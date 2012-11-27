@@ -1,9 +1,31 @@
 package path;
 
+# Single-level navbar. Entries without an href are headers.
+our @nav = (
+    { title => "Apache Streams" },
+    { title => "Overview",
+      href => "/streams/index.html"},
+    { title => "Wiki",
+      href => ""},
+    { title => "Project" },
+    { title => "Source Code",
+      href => "/streams/source-repository.html" },
+    { title => "Mailing Lists",
+      href => "/streams/mailing-lists.html" },
+    { title => "Issue Tracking",
+      href => "https://issues.apache.org/jira/browse/STREAMS" },
+    { title => "Resources",
+      href => "/streams/resources.html" },
+    { title => "License",
+      href => "http://apache.org/licenses/LICENSE-2.0.html" },
+);
+
 # Django-style URL dispatching
 our @patterns = (
-	[qr!\.mdtext$!, single_narrative => { template => "skeleton.html" }],
-) ;
+  [qr!\.mdtext$!, single_narrative => { 
+    template => "skeleton.html", 
+    nav => \@nav }],
+);
 
 1;
 
