@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <groupId>org.apache.streams.osgi-components</groupId>
+    <artifactId>streams-osgi-components</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <bundle.symbolicName>org.apache.streams.osgi-components.activity-publisher-registration</bundle.symbolicName>
+    <bundle.namespace>org.apache.streams.osgi.components</bundle.namespace>
+  </properties>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.streams.osgi-components</groupId>
+  <artifactId>activity-publisher-registration</artifactId>
+  <version>0.1-SNAPSHOT</version>
+
+  <name>Activity Publisher Registration</name>
+
+  <packaging>bundle</packaging>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+      <optional>true</optional>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_compendium</artifactId>
+      <optional>true</optional>
+      <version>1.0</version>
+    </dependency>
+  </dependencies>
+
+</project>
