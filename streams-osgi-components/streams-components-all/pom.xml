@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="MACROMAN"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <groupId>org.apache.streams.osgi-components</groupId>
+    <artifactId>streams-osgi-components</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.streams</groupId>
+  <artifactId>streams-components-all</artifactId>
+  <version>0.1-SNAPSHOT</version>
+
+  <name>Apache Streams Components</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.streams.osgi-components</groupId>
+            <artifactId>activity-publisher-registration</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+  <packaging>jar</packaging>
+
+    <build>
+     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.0</version>
+        <executions>
+            <execution>
+                <phase>package</phase>
+                <goals>
+                    <goal>shade</goal>
+                </goals>
+            </execution>
+        </executions>
+      </plugin>
+     </plugins>
+    </build>
+
+</project>
