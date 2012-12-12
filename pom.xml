@@ -5,7 +5,6 @@
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-master</artifactId>
         <version>0.1-SNAPSHOT</version>
-        <relativePath>../streams-master-pom/pom.xml</relativePath>
    </parent>
 
   <modelVersion>4.0.0</modelVersion>

@@ -1,12 +1,18 @@
-##compile directores##
-*/target/**
+# environment ignores #
+streams-master-pom/
 
-## IDE directories/files ##
+# Compile directores and files #
+
+target/
+dependency-reduced-pom.xml
+
+# IDE directories/files #
 /.idea
 .iml
+.eclipse/
+.settings/
 
 # OS generated files #
-######################
 .DS_Store
 .DS_Store?
 ._*
