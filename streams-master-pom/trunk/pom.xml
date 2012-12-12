@@ -28,7 +28,7 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>10</version>
+    <version>11</version>
     <relativePath />
   </parent>
 
@@ -41,12 +41,12 @@
   
   <inceptionYear>2012</inceptionYear>
 
-  <url>http://streams.apache.org/</url>
+  <url>http://incubator.apache.org/streams</url>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/streams/streams-master-pom/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/streams/streams-master-pom/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/incubator/streams/streams-master-pom/trunk/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/streams/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/streams/trunk</developerConnection>
+    <url>http://svn.apache.org/viewvc/incubator/streams/trunk/</url>
   </scm>
 
   <mailingLists>
@@ -79,29 +79,32 @@
   
   
   <profiles>
-    <profile>
-      <id>pedantic</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.rat</groupId>
-            <artifactId>apache-rat-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>verify</phase>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <excludes>
-                <exclude>**/MANIFEST.MF</exclude>
-              </excludes>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+  <profile>
+    <id>release-sign-artifacts</id>
+    <activation>
+      <property>
+        <name>performRelease</name>
+        <value>true</value>
+      </property>
+    </activation>
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>1.1</version>
+          <executions>
+            <execution>
+              <id>sign-artifacts</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>sign</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+  </profile>
+</profiles>
 </project>
