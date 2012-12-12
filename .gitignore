@@ -1,0 +1,17 @@
+
+/target
+/activities-core/target
+/activities-shindig/target
+/activities-test-client/target
+/activities-core/target/activities-core-1.0.0-SNAPSHOT.jar
+/activities-core/target/maven-archiver
+/activities-core/target
+/activities-shindig/target
+/activities-test-client/target/maven-archiver
+/activities-test-client/target/surefire
+/activities-test-client/target/test-classes
+/activities-test-client/target/activities-test-client-1.0.0-SNAPSHOT.jar
+/activities-test-client/target/classes
+/activities-run/target
+/.idea
+.iml
