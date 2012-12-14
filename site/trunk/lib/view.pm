@@ -1,5 +1,6 @@
 package view;
 use base 'ASF::View'; # see https://svn.apache.org/repos/infra/websites/cms/build/lib/ASF/View.pm
+
 1;
 
 =head1 LICENSE
