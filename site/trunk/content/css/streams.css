@@ -3,6 +3,10 @@
   padding-right: 5px;
 }
 
+.nav-header {
+  font-size: 110%;
+}
+
 .footer p {
   text-align: center;
   margin-bottom: 0px;
