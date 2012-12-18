@@ -5,7 +5,7 @@ our @nav = (
     { title => "Apache Streams" },
     { title => "Overview",
       href => "/index.html"},
-    { title => "Wiki",
+    { title => "Wiki (coming soon)",
       href => ""},
     { title => "Project" },
     { title => "Source Code",
@@ -16,8 +16,15 @@ our @nav = (
       href => "https://issues.apache.org/jira/browse/STREAMS" },
     { title => "Resources",
       href => "/resources.html" },
+    { title => "Foundation" },
+    { title => "Foundation Info",
+      href => "http://www.apache.org/" },
     { title => "License",
       href => "http://apache.org/licenses/LICENSE-2.0.html" },
+    { title => "Sponsorship",
+      href => "http://www.apache.org/foundation/sponsorship.html" },
+    { title => "Thanks",
+      href => "http://www.apache.org/foundation/thanks.html" },
 );
 
 # Django-style URL dispatching
