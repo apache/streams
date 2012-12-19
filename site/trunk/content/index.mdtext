@@ -19,7 +19,7 @@ Notice:   Licensed to the Apache Software Foundation (ASF) under one
 
 ---
 
-> *Apache Streams (incubating)* is a lightweight server for ActivityStreams.
+> *Apache Streams (incubating)* is a lightweight (yet scalable) server for ActivityStreams.
 
 ---
 
