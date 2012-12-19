@@ -8,7 +8,7 @@ dependency-reduced-pom.xml
 
 # IDE directories/files #
 /.idea
-.iml
+*.iml
 .eclipse/
 .settings/
 
