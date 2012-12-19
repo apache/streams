@@ -16,12 +16,13 @@ Notice:   Licensed to the Apache Software Foundation (ASF) under one
           specific language governing permissions and limitations
           under the License.
 
-
 Apache Streams is a community developed project.  The list below is a partial list of contributors to the project, for a complete list you'd have to look at all contributors to our issue tracker, mailing list and version control.  Contributors in the community serve in many different roles.  For more information on how Apache works, see [how it works][1].
 
  Apache ID | Name          | Follow                     | Role(s)                        
 -----------|---------------|----------------------------|--------------------------------
  mfranklin | Matt Franklin |twitter: [@mattfranklin][2] | Mentor, PPMC Member, Committer 
+rbaxter      | Ryan Baxter   |twitter: [@ryanjbaxter][3]  | Committer
 
 [1]: http://www.apache.org/foundation/how-it-works.html
 [2]: http://www.twitter.com/mattfranklin
+[3]: http://www.twitter.com/ryanjbaxter
