@@ -16,15 +16,15 @@ Notice:   Licensed to the Apache Software Foundation (ASF) under one
           specific language governing permissions and limitations
           under the License.
 
-The preliminary architecture for the Apache Streams project is heavily influenced by Enterprise Integration Patterns and general messaging architecture.  It is the goal of the project to support both a lightweight servlet container deployment and a robust distributed deployment.  The initial architectural patterns selected are being developed with an Enterprise Service Bus based architecture in mind with target implementations of Apache ServiceMix and Apache Camel.
+The preliminary architecture for the Apache Streams (v0.1) project is heavily influenced by Enterprise Integration Patterns and general messaging architecture.  It is the goal of the project to support both a lightweight servlet container deployment and a robust distributed deployment.  The initial architectural patterns selected are being developed with an Enterprise Service Bus based architecture in mind with target implementations of Apache ServiceMix and Apache Camel.
 
 ---
 
-> *Apache Streams (incubating) v.1 Architecture*
+> *Apache Streams (incubating) v0.1 Architecture*
 
 ---
 
-![v.01 Architecture](/images/v.1_architecture.png)
+![v0.1 Architecture](/images/v.1_architecture.png)
 
 Component Descriptions
 ----------------------
