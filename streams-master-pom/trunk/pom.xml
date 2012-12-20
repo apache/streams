@@ -126,22 +126,6 @@
         </configuration>
       </plugin>
 
-      <!-- Add license to artifacts -->
-      <plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-remote-resources-plugin</artifactId>
-         <executions>
-           <execution>
-             <configuration>
-               <resourceBundles>
-                <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
-                <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
-               </resourceBundles>
-             </configuration>
-           </execution>
-         </executions>
-       </plugin>
-
        <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
@@ -155,7 +139,7 @@
           </executions>
         </plugin>
 
-         <plugin>
+        <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.4</version>
         <configuration>
@@ -166,7 +150,17 @@
             <format>zip</format>
           </formats>
           <fileSets>
-            <fileSet>
+             <fileSet>
+              <directory>${project.basedir}/maven-shared-archive-resources</directory>
+              <includes>
+                <include>README*</include>
+                <include>LICENSE*</include>
+                <include>NOTICE*</include>
+              </includes>
+              <useDefaultExcludes>true</useDefaultExcludes>
+            </fileSet>
+
+            <fileSet> <!-- let local files override external files -->
               <directory>${project.basedir}</directory>
               <includes>
                 <include>README*</include>
@@ -250,6 +244,7 @@
       </plugins>
     </build>
   </profile>
+
   <profile>
       <id>pedantic</id>
       <build>
