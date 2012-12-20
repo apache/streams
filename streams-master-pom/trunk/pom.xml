@@ -151,7 +151,7 @@
           </formats>
           <fileSets>
              <fileSet>
-              <directory>${project.basedir}/maven-shared-archive-resources/META-INF</directory>
+              <directory>${project.basedir}/target/maven-shared-archive-resources/META-INF</directory>
               <includes>
                 <include>README*</include>
                 <include>LICENSE*</include>
