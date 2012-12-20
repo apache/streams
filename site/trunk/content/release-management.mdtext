@@ -105,8 +105,8 @@ All of the steps below apply to both the master and project releases, unless oth
 
 
 11. Put the release candidate up for a vote
-     1. Create a VOTE email thread on dev@ to record votes as replies, like [this](release-vote.txt)
-     2. Create a DISCUSS email thread on dev@ for any vote questions, [this](release-discuss.txt)
+     1. Create a VOTE email thread on dev@ to record votes as replies
+     2. Create a DISCUSS email thread on dev@ for any vote questions
      3. Perform a review of the release and cast your vote. See the following for more details on Apache releases 
 
            [http://www.apache.org/dev/release.html](http://www.apache.org/dev/release.html)  
