@@ -75,7 +75,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-     <sourceReleaseAssemblyDescriptor>streams-source-release-zip-tar</sourceReleaseAssemblyDescriptor>  
+     <sourceReleaseAssemblyDescriptor>streams-source-release-tar</sourceReleaseAssemblyDescriptor>  
   </properties>
 
 <build>
@@ -154,7 +154,48 @@
             </execution>
           </executions>
         </plugin>
+
+         <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>src</descriptorRef>
+          </descriptorRefs>
+          <formats>
+            <format>zip</format>
+          </formats>
+          <fileSets>
+            <fileSet>
+              <directory>${project.basedir}</directory>
+              <includes>
+                <include>README*</include>
+                <include>LICENSE*</include>
+                <include>NOTICE*</include>
+                <include>pom.xml</include>
+              </includes>
+              <useDefaultExcludes>true</useDefaultExcludes>
+            </fileSet>
+            <fileSet>
+            <!-- TODO: use expresssions instead: ${project.build.sourceDirectory}, etc -->
+            <directory>${project.basedir}/src</directory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+          </fileSet>
+        </fileSets>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
+
+   
   </build>
   
   
@@ -178,18 +219,6 @@
               </execution>
             </executions>
           </plugin>          
-          
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>add-third-party</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
         </plugins>
       </build>
     </profile>
