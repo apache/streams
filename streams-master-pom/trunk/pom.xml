@@ -102,29 +102,27 @@
         </executions>
       </plugin>
 
-      <!-- Attach sources for all builds -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <inherited>true</inherited>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <!-- Compile for Java 6, source is Java 6 -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
+       <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <resourceBundles>
+                                <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
+                                <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
+                            </resourceBundles>
+                            <outputDirectory>
+                              ${project.basedir}/src/main/resources
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+       </plugin>
+
 
        <plugin>
           <groupId>org.apache.rat</groupId>
@@ -139,6 +137,10 @@
           </executions>
         </plugin>
 
+
+
+       
+
         <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.4</version>
@@ -149,33 +151,6 @@
           <formats>
             <format>zip</format>
           </formats>
-          <fileSets>
-             <fileSet>
-              <directory>/target/maven-shared-archive-resources/META-INF</directory>
-              <includes>
-                <include>README*</include>
-                <include>LICENSE*</include>
-                <include>NOTICE*</include>
-              </includes>
-              <useDefaultExcludes>true</useDefaultExcludes>
-            </fileSet>
-
-            <fileSet> <!-- let local files override external files -->
-              <directory>${project.basedir}</directory>
-              <includes>
-                <include>README*</include>
-                <include>LICENSE*</include>
-                <include>NOTICE*</include>
-                <include>pom.xml</include>
-              </includes>
-              <useDefaultExcludes>true</useDefaultExcludes>
-            </fileSet>
-            <fileSet>
-            <!-- TODO: use expresssions instead: ${project.build.sourceDirectory}, etc -->
-            <directory>${project.basedir}/src</directory>
-            <useDefaultExcludes>true</useDefaultExcludes>
-          </fileSet>
-        </fileSets>
         </configuration>
         <executions>
           <execution>
