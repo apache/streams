@@ -191,7 +191,7 @@ All of the steps below apply to both the master and project releases, unless oth
 
 6. Make the required updates that caused the vote to be canceled during the next release cycle
 
-<a name="verify_signatures" />
+<a name="verify_signatures" ></a>
 ####Verifying release signatures
 On unix platforms the following command can be executed -
 
@@ -206,7 +206,7 @@ gpg: Good signature from ...
 gpg: Signature made ...
 
 
-<a name="combined" />
+<a name="combined" ></a>
 ####Combined Release
 In order to perform a combined release of the streams-master and streams-project trunks, do the following:    
 
