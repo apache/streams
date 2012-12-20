@@ -76,14 +76,14 @@ These setup steps only need to be performed on a particular machine once.
     The program's default values should be fine. For the "Real Name" enter your full name (ie. Stan Programmer). For the "e-mail address" enter your apache address (ie. sprogrammer@apache.org). You will also be required to enter a "passphrase" for the GPG key generation. Keep track of this as you will need this for the Release processing.
 	
    * *The generated keys are stored in $HOME/.gnupg or %HOME%\Application Data\gnupg subdirectory.*
-   * *Save the content in this subdirectory to a safe media. This contains your private key used to sign all the Rave release materials.*
+   * *Save the content in this subdirectory to a safe media. This contains your private key used to sign all the Streams release materials.*
  
 3. Backup your home directory to another media ||
-4. Add your public key to the [SVN repository](https://svn.apache.org/repos/asf/rave/KEYS). See the commands describe at the beginning of this KEYS file to perform this task. The gpg key-pair is used to sign the published artifacts for the Rave releases.
+4. Add your public key to the [SVN repository](https://svn.apache.org/repos/asf/incubator/streams/KEYS). See the commands describe at the beginning of this KEYS file to perform this task. The gpg key-pair is used to sign the published artifacts for the Streams releases.
     
        $ gpg --list-sigs <Real Name> && gpg --armor -- export <Real Name>
 	
-    *The [KEYS](https://svn.apache.org/repos/asf/rave/KEYS) file is updated via normal svn commit procedures. The one under w.a.o/dist/ has to be manually updated from svn.*
+    *The [KEYS](https://svn.apache.org/repos/asf/incubator/streams/KEYS) file is updated via normal svn commit procedures. The one under w.a.o/dist/ has to be manually updated from svn.*
 
 5. Submit your public key to a key server. E.g. [SURFNET](http://pgp.surfnet.nl:11371/) or [MIT](http://pgp.mit.edu/)
 
