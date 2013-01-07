@@ -44,9 +44,9 @@
   <url>http://incubator.apache.org/streams</url>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/streams/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/streams/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/incubator/streams/trunk/</url>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/incubator/streams</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/streams/</developerConnection>
+    <url>https://svn.apache.org/repos/asf/incubator/streams</url>
   </scm>
 
   <mailingLists>
