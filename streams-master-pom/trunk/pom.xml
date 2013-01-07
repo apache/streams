@@ -124,24 +124,7 @@
        </plugin>
 
 
-       <plugin>
-          <groupId>org.apache.rat</groupId>
-          <artifactId>apache-rat-plugin</artifactId>
-          <version>0.8</version>
-          <executions>
-            <execution>
-              <configuration>
-                <reportFile>${project.build.directory}/maven-shared-archive-resources/META-INF/RAT-REPORT</reportFile>
-              </configuration> 
-            </execution>
-          </executions>
-        </plugin>
-
-
-
-       
-
-        <plugin>
+              <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.4</version>
         <configuration>
