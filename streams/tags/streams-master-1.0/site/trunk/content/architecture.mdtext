@@ -1,0 +1,56 @@
+Title:    Apache Streams Architecture
+Notice:   Licensed to the Apache Software Foundation (ASF) under one
+          or more contributor license agreements.  See the NOTICE file
+          distributed with this work for additional information
+          regarding copyright ownership.  The ASF licenses this file
+          to you under the Apache License, Version 2.0 (the
+          "License"); you may not use this file except in compliance
+          with the License.  You may obtain a copy of the License at
+          .
+            http://www.apache.org/licenses/LICENSE-2.0
+          .
+          Unless required by applicable law or agreed to in writing,
+          software distributed under the License is distributed on an
+          "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+          KIND, either express or implied.  See the License for the
+          specific language governing permissions and limitations
+          under the License.
+
+The preliminary architecture for the Apache Streams (v0.1) project is heavily influenced by Enterprise Integration Patterns and general messaging architecture.  It is the goal of the project to support both a lightweight servlet container deployment and a robust distributed deployment.  The initial architectural patterns selected are being developed with an Enterprise Service Bus based architecture in mind with target implementations of Apache ServiceMix and Apache Camel.
+
+---
+
+> *Apache Streams (incubating) v0.1 Architecture*
+
+---
+
+![v0.1 Architecture](/images/v.1_architecture.png)
+
+Component Descriptions
+----------------------
+
+*Activity Publisher*:  Entity external to Activity Streams server that creates Activities per the activitystre.ms specification
+
+*Activity Publisher Endpoint Adapter*: Provides protocol interfaces for Activity Publishers to use when registering as an Activity Publisher and when publishing Activities
+
+*Publisher Registration Service*: Authorizes Activity Producers to publish Activities to Activity Streams server and configures a dedicated Activity Consumer for the Activity Publisher
+
+*Activity Routing Service*:  For pushed Activities, this service routes the Activity to the appropriate Activity Consumer
+
+*Activity Consumer*: Consumes Activities from Authorized Activity Publishers.  An Activity Consumer is set up to be either a push or pull service.  A Pull Activity Consumer will poll an Activity Publisher for new Activities, and a Push Activity Consumer will receive new Activities from the Activity Router Service.
+
+*Activity Splitter*: Activity Consumers use the Activity Splitter to create discrete Activity messages from a collection of Activities and place them for processing on the Activity Queue.
+
+*Activity Aggregation Service*: Pops Activities from the Activity Queue and notifies Activity Streams Subscriber Delegates when a new Activity Stream they have subscribed to is available.
+
+
+*Activity Streams Subscriber*: An external entity that is interested in subscribing to aggregated Activity Streams based on some criteria.  Expects Activities adhering to activitystre.ms specification
+
+*Activity Streams Subscriber Delegate*:  Defines the aggregation of Activity Streams on behalf of Activity Streams Consumers and provides notification to its Activity Streams Subscriber when new aggregated Activity Streams are available
+
+
+*Activity Streams Subscriber Endpoint Adapter*: Provides protocol interfaces for Activity Streams Subscribers to use when subscribing to Activity Streams and polling for new Activity Streams
+
+*Activity Streams Consumer Registration Service*: Creates Activity Streams Subscriber Delegates for each Activity Streams Subscribers.
+
+*Activity Streams Router*: Handles the routing of poll requests from Activity Streams Subscribers to Activity Streams Subscriber Delegates and push notifications from Activity Streams Subscriber Delegates to Activity Streams Subscribers

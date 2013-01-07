@@ -1,0 +1,38 @@
+Title:    Apache Streams Contributors.
+Notice:   Licensed to the Apache Software Foundation (ASF) under one
+          or more contributor license agreements.  See the NOTICE file
+          distributed with this work for additional information
+          regarding copyright ownership.  The ASF licenses this file
+          to you under the Apache License, Version 2.0 (the
+          "License"); you may not use this file except in compliance
+          with the License.  You may obtain a copy of the License at
+          .
+            http://www.apache.org/licenses/LICENSE-2.0
+          .
+          Unless required by applicable law or agreed to in writing,
+          software distributed under the License is distributed on an
+          "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+          KIND, either express or implied.  See the License for the
+          specific language governing permissions and limitations
+          under the License.
+
+Apache Streams is a community developed project.  The list below is a partial list of contributors to the project, for a complete list you'd have to look at all contributors to our issue tracker, mailing list and version control.  Contributors in the community serve in many different roles.  For more information on how Apache works, see [how it works][1].
+
+ Apache ID | Name          | Follow                     | Role(s)                        
+-----------|---------------|----------------------------|--------------------------------
+ ate       | Ate Douma     |twitter: [@atedouma][4]     | Mentor, PPMC Member, Committer
+ mfranklin | Matt Franklin |twitter: [@mattfranklin][2] | Mentor, PPMC Member, Committer 
+ letourneau| Jason Letourneau   |twitter: [@jletourneau8080][5]  | Committer
+ rbaxter85 | Ryan J Baxter   |twitter: [@ryanjbaxter][3]  | Committer
+ craigmcc  | Craig McClanahan | twitter: [@craigmcclanahan][6] | Mentor, PPMC Member, Committer
+ ahart     | Andrew Hart   |twitter: [@andrewfhart][7]  | Mentor, PPMC Member, Committer
+
+
+[1]: http://www.apache.org/foundation/how-it-works.html
+[2]: http://www.twitter.com/mattfranklin
+[3]: http://www.twitter.com/ryanjbaxter
+[4]: http://twitter.com/atedouma
+[5]: http://twitter.com/jletourneau8080
+[6]: http://twitter.com/craigmcclanahan
+[7]: http://www.twitter.com/andrewfhart
+

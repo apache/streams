@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+  
+  <parent>
+    <groupId>org.apache</groupId>
+    <artifactId>apache</artifactId>
+    <version>11</version>
+    <relativePath />
+  </parent>
+
+  <groupId>org.apache.streams</groupId>
+  <artifactId>streams-master</artifactId>
+  <name>Apache Streams :: streams-master (Master POM)</name>
+  <description>Apache Streams Master Project</description>
+  <packaging>pom</packaging>
+  <version>1.0</version>
+  
+  <inceptionYear>2012</inceptionYear>
+
+  <url>http://incubator.apache.org/streams</url>
+
+  <scm>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/incubator/streams/tags/streams-master-1.0</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/streams/tags/streams-master-1.0</developerConnection>
+    <url>https://svn.apache.org/repos/asf/incubator/streams/tags/streams-master-1.0</url>
+  </scm>
+
+  <mailingLists>
+
+    <mailingList>
+      <name>Streams Developer List</name>
+      <subscribe>dev-subscribe@streams.incubator.apache.org</subscribe>
+      <unsubscribe>dev-unsubscribe@streams.incubator.apache.org</unsubscribe>
+      <post>mailto:dev@rstreams.incubator.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/streams-dev/</archive>
+    </mailingList>
+
+    <mailingList>
+      <name>Streams User List</name>
+      <subscribe>users-subscribe@streams.incubator.apache.org</subscribe>
+      <unsubscribe>users-unsubscribe@streams.incubator.apache.org</unsubscribe>
+      <post>mailto:users@streams.incubator.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/streams-users/</archive>
+    </mailingList>
+
+  </mailingLists>
+
+  <issueManagement>
+    <url>https://issues.apache.org/jira/browse/STREAMS</url>
+  </issueManagement>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+<build>
+    <plugins>
+      <!-- requires Java 6 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-java</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <message>Java 6 or higher is required to compile this module</message>
+                  <version>1.6</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+       <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <resourceBundles>
+                                <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
+                                <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
+                            </resourceBundles>
+                            <outputDirectory>
+                              ${project.basedir}/src/main/resources
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+       </plugin>
+
+
+       <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <version>0.8</version>
+          <executions>
+            <execution>
+              <configuration>
+                <reportFile>${project.build.directory}/maven-shared-archive-resources/META-INF/RAT-REPORT</reportFile>
+                 <excludes>
+                <exclude>**/MANIFEST.MF</exclude>
+                <exclude>**/DEPENDENCIES</exclude>
+                <exclude>**/NOTICE</exclude>
+                <exclude>**/DISCLAIMER</exclude>
+                <exclude>**/RELEASE NOTES</exclude>
+                 <exclude>**/LICENSE</exclude>
+              </excludes>
+              </configuration> 
+            </execution>
+          </executions>
+        </plugin>
+
+
+
+       
+
+        <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>src</descriptorRef>
+          </descriptorRefs>
+          <formats>
+            <format>zip</format>
+          </formats>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+
+   
+  </build>
+  
+  
+  <profiles>
+    <profile>
+      <id>apache-release</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.rat</groupId>
+            <artifactId>apache-rat-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>compile</phase>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+             <configuration>
+                <useAgent>true</useAgent>
+            </configuration>
+          </plugin>          
+        </plugins>
+      </build>
+    </profile>
+
+  <profile>
+    <id>release-sign-artifacts</id>
+    <activation>
+      <property>
+        <name>performRelease</name>
+        <value>true</value>
+      </property>
+    </activation>
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>1.1</version>
+          <executions>
+            <execution>
+              <id>sign-artifacts</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>sign</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+  </profile>
+
+  <profile>
+      <id>pedantic</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.rat</groupId>
+            <artifactId>apache-rat-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>verify</phase>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <excludes>
+                <exclude>**/MANIFEST.MF</exclude>
+                <exclude>**/DEPENDENCIES</exclude>
+                <exclude>**/NOTICE</exclude>
+                <exclude>**/DISCLAIMER</exclude>
+                <exclude>**/RELEASE NOTES</exclude>
+                 <exclude>**/LICENSE</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+</profiles>
+</project>

@@ -1,0 +1,35 @@
+Title:    Mailing Lists
+Notice:   Licensed to the Apache Software Foundation (ASF) under one
+          or more contributor license agreements.  See the NOTICE file
+          distributed with this work for additional information
+          regarding copyright ownership.  The ASF licenses this file
+          to you under the Apache License, Version 2.0 (the
+          "License"); you may not use this file except in compliance
+          with the License.  You may obtain a copy of the License at
+          .
+            http://www.apache.org/licenses/LICENSE-2.0
+          .
+          Unless required by applicable law or agreed to in writing,
+          software distributed under the License is distributed on an
+          "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+          KIND, either express or implied.  See the License for the
+          specific language governing permissions and limitations
+          under the License.
+
+
+There are several mailing lists for Apache Streams. To subscribe or unsubscribe
+to a list send mail to the respective administrative address given below. You
+will then receive a confirmation mail with further instructions.
+
+ Name                 | Subscribe      | Unsubscribe       | Post      | Archive
+----------------------|----------------|-------------------|-----------|-------------------------------
+ Developer List       | [Subscribe][1] | [Unsubscribe][2]  | [Post][3] | [mail-archives.apache.org][4]
+ Commit Announcements | [Subscribe][1] | [Unsubscribe][2]  |           | [mail-archives.apache.org][4]
+
+[1]: mailto:dev-subscribe@streams.incubator.apache.org
+[2]: mailto:dev-unsubscribe@streams.incubator.apache.org
+[3]: mailto:dev@streams.incubator.apache.org
+[4]: http://mail-archives.apache.org/mod_mbox/incubator-streams-dev/
+[5]: mailto:commits-subscribe@streams.incubator.apache.org
+[6]: mailto:commits-unsubscribe@streams.incubator.apache.org
+[7]: http://mail-archives.apache.org/mod_mbox/incubator-streams-commits/

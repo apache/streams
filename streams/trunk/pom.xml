@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+        <groupId>org.apache.streams</groupId>
+        <artifactId>streams-master</artifactId>
+        <version>0.1-SNAPSHOT</version>
+   </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.streams</groupId>
+  <artifactId>streams-project</artifactId>
+  <version>0.1-SNAPSHOT</version>
+
+  <name>Apache Streams Project</name>
+
+  <!--
+   | describe your project here
+  -->
+
+  <description>Generated using Pax-Construct</description>
+
+  <properties>
+    <!--
+     | some example OSGi runtime properties
+    -->
+
+    <org.osgi.service.http.port>8080</org.osgi.service.http.port>
+    <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
+  </properties>
+
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>poms</module>
+    <module>provision</module>
+    <module>streams-osgi-components</module>
+    <module>streams-eip-routes</module>
+    <module>streams-web</module>
+  </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.ops4j</groupId>
+        <artifactId>maven-pax-plugin</artifactId>
+        <version>1.5</version>
+          <extensions>true</extensions>
+          <configuration>
+          <provision>
+            <param>--platform=felix</param>
+          </provision>
+        </configuration>
+       <executions>
+        </executions>
+      </plugin>
+
+        <plugin>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>2.3</version>
+            <!--<configuration>
+                <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
+            </configuration> -->
+        </plugin>
+
+
+    </plugins>
+  </build>
+
+
+
+</project>

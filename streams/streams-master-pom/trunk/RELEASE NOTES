@@ -1,0 +1,32 @@
+Apache Streams (Incubating)
++++++++++++++++++++++++++++++++
+
+Apache Streams is be a lightweight server for ActivityStreams (activitystrea.ms). The role of Apache Streams is to provide a central point of aggregation, filtering and querying for Activities that have been submitted by disparate systems. Apache Streams also intends to include a mechanism for intelligent filtering and recommendation to reduce the noise to end users.
+
+
+Apache Streams will bring together individuals who are or are looking to increase and centralize the production, consumption and federation of ActivityStreams throughout enterprise organizations and the Internet as a whole. The target features include:
+
+Publication of Activities from multiple systems via HTTP
+Aggregation and syndication of streams
+Support for security trimming of streams by social graph
+Noise reduction and intelligent filtering
+Federation of streams across disparate systems
+Provide libraries for easy integration in source systems
+
+The ActivityStreams specification standardizes a generic format for describing event-based data. Many social web companies have adopted the format and it has been included in the OpenSocial specification as the preferred method for delivery of activity data. During discussions of ActivityStreams at OpenSocial events earlier in the year, it became clear that multiple organizations are facing similar issues as to the publication and filtering of their activities and would benefit from a commonly-developed, open-source ActivityStreams server.
+
+The initial goal of the project is to survey donated code and develop a common, high-level architecture for an initial release. The project will then work toward that release in a new code base, pulling in pieces of donated code as necessary.
+
+There are several mailing lists for Apache Streams. To subscribe or unsubscribe to a list send mail to the respective administrative address given below. You will then receive a confirmation mail with further instructions.
+
+http://mail-archives.apache.org/mod_mbox/incubator-streams-dev/
+
+Please submit issues to: https://issues.apache.org/jira/browse/STREAMS
+
++++++++++++++++++++++++++++++++++
+
+RELEASE 1.0: Streams Master POM
+
++++++++++++++++++++++++++++++++++
+
+Initial release of project master POM that defines global meta-data and build processes for sub-modules and Streams project.
