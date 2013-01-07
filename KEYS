@@ -8,40 +8,39 @@ Developers:
         (gpg --list-sigs <your name>
              && gpg --armor --export <your name>) >> this file.
 
-pub   2048R/F4F737BF 2012-12-12
-uid                  Jason Letourneau (Key for Streams project distribution) <letourneau@apache.org>
-sig 3        F4F737BF 2012-12-12  Jason Letourneau (Key for Streams project distribution) <letourneau@apache.org>
-sub   2048R/A3436A7D 2012-12-12
-sig          F4F737BF 2012-12-12  Jason Letourneau (Key for Streams project distribution) <letourneau@apache.org>
+pub   2048R/3F94A968 2013-01-07
+uid                  Jason Letourneau <letourneau@apache.org>
+sig 3        3F94A968 2013-01-07  Jason Letourneau <letourneau@apache.org>
+sub   2048R/020FBED0 2013-01-07
+sig          3F94A968 2013-01-07  Jason Letourneau <letourneau@apache.org>
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1.4.12 (Darwin)
 
-mQENBFDI/loBCAC4pgYBoZuNAXjgPx2ojMl/rSfU/AfxpiZ65i4dnYcedcxOunC2
-rkk34mtZcpEXtJ5LHp3cMYku8i6cHfyQ8OJkOktMitNNlhV9K9ZAsyN/KqwvcVEb
-mtvQ8cbCYBwLLcMEToICohE4wJeYcgC7Y9MThqxBw5gW35rs6ZdEdtLlG6ow/7RR
-LzIk9ysNZqO3pizs0P9cqHak4Hdzk4t6+9XBKUYmqUL3b67bjoUICRtVlC9uYMNA
-UE2hDaNmulPQBEUHS+OO9t99oCCYDkuzS6nNE0SzNZEw8eHZshlXka2Jne+4IeAa
-XC9QgF18Pc3WQ6+EAGk22bLk9DksT93DpWurABEBAAG0T0phc29uIExldG91cm5l
-YXUgKEtleSBmb3IgU3RyZWFtcyBwcm9qZWN0IGRpc3RyaWJ1dGlvbikgPGxldG91
-cm5lYXVAYXBhY2hlLm9yZz6JATgEEwECACIFAlDI/loCGwMGCwkIBwMCBhUIAgkK
-CwQWAgMBAh4BAheAAAoJEHIMbEz09ze/230H+wQIiaEtbAlptRshKNbjAJiIbcjA
-vjpxLsc+iM75Qo0h8QaoRSQpFDJKnrRyMjbdqyP8JozzC09ekS17dgAt0/f5xtR4
-DFLo5R83IYVPvH/LkH6wjQ7QeWWFm3ZDk8c0fn+ONUPHzzwgkYlvf6kbgXS5C3vM
-D9BwaBckMOrgBYMRPrAITMKxKqGj8zb7+asj6Mp6G4dkv9H+X+yRVR38bjfXOzbf
-NiukvAvesxGWvyaoPyq6NSeZZxsxMA26H/OG1DDYuyRRjmwINiiwkQyWcqBDFKEf
-zmTE4hkkVWL8XI3szVnnbY+wvHNoMKWojhxjxGj6ObVtXp4hIABMwg8Bddu5AQ0E
-UMj+WgEIAK4BgpuE+WaxFdYbxzAQqGv++/7HxYQad0SYOihtonqy3qDRFIaUELQ9
-I+1EDl3x3C6OSGAkAc+7edtR6rChqkbIgRLbNNHNWYOgS+xhUL3zhiVaIgC2s+j2
-IxqeK2agCCeJ+nBDuJ5BCgPjf6e3BxQYTgj9APma7GmtjQWqyWG3Ss5hh0/YyUio
-2pjdePRF1UIVT6LxjXBL25eBBXed0SozIsLFEbzzWVitSJp4ocUYHnEXlnkRYo3j
-vtMLDEBorqvgBVSesurSqZ+I16XTeUPQd5VfurbzV2j2CTg9r4nniQs2w2ypwSJy
-AUNV6glCKCYhHrbjfpLuzSqdAmwpUb0AEQEAAYkBHwQYAQIACQUCUMj+WgIbDAAK
-CRByDGxM9Pc3v40cB/9VcS7YFvA4x8KQk+zD3dyeLdBZhgAWL4RY84cW6ZZmbTdm
-wvBBj7iiTZQ7H40FK0ufEcN6yXqDYdLAaJPugOQQJuVh1E30o13mGtuxGdizt3VG
-A7YpDLCx6cZgDWRb+vSQaUM83azdKtkstFzOQ7xP/M89mljYTEGurd6SZDQUoy5g
-aJbqPAiAUCgkWdzJK7PqtTR07HHbANdw0NKv6/Ry9oO3hJa4z0bmwkYOvf2eFNK3
-lNk8so73E+D0xChwv8VpMWceF7YLzIPgXQ7Qz0M+vbYsBVbhXSDAoKelIKOaVya+
-CarxOIbtCt+S/fJueotAh2SSMGJvnBXlgr+cDCeC
-=kiuV
+mQENBFDrCSQBCADrCEd8fjnwpYn6aW7caXtwcrduZKbRPVisa+K+V9K1cm2zNg7Z
+unOk5cvlyLE3l8m2324I2cFml/ing/NaK6PY2+xJg+c9EXQ73/u5ccMU7NYuMYEG
+bPK5FMmr6B8q0UhpNIVZ0S2ZV1mfROGaLGPkQPuP36sU+u6Z6R/CruT7f6V/GVJ8
+66HQ087Lb24JTi1j5boLQlAIEFtF15eGxB45LT6IklEKAVf/B2TJK2TWDkcB6p0/
+j1EglDcOIPXcGBHTco4xC/qIDjpqAWd2N6KTcHB8ZHgpAQrq0PIC0iOqxWMfzdvA
+CFEhCKdH99Kqut9HGIl5++jwDlo2ntZh/52XABEBAAG0KEphc29uIExldG91cm5l
+YXUgPGxldG91cm5lYXVAYXBhY2hlLm9yZz6JATgEEwECACIFAlDrCSQCGwMGCwkI
+BwMCBhUIAgkKCwQWAgMBAh4BAheAAAoJEN+dqCk/lKlo50gIAN4MyxP4RAbgirEK
+j3wN0LnC7yzofi6+PMT03E4XKV9tTDB4xNROjxDAly5N6KuKk7F/QleQKVdQEQL1
+7YKnYV45QK1oYn2x06IkNwCFw4dNDqn41Gd2QpJY5twKTVFf0o3Fd7QBDCfoiW01
+Ke8ymubN9bdKN/LjjmkiCslhrweLScySDxv5upaPZvNP8cHrk8MsoDJRtsuxUQ7e
+/kQaNLLTNSW8bXevft5IEKUVky5YbPnPSea0iOjMR9gYaOE3N+Vik1NjixjKe3NF
+TnbJNSobHUkmVcD6xaNcAlX+0J9kaNH6+abp119a18Bg47rtN1EVLJYNKk5u8MJz
+EHNqTk25AQ0EUOsJJAEIAKWqm/hH97xE/re7HBz4PcSeXaYbaV4gYR6crfQNEUUF
+4xguHLVK/cpQBfB1aZJp/oJdB1v3ervYiN+PCSYOriTAK1SOj0zbOqEsmLmIOy/w
+FKGEJocVbNfpMlFcLKSL+Eq4Zz7FTUNvLksF5nI9llA/2spGncHj7DU1w0tvExjI
+EIaglfEpVsFlmehC1BMdoIeTDYnarY78A5hZ5ydDxbVk78qYpRJMC9N5Ez4IAY8N
+QGXNgA8wTpb2y86oCkEgNRl2RuEhRce0SjEZ+euttVvxRpzqEusdsQJbs8Eg5wpF
+h8+ZF63fUPTyqscZtkCeHbcskjMykow0pfB90xNtROkAEQEAAYkBHwQYAQIACQUC
+UOsJJAIbDAAKCRDfnagpP5SpaFbgCADNR6m7BdNs9lnpfVTjmgA5Bxg3ZoCJilbk
+7OM3QxvdcoDnb0iXJEgoAIO1QaiK395eQmam/dHupzVcwI/86Q2eDWUTx4zcUYRv
+m2C6P5yiEuH2792rLJ1SJbMy7AA3ZzBPwobjLmujHu9nO6SdX4hbpH3/LW+Xe3zV
+k+sS4gxii4SYQWqQyBf27nZIVVxcBVVdB0KmFcw6IEV7/LVho/tBpKV1BUoDeZj1
+BrhHUb9vCD16k6NX+gjQhKgRmZuljnC87ruUxLDEqhmiViVEjzrusx5uLVK7FmzF
+fLsE3mi3F0I3eJVwUFXji+nIeZXszGWvstmz8ADWWyvkEblYBv7H
+=iVYc
 -----END PGP PUBLIC KEY BLOCK-----
