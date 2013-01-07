@@ -37,7 +37,7 @@
   <name>Apache Streams :: streams-master (Master POM)</name>
   <description>Apache Streams Master Project</description>
   <packaging>pom</packaging>
-  <version>1.0</version>
+  <version>1.0-SNAPSHOT</version>
   
   <inceptionYear>2012</inceptionYear>
 
@@ -238,6 +238,11 @@
             <configuration>
               <excludes>
                 <exclude>**/MANIFEST.MF</exclude>
+                <exclude>**/DEPENDENCIES</exclude>
+                <exclude>**/NOTICE</exclude>
+                <exclude>**/DISCLAIMER</exclude>
+                <exclude>**/RELEASE NOTES</exclude>
+                 <exclude>**/LICENSE</exclude>
               </excludes>
             </configuration>
           </plugin>
