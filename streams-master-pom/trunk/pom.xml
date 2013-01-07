@@ -75,7 +75,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-     <sourceReleaseAssemblyDescriptor>streams-source-release-tar</sourceReleaseAssemblyDescriptor>  
+     <sourceReleaseAssemblyDescriptor>apache-streams-incubating-source-release-tar</sourceReleaseAssemblyDescriptor>  
   </properties>
 
 <build>
