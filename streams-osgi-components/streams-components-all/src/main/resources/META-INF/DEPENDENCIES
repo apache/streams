@@ -1,0 +1,15 @@
+// ------------------------------------------------------------------
+// Transitive dependencies of this project determined from the
+// maven pom organized by organization.
+// ------------------------------------------------------------------
+
+Apache Streams Components
+
+
+From: 'an unknown organization'
+  - activity-publisher-registration-bundle [org.apache.streams.osgi.components]  org.apache.streams.osgi-components:activity-publisher-registration:bundle:0.1-SNAPSHOT
+
+
+
+
+

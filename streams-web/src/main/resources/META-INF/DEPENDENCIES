@@ -1,0 +1,37 @@
+// ------------------------------------------------------------------
+// Transitive dependencies of this project determined from the
+// maven pom organized by organization.
+// ------------------------------------------------------------------
+
+streams-web Maven Webapp
+
+
+From: 'an unknown organization'
+  - AOP alliance (http://aopalliance.sourceforge.net) aopalliance:aopalliance:jar:1.0
+    License: Public Domain 
+  - streams-eip-routes [org.apache.streams]  org.apache.streams:streams-eip-routes:bundle:0.1-SNAPSHOT
+
+  - spring-aop  org.springframework:spring-aop:jar:3.0.5.RELEASE
+
+  - spring-asm  org.springframework:spring-asm:jar:3.0.5.RELEASE
+
+  - spring-beans  org.springframework:spring-beans:jar:3.0.5.RELEASE
+
+  - spring-context  org.springframework:spring-context:jar:3.0.5.RELEASE
+
+  - spring-core  org.springframework:spring-core:jar:3.0.5.RELEASE
+
+  - spring-expression  org.springframework:spring-expression:jar:3.0.5.RELEASE
+
+  - spring-web  org.springframework:spring-web:jar:3.0.5.RELEASE
+
+
+From: 'The Apache Software Foundation' (http://www.apache.org/)
+  - Commons Logging (http://commons.apache.org/logging) commons-logging:commons-logging:jar:1.1.1
+    License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+  - Apache Streams Components (http://incubator.apache.org/streams/streams-project/streams-osgi-components/streams-components-all) org.apache.streams:streams-components-all:jar:0.1-SNAPSHOT
+    License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+
+
+

@@ -25,8 +25,7 @@
          <groupId>org.apache.streams</groupId>
          <artifactId>streams-eip-routes</artifactId>
          <version>0.1-SNAPSHOT</version>
-         <type>war</type>
-         <scope>runtime</scope>
+         <type>bundle</type>
      </dependency>
 
       <dependency>
@@ -35,8 +34,53 @@
           <version>0.1-SNAPSHOT</version>
       </dependency>
 
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-web</artifactId>
+          <version>3.0.5.RELEASE</version>
+      </dependency>
+
   </dependencies>
   <build>
     <finalName>streams-web</finalName>
+      <plugins>
+      <plugin>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>maven-jetty-plugin</artifactId>
+          <configuration>
+              <webAppConfig>
+                  <contextPath>/</contextPath>
+              </webAppConfig>
+              <scanIntervalSeconds>10</scanIntervalSeconds>
+          </configuration>
+      </plugin>
+
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-resources-plugin</artifactId>
+              <version>2.4.2</version>
+              <executions>
+                  <execution>
+                      <id>default-copy-resources</id>
+                      <phase>process-resources</phase>
+                      <goals>
+                          <goal>copy-resources</goal>
+                      </goals>
+                      <configuration>
+                          <overwrite>true</overwrite>
+                          <outputDirectory>${project.build.directory}/${project.artifactId}/WEB-INF/spring</outputDirectory>
+                          <resources>
+                              <resource>
+                                  <directory>${project.parent.basedir}/streams-eip-routes/src/main/resources/META-INF/spring</directory>
+                                  <excludes>
+                                    <exclude>osgi-component-import.xml</exclude>
+                                  </excludes>
+                              </resource>
+                          </resources>
+                      </configuration>
+                  </execution>
+              </executions>
+          </plugin>
+  </plugins>
   </build>
 </project>

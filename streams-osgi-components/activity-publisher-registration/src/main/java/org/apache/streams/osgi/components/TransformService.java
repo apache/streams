@@ -3,10 +3,9 @@ package org.apache.streams.osgi.components;
 /**
  * Public API representing an example OSGi service
  */
-public interface ExampleService
-{
-    // public methods go here...
+public interface TransformService {
 
-    String scramble( String text );
+    public Object transform(Object obj);
+
 }
 
