@@ -12,11 +12,19 @@
 
 
 
+
     <camelContext xmlns="http://camel.apache.org/schema/spring">
 
         <route>
             <from uri="timer://myTimer?fixedRate=true&amp;period=10000"/>
-            <bean ref="myTransform" method="transform"/>
+            <dynamicRouter>
+                <method ref="activityRouter" method="slip"/>
+            </dynamicRouter>
+        </route>
+
+        <route>
+            <from uri="direct:foo"/>
+                <bean ref="myTransform" method="transform"/>
             <to uri="log:ExampleRouter"/>
         </route>
     </camelContext>

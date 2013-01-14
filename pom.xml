@@ -43,9 +43,10 @@
         <version>1.5</version>
           <extensions>true</extensions>
           <configuration>
-          <provision>
-            <param>--platform=felix</param>
-          </provision>
+            <compilerVersion>1.5</compilerVersion>
+            <provision>
+              <param>--platform=felix</param>
+            </provision>
         </configuration>
        <executions>
         </executions>

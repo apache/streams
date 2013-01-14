@@ -9,4 +9,13 @@
 
     <osgi:reference id="myTransform" interface="org.apache.streams.osgi.components.TransformService" />
 
+    <bean id="activityRouter" class="org.apache.streams.messaging.routers.impl.ActivityRouterImpl">
+
+        <constructor-arg>
+            <map>
+                <entry key="timer://myTimer?fixedRate=true&amp;period=10000" value="direct:foo"/>
+            </map>
+        </constructor-arg>
+    </bean>
+
 </beans>
