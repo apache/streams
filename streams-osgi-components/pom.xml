@@ -8,7 +8,7 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.apache.streams.osgi-components</groupId>
+  <groupId>org.apache.streams.osgi.components</groupId>
   <artifactId>streams-osgi-components</artifactId>
   <version>0.1-SNAPSHOT</version>
 
