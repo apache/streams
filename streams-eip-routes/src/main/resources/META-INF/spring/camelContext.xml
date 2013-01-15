@@ -15,14 +15,23 @@
 
     <camelContext xmlns="http://camel.apache.org/schema/spring">
 
+        <!--registration route setup -->
         <route>
-            <from uri="direct:foo"/>
-                <bean ref="myTransform" method="transform"/>
-            <to uri="log:ExampleRouter"/>
+            <from uri="jetty:http://localhost:8000/streams/register"/>
+                <bean ref="activityPublisherProcessor" />
+            <to uri="direct:register"/>
         </route>
 
         <route>
-            <from uri="timer://myTimer?fixedRate=true&amp;period=10000"/>
+            <from uri="direct:register"/>
+            <bean ref="activityPublisherRegistration" method="register"/>
+            <to uri="log:ExampleRouter"/>
+        </route>
+
+
+        <!--publishing route setup -->
+        <route>
+            <from uri="jetty:http://localhost:8000/streams/publish"/>
             <dynamicRouter>
                 <method ref="activityRouter" method="slip"/>
             </dynamicRouter>

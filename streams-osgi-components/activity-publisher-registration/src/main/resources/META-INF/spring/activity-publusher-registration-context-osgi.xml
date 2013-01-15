@@ -7,6 +7,6 @@
     http://www.springframework.org/schema/osgi
     http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-    <osgi:service ref="transformService" interface="org.apache.streams.osgi.components.TransformService"/>
+    <osgi:service ref="activityPublisherRegistration" interface="org.apache.streams.osgi.components.ActivityPublisherRegistration"/>
 
 </beans>

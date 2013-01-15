@@ -4,15 +4,15 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.streams.osgi.components.TransformService;
+import org.apache.streams.osgi.components.ActivityPublisherRegistration;
 
-public class TransformServiceImpl implements TransformService {
-    private static final transient Log LOG = LogFactory.getLog(TransformServiceImpl.class);
+public class ActivityPublisherRegistrationImpl implements ActivityPublisherRegistration {
+    private static final transient Log LOG = LogFactory.getLog(ActivityPublisherRegistrationImpl.class);
     private boolean verbose = true;
-    private String prefix = "MyTransform";
+    private String prefix = "Activity Publisher Registration";
 
-    public Object transform(Object body) {
-        String answer = prefix + " set body:  " + new Date();
+    public Object register(Object body) {
+        String answer = prefix + " set body:  " + body + " " + new Date();
         if (verbose) {
             System.out.println(">> call >> " + answer);
         }
