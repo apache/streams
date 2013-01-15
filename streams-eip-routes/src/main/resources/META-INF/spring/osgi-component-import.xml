@@ -12,9 +12,12 @@
     <bean id="activityRouter" class="org.apache.streams.messaging.routers.impl.ActivityRouterImpl">
 
         <constructor-arg>
-            <map>
-                <entry key="timer://myTimer?fixedRate=true&amp;period=10000" value="direct:foo"/>
-            </map>
+            <list>
+                <bean class="org.apache.streams.messaging.rules.impl.SimpleRoutingRule">
+                    <property name="source" value="timer://myTimer?fixedRate=true&amp;period=10000"/>
+                    <property name="destination" value="direct:foo"/>
+                </bean>
+            </list>
         </constructor-arg>
     </bean>
 

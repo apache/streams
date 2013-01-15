@@ -6,6 +6,7 @@ public class SimpleRoutingRule implements RoutingRule{
     private String source;
     private String destination;
 
+    public SimpleRoutingRule(){}
     public SimpleRoutingRule(String source, String destination){
         setSource(source);
         setDestination(destination);

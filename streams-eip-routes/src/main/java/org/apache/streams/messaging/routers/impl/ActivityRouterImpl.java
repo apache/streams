@@ -1,61 +1,60 @@
 package org.apache.streams.messaging.routers.impl;
 
+
 import org.apache.streams.messaging.routers.ActivityRouter;
 
 import java.lang.String;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.ArrayList;
 import org.apache.streams.messaging.rules.RoutingRule;
 
-import org.apache.camel.Properties;
+
+import org.apache.camel.Header;
+import org.apache.camel.Exchange;
+
 import org.apache.streams.messaging.rules.impl.SimpleRoutingRule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 
-public class ActivityRouterImpl implements ActivityRouter {
+public class ActivityRouterImpl  implements ActivityRouter {
     private static final transient Log LOG = LogFactory.getLog(ActivityRouterImpl.class);
 
-    private ArrayList<RoutingRule> routingRules;
+    private HashMap<String, RoutingRule> routingRules;
 
     public ActivityRouterImpl(){
-        routingRules = new ArrayList<RoutingRule>();
+        routingRules = new HashMap<String, RoutingRule>();
     }
 
-    public ActivityRouterImpl(HashMap<String, String> routes){
+    public ActivityRouterImpl(ArrayList<RoutingRule> routes){
         LOG.info(">> setting up routes >>");
+        routingRules = new HashMap<String, RoutingRule>();
        addRoutingRules(routes);
     }
 
-    public String slip(String body, @Properties Map<String, Object> properties) {
 
 
-        // get the state from the exchange properties and keep track how many times
-        // we have been invoked
-        int invoked = 0;
-        Object current = properties.get("invoked");
-        if (current != null) {
-            invoked = Integer.valueOf(current.toString());
-        }
-        invoked++;
-        // and store the state back on the properties
-        properties.put("invoked", invoked);
+    public String slip(String body,@Header(Exchange.SLIP_ENDPOINT) String previous) {
 
-        for(RoutingRule r : routingRules){
-           if (r.isMessageRoutable(body)){
-               return r.getDestination();
-           }
-        }
+        LOG.info("previous: " + previous);
+            if (routingRules.containsKey(previous) ){
+                return routingRules.get(previous).getDestination();
+            }
+        return null;
 
-        // no more so return null
-        return "direct:foo";
+
     }
 
-    public void addRoutingRules(@Properties Map<String,String> rules){
-        for(String key : rules.keySet()){
-            LOG.info(key + ">> setting up routes >>" + rules.get(key));
-            routingRules.add(new SimpleRoutingRule(key,rules.get(key)));
+    public void addRoutingRules(ArrayList<RoutingRule> routes){
+        String previous = null;
+        //previous endpoint will be the key lookup to maintain routing order
+        for(RoutingRule r : routes){
+
+            LOG.info(previous + ">> setting up routes >>" + r.getDestination());
+            routingRules.put(previous, new SimpleRoutingRule(r.getSource(),r.getDestination()));
+            previous = r.getDestination();
         }
 
     }
