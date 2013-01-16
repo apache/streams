@@ -19,6 +19,7 @@
 
   <modules>
     <module>activity-publisher-registration</module>
+    <module>activity-consumer</module>
     <module>streams-components-all</module>
   </modules>
 

@@ -5,7 +5,7 @@ public interface RoutingRule {
 
     void setSource(String source);
     String getSource();
-    void setDestination(String destination);
+
     String getDestination();
     boolean isMessageRoutable(String body);
 }

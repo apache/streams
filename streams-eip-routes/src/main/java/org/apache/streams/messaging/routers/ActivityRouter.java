@@ -9,17 +9,12 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Header;
 import org.apache.camel.Properties;
 import org.apache.streams.messaging.rules.RoutingRule;
+import org.apache.streams.osgi.components.activityconsumer.ActivityConsumer;
 
 
 public interface ActivityRouter {
 
-    /*
-    * Use this method to compute dynamic where we should route next.
-    *
-    * @param body the message body
-    * @return endpoints to go, or <tt>null</tt> to indicate the end
-    */
-    String slip(String body,@Header(Exchange.SLIP_ENDPOINT) String previous);
-    void addRoutingRules(ArrayList<RoutingRule> rules);
+    String slip(Exchange exchange, String body,@Header("SRC") String src);
+    void createNewRouteForConsumer(ActivityConsumer activityConsumer);
 
 }

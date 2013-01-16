@@ -60,6 +60,7 @@
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>${bundle.namespace};version="${pom.version}"</Export-Package>
                         <Private-Package>${bundle.namespace}.impl.*</Private-Package>
+                        <Import-Package>org.apache.streams.osgi.components.activityconsumer.impl,org.apache.commons.logging</Import-Package>
                         <Include-Resource>src/main/resources</Include-Resource>
                     </instructions>
                 </configuration>
@@ -87,6 +88,11 @@
             <artifactId>commons-logging-api</artifactId>
             <version>${commons.log}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams.osgi.components</groupId>
+            <artifactId>activity-consumer</artifactId>
+            <version>${pom.version}</version>
         </dependency>
     </dependencies>
 

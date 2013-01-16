@@ -13,25 +13,37 @@
 
 
 
-    <camelContext xmlns="http://camel.apache.org/schema/spring">
+    <camelContext id="context" xmlns="http://camel.apache.org/schema/spring">
 
         <!--registration route setup -->
         <route>
             <from uri="jetty:http://localhost:8000/streams/register"/>
-                <bean ref="activityPublisherProcessor" />
+                <bean ref="activityRegistrationProcessor" />
             <to uri="direct:register"/>
         </route>
 
         <route>
             <from uri="direct:register"/>
-            <bean ref="activityPublisherRegistration" method="register"/>
-            <to uri="log:ExampleRouter"/>
+                <bean ref="activityPublisherRegistration" method="register"/>
+            <to uri="direct:add-route"/>
+        </route>
+
+        <route>
+            <from uri="direct:add-route"/>
+                <bean ref="activityRouter" method="createNewRouteForConsumer"/>
+            <to uri="log:ExampleLog"/>
         </route>
 
 
         <!--publishing route setup -->
         <route>
             <from uri="jetty:http://localhost:8000/streams/publish"/>
+                <bean ref="activityPublisherProcessor"/>
+            <to uri="direct:dynamic-route"/>
+        </route>
+
+        <route>
+            <from uri="direct:dynamic-route"/>
             <dynamicRouter>
                 <method ref="activityRouter" method="slip"/>
             </dynamicRouter>

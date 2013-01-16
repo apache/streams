@@ -10,18 +10,19 @@
 
     <osgi:reference id="activityPublisherRegistration" interface="org.apache.streams.osgi.components.ActivityPublisherRegistration" />
 
-    <bean id="activityPublisherProcessor" class="org.apache.streams.messaging.processors.ActivityRegistrationProcessor"/>
+    <osgi:reference id="activityConsumerWarehouse" interface="org.apache.streams.osgi.components.activityconsumer.ActivityConsumerWarehouse" />
 
-    <bean id="activityRouter" class="org.apache.streams.messaging.routers.impl.ActivityRouterImpl">
 
-        <constructor-arg>
-            <list>
-                <bean class="org.apache.streams.messaging.rules.impl.SimpleRoutingRule">
-                    <property name="source" value="http://localhost:8000/streams/register"/>
-                    <property name="destination" value="direct:register"/>
-                </bean>
-            </list>
-        </constructor-arg>
+
+    <bean id="activityRegistrationProcessor" class="org.apache.streams.messaging.processors.ActivityRegistrationProcessor"/>
+    <bean id="activityPublisherProcessor" class="org.apache.streams.messaging.processors.ActivityPublisherProcessor"/>
+
+    <bean id="activityRouter" class="org.apache.streams.messaging.routers.impl.ActivityConsumerRouter">
+          <property name="activityConsumerWarehouse" ref="activityConsumerWarehouse"/>
+        <property name="camelContext" ref="context"/>
     </bean>
+
+
+
 
 </beans>

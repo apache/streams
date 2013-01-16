@@ -5,6 +5,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.osgi.components.ActivityPublisherRegistration;
+import org.apache.streams.osgi.components.activityconsumer.impl.PushActivityConsumer;
 
 public class ActivityPublisherRegistrationImpl implements ActivityPublisherRegistration {
     private static final transient Log LOG = LogFactory.getLog(ActivityPublisherRegistrationImpl.class);
@@ -12,13 +13,18 @@ public class ActivityPublisherRegistrationImpl implements ActivityPublisherRegis
     private String prefix = "Activity Publisher Registration";
 
     public Object register(Object body) {
+
+        //authorize this producer based on some rule set...
+        //create a new ActivityConsumer...
+        //using the URI supplied to set it up...
+        //return the consumer for addition to the consumer warehouse
+
         String answer = prefix + " set body:  " + body + " " + new Date();
-        if (verbose) {
-            System.out.println(">> call >> " + answer);
-        }
         LOG.info(">> call >>" + answer);
-        return answer;
+
+        return new PushActivityConsumer(body.toString());
     }
+
 
     public boolean isVerbose() {
         return verbose;
