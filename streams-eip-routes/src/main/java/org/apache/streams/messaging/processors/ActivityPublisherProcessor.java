@@ -26,8 +26,11 @@ public class ActivityPublisherProcessor implements Processor {
             String body = exchange.getIn().getBody(String.class);
             try{
                 URI publisherUrl = new URI(body);
+                //todo: this will probably come from the activity set itself...maybe?
                 exchange.getOut().setHeader("SRC",body);
+                //todo: set this to the activity set json
                 exchange.getOut().setBody("got some message from a registered publisher.");
+
             }catch(URISyntaxException e){
                 exchange.getOut().setFault(true);
                 exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE,400);

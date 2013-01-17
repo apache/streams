@@ -16,6 +16,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.CamelContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.camel.ExchangePattern;
 
 
 
@@ -57,13 +58,17 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityRout
     public String slip(Exchange exchange, String body, @Header("SRC") String src){
             //if not sent from a SRC, kill the routing chain
             if (src==null){
+                LOG.info("end of route reached, the body is: " + body);
+                exchange.getOut().setBody(null);
                 return src;
-            }
 
+            }
+            LOG.info("body of message at router: " + body);
             //lookup the route to the activityconsumer registered to receive messages from SRC
             String outRoute = activityConsumerWarehouse.findConsumerBySrc(src).getInRoute();
             //for now, just one route out...set SRC to null
             exchange.getOut().setHeader("SRC", null);
+            exchange.getOut().setBody(body);
             return outRoute;
 
     }
@@ -88,7 +93,11 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityRout
 
         @Override
         public void configure() throws Exception {
-            from(from).bean(activityConsumer, "receive");
+
+            //todo: this message to the bean is always NULL!!!
+            from(from).bean(activityConsumer, "receive").split().method(activityConsumer, "split").to("direct:activityQ");
+
+
         }
     }
 

@@ -3,6 +3,8 @@ package org.apache.streams.osgi.components.activityconsumer.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.osgi.components.activityconsumer.ActivityConsumer;
+import java.util.List;
+import java.util.ArrayList;
 
 public class PushActivityConsumer implements ActivityConsumer {
 
@@ -25,10 +27,24 @@ public class PushActivityConsumer implements ActivityConsumer {
         this.src = src;
     }
 
-    public void receive (Object activity){
-        //receive activity...do anything that is necessary
+
+    public void receive (String activity){
+        //receive activities...do anything that is necessary
         LOG.info("got a message i subscribed to: " + activity);
-        //pass off to activity splitter ?
+
+        //pass off to activity splitter
+
+    }
+
+    public List<String> split(String activities){
+        LOG.info("I am going to split this message: " + activities);
+        ArrayList<String> activitiesList = new ArrayList<String>();
+        activitiesList.add("this");
+        activitiesList.add("is");
+        activitiesList.add("my");
+        activitiesList.add("split");
+        activitiesList.add("message");
+        return activitiesList;
     }
 
     public void init(){

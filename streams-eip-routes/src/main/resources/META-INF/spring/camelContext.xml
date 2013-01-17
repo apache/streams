@@ -49,6 +49,11 @@
             </dynamicRouter>
         </route>
 
+        <route>
+            <from uri="direct:activityQ"/>
+            <inOnly uri="activemq:queue:activities"/>
+        </route>
+
 
     </camelContext>
 
