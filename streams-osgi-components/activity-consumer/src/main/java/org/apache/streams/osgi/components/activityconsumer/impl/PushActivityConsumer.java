@@ -28,10 +28,10 @@ public class PushActivityConsumer implements ActivityConsumer {
     }
 
 
-    public void receive (String activity){
+    public String receive (String activity){
         //receive activities...do anything that is necessary
         LOG.info("got a message i subscribed to: " + activity);
-
+        return activity;
         //pass off to activity splitter
 
     }

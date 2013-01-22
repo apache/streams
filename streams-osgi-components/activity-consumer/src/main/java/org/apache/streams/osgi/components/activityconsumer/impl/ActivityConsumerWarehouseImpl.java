@@ -31,5 +31,9 @@ public class ActivityConsumerWarehouseImpl implements ActivityConsumerWarehouse 
     }
 
 
+    public int getConsumersCount(){
+        return consumers.size();
+    }
+
 
 }

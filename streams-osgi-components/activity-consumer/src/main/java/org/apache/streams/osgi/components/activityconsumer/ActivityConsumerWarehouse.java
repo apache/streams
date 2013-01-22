@@ -7,6 +7,7 @@ public interface ActivityConsumerWarehouse {
 
     public void register(ActivityConsumer activityConsumer);
     public ActivityConsumer findConsumerBySrc(String src);
+    public int getConsumersCount();
 
 }
 

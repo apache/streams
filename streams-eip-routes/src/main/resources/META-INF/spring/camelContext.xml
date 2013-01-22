@@ -36,18 +36,7 @@
 
 
         <!--publishing route setup -->
-        <route>
-            <from uri="jetty:http://localhost:8000/streams/publish"/>
-                <bean ref="activityPublisherProcessor"/>
-            <to uri="direct:dynamic-route"/>
-        </route>
 
-        <route>
-            <from uri="direct:dynamic-route"/>
-            <dynamicRouter>
-                <method ref="activityRouter" method="slip"/>
-            </dynamicRouter>
-        </route>
 
         <route>
             <from uri="direct:activityQ"/>
