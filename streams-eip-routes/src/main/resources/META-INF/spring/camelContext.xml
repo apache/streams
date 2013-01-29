@@ -15,7 +15,7 @@
 
     <camelContext id="context" xmlns="http://camel.apache.org/schema/spring">
 
-        <!--registration route setup -->
+        <!--registration route setup todo: get this from the properties file (host and port)-->
         <route>
             <from uri="jetty:http://localhost:8000/streams/register"/>
                 <bean ref="activityRegistrationProcessor" />

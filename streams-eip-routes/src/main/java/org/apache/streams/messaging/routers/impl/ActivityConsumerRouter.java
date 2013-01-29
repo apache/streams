@@ -10,6 +10,7 @@ import org.apache.streams.messaging.routers.ActivityRouteBuilder;
 
 import org.apache.streams.osgi.components.activityconsumer.ActivityConsumerWarehouse;
 import org.apache.streams.osgi.components.activityconsumer.ActivityConsumer;
+import org.apache.streams.messaging.configuration.EipConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.camel.Header;
 import org.apache.camel.Exchange;
@@ -24,6 +25,8 @@ import org.apache.camel.ExchangePattern;
 public class ActivityConsumerRouter extends RouteBuilder implements ActivityRouteBuilder {
     private static final transient Log LOG = LogFactory.getLog(ActivityConsumerRouter.class);
 
+    @Autowired
+    private EipConfigurator configuration;
 
     protected CamelContext camelContext;
 
@@ -40,13 +43,13 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityRout
 
     public void createNewRouteForConsumer(Exchange exchange, ActivityConsumer activityConsumer){
 
-        //todo: make this driven by configuration, and some better scheme then getCount for URL...
+        //todo: add some better scheme then getCount for URL...
         //todo: make the route again if consumer exists...
         ActivityConsumer existingConsumer = activityConsumerWarehouse.findConsumerBySrc(activityConsumer.getSrc());
 
         if (existingConsumer==null){
-
-            activityConsumer.setInRoute("http://localhost:8000/streams/publish/" + activityConsumerWarehouse.getConsumersCount());
+            log.info("configuration: " + configuration.getConsumerInRouteHost());
+            activityConsumer.setInRoute("http://" + configuration.getConsumerInRouteHost()+ ":" + configuration.getConsumerInRoutePort() + EipConfigurator.CONSUMER_URL_RESOURCE + "/" + activityConsumerWarehouse.getConsumersCount());
             activityConsumerWarehouse.register(activityConsumer);
 
             try{
@@ -81,6 +84,9 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityRout
         private final String from;
         private ActivityConsumer activityConsumer;
 
+        @Autowired
+        EipConfigurator configuration;
+
         private DynamcConsumerRouteBuilder(CamelContext context, String from, ActivityConsumer activityConsumer) {
             super(context);
             this.from = from;
@@ -90,12 +96,12 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityRout
         @Override
         public void configure() throws Exception {
 
-            //todo: this message to the bean is always NULL!!!
+
             from(from)
-                    .bean(activityConsumer, "receive").setBody(body())
+                    .bean(activityConsumer, EipConfigurator.CONSUMER_RECIEVE_METHOD).setBody(body())
                     .split()
-                    .method(activityConsumer, "split")
-                    .to("direct:activityQ");
+                    .method(activityConsumer, EipConfigurator.CONSUMER_SPLIT_METHOD)
+                    .to(configuration.getConsumerActivityQUri());
 
 
         }
