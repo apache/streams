@@ -48,16 +48,18 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityRout
         ActivityConsumer existingConsumer = activityConsumerWarehouse.findConsumerBySrc(activityConsumer.getSrc());
 
         if (existingConsumer==null){
-            log.info("configuration: " + configuration.getConsumerInRouteHost());
+
             activityConsumer.setInRoute("http://" + configuration.getConsumerInRouteHost()+ ":" + configuration.getConsumerInRoutePort() + EipConfigurator.CONSUMER_URL_RESOURCE + "/" + activityConsumerWarehouse.getConsumersCount());
-            activityConsumerWarehouse.register(activityConsumer);
+
 
             try{
                 //setup a message queue for this consumer.getInRoute()
-                camelContext.addRoutes(new DynamcConsumerRouteBuilder(camelContext, "jetty:" + activityConsumer.getInRoute(), activityConsumer));
+                camelContext.addRoutes(new DynamicConsumerRouteBuilder(configuration,camelContext, "jetty:" + activityConsumer.getInRoute(), activityConsumer));
                 //set the body to the url the producer should post to
                 exchange.getOut().setBody(activityConsumer.getInRoute());
                 LOG.info("all messages sent from " + activityConsumer.getSrc() + " must be posted to " + activityConsumer.getInRoute());
+                //only add the route to the warehouse after its been created in messaging system...
+                activityConsumerWarehouse.register(activityConsumer);
             }catch (Exception e){
                 exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE,500);
                 exchange.getOut().setBody("error creating route: " + e);
@@ -80,17 +82,18 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityRout
     /**
      * This route builder is a skeleton to add new routes at runtime
      */
-    private static final class DynamcConsumerRouteBuilder extends RouteBuilder {
+    private static final class DynamicConsumerRouteBuilder extends RouteBuilder {
         private final String from;
         private ActivityConsumer activityConsumer;
 
-        @Autowired
-        EipConfigurator configuration;
 
-        private DynamcConsumerRouteBuilder(CamelContext context, String from, ActivityConsumer activityConsumer) {
+        private EipConfigurator configuration;
+
+        private DynamicConsumerRouteBuilder(EipConfigurator configuration, CamelContext context, String from, ActivityConsumer activityConsumer) {
             super(context);
             this.from = from;
             this.activityConsumer = activityConsumer;
+            this.configuration = configuration;
         }
 
         @Override
