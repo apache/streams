@@ -8,4 +8,5 @@ bundle. The configuration of OSGi definitions is kept in a separate
 configuration file so that this file can easily be used
 for integration testing outside of an OSGi environment -->
     <bean id="activityPublisherRegistration" class="org.apache.streams.osgi.components.impl.ActivityPublisherRegistrationImpl"/>
+    <bean id="activityStreamsSubscriberRegistration" class="org.apache.streams.osgi.components.impl.ActivityStreamsSubscriberRegistrationImpl"/>
 </beans>

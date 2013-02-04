@@ -2,27 +2,20 @@ package org.apache.streams.messaging.routers.impl;
 
 
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.model.RouteDefinition;
-import org.apache.streams.messaging.routers.ActivityRouteBuilder;
-
+import org.apache.streams.messaging.routers.ActivityConsumerRouteBuilder;
 
 
 import org.apache.streams.osgi.components.activityconsumer.ActivityConsumerWarehouse;
 import org.apache.streams.osgi.components.activityconsumer.ActivityConsumer;
 import org.apache.streams.messaging.configuration.EipConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.apache.camel.Header;
-import org.apache.camel.Exchange;
 import org.apache.camel.Exchange;
 import org.apache.camel.CamelContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.camel.ExchangePattern;
 
 
-
-public class ActivityConsumerRouter extends RouteBuilder implements ActivityRouteBuilder {
+public class ActivityConsumerRouter extends RouteBuilder implements ActivityConsumerRouteBuilder {
     private static final transient Log LOG = LogFactory.getLog(ActivityConsumerRouter.class);
 
     @Autowired
@@ -44,7 +37,7 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityRout
     public void createNewRouteForConsumer(Exchange exchange, ActivityConsumer activityConsumer){
 
         //todo: add some better scheme then getCount for URL...
-        //todo: make the route again if consumer exists...
+        //todo: make the route again if consumer exists...and context doesn't have route
         ActivityConsumer existingConsumer = activityConsumerWarehouse.findConsumerBySrc(activityConsumer.getSrc());
 
         if (existingConsumer==null){

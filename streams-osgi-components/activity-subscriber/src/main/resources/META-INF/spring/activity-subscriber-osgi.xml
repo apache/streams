@@ -7,6 +7,6 @@
     http://www.springframework.org/schema/osgi
     http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-    <osgi:service ref="activityPublisherRegistration" interface="org.apache.streams.osgi.components.ActivityPublisherRegistration"/>
+    <osgi:service ref="activitySubscriberWarehouse" interface="org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberWarehouse"/>
 
 </beans>

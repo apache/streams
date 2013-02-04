@@ -8,7 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 
-public class ActivityRegistrationProcessor implements Processor{
+public class ActivityPublisherRegistrationProcessor implements Processor{
 
     public void process(Exchange exchange){
         //add the necessary headers to the message so that the activity registration component
@@ -22,7 +22,7 @@ public class ActivityRegistrationProcessor implements Processor{
         }  else {
 
              //for now...just expect a post with a uri in the body...should have some checking here with http response codes
-            // authentication, all that good stuff...
+            // authentication, all that good stuff...happens in the registration module
 
             String body = exchange.getIn().getBody(String.class);
             try{

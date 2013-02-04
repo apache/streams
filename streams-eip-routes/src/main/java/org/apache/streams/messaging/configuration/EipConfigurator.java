@@ -14,6 +14,12 @@ public class EipConfigurator {
     @Value("${consumer.inRoutePort}")
     private String consumerInRoutePort;
 
+    @Value("${subscriber.inRouteHost}")
+    private String subscriberInRouteHost;
+
+    @Value("${subscriber.inRoutePort}")
+    private String subscriberInRoutePort;
+
 
     @Value("${consumer.activityQUri}")
     private String consumerActivityQUri;
@@ -21,6 +27,11 @@ public class EipConfigurator {
     public static String CONSUMER_URL_RESOURCE = "/streams/publish";
     public static String CONSUMER_RECIEVE_METHOD = "receive";
     public static String CONSUMER_SPLIT_METHOD = "split";
+
+    public static String SUBSCRIBER_URL_RESOURCE = "/streams/subscribe";
+    public static String SUBSCRIBER_RECEIVE_METHOD = "receive";
+    public static String SUBSCRIBER_POST_METHOD = "addSrc";
+    public static String SUBSCRIBER_GET_METHOD = "getStream";
 
     public String getConsumerInRouteHost() {
         return consumerInRouteHost;
@@ -44,6 +55,22 @@ public class EipConfigurator {
 
     public void setConsumerInRouteHost(String consumerInRouteHost) {
         this.consumerInRouteHost = consumerInRouteHost;
+    }
+
+    public String getSubscriberInRouteHost() {
+        return subscriberInRouteHost;
+    }
+
+    public void setSubscriberInRouteHost(String subscriberInRouteHost) {
+        this.subscriberInRouteHost = subscriberInRouteHost;
+    }
+
+    public String getSubscriberInRoutePort() {
+        return subscriberInRoutePort;
+    }
+
+    public void setSubscriberInRoutePort(String subscriberInRoutePort) {
+        this.subscriberInRoutePort = subscriberInRoutePort;
     }
 
 

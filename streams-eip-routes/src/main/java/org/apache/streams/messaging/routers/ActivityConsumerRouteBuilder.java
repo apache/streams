@@ -6,7 +6,7 @@ import org.apache.camel.Exchange;
 import org.apache.streams.osgi.components.activityconsumer.ActivityConsumer;
 
 
-public interface ActivityRouteBuilder {
+public interface ActivityConsumerRouteBuilder {
 
 
     void createNewRouteForConsumer(Exchange exchange, ActivityConsumer activityConsumer);

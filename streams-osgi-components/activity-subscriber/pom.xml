@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <properties>
+        <bundle.symbolicName>activity-subscriber-bundle</bundle.symbolicName>
+        <bundle.namespace>org.apache.streams.osgi.components.activitysubscriber</bundle.namespace>
+        <commons.log>1.1</commons.log>
+    </properties>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.streams.osgi.components</groupId>
+    <artifactId>activity-subscriber</artifactId>
+    <version>0.1-SNAPSHOT</version>
+
+    <name>${bundle.symbolicName} [${bundle.namespace}]</name>
+
+    <packaging>bundle</packaging>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <!--
+             | example additional resource entries, useful when building Eclipse RCP applications
+            -->
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>plugin.xml</include>
+                    <include>plugin.properties</include>
+                    <include>icons/**</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.ops4j</groupId>
+                <artifactId>maven-pax-plugin</artifactId>
+                <version>1.5</version>
+                <!--
+                 | enable improved OSGi compilation support for the bundle life-cycle.
+                 | to switch back to the standard bundle life-cycle, move this setting
+                 | down to the maven-bundle-plugin section
+                -->
+                <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>1.4.3</version>
+                <!--
+                 | the following instructions build a simple set of public/private classes into an OSGi bundle
+                -->
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                        <Bundle-Version>${pom.version}</Bundle-Version>
+                        <Export-Package>${bundle.namespace};version="${pom.version}",org.apache.streams.osgi.components.activitysubscriber.impl</Export-Package>
+                        <Private-Package>${bundle.namespace}.impl.*</Private-Package>
+                        <Import-Package>org.apache.streams.osgi.components.activitysubscriber,org.apache.commons.logging</Import-Package>
+                        <Include-Resource>src/main/resources</Include-Resource>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi_R4_core</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi_R4_compendium</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging-api</artifactId>
+            <version>${commons.log}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>

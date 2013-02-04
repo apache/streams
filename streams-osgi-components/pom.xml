@@ -18,8 +18,9 @@
 
 
   <modules>
-    <module>activity-publisher-registration</module>
+    <module>activity-registration</module>
     <module>activity-consumer</module>
+    <module>activity-subscriber</module>
     <module>streams-components-all</module>
   </modules>
 
