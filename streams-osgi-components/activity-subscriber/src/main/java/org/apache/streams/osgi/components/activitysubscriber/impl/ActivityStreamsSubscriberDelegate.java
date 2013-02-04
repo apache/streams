@@ -3,18 +3,16 @@ package org.apache.streams.osgi.components.activitysubscriber.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriber;
-import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberConfiguration;
-import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
+import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscription;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscriber {
 
     private static final transient Log LOG = LogFactory.getLog(ActivityStreamsSubscriberDelegate.class);
 
 
-    private ActivityStreamsSubscriberConfiguration activityStreamsSubscriberConfiguration;
+    private ActivityStreamsSubscription activityStreamsSubscriberConfiguration;
 
     private String inRoute;
 
@@ -22,21 +20,21 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
     private ArrayList<String> stream;
 
 
-    public ActivityStreamsSubscriberDelegate(ActivityStreamsSubscriberConfiguration configuration){
+    public ActivityStreamsSubscriberDelegate(ActivityStreamsSubscription configuration){
         setActivityStreamsSubscriberConfiguration(configuration);
         stream = new ArrayList<String>();
     }
 
 
-    public ActivityStreamsSubscriberConfiguration getActivityStreamsSubscriberConfiguration() {
+    public ActivityStreamsSubscription getActivityStreamsSubscriberConfiguration() {
         return activityStreamsSubscriberConfiguration;
     }
 
-    public void setActivityStreamsSubscriberConfiguration(ActivityStreamsSubscriberConfiguration activityStreamsSubscriberConfiguration) {
+    public void setActivityStreamsSubscriberConfiguration(ActivityStreamsSubscription activityStreamsSubscriberConfiguration) {
         this.activityStreamsSubscriberConfiguration = activityStreamsSubscriberConfiguration;
     }
 
-    public void updateActivityStreamsSubscriberConfiguration(ActivityStreamsSubscriberConfiguration activityStreamsSubscriberConfiguration) {
+    public void updateActivityStreamsSubscriberConfiguration(ActivityStreamsSubscription activityStreamsSubscriberConfiguration) {
         this.activityStreamsSubscriberConfiguration = activityStreamsSubscriberConfiguration;
     }
 

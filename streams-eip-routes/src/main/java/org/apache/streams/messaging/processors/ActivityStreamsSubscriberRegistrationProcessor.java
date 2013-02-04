@@ -2,16 +2,8 @@ package org.apache.streams.messaging.processors;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.commons.logging.impl.SimpleLog;
-import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberConfiguration;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
+import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscription;
 import org.codehaus.jackson.map.ObjectMapper;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
 
 
 public class ActivityStreamsSubscriberRegistrationProcessor implements Processor{
@@ -40,7 +32,7 @@ public class ActivityStreamsSubscriberRegistrationProcessor implements Processor
 
             try {
                 // read from file, convert it to user class
-                ActivityStreamsSubscriberConfiguration configuration = mapper.readValue(body, ActivityStreamsSubscriberConfiguration.class);
+                ActivityStreamsSubscription configuration = mapper.readValue(body, ActivityStreamsSubscription.class);
                 exchange.getOut().setBody(configuration);
 
             } catch (Exception e) {

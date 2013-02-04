@@ -3,11 +3,8 @@ package org.apache.streams.osgi.components.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.osgi.components.ActivityStreamsSubscriberRegistration;
-import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberConfiguration;
+import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscription;
 import org.apache.streams.osgi.components.activitysubscriber.impl.ActivityStreamsSubscriberDelegate;
-
-import java.util.Date;
-import java.util.HashMap;
 
 public class ActivityStreamsSubscriberRegistrationImpl implements ActivityStreamsSubscriberRegistration {
     private static final transient Log LOG = LogFactory.getLog(ActivityStreamsSubscriberRegistrationImpl.class);
@@ -21,7 +18,7 @@ public class ActivityStreamsSubscriberRegistrationImpl implements ActivityStream
         //using the URI supplied to set it up...
         //return the consumer for addition to the consumer warehouse
 
-        ActivityStreamsSubscriberConfiguration configuration = (ActivityStreamsSubscriberConfiguration)body;
+        ActivityStreamsSubscription configuration = (ActivityStreamsSubscription)body;
 
         return new ActivityStreamsSubscriberDelegate(configuration);
     }
