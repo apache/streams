@@ -7,6 +7,7 @@
         <bundle.symbolicName>activity-subscriber-bundle</bundle.symbolicName>
         <bundle.namespace>org.apache.streams.osgi.components.activitysubscriber</bundle.namespace>
         <commons.log>1.1</commons.log>
+        <jackson.version>1.9.11</jackson.version>
     </properties>
 
     <modelVersion>4.0.0</modelVersion>
@@ -70,7 +71,7 @@
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>${bundle.namespace};version="${pom.version}",org.apache.streams.osgi.components.activitysubscriber.impl</Export-Package>
                         <Private-Package>${bundle.namespace}.impl.*</Private-Package>
-                        <Import-Package>org.apache.streams.osgi.components.activitysubscriber,org.apache.commons.logging</Import-Package>
+                        <Import-Package>org.apache.streams.osgi.components.activitysubscriber,org.apache.commons.logging,org.codehaus.jackson.*;version="${jackson.version}",javax.xml.datatype, javax.xml.namespace, javax.xml.parsers, org.joda.time, org.joda.time.format, org.w3c.dom, org.w3c.dom.bootstrap, org.w3c.dom.ls, org.xml.sax</Import-Package>
                         <Include-Resource>src/main/resources</Include-Resource>
                     </instructions>
                 </configuration>
@@ -85,6 +86,18 @@
             <version>1.0</version>
             <scope>provided</scope>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mrbean</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>

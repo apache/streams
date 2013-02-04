@@ -2,12 +2,16 @@ package org.apache.streams.messaging.processors;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscription;
+import org.apache.streams.osgi.components.activitysubscriber.impl.ActivityStreamsSubscriptionImpl;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
 
 public class ActivityStreamsSubscriberRegistrationProcessor implements Processor{
-
+    private static final transient Log LOG = LogFactory.getLog(ActivityStreamsSubscriberRegistrationProcessor.class);
     public void process(Exchange exchange){
         //add the necessary headers to the message so that the activity registration component
         //can do a lookup to either make a new processor and endpoint, or pass the message to the right one
@@ -29,13 +33,15 @@ public class ActivityStreamsSubscriberRegistrationProcessor implements Processor
             //maybe its a list of URLs to subscribe to subscriptions=1,2,3,4&auth_token=XXXX
 
             ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,false);
 
             try {
                 // read from file, convert it to user class
-                ActivityStreamsSubscription configuration = mapper.readValue(body, ActivityStreamsSubscription.class);
+                ActivityStreamsSubscription configuration = mapper.readValue(body, ActivityStreamsSubscriptionImpl.class);
                 exchange.getOut().setBody(configuration);
 
             } catch (Exception e) {
+                LOG.info("exception" + e);
                 exchange.getOut().setFault(true);
                 exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE,400);
                 exchange.getOut().setBody("POST should contain a valid Subscription configuration object.");

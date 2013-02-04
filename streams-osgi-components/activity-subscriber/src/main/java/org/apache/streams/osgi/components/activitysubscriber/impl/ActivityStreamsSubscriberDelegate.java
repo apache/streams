@@ -4,6 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriber;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscription;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import java.util.ArrayList;
 
@@ -34,8 +36,20 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
         this.activityStreamsSubscriberConfiguration = activityStreamsSubscriberConfiguration;
     }
 
-    public void updateActivityStreamsSubscriberConfiguration(ActivityStreamsSubscription activityStreamsSubscriberConfiguration) {
-        this.activityStreamsSubscriberConfiguration = activityStreamsSubscriberConfiguration;
+    public void updateActivityStreamsSubscriberConfiguration(String activityStreamsSubscriberConfiguration) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+
+        try {
+            // read from file, convert it to user class
+            ActivityStreamsSubscription configuration = mapper.readValue(activityStreamsSubscriberConfiguration, ActivityStreamsSubscriptionImpl.class);
+            this.activityStreamsSubscriberConfiguration = configuration;
+
+        } catch (Exception e) {
+            LOG.info("exception" + e);
+
+        }
+
     }
 
     public String getInRoute() {

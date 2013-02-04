@@ -12,6 +12,7 @@ public class ActivityStreamsSubscriptionImpl implements ActivityStreamsSubscript
     private  ArrayList<ActivityStreamsSubscriptionFilter> activityStreamsSubscriptionFilters;
     private ArrayList<ActivityStreamsSubscriptionOutput> activityStreamsSubscriptionOutputs;
 
+
     @Override
     public ArrayList<ActivityStreamsSubscriptionFilter> getActivityStreamsSubscriptionFilters() {
         return activityStreamsSubscriptionFilters;

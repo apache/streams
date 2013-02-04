@@ -8,6 +8,6 @@ public interface ActivityStreamsSubscriber {
     public void setInRoute(String route);
     public String getInRoute();
     public void setActivityStreamsSubscriberConfiguration(ActivityStreamsSubscription config);
-    public void updateActivityStreamsSubscriberConfiguration(ActivityStreamsSubscription config);
+    public void updateActivityStreamsSubscriberConfiguration(String config);
 
 }
