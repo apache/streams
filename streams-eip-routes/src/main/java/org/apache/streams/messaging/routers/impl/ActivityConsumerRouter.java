@@ -38,30 +38,37 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityCons
 
         //todo: add some better scheme then getCount for URL...
         //todo: make the route again if consumer exists...and context doesn't have route
-        ActivityConsumer existingConsumer = activityConsumerWarehouse.findConsumerBySrc(activityConsumer.getSrc());
+        if (activityConsumer.isAuthenticated()){
+                ActivityConsumer existingConsumer = activityConsumerWarehouse.findConsumerBySrc(activityConsumer.getSrc());
 
-        if (existingConsumer==null){
+                if (existingConsumer==null){
 
-            activityConsumer.setInRoute("http://" + configuration.getConsumerInRouteHost()+ ":" + configuration.getConsumerInRoutePort() + EipConfigurator.CONSUMER_URL_RESOURCE + "/" + activityConsumerWarehouse.getConsumersCount());
+                    activityConsumer.setInRoute("http://" + configuration.getConsumerInRouteHost()+ ":" + configuration.getConsumerInRoutePort() + EipConfigurator.CONSUMER_URL_RESOURCE + "/" + activityConsumerWarehouse.getConsumersCount());
 
 
-            try{
-                //setup a message queue for this consumer.getInRoute()
-                camelContext.addRoutes(new DynamicConsumerRouteBuilder(configuration,camelContext, "jetty:" + activityConsumer.getInRoute(), activityConsumer));
-                //set the body to the url the producer should post to
-                exchange.getOut().setBody(activityConsumer.getInRoute());
-                LOG.info("all messages sent from " + activityConsumer.getSrc() + " must be posted to " + activityConsumer.getInRoute());
-                //only add the route to the warehouse after its been created in messaging system...
-                activityConsumerWarehouse.register(activityConsumer);
-            }catch (Exception e){
-                exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE,500);
-                exchange.getOut().setBody("error creating route: " + e);
-                LOG.error("error creating route: " + e);
-            }
+                    try{
+                        //setup a message queue for this consumer.getInRoute()
+                        camelContext.addRoutes(new DynamicConsumerRouteBuilder(configuration,camelContext, "jetty:" + activityConsumer.getInRoute(), activityConsumer));
+                        //set the body to the url the producer should post to
+                        exchange.getOut().setBody(activityConsumer.getInRoute());
+                        LOG.info("all messages sent from " + activityConsumer.getSrc() + " must be posted to " + activityConsumer.getInRoute());
+                        //only add the route to the warehouse after its been created in messaging system...
+                        activityConsumerWarehouse.register(activityConsumer);
+                    }catch (Exception e){
+                        exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE,500);
+                        exchange.getOut().setBody("error creating route: " + e);
+                        LOG.error("error creating route: " + e);
+                    }
 
-        } else{
+                } else{
 
-            exchange.getOut().setBody(existingConsumer.getInRoute());
+                    exchange.getOut().setBody(existingConsumer.getInRoute());
+                }
+
+        }else{
+                exchange.getOut().setFault(true);
+                exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE,401);
+                exchange.getOut().setBody("Authentication failed.");
         }
 
     }

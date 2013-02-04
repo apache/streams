@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscription;
 import org.apache.streams.osgi.components.activitysubscriber.impl.ActivityStreamsSubscriptionImpl;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -36,8 +37,9 @@ public class ActivityStreamsSubscriberRegistrationProcessor implements Processor
             mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,false);
 
             try {
+
                 // read from file, convert it to user class
-                ActivityStreamsSubscription configuration = mapper.readValue(body, ActivityStreamsSubscriptionImpl.class);
+                ActivityStreamsSubscription configuration = mapper.readValue(body, ActivityStreamsSubscription.class);
                 exchange.getOut().setBody(configuration);
 
             } catch (Exception e) {

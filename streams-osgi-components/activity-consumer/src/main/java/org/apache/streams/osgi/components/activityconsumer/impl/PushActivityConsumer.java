@@ -13,6 +13,9 @@ public class PushActivityConsumer implements ActivityConsumer {
     private String src;
 
 
+
+    private boolean authenticated;
+
     private String inRoute;
 
     public PushActivityConsumer(String src){
@@ -27,6 +30,13 @@ public class PushActivityConsumer implements ActivityConsumer {
         this.src = src;
     }
 
+    public boolean isAuthenticated() {
+        return authenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        this.authenticated = authenticated;
+    }
 
     public String receive (String activity){
         //receive activities...do anything that is necessary

@@ -39,7 +39,7 @@ public class ActivityStreamsSubscriberRouter extends RouteBuilder implements Act
 
         //todo: add some better scheme then getCount for URL...
         //todo: make the route again if subscriber exists...and context doesn't have route
-
+        if (activityStreamsSubscriber.isAuthenticated()){
             activityStreamsSubscriber.setInRoute("http://" + configuration.getSubscriberInRouteHost()+ ":" + configuration.getSubscriberInRoutePort() + EipConfigurator.SUBSCRIBER_URL_RESOURCE + "/" + UUID.randomUUID());
 
             try{
@@ -55,7 +55,11 @@ public class ActivityStreamsSubscriberRouter extends RouteBuilder implements Act
                 LOG.error("error creating route: " + e);
             }
 
-
+        }else{
+            exchange.getOut().setFault(true);
+            exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE,401);
+            exchange.getOut().setBody("Authentication failed.");
+        }
 
     }
 

@@ -20,7 +20,13 @@ public class ActivityStreamsSubscriberRegistrationImpl implements ActivityStream
 
         ActivityStreamsSubscription configuration = (ActivityStreamsSubscription)body;
 
-        return new ActivityStreamsSubscriberDelegate(configuration);
+        ActivityStreamsSubscriberDelegate delegate =    new ActivityStreamsSubscriberDelegate(configuration);
+        //authenticate
+        delegate.setAuthenticated(true);
+
+
+
+        return  delegate;
     }
 
 

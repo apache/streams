@@ -22,7 +22,11 @@ public class ActivityPublisherRegistrationImpl implements ActivityPublisherRegis
         String answer = prefix + " set body:  " + body + " " + new Date();
         LOG.info(">> call >>" + answer);
 
-        return new PushActivityConsumer(body.toString());
+        //should be configed like the subscriber = what type? polling? how often? etc...
+        PushActivityConsumer activityConsumer =new PushActivityConsumer(body.toString());
+        //authenticate..
+        activityConsumer.setAuthenticated(true);
+        return activityConsumer;
     }
 
 

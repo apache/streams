@@ -13,6 +13,7 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
 
     private static final transient Log LOG = LogFactory.getLog(ActivityStreamsSubscriberDelegate.class);
 
+    private boolean authenticated;
 
     private ActivityStreamsSubscription activityStreamsSubscriberConfiguration;
 
@@ -50,6 +51,14 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
 
         }
 
+    }
+
+    public boolean isAuthenticated() {
+        return authenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        this.authenticated = authenticated;
     }
 
     public String getInRoute() {

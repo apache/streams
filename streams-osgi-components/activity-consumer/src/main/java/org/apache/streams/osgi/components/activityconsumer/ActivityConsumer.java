@@ -7,4 +7,6 @@ public interface ActivityConsumer {
     public String getSrc();
     public void setInRoute(String route);
     public String getInRoute();
+    public boolean isAuthenticated();
+    public void setAuthenticated(boolean authenticated);
 }

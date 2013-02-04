@@ -9,5 +9,7 @@ public interface ActivityStreamsSubscriber {
     public String getInRoute();
     public void setActivityStreamsSubscriberConfiguration(ActivityStreamsSubscription config);
     public void updateActivityStreamsSubscriberConfiguration(String config);
+    public boolean isAuthenticated();
+    public void setAuthenticated(boolean authenticated);
 
 }

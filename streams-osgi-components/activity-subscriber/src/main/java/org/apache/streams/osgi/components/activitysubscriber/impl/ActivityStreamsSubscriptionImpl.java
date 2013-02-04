@@ -13,6 +13,10 @@ public class ActivityStreamsSubscriptionImpl implements ActivityStreamsSubscript
     private ArrayList<ActivityStreamsSubscriptionOutput> activityStreamsSubscriptionOutputs;
 
 
+
+
+    private String authToken;
+
     @Override
     public ArrayList<ActivityStreamsSubscriptionFilter> getActivityStreamsSubscriptionFilters() {
         return activityStreamsSubscriptionFilters;
@@ -32,4 +36,17 @@ public class ActivityStreamsSubscriptionImpl implements ActivityStreamsSubscript
     public void setActivityStreamsSubscriptionOutputs(ArrayList<ActivityStreamsSubscriptionOutput> outputs) {
         this.activityStreamsSubscriptionOutputs = outputs;
     }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String auth_token) {
+        this.authToken = auth_token;
+    }
+
+
+
+
+
 }

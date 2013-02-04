@@ -1,15 +1,14 @@
 package org.apache.streams.osgi.components.activitysubscriber;
 
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 
+@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
 public interface ActivityStreamsSubscriptionFilter {
 
-    public String[] getFields();
-    public void setFields(String[] fields);
 
-    public String getComparisonOperator();
-    public void setComparisonOperator(String comparisonOperator);
 
-    public String[] getValueSet();
-    public void setValueSet(String[] valueSet);
+    public void setQuery(String query);
+
+    public boolean evaluate(String activity);
 
 }
