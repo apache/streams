@@ -7,9 +7,9 @@ import java.util.ArrayList;
  */
 public interface ActivityStreamsSubscriberWarehouse {
 
-    public void register(String src, ActivityStreamsSubscriber activitySubscriber);
-    public void register(String[] src, ActivityStreamsSubscriber activitySubscriber);
-    public ArrayList<ActivityStreamsSubscriber> findSubscribersBySrc(String src);
+    public void register(ActivityStreamsSubscriber activitySubscriber);
+
+    public ArrayList<ActivityStreamsSubscriber> findSubscribersByFilters(String src);
 
 
 }

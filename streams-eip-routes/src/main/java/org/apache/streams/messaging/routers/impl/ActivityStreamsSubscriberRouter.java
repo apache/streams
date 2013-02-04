@@ -40,13 +40,7 @@ public class ActivityStreamsSubscriberRouter extends RouteBuilder implements Act
         //todo: add some better scheme then getCount for URL...
         //todo: make the route again if subscriber exists...and context doesn't have route
 
-
-      //  ActivityStreamsSubscriber existingConsumer = activityStreamsSubscriberWarehouse.findSubscriberBySrc(activityStreamsSubscriber.getSrc());
-
-
-
             activityStreamsSubscriber.setInRoute("http://" + configuration.getSubscriberInRouteHost()+ ":" + configuration.getSubscriberInRoutePort() + EipConfigurator.SUBSCRIBER_URL_RESOURCE + "/" + UUID.randomUUID());
-
 
             try{
 
@@ -54,10 +48,7 @@ public class ActivityStreamsSubscriberRouter extends RouteBuilder implements Act
                 camelContext.addRoutes(new DynamicSubscriberRouteBuilder(configuration,camelContext, "jetty:" + activityStreamsSubscriber.getInRoute(), activityStreamsSubscriber));
                 //set the body to the url the producer should post to
                 exchange.getOut().setBody(activityStreamsSubscriber.getInRoute());
-                log.info("subs : " + activityStreamsSubscriber.getSubscriptions());
-                activityStreamsSubscriber.setActivityStreamsSubscriberWarehouse(activityStreamsSubscriberWarehouse);
-                //only add the route to the warehouse after its been created in messaging system...
-               activityStreamsSubscriberWarehouse.register(activityStreamsSubscriber.getSubscriptions(),activityStreamsSubscriber);
+                activityStreamsSubscriberWarehouse.register(activityStreamsSubscriber);
             }catch (Exception e){
                 exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE,500);
                 exchange.getOut().setBody("error creating route: " + e);

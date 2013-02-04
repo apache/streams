@@ -3,6 +3,7 @@ package org.apache.streams.osgi.components.activitysubscriber.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriber;
+import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberConfiguration;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 
 import java.util.ArrayList;
@@ -13,8 +14,7 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
     private static final transient Log LOG = LogFactory.getLog(ActivityStreamsSubscriberDelegate.class);
 
 
-
-    private ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse;
+    private ActivityStreamsSubscriberConfiguration activityStreamsSubscriberConfiguration;
 
     private String inRoute;
 
@@ -22,25 +22,23 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
     private ArrayList<String> stream;
 
 
-
-    private String[] subscriptions;
-
-    public ActivityStreamsSubscriberDelegate(){
-
+    public ActivityStreamsSubscriberDelegate(ActivityStreamsSubscriberConfiguration configuration){
+        setActivityStreamsSubscriberConfiguration(configuration);
         stream = new ArrayList<String>();
     }
 
-    public ActivityStreamsSubscriberDelegate(String[] subscriptions){
 
-        this();
-        this.subscriptions=subscriptions;
-
+    public ActivityStreamsSubscriberConfiguration getActivityStreamsSubscriberConfiguration() {
+        return activityStreamsSubscriberConfiguration;
     }
 
-    public void setActivityStreamsSubscriberWarehouse(ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse) {
-        this.activityStreamsSubscriberWarehouse = activityStreamsSubscriberWarehouse;
+    public void setActivityStreamsSubscriberConfiguration(ActivityStreamsSubscriberConfiguration activityStreamsSubscriberConfiguration) {
+        this.activityStreamsSubscriberConfiguration = activityStreamsSubscriberConfiguration;
     }
 
+    public void updateActivityStreamsSubscriberConfiguration(ActivityStreamsSubscriberConfiguration activityStreamsSubscriberConfiguration) {
+        this.activityStreamsSubscriberConfiguration = activityStreamsSubscriberConfiguration;
+    }
 
     public String getInRoute() {
         return inRoute;
@@ -49,22 +47,6 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
     public void setInRoute(String inRoute) {
         this.inRoute = inRoute;
     }
-
-    public String[] getSubscriptions() {
-        return subscriptions;
-    }
-
-    public void addSrc(String src){
-        HashMap<String,String[]> bodyParts = parseBody(src);
-
-        activityStreamsSubscriberWarehouse.register(bodyParts.get("subscriptions"),this);
-    }
-
-    public void addSrc(String[] src){
-
-        activityStreamsSubscriberWarehouse.register(src,this);
-    }
-
 
     public void receive (String activity){
         //receive activities...do anything that is necessary
@@ -89,19 +71,7 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
 
     }
 
-    private HashMap<String, String[]> parseBody(String body) {
-        HashMap<String,String[]> parts = new HashMap<String, String[]>();
-        String[] segments = body.split("&");
-        for (String seg : segments){
-            String[] query = seg.split("=");
-            if (query.length>0) {
-                parts.put(query[0],query[1].split(","));
-            }
-        }
 
-        if (parts.isEmpty()){return null;}
-        return parts;
-    }
 
 
 

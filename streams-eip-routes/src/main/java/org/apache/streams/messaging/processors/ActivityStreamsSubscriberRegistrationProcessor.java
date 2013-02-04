@@ -3,7 +3,12 @@ package org.apache.streams.messaging.processors;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberConfiguration;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -31,19 +36,20 @@ public class ActivityStreamsSubscriberRegistrationProcessor implements Processor
             //OAuth token? What does subscriber post to init a subscription URL?
             //maybe its a list of URLs to subscribe to subscriptions=1,2,3,4&auth_token=XXXX
 
+            ObjectMapper mapper = new ObjectMapper();
 
+            try {
+                // read from file, convert it to user class
+                ActivityStreamsSubscriberConfiguration configuration = mapper.readValue(body, ActivityStreamsSubscriberConfiguration.class);
+                exchange.getOut().setBody(configuration);
 
-            try{
-                HashMap<String, String[]> parsedBody = parseBody(body);
-                if (parsedBody.get("subscriptions")==null){
-                    throw new Exception();
-                }
-                exchange.getOut().setBody(body);
-            }catch(Exception e){
+            } catch (Exception e) {
                 exchange.getOut().setFault(true);
                 exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE,400);
-                exchange.getOut().setBody("POST should contain subscriptions and auth_token key/value pair.");
+                exchange.getOut().setBody("POST should contain a valid Subscription configuration object.");
             }
+
+
 
             //just pass this on to the route creator, body will be the dedicated URL for this subscriber
 
@@ -53,17 +59,5 @@ public class ActivityStreamsSubscriberRegistrationProcessor implements Processor
 
     }
 
-    private HashMap<String, String[]> parseBody(String body) {
-        HashMap<String,String[]> parts = new HashMap<String, String[]>();
-        String[] segments = body.split("&");
-        for (String seg : segments){
-            String[] query = seg.split("=");
-            if (query.length>0) {
-                parts.put(query[0],query[1].split(","));
-            }
-        }
 
-        if (parts.isEmpty()){return null;}
-        return parts;
-    }
 }

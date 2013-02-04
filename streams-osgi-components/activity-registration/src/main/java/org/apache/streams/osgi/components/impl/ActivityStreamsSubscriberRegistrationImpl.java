@@ -3,6 +3,7 @@ package org.apache.streams.osgi.components.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.osgi.components.ActivityStreamsSubscriberRegistration;
+import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberConfiguration;
 import org.apache.streams.osgi.components.activitysubscriber.impl.ActivityStreamsSubscriberDelegate;
 
 import java.util.Date;
@@ -20,26 +21,12 @@ public class ActivityStreamsSubscriberRegistrationImpl implements ActivityStream
         //using the URI supplied to set it up...
         //return the consumer for addition to the consumer warehouse
 
-        HashMap<String,String[]> bodyParts = parseBody(body.toString());
-        String answer = prefix + " set body:  " + body + " " + new Date();
-        LOG.info(">> setting up subscriptions >>" + bodyParts.get("subscriptions"));
-        if (bodyParts.get("subscriptions")!=null){return new ActivityStreamsSubscriberDelegate(bodyParts.get("subscriptions"));}
-        return new ActivityStreamsSubscriberDelegate();
+        ActivityStreamsSubscriberConfiguration configuration = (ActivityStreamsSubscriberConfiguration)body;
+
+        return new ActivityStreamsSubscriberDelegate(configuration);
     }
 
-    private HashMap<String, String[]> parseBody(String body) {
-        HashMap<String,String[]> parts = new HashMap<String, String[]>();
-        String[] segments = body.split("&");
-        for (String seg : segments){
-            String[] query = seg.split("=");
-            if (query.length>0) {
-                parts.put(query[0],query[1].split(","));
-            }
-        }
 
-        if (parts.isEmpty()){return null;}
-        return parts;
-    }
 
     public boolean isVerbose() {
         return verbose;

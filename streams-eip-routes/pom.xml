@@ -6,6 +6,7 @@
     <properties>
         <bundle.symbolicName>streams-eip-routes</bundle.symbolicName>
         <bundle.namespace>org.apache.streams</bundle.namespace>
+        <jackson.version>1.9.11</jackson.version>
     </properties>
 
     <modelVersion>4.0.0</modelVersion>
@@ -108,6 +109,18 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>3.0.6.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mrbean</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>
