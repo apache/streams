@@ -28,7 +28,7 @@ public class EipConfigurator {
     public static String CONSUMER_RECIEVE_METHOD = "receive";
     public static String CONSUMER_SPLIT_METHOD = "split";
 
-    public static String SUBSCRIBER_URL_RESOURCE = "/streams/subscribe";
+    public static String SUBSCRIBER_URL_RESOURCE = "/streams/subscriber";
     public static String SUBSCRIBER_RECEIVE_METHOD = "receive";
     public static String SUBSCRIBER_POST_METHOD = "addSrc";
     public static String SUBSCRIBER_GET_METHOD = "getStream";
