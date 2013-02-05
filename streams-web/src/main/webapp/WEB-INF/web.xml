@@ -6,101 +6,36 @@
          version="2.5">
     <display-name>Streams</display-name>
 
-    <servlet>
-        <servlet-name>spring-web</servlet-name>
-        <servlet-class>
-            org.springframework.web.servlet.DispatcherServlet
-        </servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>spring-web</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
-
+    <!--  tell Spring where it should load the XML file  -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
+            /WEB-INF/spring/*.xml
             /WEB-INF/spring-web-servlet.xml
-            /WEB-INF/spring/camelContext.xml
         </param-value>
     </context-param>
-
+    <!--  spring context listener which loads the XML file  -->
     <listener>
         <listener-class>
             org.springframework.web.context.ContextLoaderListener
         </listener-class>
     </listener>
-
-    <filter>
-        <filter-name>Jersey Filter</filter-name>
-
-        <filter-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</filter-class>
-        <init-param>
-
-            <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
-            <param-value>org.apache.camel.web.util.CamelResourceConfig</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.config.feature.FilterForwardOn404</param-name>
-            <param-value>true</param-value>
-        </init-param>
-
-        <init-param>
-
-            <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
-            <param-value>/(images|css|js)/.*</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.config.feature.ImplicitViewables</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.config.feature.Trace</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.config.feature.Redirect</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>org.apache.camel.web:</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.config.property.WadlResourceUri</param-name>
-            <param-value>/api</param-value>
-        </init-param>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>Jersey Filter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
+    <!--  Camel Servlet  -->
     <servlet>
-        <servlet-name>TemplateEngineServlet</servlet-name>
-
-        <servlet-class>org.fusesource.scalate.servlet.TemplateEngineServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
+        <servlet-name>CamelServlet</servlet-name>
+        <display-name>Camel Http Transport Servlet</display-name>
+        <servlet-class>
+            org.apache.camel.component.servlet.CamelHttpTransportServlet
+        </servlet-class>
+        <init-param>
+            <param-name>matchOnUriPrefix</param-name>
+            <param-value>true</param-value>
+        </init-param>
     </servlet>
-
+    <!--  Camel Servlet mappings  -->
     <servlet-mapping>
-        <servlet-name>TemplateEngineServlet</servlet-name>
-        <url-pattern>*.mustache</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>TemplateEngineServlet</servlet-name>
-        <url-pattern>*.scaml</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>TemplateEngineServlet</servlet-name>
-        <url-pattern>*.ssp</url-pattern>
+        <servlet-name>CamelServlet</servlet-name>
+        <url-pattern>/streams/*</url-pattern>
     </servlet-mapping>
 
-    <error-page>
-        <error-code>500</error-code>
-        <location>/WEB-INF/scalate/errors/500.scaml</location>
-    </error-page>
  </web-app>

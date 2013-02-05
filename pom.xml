@@ -4,7 +4,7 @@
   <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-master</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1-incubating</version>
    </parent>
 
   <modelVersion>4.0.0</modelVersion>

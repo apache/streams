@@ -9,6 +9,8 @@ streams-web Maven Webapp
 From: 'an unknown organization'
   - AOP alliance (http://aopalliance.sourceforge.net) aopalliance:aopalliance:jar:1.0
     License: Public Domain 
+  - Codec  commons-codec:commons-codec:jar:1.2
+
   - Logging (http://jakarta.apache.org/commons/logging/) commons-logging:commons-logging:jar:1.0.3
 
   - streams-eip-routes [org.apache.streams]  org.apache.streams:streams-eip-routes:bundle:0.1-SNAPSHOT
@@ -37,6 +39,10 @@ From: 'an unknown organization'
 
   - spring-webmvc  org.springframework:spring-webmvc:jar:3.0.5.RELEASE
 
+
+From: 'Apache Software Foundation' (http://jakarta.apache.org/)
+  - HttpClient (http://jakarta.apache.org/httpcomponents/httpclient-3.x/) commons-httpclient:commons-httpclient:jar:3.1
+    License: Apache License  (http://www.apache.org/licenses/LICENSE-2.0)
 
 From: 'Apache Software Foundation' (http://www.apache.org)
   - Apache Log4j (http://logging.apache.org/log4j/1.2/) log4j:log4j:bundle:1.2.16
@@ -75,7 +81,11 @@ From: 'The Apache Software Foundation' (http://www.apache.org/)
     License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
   - Camel :: Core (http://camel.apache.org/camel-parent/camel-core) org.apache.camel:camel-core:bundle:2.9.0
     License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+  - Camel :: HTTP (http://camel.apache.org/camel-parent/camel-http) org.apache.camel:camel-http:bundle:2.9.0
+    License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
   - Camel :: JMS (http://camel.apache.org/camel-parent/camel-jms) org.apache.camel:camel-jms:bundle:2.9.0
+    License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+  - Camel :: Servlet (http://camel.apache.org/camel-parent/camel-servlet) org.apache.camel:camel-servlet:bundle:2.9.0
     License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
   - Camel :: Spring (http://camel.apache.org/camel-parent/camel-spring) org.apache.camel:camel-spring:bundle:2.9.0
     License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
@@ -83,7 +93,7 @@ From: 'The Apache Software Foundation' (http://www.apache.org/)
     License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
   - Camel :: Web (http://camel.apache.org/camel-parent/components/camel-web) org.apache.camel:camel-web:war:2.9.0
     License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
-  - Apache Streams Components (http://incubator.apache.org/streams/streams-project/streams-osgi-components/streams-components-all) org.apache.streams:streams-components-all:jar:0.1-SNAPSHOT
+  - Apache Streams Components All (http://incubator.apache.org/streams/streams-project/streams-osgi-components/streams-components-all) org.apache.streams.osgi.components:streams-components-all:jar:0.1-SNAPSHOT
     License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
   - Apache XBean :: Spring (http://geronimo.apache.org/xbean/xbean-spring) org.apache.xbean:xbean-spring:bundle:3.5
     License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
