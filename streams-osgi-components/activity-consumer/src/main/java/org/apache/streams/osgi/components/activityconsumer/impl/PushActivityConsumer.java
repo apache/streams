@@ -3,6 +3,12 @@ package org.apache.streams.osgi.components.activityconsumer.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.osgi.components.activityconsumer.ActivityConsumer;
+
+import javax.tools.JavaFileManager;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -10,24 +16,40 @@ public class PushActivityConsumer implements ActivityConsumer {
 
     private static final transient Log LOG = LogFactory.getLog(PushActivityConsumer.class);
 
-    private String src;
+    private URI src;
 
 
+
+    private String authToken;
 
     private boolean authenticated;
 
     private String inRoute;
 
-    public PushActivityConsumer(String src){
-        this.setSrc(src);
+    public PushActivityConsumer(){
+
     }
 
-    public String getSrc() {
+
+    public URI getSrc() {
         return src;
     }
 
     public void setSrc(String src) {
-        this.src = src;
+        try{
+            this.src = new URI(src);
+
+        } catch (URISyntaxException e) {
+           this.src=null;
+        }
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 
     public boolean isAuthenticated() {

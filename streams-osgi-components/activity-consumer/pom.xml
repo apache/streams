@@ -7,6 +7,7 @@
         <bundle.symbolicName>activity-consumer-bundle</bundle.symbolicName>
         <bundle.namespace>org.apache.streams.osgi.components.activityconsumer</bundle.namespace>
         <commons.log>1.1</commons.log>
+        <jackson.version>1.9.11</jackson.version>
     </properties>
 
     <modelVersion>4.0.0</modelVersion>
@@ -70,7 +71,7 @@
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>${bundle.namespace};version="${pom.version}",org.apache.streams.osgi.components.activityconsumer.impl</Export-Package>
                         <Private-Package>${bundle.namespace}.impl.*</Private-Package>
-                        <Import-Package>org.apache.streams.osgi.components.activityconsumer,org.apache.commons.logging</Import-Package>
+                        <Import-Package>org.apache.streams.osgi.components.activityconsumer,org.apache.streams.osgi.components.activityconsumer.impl,org.apache.commons.logging,org.codehaus.jackson.*;version="${jackson.version}",javax.xml.datatype, javax.xml.namespace, javax.xml.parsers, org.joda.time, org.joda.time.format, org.w3c.dom, org.w3c.dom.bootstrap, org.w3c.dom.ls, org.xml.sax</Import-Package>
                         <Include-Resource>src/main/resources</Include-Resource>
                     </instructions>
                 </configuration>
@@ -88,6 +89,18 @@
         </dependency>
 
         <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mrbean</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi_R4_compendium</artifactId>
             <version>1.0</version>
@@ -100,6 +113,7 @@
             <version>${commons.log}</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
 </project>

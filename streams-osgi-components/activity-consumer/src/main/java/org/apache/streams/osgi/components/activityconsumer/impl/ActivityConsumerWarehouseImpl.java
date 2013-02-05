@@ -20,7 +20,7 @@ public class ActivityConsumerWarehouseImpl implements ActivityConsumerWarehouse 
     public void register(ActivityConsumer activityConsumer) {
 
         //key in warehouse is the activity publisher URI source
-        consumers.put(activityConsumer.getSrc(), activityConsumer);
+        consumers.put(activityConsumer.getSrc().toASCIIString(), activityConsumer);
         activityConsumer.init();
 
 

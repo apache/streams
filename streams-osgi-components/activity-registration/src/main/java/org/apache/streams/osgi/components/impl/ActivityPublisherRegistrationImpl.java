@@ -5,6 +5,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.osgi.components.ActivityPublisherRegistration;
+import org.apache.streams.osgi.components.activityconsumer.ActivityConsumer;
 import org.apache.streams.osgi.components.activityconsumer.impl.PushActivityConsumer;
 
 public class ActivityPublisherRegistrationImpl implements ActivityPublisherRegistration {
@@ -22,8 +23,8 @@ public class ActivityPublisherRegistrationImpl implements ActivityPublisherRegis
         String answer = prefix + " set body:  " + body + " " + new Date();
         LOG.info(">> call >>" + answer);
 
-        //should be configed like the subscriber = what type? polling? how often? etc...
-        PushActivityConsumer activityConsumer =new PushActivityConsumer(body.toString());
+
+        ActivityConsumer activityConsumer =(ActivityConsumer)body;
         //authenticate..
         activityConsumer.setAuthenticated(true);
         return activityConsumer;

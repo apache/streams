@@ -39,7 +39,7 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityCons
         //todo: add some better scheme then getCount for URL...
         //todo: make the route again if consumer exists...and context doesn't have route
         if (activityConsumer.isAuthenticated()){
-                ActivityConsumer existingConsumer = activityConsumerWarehouse.findConsumerBySrc(activityConsumer.getSrc());
+                ActivityConsumer existingConsumer = activityConsumerWarehouse.findConsumerBySrc(activityConsumer.getSrc().toASCIIString());
 
                 if (existingConsumer==null){
 
