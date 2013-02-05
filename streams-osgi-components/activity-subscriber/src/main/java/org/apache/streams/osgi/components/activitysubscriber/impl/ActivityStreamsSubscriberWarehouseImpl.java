@@ -29,7 +29,12 @@ public class ActivityStreamsSubscriberWarehouseImpl implements ActivityStreamsSu
 
     //the warehouse can do some interesting things to make the filtering efficient i think...
     public ArrayList<ActivityStreamsSubscriber> findSubscribersByFilters(String src){
-        return null;
+        return subscribers;
+    }
+
+
+    public ArrayList<ActivityStreamsSubscriber> getAllSubscribers(){
+        return subscribers;
     }
 
 

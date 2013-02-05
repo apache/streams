@@ -11,6 +11,6 @@ public interface ActivityStreamsSubscriberWarehouse {
 
     public ArrayList<ActivityStreamsSubscriber> findSubscribersByFilters(String src);
 
-
+    public ArrayList<ActivityStreamsSubscriber> getAllSubscribers();
 }
 
