@@ -10,51 +10,11 @@
 
     <osgi:reference id="activityPublisherRegistration" interface="org.apache.streams.osgi.components.ActivityPublisherRegistration" />
     <osgi:reference id="activityConsumerWarehouse" interface="org.apache.streams.osgi.components.activityconsumer.ActivityConsumerWarehouse" />
-    <bean id="activityConsumerRouter" class="org.apache.streams.messaging.routers.impl.ActivityConsumerRouter">
-        <property name="activityConsumerWarehouse" ref="activityConsumerWarehouse"/>
-        <property name="camelContext" ref="context"/>
-    </bean>
-    <bean id="activityRegistrationProcessor" class="org.apache.streams.messaging.processors.ActivityPublisherRegistrationProcessor"/>
-
 
     <osgi:reference id="activityStreamsSubscriberRegistration" interface="org.apache.streams.osgi.components.ActivityStreamsSubscriberRegistration" />
     <osgi:reference id="activityStreamsSubscriberWarehouse" interface="org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberWarehouse" />
-    <bean id="activityStreamsSubscriberRouter" class="org.apache.streams.messaging.routers.impl.ActivityStreamsSubscriberRouter">
-        <property name="activityStreamsSubscriberWarehouse" ref="activityStreamsSubscriberWarehouse"/>
-        <property name="camelContext" ref="context"/>
-    </bean>
-     <bean id="subscriberRegistrationProcessor" class="org.apache.streams.messaging.processors.ActivityStreamsSubscriberRegistrationProcessor"/>
-
-    <bean id="activityWarehouseDistributor" class="org.apache.streams.messaging.aggregation.ActivityAggregator">
-        <property name="activityStreamsSubscriberWarehouse" ref="activityStreamsSubscriberWarehouse"/>
-    </bean>
 
 
-
-
-
-
-    <bean id="jmsConnectionFactory"
-          class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="tcp://localhost:61616" />
-    </bean>
-
-    <bean id="pooledConnectionFactory"
-          class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
-        <property name="maxConnections" value="8" />
-        <property name="connectionFactory" ref="jmsConnectionFactory" />
-    </bean>
-
-    <bean id="jmsConfig"
-          class="org.apache.camel.component.jms.JmsConfiguration">
-        <property name="connectionFactory" ref="pooledConnectionFactory"/>
-        <property name="concurrentConsumers" value="10"/>
-    </bean>
-
-    <bean id="activemq"
-          class="org.apache.activemq.camel.component.ActiveMQComponent">
-        <property name="configuration" ref="jmsConfig"/>
-    </bean>
 
 
 </beans>

@@ -10,20 +10,12 @@
        http://camel.apache.org/schema/spring
        http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-        <property name="connectionFactory">
-            <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-                <property name="brokerURL" value="vm://localhost?create=false&waitForStart=10000"/>
-                <!--
+    <bean id="activityPublisherRegistration" class="org.apache.streams.osgi.components.impl.ActivityPublisherRegistrationImpl" />
+    <bean id="activityConsumerWarehouse" class="org.apache.streams.osgi.components.activityconsumer.impl.ActivityConsumerWarehouseImpl" />
 
-                                  <property name="userName" value="${activemq.username}"/>
-                                  <property name="password" value="${activemq.password}"/>
+    <bean id="activityStreamsSubscriberRegistration" class="org.apache.streams.osgi.components.impl.ActivityStreamsSubscriberRegistrationImpl" />
+    <bean id="activityStreamsSubscriberWarehouse" class="org.apache.streams.osgi.components.activitysubscriber.impl.ActivityStreamsSubscriberWarehouseImpl" />
 
-                -->
-            </bean>
-        </property>
-    </bean>
 
-    <bean id="myTransform" class="org.apache.streams.osgi.components.impl.TransformServiceImpl"/>
 
 </beans>
