@@ -11,28 +11,24 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             /WEB-INF/spring/*.xml
+            /WEB-INF/applicationContext.xml
             /WEB-INF/spring-web-servlet.xml
+            /WEB-INF/camelContextWeb.xml
         </param-value>
     </context-param>
-    <!--  spring context listener which loads the XML file  -->
+    <!-- the listener that kick-starts Spring -->
     <listener>
-        <listener-class>
-            org.springframework.web.context.ContextLoaderListener
-        </listener-class>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-    <!--  Camel Servlet  -->
+
+    <!-- Camel servlet -->
     <servlet>
         <servlet-name>CamelServlet</servlet-name>
-        <display-name>Camel Http Transport Servlet</display-name>
-        <servlet-class>
-            org.apache.camel.component.servlet.CamelHttpTransportServlet
-        </servlet-class>
-        <init-param>
-            <param-name>matchOnUriPrefix</param-name>
-            <param-value>true</param-value>
-        </init-param>
+        <servlet-class>org.apache.camel.component.servlet.CamelHttpTransportServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
     </servlet>
-    <!--  Camel Servlet mappings  -->
+
+    <!-- Camel servlet mapping -->
     <servlet-mapping>
         <servlet-name>CamelServlet</servlet-name>
         <url-pattern>/streams/*</url-pattern>
