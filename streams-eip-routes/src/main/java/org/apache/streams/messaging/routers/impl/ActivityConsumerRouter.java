@@ -14,6 +14,8 @@ import org.apache.camel.CamelContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.UUID;
+
 
 public class ActivityConsumerRouter extends RouteBuilder implements ActivityConsumerRouteBuilder {
     private static final transient Log LOG = LogFactory.getLog(ActivityConsumerRouter.class);
@@ -43,12 +45,19 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityCons
 
                 if (existingConsumer==null){
 
-                    activityConsumer.setInRoute("http://" + configuration.getConsumerInRouteHost()+ ":" + configuration.getConsumerInRoutePort() + EipConfigurator.CONSUMER_URL_RESOURCE + "/" + activityConsumerWarehouse.getConsumersCount());
+                  try{
+
+                    if (configuration.getPublisherEndpointProtocol().equals(EipConfigurator.ENDPOINT_PROTOCOL_JETTY)){
+                        activityConsumer.setInRoute(configuration.getConsumerInRouteHost()+ ":" + configuration.getConsumerInRoutePort() +"/" + configuration.getPublisherEndpointUrlResource() + "/" + UUID.randomUUID());
+                    }else if (configuration.getPublisherEndpointProtocol().equals(EipConfigurator.ENDPOINT_PROTOCOL_SERVLET)){
+                        activityConsumer.setInRoute( configuration.getPublisherEndpointUrlResource() + "/" + UUID.randomUUID());
+                    } else{
+                        throw new Exception("No supported endpoint protocol is configured.");
+                    }
 
 
-                    try{
                         //setup a message queue for this consumer.getInRoute()
-                        camelContext.addRoutes(new DynamicConsumerRouteBuilder(configuration,camelContext, "jetty:" + activityConsumer.getInRoute(), activityConsumer));
+                        camelContext.addRoutes(new DynamicConsumerRouteBuilder(configuration,camelContext, configuration.getPublisherEndpointProtocol() + activityConsumer.getInRoute(), activityConsumer));
                         //set the body to the url the producer should post to
                         exchange.getOut().setBody(activityConsumer.getInRoute());
                         LOG.info("all messages sent from " + activityConsumer.getSrc() + " must be posted to " + activityConsumer.getInRoute());
@@ -101,9 +110,9 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityCons
 
 
             from(from)
-                    .bean(activityConsumer, EipConfigurator.CONSUMER_RECIEVE_METHOD).setBody(body())
+                    .bean(activityConsumer, configuration.getConsumerReceiveMethod()).setBody(body())
                     .split()
-                    .method(activityConsumer, EipConfigurator.CONSUMER_SPLIT_METHOD)
+                    .method(activityConsumer, configuration.getConsumerSplitMethod())
                     .to(configuration.getConsumerActivityQUri());
 
 

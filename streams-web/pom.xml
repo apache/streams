@@ -169,9 +169,9 @@
                               <resource>
                                   <directory>${project.parent.basedir}/streams-eip-routes/src/main/resources/META-INF/spring</directory>
                                   <excludes>
-                                    <exclude>osgi-component-import.xml</exclude>
-                                    <exclude>camelContext.xml</exclude>
-                                      <exclude>streams-eip-applicationContext.xml</exclude>
+                                    <exclude>streams-eip-osgi-component-import.xml</exclude>
+                                     <exclude>propertiesLoader.xml</exclude>
+                                    <exclude>streams.properties</exclude>
                                   </excludes>
                               </resource>
                           </resources>

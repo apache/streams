@@ -1,34 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
        http://camel.apache.org/schema/spring
-       http://camel.apache.org/schema/spring/camel-spring-2.0.0.xsd">
+       http://camel.apache.org/schema/spring/camel-spring-2.0.0.xsd
+       http://www.springframework.org/schema/osgi
+       http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
 
 
 
     <camelContext id="context" xmlns="http://camel.apache.org/schema/spring">
 
-        <!--publisher registration route setup todo: get this from the properties file (host and port)-->
+        <endpoint id="consumerRegistrationEndpoint" uri="${consumer.registrationEndpoint}"/>
+        <endpoint id="subscriberRegistrationEndpoint" uri="${subscriber.registrationEndpoint}"/>
+        <!--publisher registration route setup -->
         <route>
-            <from uri="servlet:///publisher/register"/>
+            <from uri="ref:consumerRegistrationEndpoint"/>
                 <bean ref="activityRegistrationProcessor" />
             <to uri="direct:publisher-register"/>
         </route>
 
         <route>
             <from uri="direct:publisher-register"/>
-            <bean ref="activityPublisherRegistration" method="register"/>
+                <bean ref="activityPublisherRegistration" method="register"/>
             <to uri="direct:add-publisher-route"/>
         </route>
 
         <route>
             <from uri="direct:add-publisher-route"/>
-            <bean ref="activityConsumerRouter" method="createNewRouteForConsumer"/>
+                <bean ref="activityConsumerRouter" method="createNewRouteForConsumer"/>
             <to uri="log:ExampleLog"/>
         </route>
 
@@ -51,14 +55,14 @@
 
         <!-- register as a subscriber - returned the endpoint to poll and add to subscription sources - GET/POST -->
         <route>
-            <from uri="servlet:///subscriber/register"/>
-            <bean ref="subscriberRegistrationProcessor" />
+            <from uri="ref:subscriberRegistrationEndpoint"/>
+                <bean ref="subscriberRegistrationProcessor" />
             <to uri="direct:subscriber-register"/>
         </route>
 
         <route>
             <from uri="direct:subscriber-register"/>
-            <bean ref="activityStreamsSubscriberRegistration" method="register"/>
+                <bean ref="activityStreamsSubscriberRegistration" method="register"/>
             <to uri="direct:add-subscriber-route"/>
         </route>
 

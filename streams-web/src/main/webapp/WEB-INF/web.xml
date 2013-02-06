@@ -10,10 +10,9 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
+            /WEB-INF/propertiesLoader.xml
             /WEB-INF/spring/*.xml
-            /WEB-INF/applicationContext.xml
             /WEB-INF/spring-web-servlet.xml
-            /WEB-INF/camelContextWeb.xml
         </param-value>
     </context-param>
     <!-- the listener that kick-starts Spring -->

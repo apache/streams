@@ -40,12 +40,19 @@ public class ActivityStreamsSubscriberRouter extends RouteBuilder implements Act
         //todo: add some better scheme then getCount for URL...
         //todo: make the route again if subscriber exists...and context doesn't have route
         if (activityStreamsSubscriber.isAuthenticated()){
-            activityStreamsSubscriber.setInRoute("http://" + configuration.getSubscriberInRouteHost()+ ":" + configuration.getSubscriberInRoutePort() + EipConfigurator.SUBSCRIBER_URL_RESOURCE + "/" + UUID.randomUUID());
 
             try{
 
+                if (configuration.getSubscriberEndpointProtocol().equals(EipConfigurator.ENDPOINT_PROTOCOL_JETTY)){
+                    activityStreamsSubscriber.setInRoute(configuration.getSubscriberInRouteHost()+ ":" + configuration.getSubscriberInRoutePort() +"/" + configuration.getSubscriberEndpointUrlResource() + "/" + UUID.randomUUID());
+                }else if (configuration.getSubscriberEndpointProtocol().equals(EipConfigurator.ENDPOINT_PROTOCOL_SERVLET)){
+                    activityStreamsSubscriber.setInRoute( configuration.getSubscriberEndpointUrlResource() + "/" + UUID.randomUUID());
+                } else{
+                    throw new Exception("No supported endpoint protocol is configured.");
+                }
+
                 //setup a message queue for this consumer.getInRoute()
-                camelContext.addRoutes(new DynamicSubscriberRouteBuilder(configuration,camelContext, "jetty:" + activityStreamsSubscriber.getInRoute(), activityStreamsSubscriber));
+                camelContext.addRoutes(new DynamicSubscriberRouteBuilder(configuration,camelContext, configuration.getSubscriberEndpointProtocol() + activityStreamsSubscriber.getInRoute(), activityStreamsSubscriber));
                 //set the body to the url the producer should post to
                 exchange.getOut().setBody(activityStreamsSubscriber.getInRoute());
                 activityStreamsSubscriberWarehouse.register(activityStreamsSubscriber);
@@ -96,10 +103,10 @@ public class ActivityStreamsSubscriberRouter extends RouteBuilder implements Act
                     .choice()
                         .when(header("CamelHttpMethod").isEqualTo("POST"))
                             //when its a post...it goes to adding a new src
-                            .bean(activityStreamsSubscriber, EipConfigurator.SUBSCRIBER_POST_METHOD).setBody(body())
+                            .bean(activityStreamsSubscriber, configuration.getSubscriberPostMethod()).setBody(body())
                         .when(header("CamelHttpMethod").isEqualTo("GET"))
                                 // when its a GET it goes to getStream()
-                            .bean(activityStreamsSubscriber, EipConfigurator.SUBSCRIBER_GET_METHOD) ;
+                            .bean(activityStreamsSubscriber, configuration.getSubscriberGetMethod()) ;
 
 
 

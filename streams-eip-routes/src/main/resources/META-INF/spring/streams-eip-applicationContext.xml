@@ -25,18 +25,11 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 
-
-    <context:component-scan base-package="org.apache.streams.messaging" annotation-config="true"/>
-
-    <context:property-placeholder location="/META-INF/spring/routing.properties"/>
-
-
-    <bean id="configuration" class="org.apache.streams.messaging.configuration.EipConfigurator" />
-
     <bean id="activityConsumerRouter" class="org.apache.streams.messaging.routers.impl.ActivityConsumerRouter">
         <property name="activityConsumerWarehouse" ref="activityConsumerWarehouse"/>
         <property name="camelContext" ref="context"/>
     </bean>
+
     <bean id="activityRegistrationProcessor" class="org.apache.streams.messaging.processors.ActivityPublisherRegistrationProcessor"/>
 
 
@@ -53,7 +46,7 @@
 
     <bean id="jmsConnectionFactory"
           class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="tcp://localhost:61616" />
+        <property name="brokerURL" value="${activemq.jmsConnectionFactoryUrl}" />
     </bean>
 
     <bean id="pooledConnectionFactory"
