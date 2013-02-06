@@ -45,16 +45,19 @@ public class ActivityStreamsSubscriberRouter extends RouteBuilder implements Act
 
                 if (configuration.getSubscriberEndpointProtocol().equals(EipConfigurator.ENDPOINT_PROTOCOL_JETTY)){
                     activityStreamsSubscriber.setInRoute(configuration.getSubscriberInRouteHost()+ ":" + configuration.getSubscriberInRoutePort() +"/" + configuration.getSubscriberEndpointUrlResource() + "/" + UUID.randomUUID());
+                    //set the body to the url the producer should post to
+                    exchange.getOut().setBody("http://" + activityStreamsSubscriber.getInRoute());
                 }else if (configuration.getSubscriberEndpointProtocol().equals(EipConfigurator.ENDPOINT_PROTOCOL_SERVLET)){
                     activityStreamsSubscriber.setInRoute( configuration.getSubscriberEndpointUrlResource() + "/" + UUID.randomUUID());
+                    //set the body to the url the producer should post to
+                    exchange.getOut().setBody(configuration.getBaseUrlPath() + activityStreamsSubscriber.getInRoute());
                 } else{
                     throw new Exception("No supported endpoint protocol is configured.");
                 }
 
                 //setup a message queue for this consumer.getInRoute()
                 camelContext.addRoutes(new DynamicSubscriberRouteBuilder(configuration,camelContext, configuration.getSubscriberEndpointProtocol() + activityStreamsSubscriber.getInRoute(), activityStreamsSubscriber));
-                //set the body to the url the producer should post to
-                exchange.getOut().setBody(activityStreamsSubscriber.getInRoute());
+
                 activityStreamsSubscriberWarehouse.register(activityStreamsSubscriber);
             }catch (Exception e){
                 exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE,500);

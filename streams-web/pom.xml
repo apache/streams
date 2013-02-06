@@ -11,7 +11,7 @@
   <artifactId>streams-web</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>war</packaging>
-  <name>streams-web Maven Webapp</name>
+  <name>Apache Streams Web App</name>
   <url>http://maven.apache.org</url>
     <properties>
         <spring.version>3.0.5.RELEASE</spring.version>

@@ -20,6 +20,7 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
+
     <!-- Camel servlet -->
     <servlet>
         <servlet-name>CamelServlet</servlet-name>
@@ -30,7 +31,7 @@
     <!-- Camel servlet mapping -->
     <servlet-mapping>
         <servlet-name>CamelServlet</servlet-name>
-        <url-pattern>/streams/*</url-pattern>
+        <url-pattern>/*</url-pattern>
     </servlet-mapping>
 
  </web-app>

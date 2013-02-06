@@ -49,8 +49,12 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityCons
 
                     if (configuration.getPublisherEndpointProtocol().equals(EipConfigurator.ENDPOINT_PROTOCOL_JETTY)){
                         activityConsumer.setInRoute(configuration.getConsumerInRouteHost()+ ":" + configuration.getConsumerInRoutePort() +"/" + configuration.getPublisherEndpointUrlResource() + "/" + UUID.randomUUID());
+                        //set the body to the url the producer should post to
+                        exchange.getOut().setBody("http://" + activityConsumer.getInRoute());
                     }else if (configuration.getPublisherEndpointProtocol().equals(EipConfigurator.ENDPOINT_PROTOCOL_SERVLET)){
                         activityConsumer.setInRoute( configuration.getPublisherEndpointUrlResource() + "/" + UUID.randomUUID());
+                        //set the body to the url the producer should post to
+                        exchange.getOut().setBody(configuration.getBaseUrlPath() + activityConsumer.getInRoute());
                     } else{
                         throw new Exception("No supported endpoint protocol is configured.");
                     }
@@ -58,8 +62,8 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityCons
 
                         //setup a message queue for this consumer.getInRoute()
                         camelContext.addRoutes(new DynamicConsumerRouteBuilder(configuration,camelContext, configuration.getPublisherEndpointProtocol() + activityConsumer.getInRoute(), activityConsumer));
-                        //set the body to the url the producer should post to
-                        exchange.getOut().setBody(activityConsumer.getInRoute());
+
+
                         LOG.info("all messages sent from " + activityConsumer.getSrc() + " must be posted to " + activityConsumer.getInRoute());
                         //only add the route to the warehouse after its been created in messaging system...
                         activityConsumerWarehouse.register(activityConsumer);

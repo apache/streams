@@ -44,7 +44,7 @@
 
         <route>
             <from uri="activemq:queue:activities"/>
-            <aggregate completionTimeout="500" groupExchanges="true">
+            <aggregate completionInterval="500" groupExchanges="true">
                 <correlationExpression>
                     <constant>true</constant>
                 </correlationExpression>

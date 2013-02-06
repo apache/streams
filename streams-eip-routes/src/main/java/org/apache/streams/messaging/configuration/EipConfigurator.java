@@ -52,6 +52,10 @@ public class EipConfigurator {
     private String subscriberGetMethod;
 
 
+    @Value("${servlet.baseUrlPath}")
+    private String baseUrlPath;
+
+
     public static String ENDPOINT_PROTOCOL_JETTY="jetty:http://";
     public static String ENDPOINT_PROTOCOL_SERVLET="servlet:///";
 
@@ -167,6 +171,13 @@ public class EipConfigurator {
         this.subscriberGetMethod = subscriberGetMethod;
     }
 
+    public String getBaseUrlPath() {
+        return baseUrlPath;
+    }
+
+    public void setBaseUrlPath(String baseUrlPath) {
+        this.baseUrlPath = baseUrlPath;
+    }
 
 
 }
