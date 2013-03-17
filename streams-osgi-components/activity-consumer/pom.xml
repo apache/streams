@@ -1,25 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <properties>
-        <bundle.symbolicName>activity-consumer-bundle</bundle.symbolicName>
-        <bundle.namespace>org.apache.streams.osgi.components.activityconsumer</bundle.namespace>
-        <commons.log>1.1</commons.log>
-        <jackson.version>1.9.11</jackson.version>
-    </properties>
+  <modelVersion>4.0.0</modelVersion>
 
-    <modelVersion>4.0.0</modelVersion>
+  <parent>
     <groupId>org.apache.streams.osgi.components</groupId>
-    <artifactId>activity-consumer</artifactId>
+    <artifactId>streams-osgi-components</artifactId>
     <version>0.1-SNAPSHOT</version>
+  </parent>
 
-    <name>${bundle.symbolicName} [${bundle.namespace}]</name>
+  <artifactId>activity-consumer</artifactId>
+  <name>${bundle.symbolicName} [${bundle.namespace}]</name>
 
-    <packaging>bundle</packaging>
+  <packaging>bundle</packaging>
 
-    <build>
+  <properties>
+    <bundle.symbolicName>activity-consumer-bundle</bundle.symbolicName>
+    <bundle.namespace>org.apache.streams.osgi.components.activityconsumer</bundle.namespace>
+    <commons.log>1.1</commons.log>
+    <jackson.version>1.9.11</jackson.version>
+  </properties>
+
+  <build>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -37,20 +59,10 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.ops4j</groupId>
                 <artifactId>maven-pax-plugin</artifactId>
-                <version>1.5</version>
                 <!--
                  | enable improved OSGi compilation support for the bundle life-cycle.
                  | to switch back to the standard bundle life-cycle, move this setting
@@ -68,11 +80,10 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-                        <Bundle-Version>${pom.version}</Bundle-Version>
-                        <Export-Package>${bundle.namespace};version="${pom.version}",org.apache.streams.osgi.components.activityconsumer.impl</Export-Package>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                        <Export-Package>${bundle.namespace};version="${project.version}",org.apache.streams.osgi.components.activityconsumer.impl</Export-Package>
                         <Private-Package>${bundle.namespace}.impl.*</Private-Package>
                         <Import-Package>org.apache.streams.osgi.components.activityconsumer,org.apache.streams.osgi.components.activityconsumer.impl,org.apache.commons.logging,org.codehaus.jackson.*;version="${jackson.version}",javax.xml.datatype, javax.xml.namespace, javax.xml.parsers, org.joda.time, org.joda.time.format, org.w3c.dom, org.w3c.dom.bootstrap, org.w3c.dom.ls, org.xml.sax</Import-Package>
-                        <Include-Resource>src/main/resources</Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>
