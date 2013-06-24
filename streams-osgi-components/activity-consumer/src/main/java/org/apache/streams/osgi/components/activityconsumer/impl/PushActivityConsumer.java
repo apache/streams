@@ -62,7 +62,7 @@ public class PushActivityConsumer implements ActivityConsumer {
 
     public String receive (String activity){
         //receive activities...do anything that is necessary
-        LOG.info("got a message i subscribed to: " + activity);
+        LOG.info("a message I published: " + activity);
         return activity;
         //pass off to activity splitter
 
@@ -70,12 +70,9 @@ public class PushActivityConsumer implements ActivityConsumer {
 
     public List<String> split(String activities){
         LOG.info("I am going to split this message: " + activities);
+
         ArrayList<String> activitiesList = new ArrayList<String>();
-        activitiesList.add("this");
-        activitiesList.add("is");
-        activitiesList.add("my");
-        activitiesList.add("split");
-        activitiesList.add("message");
+        activitiesList.add(activities);
         return activitiesList;
     }
 
