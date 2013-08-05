@@ -58,6 +58,12 @@
       </dependency>
 
       <dependency>
+          <groupId>org.apache.streams</groupId>
+          <artifactId>streams-cassandra</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
           <groupId>org.apache.camel</groupId>
           <artifactId>camel-web</artifactId>
           <version>2.9.0</version>
@@ -137,6 +143,43 @@
           <version>${spring.version}</version>
       </dependency>
 
+      <!--astyanax-->
+      <dependency>
+          <groupId>com.netflix.astyanax</groupId>
+          <artifactId>astyanax-core</artifactId>
+          <version>1.56.43-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.netflix.astyanax</groupId>
+          <artifactId>astyanax-thrift</artifactId>
+          <version>1.56.43-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.netflix.astyanax</groupId>
+          <artifactId>astyanax-cassandra</artifactId>
+          <version>1.56.43-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+          <groupId>com.netflix.astyanax</groupId>
+          <artifactId>astyanax-entity-mapper</artifactId>
+          <version>1.56.43-SNAPSHOT</version>
+      </dependency>
+
+      <!--rave-->
+      <dependency>
+          <groupId>org.apache.rave</groupId>
+          <artifactId>rave-core-api</artifactId>
+          <version>0.22-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.apache.rave</groupId>
+          <artifactId>rave-core</artifactId>
+          <version>0.22-SNAPSHOT</version>
+      </dependency>
 
   </dependencies>
   <build>

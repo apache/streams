@@ -39,8 +39,8 @@
     </bean>
     <bean id="subscriberRegistrationProcessor" class="org.apache.streams.messaging.processors.ActivityStreamsSubscriberRegistrationProcessor"/>
 
-    <bean id="activityWarehouseDistributor" class="org.apache.streams.messaging.aggregation.ActivityAggregator">
-        <property name="activityStreamsSubscriberWarehouse" ref="activityStreamsSubscriberWarehouse"/>
+    <bean id="activityService" class="org.apache.streams.messaging.service.impl.CassandraActivityService">
+
     </bean>
 
 

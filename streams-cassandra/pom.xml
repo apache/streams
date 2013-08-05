@@ -1,0 +1,121 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.apache.streams</groupId>
+        <artifactId>streams-project</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>streams-cassandra</artifactId>
+
+    <name>${bundle.symbolicName} [${bundle.namespace}]</name>
+
+    <properties>
+        <bundle.symbolicName>streams-cassandra</bundle.symbolicName>
+        <bundle.namespace>org.apache.streams</bundle.namespace>
+    </properties>
+
+    <packaging>bundle</packaging>
+    <build>
+        <resources>
+        <resource>
+            <directory>src/main/resources</directory>
+        </resource>
+
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>plugin.xml</include>
+                    <include>plugin.properties</include>
+                    <include>icons/**</include>
+                </includes>
+            </resource>
+        </resources>
+    <plugins>
+        <plugin>
+            <groupId>org.ops4j</groupId>
+            <artifactId>maven-pax-plugin</artifactId>
+            <!--
+             | enable improved OSGi compilation support for the bundle life-cycle.
+             | to switch back to the standard bundle life-cycle, move this setting
+             | down to the maven-bundle-plugin section
+            -->
+            <extensions>true</extensions>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>maven-bundle-plugin</artifactId>
+            <version>1.4.3</version>
+            <!--
+             | the following instructions build a simple set of public/private classes into an OSGi bundle
+            -->
+            <configuration>
+                <instructions>
+                    <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                    <Bundle-Version>${project.version}</Bundle-Version>
+                    <Export-Package>
+                        ${bundle.namespace};version="${project.version}",org.apache.streams.cassandra.repository.impl, org.apache.streams.cassandra.model, org.apache.streams.cassandra.service
+                    </Export-Package>
+                    <Private-Package>${bundle.namespace}.cassandra.repository.impl.*,${bundle.namespace}.cassandra.model, ${bundle.namespace}.cassandra.service </Private-Package>
+                    <Import-Package>
+                        org.apache.rave.model,org.apache.rave.portal.model.impl,
+                        com.netflix.astyanax, com.netflix.astyanax.connectionpool, com.netflix.astyanax.connectionpool.impl, com.netflix.astyanax.impl, com.netflix.astyanax.thrift, com.netflix.astyanax.connectionpool.exceptions, com.netflix.astyanax.model, com.netflix.astyanax.serializers, com.netflix.astyanax.entitystore,  com.netflix.astyanax.ddl,
+                        javax.persistence, org.apache.commons.logging, com.google.common.collect, org.codehaus.jackson.map
+                    </Import-Package>
+                </instructions>
+            </configuration>
+        </plugin>
+    </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.rave</groupId>
+            <artifactId>rave-core-api</artifactId>
+            <version>0.22-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.rave</groupId>
+            <artifactId>rave-core</artifactId>
+            <version>0.22-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--astyanax-->
+        <dependency>
+            <groupId>com.netflix.astyanax</groupId>
+            <artifactId>astyanax-core</artifactId>
+            <version>1.56.43-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.netflix.astyanax</groupId>
+            <artifactId>astyanax-thrift</artifactId>
+            <version>1.56.43-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.netflix.astyanax</groupId>
+            <artifactId>astyanax-cassandra</artifactId>
+            <version>1.56.43-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.netflix.astyanax</groupId>
+            <artifactId>astyanax-entity-mapper</artifactId>
+            <version>1.56.43-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+</project>

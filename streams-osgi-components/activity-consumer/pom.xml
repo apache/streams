@@ -83,7 +83,8 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>${bundle.namespace};version="${project.version}",org.apache.streams.osgi.components.activityconsumer.impl</Export-Package>
                         <Private-Package>${bundle.namespace}.impl.*</Private-Package>
-                        <Import-Package>org.apache.streams.osgi.components.activityconsumer,org.apache.streams.osgi.components.activityconsumer.impl,org.apache.commons.logging,org.codehaus.jackson.*;version="${jackson.version}",javax.xml.datatype, javax.xml.namespace, javax.xml.parsers, org.joda.time, org.joda.time.format, org.w3c.dom, org.w3c.dom.bootstrap, org.w3c.dom.ls, org.xml.sax</Import-Package>
+                        <Import-Package>org.apache.streams.osgi.components.activityconsumer,org.apache.streams.osgi.components.activityconsumer.impl,org.apache.commons.logging,org.codehaus.jackson.*;version="${jackson.version}",javax.xml.datatype, javax.xml.namespace, javax.xml.parsers, org.joda.time, org.joda.time.format, org.w3c.dom, org.w3c.dom.bootstrap, org.w3c.dom.ls, org.xml.sax, org.apache.rave.model, org.apache.rave.portal.model.impl, org.apache.streams.cassandra.model
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -122,6 +123,27 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging-api</artifactId>
             <version>${commons.log}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.rave</groupId>
+            <artifactId>rave-core</artifactId>
+            <version>0.22-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.rave</groupId>
+            <artifactId>rave-core-api</artifactId>
+            <version>0.22-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-cassandra</artifactId>
+            <version>0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

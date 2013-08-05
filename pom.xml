@@ -47,6 +47,7 @@
     <module>provision</module>
     <module>streams-osgi-components</module>
     <module>streams-eip-routes</module>
+    <module>streams-cassandra</module>
     <module>streams-web</module>
   </modules>
 
