@@ -18,6 +18,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
 
+import java.util.List;
+
 public class CassandraActivityStreamsRepository {
 
     private final String KEYSPACE_NAME = "ActivityStreams";
@@ -116,6 +118,12 @@ public class CassandraActivityStreamsRepository {
         } catch (Exception e) {
             LOG.info("An error occured while inserting the entry with id, " + entry.getId(), e);
         }
+    }
+
+    public List<CassandraActivityStreamsEntry> getActivitiesForQuery(String query) {
+            //return entities that match the given cql query
+            LOG.info("executing the query: "+query);
+            return entityManager.find(query);
     }
 
 }

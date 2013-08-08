@@ -5,47 +5,43 @@ import org.apache.camel.Exchange;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
+import org.apache.streams.cassandra.repository.impl.CassandraActivityStreamsRepository;
+import org.apache.streams.messaging.service.impl.CassandraActivityService;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriber;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
+import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriptionFilter;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ActivityAggregator {
 
     private ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse;
+    private CassandraActivityService activityService;
     private static final transient Log LOG = LogFactory.getLog(ActivityAggregator.class);
 
     public void setActivityStreamsSubscriberWarehouse(ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse) {
         this.activityStreamsSubscriberWarehouse = activityStreamsSubscriberWarehouse;
     }
 
-    public void distributeToSubscribers(Exchange exchange) {
+    public void setActivityService(CassandraActivityService activityService) {
+        this.activityService = activityService;
+    }
 
-        //iterate over the aggregated messages and send to subscribers in warehouse...they will evaluate and determine if they keep it
-        List<Exchange> grouped = exchange.getProperty(Exchange.GROUPED_EXCHANGE, List.class);
-
-        //initialize the ObjectMapper
-        ObjectMapper mapper = new ObjectMapper();
-
-        for (Exchange e : grouped){
-            //get activity off of exchange
-           LOG.info("Processing the activity...");
-           LOG.info("Exchange: "+e);
-
-            try {
-                //extract the ActivityStreamsEntry object and translate to JSON
-                CassandraActivityStreamsEntry activity = e.getIn().getBody(CassandraActivityStreamsEntry.class);
-                String activityJSON = mapper.writeValueAsString(activity);
-                LOG.info("Activity Object: "+activityJSON);
-                for(ActivityStreamsSubscriber subscriber:activityStreamsSubscriberWarehouse.getAllSubscribers()){
-                    subscriber.receive(activityJSON);
-                }
-            } catch (IOException err) {
-                LOG.warn("There was an error translating the java object to JSON");
-                LOG.warn(err);
+    @Scheduled(fixedRate=30000)
+    public void distributeToSubscribers() {
+        for (ActivityStreamsSubscriber subscriber : activityStreamsSubscriberWarehouse.getAllSubscribers()) {
+            Set<String> activities = new HashSet<String>();
+            for (ActivityStreamsSubscriptionFilter filter: subscriber.getActivityStreamsSubscriberConfiguration().getActivityStreamsSubscriptionFilters()){
+                //send the query of each filter to the service to receive the activities of that filter
+                activities.addAll(activityService.getActivitiesForQuery(filter.getQuery()));
             }
+            subscriber.receive(new ArrayList<String>(activities));
         }
     }
 }

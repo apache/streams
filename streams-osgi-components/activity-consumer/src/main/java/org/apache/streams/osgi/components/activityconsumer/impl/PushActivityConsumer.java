@@ -66,20 +66,11 @@ public class PushActivityConsumer implements ActivityConsumer {
 
     }
 
-    public List<CassandraActivityStreamsEntry> split(String activities) {
+    public List<String> split(String activities) {
         LOG.info("I am going to split this message: " + activities);
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        List<CassandraActivityStreamsEntry> activitiesList = new ArrayList<CassandraActivityStreamsEntry>();
 
-        try {
-            //attempt to convert the activity to a java object
-            LOG.info("About to preform the translation to JSON Object");
-            CassandraActivityStreamsEntry streamsEntry = mapper.readValue(activities, CassandraActivityStreamsEntry.class);
-            activitiesList.add(streamsEntry);
-        } catch (Exception e) {
-            LOG.info("Error while converting the JSON object to POJO and saving to database",e);
-        }
+        List<String> activitiesList = new ArrayList<String>();
+        activitiesList.add(activities);
         return activitiesList;
     }
 

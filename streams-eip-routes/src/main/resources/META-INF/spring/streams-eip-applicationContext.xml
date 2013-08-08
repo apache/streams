@@ -18,11 +18,12 @@
   -->
 
 <beans
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns="http://www.springframework.org/schema/beans"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:task="http://www.springframework.org/schema/task"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
 
     <bean id="activityConsumerRouter" class="org.apache.streams.messaging.routers.impl.ActivityConsumerRouter">
@@ -39,10 +40,14 @@
     </bean>
     <bean id="subscriberRegistrationProcessor" class="org.apache.streams.messaging.processors.ActivityStreamsSubscriberRegistrationProcessor"/>
 
-    <bean id="activityService" class="org.apache.streams.messaging.service.impl.CassandraActivityService">
+    <bean id="activityService" class="org.apache.streams.messaging.service.impl.CassandraActivityService"></bean>
 
+    <bean id="activityAggregator" class="org.apache.streams.messaging.aggregation.ActivityAggregator">
+        <property name="activityService" ref="activityService"/>
+        <property name="activityStreamsSubscriberWarehouse" ref="activityStreamsSubscriberWarehouse"/>
     </bean>
 
+    <task:annotation-driven/>
 
     <bean id="jmsConnectionFactory"
           class="org.apache.activemq.ActiveMQConnectionFactory">

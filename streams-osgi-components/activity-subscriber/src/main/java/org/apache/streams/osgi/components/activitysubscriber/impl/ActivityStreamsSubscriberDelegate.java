@@ -8,6 +8,7 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscriber {
 
@@ -69,11 +70,10 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
         this.inRoute = inRoute;
     }
 
-    public void receive (String activity){
-        //receive activities...do anything that is necessary
-        LOG.info("got a message i subscribed to: " + activity);
-        //guarenteed unique?
-        stream.add(activity);
+    public void receive (List<String> activity){
+        //add new activities to stream
+        LOG.info("adding activities to subscription stream");
+        stream.addAll(activity);
 
     }
 

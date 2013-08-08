@@ -15,7 +15,4 @@ public interface ActivityStreamsSubscription {
     public String getAuthToken();
     public void setAuthToken(String token);
 
-
-
-
 }

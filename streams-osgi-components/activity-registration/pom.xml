@@ -82,7 +82,7 @@
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>${bundle.namespace};version="${project.version}"</Export-Package>
                         <Private-Package>${bundle.namespace}.impl.*</Private-Package>
-                        <Import-Package>org.apache.streams.osgi.components.activityconsumer.impl,org.apache.streams.osgi.components.activityconsumer,org.apache.streams.osgi.components.activitysubscriber,org.apache.streams.osgi.components.activitysubscriber.impl,org.apache.commons.logging</Import-Package>
+                        <Import-Package>org.apache.streams.osgi.components.activityconsumer.impl,org.apache.streams.osgi.components.activityconsumer,org.apache.streams.osgi.components.activitysubscriber,org.apache.streams.osgi.components.activitysubscriber.impl,org.apache.commons.logging, org.codehaus.jackson.map</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
