@@ -1,6 +1,7 @@
 package org.apache.streams.osgi.components.activitysubscriber;
 
 
+import java.util.Date;
 import java.util.List;
 
 public interface ActivityStreamsSubscriber {
@@ -14,4 +15,6 @@ public interface ActivityStreamsSubscriber {
     public boolean isAuthenticated();
     public void setAuthenticated(boolean authenticated);
     public ActivityStreamsSubscription getActivityStreamsSubscriberConfiguration();
+    Date getLastUpdated();
+    void setLastUpdated(Date lastUpdated);
 }

@@ -48,7 +48,6 @@
          <groupId>org.apache.streams</groupId>
          <artifactId>streams-eip-routes</artifactId>
          <version>${project.version}</version>
-         <type>bundle</type>
      </dependency>
 
       <dependency>
@@ -141,31 +140,6 @@
           <groupId>org.springframework</groupId>
           <artifactId>spring-webmvc</artifactId>
           <version>${spring.version}</version>
-      </dependency>
-
-      <!--astyanax-->
-      <dependency>
-          <groupId>com.netflix.astyanax</groupId>
-          <artifactId>astyanax-core</artifactId>
-          <version>1.56.43-SNAPSHOT</version>
-      </dependency>
-
-      <dependency>
-          <groupId>com.netflix.astyanax</groupId>
-          <artifactId>astyanax-thrift</artifactId>
-          <version>1.56.43-SNAPSHOT</version>
-      </dependency>
-
-      <dependency>
-          <groupId>com.netflix.astyanax</groupId>
-          <artifactId>astyanax-cassandra</artifactId>
-          <version>1.56.43-SNAPSHOT</version>
-      </dependency>
-
-      <dependency>
-          <groupId>com.netflix.astyanax</groupId>
-          <artifactId>astyanax-entity-mapper</artifactId>
-          <version>1.56.43-SNAPSHOT</version>
       </dependency>
 
       <!--rave-->

@@ -129,22 +129,19 @@
         <dependency>
             <groupId>org.apache.rave</groupId>
             <artifactId>rave-core</artifactId>
-            <version>0.22-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>${rave.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.rave</groupId>
             <artifactId>rave-core-api</artifactId>
-            <version>0.22-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>${rave.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-cassandra</artifactId>
             <version>0.1-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>

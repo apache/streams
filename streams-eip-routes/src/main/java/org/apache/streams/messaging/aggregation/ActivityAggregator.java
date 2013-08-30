@@ -1,23 +1,15 @@
 package org.apache.streams.messaging.aggregation;
 
 
-import org.apache.camel.Exchange;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
-import org.apache.streams.cassandra.repository.impl.CassandraActivityStreamsRepository;
 import org.apache.streams.messaging.service.impl.CassandraActivityService;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriber;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriptionFilter;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ActivityAggregator {
 
@@ -39,8 +31,10 @@ public class ActivityAggregator {
             Set<String> activities = new HashSet<String>();
             for (ActivityStreamsSubscriptionFilter filter: subscriber.getActivityStreamsSubscriberConfiguration().getActivityStreamsSubscriptionFilters()){
                 //send the query of each filter to the service to receive the activities of that filter
-                activities.addAll(activityService.getActivitiesForQuery(filter.getQuery()));
+                activities.addAll(activityService.getActivitiesForQuery(filter.getQuery() + " WHERE published > " + subscriber.getLastUpdated().getTime() + " LIMIT 10 ALLOW FILTERING"));
             }
+            //TODO: an activity posted in between the cql query and setting the lastUpdated field will be lost
+            subscriber.setLastUpdated(new Date());
             subscriber.receive(new ArrayList<String>(activities));
         }
     }

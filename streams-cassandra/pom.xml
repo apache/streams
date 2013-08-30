@@ -58,12 +58,12 @@
                     <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                     <Bundle-Version>${project.version}</Bundle-Version>
                     <Export-Package>
-                        ${bundle.namespace};version="${project.version}",org.apache.streams.cassandra.repository.impl, org.apache.streams.cassandra.model, org.apache.streams.cassandra.service
+                        ${bundle.namespace};version="${project.version}",org.apache.streams.cassandra.repository.impl, org.apache.streams.cassandra.model
                     </Export-Package>
-                    <Private-Package>${bundle.namespace}.cassandra.repository.impl.*,${bundle.namespace}.cassandra.model, ${bundle.namespace}.cassandra.service </Private-Package>
+                    <Private-Package>${bundle.namespace}.cassandra.repository.impl.*,${bundle.namespace}.cassandra.model </Private-Package>
                     <Import-Package>
                         org.apache.rave.model,org.apache.rave.portal.model.impl,
-                        com.netflix.astyanax, com.netflix.astyanax.connectionpool, com.netflix.astyanax.connectionpool.impl, com.netflix.astyanax.impl, com.netflix.astyanax.thrift, com.netflix.astyanax.connectionpool.exceptions, com.netflix.astyanax.model, com.netflix.astyanax.serializers, com.netflix.astyanax.entitystore,  com.netflix.astyanax.ddl,
+                        com.datastax.driver.core, com.datastax.driver.core.exceptions, org.codehaus.jackson.map.annotate,
                         javax.persistence, org.apache.commons.logging, com.google.common.collect, org.codehaus.jackson.map
                     </Import-Package>
                 </instructions>
@@ -76,50 +76,31 @@
         <dependency>
             <groupId>org.apache.rave</groupId>
             <artifactId>rave-core-api</artifactId>
-            <version>0.22-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>${rave.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.rave</groupId>
             <artifactId>rave-core</artifactId>
-            <version>0.22-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!--astyanax-->
-        <dependency>
-            <groupId>com.netflix.astyanax</groupId>
-            <artifactId>astyanax-core</artifactId>
-            <version>1.56.43-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.netflix.astyanax</groupId>
-            <artifactId>astyanax-thrift</artifactId>
-            <version>1.56.43-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.netflix.astyanax</groupId>
-            <artifactId>astyanax-cassandra</artifactId>
-            <version>1.56.43-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.netflix.astyanax</groupId>
-            <artifactId>astyanax-entity-mapper</artifactId>
-            <version>1.56.43-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>${rave.version}</version>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.datastax.cassandra</groupId>
+            <artifactId>cassandra-driver-core</artifactId>
+            <version>${datastax.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.netty</groupId>
+            <artifactId>netty</artifactId>
+            <version>3.2.9.Final</version>
         </dependency>
 
     </dependencies>

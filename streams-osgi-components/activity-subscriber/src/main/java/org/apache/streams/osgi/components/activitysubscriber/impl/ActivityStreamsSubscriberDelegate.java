@@ -8,6 +8,7 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscriber {
@@ -23,10 +24,13 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
     //an individual subscriber gets ONE stream which is an aggregation of all its SRCs
     private ArrayList<String> stream;
 
+    private Date lastUpdated;
+
 
     public ActivityStreamsSubscriberDelegate(ActivityStreamsSubscription configuration){
         setActivityStreamsSubscriberConfiguration(configuration);
         stream = new ArrayList<String>();
+        lastUpdated = new Date(0);
     }
 
 
@@ -83,7 +87,13 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
         return stream.toString();
     }
 
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
 
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
 
     public void init(){
         //any initialization... gets called directly after registration

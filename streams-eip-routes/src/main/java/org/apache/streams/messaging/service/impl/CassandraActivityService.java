@@ -3,6 +3,7 @@ package org.apache.streams.messaging.service.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.camel.Exchange;
+import org.apache.rave.model.ActivityStreamsEntry;
 import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
 import org.apache.streams.cassandra.repository.impl.CassandraActivityStreamsRepository;
 import org.apache.streams.messaging.service.ActivityService;
@@ -11,6 +12,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CassandraActivityService implements ActivityService {
@@ -40,7 +42,8 @@ public class CassandraActivityService implements ActivityService {
             String activityJson = e.getIn().getBody(String.class);
 
             try {
-                CassandraActivityStreamsEntry streamsEntry = mapper.readValue(activityJson, CassandraActivityStreamsEntry.class);
+                ActivityStreamsEntry streamsEntry = mapper.readValue(activityJson, CassandraActivityStreamsEntry.class);
+                streamsEntry.setPublished(new Date());
                 cassandraActivityStreamsRepository.save(streamsEntry);
             } catch (IOException err) {
                 LOG.error("there was an error while converting the json string to an object and saving to the database", err);
@@ -50,13 +53,13 @@ public class CassandraActivityService implements ActivityService {
     }
 
     public List<String> getActivitiesForQuery(String query) {
-        List<CassandraActivityStreamsEntry> activityObjects = cassandraActivityStreamsRepository.getActivitiesForQuery(query);
+        List<ActivityStreamsEntry> activityObjects = cassandraActivityStreamsRepository.getActivitiesForQuery(query);
         return getJsonList(activityObjects);
     }
 
-    private List<String> getJsonList(List<CassandraActivityStreamsEntry> activities) {
+    private List<String> getJsonList(List<ActivityStreamsEntry> activities) {
         List<String> jsonList = new ArrayList<String>();
-        for (CassandraActivityStreamsEntry entry : activities) {
+        for (ActivityStreamsEntry entry : activities) {
             try {
                 jsonList.add(mapper.writeValueAsString(entry));
             } catch (IOException e) {
