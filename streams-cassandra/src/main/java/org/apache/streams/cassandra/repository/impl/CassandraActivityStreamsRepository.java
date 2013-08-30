@@ -43,24 +43,28 @@ public class CassandraActivityStreamsRepository {
                     "verb text, " +
                     "actor_displayname text, " +
                     "actor_id text, " +
-                    "object_displayname text, " +
-                    "object_id text, " +
+                    "actor_url text, " +
                     "target_displayname text, " +
                     "target_id text, " +
+                    "target_url text, " +
+                    "object_displayname text, " +
+                    "object_id text, " +
                     "PRIMARY KEY (id, published));");
         } catch (AlreadyExistsException ignored) {
         }
     }
 
     public void save(ActivityStreamsEntry entry) {
-        String sql = "INSERT INTO " + TABLE_NAME + " (id, published, verb, actor_displayname, actor_id, object_displayname, object_id, target_displayname, target_id) VALUES ('" +
+        String sql = "INSERT INTO " + TABLE_NAME + " (id, published, verb, actor_displayname, actor_id, actor_url, target_displayname, target_id, target_url, object_displayname, object_id) VALUES ('" +
                 entry.getId() + "','" +
                 entry.getPublished().getTime() + "','" +
                 entry.getVerb() + "','" +
                 entry.getActor().getDisplayName() + "','" +
                 entry.getActor().getId() + "','" +
+                entry.getActor().getUrl() + "','" +
                 entry.getTarget().getDisplayName() + "','" +
                 entry.getTarget().getId() + "','" +
+                entry.getTarget().getUrl() + "','" +
                 entry.getObject().getDisplayName() + "','" +
                 entry.getObject().getId() + "')";
         session.execute(sql);
@@ -76,13 +80,15 @@ public class CassandraActivityStreamsRepository {
             ActivityStreamsObject object = new ActivityStreamsObjectImpl();
 
             actor.setDisplayName(row.getString("actor_displayname"));
-            actor.setUrl(row.getString("actor_id"));
+            actor.setId(row.getString("actor_id"));
+            actor.setUrl(row.getString("actor_url"));
 
             target.setDisplayName(row.getString("target_displayname"));
-            target.setUrl(row.getString("target_id"));
+            target.setId(row.getString("target_id"));
+            target.setUrl(row.getString("target_url"));
 
             object.setDisplayName(row.getString("object_displayname"));
-            target.setUrl(row.getString("object_id"));
+            object.setUrl(row.getString("object_id"));
 
             entry.setPublished(row.getDate("published"));
             entry.setVerb(row.getString("verb"));
