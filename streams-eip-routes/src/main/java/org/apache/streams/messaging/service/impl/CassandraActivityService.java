@@ -28,6 +28,7 @@ public class CassandraActivityService implements ActivityService {
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    @Override
     public void receiveExchange(Exchange exchange) {
 
         //receive the exchange as a list
@@ -52,8 +53,9 @@ public class CassandraActivityService implements ActivityService {
         }
     }
 
-    public List<String> getActivitiesForQuery(String query) {
-        List<ActivityStreamsEntry> activityObjects = cassandraActivityStreamsRepository.getActivitiesForQuery(query);
+    @Override
+    public List<String> getActivitiesForFilters(List<String> filters, Date lastUpdated) {
+        List<ActivityStreamsEntry> activityObjects = cassandraActivityStreamsRepository.getActivitiesForFilters(filters, lastUpdated);
         return getJsonList(activityObjects);
     }
 

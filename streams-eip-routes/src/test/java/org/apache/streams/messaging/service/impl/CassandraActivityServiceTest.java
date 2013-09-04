@@ -59,6 +59,6 @@ public class CassandraActivityServiceTest {
         replay(e, e2, m);
 
         //cassandraActivityService.receiveExchange(e);
-        List<String> myTest = cassandraActivityService.getActivitiesForQuery("select * from coltest");
+        //List<String> myTest = cassandraActivityService.getActivitiesForQuery("select * from coltest");
     }
 }

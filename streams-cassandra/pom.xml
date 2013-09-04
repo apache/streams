@@ -64,7 +64,8 @@
                     <Import-Package>
                         org.apache.rave.model,org.apache.rave.portal.model.impl,
                         com.datastax.driver.core, com.datastax.driver.core.exceptions, org.codehaus.jackson.map.annotate,
-                        javax.persistence, org.apache.commons.logging, com.google.common.collect, org.codehaus.jackson.map
+                        javax.persistence, org.apache.commons.logging, com.google.common.collect, org.codehaus.jackson.map,
+                        org.apache.commons.lang
                     </Import-Package>
                 </instructions>
             </configuration>

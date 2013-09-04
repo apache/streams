@@ -3,22 +3,23 @@ package org.apache.streams.cassandra.repository.impl;
 import com.datastax.driver.core.*;
 
 import com.datastax.driver.core.exceptions.AlreadyExistsException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.rave.model.ActivityStreamsEntry;
 import org.apache.rave.model.ActivityStreamsObject;
 import org.apache.rave.portal.model.impl.ActivityStreamsEntryImpl;
 import org.apache.rave.portal.model.impl.ActivityStreamsObjectImpl;
-import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
 public class CassandraActivityStreamsRepository {
 
-    private final String KEYSPACE_NAME = "streams";
-    private final String TABLE_NAME = "activities";
+    private final String KEYSPACE_NAME = "keytest";
+    private final String TABLE_NAME = "coltest";
 
     private static final Log LOG = LogFactory.getLog(CassandraActivityStreamsRepository.class);
 
@@ -49,7 +50,7 @@ public class CassandraActivityStreamsRepository {
                     "target_url text, " +
                     "object_displayname text, " +
                     "object_id text, " +
-                    "PRIMARY KEY (id, published));");
+                    "PRIMARY KEY (id, target_displayname, published));");
         } catch (AlreadyExistsException ignored) {
         }
     }
@@ -70,8 +71,17 @@ public class CassandraActivityStreamsRepository {
         session.execute(sql);
     }
 
-    public List<ActivityStreamsEntry> getActivitiesForQuery(String cql) {
+    public List<ActivityStreamsEntry> getActivitiesForFilters(List<String> filters, Date lastUpdated) {
+        String cql = "SELECT * FROM " + TABLE_NAME + " WHERE ";
+        if(!filters.isEmpty()){
+            cql = cql + " target_displayname IN ('"+ StringUtils.join(filters, "','")+"') AND ";
+        }
+        cql = cql + "published > " + lastUpdated.getTime() + "LIMIT 10 ALLOW FILTERING";
+
+        //execute the cql query and store the results
         ResultSet set = session.execute(cql);
+
+        //iterate through the results and create a new ActivityStreamsEntry for every result returned
         List<ActivityStreamsEntry> results = new ArrayList<ActivityStreamsEntry>();
         for (Row row : set) {
             ActivityStreamsEntry entry = new ActivityStreamsEntryImpl();

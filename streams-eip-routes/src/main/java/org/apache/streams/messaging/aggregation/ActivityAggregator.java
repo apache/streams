@@ -6,7 +6,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.streams.messaging.service.impl.CassandraActivityService;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriber;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
-import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriptionFilter;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.*;
@@ -29,10 +28,7 @@ public class ActivityAggregator {
     public void distributeToSubscribers() {
         for (ActivityStreamsSubscriber subscriber : activityStreamsSubscriberWarehouse.getAllSubscribers()) {
             Set<String> activities = new HashSet<String>();
-            for (ActivityStreamsSubscriptionFilter filter: subscriber.getActivityStreamsSubscriberConfiguration().getActivityStreamsSubscriptionFilters()){
-                //send the query of each filter to the service to receive the activities of that filter
-                activities.addAll(activityService.getActivitiesForQuery(filter.getQuery() + " WHERE published > " + subscriber.getLastUpdated().getTime() + " LIMIT 10 ALLOW FILTERING"));
-            }
+            activities.addAll(activityService.getActivitiesForFilters(subscriber.getActivityStreamsSubscriberConfiguration().getFilters(), subscriber.getLastUpdated()));
             //TODO: an activity posted in between the cql query and setting the lastUpdated field will be lost
             subscriber.setLastUpdated(new Date());
             subscriber.receive(new ArrayList<String>(activities));

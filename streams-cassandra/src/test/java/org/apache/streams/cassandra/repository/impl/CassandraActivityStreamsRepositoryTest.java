@@ -1,5 +1,6 @@
 package org.apache.streams.cassandra.repository.impl;
 
+import com.google.common.collect.Lists;
 import org.apache.rave.model.ActivityStreamsEntry;
 import org.apache.rave.model.ActivityStreamsObject;
 import org.apache.rave.portal.model.impl.ActivityStreamsEntryImpl;
@@ -8,6 +9,7 @@ import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -29,10 +31,12 @@ public class CassandraActivityStreamsRepositoryTest {
         ActivityStreamsObject object = new ActivityStreamsObjectImpl();
 
         actor.setId("actorid1");
+        actor.setUrl("actorurl1");
         actor.setDisplayName("actorname1");
 
         target.setId("targetid1");
-        target.setDisplayName("targetname1");
+        target.setUrl("targeturl1");
+        target.setDisplayName("r501");
 
         object.setId("objectid1");
         object.setDisplayName("objectname1");
@@ -50,8 +54,10 @@ public class CassandraActivityStreamsRepositoryTest {
 
     @Test
     public void getActivity() {
-        String cql = "SELECT * FROM coltest WHERE published > '2010-10-10' LIMIT 1 ALLOW FILTERING";
-        List<ActivityStreamsEntry> results = repository.getActivitiesForQuery(cql);
+        String cql = "'r501'";
+        List<String> f = Arrays.asList(cql);
+        Date d = new Date(0);
+        //List<ActivityStreamsEntry> results = repository.getActivitiesForFilters(f,d);
     }
 
     @Test

@@ -2,8 +2,11 @@ package org.apache.streams.osgi.components.activitysubscriber.impl;
 
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriptionFilter;
 
+import java.util.List;
+
 public class ActivityStreamsSubscriptionCassandraFilterImpl implements ActivityStreamsSubscriptionFilter {
     private String query;
+    private List<String> filters;
 
     public ActivityStreamsSubscriptionCassandraFilterImpl(){}
 
