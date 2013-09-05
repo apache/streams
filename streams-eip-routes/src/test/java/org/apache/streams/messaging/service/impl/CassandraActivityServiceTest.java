@@ -3,6 +3,7 @@ package org.apache.streams.messaging.service.impl;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.easymock.EasyMock.*;
@@ -19,12 +20,14 @@ public class CassandraActivityServiceTest {
         cassandraActivityService = new CassandraActivityService();
     }
 
+    @Ignore
     @Test
     public void getActivititiesForQueryTest(){
         //List<String> activities = cassandraActivityService.getActivitiesForQuery("select * from Activities");
         //assert(activities != null);
     }
 
+    @Ignore
     @Test
     public void receiveExchangeTest(){
         Exchange e = createMock(Exchange.class);
