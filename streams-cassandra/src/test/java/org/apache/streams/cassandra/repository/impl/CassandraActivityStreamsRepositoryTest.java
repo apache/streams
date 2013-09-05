@@ -1,12 +1,11 @@
 package org.apache.streams.cassandra.repository.impl;
 
-import com.google.common.collect.Lists;
 import org.apache.rave.model.ActivityStreamsEntry;
 import org.apache.rave.model.ActivityStreamsObject;
 import org.apache.rave.portal.model.impl.ActivityStreamsEntryImpl;
 import org.apache.rave.portal.model.impl.ActivityStreamsObjectImpl;
-import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -23,6 +22,7 @@ public class CassandraActivityStreamsRepositoryTest {
         repository = new CassandraActivityStreamsRepository();
     }
 
+    @Ignore
     @Test
     public void saveActivity() {
         ActivityStreamsEntry entry = new ActivityStreamsEntryImpl();
@@ -49,19 +49,21 @@ public class CassandraActivityStreamsRepositoryTest {
         entry.setObject(object);
         entry.setTarget(target);
 
-        //repository.save(entry);
+        repository.save(entry);
     }
 
+    @Ignore
     @Test
     public void getActivity() {
         String cql = "'r501'";
         List<String> f = Arrays.asList(cql);
         Date d = new Date(0);
-        //List<ActivityStreamsEntry> results = repository.getActivitiesForFilters(f,d);
+        List<ActivityStreamsEntry> results = repository.getActivitiesForFilters(f,d);
     }
 
+    @Ignore
     @Test
     public void dropTableTest(){
-        //repository.dropTable("coltest");
+        repository.dropTable("coltest");
     }
 }

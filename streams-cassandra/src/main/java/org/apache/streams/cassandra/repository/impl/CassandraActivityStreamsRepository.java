@@ -1,7 +1,9 @@
 package org.apache.streams.cassandra.repository.impl;
 
-import com.datastax.driver.core.*;
-
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
+import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.AlreadyExistsException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -42,39 +44,61 @@ public class CassandraActivityStreamsRepository {
                     "id text, " +
                     "published timestamp, " +
                     "verb text, " +
+                    "tags text, " +
+
                     "actor_displayname text, " +
                     "actor_id text, " +
                     "actor_url text, " +
+                    "actor_objecttype text, " +
+
                     "target_displayname text, " +
                     "target_id text, " +
                     "target_url text, " +
+
+                    "object_url text, " +
                     "object_displayname text, " +
                     "object_id text, " +
-                    "PRIMARY KEY (id, target_displayname, published));");
+                    "object_objecttype text, " +
+
+                    "PRIMARY KEY (id, tags, published));");
         } catch (AlreadyExistsException ignored) {
         }
     }
 
     public void save(ActivityStreamsEntry entry) {
-        String sql = "INSERT INTO " + TABLE_NAME + " (id, published, verb, actor_displayname, actor_id, actor_url, target_displayname, target_id, target_url, object_displayname, object_id) VALUES ('" +
+        String sql = "INSERT INTO " + TABLE_NAME + " (" +
+                "id, published, verb, tags, " +
+                "actor_displayname, actor_objecttype, actor_id, actor_url, " +
+                "target_displayname, target_id, target_url, " +
+                "object_displayname, object_objecttype, object_id, object_url) " +
+                "VALUES ('" +
                 entry.getId() + "','" +
                 entry.getPublished().getTime() + "','" +
                 entry.getVerb() + "','" +
+                entry.getTags() + "','" +
+
                 entry.getActor().getDisplayName() + "','" +
+                entry.getActor().getObjectType() + "','" +
                 entry.getActor().getId() + "','" +
                 entry.getActor().getUrl() + "','" +
+
                 entry.getTarget().getDisplayName() + "','" +
                 entry.getTarget().getId() + "','" +
                 entry.getTarget().getUrl() + "','" +
+
                 entry.getObject().getDisplayName() + "','" +
-                entry.getObject().getId() + "')";
+                entry.getObject().getObjectType() + "','" +
+                entry.getObject().getId() + "','" +
+                entry.getObject().getUrl() +
+
+                "')";
         session.execute(sql);
     }
 
     public List<ActivityStreamsEntry> getActivitiesForFilters(List<String> filters, Date lastUpdated) {
         String cql = "SELECT * FROM " + TABLE_NAME + " WHERE ";
         if(!filters.isEmpty()){
-            cql = cql + " target_displayname IN ('"+ StringUtils.join(filters, "','")+"') AND ";
+            cql = cql + " tags IN ('"+ StringUtils.join(filters, "','")+"') AND ";
         }
         cql = cql + "published > " + lastUpdated.getTime() + "LIMIT 10 ALLOW FILTERING";
 
@@ -91,6 +115,7 @@ public class CassandraActivityStreamsRepository {
 
             actor.setDisplayName(row.getString("actor_displayname"));
             actor.setId(row.getString("actor_id"));
+            actor.setObjectType(row.getString("actor_objecttype"));
             actor.setUrl(row.getString("actor_url"));
 
             target.setDisplayName(row.getString("target_displayname"));
@@ -98,11 +123,14 @@ public class CassandraActivityStreamsRepository {
             target.setUrl(row.getString("target_url"));
 
             object.setDisplayName(row.getString("object_displayname"));
-            object.setUrl(row.getString("object_id"));
+            object.setObjectType(row.getString("object_objecttype"));
+            object.setUrl(row.getString("object_url"));
+            object.setId(row.getString("object_id"));
 
             entry.setPublished(row.getDate("published"));
             entry.setVerb(row.getString("verb"));
             entry.setId(row.getString("id"));
+            entry.setTags(row.getString("tags"));
             entry.setActor(actor);
             entry.setTarget(target);
             entry.setObject(object);

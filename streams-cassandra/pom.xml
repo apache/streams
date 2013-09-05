@@ -65,7 +65,8 @@
                         org.apache.rave.model,org.apache.rave.portal.model.impl,
                         com.datastax.driver.core, com.datastax.driver.core.exceptions, org.codehaus.jackson.map.annotate,
                         javax.persistence, org.apache.commons.logging, com.google.common.collect, org.codehaus.jackson.map,
-                        org.apache.commons.lang
+                        org.apache.commons.lang,
+                        org.apache.streams.osgi.components.activitysubscriber
                     </Import-Package>
                 </instructions>
             </configuration>
@@ -102,6 +103,11 @@
             <groupId>org.jboss.netty</groupId>
             <artifactId>netty</artifactId>
             <version>3.2.9.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams.osgi.components</groupId>
+            <artifactId>activity-subscriber</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>
