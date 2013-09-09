@@ -55,6 +55,8 @@ public class CassandraActivityStreamsRepository {
                     "target_id text, " +
                     "target_url text, " +
 
+                    "provider_url text, " +
+
                     "object_url text, " +
                     "object_displayname text, " +
                     "object_id text, " +
@@ -70,6 +72,7 @@ public class CassandraActivityStreamsRepository {
                 "id, published, verb, tags, " +
                 "actor_displayname, actor_objecttype, actor_id, actor_url, " +
                 "target_displayname, target_id, target_url, " +
+                "provider_url, " +
                 "object_displayname, object_objecttype, object_id, object_url) " +
                 "VALUES ('" +
                 entry.getId() + "','" +
@@ -86,6 +89,8 @@ public class CassandraActivityStreamsRepository {
                 entry.getTarget().getId() + "','" +
                 entry.getTarget().getUrl() + "','" +
 
+                entry.getProvider().getUrl() + "','" +
+
                 entry.getObject().getDisplayName() + "','" +
                 entry.getObject().getObjectType() + "','" +
                 entry.getObject().getId() + "','" +
@@ -97,9 +102,15 @@ public class CassandraActivityStreamsRepository {
 
     public List<ActivityStreamsEntry> getActivitiesForFilters(List<String> filters, Date lastUpdated) {
         String cql = "SELECT * FROM " + TABLE_NAME + " WHERE ";
-        if(!filters.isEmpty()){
-            cql = cql + " tags IN ('"+ StringUtils.join(filters, "','")+"') AND ";
+        if(filters.isEmpty()){
+            LOG.info("There were no filters specified");
+            return new ArrayList<ActivityStreamsEntry>();
         }
+
+        //add filters
+        cql = cql + " tags IN ('"+ StringUtils.join(filters, "','")+"') AND ";
+
+        //specify last modified
         cql = cql + "published > " + lastUpdated.getTime() + "LIMIT 10 ALLOW FILTERING";
 
         //execute the cql query and store the results
@@ -112,6 +123,7 @@ public class CassandraActivityStreamsRepository {
             ActivityStreamsObject actor = new ActivityStreamsObjectImpl();
             ActivityStreamsObject target = new ActivityStreamsObjectImpl();
             ActivityStreamsObject object = new ActivityStreamsObjectImpl();
+            ActivityStreamsObject provider = new ActivityStreamsObjectImpl();
 
             actor.setDisplayName(row.getString("actor_displayname"));
             actor.setId(row.getString("actor_id"));
@@ -127,6 +139,8 @@ public class CassandraActivityStreamsRepository {
             object.setUrl(row.getString("object_url"));
             object.setId(row.getString("object_id"));
 
+            provider.setUrl(row.getString("provider_url"));
+
             entry.setPublished(row.getDate("published"));
             entry.setVerb(row.getString("verb"));
             entry.setId(row.getString("id"));
@@ -134,6 +148,7 @@ public class CassandraActivityStreamsRepository {
             entry.setActor(actor);
             entry.setTarget(target);
             entry.setObject(object);
+            entry.setProvider(provider);
 
             results.add(entry);
         }
