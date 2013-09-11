@@ -14,4 +14,7 @@ public class CassandraActivityStreamsEntry extends ActivityStreamsEntryImpl{
 
     @JsonDeserialize(as=ActivityStreamsObjectImpl.class)
     private ActivityStreamsObject actor;
+
+    @JsonDeserialize(as=ActivityStreamsObjectImpl.class)
+    private ActivityStreamsObject provider;
 }
