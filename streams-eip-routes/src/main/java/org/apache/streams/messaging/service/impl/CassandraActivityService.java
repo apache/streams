@@ -12,6 +12,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -55,11 +56,13 @@ public class CassandraActivityService implements ActivityService {
 
     @Override
     public List<String> getActivitiesForFilters(List<String> filters, Date lastUpdated) {
-        List<ActivityStreamsEntry> activityObjects = cassandraActivityStreamsRepository.getActivitiesForFilters(filters, lastUpdated);
-        return getJsonList(activityObjects);
+        List<CassandraActivityStreamsEntry> activityObjects = cassandraActivityStreamsRepository.getActivitiesForFilters(filters, lastUpdated);
+        Collections.sort(activityObjects);
+        //TODO: make the number of streams returned configurable
+        return getJsonList(activityObjects.subList(0,Math.min(activityObjects.size(),10)));
     }
 
-    private List<String> getJsonList(List<ActivityStreamsEntry> activities) {
+    private List<String> getJsonList(List<CassandraActivityStreamsEntry> activities) {
         List<String> jsonList = new ArrayList<String>();
         for (ActivityStreamsEntry entry : activities) {
             try {

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ActivityService {
 
-    public void receiveExchange(Exchange exchange);
+    void receiveExchange(Exchange exchange);
 
-    public List<String> getActivitiesForFilters(List<String> filters, Date lastUpdated);
+    List<String> getActivitiesForFilters(List<String> filters, Date lastUpdated);
 }

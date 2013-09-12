@@ -12,6 +12,7 @@ import org.apache.rave.model.ActivityStreamsEntry;
 import org.apache.rave.model.ActivityStreamsObject;
 import org.apache.rave.portal.model.impl.ActivityStreamsEntryImpl;
 import org.apache.rave.portal.model.impl.ActivityStreamsObjectImpl;
+import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -100,26 +101,26 @@ public class CassandraActivityStreamsRepository {
         session.execute(sql);
     }
 
-    public List<ActivityStreamsEntry> getActivitiesForFilters(List<String> filters, Date lastUpdated) {
+    public List<CassandraActivityStreamsEntry> getActivitiesForFilters(List<String> filters, Date lastUpdated) {
         String cql = "SELECT * FROM " + TABLE_NAME + " WHERE ";
         if(filters.isEmpty()){
             LOG.info("There were no filters specified");
-            return new ArrayList<ActivityStreamsEntry>();
+            return new ArrayList<CassandraActivityStreamsEntry>();
         }
 
         //add filters
         cql = cql + " tags IN ('"+ StringUtils.join(filters, "','")+"') AND ";
 
         //specify last modified
-        cql = cql + "published > " + lastUpdated.getTime() + "LIMIT 10 ALLOW FILTERING";
+        cql = cql + "published > " + lastUpdated.getTime() + " ALLOW FILTERING";
 
         //execute the cql query and store the results
         ResultSet set = session.execute(cql);
 
         //iterate through the results and create a new ActivityStreamsEntry for every result returned
-        List<ActivityStreamsEntry> results = new ArrayList<ActivityStreamsEntry>();
+        List<CassandraActivityStreamsEntry> results = new ArrayList<CassandraActivityStreamsEntry>();
         for (Row row : set) {
-            ActivityStreamsEntry entry = new ActivityStreamsEntryImpl();
+            CassandraActivityStreamsEntry entry = new CassandraActivityStreamsEntry();
             ActivityStreamsObject actor = new ActivityStreamsObjectImpl();
             ActivityStreamsObject target = new ActivityStreamsObjectImpl();
             ActivityStreamsObject object = new ActivityStreamsObjectImpl();

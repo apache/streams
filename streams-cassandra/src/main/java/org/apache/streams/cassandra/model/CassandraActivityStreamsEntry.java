@@ -5,7 +5,10 @@ import org.apache.rave.portal.model.impl.ActivityStreamsEntryImpl;
 import org.apache.rave.portal.model.impl.ActivityStreamsObjectImpl;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
-public class CassandraActivityStreamsEntry extends ActivityStreamsEntryImpl{
+import java.util.Date;
+
+public class CassandraActivityStreamsEntry extends ActivityStreamsEntryImpl implements Comparable<CassandraActivityStreamsEntry>{
+
     @JsonDeserialize(as=ActivityStreamsObjectImpl.class)
     private ActivityStreamsObject object;
 
@@ -17,4 +20,8 @@ public class CassandraActivityStreamsEntry extends ActivityStreamsEntryImpl{
 
     @JsonDeserialize(as=ActivityStreamsObjectImpl.class)
     private ActivityStreamsObject provider;
+
+    public int compareTo(CassandraActivityStreamsEntry entry){
+        return (this.getPublished()).compareTo(entry.getPublished());
+    }
 }

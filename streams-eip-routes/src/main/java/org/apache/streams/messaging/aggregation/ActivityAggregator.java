@@ -32,7 +32,7 @@ public class ActivityAggregator {
     }
 
     public void updateSubscriber(ActivityStreamsSubscriber subscriber){
-        Set<String> activities = new HashSet<String>();
+        Set<String> activities = new TreeSet<String>();
         activities.addAll(activityService.getActivitiesForFilters(subscriber.getActivityStreamsSubscriberConfiguration().getFilters(), subscriber.getLastUpdated()));
         //TODO: an activity posted in between the cql query and setting the lastUpdated field will be lost
         subscriber.setLastUpdated(new Date());
