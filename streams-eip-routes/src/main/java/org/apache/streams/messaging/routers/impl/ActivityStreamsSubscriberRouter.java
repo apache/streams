@@ -6,6 +6,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.streams.messaging.aggregation.ActivityAggregator;
 import org.apache.streams.messaging.configuration.EipConfigurator;
 import org.apache.streams.messaging.routers.ActivityStreamsSubscriberRouteBuilder;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriber;
@@ -23,6 +24,9 @@ public class ActivityStreamsSubscriberRouter extends RouteBuilder implements Act
     private EipConfigurator configuration;
 
     protected CamelContext camelContext;
+
+    @Autowired
+    private ActivityAggregator activityAggregator;
 
     private ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse;
 
@@ -58,6 +62,7 @@ public class ActivityStreamsSubscriberRouter extends RouteBuilder implements Act
                 //setup a message queue for this consumer.getInRoute()
                 camelContext.addRoutes(new DynamicSubscriberRouteBuilder(configuration,camelContext, configuration.getSubscriberEndpointProtocol() + activityStreamsSubscriber.getInRoute(), activityStreamsSubscriber));
 
+                activityAggregator.updateSubscriber(activityStreamsSubscriber);
                 activityStreamsSubscriberWarehouse.register(activityStreamsSubscriber);
             }catch (Exception e){
                 exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE,500);

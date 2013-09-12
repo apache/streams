@@ -27,11 +27,15 @@ public class ActivityAggregator {
     @Scheduled(fixedRate=30000)
     public void distributeToSubscribers() {
         for (ActivityStreamsSubscriber subscriber : activityStreamsSubscriberWarehouse.getAllSubscribers()) {
-            Set<String> activities = new HashSet<String>();
-            activities.addAll(activityService.getActivitiesForFilters(subscriber.getActivityStreamsSubscriberConfiguration().getFilters(), subscriber.getLastUpdated()));
-            //TODO: an activity posted in between the cql query and setting the lastUpdated field will be lost
-            subscriber.setLastUpdated(new Date());
-            subscriber.receive(new ArrayList<String>(activities));
+              updateSubscriber(subscriber);
         }
+    }
+
+    public void updateSubscriber(ActivityStreamsSubscriber subscriber){
+        Set<String> activities = new HashSet<String>();
+        activities.addAll(activityService.getActivitiesForFilters(subscriber.getActivityStreamsSubscriberConfiguration().getFilters(), subscriber.getLastUpdated()));
+        //TODO: an activity posted in between the cql query and setting the lastUpdated field will be lost
+        subscriber.setLastUpdated(new Date());
+        subscriber.receive(new ArrayList<String>(activities));
     }
 }
