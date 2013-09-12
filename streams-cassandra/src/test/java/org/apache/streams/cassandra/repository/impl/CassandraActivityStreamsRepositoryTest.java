@@ -1,9 +1,11 @@
 package org.apache.streams.cassandra.repository.impl;
 
+import com.datastax.driver.core.ResultSet;
 import org.apache.rave.model.ActivityStreamsEntry;
 import org.apache.rave.model.ActivityStreamsObject;
 import org.apache.rave.portal.model.impl.ActivityStreamsEntryImpl;
 import org.apache.rave.portal.model.impl.ActivityStreamsObjectImpl;
+import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,6 +31,7 @@ public class CassandraActivityStreamsRepositoryTest {
         ActivityStreamsObject actor = new ActivityStreamsObjectImpl();
         ActivityStreamsObject target = new ActivityStreamsObjectImpl();
         ActivityStreamsObject object = new ActivityStreamsObjectImpl();
+        ActivityStreamsObject provider = new ActivityStreamsObjectImpl();
 
         actor.setId("actorid1");
         actor.setUrl("actorurl1");
@@ -38,11 +41,15 @@ public class CassandraActivityStreamsRepositoryTest {
         target.setUrl("targeturl1");
         target.setDisplayName("r501");
 
+        provider.setUrl("providerurl");
+
         object.setId("objectid1");
         object.setDisplayName("objectname1");
 
         entry.setId("one");
         entry.setVerb("verb1");
+        entry.setTags("r501");
+        entry.setProvider(provider);
         Date d = new Date();
         entry.setPublished(d);
         entry.setActor(actor);
@@ -55,10 +62,10 @@ public class CassandraActivityStreamsRepositoryTest {
     @Ignore
     @Test
     public void getActivity() {
-        String cql = "'r501'";
+        String cql = "r501";
         List<String> f = Arrays.asList(cql);
         Date d = new Date(0);
-        List<ActivityStreamsEntry> results = repository.getActivitiesForFilters(f,d);
+        List<CassandraActivityStreamsEntry> results = repository.getActivitiesForFilters(f,d);
     }
 
     @Ignore
