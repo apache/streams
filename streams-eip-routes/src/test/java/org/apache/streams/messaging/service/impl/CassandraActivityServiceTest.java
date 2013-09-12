@@ -9,6 +9,8 @@ import org.junit.Test;
 import static org.easymock.EasyMock.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class CassandraActivityServiceTest {
@@ -22,9 +24,8 @@ public class CassandraActivityServiceTest {
 
     @Ignore
     @Test
-    public void getActivititiesForQueryTest(){
-        //List<String> activities = cassandraActivityService.getActivitiesForQuery("select * from Activities");
-        //assert(activities != null);
+    public void getActivititiesForFilterTest(){
+        List<String> activities = cassandraActivityService.getActivitiesForFilters(Arrays.asList("r501"), new Date(0));
     }
 
     @Ignore
@@ -61,7 +62,7 @@ public class CassandraActivityServiceTest {
 
         replay(e, e2, m);
 
-        //cassandraActivityService.receiveExchange(e);
+        cassandraActivityService.receiveExchange(e);
         //List<String> myTest = cassandraActivityService.getActivitiesForQuery("select * from coltest");
     }
 }

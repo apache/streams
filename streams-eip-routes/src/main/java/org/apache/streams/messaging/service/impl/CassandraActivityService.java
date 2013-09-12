@@ -57,7 +57,7 @@ public class CassandraActivityService implements ActivityService {
     @Override
     public List<String> getActivitiesForFilters(List<String> filters, Date lastUpdated) {
         List<CassandraActivityStreamsEntry> activityObjects = cassandraActivityStreamsRepository.getActivitiesForFilters(filters, lastUpdated);
-        Collections.sort(activityObjects);
+        Collections.sort(activityObjects, Collections.reverseOrder());
         //TODO: make the number of streams returned configurable
         return getJsonList(activityObjects.subList(0,Math.min(activityObjects.size(),10)));
     }
