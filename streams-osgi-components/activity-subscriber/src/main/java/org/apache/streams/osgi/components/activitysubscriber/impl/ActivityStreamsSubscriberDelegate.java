@@ -22,7 +22,7 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
     private String inRoute;
 
     //an individual subscriber gets ONE stream which is an aggregation of all its SRCs
-    private ArrayList<String> stream;
+    private List<String> stream;
 
     private Date lastUpdated;
 
@@ -77,8 +77,7 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
     public void receive (List<String> activity){
         //add new activities to stream
         LOG.info("adding activities to subscription stream");
-        stream.addAll(activity);
-
+        stream.addAll(0,activity);
     }
 
     //return the list of activities (stream) as a json string

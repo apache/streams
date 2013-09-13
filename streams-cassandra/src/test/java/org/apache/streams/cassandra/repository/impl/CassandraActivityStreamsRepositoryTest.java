@@ -46,7 +46,7 @@ public class CassandraActivityStreamsRepositoryTest {
         object.setId("objectid1");
         object.setDisplayName("objectname1");
 
-        entry.setId("one");
+        entry.setId("nowthisisfirst");
         entry.setVerb("verb1");
         entry.setTags("r501");
         entry.setProvider(provider);
