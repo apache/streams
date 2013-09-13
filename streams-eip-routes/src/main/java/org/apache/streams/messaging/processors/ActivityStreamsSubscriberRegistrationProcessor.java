@@ -16,6 +16,7 @@ public class ActivityStreamsSubscriberRegistrationProcessor implements Processor
     private static SubscriptionService subscriptionService = new CassandraSubscriptionService();
 
     public void process(Exchange exchange){
+        LOG.info("processing the subscriber...");
         //add the necessary headers to the message so that the activity registration component
         //can do a lookup to either make a new processor and endpoint, or pass the message to the right one
         String httpMethod = exchange.getIn().getHeader("CamelHttpMethod").toString();
@@ -32,6 +33,7 @@ public class ActivityStreamsSubscriberRegistrationProcessor implements Processor
 
             String body = exchange.getIn().getBody(String.class);
 
+            LOG.info("receiving the subscriber: "+body);
             //OAuth token? What does subscriber post to init a subscription URL?
             //maybe its a list of URLs to subscribe to subscriptions=1,2,3,4&auth_token=XXXX
 
