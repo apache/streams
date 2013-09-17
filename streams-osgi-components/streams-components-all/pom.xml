@@ -55,6 +55,12 @@
             <artifactId>streams-eip-routes</artifactId>
           <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-cassandra</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
   <packaging>jar</packaging>

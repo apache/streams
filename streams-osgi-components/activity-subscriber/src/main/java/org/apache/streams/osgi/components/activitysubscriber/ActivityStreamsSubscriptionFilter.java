@@ -9,6 +9,8 @@ public interface ActivityStreamsSubscriptionFilter {
 
     public void setQuery(String query);
 
+    public String getQuery();
+
     public boolean evaluate(String activity);
 
 }

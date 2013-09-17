@@ -1,33 +1,41 @@
 package org.apache.streams.messaging.aggregation;
 
 
-import org.apache.camel.Exchange;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.streams.messaging.service.impl.CassandraActivityService;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriber;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
+import org.springframework.scheduling.annotation.Scheduled;
 
-import java.util.List;
+import java.util.*;
 
 public class ActivityAggregator {
 
     private ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse;
+    private CassandraActivityService activityService;
+    private static final transient Log LOG = LogFactory.getLog(ActivityAggregator.class);
 
     public void setActivityStreamsSubscriberWarehouse(ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse) {
         this.activityStreamsSubscriberWarehouse = activityStreamsSubscriberWarehouse;
     }
 
-    public void distributeToSubscribers(Exchange exchange) {
+    public void setActivityService(CassandraActivityService activityService) {
+        this.activityService = activityService;
+    }
 
-        //iterate over the aggregated messages and send to subscribers in warehouse...they will evaluate and determine if they keep it
-        List<Exchange> grouped = exchange.getProperty(Exchange.GROUPED_EXCHANGE, List.class);
-
-        for (Exchange e : grouped){
-            //get activity off of exchange
-           String activity= e.getIn().getBody(String.class);
-
-            for(ActivityStreamsSubscriber subscriber:activityStreamsSubscriberWarehouse.getAllSubscribers()){
-                subscriber.receive(activity);
-            }
+    @Scheduled(fixedRate=30000)
+    public void distributeToSubscribers() {
+        for (ActivityStreamsSubscriber subscriber : activityStreamsSubscriberWarehouse.getAllSubscribers()) {
+              updateSubscriber(subscriber);
         }
+    }
+
+    public void updateSubscriber(ActivityStreamsSubscriber subscriber){
+        Set<String> activities = new TreeSet<String>();
+        activities.addAll(activityService.getActivitiesForFilters(subscriber.getActivityStreamsSubscriberConfiguration().getFilters(), subscriber.getLastUpdated()));
+        //TODO: an activity posted in between the cql query and setting the lastUpdated field will be lost
+        subscriber.setLastUpdated(new Date());
+        subscriber.receive(new ArrayList<String>(activities));
     }
 }

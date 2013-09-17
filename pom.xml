@@ -17,56 +17,60 @@
   specific language governing permissions and limitations
   under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
+    <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-master</artifactId>
         <version>0.2-incubating-SNAPSHOT</version>
-   </parent>
+    </parent>
 
-  <groupId>org.apache.streams</groupId>
-  <artifactId>streams-project</artifactId>
-  <version>0.1-SNAPSHOT</version>
+    <groupId>org.apache.streams</groupId>
+    <artifactId>streams-project</artifactId>
+    <version>0.1-SNAPSHOT</version>
 
-  <name>Apache Streams Project</name>
+    <name>Apache Streams Project</name>
 
-  <description>Apache Streams Project</description>
+    <description>Apache Streams Project</description>
 
-  <properties>
-    <org.osgi.service.http.port>8080</org.osgi.service.http.port>
-    <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
-  </properties>
+    <properties>
+        <org.osgi.service.http.port>8080</org.osgi.service.http.port>
+        <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
+        <rave.version>0.22</rave.version>
+        <datastax.version>1.0.2</datastax.version>
+    </properties>
 
-  <packaging>pom</packaging>
+    <packaging>pom</packaging>
 
-  <modules>
-    <module>poms</module>
-    <module>provision</module>
-    <module>streams-osgi-components</module>
-    <module>streams-eip-routes</module>
-    <module>streams-web</module>
-  </modules>
+    <modules>
+        <module>poms</module>
+        <module>provision</module>
+        <module>streams-osgi-components</module>
+        <module>streams-eip-routes</module>
+        <module>streams-cassandra</module>
+        <module>streams-web</module>
+    </modules>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.ops4j</groupId>
-        <artifactId>maven-pax-plugin</artifactId>
-        <version>1.5</version>
-          <extensions>true</extensions>
-          <configuration>
-            <compilerVersion>1.5</compilerVersion>
-            <provision>
-              <param>--platform=felix</param>
-            </provision>
-        </configuration>
-       <executions>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.ops4j</groupId>
+                <artifactId>maven-pax-plugin</artifactId>
+                <version>1.5</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <compilerVersion>1.5</compilerVersion>
+                    <provision>
+                        <param>--platform=felix</param>
+                    </provision>
+                </configuration>
+                <executions>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

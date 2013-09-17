@@ -48,7 +48,7 @@
                 <correlationExpression>
                     <constant>true</constant>
                 </correlationExpression>
-                <bean ref="activityWarehouseDistributor" method="distributeToSubscribers"/>
+                <bean ref="activityService" method="receiveExchange"/>
             </aggregate>
         </route>
 

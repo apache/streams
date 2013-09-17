@@ -4,16 +4,19 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.streams.messaging.service.SubscriptionService;
+import org.apache.streams.messaging.service.impl.CassandraSubscriptionService;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscription;
-import org.apache.streams.osgi.components.activitysubscriber.impl.ActivityStreamsSubscriptionImpl;
-import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
 
 public class ActivityStreamsSubscriberRegistrationProcessor implements Processor{
     private static final transient Log LOG = LogFactory.getLog(ActivityStreamsSubscriberRegistrationProcessor.class);
+    private static SubscriptionService subscriptionService = new CassandraSubscriptionService();
+
     public void process(Exchange exchange){
+        LOG.info("processing the subscriber...");
         //add the necessary headers to the message so that the activity registration component
         //can do a lookup to either make a new processor and endpoint, or pass the message to the right one
         String httpMethod = exchange.getIn().getHeader("CamelHttpMethod").toString();
@@ -30,6 +33,7 @@ public class ActivityStreamsSubscriberRegistrationProcessor implements Processor
 
             String body = exchange.getIn().getBody(String.class);
 
+            LOG.info("receiving the subscriber: "+body);
             //OAuth token? What does subscriber post to init a subscription URL?
             //maybe its a list of URLs to subscribe to subscriptions=1,2,3,4&auth_token=XXXX
 
@@ -40,6 +44,11 @@ public class ActivityStreamsSubscriberRegistrationProcessor implements Processor
 
                 // read from file, convert it to user class
                 ActivityStreamsSubscription configuration = mapper.readValue(body, ActivityStreamsSubscription.class);
+                if(configuration.getFilters() == null){
+                    configuration.setFilters(subscriptionService.getFilters(configuration.getAuthToken()));
+                }else{
+                    subscriptionService.saveFilters(configuration);
+                }
                 exchange.getOut().setBody(configuration);
 
             } catch (Exception e) {

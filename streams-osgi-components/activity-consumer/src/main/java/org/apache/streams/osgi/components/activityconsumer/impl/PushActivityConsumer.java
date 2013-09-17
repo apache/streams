@@ -2,13 +2,13 @@ package org.apache.streams.osgi.components.activityconsumer.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
 import org.apache.streams.osgi.components.activityconsumer.ActivityConsumer;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
 
-import javax.tools.JavaFileManager;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -19,7 +19,6 @@ public class PushActivityConsumer implements ActivityConsumer {
     private URI src;
 
 
-
     private String authToken;
 
     private boolean authenticated;
@@ -27,7 +26,6 @@ public class PushActivityConsumer implements ActivityConsumer {
     private String inRoute;
 
     public PushActivityConsumer(){
-
     }
 
 
@@ -68,10 +66,10 @@ public class PushActivityConsumer implements ActivityConsumer {
 
     }
 
-    public List<String> split(String activities){
+    public List<String> split(String activities) {
         LOG.info("I am going to split this message: " + activities);
 
-        ArrayList<String> activitiesList = new ArrayList<String>();
+        List<String> activitiesList = new ArrayList<String>();
         activitiesList.add(activities);
         return activitiesList;
     }
@@ -87,5 +85,4 @@ public class PushActivityConsumer implements ActivityConsumer {
     public void setInRoute(String inRoute) {
         this.inRoute = inRoute;
     }
-
 }

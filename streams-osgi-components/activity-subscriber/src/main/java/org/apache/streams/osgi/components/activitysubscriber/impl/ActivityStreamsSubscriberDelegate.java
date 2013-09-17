@@ -8,6 +8,8 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscriber {
 
@@ -20,12 +22,15 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
     private String inRoute;
 
     //an individual subscriber gets ONE stream which is an aggregation of all its SRCs
-    private ArrayList<String> stream;
+    private List<String> stream;
+
+    private Date lastUpdated;
 
 
     public ActivityStreamsSubscriberDelegate(ActivityStreamsSubscription configuration){
         setActivityStreamsSubscriberConfiguration(configuration);
         stream = new ArrayList<String>();
+        lastUpdated = new Date(0);
     }
 
 
@@ -69,12 +74,10 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
         this.inRoute = inRoute;
     }
 
-    public void receive (String activity){
-        //receive activities...do anything that is necessary
-        LOG.info("got a message i subscribed to: " + activity);
-        //guarenteed unique?
-        stream.add(activity);
-
+    public void receive (List<String> activity){
+        //add new activities to stream
+        LOG.info("adding activities to subscription stream");
+        stream.addAll(0,activity);
     }
 
     //return the list of activities (stream) as a json string
@@ -83,7 +86,13 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
         return stream.toString();
     }
 
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
 
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
 
     public void init(){
         //any initialization... gets called directly after registration

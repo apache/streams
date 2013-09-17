@@ -48,13 +48,18 @@
          <groupId>org.apache.streams</groupId>
          <artifactId>streams-eip-routes</artifactId>
          <version>${project.version}</version>
-         <type>bundle</type>
      </dependency>
 
       <dependency>
           <groupId>org.apache.streams.osgi.components</groupId>
           <artifactId>streams-components-all</artifactId>
         <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.apache.streams</groupId>
+          <artifactId>streams-cassandra</artifactId>
+          <version>${project.version}</version>
       </dependency>
 
       <dependency>
@@ -137,6 +142,18 @@
           <version>${spring.version}</version>
       </dependency>
 
+      <!--rave-->
+      <dependency>
+          <groupId>org.apache.rave</groupId>
+          <artifactId>rave-core-api</artifactId>
+          <version>${rave.version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.apache.rave</groupId>
+          <artifactId>rave-core</artifactId>
+          <version>${rave.version}</version>
+      </dependency>
 
   </dependencies>
   <build>
