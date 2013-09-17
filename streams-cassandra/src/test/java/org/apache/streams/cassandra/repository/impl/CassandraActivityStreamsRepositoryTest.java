@@ -46,7 +46,7 @@ public class CassandraActivityStreamsRepositoryTest {
         object.setId("objectid1");
         object.setDisplayName("objectname1");
 
-        entry.setId("nowthisisfirst");
+        entry.setId("dink");
         entry.setVerb("verb1");
         entry.setTags("r501");
         entry.setProvider(provider);
@@ -62,8 +62,9 @@ public class CassandraActivityStreamsRepositoryTest {
     @Ignore
     @Test
     public void getActivity() {
-        String cql = "r501";
-        List<String> f = Arrays.asList(cql);
+        String cql = "tags";
+        String other = "r501";
+        List<String> f = Arrays.asList(cql, other);
         Date d = new Date(0);
         List<CassandraActivityStreamsEntry> results = repository.getActivitiesForFilters(f,d);
     }
