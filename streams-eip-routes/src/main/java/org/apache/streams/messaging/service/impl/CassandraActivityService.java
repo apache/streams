@@ -9,6 +9,7 @@ import org.apache.streams.cassandra.repository.impl.CassandraActivityStreamsRepo
 import org.apache.streams.messaging.service.ActivityService;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,9 +24,10 @@ public class CassandraActivityService implements ActivityService {
     private CassandraActivityStreamsRepository cassandraActivityStreamsRepository;
     private ObjectMapper mapper;
 
-    public CassandraActivityService() {
-        this.cassandraActivityStreamsRepository = new CassandraActivityStreamsRepository();
-        this.mapper = new ObjectMapper();
+    @Autowired
+    public CassandraActivityService(CassandraActivityStreamsRepository cassandraActivityStreamsRepository, ObjectMapper mapper) {
+        this.cassandraActivityStreamsRepository = cassandraActivityStreamsRepository;
+        this.mapper = mapper;
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 

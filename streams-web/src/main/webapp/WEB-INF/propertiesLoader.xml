@@ -26,10 +26,12 @@
 
 
 
-    <context:component-scan base-package="org.apache.streams.messaging" annotation-config="true"/>
+    <context:property-placeholder
+            location="WEB-INF/streams.properties,
+            WEB-INF/cassandra.properties"
+            ignore-unresolvable="true"/>
 
-    <context:property-placeholder location="/WEB-INF/streams.properties"/>
     <bean id="configuration" class="org.apache.streams.messaging.configuration.EipConfigurator" />
-
+    <bean id="cassandraConfig" class="org.apache.streams.cassandra.configuration.CassandraConfiguration" />
 
 </beans>

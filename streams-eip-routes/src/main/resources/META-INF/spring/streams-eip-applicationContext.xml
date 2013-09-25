@@ -31,16 +31,55 @@
         <property name="camelContext" ref="context"/>
     </bean>
 
-    <bean id="activityRegistrationProcessor" class="org.apache.streams.messaging.processors.ActivityPublisherRegistrationProcessor"/>
+    <bean id="activityRegistrationProcessor"
+          class="org.apache.streams.messaging.processors.ActivityPublisherRegistrationProcessor"/>
 
 
-    <bean id="activityStreamsSubscriberRouter" class="org.apache.streams.messaging.routers.impl.ActivityStreamsSubscriberRouter">
+    <bean id="activityStreamsSubscriberRouter"
+          class="org.apache.streams.messaging.routers.impl.ActivityStreamsSubscriberRouter">
         <property name="activityStreamsSubscriberWarehouse" ref="activityStreamsSubscriberWarehouse"/>
         <property name="camelContext" ref="context"/>
     </bean>
-    <bean id="subscriberRegistrationProcessor" class="org.apache.streams.messaging.processors.ActivityStreamsSubscriberRegistrationProcessor"/>
 
-    <bean id="activityService" class="org.apache.streams.messaging.service.impl.CassandraActivityService"></bean>
+    <bean id="subscriberRegistrationProcessor"
+          class="org.apache.streams.messaging.processors.ActivityStreamsSubscriberRegistrationProcessor">
+        <constructor-arg ref="subscriptionService"/>
+    </bean>
+
+    <bean id="cassandraKeyspace" class="org.apache.streams.cassandra.repository.impl.CassandraKeyspace">
+        <constructor-arg ref="cassandraConfig"/>
+    </bean>
+
+    <bean id="cassandraActivityStreamsRepository"
+          class="org.apache.streams.cassandra.repository.impl.CassandraActivityStreamsRepository">
+        <constructor-arg ref="cassandraKeyspace"/>
+        <constructor-arg ref="cassandraConfig"/>
+    </bean>
+
+    <bean id="cassandraSubscriptionRepository"
+          class="org.apache.streams.cassandra.repository.impl.CassandraSubscriptionRepository">
+        <constructor-arg ref="cassandraKeyspace"/>
+        <constructor-arg ref="cassandraConfig"/>
+    </bean>
+
+    <bean id="objectMapper" class="org.codehaus.jackson.map.ObjectMapper"/>
+
+    <bean id="subscriptionService" class="org.apache.streams.messaging.service.impl.CassandraSubscriptionService">
+        <constructor-arg ref="cassandraSubscriptionRepository"/>
+    </bean>
+
+    <bean id="activityService" class="org.apache.streams.messaging.service.impl.CassandraActivityService">
+        <constructor-arg ref="cassandraActivityStreamsRepository"/>
+        <constructor-arg ref="objectMapper"/>
+    </bean>
+
+    <!--<bean id="stromActivityAggregator" class="org.apache.streams.messaging.storm.StormActivityAggregator">-->
+        <!--<constructor-arg ref="bolt"/>-->
+        <!--<constructor-arg ref="spout"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="bolt" class="org.apache.streams.messaging.storm.StormSubscriberBolt"/>-->
+    <!--<bean id="spout" class="org.apache.streams.messaging.storm.StormSubscriberSpout"/>-->
 
     <bean id="activityAggregator" class="org.apache.streams.messaging.aggregation.ActivityAggregator">
         <property name="activityService" ref="activityService"/>
@@ -51,13 +90,13 @@
 
     <bean id="jmsConnectionFactory"
           class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="${activemq.jmsConnectionFactoryUrl}" />
+        <property name="brokerURL" value="${activemq.jmsConnectionFactoryUrl}"/>
     </bean>
 
     <bean id="pooledConnectionFactory"
           class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
-        <property name="maxConnections" value="8" />
-        <property name="connectionFactory" ref="jmsConnectionFactory" />
+        <property name="maxConnections" value="8"/>
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
     </bean>
 
     <bean id="jmsConfig"
@@ -70,9 +109,6 @@
           class="org.apache.activemq.camel.component.ActiveMQComponent">
         <property name="configuration" ref="jmsConfig"/>
     </bean>
-
-
-
 
 
 </beans>

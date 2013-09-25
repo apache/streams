@@ -12,7 +12,9 @@ import org.apache.rave.model.ActivityStreamsEntry;
 import org.apache.rave.model.ActivityStreamsObject;
 import org.apache.rave.portal.model.impl.ActivityStreamsEntryImpl;
 import org.apache.rave.portal.model.impl.ActivityStreamsObjectImpl;
+import org.apache.streams.cassandra.configuration.CassandraConfiguration;
 import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,27 +23,18 @@ import java.util.List;
 
 public class CassandraActivityStreamsRepository {
 
-    private final String KEYSPACE_NAME = "keytest";
-    private final String TABLE_NAME = "coltest";
-
     private static final Log LOG = LogFactory.getLog(CassandraActivityStreamsRepository.class);
 
-    private Cluster cluster;
-    private Session session;
+    private CassandraKeyspace keyspace;
+    private CassandraConfiguration configuration;
 
-    public CassandraActivityStreamsRepository() {
-        cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
-        session = cluster.connect();
+    @Autowired
+    public CassandraActivityStreamsRepository(CassandraKeyspace keyspace, CassandraConfiguration configuration) {
+        this.configuration = configuration;
+        this.keyspace = keyspace;
 
-        //TODO: cassandra 2 will have support for CREATE KEYSPACE IF NOT EXISTS
         try {
-            session.execute("CREATE KEYSPACE " + KEYSPACE_NAME + " WITH replication = { 'class': 'SimpleStrategy','replication_factor' : 1 };");
-        } catch (AlreadyExistsException ignored) {
-        }
-        //connect to the keyspace
-        session = cluster.connect(KEYSPACE_NAME);
-        try {
-            session.execute("CREATE TABLE " + TABLE_NAME + " (" +
+            keyspace.getSession().execute("CREATE TABLE " + configuration.getActivitystreamsColumnFamilyName() + " (" +
                     "id text, " +
                     "published timestamp, " +
                     "verb text, " +
@@ -69,7 +62,7 @@ public class CassandraActivityStreamsRepository {
     }
 
     public void save(ActivityStreamsEntry entry) {
-        String sql = "INSERT INTO " + TABLE_NAME + " (" +
+        String sql = "INSERT INTO " + configuration.getActivitystreamsColumnFamilyName() + " (" +
                 "id, published, verb, tags, " +
                 "actor_displayname, actor_objecttype, actor_id, actor_url, " +
                 "target_displayname, target_id, target_url, " +
@@ -98,14 +91,14 @@ public class CassandraActivityStreamsRepository {
                 entry.getObject().getUrl() +
 
                 "')";
-        session.execute(sql);
+        keyspace.getSession().execute(sql);
     }
 
     public List<CassandraActivityStreamsEntry> getActivitiesForFilters(List<String> filters, Date lastUpdated) {
         List<CassandraActivityStreamsEntry> results = new ArrayList<CassandraActivityStreamsEntry>();
 
         for (String tag : filters) {
-            String cql = "SELECT * FROM " + TABLE_NAME + " WHERE ";
+            String cql = "SELECT * FROM " + configuration.getActivitystreamsColumnFamilyName() + " WHERE ";
 
             //add filters
             cql = cql + " tags = '" + tag + "' AND ";
@@ -114,7 +107,7 @@ public class CassandraActivityStreamsRepository {
             cql = cql + "published > " + lastUpdated.getTime() + " ALLOW FILTERING";
 
             //execute the cql query and store the results
-            ResultSet set = session.execute(cql);
+            ResultSet set = keyspace.getSession().execute(cql);
 
             //iterate through the results and create a new ActivityStreamsEntry for every result returned
 
@@ -159,17 +152,7 @@ public class CassandraActivityStreamsRepository {
 
     public void dropTable(String table) {
         String cql = "DROP TABLE " + table;
-        session.execute(cql);
-    }
-
-
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            cluster.shutdown();
-        } finally {
-            super.finalize();
-        }
+        keyspace.getSession().execute(cql);
     }
 
 }

@@ -17,6 +17,7 @@
     <properties>
         <bundle.symbolicName>streams-cassandra</bundle.symbolicName>
         <bundle.namespace>org.apache.streams</bundle.namespace>
+        <easymock.version>3.2</easymock.version>
     </properties>
 
     <packaging>bundle</packaging>
@@ -58,15 +59,16 @@
                     <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                     <Bundle-Version>${project.version}</Bundle-Version>
                     <Export-Package>
-                        ${bundle.namespace};version="${project.version}",org.apache.streams.cassandra.repository.impl, org.apache.streams.cassandra.model
+                        ${bundle.namespace};version="${project.version}",org.apache.streams.cassandra.repository.impl, org.apache.streams.cassandra.model, org.apache.streams.cassandra.configuration
                     </Export-Package>
-                    <Private-Package>${bundle.namespace}.cassandra.repository.impl.*,${bundle.namespace}.cassandra.model </Private-Package>
+                    <Private-Package>${bundle.namespace}.cassandra.repository.impl.*,${bundle.namespace}.cassandra.model, ${bundle.namespace}.cassandra.configuration </Private-Package>
                     <Import-Package>
                         org.apache.rave.model,org.apache.rave.portal.model.impl,
                         com.datastax.driver.core, com.datastax.driver.core.exceptions, org.codehaus.jackson.map.annotate,
                         javax.persistence, org.apache.commons.logging, com.google.common.collect, org.codehaus.jackson.map,
                         org.apache.commons.lang,
-                        org.apache.streams.osgi.components.activitysubscriber
+                        org.apache.streams.osgi.components.activitysubscriber,
+                        org.springframework.beans.factory.annotation, org.springframework.stereotype
                     </Import-Package>
                 </instructions>
             </configuration>
@@ -108,6 +110,13 @@
             <groupId>org.apache.streams.osgi.components</groupId>
             <artifactId>activity-subscriber</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>${easymock.version}</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

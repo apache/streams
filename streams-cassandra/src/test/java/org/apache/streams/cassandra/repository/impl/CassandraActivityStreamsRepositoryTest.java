@@ -5,7 +5,9 @@ import org.apache.rave.model.ActivityStreamsEntry;
 import org.apache.rave.model.ActivityStreamsObject;
 import org.apache.rave.portal.model.impl.ActivityStreamsEntryImpl;
 import org.apache.rave.portal.model.impl.ActivityStreamsObjectImpl;
+import org.apache.streams.cassandra.configuration.CassandraConfiguration;
 import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
+import static org.easymock.EasyMock.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,12 +18,14 @@ import java.util.List;
 
 public class CassandraActivityStreamsRepositoryTest {
 
-    public CassandraActivityStreamsRepository repository;
+    private CassandraActivityStreamsRepository repository;
 
 
     @Before
     public void setup() {
-        repository = new CassandraActivityStreamsRepository();
+        CassandraKeyspace keyspace = createMock(CassandraKeyspace.class);
+        CassandraConfiguration configuration = createMock(CassandraConfiguration.class);
+        repository = new CassandraActivityStreamsRepository(keyspace, configuration);
     }
 
     @Ignore

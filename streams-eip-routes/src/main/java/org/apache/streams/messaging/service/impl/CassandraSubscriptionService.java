@@ -11,8 +11,8 @@ public class CassandraSubscriptionService implements SubscriptionService {
 
     private CassandraSubscriptionRepository repository;
 
-    public CassandraSubscriptionService(){
-        repository = new CassandraSubscriptionRepository();
+    public CassandraSubscriptionService(CassandraSubscriptionRepository repository){
+        this.repository = repository;
     }
 
     public List<String> getFilters(String authToken){

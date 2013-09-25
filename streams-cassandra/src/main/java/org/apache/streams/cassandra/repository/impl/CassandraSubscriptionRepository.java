@@ -1,35 +1,27 @@
 package org.apache.streams.cassandra.repository.impl;
 
-import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.AlreadyExistsException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.streams.cassandra.configuration.CassandraConfiguration;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscription;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class CassandraSubscriptionRepository {
-    private final String KEYSPACE_NAME = "keytest";
-    private final String TABLE_NAME = "subtest";
+    private static final Log LOG = LogFactory.getLog(CassandraSubscriptionRepository.class);
 
-    private static final Log LOG = LogFactory.getLog(CassandraActivityStreamsRepository.class);
+    private CassandraKeyspace keyspace;
+    private CassandraConfiguration configuration;
 
-    private Cluster cluster;
-    private Session session;
-
-    public CassandraSubscriptionRepository() {
-        cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
-        session = cluster.connect();
+    @Autowired
+    public CassandraSubscriptionRepository(CassandraKeyspace keyspace, CassandraConfiguration configuration) {
+        this.keyspace = keyspace;
+        this.configuration = configuration;
 
         try {
-            session.execute("CREATE KEYSPACE " + KEYSPACE_NAME + " WITH replication = { 'class': 'SimpleStrategy','replication_factor' : 1 };");
-        } catch (AlreadyExistsException ignored) {
-        }
-        //connect to the keyspace
-        session = cluster.connect(KEYSPACE_NAME);
-        try {
-            session.execute("CREATE TABLE " + TABLE_NAME + " (" +
+            keyspace.getSession().execute("CREATE TABLE " + configuration.getSubscriptionColumnFamilyName() + " (" +
                     "id text, " +
                     "filters text, " +
 
@@ -39,30 +31,21 @@ public class CassandraSubscriptionRepository {
     }
 
     public String getFilters(String id){
-        String cql = "SELECT * FROM " + TABLE_NAME + " WHERE id = '" + id+"';";
+        String cql = "SELECT * FROM " + configuration.getSubscriptionColumnFamilyName()  + " WHERE id = '" + id+"';";
 
-        ResultSet set = session.execute(cql);
+        ResultSet set = keyspace.getSession().execute(cql);
 
         return set.one().getString("filters");
     }
 
     public void save(ActivityStreamsSubscription subscription){
-        String cql = "INSERT INTO " + TABLE_NAME + " (" +
+        String cql = "INSERT INTO " + configuration.getSubscriptionColumnFamilyName()  + " (" +
                 "id, filters) " +
                 "VALUES ('" +
                 subscription.getAuthToken() + "','" +
                 StringUtils.join(subscription.getFilters(), " ") +
 
                 "')";
-        session.execute(cql);
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            cluster.shutdown();
-        } finally {
-            super.finalize();
-        }
+        keyspace.getSession().execute(cql);
     }
 }

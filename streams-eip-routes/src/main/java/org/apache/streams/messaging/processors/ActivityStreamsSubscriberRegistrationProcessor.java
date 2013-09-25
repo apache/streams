@@ -13,7 +13,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 public class ActivityStreamsSubscriberRegistrationProcessor implements Processor{
     private static final transient Log LOG = LogFactory.getLog(ActivityStreamsSubscriberRegistrationProcessor.class);
-    private static SubscriptionService subscriptionService = new CassandraSubscriptionService();
+    private SubscriptionService subscriptionService;
+
+    public ActivityStreamsSubscriberRegistrationProcessor(SubscriptionService subscriptionService){
+        this.subscriptionService = subscriptionService;
+    }
 
     public void process(Exchange exchange){
         LOG.info("processing the subscriber...");
