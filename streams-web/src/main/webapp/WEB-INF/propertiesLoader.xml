@@ -31,7 +31,4 @@
             WEB-INF/cassandra.properties"
             ignore-unresolvable="true"/>
 
-    <bean id="configuration" class="org.apache.streams.messaging.configuration.EipConfigurator" />
-    <bean id="cassandraConfig" class="org.apache.streams.cassandra.configuration.CassandraConfiguration" />
-
 </beans>

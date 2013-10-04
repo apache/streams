@@ -5,7 +5,9 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.AlreadyExistsException;
 import org.apache.streams.cassandra.configuration.CassandraConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CassandraKeyspace {
     private CassandraConfiguration configuration;
     private Cluster cluster;

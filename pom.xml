@@ -63,6 +63,7 @@
         <module>streams-eip-routes</module>
         <module>streams-cassandra</module>
         <module>streams-web</module>
+        <module>streams-components</module>
     </modules>
 
     <build>

@@ -51,6 +51,12 @@
      </dependency>
 
       <dependency>
+          <groupId>org.apache.streams</groupId>
+          <artifactId>streams-components</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
           <groupId>org.apache.streams.osgi.components</groupId>
           <artifactId>streams-components-all</artifactId>
         <version>${project.version}</version>
@@ -60,50 +66,6 @@
           <groupId>org.apache.streams</groupId>
           <artifactId>streams-cassandra</artifactId>
           <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-          <groupId>org.apache.camel</groupId>
-          <artifactId>camel-web</artifactId>
-          <version>2.9.0</version>
-          <type>war</type>
-          <scope>runtime</scope>
-      </dependency>
-
-      <!-- Dependencies for using ActiveMQ -->
-      <dependency>
-          <groupId>org.apache.activemq</groupId>
-          <artifactId>activemq-camel</artifactId>
-          <version>5.5.1</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.geronimo.specs</groupId>
-          <artifactId>geronimo-jms_1.1_spec</artifactId>
-          <version>1.1.1</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.xbean</groupId>
-          <artifactId>xbean-spring</artifactId>
-          <version>3.5</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.camel</groupId>
-          <artifactId>camel-jms</artifactId>
-          <version>2.9.0</version>
-      </dependency>
-
-      <dependency>
-          <groupId>org.apache.camel</groupId>
-          <artifactId>camel-servlet</artifactId>
-          <version>2.9.0</version>
-      </dependency>
-
-      <!-- Dependencies for stream processing in Camel
-     http://camel.apache.org/stream.html -->
-      <dependency>
-          <groupId>org.apache.camel</groupId>
-          <artifactId>camel-stream</artifactId>
-          <version>2.9.0</version>
       </dependency>
 
       <!-- logging -->
@@ -142,49 +104,11 @@
           <version>${spring.version}</version>
       </dependency>
 
-      <!--rave-->
-      <dependency>
-          <groupId>org.apache.rave</groupId>
-          <artifactId>rave-core-api</artifactId>
-          <version>${rave.version}</version>
-      </dependency>
-
-      <dependency>
-          <groupId>org.apache.rave</groupId>
-          <artifactId>rave-core</artifactId>
-          <version>${rave.version}</version>
-      </dependency>
-
   </dependencies>
   <build>
     <finalName>streams-web</finalName>
       <plugins>
-          <plugin>
-              <groupId>org.apache.camel</groupId>
-              <artifactId>camel-maven-plugin</artifactId>
-              <version>2.9.0</version>
-          </plugin>
 
-          <plugin>
-              <groupId>org.mortbay.jetty</groupId>
-              <artifactId>jetty-maven-plugin</artifactId>
-              <version>7.5.3.v20111011</version>
-
-              <configuration>
-                  <webAppConfig>
-                      <contextPath>/</contextPath>
-                  </webAppConfig>
-
-                  <systemProperties>
-                      <!-- enable easy JMX connection to JConsole -->
-                      <systemProperty>
-                          <name>com.sun.management.jmxremote</name>
-                          <value/>
-                      </systemProperty>
-                  </systemProperties>
-                  <scanIntervalSeconds>10</scanIntervalSeconds>
-              </configuration>
-          </plugin>
 
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>

@@ -20,6 +20,7 @@ public class ActivityStreamsSubscriptionImpl implements ActivityStreamsSubscript
     private String authToken;
 
     public void setFilters(List<String> filters) {
+        //TODO: it's possible that this could be null
         this.filters = filters;
     }
 

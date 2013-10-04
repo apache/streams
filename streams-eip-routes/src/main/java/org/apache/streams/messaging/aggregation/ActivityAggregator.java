@@ -6,21 +6,22 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.streams.messaging.service.impl.CassandraActivityService;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriber;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class ActivityAggregator {
 
     private ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse;
     private CassandraActivityService activityService;
     private static final transient Log LOG = LogFactory.getLog(ActivityAggregator.class);
 
-    public void setActivityStreamsSubscriberWarehouse(ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse) {
+    @Autowired
+    public ActivityAggregator(ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse, CassandraActivityService activityService){
         this.activityStreamsSubscriberWarehouse = activityStreamsSubscriberWarehouse;
-    }
-
-    public void setActivityService(CassandraActivityService activityService) {
         this.activityService = activityService;
     }
 

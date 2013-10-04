@@ -73,13 +73,17 @@
         <constructor-arg ref="objectMapper"/>
     </bean>
 
-    <!--<bean id="stromActivityAggregator" class="org.apache.streams.messaging.storm.StormActivityAggregator">-->
-        <!--<constructor-arg ref="bolt"/>-->
-        <!--<constructor-arg ref="spout"/>-->
-    <!--</bean>-->
+    <bean id="stromActivityAggregator" class="org.apache.streams.messaging.storm.StormActivityAggregator">
+        <constructor-arg ref="bolt"/>
+        <constructor-arg ref="spout"/>
+    </bean>
 
-    <!--<bean id="bolt" class="org.apache.streams.messaging.storm.StormSubscriberBolt"/>-->
-    <!--<bean id="spout" class="org.apache.streams.messaging.storm.StormSubscriberSpout"/>-->
+    <bean id="bolt" class="org.apache.streams.messaging.storm.StormSubscriberBolt">
+        <constructor-arg ref="activityService"/>
+    </bean>
+    <bean id="spout" class="org.apache.streams.messaging.storm.StormSubscriberSpout">
+        <constructor-arg ref="activityStreamsSubscriberWarehouse"/>
+    </bean>
 
     <bean id="activityAggregator" class="org.apache.streams.messaging.aggregation.ActivityAggregator">
         <property name="activityService" ref="activityService"/>
@@ -87,28 +91,5 @@
     </bean>
 
     <task:annotation-driven/>
-
-    <bean id="jmsConnectionFactory"
-          class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="${activemq.jmsConnectionFactoryUrl}"/>
-    </bean>
-
-    <bean id="pooledConnectionFactory"
-          class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
-        <property name="maxConnections" value="8"/>
-        <property name="connectionFactory" ref="jmsConnectionFactory"/>
-    </bean>
-
-    <bean id="jmsConfig"
-          class="org.apache.camel.component.jms.JmsConfiguration">
-        <property name="connectionFactory" ref="pooledConnectionFactory"/>
-        <property name="concurrentConsumers" value="10"/>
-    </bean>
-
-    <bean id="activemq"
-          class="org.apache.activemq.camel.component.ActiveMQComponent">
-        <property name="configuration" ref="jmsConfig"/>
-    </bean>
-
 
 </beans>

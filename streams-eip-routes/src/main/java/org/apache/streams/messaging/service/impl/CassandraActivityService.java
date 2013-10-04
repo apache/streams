@@ -10,6 +10,7 @@ import org.apache.streams.messaging.service.ActivityService;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+@Component
 public class CassandraActivityService implements ActivityService {
 
     private static final transient Log LOG = LogFactory.getLog(CassandraActivityService.class);
@@ -25,9 +27,9 @@ public class CassandraActivityService implements ActivityService {
     private ObjectMapper mapper;
 
     @Autowired
-    public CassandraActivityService(CassandraActivityStreamsRepository cassandraActivityStreamsRepository, ObjectMapper mapper) {
+    public CassandraActivityService(CassandraActivityStreamsRepository cassandraActivityStreamsRepository) {
         this.cassandraActivityStreamsRepository = cassandraActivityStreamsRepository;
-        this.mapper = mapper;
+        this.mapper = new ObjectMapper();
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
@@ -57,11 +59,19 @@ public class CassandraActivityService implements ActivityService {
     }
 
     @Override
+    public void receiveActivity(String activityJSON) throws IOException {
+        ActivityStreamsEntry streamsEntry = mapper.readValue(activityJSON, CassandraActivityStreamsEntry.class);
+        streamsEntry.setPublished(new Date());
+        cassandraActivityStreamsRepository.save(streamsEntry);
+    }
+
+    @Override
     public List<String> getActivitiesForFilters(List<String> filters, Date lastUpdated) {
         List<CassandraActivityStreamsEntry> activityObjects = cassandraActivityStreamsRepository.getActivitiesForFilters(filters, lastUpdated);
         Collections.sort(activityObjects, Collections.reverseOrder());
         //TODO: make the number of streams returned configurable
-        return getJsonList(activityObjects.subList(0,Math.min(activityObjects.size(),10)));
+        //TODO: what happens if this .subList(0,0)?
+        return getJsonList(activityObjects.subList(0, Math.min(activityObjects.size(), 10)));
     }
 
     private List<String> getJsonList(List<CassandraActivityStreamsEntry> activities) {

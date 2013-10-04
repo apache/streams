@@ -11,7 +11,7 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             /WEB-INF/propertiesLoader.xml
-            /WEB-INF/spring/*.xml
+            /WEB-INF/webservice-servlet.xml
             /WEB-INF/spring-web-servlet.xml
         </param-value>
     </context-param>
@@ -20,18 +20,15 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
-
-    <!-- Camel servlet -->
     <servlet>
-        <servlet-name>CamelServlet</servlet-name>
-        <servlet-class>org.apache.camel.component.servlet.CamelHttpTransportServlet</servlet-class>
+        <servlet-name>webservice</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-    <!-- Camel servlet mapping -->
     <servlet-mapping>
-        <servlet-name>CamelServlet</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <servlet-name>webservice</servlet-name>
+        <url-pattern>/app/*</url-pattern>
     </servlet-mapping>
 
  </web-app>

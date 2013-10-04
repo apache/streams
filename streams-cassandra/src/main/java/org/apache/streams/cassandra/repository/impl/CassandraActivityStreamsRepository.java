@@ -15,12 +15,13 @@ import org.apache.rave.portal.model.impl.ActivityStreamsObjectImpl;
 import org.apache.streams.cassandra.configuration.CassandraConfiguration;
 import org.apache.streams.cassandra.model.CassandraActivityStreamsEntry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
+@Component
 public class CassandraActivityStreamsRepository {
 
     private static final Log LOG = LogFactory.getLog(CassandraActivityStreamsRepository.class);
@@ -62,6 +63,7 @@ public class CassandraActivityStreamsRepository {
     }
 
     public void save(ActivityStreamsEntry entry) {
+        //TODO: this should be random UUID
         String sql = "INSERT INTO " + configuration.getActivitystreamsColumnFamilyName() + " (" +
                 "id, published, verb, tags, " +
                 "actor_displayname, actor_objecttype, actor_id, actor_url, " +
@@ -107,6 +109,7 @@ public class CassandraActivityStreamsRepository {
             cql = cql + "published > " + lastUpdated.getTime() + " ALLOW FILTERING";
 
             //execute the cql query and store the results
+            //TODO: will this ever return a null ResultSet
             ResultSet set = keyspace.getSession().execute(cql);
 
             //iterate through the results and create a new ActivityStreamsEntry for every result returned

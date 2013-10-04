@@ -8,7 +8,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.streams.cassandra.configuration.CassandraConfiguration;
 import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscription;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CassandraSubscriptionRepository {
     private static final Log LOG = LogFactory.getLog(CassandraSubscriptionRepository.class);
 
@@ -39,6 +41,7 @@ public class CassandraSubscriptionRepository {
     }
 
     public void save(ActivityStreamsSubscription subscription){
+        //TODO: will this overwrite?
         String cql = "INSERT INTO " + configuration.getSubscriptionColumnFamilyName()  + " (" +
                 "id, filters) " +
                 "VALUES ('" +

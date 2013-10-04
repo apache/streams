@@ -4,6 +4,7 @@ import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubs
 
 import java.util.List;
 
+//TODO: delete this
 public class ActivityStreamsSubscriptionCassandraFilterImpl implements ActivityStreamsSubscriptionFilter {
     private String query;
     private List<String> filters;

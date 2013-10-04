@@ -1,6 +1,6 @@
 package org.apache.streams.osgi.components.activitysubscriber;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Public API representing an example OSGi service
@@ -9,8 +9,8 @@ public interface ActivityStreamsSubscriberWarehouse {
 
     public void register(ActivityStreamsSubscriber activitySubscriber);
 
-    public ArrayList<ActivityStreamsSubscriber> findSubscribersByFilters(String src);
+    public ActivityStreamsSubscriber findSubscribersByID(String id);
 
-    public ArrayList<ActivityStreamsSubscriber> getAllSubscribers();
+    public Collection<ActivityStreamsSubscriber> getAllSubscribers();
 }
 
