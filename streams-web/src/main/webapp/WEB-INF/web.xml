@@ -31,7 +31,9 @@
     <!-- Camel servlet mapping -->
     <servlet-mapping>
         <servlet-name>CamelServlet</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/apps/*</url-pattern>
     </servlet-mapping>
 
- </web-app>
+    <welcome-file-list><welcome-file>/demo/index.html</welcome-file></welcome-file-list>
+
+</web-app>
