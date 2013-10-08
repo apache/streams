@@ -3,8 +3,8 @@ package org.apache.streams.components.service.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.service.StreamsActivityReceivingService;
-import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriber;
-import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
+import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriber;
+import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

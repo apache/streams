@@ -17,14 +17,4 @@
             <value>.jsp</value>
         </property>
     </bean>
-
-
-    <bean id="activityPublisherRegistration" class="org.apache.streams.osgi.components.impl.ActivityPublisherRegistrationImpl" />
-    <bean id="activityConsumerWarehouse" class="org.apache.streams.osgi.components.activityconsumer.impl.ActivityConsumerWarehouseImpl" />
-
-    <bean id="activityStreamsSubscriberRegistration" class="org.apache.streams.osgi.components.impl.ActivityStreamsSubscriberRegistrationImpl" />
-    <bean id="activityStreamsSubscriberWarehouse" class="org.apache.streams.osgi.components.activitysubscriber.impl.ActivityStreamsSubscriberWarehouseImpl" />
-
-
-
 </beans>

@@ -21,14 +21,11 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://www.springframework.org/schema/beans"
         xmlns:context="http://www.springframework.org/schema/context"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
 
-
-
-    <context:property-placeholder
-            location="WEB-INF/streams.properties,
-            WEB-INF/cassandra.properties"
-            ignore-unresolvable="true"/>
+    <context:property-placeholder location="WEB-INF/streams.properties" ignore-unresolvable="true"/>
 
 </beans>

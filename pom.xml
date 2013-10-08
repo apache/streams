@@ -52,6 +52,7 @@
         <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
         <rave.version>0.22</rave.version>
         <datastax.version>1.0.3</datastax.version>
+        <spring.version>3.0.5.RELEASE</spring.version>
     </properties>
 
     <packaging>pom</packaging>
@@ -59,30 +60,13 @@
     <modules>
         <module>poms</module>
         <module>provision</module>
-        <module>streams-osgi-components</module>
-        <module>streams-eip-routes</module>
-        <module>streams-cassandra</module>
         <module>streams-web</module>
         <module>streams-components</module>
+        <module>streams-persistence</module>
     </modules>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.ops4j</groupId>
-                <artifactId>maven-pax-plugin</artifactId>
-                <version>1.5</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <compilerVersion>1.5</compilerVersion>
-                    <provision>
-                        <param>--platform=felix</param>
-                    </provision>
-                </configuration>
-                <executions>
-                </executions>
-            </plugin>
-        </plugins>
+
     </build>
 
 </project>

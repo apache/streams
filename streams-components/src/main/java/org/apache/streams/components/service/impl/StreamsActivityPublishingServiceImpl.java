@@ -3,7 +3,7 @@ package org.apache.streams.components.service.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.service.StreamsActivityPublishingService;
-import org.apache.streams.messaging.service.ActivityService;
+import org.apache.streams.components.service.StreamsActivityRepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +13,10 @@ import java.io.IOException;
 public class StreamsActivityPublishingServiceImpl implements StreamsActivityPublishingService {
     private Log log = LogFactory.getLog(StreamsActivityPublishingServiceImpl.class);
 
-    private ActivityService activityService;
+    private StreamsActivityRepositoryService activityService;
 
     @Autowired
-    public StreamsActivityPublishingServiceImpl(ActivityService activityService) {
+    public StreamsActivityPublishingServiceImpl(StreamsActivityRepositoryService activityService) {
         this.activityService = activityService;
     }
 

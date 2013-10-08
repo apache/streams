@@ -15,7 +15,17 @@
         <bundle.symbolicName>streams-components</bundle.symbolicName>
         <bundle.namespace>org.apache.streams</bundle.namespace>
         <jackson.version>1.9.11</jackson.version>
+        <spring.version>3.0.6.RELEASE</spring.version>
+        <storm.version>0.8.2</storm.version>
+        <netty.version>3.2.9.Final</netty.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>clojars.org</id>
+            <url>http://clojars.org/repo</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -25,17 +35,46 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.streams.osgi.components</groupId>
-            <artifactId>activity-consumer</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.rave</groupId>
+            <artifactId>rave-core</artifactId>
+            <version>${rave.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.rave</groupId>
+            <artifactId>rave-core-api</artifactId>
+            <version>${rave.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>storm</groupId>
+            <artifactId>storm</artifactId>
+            <version>${storm.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.datastax.cassandra</groupId>
+            <artifactId>cassandra-driver-core</artifactId>
+            <version>${datastax.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.netty</groupId>
+            <artifactId>netty</artifactId>
+            <version>${netty.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-eip-routes</artifactId>
+            <artifactId>streams-persistence</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
 
 

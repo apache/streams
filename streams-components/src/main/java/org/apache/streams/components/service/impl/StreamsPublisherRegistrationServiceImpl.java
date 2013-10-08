@@ -3,9 +3,9 @@ package org.apache.streams.components.service.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.service.StreamsPublisherRegistrationService;
-import org.apache.streams.messaging.configuration.EipConfigurator;
-import org.apache.streams.osgi.components.activityconsumer.ActivityConsumer;
-import org.apache.streams.osgi.components.activityconsumer.ActivityConsumerWarehouse;
+import org.apache.streams.components.configuration.StreamsConfiguration;
+import org.apache.streams.components.activityconsumer.ActivityConsumer;
+import org.apache.streams.components.activityconsumer.ActivityConsumerWarehouse;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,12 @@ public class StreamsPublisherRegistrationServiceImpl implements StreamsPublisher
     private Log log = LogFactory.getLog(StreamsPublisherRegistrationServiceImpl.class);
 
     private ActivityConsumerWarehouse activityConsumerWarehouse;
-    private EipConfigurator configurator;
+    private StreamsConfiguration configuration;
 
     @Autowired
-    public StreamsPublisherRegistrationServiceImpl(ActivityConsumerWarehouse activityConsumerWarehouse, EipConfigurator configurator) {
+    public StreamsPublisherRegistrationServiceImpl(ActivityConsumerWarehouse activityConsumerWarehouse, StreamsConfiguration configuration) {
         this.activityConsumerWarehouse = activityConsumerWarehouse;
-        this.configurator = configurator;
+        this.configuration = configuration;
     }
 
     /**
@@ -47,6 +47,6 @@ public class StreamsPublisherRegistrationServiceImpl implements StreamsPublisher
         activityConsumer.setAuthenticated(true);
         activityConsumer.setInRoute("" + UUID.randomUUID());
         activityConsumerWarehouse.register(activityConsumer);
-        return configurator.getBaseUrlPath() + "postActivity/" + activityConsumer.getInRoute();
+        return configuration.getBaseUrlPath() + "postActivity/" + activityConsumer.getInRoute();
     }
 }

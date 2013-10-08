@@ -3,13 +3,13 @@ package org.apache.streams.components.service.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.service.StreamsSubscriberRegistrationService;
-import org.apache.streams.messaging.aggregation.ActivityAggregator;
-import org.apache.streams.messaging.configuration.EipConfigurator;
-import org.apache.streams.messaging.service.SubscriptionService;
-import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriber;
-import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
-import org.apache.streams.osgi.components.activitysubscriber.ActivityStreamsSubscription;
-import org.apache.streams.osgi.components.activitysubscriber.impl.ActivityStreamsSubscriberDelegate;
+import org.apache.streams.components.aggregation.ActivityAggregator;
+import org.apache.streams.components.configuration.StreamsConfiguration;
+import org.apache.streams.components.service.StreamsSubscriptionRepositoryService;
+import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriber;
+import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
+import org.apache.streams.persistence.model.ActivityStreamsSubscription;
+import org.apache.streams.components.activitysubscriber.impl.ActivityStreamsSubscriberDelegate;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,22 +22,22 @@ import java.util.UUID;
 public class StreamsSubscriberRegistrationServiceImpl implements StreamsSubscriberRegistrationService {
     private Log log = LogFactory.getLog(StreamsSubscriberRegistrationServiceImpl.class);
 
-    private SubscriptionService subscriptionService;
+    private StreamsSubscriptionRepositoryService subscriptionService;
     private ActivityAggregator activityAggregator;
     private ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse;
-    private EipConfigurator configurator;
+    private StreamsConfiguration configuration;
 
     @Autowired
     public StreamsSubscriberRegistrationServiceImpl(
-            SubscriptionService subscriptionService,
+            StreamsSubscriptionRepositoryService subscriptionService,
             ActivityAggregator activityAggregator,
             ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse,
-            EipConfigurator configurator
+            StreamsConfiguration configuration
     ) {
         this.subscriptionService = subscriptionService;
         this.activityAggregator = activityAggregator;
         this.activityStreamsSubscriberWarehouse = activityStreamsSubscriberWarehouse;
-        this.configurator = configurator;
+        this.configuration = configuration;
     }
 
     /**
@@ -62,6 +62,6 @@ public class StreamsSubscriberRegistrationServiceImpl implements StreamsSubscrib
         activityAggregator.updateSubscriber(subscriber);
         activityStreamsSubscriberWarehouse.register(subscriber);
 
-        return configurator.getBaseUrlPath() + "getActivity/" + subscriber.getInRoute();
+        return configuration.getBaseUrlPath() + "getActivity/" + subscriber.getInRoute();
     }
 }

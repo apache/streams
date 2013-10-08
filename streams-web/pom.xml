@@ -31,7 +31,6 @@
   <name>Apache Streams Web App</name>
 
   <properties>
-    <spring.version>3.0.5.RELEASE</spring.version>
     <junit.version>4.11</junit.version>
     <jdk.version>1.6</jdk.version>
   </properties>
@@ -44,11 +43,6 @@
       <scope>test</scope>
     </dependency>
 
-     <dependency>
-         <groupId>org.apache.streams</groupId>
-         <artifactId>streams-eip-routes</artifactId>
-         <version>${project.version}</version>
-     </dependency>
 
       <dependency>
           <groupId>org.apache.streams</groupId>
@@ -56,17 +50,6 @@
           <version>${project.version}</version>
       </dependency>
 
-      <dependency>
-          <groupId>org.apache.streams.osgi.components</groupId>
-          <artifactId>streams-components-all</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-          <groupId>org.apache.streams</groupId>
-          <artifactId>streams-cassandra</artifactId>
-          <version>${project.version}</version>
-      </dependency>
 
       <!-- logging -->
       <dependency>

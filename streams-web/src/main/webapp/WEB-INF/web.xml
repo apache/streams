@@ -11,7 +11,6 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             /WEB-INF/propertiesLoader.xml
-            /WEB-INF/webservice-servlet.xml
             /WEB-INF/spring-web-servlet.xml
         </param-value>
     </context-param>
