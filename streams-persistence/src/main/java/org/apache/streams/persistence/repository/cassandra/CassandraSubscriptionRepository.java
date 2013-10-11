@@ -46,7 +46,7 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository{
         String cql = "INSERT INTO " + configuration.getSubscriptionColumnFamilyName()  + " (" +
                 "id, filters) " +
                 "VALUES ('" +
-                subscription.getAuthToken() + "','" +
+                subscription.getId() + "','" +
                 StringUtils.join(subscription.getFilters(), " ") +
 
                 "')";

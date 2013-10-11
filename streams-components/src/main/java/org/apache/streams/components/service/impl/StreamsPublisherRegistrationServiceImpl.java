@@ -4,8 +4,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.service.StreamsPublisherRegistrationService;
 import org.apache.streams.components.configuration.StreamsConfiguration;
-import org.apache.streams.components.activityconsumer.ActivityConsumer;
-import org.apache.streams.components.activityconsumer.ActivityConsumerWarehouse;
+import org.apache.streams.components.service.StreamsPublisherRepositoryService;
+import org.apache.streams.persistence.model.ActivityStreamsPublisher;
+import org.apache.streams.persistence.model.cassandra.CassandraPublisher;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +18,12 @@ import java.util.UUID;
 public class StreamsPublisherRegistrationServiceImpl implements StreamsPublisherRegistrationService {
     private Log log = LogFactory.getLog(StreamsPublisherRegistrationServiceImpl.class);
 
-    private ActivityConsumerWarehouse activityConsumerWarehouse;
+    private StreamsPublisherRepositoryService publisherRepositoryService;
     private StreamsConfiguration configuration;
 
     @Autowired
-    public StreamsPublisherRegistrationServiceImpl(ActivityConsumerWarehouse activityConsumerWarehouse, StreamsConfiguration configuration) {
-        this.activityConsumerWarehouse = activityConsumerWarehouse;
+    public StreamsPublisherRegistrationServiceImpl(StreamsPublisherRepositoryService publisherRepositoryService, StreamsConfiguration configuration) {
+        this.publisherRepositoryService = publisherRepositoryService;
         this.configuration = configuration;
     }
 
@@ -37,16 +38,16 @@ public class StreamsPublisherRegistrationServiceImpl implements StreamsPublisher
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         // read from file, convert it to user class
-        ActivityConsumer activityConsumer = mapper.readValue(publisherJSON, ActivityConsumer.class);
+        ActivityStreamsPublisher publisher = mapper.readValue(publisherJSON, CassandraPublisher.class);
 
-        if (activityConsumer.getSrc() == null) {
+        if (publisher.getSrc() == null) {
             log.info("configuration src is null");
             throw new Exception("configuration src is null");
         }
 
-        activityConsumer.setAuthenticated(true);
-        activityConsumer.setInRoute("" + UUID.randomUUID());
-        activityConsumerWarehouse.register(activityConsumer);
-        return configuration.getBaseUrlPath() + "postActivity/" + activityConsumer.getInRoute();
+        publisher.setInRoute("" + UUID.randomUUID());
+        publisherRepositoryService.savePublisher(publisher);
+
+        return configuration.getBaseUrlPath() + "postActivity/" + publisher.getInRoute();
     }
 }

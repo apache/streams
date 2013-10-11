@@ -51,7 +51,7 @@ public class StreamsSubscriberRegistrationServiceImpl implements StreamsSubscrib
 
         ActivityStreamsSubscription subscription = mapper.readValue(subscriberJSON, ActivityStreamsSubscription.class);
         if (subscription.getFilters() == null) {
-            subscription.setFilters(subscriptionService.getFilters(subscription.getAuthToken()));
+            subscription.setFilters(subscriptionService.getFilters(subscription.getId()));
         } else {
             subscriptionService.saveFilters(subscription);
         }

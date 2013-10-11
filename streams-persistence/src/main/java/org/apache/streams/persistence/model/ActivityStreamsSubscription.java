@@ -10,7 +10,7 @@ public interface ActivityStreamsSubscription {
     public void setFilters(List<String> filters);
     public List<String> getFilters();
 
-    public String getAuthToken();
-    public void setAuthToken(String token);
+    public String getId();
+    public void setId(String id);
 
 }

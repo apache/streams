@@ -4,6 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.service.StreamsActivityPublishingService;
 import org.apache.streams.components.service.StreamsActivityRepositoryService;
+import org.apache.streams.components.service.StreamsPublisherRepositoryService;
+import org.apache.streams.persistence.model.ActivityStreamsPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,10 +16,12 @@ public class StreamsActivityPublishingServiceImpl implements StreamsActivityPubl
     private Log log = LogFactory.getLog(StreamsActivityPublishingServiceImpl.class);
 
     private StreamsActivityRepositoryService activityService;
+    private StreamsPublisherRepositoryService publisherService;
 
     @Autowired
-    public StreamsActivityPublishingServiceImpl(StreamsActivityRepositoryService activityService) {
+    public StreamsActivityPublishingServiceImpl(StreamsActivityRepositoryService activityService, StreamsPublisherRepositoryService publisherService) {
         this.activityService = activityService;
+        this.publisherService = publisherService;
     }
 
     /**
@@ -26,8 +30,9 @@ public class StreamsActivityPublishingServiceImpl implements StreamsActivityPubl
      * @param activityJSON the activityJSON being published
      * @return a success message if no errors were thrown
      * */
-    public String publish(String publisherID, String activityJSON) throws IOException {
-        activityService.receiveActivity(activityJSON);
+    public String publish(String publisherID, String activityJSON) throws Exception {
+        ActivityStreamsPublisher publisher = publisherService.getActivityStreamsPublisher(publisherID);
+        activityService.receiveActivity(publisher,activityJSON);
         return "The activity was successfully published!";
     }
 }

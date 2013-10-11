@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class CassandraSubscriptionService implements StreamsSubscriptionRepositoryService {
@@ -15,15 +16,16 @@ public class CassandraSubscriptionService implements StreamsSubscriptionReposito
     private SubscriptionRepository repository;
 
     @Autowired
-    public CassandraSubscriptionService(SubscriptionRepository repository){
+    public CassandraSubscriptionService(SubscriptionRepository repository) {
         this.repository = repository;
     }
 
-    public List<String> getFilters(String authToken){
-          return Arrays.asList(repository.getFilters(authToken).split(" "));
+    public List<String> getFilters(String authToken) {
+        return Arrays.asList(repository.getFilters(authToken).split(" "));
     }
 
-    public void saveFilters(ActivityStreamsSubscription subscription){
-          //repository.save(subscription);
+    public void saveFilters(ActivityStreamsSubscription subscription) {
+        subscription.setId("" + UUID.randomUUID());
+        repository.save(subscription);
     }
 }

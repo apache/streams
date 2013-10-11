@@ -50,7 +50,7 @@ public class StreamsWebController {
             return new ResponseEntity<String>(publisherRegistrationService.register(payload), HttpStatus.OK);
         }catch(Exception e){
             log.error(e);
-            return new ResponseEntity<String>("Verify the POST contains a valid JSON object", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -67,7 +67,7 @@ public class StreamsWebController {
             return new ResponseEntity<String>(subscriberRegistrationService.register(payload), HttpStatus.OK);
         }catch(Exception e){
             log.error(e);
-            return new ResponseEntity<String>("Verify the POST contains a valid JSON object", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -85,7 +85,7 @@ public class StreamsWebController {
             return new ResponseEntity<String>(activityPublishingService.publish(publisherID, payload), HttpStatus.OK);
         }catch(Exception e){
             log.error(e);
-            return new ResponseEntity<String>("Verify the POST contains a valid JSON object", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 

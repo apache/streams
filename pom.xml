@@ -53,6 +53,7 @@
         <rave.version>0.22</rave.version>
         <datastax.version>1.0.3</datastax.version>
         <spring.version>3.0.5.RELEASE</spring.version>
+        <junit.version>4.9</junit.version>
     </properties>
 
     <packaging>pom</packaging>
@@ -68,5 +69,13 @@
     <build>
 
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

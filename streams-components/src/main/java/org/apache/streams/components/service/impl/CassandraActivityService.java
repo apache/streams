@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.rave.model.ActivityStreamsEntry;
 import org.apache.streams.components.service.StreamsActivityRepositoryService;
+import org.apache.streams.persistence.model.ActivityStreamsPublisher;
 import org.apache.streams.persistence.model.cassandra.CassandraActivityStreamsEntry;
 import org.apache.streams.persistence.repository.ActivityStreamsRepository;
 import org.codehaus.jackson.map.DeserializationConfig;
@@ -12,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class CassandraActivityService implements StreamsActivityRepositoryService {
@@ -33,9 +31,13 @@ public class CassandraActivityService implements StreamsActivityRepositoryServic
     }
 
     @Override
-    public void receiveActivity(String activityJSON) throws IOException {
+    public void receiveActivity(ActivityStreamsPublisher publisher, String activityJSON) throws Exception {
         ActivityStreamsEntry streamsEntry = mapper.readValue(activityJSON, CassandraActivityStreamsEntry.class);
+        if(!publisher.getSrc().equals(streamsEntry.getProvider().getUrl())){
+            throw new Exception("The Publisher source: "+ publisher.getSrc() +" and Activity Provider source: " + streamsEntry.getProvider().getUrl() + " were not equal");
+        }
         streamsEntry.setPublished(new Date());
+        streamsEntry.setId(""+UUID.randomUUID());
         activityStreamsRepository.save(streamsEntry);
     }
 
@@ -44,7 +46,6 @@ public class CassandraActivityService implements StreamsActivityRepositoryServic
         List<ActivityStreamsEntry> activityObjects = activityStreamsRepository.getActivitiesForFilters(filters, lastUpdated);
         Collections.sort(activityObjects, Collections.reverseOrder());
         //TODO: make the number of streams returned configurable
-        //TODO: what happens if this .subList(0,0)?
         return getJsonList(activityObjects.subList(0, Math.min(activityObjects.size(), 10)));
     }
 

@@ -11,7 +11,7 @@ public class CassandraSubscription implements ActivityStreamsSubscription {
     @JsonDeserialize(as=ArrayList.class)
     private List<String> filters;
 
-    private String authToken;
+    private String id;
 
     public void setFilters(List<String> filters) {
         //TODO: it's possible that this could be null
@@ -25,12 +25,12 @@ public class CassandraSubscription implements ActivityStreamsSubscription {
     }
 
     @Override
-    public String getAuthToken() {
-        return authToken;
+    public String getId() {
+        return id;
     }
 
     @Override
-    public void setAuthToken(String auth_token) {
-        this.authToken = auth_token;
+    public void setId(String id) {
+        this.id = id;
     }
 }
