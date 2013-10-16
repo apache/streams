@@ -52,8 +52,13 @@
         <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
         <rave.version>0.22</rave.version>
         <datastax.version>1.0.3</datastax.version>
-        <spring.version>3.0.5.RELEASE</spring.version>
+        <spring.version>3.2.4.RELEASE</spring.version>
         <junit.version>4.9</junit.version>
+        <cglib.version>3.0</cglib.version>
+        <asm.version>3.3.1</asm.version>
+        <jackson.version>1.9.11</jackson.version>
+        <storm.version>0.8.2</storm.version>
+        <netty.version>3.2.9.Final</netty.version>
     </properties>
 
     <packaging>pom</packaging>

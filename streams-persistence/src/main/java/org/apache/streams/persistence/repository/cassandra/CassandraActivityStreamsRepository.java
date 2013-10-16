@@ -1,16 +1,12 @@
 package org.apache.streams.persistence.repository.cassandra;
 
-import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.AlreadyExistsException;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.rave.model.ActivityStreamsEntry;
 import org.apache.rave.model.ActivityStreamsObject;
-import org.apache.rave.portal.model.impl.ActivityStreamsEntryImpl;
 import org.apache.rave.portal.model.impl.ActivityStreamsObjectImpl;
 import org.apache.streams.persistence.configuration.CassandraConfiguration;
 import org.apache.streams.persistence.model.cassandra.CassandraActivityStreamsEntry;
@@ -18,12 +14,13 @@ import org.apache.streams.persistence.repository.ActivityStreamsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Component
-public class CassandraActivityStreamsRepository implements ActivityStreamsRepository{
+public class CassandraActivityStreamsRepository implements ActivityStreamsRepository {
 
     private static final Log LOG = LogFactory.getLog(CassandraActivityStreamsRepository.class);
 

@@ -14,10 +14,6 @@
     <properties>
         <bundle.symbolicName>streams-components</bundle.symbolicName>
         <bundle.namespace>org.apache.streams</bundle.namespace>
-        <jackson.version>1.9.11</jackson.version>
-        <spring.version>3.0.6.RELEASE</spring.version>
-        <storm.version>0.8.2</storm.version>
-        <netty.version>3.2.9.Final</netty.version>
     </properties>
 
     <repositories>
@@ -75,6 +71,7 @@
             <artifactId>streams-persistence</artifactId>
             <version>${project.version}</version>
         </dependency>
+
     </dependencies>
 
 

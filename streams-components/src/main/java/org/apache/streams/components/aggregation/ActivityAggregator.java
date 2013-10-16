@@ -25,7 +25,7 @@ public class ActivityAggregator {
         this.activityService = activityService;
     }
 
-    @Scheduled(fixedRate=30000)
+    //@Scheduled(fixedRate=30000)
     public void distributeToSubscribers() {
         for (ActivityStreamsSubscriber subscriber : activityStreamsSubscriberWarehouse.getAllSubscribers()) {
               updateSubscriber(subscriber);

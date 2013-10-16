@@ -3,7 +3,6 @@ package org.apache.streams.components.service.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.service.StreamsPublisherRegistrationService;
-import org.apache.streams.components.configuration.StreamsConfiguration;
 import org.apache.streams.components.service.StreamsPublisherRepositoryService;
 import org.apache.streams.persistence.model.ActivityStreamsPublisher;
 import org.apache.streams.persistence.model.cassandra.CassandraPublisher;
@@ -19,12 +18,10 @@ public class StreamsPublisherRegistrationServiceImpl implements StreamsPublisher
     private Log log = LogFactory.getLog(StreamsPublisherRegistrationServiceImpl.class);
 
     private StreamsPublisherRepositoryService publisherRepositoryService;
-    private StreamsConfiguration configuration;
 
     @Autowired
-    public StreamsPublisherRegistrationServiceImpl(StreamsPublisherRepositoryService publisherRepositoryService, StreamsConfiguration configuration) {
+    public StreamsPublisherRegistrationServiceImpl(StreamsPublisherRepositoryService publisherRepositoryService) {
         this.publisherRepositoryService = publisherRepositoryService;
-        this.configuration = configuration;
     }
 
     /**
@@ -48,6 +45,6 @@ public class StreamsPublisherRegistrationServiceImpl implements StreamsPublisher
         publisher.setInRoute("" + UUID.randomUUID());
         publisherRepositoryService.savePublisher(publisher);
 
-        return configuration.getBaseUrlPath() + "postActivity/" + publisher.getInRoute();
+        return publisher.getInRoute();
     }
 }

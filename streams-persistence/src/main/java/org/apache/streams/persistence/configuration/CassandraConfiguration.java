@@ -1,10 +1,20 @@
 package org.apache.streams.persistence.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-@Component
+@Configuration
+@PropertySource("classpath:cassandra.properties")
 public class CassandraConfiguration {
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
+
     @Value("${cassandra.keyspaceName}")
     private String keyspaceName;
 
