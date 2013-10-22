@@ -10,8 +10,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            /WEB-INF/propertiesLoader.xml
-            /WEB-INF/spring-web-servlet.xml
+            classpath:streams_web_applicationContext.xml
         </param-value>
     </context-param>
     <!-- the listener that kick-starts Spring -->
@@ -22,6 +21,10 @@
     <servlet>
         <servlet-name>webservice</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:streams_web_servletContext.xml</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
