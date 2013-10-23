@@ -33,6 +33,6 @@ public class StreamsActivityPublishingServiceImpl implements StreamsActivityPubl
     public String publish(String publisherID, String activityJSON) throws Exception {
         ActivityStreamsPublisher publisher = publisherService.getActivityStreamsPublisher(publisherID);
         activityService.receiveActivity(publisher,activityJSON);
-        return "The activity was successfully published!";
+        return activityJSON;
     }
 }
