@@ -32,8 +32,6 @@ public class IntegrationTest {
     private WebApplicationContext wac;
     @Autowired
     private MockHttpSession session;
-    @Autowired
-    private MockHttpServletRequest request;
 
     private MockMvc mockMvc;
 
@@ -41,7 +39,7 @@ public class IntegrationTest {
     private final String publisherRegistrationJson = "{\n" +
             "     \"authToken\": \"token\",\n" +
             "     \"@class\":\"org.apache.streams.osgi.components.activityconsumer.impl.PushActivityConsumer\",    \n" +
-            "     \"src\": \"http.example.com:8888\"\n" +
+            "     \"src\": \"www.providerexample.com\"\n" +
             " }";
 
     private final String subscriberRegistrationJson = "{\n" +
@@ -52,37 +50,82 @@ public class IntegrationTest {
             "     ]\n" +
             " }";
 
+    private final String validActivity = "{\n" +
+            "     \"id\": \"id\",\n" +
+            "     \"verb\": \"verb\",\n" +
+            "     \"tags\": \"tags\",\n" +
+            "     \"provider\": {\n" +
+            "          \"url\": \"www.providerexample.com\"\n" +
+            "     },\n" +
+            "     \"actor\": {\n" +
+            "          \"id\": \"actorid\",\n" +
+            "          \"objectType\": \"actorobject\",\n" +
+            "          \"displayName\": \"actorname\",\n" +
+            "          \"url\": \"www.actorexampleurl.com\"\n" +
+            "     },\n" +
+            "     \"target\": {\n" +
+            "           \"id\": \"targetid\",\n" +
+            "           \"displayName\": \"targetname\",\n" +
+            "           \"url\": \"www.targeturl.com\"\n" +
+            "     },\n" +
+            "     \"object\": {\n" +
+            "           \"id\": \"objectid\",\n" +
+            "           \"displayName\": \"objectname\",\n" +
+            "           \"objectType\": \"object\",\n" +
+            "           \"url\": \"www.objecturl.org\"\n" +
+            "       }\n" +
+            " }";
+
+    private final String urlBeginning = "http://localhost:8080/streams-web/app";
+
 
     @Before
     public void setup() throws ServletException {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-    @After
-    public void after(){
-    }
-
     @Ignore
     @Test
     public void test_PublisherRegister() throws Exception {
-        byte[] contentBody = publisherRegistrationJson.getBytes();
+        byte[] publisherBody = publisherRegistrationJson.getBytes();
+        byte[] activityBody = validActivity.getBytes();
 
-        this.mockMvc.perform(post("/publisherRegister").session(session)
+        ResultActions resultActions1 = this.mockMvc.perform(post("/publisherRegister").session(session)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(contentBody)
-                .accept(MediaType.TEXT_HTML))
-                .andExpect(status().isOk());
+                .header("host","localhost:8080")
+                .content(publisherBody)
+                .accept(MediaType.TEXT_HTML));
+
+        String pubUrl = resultActions1.andReturn().getResponse().getContentAsString();
+        pubUrl = pubUrl.substring(urlBeginning.length());
+
+        ResultActions resultActions2 = this.mockMvc.perform(post(pubUrl).session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(activityBody)
+                .accept(MediaType.TEXT_HTML));
+
+        resultActions1.andExpect(status().isOk());
+        resultActions2.andExpect(status().isOk());
     }
 
     @Ignore
     @Test
     public void test_SubscriberRegister() throws Exception {
-        byte[] contentBody = subscriberRegistrationJson.getBytes();
+        byte[] subscriberBody = subscriberRegistrationJson.getBytes();
 
-        this.mockMvc.perform(post("/subscriberRegister").session(session)
+        ResultActions resultActions1 = this.mockMvc.perform(post("/subscriberRegister").session(session)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(contentBody)
-                .accept(MediaType.TEXT_HTML))
-                .andExpect(status().isOk());
+                .header("host","localhost:8080")
+                .content(subscriberBody)
+                .accept(MediaType.TEXT_HTML));
+
+        String subUrl = resultActions1.andReturn().getResponse().getContentAsString();
+        subUrl = subUrl.substring(urlBeginning.length());
+
+        ResultActions resultActions2 = this.mockMvc.perform(get(subUrl).session(session)
+                .accept(MediaType.APPLICATION_JSON));
+
+        resultActions1.andExpect(status().isOk());
+        resultActions2.andExpect(status().isOk());
     }
 }
