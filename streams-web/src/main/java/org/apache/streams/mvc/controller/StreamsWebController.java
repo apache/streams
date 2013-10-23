@@ -6,7 +6,6 @@ import org.apache.streams.components.service.StreamsActivityPublishingService;
 import org.apache.streams.components.service.StreamsActivityReceivingService;
 import org.apache.streams.components.service.StreamsPublisherRegistrationService;
 import org.apache.streams.components.service.StreamsSubscriberRegistrationService;
-import org.apache.streams.mvc.configuration.StreamsConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,20 +24,17 @@ public class StreamsWebController {
     private StreamsSubscriberRegistrationService subscriberRegistrationService;
     private StreamsActivityPublishingService activityPublishingService;
     private StreamsActivityReceivingService activityReceivingService;
-    private StreamsConfiguration streamsConfiguration;
 
     @Autowired
     public StreamsWebController(
             StreamsPublisherRegistrationService publisherRegistrationService,
             StreamsSubscriberRegistrationService subscriberRegistrationService,
             StreamsActivityPublishingService activityPublishingService,
-            StreamsActivityReceivingService activityReceivingService,
-            StreamsConfiguration streamsConfiguration) {
+            StreamsActivityReceivingService activityReceivingService) {
         this.publisherRegistrationService = publisherRegistrationService;
         this.subscriberRegistrationService = subscriberRegistrationService;
         this.activityPublishingService = activityPublishingService;
         this.activityReceivingService = activityReceivingService;
-        this.streamsConfiguration = streamsConfiguration;
     }
 
     /**
@@ -49,9 +45,9 @@ public class StreamsWebController {
      */
     @RequestMapping(headers = {"content-type=application/json"}, value = "/publisherRegister", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<String> registerPublisher(@RequestBody String payload) {
+    public ResponseEntity<String> registerPublisher(@RequestBody String payload, @RequestHeader("host") String host) {
         try{
-            return new ResponseEntity<String>(streamsConfiguration.getBaseUrlPath() + "postActivity/" + publisherRegistrationService.register(payload), HttpStatus.OK);
+            return new ResponseEntity<String>("http://" + host + "/postActivity/" + publisherRegistrationService.register(payload), HttpStatus.OK);
         }catch(Exception e){
             log.error(e);
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -66,9 +62,9 @@ public class StreamsWebController {
      */
     @RequestMapping(headers = {"content-type=application/json"}, value = "/subscriberRegister", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<String> registerSubscriber(@RequestBody String payload) {
+    public ResponseEntity<String> registerSubscriber(@RequestBody String payload, @RequestHeader("host") String host) {
         try{
-            return new ResponseEntity<String>(streamsConfiguration.getBaseUrlPath() + "getActivity/" + subscriberRegistrationService.register(payload), HttpStatus.OK);
+            return new ResponseEntity<String>("http://" + host + "/getActivity/" + subscriberRegistrationService.register(payload), HttpStatus.OK);
         }catch(Exception e){
             log.error(e);
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
