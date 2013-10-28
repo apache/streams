@@ -7,7 +7,9 @@ import org.apache.streams.components.service.StreamsActivityReceivingService;
 import org.apache.streams.components.service.StreamsPublisherRegistrationService;
 import org.apache.streams.components.service.StreamsSubscriberRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -98,6 +100,8 @@ public class StreamsWebController {
     @RequestMapping(value = "/getActivity/{subscriberID}", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<String> getActivity(@PathVariable("subscriberID") String subscriberID) {
-         return new ResponseEntity<String>(activityReceivingService.getActivity(subscriberID), HttpStatus.OK);
+         HttpHeaders responseHeaders = new HttpHeaders();
+         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+         return new ResponseEntity<String>(activityReceivingService.getActivity(subscriberID), responseHeaders, HttpStatus.OK);
     }
 }

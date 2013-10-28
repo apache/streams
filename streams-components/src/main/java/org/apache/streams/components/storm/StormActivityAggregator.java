@@ -22,6 +22,7 @@ public class StormActivityAggregator {
 
     @PostConstruct
     public void aggregate() {
+
         TopologyBuilder builder = new TopologyBuilder();
 
         builder.setSpout("activity", spout, 10);
@@ -32,5 +33,6 @@ public class StormActivityAggregator {
 
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology("test", conf, builder.createTopology());
+
     }
 }
