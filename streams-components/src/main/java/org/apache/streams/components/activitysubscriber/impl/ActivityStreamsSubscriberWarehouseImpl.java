@@ -1,13 +1,13 @@
 package org.apache.streams.components.activitysubscriber.impl;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriber;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
+import org.apache.streams.components.service.StreamsActivityRepositoryService;
+import org.apache.streams.persistence.model.ActivityStreamsSubscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,29 +16,46 @@ public class ActivityStreamsSubscriberWarehouseImpl implements ActivityStreamsSu
     private static final transient Log LOG = LogFactory.getLog(ActivityStreamsSubscriberWarehouseImpl.class);
 
     private Map<String, ActivityStreamsSubscriber> subscribers;
+    private StreamsActivityRepositoryService activityService;
 
-    public ActivityStreamsSubscriberWarehouseImpl(){
+    @Autowired
+    public ActivityStreamsSubscriberWarehouseImpl(StreamsActivityRepositoryService activityService) {
+        this.activityService = activityService;
         subscribers = new HashMap<String, ActivityStreamsSubscriber>();
     }
 
-    public void register(ActivityStreamsSubscriber activitySubscriber) {
-        if (!subscribers.containsKey(activitySubscriber.getInRoute())){
-            subscribers.put(activitySubscriber.getInRoute(), activitySubscriber);
-            activitySubscriber.init();
+    @Override
+    public void register(ActivityStreamsSubscription subscription) {
+        if (!subscribers.containsKey(subscription.getInRoute())) {
+            ActivityStreamsSubscriber subscriber = new ActivityStreamsSubscriberDelegate();
+            subscribers.put(subscription.getInRoute(), subscriber);
         }
-
     }
 
-    //the warehouse can do some interesting things to make the filtering efficient i think...
-    public ActivityStreamsSubscriber findSubscribersByID(String id){
-        return subscribers.get(id);
+    @Override
+    public String getStream(String inRoute) {
+        ActivityStreamsSubscriber subscriber = getSubscriber(inRoute);
+        if (subscriber != null) {
+            return subscriber.getStream();
+        } else {
+            return "Registration Needed";
+        }
     }
 
-
-    public Collection<ActivityStreamsSubscriber> getAllSubscribers(){
-        return subscribers.values();
+    @Override
+    public ActivityStreamsSubscriber getSubscriber(String inRoute) {
+        return subscribers.get(inRoute);
     }
 
-
-
+    @Override
+    public void updateSubscriber(ActivityStreamsSubscription subscription) {
+        ActivityStreamsSubscriber subscriber = getSubscriber(subscription.getInRoute());
+        if (subscriber != null) {
+            //TODO: an activity posted in between the cql query and setting the lastUpdated field will be lost
+            Set<String> activities = new TreeSet<String>();
+            activities.addAll(activityService.getActivitiesForFilters(subscription.getFilters(), subscriber.getLastUpdated()));
+            subscriber.setLastUpdated(new Date());
+            subscriber.receive(new ArrayList<String>(activities));
+        }
+    }
 }

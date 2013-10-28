@@ -3,12 +3,9 @@ package org.apache.streams.components.service.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.service.StreamsSubscriberRegistrationService;
-import org.apache.streams.components.aggregation.ActivityAggregator;
 import org.apache.streams.components.service.StreamsSubscriptionRepositoryService;
-import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriber;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.persistence.model.ActivityStreamsSubscription;
-import org.apache.streams.components.activitysubscriber.impl.ActivityStreamsSubscriberDelegate;
 import org.apache.streams.persistence.model.cassandra.CassandraSubscription;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -23,17 +20,14 @@ public class StreamsSubscriberRegistrationServiceImpl implements StreamsSubscrib
     private Log log = LogFactory.getLog(StreamsSubscriberRegistrationServiceImpl.class);
 
     private StreamsSubscriptionRepositoryService subscriptionService;
-    private ActivityAggregator activityAggregator;
     private ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse;
 
     @Autowired
     public StreamsSubscriberRegistrationServiceImpl(
             StreamsSubscriptionRepositoryService subscriptionService,
-            ActivityAggregator activityAggregator,
             ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse
     ) {
         this.subscriptionService = subscriptionService;
-        this.activityAggregator = activityAggregator;
         this.activityStreamsSubscriberWarehouse = activityStreamsSubscriberWarehouse;
     }
 
@@ -47,18 +41,10 @@ public class StreamsSubscriberRegistrationServiceImpl implements StreamsSubscrib
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         ActivityStreamsSubscription subscription = mapper.readValue(subscriberJSON, CassandraSubscription.class);
-        if (subscription.getFilters() == null) {
-            subscription.setFilters(subscriptionService.getFilters(subscription.getId()));
-        } else {
-            subscriptionService.saveFilters(subscription);
-        }
+        subscription.setInRoute("" + UUID.randomUUID());
+        subscriptionService.saveSubscription(subscription);
+        activityStreamsSubscriberWarehouse.register(subscription);
 
-        ActivityStreamsSubscriber subscriber = new ActivityStreamsSubscriberDelegate(subscription);
-        subscriber.setAuthenticated(true);
-        subscriber.setInRoute("" + UUID.randomUUID());
-        activityAggregator.updateSubscriber(subscriber);
-        activityStreamsSubscriberWarehouse.register(subscriber);
-
-        return subscriber.getInRoute();
+        return subscription.getInRoute();
     }
 }

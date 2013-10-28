@@ -20,12 +20,14 @@ public class CassandraSubscriptionService implements StreamsSubscriptionReposito
         this.repository = repository;
     }
 
-    public List<String> getFilters(String authToken) {
-        return Arrays.asList(repository.getFilters(authToken).split(" "));
-    }
-
-    public void saveFilters(ActivityStreamsSubscription subscription) {
+    @Override
+    public void saveSubscription(ActivityStreamsSubscription subscription) {
         subscription.setId("" + UUID.randomUUID());
         repository.save(subscription);
+    }
+
+    @Override
+    public List<ActivityStreamsSubscription> getAllSubscriptions(){
+        return repository.getAllSubscriptions();
     }
 }

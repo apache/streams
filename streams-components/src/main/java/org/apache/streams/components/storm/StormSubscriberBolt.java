@@ -7,8 +7,10 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
+import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.components.service.StreamsActivityRepositoryService;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriber;
+import org.apache.streams.persistence.model.ActivityStreamsSubscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ import java.util.*;
 public class StormSubscriberBolt extends BaseBasicBolt {
     private static ApplicationContext appContext;
     BatchOutputCollector _collector;
-    StreamsActivityRepositoryService activityService;
+    private ActivityStreamsSubscriberWarehouse subscriberWarehouse;
 
     @Autowired
     public StormSubscriberBolt(ApplicationContext ctx) {
@@ -28,24 +30,23 @@ public class StormSubscriberBolt extends BaseBasicBolt {
 
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
-        activityService = (StreamsActivityRepositoryService) appContext.getBean("cassandraActivityService");
+        subscriberWarehouse = (ActivityStreamsSubscriberWarehouse) appContext.getBean("activityStreamsSubscriberWarehouseImpl");
         super.prepare(stormConf, context);
     }
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
-        if(tuple.getValue(0) instanceof ActivityStreamsSubscriber){
-            ActivityStreamsSubscriber subscriber = (ActivityStreamsSubscriber) tuple.getValue(0);
-            this.updateSubscriber(subscriber);
+        if(tuple.getValue(0) instanceof ActivityStreamsSubscription){
+            ActivityStreamsSubscription subscription = (ActivityStreamsSubscription) tuple.getValue(0);
+            if(subscriberWarehouse.getSubscriber(subscription.getInRoute()) == null){
+                subscriberWarehouse.register(subscription);
+            }
+            subscriberWarehouse.updateSubscriber(subscription);
         }
     }
 
-    public void updateSubscriber(ActivityStreamsSubscriber subscriber) {
-        Set<String> activities = new TreeSet<String>();
-        activities.addAll(activityService.getActivitiesForFilters(subscriber.getSubscription().getFilters(), subscriber.getLastUpdated()));
-        //TODO: an activity posted in between the cql query and setting the lastUpdated field will be lost
-        subscriber.setLastUpdated(new Date());
-        subscriber.receive(new ArrayList<String>(activities));
+    public void updateSubscription(ActivityStreamsSubscription subscription) {
+
     }
 
     @Override

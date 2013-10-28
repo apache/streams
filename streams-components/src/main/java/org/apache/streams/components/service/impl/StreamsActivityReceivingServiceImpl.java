@@ -25,7 +25,6 @@ public class StreamsActivityReceivingServiceImpl implements StreamsActivityRecei
      * @return the stream list in string form
      * */
     public  String getActivity(String subscriberID){
-        ActivityStreamsSubscriber subscriber = activityStreamsSubscriberWarehouse.findSubscribersByID(subscriberID);
-        return subscriber.getStream();
+        return activityStreamsSubscriberWarehouse.getStream(subscriberID);
     }
 }

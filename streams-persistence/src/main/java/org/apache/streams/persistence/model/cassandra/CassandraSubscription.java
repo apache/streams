@@ -13,6 +13,8 @@ public class CassandraSubscription implements ActivityStreamsSubscription {
 
     private String id;
 
+    private String inRoute;
+
     public void setFilters(List<String> filters) {
         //TODO: it's possible that this could be null
         this.filters = filters;
@@ -32,5 +34,15 @@ public class CassandraSubscription implements ActivityStreamsSubscription {
     @Override
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public String getInRoute() {
+        return inRoute;
+    }
+
+    @Override
+    public void setInRoute(String inRoute) {
+        this.inRoute = inRoute;
     }
 }

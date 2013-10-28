@@ -11,6 +11,9 @@ import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscribe
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.components.activitysubscriber.impl.ActivityStreamsSubscriberWarehouseImpl;
 import org.apache.streams.components.service.StreamsActivityRepositoryService;
+import org.apache.streams.components.service.StreamsSubscriptionRepositoryService;
+import org.apache.streams.persistence.model.ActivityStreamsSubscription;
+import org.apache.streams.persistence.repository.SubscriptionRepository;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
@@ -26,7 +29,7 @@ import java.util.Map;
 public class StormSubscriberSpout extends BaseRichSpout {
 
     private static ApplicationContext appContext;
-    private ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse;
+    private StreamsSubscriptionRepositoryService repositoryService;
     private SpoutOutputCollector _collector;
     private Iterator iterator;
 
@@ -37,7 +40,7 @@ public class StormSubscriberSpout extends BaseRichSpout {
 
     @Override
     public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
-        activityStreamsSubscriberWarehouse = (ActivityStreamsSubscriberWarehouse)appContext.getBean("activityStreamsSubscriberWarehouseImpl");
+        repositoryService = (StreamsSubscriptionRepositoryService)appContext.getBean("cassandraSubscriptionService");
 
         _collector = collector;
     }
@@ -45,14 +48,13 @@ public class StormSubscriberSpout extends BaseRichSpout {
     @Override
     public void nextTuple() {
         Utils.sleep(10000);
-        for (ActivityStreamsSubscriber activityStreamsSubscriber : activityStreamsSubscriberWarehouse.getAllSubscribers()) {
-            _collector.emit(new Values(activityStreamsSubscriber));
+        for (ActivityStreamsSubscription subscription : repositoryService.getAllSubscriptions()) {
+            _collector.emit(new Values(subscription));
         }
     }
 
     @Override
     public void ack(Object id) {
-        System.out.println("RandomSentenceSpout.ack: "+ id);
     }
 
     @Override

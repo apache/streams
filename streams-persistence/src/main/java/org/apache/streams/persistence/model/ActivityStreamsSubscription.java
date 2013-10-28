@@ -1,15 +1,16 @@
 package org.apache.streams.persistence.model;
 
-import org.codehaus.jackson.annotate.JsonTypeInfo;
-
 import java.util.List;
 
 public interface ActivityStreamsSubscription {
 
-    public void setFilters(List<String> filters);
-    public List<String> getFilters();
+    void setFilters(List<String> filters);
+    List<String> getFilters();
 
-    public String getId();
-    public void setId(String id);
+    String getId();
+    void setId(String id);
+
+    String getInRoute();
+    void setInRoute(String inRoute);
 
 }
