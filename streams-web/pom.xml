@@ -30,19 +30,7 @@
 
   <name>Apache Streams Web App</name>
 
-  <properties>
-    <junit.version>4.11</junit.version>
-    <jdk.version>1.6</jdk.version>
-  </properties>
-
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-
 
       <dependency>
           <groupId>org.apache.streams</groupId>
@@ -50,22 +38,21 @@
           <version>${project.version}</version>
       </dependency>
 
-
       <!-- logging -->
       <dependency>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
-          <version>1.6.1</version>
+          <version>${slf4j.version}</version>
       </dependency>
       <dependency>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-log4j12</artifactId>
-          <version>1.6.1</version>
+          <version>${slf4j.version}</version>
       </dependency>
       <dependency>
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
-          <version>1.2.16</version>
+          <version>${log4j.version}</version>
       </dependency>
 
 
@@ -78,6 +65,12 @@
       <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-web</artifactId>
+          <version>${spring.version}</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-webmvc</artifactId>
           <version>${spring.version}</version>
       </dependency>
 
@@ -125,8 +118,6 @@
                               <resource>
                                   <directory>${project.parent.basedir}/streams-eip-routes/src/main/resources/META-INF/spring</directory>
                                   <excludes>
-                                    <exclude>streams-eip-osgi-component-import.xml</exclude>
-                                     <exclude>propertiesLoader.xml</exclude>
                                     <exclude>streams.properties</exclude>
                                   </excludes>
                               </resource>

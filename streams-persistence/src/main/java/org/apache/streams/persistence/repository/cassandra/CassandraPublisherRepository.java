@@ -27,11 +27,10 @@ public class CassandraPublisherRepository implements PublisherRepository{
 
         try {
             keyspace.getSession().execute("CREATE TABLE " + configuration.getPublisherColumnFamilyName() + " (" +
-                    "id text, " +
                     "inroute text, " +
                     "src text, " +
 
-                    "PRIMARY KEY (id, inroute));");
+                    "PRIMARY KEY (inroute));");
         } catch (AlreadyExistsException ignored) {
         }
     }
@@ -39,9 +38,8 @@ public class CassandraPublisherRepository implements PublisherRepository{
     @Override
     public void save(ActivityStreamsPublisher publisher){
         String cql = "INSERT INTO " + configuration.getPublisherColumnFamilyName()  + " (" +
-                "id, inroute, src) " +
+                "inroute, src) " +
                 "VALUES ('" +
-                publisher.getId() + "','" +
                 publisher.getInRoute() + "','" +
                 publisher.getSrc() +
 
@@ -51,13 +49,12 @@ public class CassandraPublisherRepository implements PublisherRepository{
 
     @Override
     public ActivityStreamsPublisher getPublisher(String inRoute){
-        String cql = "SELECT * FROM " + configuration.getPublisherColumnFamilyName()  + " WHERE inroute = '" + inRoute+"' ALLOW FILTERING;";
+        String cql = "SELECT * FROM " + configuration.getPublisherColumnFamilyName()  + " WHERE inroute = '" + inRoute+"'";
 
         ResultSet set = keyspace.getSession().execute(cql);
         Row row = set.one();
 
         ActivityStreamsPublisher publisher = new CassandraPublisher();
-        publisher.setId(row.getString("id"));
         publisher.setSrc(row.getString("src"));
         publisher.setInRoute(row.getString("inroute"));
 

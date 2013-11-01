@@ -10,19 +10,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>streams-persistence</artifactId>
+    <packaging>jar</packaging>
 
     <dependencies>
-    <dependency>
-        <groupId>org.apache.rave</groupId>
-        <artifactId>rave-core-api</artifactId>
-        <version>${rave.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.rave</groupId>
+            <artifactId>rave-core-api</artifactId>
+            <version>${rave.version}</version>
+        </dependency>
 
-    <dependency>
-        <groupId>org.apache.rave</groupId>
-        <artifactId>rave-core</artifactId>
-        <version>${rave.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.rave</groupId>
+            <artifactId>rave-core</artifactId>
+            <version>${rave.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.datastax.cassandra</groupId>
@@ -38,6 +39,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
         </dependency>
     </dependencies>
 

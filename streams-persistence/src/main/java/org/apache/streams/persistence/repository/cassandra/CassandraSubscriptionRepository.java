@@ -31,21 +31,25 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository{
 
         try {
             keyspace.getSession().execute("CREATE TABLE " + configuration.getSubscriptionColumnFamilyName() + " (" +
-                    "id text, " +
                     "inroute text, " +
                     "filters text, " +
 
-                    "PRIMARY KEY (id));");
+                    "PRIMARY KEY (inroute));");
         } catch (AlreadyExistsException ignored) {
         }
     }
 
-    public String getSubscriptionForId(String id){
-        String cql = "SELECT * FROM " + configuration.getSubscriptionColumnFamilyName()  + " WHERE id = '" + id+"';";
+    public ActivityStreamsSubscription getSubscription(String inRoute){
+        String cql = "SELECT * FROM " + configuration.getSubscriptionColumnFamilyName()  + " WHERE inroute = '" + inRoute+"';";
 
         ResultSet set = keyspace.getSession().execute(cql);
 
-        return set.one().getString("filters");
+        ActivityStreamsSubscription subscription = new CassandraSubscription();
+
+        subscription.setInRoute(set.one().getString("inroute"));
+        subscription.setFilters(Arrays.asList(set.one().getString("filters").split(",")));
+
+        return subscription;
     }
 
     public List<ActivityStreamsSubscription> getAllSubscriptions(){
@@ -57,7 +61,6 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository{
         for (Row row : set) {
             ActivityStreamsSubscription subscription = new CassandraSubscription();
 
-            subscription.setId(row.getString("id"));
             subscription.setInRoute(row.getString("inroute"));
             subscription.setFilters(Arrays.asList(row.getString("filters").split(",")));
 
@@ -70,9 +73,8 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository{
     public void save(ActivityStreamsSubscription subscription){
         //TODO: will this overwrite?
         String cql = "INSERT INTO " + configuration.getSubscriptionColumnFamilyName()  + " (" +
-                "id, inroute, filters) " +
+                "inroute, filters) " +
                 "VALUES ('" +
-                subscription.getId() + "','" +
                 subscription.getInRoute() + "','" +
                 StringUtils.join(subscription.getFilters(), ",") +
 

@@ -8,8 +8,6 @@ import backtype.storm.topology.base.BaseBasicBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
-import org.apache.streams.components.service.StreamsActivityRepositoryService;
-import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriber;
 import org.apache.streams.persistence.model.ActivityStreamsSubscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -43,10 +41,6 @@ public class StormSubscriberBolt extends BaseBasicBolt {
             }
             subscriberWarehouse.updateSubscriber(subscription);
         }
-    }
-
-    public void updateSubscription(ActivityStreamsSubscription subscription) {
-
     }
 
     @Override

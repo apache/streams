@@ -5,7 +5,7 @@ import org.apache.streams.persistence.model.ActivityStreamsSubscription;
 import java.util.List;
 
 public interface SubscriptionRepository {
-    String getSubscriptionForId(String id);
+    ActivityStreamsSubscription getSubscription(String inRoute);
     List<ActivityStreamsSubscription> getAllSubscriptions();
     void save(ActivityStreamsSubscription subscription);
 }

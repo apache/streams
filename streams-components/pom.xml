@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>streams-components</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
         <bundle.symbolicName>streams-components</bundle.symbolicName>
@@ -70,6 +71,12 @@
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-persistence</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
         </dependency>
 
     </dependencies>
