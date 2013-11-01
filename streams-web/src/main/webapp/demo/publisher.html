@@ -1,20 +1,29 @@
 <!DOCTYPE HTML>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="js/publisher.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/activityStyles.css" />
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
 
     <title>Publisher Demo</title>
 </head>
 
 <body>
-      <form>
-        <p>
-
-            <label>Enter your Publisher Registration JSON here:</label>
-            <textarea id="publisherRegistrationJSON"
-                rows="12"
-                cols="80">{
+    <form  class="form-publisher">
+        <label>Publisher Registration JSON:</label>
+        <textarea id="publisherRegistrationJSON"
+               class="form-control"
+               type="text"
+               rows="12"
+               cols="80">{
                 "authToken": "token",
                 "@class":"org.apache.streams.osgi.components.activityconsumer.impl.PushActivityConsumer",
                 "input_type": "http",
@@ -25,20 +34,19 @@
                 "username": "username",
                 "password": "password"
                 }
-            </textarea><br>
-          </p>
-      </form>
-      <button type="button" onclick="publisher.registerPublisher()">Submit Registration JSON</button><br>
+        </textarea><br>
+        <button type="button" class="btn btn-primary" onclick="publisher.registerPublisher()">Submit Registration JSON</button><br><br>
+        <input id="registrationUrl" size="100">
+    </form>
 
-      <input id="registrationUrl">
 
-      <form>
-          <p>
-
-              <label>Enter your Publisher Registration JSON here:</label>
-              <textarea id="publisherActivityJSON"
-                        rows="12"
-                        cols="80">
+    <form  class="form-publisher">
+        <label>Publisher Activity JSON:</label>
+        <textarea id="publisherActivityJSON"
+                  class="form-control"
+                  type="text"
+                  rows="12"
+                  cols="80">
                   {
                   "id": "id",
                   "verb": "verb",
@@ -64,11 +72,15 @@
                   "url": "www.objecturl.org"
                   }
                   }
-              </textarea><br>
-          </p>
-      </form>
+        </textarea><br>
+        <button type="button" class="btn btn-primary" onclick="publisher.postActivity()">Submit Activity JSON</button><br>
+        <p id="successMessage"></p>
+    </form>
 
-      <button type="button" onclick="publisher.postActivity()">Submit Activity JSON</button><br>
-      <p id="successMessage"></p>
+
+      <!-- Bootstrap core JavaScript
+     ================================================== -->
+      <!-- Placed at the end of the document so the pages load faster -->
+      <script src="js/bootstrap.min.js"></script>
 </body>
 </html>

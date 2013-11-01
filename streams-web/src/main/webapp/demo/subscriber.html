@@ -1,16 +1,26 @@
 <!DOCTYPE HTML>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="js/subscriber.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/activityStyles.css" />
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
     <title>Subscriber Demo</title>
 </head>
 
 <body>
-<form>
-    <p>
-        <label>Enter your Subscriber Registration JSON here:</label>
+    <form  class="form-publisher">
+        <label>Subscriber Registration JSON:</label>
         <textarea id="subscriberRegistrationJSON"
+                  class="form-control"
+                  type="text"
                   rows="12"
                   cols="80">
             {
@@ -21,20 +31,20 @@
             ]
             }
         </textarea><br>
-    </p>
-</form>
+        <button type="button" class="btn btn-primary" onclick="subscriber.registerSubscriber()">Submit Registration JSON</button><br><br>
+        <input id="registrationUrl" size="100">
+    </form>
+    <form class="form-publisher">
+        <button type="button" class="btn btn-primary" onclick="subscriber.getActivities()">Get Activities</button><br><br>
+        <textarea id="successMessage"
+                  class="form-control"
+                  rows="16"
+                  cols="80"></textarea>
+    </form>
 
-<button type="button" onclick="subscriber.registerSubscriber()">Submit Registration JSON</button>
-<br>
-<textarea id="registrationUrl"
-          rows="2"
-          cols="80"></textarea><br>
-
-<button type="button" onclick="subscriber.getActivities()">Get Activities</button>
-<br>
-<textarea id="successMessage"
-          rows="16"
-          cols="80"></textarea>
-
+    <!-- Bootstrap core JavaScript
+   ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/bootstrap.min.js"></script>
 </body>
 </html>

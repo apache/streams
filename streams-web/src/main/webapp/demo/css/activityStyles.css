@@ -1,9 +1,42 @@
+body {
+    padding-top: 40px;
+    background-color: #eeeeee;
+}
+input{
+    margin: 0 auto;
+}
+.form-activities {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+.form-activities .form-control .form-publisher {
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.form-publisher {
+    max-width: 500px;
+    padding: 15px;
+    margin: 0 auto;
+}
 .activity {
     -moz-box-shadow:    3px 3px 5px 6px #ccc;
     -webkit-box-shadow: 3px 3px 5px 6px #ccc;
     box-shadow:         3px 3px 5px 6px #ccc;
     padding: .3em .7em .3em .7em;
-    width: 300px;
     margin-top: 25px;
-    margin-bottom: 25px; }
+    margin-bottom: 25px;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+    background: #efefef;
+}
+.activity:nth-child(odd) {
+    background: #fff;
+}
 .actor { text-align: left; }

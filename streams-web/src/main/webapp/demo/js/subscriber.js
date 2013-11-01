@@ -20,14 +20,13 @@ var subscriber = subscriber || (function(){
 
     //returns activity streams (JSON) that have the same tag specified in the subscriber's filters
     var getActivities = function(){
-        var registrationUrl;
+        var registrationUrl = $("#registrationUrl").val();
         $.ajax({
-            contentType: "text/plain",
             type:"GET",
-            url: $("#registrationUrl").val(),
+            url: registrationUrl,
             success:function(data){
                 console.log(data);
-                $("#successMessage").val(data);
+                $("#successMessage").val(JSON.stringify(data));
             }
         })
     };

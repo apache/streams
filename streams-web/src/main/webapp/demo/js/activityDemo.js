@@ -30,26 +30,27 @@ var activityDemo = activityDemo || (function(){
             success:function(data){
                 console.log(data);
                 subscriberURL = data;
-                getActivitiesStream();
+                //getActivitiesStream();
             }
         })
     };
 
-    // Gets activities streams array
-    var getActivitiesStream = function(){
-        if(!subscriberURL){
-            alert("Please enter a subscriber url first");
-        }
+    setInterval(function(){
+        // Gets activities streams array
+       // var getActivitiesStream = function(){
+            if(!subscriberURL){
+                alert("Please enter a subscriber url first");
+            }else(
+                $.ajax({
+                    type:"GET",
+                    url: subscriberURL,
+                    success:function(data){
+                        setTemplate(data);
+                    }
+                }));
+        //};
+    },3000);
 
-        $.ajax({
-            contentType: "application/json",
-            type:"GET",
-            url: subscriberURL,
-            success:function(data){
-                setTemplate(data);
-            }
-        })
-    };
 
     // Applies the array returned from Streams to the html template to be displayed
     var setTemplate = function(activityStreamData){

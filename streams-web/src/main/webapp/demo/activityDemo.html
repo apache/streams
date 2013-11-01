@@ -1,17 +1,30 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="js/handlebars.js"></script>
     <script type="text/javascript" src="js/activityDemo.js"></script>
     <link rel="stylesheet" type="text/css" href="css/activityStyles.css" />
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->
+
     <title>Activity Streams Demo</title>
+
 </head>
 <body>
-    <label>View Streams for the following tag:</label><br>
-    <textarea id="tag" rows="2"></textarea><br>
-    <button type="button" onclick="activityDemo.getActivitiesForGivenTag()">Get Activities</button><br><br>
 
+    <form  class="form-activities">
+        <label>View Streams for the following tag:</label><br>
+        <input id="tag" type="text" class="form-control" placeholder="Enter tag here" autofocus><br>
+        <button type="button" class="btn btn-lg btn-primary btn-block" onclick="activityDemo.getActivitiesForGivenTag()">Get Activities</button><br><br>
+    </form>
     <div id="activityStream"></div>
     <script type="text/x-handlebars-template" id='activity-template'>
         <!--Iterates through each activity in the array that was returned from Streams-->
@@ -22,5 +35,9 @@
         {{/each}}
     </script>
 
+    <!-- Bootstrap core JavaScript
+   ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/bootstrap.min.js"></script>
 </body>
 </html>
