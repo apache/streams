@@ -19,15 +19,15 @@ import java.util.UUID;
 public class StreamsSubscriberRegistrationServiceImpl implements StreamsSubscriberRegistrationService {
     private Log log = LogFactory.getLog(StreamsSubscriberRegistrationServiceImpl.class);
 
-    private StreamsSubscriptionRepositoryService subscriptionService;
+    private StreamsSubscriptionRepositoryService subscriptionRepositoryService;
     private ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse;
 
     @Autowired
     public StreamsSubscriberRegistrationServiceImpl(
-            StreamsSubscriptionRepositoryService subscriptionService,
+            StreamsSubscriptionRepositoryService subscriptionRepositoryService,
             ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse
     ) {
-        this.subscriptionService = subscriptionService;
+        this.subscriptionRepositoryService = subscriptionRepositoryService;
         this.activityStreamsSubscriberWarehouse = activityStreamsSubscriberWarehouse;
     }
 
@@ -42,7 +42,7 @@ public class StreamsSubscriberRegistrationServiceImpl implements StreamsSubscrib
 
         ActivityStreamsSubscription subscription = mapper.readValue(subscriberJSON, CassandraSubscription.class);
         subscription.setInRoute("" + UUID.randomUUID());
-        subscriptionService.saveSubscription(subscription);
+        subscriptionRepositoryService.saveSubscription(subscription);
         activityStreamsSubscriberWarehouse.register(subscription);
 
         return subscription.getInRoute();
