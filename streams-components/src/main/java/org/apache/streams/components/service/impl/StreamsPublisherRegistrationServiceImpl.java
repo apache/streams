@@ -6,8 +6,7 @@ import org.apache.streams.components.service.StreamsPublisherRegistrationService
 import org.apache.streams.components.service.StreamsPublisherRepositoryService;
 import org.apache.streams.persistence.model.ActivityStreamsPublisher;
 import org.apache.streams.persistence.model.cassandra.CassandraPublisher;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,10 +17,12 @@ public class StreamsPublisherRegistrationServiceImpl implements StreamsPublisher
     private Log log = LogFactory.getLog(StreamsPublisherRegistrationServiceImpl.class);
 
     private StreamsPublisherRepositoryService publisherRepositoryService;
+    private ObjectMapper mapper;
 
     @Autowired
-    public StreamsPublisherRegistrationServiceImpl(StreamsPublisherRepositoryService publisherRepositoryService) {
+    public StreamsPublisherRegistrationServiceImpl(StreamsPublisherRepositoryService publisherRepositoryService, ObjectMapper mapper) {
         this.publisherRepositoryService = publisherRepositoryService;
+        this.mapper = mapper;
     }
 
     /**
@@ -31,8 +32,6 @@ public class StreamsPublisherRegistrationServiceImpl implements StreamsPublisher
      * */
     public String register(String publisherJSON) throws Exception {
         log.info("attempting to register publisher json: " + publisherJSON);
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         // read from file, convert it to user class
         ActivityStreamsPublisher publisher = mapper.readValue(publisherJSON, CassandraPublisher.class);

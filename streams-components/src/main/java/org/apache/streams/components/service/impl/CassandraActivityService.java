@@ -7,8 +7,7 @@ import org.apache.streams.components.service.StreamsActivityRepositoryService;
 import org.apache.streams.persistence.model.ActivityStreamsPublisher;
 import org.apache.streams.persistence.model.cassandra.CassandraActivityStreamsEntry;
 import org.apache.streams.persistence.repository.ActivityStreamsRepository;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +23,9 @@ public class CassandraActivityService implements StreamsActivityRepositoryServic
     private ObjectMapper mapper;
 
     @Autowired
-    public CassandraActivityService(ActivityStreamsRepository activityStreamsRepository) {
+    public CassandraActivityService(ActivityStreamsRepository activityStreamsRepository, ObjectMapper mapper) {
         this.activityStreamsRepository = activityStreamsRepository;
-        this.mapper = new ObjectMapper();
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.mapper = mapper;
     }
 
     @Override

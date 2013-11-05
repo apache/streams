@@ -7,8 +7,7 @@ import org.apache.streams.components.service.StreamsSubscriptionRepositoryServic
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.persistence.model.ActivityStreamsSubscription;
 import org.apache.streams.persistence.model.cassandra.CassandraSubscription;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,14 +20,17 @@ public class StreamsSubscriberRegistrationServiceImpl implements StreamsSubscrib
 
     private StreamsSubscriptionRepositoryService subscriptionRepositoryService;
     private ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse;
+    private ObjectMapper mapper;
 
     @Autowired
     public StreamsSubscriberRegistrationServiceImpl(
             StreamsSubscriptionRepositoryService subscriptionRepositoryService,
-            ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse
+            ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse,
+            ObjectMapper mapper
     ) {
         this.subscriptionRepositoryService = subscriptionRepositoryService;
         this.activityStreamsSubscriberWarehouse = activityStreamsSubscriberWarehouse;
+        this.mapper = mapper;
     }
 
     /**
@@ -37,9 +39,6 @@ public class StreamsSubscriberRegistrationServiceImpl implements StreamsSubscrib
      * @return a url that the client can use to GET activity streams
      * */
     public String register(String subscriberJSON) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
         ActivityStreamsSubscription subscription = mapper.readValue(subscriberJSON, CassandraSubscription.class);
         subscription.setInRoute("" + UUID.randomUUID());
         subscriptionRepositoryService.saveSubscription(subscription);

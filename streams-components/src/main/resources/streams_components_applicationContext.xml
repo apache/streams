@@ -10,4 +10,17 @@
     <context:annotation-config />
     <context:component-scan base-package="org.apache.streams.components"/>
 
+    <!-- Jackson Mapper -->
+    <bean id="mapper" class="com.fasterxml.jackson.databind.ObjectMapper" />
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="mapper" />
+        <property name="targetMethod" value="configure" />
+        <property name="arguments">
+            <list>
+                <value type="com.fasterxml.jackson.databind.DeserializationFeature">FAIL_ON_UNKNOWN_PROPERTIES</value>
+                <value>false</value>
+            </list>
+        </property>
+    </bean>
+
 </beans>
