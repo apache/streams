@@ -29,6 +29,7 @@ public class ActivityStreamsSubscriberWarehouseImpl implements ActivityStreamsSu
         if (!subscribers.containsKey(subscription.getInRoute())) {
             ActivityStreamsSubscriber subscriber = new ActivityStreamsSubscriberDelegate();
             subscribers.put(subscription.getInRoute(), subscriber);
+            this.updateSubscriber(subscription);
         }
     }
 
@@ -48,7 +49,7 @@ public class ActivityStreamsSubscriberWarehouseImpl implements ActivityStreamsSu
     }
 
     @Override
-    public void updateSubscriber(ActivityStreamsSubscription subscription) {
+    public synchronized void updateSubscriber(ActivityStreamsSubscription subscription) {
         ActivityStreamsSubscriber subscriber = getSubscriber(subscription.getInRoute());
         if (subscriber != null) {
             //TODO: an activity posted in between the cql query and setting the lastUpdated field will be lost
