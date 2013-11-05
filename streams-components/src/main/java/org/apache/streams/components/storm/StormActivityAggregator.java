@@ -29,7 +29,7 @@ public class StormActivityAggregator {
         builder.setBolt("distribute", bolt, 3).shuffleGrouping("activity");
 
         Config conf = new Config();
-        conf.setDebug(true);
+        conf.setDebug(false);
 
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology("test", conf, builder.createTopology());
