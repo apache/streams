@@ -1,10 +1,10 @@
 package org.apache.streams.persistence.repository.cassandra;
 
-import org.apache.rave.model.ActivityStreamsEntry;
-import org.apache.rave.model.ActivityStreamsObject;
-import org.apache.rave.portal.model.impl.ActivityStreamsObjectImpl;
 import org.apache.streams.persistence.configuration.CassandraConfiguration;
+import org.apache.streams.persistence.model.ActivityStreamsEntry;
+import org.apache.streams.persistence.model.ActivityStreamsObject;
 import org.apache.streams.persistence.model.cassandra.CassandraActivityStreamsEntry;
+import org.apache.streams.persistence.model.cassandra.CassandraActivityStreamsObject;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -27,18 +27,18 @@ public class CassandraActiivtyStreamsRepositoryTest {
 
     @Ignore
     @Test
-    public void testNullFilters(){
-       repository.getActivitiesForFilters(null,new Date(0));
+    public void testNullTags(){
+       repository.getActivitiesForTags(null,new Date(0));
     }
 
     @Ignore
     @Test
     public void saveActivity(){
         ActivityStreamsEntry entry = new CassandraActivityStreamsEntry();
-        ActivityStreamsObject actor = new ActivityStreamsObjectImpl();
-        ActivityStreamsObject target = new ActivityStreamsObjectImpl();
-        ActivityStreamsObject object = new ActivityStreamsObjectImpl();
-        ActivityStreamsObject provider = new ActivityStreamsObjectImpl();
+        ActivityStreamsObject actor = new CassandraActivityStreamsObject();
+        ActivityStreamsObject target = new CassandraActivityStreamsObject();
+        ActivityStreamsObject object = new CassandraActivityStreamsObject();
+        ActivityStreamsObject provider = new CassandraActivityStreamsObject();
 
         actor.setDisplayName("actor_displayname");
         actor.setId("actor_id");

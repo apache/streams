@@ -2,16 +2,16 @@ package org.apache.streams.components.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.rave.model.ActivityStreamsEntry;
 import org.apache.streams.components.service.StreamsActivityRepositoryService;
+import org.apache.streams.persistence.model.ActivityStreamsEntry;
 import org.apache.streams.persistence.model.ActivityStreamsPublisher;
 import org.apache.streams.persistence.model.cassandra.CassandraActivityStreamsEntry;
 import org.apache.streams.persistence.repository.ActivityStreamsRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.*;
 
 @Component
@@ -23,9 +23,10 @@ public class CassandraActivityService implements StreamsActivityRepositoryServic
     private ObjectMapper mapper;
 
     @Autowired
-    public CassandraActivityService(ActivityStreamsRepository activityStreamsRepository, ObjectMapper mapper) {
+    public CassandraActivityService(ActivityStreamsRepository activityStreamsRepository) {
         this.activityStreamsRepository = activityStreamsRepository;
-        this.mapper = mapper;
+        this.mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @Override
@@ -40,8 +41,8 @@ public class CassandraActivityService implements StreamsActivityRepositoryServic
     }
 
     @Override
-    public List<String> getActivitiesForFilters(List<String> filters, Date lastUpdated) {
-        List<ActivityStreamsEntry> activityObjects = activityStreamsRepository.getActivitiesForFilters(filters, lastUpdated);
+    public List<String> getActivitiesForTags(Set<String> tags, Date lastUpdated){
+        List<ActivityStreamsEntry> activityObjects = activityStreamsRepository.getActivitiesForTags(tags, lastUpdated);
         Collections.sort(activityObjects, Collections.reverseOrder());
         //TODO: make the number of streams returned configurable
         return getJsonList(activityObjects.subList(0, Math.min(activityObjects.size(), 10)));
@@ -52,8 +53,8 @@ public class CassandraActivityService implements StreamsActivityRepositoryServic
         for (ActivityStreamsEntry entry : activities) {
             try {
                 jsonList.add(mapper.writeValueAsString(entry));
-            } catch (IOException e) {
-                LOG.error("There was an error while trying to convert the java object to a string: " + entry, e);
+            } catch (Exception e) {
+                LOG.error("Error processing the entry with the id: "+entry.getId(),e);
             }
         }
         return jsonList;

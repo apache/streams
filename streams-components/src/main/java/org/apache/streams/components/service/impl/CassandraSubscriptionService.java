@@ -6,10 +6,8 @@ import org.apache.streams.persistence.repository.SubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 
 @Component
 public class CassandraSubscriptionService implements StreamsSubscriptionRepositoryService {
@@ -23,10 +21,6 @@ public class CassandraSubscriptionService implements StreamsSubscriptionReposito
 
     @Override
     public void saveSubscription(ActivityStreamsSubscription subscription) {
-        subscription.setId("" + UUID.randomUUID());
-        if(subscription.getFilters() == null){
-            subscription.setFilters(new ArrayList<String>());
-        }
         repository.save(subscription);
     }
 
@@ -34,4 +28,20 @@ public class CassandraSubscriptionService implements StreamsSubscriptionReposito
     public List<ActivityStreamsSubscription> getAllSubscriptions(){
         return repository.getAllSubscriptions();
     }
+
+    @Override
+    public void updateTags(String subscriberId, Set<String> add, Set<String> remove){
+        repository.updateTags(subscriberId, add, remove);
+    }
+
+    @Override
+    public ActivityStreamsSubscription getSubscriptionByUsername(String username){
+        return repository.getSubscriptionByUsername(username);
+    }
+
+    @Override
+    public ActivityStreamsSubscription getSubscriptionByInRoute(String inRoute){
+        return repository.getSubscriptionByInRoute(inRoute);
+    }
+
 }

@@ -17,115 +17,75 @@
   specific language governing permissions and limitations
   under the License.
 -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>streams-project</artifactId>
-    <groupId>org.apache.streams</groupId>
-    <version>0.1-SNAPSHOT</version>
-  </parent>
-  <artifactId>streams-web</artifactId>
-  <packaging>war</packaging>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>streams-project</artifactId>
+        <groupId>org.apache.streams</groupId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>streams-web</artifactId>
+    <packaging>war</packaging>
 
-  <name>Apache Streams Web App</name>
+    <name>Apache Streams Web App</name>
 
-  <dependencies>
+    <dependencies>
 
-      <dependency>
-          <groupId>org.apache.streams</groupId>
-          <artifactId>streams-components</artifactId>
-          <version>${project.version}</version>
-      </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-components</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-      <!-- logging -->
-      <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-          <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-          <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-          <version>${log4j.version}</version>
-      </dependency>
+        <!-- logging -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.3</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-      <dependency>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-core</artifactId>
-          <version>${spring.version}</version>
-      </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-      <dependency>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-web</artifactId>
-          <version>${spring.version}</version>
-      </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-      <dependency>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-webmvc</artifactId>
-          <version>${spring.version}</version>
-      </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-      <dependency>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-webmvc</artifactId>
-          <version>${spring.version}</version>
-      </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-      <dependency>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-test</artifactId>
-          <version>${spring.version}</version>
-          <scope>test</scope>
-      </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-      <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <version>${junit.version}</version>
-          <scope>test</scope>
-      </dependency>
-
-  </dependencies>
-  <build>
-    <finalName>streams-web</finalName>
-      <plugins>
-
-
-          <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-resources-plugin</artifactId>
-              <version>2.4.2</version>
-              <executions>
-                  <execution>
-                      <id>default-copy-resources</id>
-                      <phase>process-resources</phase>
-                      <goals>
-                          <goal>copy-resources</goal>
-                      </goals>
-                      <configuration>
-                          <overwrite>true</overwrite>
-                          <outputDirectory>${project.build.directory}/${project.artifactId}/WEB-INF/spring</outputDirectory>
-                          <resources>
-                              <resource>
-                                  <directory>${project.parent.basedir}/streams-eip-routes/src/main/resources/META-INF/spring</directory>
-                                  <excludes>
-                                    <exclude>streams.properties</exclude>
-                                  </excludes>
-                              </resource>
-                          </resources>
-                      </configuration>
-                  </execution>
-              </executions>
-          </plugin>
-  </plugins>
-  </build>
+    </dependencies>
+    <build>
+        <finalName>streams-web</finalName>
+    </build>
 </project>

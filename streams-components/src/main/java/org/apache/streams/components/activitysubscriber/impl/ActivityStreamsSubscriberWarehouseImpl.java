@@ -29,7 +29,6 @@ public class ActivityStreamsSubscriberWarehouseImpl implements ActivityStreamsSu
         if (!subscribers.containsKey(subscription.getInRoute())) {
             ActivityStreamsSubscriber subscriber = new ActivityStreamsSubscriberDelegate();
             subscribers.put(subscription.getInRoute(), subscriber);
-            this.updateSubscriber(subscription);
         }
     }
 
@@ -54,7 +53,7 @@ public class ActivityStreamsSubscriberWarehouseImpl implements ActivityStreamsSu
         if (subscriber != null) {
             //TODO: an activity posted in between the cql query and setting the lastUpdated field will be lost
             Set<String> activities = new TreeSet<String>();
-            activities.addAll(activityService.getActivitiesForFilters(subscription.getFilters(), subscriber.getLastUpdated()));
+            activities.addAll(activityService.getActivitiesForTags(subscription.getTags(), subscriber.getLastUpdated()));
             subscriber.setLastUpdated(new Date());
             subscriber.receive(new ArrayList<String>(activities));
         }

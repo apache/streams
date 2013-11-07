@@ -1,12 +1,14 @@
 package org.apache.streams.components.service.impl;
 
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.service.StreamsPublisherRegistrationService;
 import org.apache.streams.components.service.StreamsPublisherRepositoryService;
 import org.apache.streams.persistence.model.ActivityStreamsPublisher;
 import org.apache.streams.persistence.model.cassandra.CassandraPublisher;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +22,10 @@ public class StreamsPublisherRegistrationServiceImpl implements StreamsPublisher
     private ObjectMapper mapper;
 
     @Autowired
-    public StreamsPublisherRegistrationServiceImpl(StreamsPublisherRepositoryService publisherRepositoryService, ObjectMapper mapper) {
+    public StreamsPublisherRegistrationServiceImpl(StreamsPublisherRepositoryService publisherRepositoryService) {
         this.publisherRepositoryService = publisherRepositoryService;
-        this.mapper = mapper;
+        this.mapper = new ObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     /**

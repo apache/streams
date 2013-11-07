@@ -25,22 +25,12 @@
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
 
+        <!-- logging -->
         <dependency>
-            <groupId>org.apache.rave</groupId>
-            <artifactId>rave-core</artifactId>
-            <version>${rave.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.rave</groupId>
-            <artifactId>rave-core-api</artifactId>
-            <version>${rave.version}</version>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.3</version>
         </dependency>
 
         <dependency>
@@ -53,6 +43,16 @@
             <groupId>storm</groupId>
             <artifactId>storm</artifactId>
             <version>${storm.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -77,6 +77,13 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>${easymock.version}</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

@@ -58,12 +58,11 @@
         <junit.version>4.9</junit.version>
         <cglib.version>3.0</cglib.version>
         <asm.version>3.3.1</asm.version>
-        <jackson.version>2.2.3</jackson.version>
         <storm.version>0.8.2</storm.version>
         <netty.version>3.2.9.Final</netty.version>
         <camel.version>2.12.1</camel.version>
-        <slf4j.version>1.7.5</slf4j.version>
-        <log4j.version>1.2.17</log4j.version>
+        <logging.version>1.7.5</logging.version>
+        <easymock.version>3.2</easymock.version>
     </properties>
 
     <packaging>pom</packaging>

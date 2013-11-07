@@ -1,16 +1,16 @@
 package org.apache.streams.persistence.model;
 
-import java.util.List;
+import java.util.Set;
 
 public interface ActivityStreamsSubscription {
 
-    void setFilters(List<String> filters);
-    List<String> getFilters();
-
-    String getId();
-    void setId(String id);
+    void setTags(Set<String> tags);
+    Set<String> getTags();
 
     String getInRoute();
     void setInRoute(String inRoute);
+
+    String getUsername();
+    void setUsername(String username);
 
 }

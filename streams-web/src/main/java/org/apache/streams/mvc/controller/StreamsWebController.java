@@ -66,7 +66,7 @@ public class StreamsWebController {
     @ResponseBody
     public ResponseEntity<String> registerSubscriber(@RequestBody String payload, @RequestHeader("host") String host) {
         try {
-            return new ResponseEntity<String>("http://" + host + "/streams-web/app/getActivity/" + subscriberRegistrationService.register(payload), HttpStatus.OK);
+            return new ResponseEntity<String>("http://" + host + "/streams-web/app/activity/" + subscriberRegistrationService.register(payload), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e);
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -115,7 +115,7 @@ public class StreamsWebController {
     @ResponseBody
     public ResponseEntity<String> updateTags(@PathVariable("subscriberID") String subscriberID, @RequestBody String payload) {
         try {
-            return new ResponseEntity<String>(tagsUpdatingService.updateTags(payload), HttpStatus.OK);
+            return new ResponseEntity<String>(tagsUpdatingService.updateTags(subscriberID, payload), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e);
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);

@@ -5,19 +5,19 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.AlreadyExistsException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.rave.model.ActivityStreamsEntry;
-import org.apache.rave.model.ActivityStreamsObject;
-import org.apache.rave.portal.model.impl.ActivityStreamsObjectImpl;
 import org.apache.streams.persistence.configuration.CassandraConfiguration;
+import org.apache.streams.persistence.model.ActivityStreamsEntry;
+import org.apache.streams.persistence.model.ActivityStreamsObject;
 import org.apache.streams.persistence.model.cassandra.CassandraActivityStreamsEntry;
+import org.apache.streams.persistence.model.cassandra.CassandraActivityStreamsObject;
 import org.apache.streams.persistence.repository.ActivityStreamsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class CassandraActivityStreamsRepository implements ActivityStreamsRepository {
@@ -60,6 +60,7 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
         }
     }
 
+    @Override
     public void save(ActivityStreamsEntry entry) {
         //TODO: this should be random UUID
         String sql = "INSERT INTO " + configuration.getActivitystreamsColumnFamilyName() + " (" +
@@ -94,13 +95,14 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
         keyspace.getSession().execute(sql);
     }
 
-    public List<ActivityStreamsEntry> getActivitiesForFilters(List<String> filters, Date lastUpdated) {
+    @Override
+    public List<ActivityStreamsEntry> getActivitiesForTags(Set<String> tags, Date lastUpdated) {
         List<ActivityStreamsEntry> results = new ArrayList<ActivityStreamsEntry>();
 
-        for (String tag : filters) {
+        for (String tag : tags) {
             String cql = "SELECT * FROM " + configuration.getActivitystreamsColumnFamilyName() + " WHERE ";
 
-            //add filters
+            //add tags
             cql = cql + " tags = '" + tag + "' AND ";
 
             //specify last modified
@@ -114,10 +116,10 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
 
             for (Row row : set) {
                 ActivityStreamsEntry entry = new CassandraActivityStreamsEntry();
-                ActivityStreamsObject actor = new ActivityStreamsObjectImpl();
-                ActivityStreamsObject target = new ActivityStreamsObjectImpl();
-                ActivityStreamsObject object = new ActivityStreamsObjectImpl();
-                ActivityStreamsObject provider = new ActivityStreamsObjectImpl();
+                ActivityStreamsObject actor = new CassandraActivityStreamsObject();
+                ActivityStreamsObject target = new CassandraActivityStreamsObject();
+                ActivityStreamsObject object = new CassandraActivityStreamsObject();
+                ActivityStreamsObject provider = new CassandraActivityStreamsObject();
 
                 actor.setDisplayName(row.getString("actor_displayname"));
                 actor.setId(row.getString("actor_id"));
