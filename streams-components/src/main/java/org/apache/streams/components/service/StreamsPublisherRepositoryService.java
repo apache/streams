@@ -4,5 +4,6 @@ import org.apache.streams.persistence.model.ActivityStreamsPublisher;
 
 public interface StreamsPublisherRepositoryService {
     void savePublisher(ActivityStreamsPublisher publisher);
-    ActivityStreamsPublisher getActivityStreamsPublisher(String inRoute);
+    ActivityStreamsPublisher getActivityStreamsPublisherBySrc(String src);
+    ActivityStreamsPublisher getActivityStreamsPublisherByInRoute(String inRoute);
 }

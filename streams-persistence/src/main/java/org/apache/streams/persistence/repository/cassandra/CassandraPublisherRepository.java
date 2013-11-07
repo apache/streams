@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CassandraPublisherRepository implements PublisherRepository{
+public class CassandraPublisherRepository implements PublisherRepository {
 
     private static final Log LOG = LogFactory.getLog(CassandraActivityStreamsRepository.class);
 
@@ -26,18 +26,22 @@ public class CassandraPublisherRepository implements PublisherRepository{
         this.keyspace = keyspace;
 
         try {
-            keyspace.getSession().execute("CREATE TABLE " + configuration.getPublisherColumnFamilyName() + " (" +
+            String createTableCQL = "CREATE TABLE " + configuration.getPublisherColumnFamilyName() + " (" +
                     "inroute text, " +
                     "src text, " +
 
-                    "PRIMARY KEY (inroute));");
+                    "PRIMARY KEY (inroute))";
+            String srcIndexCQL = "CREATE INDEX ON " + configuration.getPublisherColumnFamilyName() + "(src)";
+
+            keyspace.getSession().execute(createTableCQL);
+            keyspace.getSession().execute(srcIndexCQL);
         } catch (AlreadyExistsException ignored) {
         }
     }
 
     @Override
-    public void save(ActivityStreamsPublisher publisher){
-        String cql = "INSERT INTO " + configuration.getPublisherColumnFamilyName()  + " (" +
+    public void save(ActivityStreamsPublisher publisher) {
+        String cql = "INSERT INTO " + configuration.getPublisherColumnFamilyName() + " (" +
                 "inroute, src) " +
                 "VALUES ('" +
                 publisher.getInRoute() + "','" +
@@ -48,17 +52,39 @@ public class CassandraPublisherRepository implements PublisherRepository{
     }
 
     @Override
-    public ActivityStreamsPublisher getPublisher(String inRoute){
-        String cql = "SELECT * FROM " + configuration.getPublisherColumnFamilyName()  + " WHERE inroute = '" + inRoute+"'";
+    public ActivityStreamsPublisher getPublisherByInRoute(String inRoute) {
+        String cql = "SELECT * FROM " + configuration.getPublisherColumnFamilyName() + " WHERE inroute = '" + inRoute + "'";
 
         ResultSet set = keyspace.getSession().execute(cql);
         Row row = set.one();
 
-        ActivityStreamsPublisher publisher = new CassandraPublisher();
-        publisher.setSrc(row.getString("src"));
-        publisher.setInRoute(row.getString("inroute"));
+        if (row != null) {
+            ActivityStreamsPublisher publisher = new CassandraPublisher();
+            publisher.setSrc(row.getString("src"));
+            publisher.setInRoute(row.getString("inroute"));
 
-        return publisher;
+            return publisher;
+        }
+
+        return null;
+    }
+
+    @Override
+    public ActivityStreamsPublisher getPublisherBySrc(String src) {
+        String cql = "SELECT * FROM " + configuration.getPublisherColumnFamilyName() + " WHERE src = '" + src + "'";
+
+        ResultSet set = keyspace.getSession().execute(cql);
+        Row row = set.one();
+
+        if (row != null) {
+            ActivityStreamsPublisher publisher = new CassandraPublisher();
+            publisher.setSrc(row.getString("src"));
+            publisher.setInRoute(row.getString("inroute"));
+
+            return publisher;
+        }
+
+        return null;
     }
 
     public void dropTable() {

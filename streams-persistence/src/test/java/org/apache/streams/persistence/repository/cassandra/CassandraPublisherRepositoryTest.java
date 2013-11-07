@@ -39,7 +39,7 @@ public class CassandraPublisherRepositoryTest {
     @Test
     public void getPublisherTest(){
 
-        ActivityStreamsPublisher publisher = repository.getPublisher("inRoute");
+        ActivityStreamsPublisher publisher = repository.getPublisherByInRoute("inRoute");
 
         assertEquals(publisher.getSrc(),("http://www.google.com"));
         assertEquals(publisher.getId(),("newId"));

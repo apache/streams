@@ -9,8 +9,6 @@ import org.apache.streams.persistence.model.ActivityStreamsPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
 @Component
 public class StreamsActivityPublishingServiceImpl implements StreamsActivityPublishingService {
     private Log log = LogFactory.getLog(StreamsActivityPublishingServiceImpl.class);
@@ -31,7 +29,7 @@ public class StreamsActivityPublishingServiceImpl implements StreamsActivityPubl
      * @return a success message if no errors were thrown
      * */
     public String publish(String publisherID, String activityJSON) throws Exception {
-        ActivityStreamsPublisher publisher = publisherService.getActivityStreamsPublisher(publisherID);
+        ActivityStreamsPublisher publisher = publisherService.getActivityStreamsPublisherByInRoute(publisherID);
         activityService.receiveActivity(publisher,activityJSON);
         return activityJSON;
     }

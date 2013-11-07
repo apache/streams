@@ -24,7 +24,14 @@ public class CassandraPublisherService implements StreamsPublisherRepositoryServ
     }
 
     @Override
-    public ActivityStreamsPublisher getActivityStreamsPublisher(String inRoute) {
-        return repository.getPublisher(inRoute);
+    public ActivityStreamsPublisher getActivityStreamsPublisherBySrc(String src) {
+        return repository.getPublisherBySrc(src);
     }
+
+    @Override
+    public ActivityStreamsPublisher getActivityStreamsPublisherByInRoute(String inRoute) {
+        return repository.getPublisherByInRoute(inRoute);
+    }
+
+
 }

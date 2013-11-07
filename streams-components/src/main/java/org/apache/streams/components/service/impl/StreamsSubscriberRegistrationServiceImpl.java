@@ -2,9 +2,9 @@ package org.apache.streams.components.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.components.service.StreamsSubscriberRegistrationService;
 import org.apache.streams.components.service.StreamsSubscriptionRepositoryService;
-import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.persistence.model.ActivityStreamsSubscription;
 import org.apache.streams.persistence.model.cassandra.CassandraSubscription;
 import org.codehaus.jackson.map.DeserializationConfig;

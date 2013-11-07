@@ -44,9 +44,15 @@ public class StreamsPublisherRegistrationServiceImpl implements StreamsPublisher
             throw new Exception("configuration src is null");
         }
 
-        publisher.setInRoute("" + UUID.randomUUID());
-        publisherRepositoryService.savePublisher(publisher);
+        ActivityStreamsPublisher fromDb = publisherRepositoryService.getActivityStreamsPublisherBySrc(publisher.getSrc());
 
-        return publisher.getInRoute();
+        if(fromDb != null){
+            return fromDb.getInRoute();
+        }else{
+            publisher.setInRoute("" + UUID.randomUUID());
+            publisherRepositoryService.savePublisher(publisher);
+
+            return publisher.getInRoute();
+        }
     }
 }
