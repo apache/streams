@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-public class StreamsActivityRepositoryServiceTest {
+public class StreamsActivityRepositoryServiceIntegrationTest {
 
     @Test
     public void parseJsonTest() throws IOException {

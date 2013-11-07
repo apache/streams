@@ -1,15 +1,11 @@
 package org.apache.streams.components.service;
 
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
-import org.apache.streams.components.service.impl.CassandraPublisherService;
 import org.apache.streams.components.service.impl.CassandraSubscriptionService;
-import org.apache.streams.components.service.impl.StreamsPublisherRegistrationServiceImpl;
 import org.apache.streams.components.service.impl.StreamsSubscriberRegistrationServiceImpl;
 import org.apache.streams.persistence.configuration.CassandraConfiguration;
-import org.apache.streams.persistence.repository.PublisherRepository;
 import org.apache.streams.persistence.repository.SubscriptionRepository;
 import org.apache.streams.persistence.repository.cassandra.CassandraKeyspace;
-import org.apache.streams.persistence.repository.cassandra.CassandraPublisherRepository;
 import org.apache.streams.persistence.repository.cassandra.CassandraSubscriptionRepository;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -17,31 +13,33 @@ import org.junit.Test;
 
 import static org.easymock.EasyMock.createMock;
 
-public class StreamsPublisherRegistrationServiceTest {
-    private StreamsPublisherRegistrationService streamsPublisherRegistrationService;
+public class StreamsSubscriberRegistrationServiceIntegrationTest {
+   private StreamsSubscriberRegistrationService streamsSubscriberRegistrationService;
 
     @Before
     public void setup(){
 
         CassandraConfiguration configuration = new CassandraConfiguration();
         configuration.setCassandraPort("127.0.0.1");
-        configuration.setPublisherColumnFamilyName("publishertestD");
+        configuration.setSubscriptionColumnFamilyName("subscriptionstestB");
         configuration.setKeyspaceName("keyspacetest");
 
         CassandraKeyspace keyspace = new CassandraKeyspace(configuration);
-        PublisherRepository publisherRepository = new CassandraPublisherRepository(keyspace,configuration);
+        SubscriptionRepository subscriptionRepository = new CassandraSubscriptionRepository(keyspace,configuration);
 
-        StreamsPublisherRepositoryService publisherRepositoryService = new CassandraPublisherService(publisherRepository);
+        ActivityStreamsSubscriberWarehouse warehouse = createMock(ActivityStreamsSubscriberWarehouse.class);
+        StreamsSubscriptionRepositoryService repositoryService = new CassandraSubscriptionService(subscriptionRepository);
 
-        streamsPublisherRegistrationService = new StreamsPublisherRegistrationServiceImpl(publisherRepositoryService);
+        streamsSubscriberRegistrationService = new StreamsSubscriberRegistrationServiceImpl(repositoryService, warehouse);
     }
 
     @Ignore
     @Test
     public void registerTest() throws Exception{
-        String subscriberJson = "{\"src\":\"example.com\"}";
+        String subscriberJson = "{\"username\":\"newUsername\"}";
 
-        String inRoute = streamsPublisherRegistrationService.register(subscriberJson);
-        assert(inRoute.equals(streamsPublisherRegistrationService.register(subscriberJson)));
+        String inRoute = streamsSubscriberRegistrationService.register(subscriberJson);
+        assert(inRoute.equals(streamsSubscriberRegistrationService.register(subscriberJson)));
     }
+
 }
