@@ -30,11 +30,13 @@ public class StreamsTagsUpdatingServiceTest {
         String subscriberId = "subscriberId";
         String tagsJson = "{\"add\":[\"this\"], \"remove\":[\"that\"]}";
         ActivityStreamsSubscription subscription = createMock(ActivityStreamsSubscription.class);
-        repositoryService.updateTags(subscriberId, isA(Set.class), isA(Set.class));
-        expectLastCall();
-        subscriberWarehouse.updateSubscriber(subscription);
+
+        repositoryService.updateTags(eq(subscriberId), isA(Set.class), isA(Set.class));
         expectLastCall();
         expect(repositoryService.getSubscriptionByInRoute(subscriberId)).andReturn(subscription);
+        subscriberWarehouse.updateSubscriber(subscription);
+        expectLastCall();
+        replay(repositoryService,subscriberWarehouse);
 
         String returned = tagsUpdatingService.updateTags(subscriberId,tagsJson);
 
