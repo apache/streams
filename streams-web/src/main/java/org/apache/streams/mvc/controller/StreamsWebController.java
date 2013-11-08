@@ -23,7 +23,7 @@ public class StreamsWebController {
     private StreamsSubscriberRegistrationService subscriberRegistrationService;
     private StreamsActivityPublishingService activityPublishingService;
     private StreamsActivityReceivingService activityReceivingService;
-    private StreamsTagsUpdatingService tagsUpdatingService;
+    private StreamsTagsService tagsService;
 
     @Autowired
     public StreamsWebController(
@@ -31,12 +31,12 @@ public class StreamsWebController {
             StreamsSubscriberRegistrationService subscriberRegistrationService,
             StreamsActivityPublishingService activityPublishingService,
             StreamsActivityReceivingService activityReceivingService,
-            StreamsTagsUpdatingService tagsUpdatingService) {
+            StreamsTagsService tagsService) {
         this.publisherRegistrationService = publisherRegistrationService;
         this.subscriberRegistrationService = subscriberRegistrationService;
         this.activityPublishingService = activityPublishingService;
         this.activityReceivingService = activityReceivingService;
-        this.tagsUpdatingService = tagsUpdatingService;
+        this.tagsService = tagsService;
     }
 
     /**
@@ -66,7 +66,7 @@ public class StreamsWebController {
     @ResponseBody
     public ResponseEntity<String> registerSubscriber(@RequestBody String payload, @RequestHeader("host") String host) {
         try {
-            return new ResponseEntity<String>("http://" + host + "/streams-web/app/activity/" + subscriberRegistrationService.register(payload), HttpStatus.OK);
+            return new ResponseEntity<String>("http://" + host + "/streams-web/app/getActivity/" + subscriberRegistrationService.register(payload), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e);
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -97,7 +97,7 @@ public class StreamsWebController {
      * @param subscriberID the id of the subscriber
      * @return an array of activity for this subscriber
      */
-    @RequestMapping(value = "/activity/{subscriberID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/getActivity/{subscriberID}", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<String> getActivity(@PathVariable("subscriberID") String subscriberID) {
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -109,13 +109,30 @@ public class StreamsWebController {
      * this method is the entry point for updating tags
      *
      * @param subscriberID the id of the subscriber
-     * @return an array of activity for this subscriber
+     * @return a message indicating whether the update was successful
      */
-    @RequestMapping(value = "/activity/{subscriberID}", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateTags/{subscriberID}", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> updateTags(@PathVariable("subscriberID") String subscriberID, @RequestBody String payload) {
         try {
-            return new ResponseEntity<String>(tagsUpdatingService.updateTags(subscriberID, payload), HttpStatus.OK);
+            return new ResponseEntity<String>(tagsService.updateTags(subscriberID, payload), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e);
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * this method is the entry point for updating tags
+     *
+     * @param subscriberID the id of the subscriber
+     * @return an array of tags for this subscriber
+     */
+    @RequestMapping(value = "/getTags/{subscriberID}", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<String> getTags(@PathVariable("subscriberID") String subscriberID) {
+        try {
+            return new ResponseEntity<String>(tagsService.getTags(subscriberID), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e);
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);

@@ -4,7 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.components.service.StreamsSubscriptionRepositoryService;
-import org.apache.streams.components.service.StreamsTagsUpdatingService;
+import org.apache.streams.components.service.StreamsTagsService;
+import org.apache.streams.persistence.model.ActivityStreamsSubscription;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,19 +16,25 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class StreamsTagsUpdatingServiceImpl implements StreamsTagsUpdatingService {
-    private static final transient Log LOG = LogFactory.getLog(StreamsTagsUpdatingServiceImpl.class);
+public class StreamsTagsServiceImpl implements StreamsTagsService {
+    private static final Log LOG = LogFactory.getLog(StreamsTagsServiceImpl.class);
 
     private StreamsSubscriptionRepositoryService repositoryService;
     private ActivityStreamsSubscriberWarehouse subscriberWarehouse;
     private ObjectMapper mapper;
 
     @Autowired
-    public StreamsTagsUpdatingServiceImpl(StreamsSubscriptionRepositoryService repositoryService, ActivityStreamsSubscriberWarehouse subscriberWarehouse) {
+    public StreamsTagsServiceImpl(StreamsSubscriptionRepositoryService repositoryService, ActivityStreamsSubscriberWarehouse subscriberWarehouse) {
         this.repositoryService = repositoryService;
         this.subscriberWarehouse = subscriberWarehouse;
         this.mapper = new ObjectMapper();
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    @Override
+    public String getTags(String subscriberId) throws Exception{
+        ActivityStreamsSubscription subscription = repositoryService.getSubscriptionByInRoute(subscriberId);
+        return mapper.writeValueAsString(subscription.getTags());
     }
 
     @Override
