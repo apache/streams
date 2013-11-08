@@ -3,6 +3,9 @@ package org.apache.streams.persistence.repository.cassandra;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.AlreadyExistsException;
+import com.datastax.driver.core.querybuilder.Insert;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Select;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.persistence.configuration.CassandraConfiguration;
@@ -14,10 +17,7 @@ import org.apache.streams.persistence.repository.ActivityStreamsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class CassandraActivityStreamsRepository implements ActivityStreamsRepository {
@@ -33,7 +33,7 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
         this.keyspace = keyspace;
 
         try {
-            keyspace.getSession().execute("CREATE TABLE " + configuration.getActivitystreamsColumnFamilyName() + " (" +
+            String createKeyspaceCql = "CREATE TABLE " + configuration.getActivitystreamsColumnFamilyName() + " (" +
                     "id text, " +
                     "published timestamp, " +
                     "verb text, " +
@@ -55,44 +55,42 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
                     "object_id text, " +
                     "object_objecttype text, " +
 
-                    "PRIMARY KEY (id, tags, published));");
+                    "PRIMARY KEY (id));";
+            String publishedIndexCql = "CREATE INDEX ON " + configuration.getActivitystreamsColumnFamilyName() + " (published)";
+            String tagsIndexCql = "CREATE INDEX ON " + configuration.getActivitystreamsColumnFamilyName() + " (tags)";
+
+            keyspace.getSession().execute(createKeyspaceCql);
+            keyspace.getSession().execute(tagsIndexCql);
+            keyspace.getSession().execute(publishedIndexCql);
         } catch (AlreadyExistsException ignored) {
         }
     }
 
     @Override
     public void save(ActivityStreamsEntry entry) {
-        //TODO: this should be random UUID
-        String sql = "INSERT INTO " + configuration.getActivitystreamsColumnFamilyName() + " (" +
-                "id, published, verb, tags, " +
-                "actor_displayname, actor_objecttype, actor_id, actor_url, " +
-                "target_displayname, target_id, target_url, " +
-                "provider_url, " +
-                "object_displayname, object_objecttype, object_id, object_url) " +
-                "VALUES ('" +
-                entry.getId() + "','" +
-                entry.getPublished().getTime() + "','" +
-                entry.getVerb() + "','" +
-                entry.getTags() + "','" +
+        Insert query = QueryBuilder.insertInto(configuration.getActivitystreamsColumnFamilyName())
+                .value("id", entry.getId())
+                .value("published", entry.getPublished().getTime())
+                .value("verb", entry.getVerb())
+                .value("tags", entry.getTags())
 
-                entry.getActor().getDisplayName() + "','" +
-                entry.getActor().getObjectType() + "','" +
-                entry.getActor().getId() + "','" +
-                entry.getActor().getUrl() + "','" +
+                .value("actor_displayname", entry.getActor().getDisplayName())
+                .value("actor_objecttype", entry.getActor().getObjectType())
+                .value("actor_id", entry.getActor().getId())
+                .value("actor_url", entry.getActor().getUrl())
 
-                entry.getTarget().getDisplayName() + "','" +
-                entry.getTarget().getId() + "','" +
-                entry.getTarget().getUrl() + "','" +
+                .value("target_displayname", entry.getTarget().getDisplayName())
+                .value("target_id", entry.getTarget().getId())
+                .value("target_url", entry.getTarget().getUrl())
 
-                entry.getProvider().getUrl() + "','" +
+                .value("provider_url", entry.getProvider().getUrl())
 
-                entry.getObject().getDisplayName() + "','" +
-                entry.getObject().getObjectType() + "','" +
-                entry.getObject().getId() + "','" +
-                entry.getObject().getUrl() +
+                .value("object_displayname", entry.getObject().getDisplayName())
+                .value("object_objecttype", entry.getObject().getObjectType())
+                .value("object_id", entry.getObject().getId())
+                .value("object_url", entry.getObject().getUrl());
 
-                "')";
-        keyspace.getSession().execute(sql);
+        keyspace.getSession().execute(query);
     }
 
     @Override
@@ -100,17 +98,12 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
         List<ActivityStreamsEntry> results = new ArrayList<ActivityStreamsEntry>();
 
         for (String tag : tags) {
-            String cql = "SELECT * FROM " + configuration.getActivitystreamsColumnFamilyName() + " WHERE ";
-
-            //add tags
-            cql = cql + " tags = '" + tag + "' AND ";
-
-            //specify last modified
-            cql = cql + "published > " + lastUpdated.getTime() + " ALLOW FILTERING";
-
-            //execute the cql query and store the results
-            //TODO: will this ever return a null ResultSet
-            ResultSet set = keyspace.getSession().execute(cql);
+            Select query = QueryBuilder.select().from(configuration.getActivitystreamsColumnFamilyName())
+                    .where(QueryBuilder.eq("tags", tag))
+                    .and(QueryBuilder.gt("published", lastUpdated))
+                    .limit(10)
+                    .allowFiltering();
+            ResultSet set = keyspace.getSession().execute(query);
 
             //iterate through the results and create a new ActivityStreamsEntry for every result returned
 

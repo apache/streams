@@ -9,7 +9,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 
 public class CassandraActiivtyStreamsRepositoryTest {
     private CassandraActivityStreamsRepository repository;
@@ -18,7 +20,7 @@ public class CassandraActiivtyStreamsRepositoryTest {
     public void setup(){
         CassandraConfiguration configuration = new CassandraConfiguration();
         configuration.setCassandraPort("127.0.0.1");
-        configuration.setActivitystreamsColumnFamilyName("acitivites_Test1");
+        configuration.setActivitystreamsColumnFamilyName("acitivites_Test34");
         configuration.setKeyspaceName("keyspacetest");
         CassandraKeyspace keyspace = new CassandraKeyspace(configuration);
 
@@ -29,6 +31,12 @@ public class CassandraActiivtyStreamsRepositoryTest {
     @Test
     public void testNullTags(){
        repository.getActivitiesForTags(null,new Date(0));
+    }
+
+    @Ignore
+    @Test
+    public void getActivitiesForTagsTest(){
+        repository.getActivitiesForTags(new HashSet<String>(Arrays.asList("tags")),new Date(0));
     }
 
     @Ignore
