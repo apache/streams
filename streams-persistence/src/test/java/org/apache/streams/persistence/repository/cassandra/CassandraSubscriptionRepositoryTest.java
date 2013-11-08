@@ -42,10 +42,16 @@ public class CassandraSubscriptionRepositoryTest {
 
     @Ignore
     @Test
+    public void getSubscriptionByInRouteTest() {
+        ActivityStreamsSubscription subscription = repository.getSubscriptionByInRoute("randomID2");
+    }
+
+    @Ignore
+    @Test
     public void addSubscriptionsTest() {
         ActivityStreamsSubscription subscription = new CassandraSubscription();
         subscription.setUsername("newID2");
-        subscription.setInRoute("randomID");
+        subscription.setInRoute("randomID2");
 
         repository.save(subscription);
     }
@@ -60,6 +66,6 @@ public class CassandraSubscriptionRepositoryTest {
         Set<String> remove = new HashSet<String>(Arrays.asList("one","three"));
 
 
-        repository.updateTags("randomID", add, remove);
+        repository.updateTags("randomID2", add, remove);
     }
 }

@@ -3,7 +3,11 @@ package org.apache.streams.persistence.repository.cassandra;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.exceptions.AlreadyExistsException;
-import org.apache.commons.lang.StringUtils;
+import com.datastax.driver.core.querybuilder.Insert;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+
+import com.datastax.driver.core.querybuilder.Select;
+import com.datastax.driver.core.querybuilder.Update;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.persistence.configuration.CassandraConfiguration;
@@ -14,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -51,9 +56,8 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository {
     public ActivityStreamsSubscription getSubscriptionByInRoute(String inRoute) {
         LOG.info("retreiving subscription for inRoute: " + inRoute);
 
-        String cql = "SELECT * FROM " + configuration.getSubscriptionColumnFamilyName() + " WHERE inroute = '" + inRoute + "';";
-
-        ResultSet set = keyspace.getSession().execute(cql);
+        Select.Where query = QueryBuilder.select().from(configuration.getSubscriptionColumnFamilyName()).where(QueryBuilder.eq("inroute",inRoute));
+        ResultSet set = keyspace.getSession().execute(query);
         Row row = set.one();
 
         if (row != null) {
@@ -72,9 +76,8 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository {
     public ActivityStreamsSubscription getSubscriptionByUsername(String username) {
         LOG.info("retreiving subscription for username: " + username);
 
-        String cql = "SELECT * FROM " + configuration.getSubscriptionColumnFamilyName() + " WHERE username = '" + username + "';";
-
-        ResultSet set = keyspace.getSession().execute(cql);
+        Select.Where query = QueryBuilder.select().from(configuration.getSubscriptionColumnFamilyName()).where(QueryBuilder.eq("username",username));
+        ResultSet set = keyspace.getSession().execute(query);
         Row row = set.one();
 
         if (row != null) {
@@ -93,9 +96,9 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository {
     public List<ActivityStreamsSubscription> getAllSubscriptions() {
         LOG.info("getting all subscriptions");
 
-        String cql = "SELECT * FROM " + configuration.getSubscriptionColumnFamilyName();
+        Select query = QueryBuilder.select().all().from(configuration.getSubscriptionColumnFamilyName());
 
-        ResultSet set = keyspace.getSession().execute(cql);
+        ResultSet set = keyspace.getSession().execute(query);
         List<ActivityStreamsSubscription> results = new ArrayList<ActivityStreamsSubscription>();
 
         for (Row row : set) {
@@ -116,28 +119,21 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository {
         LOG.info("saving subscription username: " + subscription.getUsername() + " inRoute " + subscription.getInRoute());
 
         //TODO: will this overwrite?
-        String cql = "INSERT INTO " + configuration.getSubscriptionColumnFamilyName() + " (" +
-                "inroute, username, tags) " +
-                "VALUES ('" +
-                subscription.getInRoute() + "','" +
-                subscription.getUsername() + "'," +
-                "{}" +
-
-                ")";
-        keyspace.getSession().execute(cql);
+        Insert query = QueryBuilder.insertInto(configuration.getSubscriptionColumnFamilyName())
+                .value("inroute", subscription.getInRoute())
+                .value("username", subscription.getUsername())
+                .value("tags", new HashSet<String>());
+        keyspace.getSession().execute(query);
     }
 
     @Override
     public void updateTags(String subscriberId, Set<String> add, Set<String> remove) {
         LOG.info("updating tags inRoute: " + subscriberId + " add: " + add + " remove: " + remove);
 
-        String cql = "UPDATE " + configuration.getSubscriptionColumnFamilyName() +
-                " SET tags = tags + {'" +
-                StringUtils.join(add, "','") + "'}," +
-                " tags = tags - {'" +
-                StringUtils.join(remove, "','") + "'}" +
-                " WHERE inroute = '" + subscriberId + "'";
-
-        keyspace.getSession().execute(cql);
+        Update.Where query = QueryBuilder.update(configuration.getSubscriptionColumnFamilyName())
+                .with(QueryBuilder.addAll("tags", add))
+                .and(QueryBuilder.removeAll("tags", remove))
+                .where(QueryBuilder.eq("inroute", subscriberId));
+        keyspace.getSession().execute(query);
     }
 }

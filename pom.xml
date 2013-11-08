@@ -53,7 +53,7 @@
 
     <properties>
         <rave.version>0.22</rave.version>
-        <datastax.version>1.0.3</datastax.version>
+        <datastax.version>2.0.0-rc1</datastax.version>
         <spring.version>3.2.4.RELEASE</spring.version>
         <junit.version>4.9</junit.version>
         <cglib.version>3.0</cglib.version>
