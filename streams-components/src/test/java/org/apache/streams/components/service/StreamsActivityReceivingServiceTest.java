@@ -22,7 +22,7 @@ public class StreamsActivityReceivingServiceTest {
     }
 
     @Test
-    public void getActivityTest(){
+    public void getActivityTest() throws Exception{
         String inRoute = "my inroute";
         String stream = "hey look, it's a stream";
 

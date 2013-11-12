@@ -100,9 +100,14 @@ public class StreamsWebController {
     @RequestMapping(value = "/getActivity/{subscriberID}", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<String> getActivity(@PathVariable("subscriberID") String subscriberID) {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<String>(activityReceivingService.getActivity(subscriberID), responseHeaders, HttpStatus.OK);
+        try {
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+            return new ResponseEntity<String>(activityReceivingService.getActivity(subscriberID), responseHeaders, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e);
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     /**

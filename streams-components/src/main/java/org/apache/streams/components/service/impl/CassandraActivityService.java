@@ -41,22 +41,7 @@ public class CassandraActivityService implements StreamsActivityRepositoryServic
     }
 
     @Override
-    public List<String> getActivitiesForProviders(Set<String> providers, Date lastUpdated){
-        List<ActivityStreamsEntry> activityObjects = activityStreamsRepository.getActivitiesForProviders(providers, lastUpdated);
-        Collections.sort(activityObjects, Collections.reverseOrder());
-        //TODO: make the number of streams returned configurable
-        return getJsonList(activityObjects.subList(0, Math.min(activityObjects.size(), 10)));
-    }
-
-    private List<String> getJsonList(List<ActivityStreamsEntry> activities) {
-        List<String> jsonList = new ArrayList<String>();
-        for (ActivityStreamsEntry entry : activities) {
-            try {
-                jsonList.add(mapper.writeValueAsString(entry));
-            } catch (Exception e) {
-                LOG.error("Error processing the entry with the id: "+entry.getId(),e);
-            }
-        }
-        return jsonList;
+    public List<ActivityStreamsEntry> getActivitiesForProviders(Set<String> providers, Date lastUpdated){
+        return activityStreamsRepository.getActivitiesForProviders(providers, lastUpdated);
     }
 }

@@ -7,7 +7,7 @@ import org.apache.streams.persistence.model.ActivityStreamsSubscription;
  */
 public interface ActivityStreamsSubscriberWarehouse {
 
-    String getStream(String inRoute);
+    String getStream(String inRoute) throws Exception;
     ActivityStreamsSubscriber getSubscriber(String inRoute);
     void updateSubscriber(ActivityStreamsSubscription subscription);
     void register(ActivityStreamsSubscription subscription);

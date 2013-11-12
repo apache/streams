@@ -23,7 +23,7 @@ public class StreamsActivityReceivingServiceImpl implements StreamsActivityRecei
      * @param subscriberID the id of the subscriber to look up
      * @return the stream list in string form
      * */
-    public  String getActivity(String subscriberID){
+    public  String getActivity(String subscriberID) throws Exception{
         return activityStreamsSubscriberWarehouse.getStream(subscriberID);
     }
 }

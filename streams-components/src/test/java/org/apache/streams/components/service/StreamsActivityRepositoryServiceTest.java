@@ -66,9 +66,6 @@ public class StreamsActivityRepositoryServiceTest {
     public void getActivitiesForTagsTest_Valid(){
         Set<String> tags = new HashSet<String>(Arrays.asList("tags"));
 
-        String entry1Json = "{\"id\":\"entry1\",\"tags\":null,\"published\":1234,\"verb\":null,\"actor\":null,\"object\":null,\"provider\":null,\"target\":null}";
-        String entry2Json = "{\"id\":\"entry2\",\"tags\":null,\"published\":5678,\"verb\":null,\"actor\":null,\"object\":null,\"provider\":null,\"target\":null}";
-
         Date begin = new Date(0L);
         ActivityStreamsEntry entry1 = new CassandraActivityStreamsEntry();
         Date published1 = new Date(1234L);
@@ -87,9 +84,9 @@ public class StreamsActivityRepositoryServiceTest {
         expect(activityStreamsRepository.getActivitiesForProviders(tags, begin)).andReturn(activities);
         replay(activityStreamsRepository);
 
-        List<String> returned = activityRepositoryService.getActivitiesForProviders(tags,begin);
+        List<ActivityStreamsEntry> returned = activityRepositoryService.getActivitiesForProviders(tags,begin);
 
-        assertThat(returned.get(0),is(equalTo(entry2Json)));
-        assertThat(returned.get(1),is(equalTo(entry1Json)));
+        assertThat(returned.get(0),is(equalTo(entry1)));
+        assertThat(returned.get(1),is(equalTo(entry2)));
     }
 }

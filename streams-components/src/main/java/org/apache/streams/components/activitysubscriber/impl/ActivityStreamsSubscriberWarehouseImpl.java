@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriber;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.components.service.StreamsActivityRepositoryService;
+import org.apache.streams.persistence.model.ActivityStreamsEntry;
 import org.apache.streams.persistence.model.ActivityStreamsSubscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,7 +34,7 @@ public class ActivityStreamsSubscriberWarehouseImpl implements ActivityStreamsSu
     }
 
     @Override
-    public String getStream(String inRoute) {
+    public String getStream(String inRoute) throws Exception{
         ActivityStreamsSubscriber subscriber = getSubscriber(inRoute);
         if (subscriber != null) {
             return subscriber.getStream();
@@ -51,11 +52,8 @@ public class ActivityStreamsSubscriberWarehouseImpl implements ActivityStreamsSu
     public synchronized void updateSubscriber(ActivityStreamsSubscription subscription) {
         ActivityStreamsSubscriber subscriber = getSubscriber(subscription.getInRoute());
         if (subscriber != null) {
-            //TODO: an activity posted in between the cql query and setting the lastUpdated field will be lost
-            Set<String> activities = new TreeSet<String>();
-            activities.addAll(activityService.getActivitiesForProviders(subscription.getFilters(), subscriber.getLastUpdated()));
+            subscriber.receive(activityService.getActivitiesForProviders(subscription.getFilters(), subscriber.getLastUpdated()));
             subscriber.setLastUpdated(new Date());
-            subscriber.receive(new ArrayList<String>(activities));
         }
     }
 }
