@@ -18,22 +18,24 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
     private ObjectMapper mapper;
     private Date lastUpdated;
 
-    public ActivityStreamsSubscriberDelegate(){
-        this.stream = new TreeSet<ActivityStreamsEntry>(new Comparator<ActivityStreamsEntry>() {
-            @Override
-            public int compare(ActivityStreamsEntry activityStreamsEntry1, ActivityStreamsEntry activityStreamsEntry2) {
-                return -1 * (activityStreamsEntry1.getPublished()).compareTo(activityStreamsEntry2.getPublished());
-            }
-        });
+    public ActivityStreamsSubscriberDelegate() {
+        this.stream = new TreeSet<ActivityStreamsEntry>(
+                //this comparator returns the activityStreamEntries in descending order by date published
+                new Comparator<ActivityStreamsEntry>() {
+                    @Override
+                    public int compare(ActivityStreamsEntry activityStreamsEntry1, ActivityStreamsEntry activityStreamsEntry2) {
+                        return -1 * (activityStreamsEntry1.getPublished()).compareTo(activityStreamsEntry2.getPublished());
+                    }
+                });
         this.lastUpdated = new Date(0);
         this.mapper = new ObjectMapper();
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     //return the list of activities (stream) as a json string
-    public String getStream() throws Exception{
+    public String getStream() throws Exception {
         List<String> activityEntires = new ArrayList<String>();
-        for(ActivityStreamsEntry e:stream){
+        for (ActivityStreamsEntry e : stream) {
             activityEntires.add(mapper.writeValueAsString(e));
         }
         return activityEntires.toString();
@@ -47,7 +49,7 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
         this.lastUpdated = lastUpdated;
     }
 
-    public void receive(List<ActivityStreamsEntry> activities){
+    public void receive(List<ActivityStreamsEntry> activities) {
         stream.addAll(activities);
     }
 }

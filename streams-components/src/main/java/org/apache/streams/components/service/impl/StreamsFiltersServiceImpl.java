@@ -11,6 +11,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ public class StreamsFiltersServiceImpl implements StreamsFiltersService {
 
         Map<String, List> updateFilters = (Map<String, List>) mapper.readValue(tagsJson, Map.class);
         repositoryService.updateFilters(subscriberId, new HashSet<String>(updateFilters.get("add")), new HashSet<String>(updateFilters.get("remove")));
+        subscriberWarehouse.getSubscriber(subscriberId).setLastUpdated(new Date(0));
         subscriberWarehouse.updateSubscriber(repositoryService.getSubscriptionByInRoute(subscriberId));
 
         return "Filters Updated Successfully!";
