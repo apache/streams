@@ -9,19 +9,19 @@ import java.util.Set;
 
 public class CassandraSubscription implements ActivityStreamsSubscription {
     @JsonDeserialize(as=HashSet.class)
-    private Set<String> tags;
+    private Set<String> filters;
 
     private String username;
     private String inRoute;
 
-    public void setTags(Set<String> tags) {
+    public void setFilters(Set<String> filters) {
         //TODO: it's possible that this could be null
-        this.tags = tags;
+        this.filters = filters;
     }
 
     @Override
-    public Set<String> getTags(){
-        return tags;
+    public Set<String> getFilters(){
+        return filters;
     }
 
     @Override

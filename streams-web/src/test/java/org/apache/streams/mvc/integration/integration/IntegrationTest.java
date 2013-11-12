@@ -35,25 +35,19 @@ public class IntegrationTest {
 
 
     private final String publisherRegistrationJson = "{\n" +
-            "     \"authToken\": \"token\",\n" +
-            "     \"@class\":\"org.apache.streams.osgi.components.activityconsumer.impl.PushActivityConsumer\",    \n" +
             "     \"src\": \"www.providerexample.com\"\n" +
             " }";
 
     private final String subscriberRegistrationJson = "{\n" +
-            "     \"authToken\": \"token\",\n" +
-            "     \"@class\":\"org.apache.streams.osgi.components.activitysubscriber.impl.ActivityStreamsSubscriptionImpl\",\n" +
-            "     \"filters\": [\n" +
-            "         \"tags\"\n" +
-            "     ]\n" +
+            "     \"username\": \"myUsername\"\n" +
             " }";
 
     private final String validActivity = "{\n" +
             "     \"id\": \"id\",\n" +
             "     \"verb\": \"verb\",\n" +
-            "     \"tags\": \"tags\",\n" +
             "     \"provider\": {\n" +
-            "          \"url\": \"www.providerexample.com\"\n" +
+            "          \"url\": \"www.providerexample.com\",\n" +
+            "          \"displayName\": \"myProvider\"\n" +
             "     },\n" +
             "     \"actor\": {\n" +
             "          \"id\": \"actorid\",\n" +

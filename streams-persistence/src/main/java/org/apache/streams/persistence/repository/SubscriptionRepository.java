@@ -10,5 +10,5 @@ public interface SubscriptionRepository {
     ActivityStreamsSubscription getSubscriptionByUsername(String username);
     List<ActivityStreamsSubscription> getAllSubscriptions();
     void save(ActivityStreamsSubscription subscription);
-    void updateTags(String subscriberId, Set<String> add, Set<String> remove);
+    void updateFilters(String subscriberId, Set<String> add, Set<String> remove);
 }

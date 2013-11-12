@@ -66,6 +66,6 @@ public class CassandraSubscriptionRepositoryTest {
         Set<String> remove = new HashSet<String>(Arrays.asList("one","three"));
 
 
-        repository.updateTags("randomID2", add, remove);
+        repository.updateFilters("randomID2", add, remove);
     }
 }

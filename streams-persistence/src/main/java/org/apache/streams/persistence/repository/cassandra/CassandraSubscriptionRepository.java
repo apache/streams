@@ -40,7 +40,7 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository {
             String createTableCQL = "CREATE TABLE " + configuration.getSubscriptionColumnFamilyName() + " (" +
                     "inroute text, " +
                     "username text, " +
-                    "tags set<text>, " +
+                    "filters set<text>, " +
 
                     "PRIMARY KEY (inroute));";
             String usernameIndexCQL = "CREATE INDEX ON " + configuration.getSubscriptionColumnFamilyName() + "(username)";
@@ -65,7 +65,7 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository {
 
             subscription.setInRoute(row.getString("inroute"));
             subscription.setUsername(row.getString("username"));
-            subscription.setTags(row.getSet("tags", String.class));
+            subscription.setFilters(row.getSet("filters", String.class));
 
             return subscription;
         }
@@ -85,7 +85,7 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository {
 
             subscription.setInRoute(row.getString("inroute"));
             subscription.setUsername(row.getString("username"));
-            subscription.setTags(row.getSet("tags", String.class));
+            subscription.setFilters(row.getSet("filters", String.class));
 
             return subscription;
         }
@@ -106,7 +106,7 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository {
 
             subscription.setInRoute(row.getString("inroute"));
             subscription.setUsername(row.getString("username"));
-            subscription.setTags(row.getSet("tags", String.class));
+            subscription.setFilters(row.getSet("filters", String.class));
 
             results.add(subscription);
         }
@@ -122,17 +122,17 @@ public class CassandraSubscriptionRepository implements SubscriptionRepository {
         Insert query = QueryBuilder.insertInto(configuration.getSubscriptionColumnFamilyName())
                 .value("inroute", subscription.getInRoute())
                 .value("username", subscription.getUsername())
-                .value("tags", new HashSet<String>());
+                .value("filters", new HashSet<String>());
         keyspace.getSession().execute(query);
     }
 
     @Override
-    public void updateTags(String subscriberId, Set<String> add, Set<String> remove) {
-        LOG.info("updating tags inRoute: " + subscriberId + " add: " + add + " remove: " + remove);
+    public void updateFilters(String subscriberId, Set<String> add, Set<String> remove) {
+        LOG.info("updating filters inRoute: " + subscriberId + " add: " + add + " remove: " + remove);
 
         Update.Where query = QueryBuilder.update(configuration.getSubscriptionColumnFamilyName())
-                .with(QueryBuilder.addAll("tags", add))
-                .and(QueryBuilder.removeAll("tags", remove))
+                .with(QueryBuilder.addAll("filters", add))
+                .and(QueryBuilder.removeAll("filters", remove))
                 .where(QueryBuilder.eq("inroute", subscriberId));
         keyspace.getSession().execute(query);
     }

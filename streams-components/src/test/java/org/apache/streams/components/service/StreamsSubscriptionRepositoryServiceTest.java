@@ -49,16 +49,16 @@ public class StreamsSubscriptionRepositoryServiceTest {
     }
 
     @Test
-    public void updateTagsTest(){
+    public void updateFiltersTest(){
         String subscriberId = "subscriberId";
         Set<String> add = new HashSet<String>(Arrays.asList("added"));
         Set<String> remove = new HashSet<String>(Arrays.asList("removed"));
 
-        repository.updateTags(subscriberId,add,remove);
+        repository.updateFilters(subscriberId,add,remove);
         expectLastCall();
         replay(repository);
 
-        subscriptionRepositoryService.updateTags(subscriberId,add,remove);
+        subscriptionRepositoryService.updateFilters(subscriberId,add,remove);
 
         verify(repository);
     }

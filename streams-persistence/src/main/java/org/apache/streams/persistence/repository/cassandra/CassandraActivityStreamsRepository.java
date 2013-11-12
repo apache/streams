@@ -33,11 +33,10 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
         this.keyspace = keyspace;
 
         try {
-            String createKeyspaceCql = "CREATE TABLE " + configuration.getActivitystreamsColumnFamilyName() + " (" +
+            String createTableCql = "CREATE TABLE " + configuration.getActivitystreamsColumnFamilyName() + " (" +
                     "id text, " +
                     "published timestamp, " +
                     "verb text, " +
-                    "tags text, " +
 
                     "actor_displayname text, " +
                     "actor_id text, " +
@@ -49,19 +48,16 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
                     "target_url text, " +
 
                     "provider_url text, " +
+                    "provider_displayname text, " +
 
                     "object_url text, " +
                     "object_displayname text, " +
                     "object_id text, " +
                     "object_objecttype text, " +
 
-                    "PRIMARY KEY (id));";
-            String publishedIndexCql = "CREATE INDEX ON " + configuration.getActivitystreamsColumnFamilyName() + " (published)";
-            String tagsIndexCql = "CREATE INDEX ON " + configuration.getActivitystreamsColumnFamilyName() + " (tags)";
+                    "PRIMARY KEY (provider_displayname, published));";
 
-            keyspace.getSession().execute(createKeyspaceCql);
-            keyspace.getSession().execute(tagsIndexCql);
-            keyspace.getSession().execute(publishedIndexCql);
+            keyspace.getSession().execute(createTableCql);
         } catch (AlreadyExistsException ignored) {
         }
     }
@@ -72,7 +68,6 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
                 .value("id", entry.getId())
                 .value("published", entry.getPublished().getTime())
                 .value("verb", entry.getVerb())
-                .value("tags", entry.getTags())
 
                 .value("actor_displayname", entry.getActor().getDisplayName())
                 .value("actor_objecttype", entry.getActor().getObjectType())
@@ -84,6 +79,7 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
                 .value("target_url", entry.getTarget().getUrl())
 
                 .value("provider_url", entry.getProvider().getUrl())
+                .value("provider_displayname", entry.getProvider().getDisplayName())
 
                 .value("object_displayname", entry.getObject().getDisplayName())
                 .value("object_objecttype", entry.getObject().getObjectType())
@@ -94,15 +90,14 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
     }
 
     @Override
-    public List<ActivityStreamsEntry> getActivitiesForTags(Set<String> tags, Date lastUpdated) {
+    public List<ActivityStreamsEntry> getActivitiesForProviders(Set<String> providers, Date lastUpdated) {
         List<ActivityStreamsEntry> results = new ArrayList<ActivityStreamsEntry>();
 
-        for (String tag : tags) {
+        for (String providerName : providers) {
             Select query = QueryBuilder.select().from(configuration.getActivitystreamsColumnFamilyName())
-                    .where(QueryBuilder.eq("tags", tag))
+                    .where(QueryBuilder.eq("provider_displayname", providerName))
                     .and(QueryBuilder.gt("published", lastUpdated))
-                    .limit(10)
-                    .allowFiltering();
+                    .orderBy(QueryBuilder.desc("published")).limit(100).allowFiltering();
             ResultSet set = keyspace.getSession().execute(query);
 
             //iterate through the results and create a new ActivityStreamsEntry for every result returned
@@ -129,11 +124,11 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
                 object.setId(row.getString("object_id"));
 
                 provider.setUrl(row.getString("provider_url"));
+                provider.setUrl(row.getString("provider_displayname"));
 
                 entry.setPublished(row.getDate("published"));
                 entry.setVerb(row.getString("verb"));
                 entry.setId(row.getString("id"));
-                entry.setTags(row.getString("tags"));
                 entry.setActor(actor);
                 entry.setTarget(target);
                 entry.setObject(object);

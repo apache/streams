@@ -30,8 +30,8 @@ public class CassandraSubscriptionService implements StreamsSubscriptionReposito
     }
 
     @Override
-    public void updateTags(String subscriberId, Set<String> add, Set<String> remove){
-        repository.updateTags(subscriberId, add, remove);
+    public void updateFilters(String subscriberId, Set<String> add, Set<String> remove){
+        repository.updateFilters(subscriberId, add, remove);
     }
 
     @Override

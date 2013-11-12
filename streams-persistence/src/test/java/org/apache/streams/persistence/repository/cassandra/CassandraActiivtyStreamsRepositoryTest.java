@@ -12,6 +12,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 
 public class CassandraActiivtyStreamsRepositoryTest {
     private CassandraActivityStreamsRepository repository;
@@ -20,7 +21,7 @@ public class CassandraActiivtyStreamsRepositoryTest {
     public void setup(){
         CassandraConfiguration configuration = new CassandraConfiguration();
         configuration.setCassandraPort("127.0.0.1");
-        configuration.setActivitystreamsColumnFamilyName("acitivites_Test34");
+        configuration.setActivitystreamsColumnFamilyName("acitivites_Test7");
         configuration.setKeyspaceName("keyspacetest");
         CassandraKeyspace keyspace = new CassandraKeyspace(configuration);
 
@@ -30,13 +31,13 @@ public class CassandraActiivtyStreamsRepositoryTest {
     @Ignore
     @Test
     public void testNullTags(){
-       repository.getActivitiesForTags(null,new Date(0));
+       repository.getActivitiesForProviders(null,new Date(0));
     }
 
     @Ignore
     @Test
     public void getActivitiesForTagsTest(){
-        repository.getActivitiesForTags(new HashSet<String>(Arrays.asList("tags")),new Date(0));
+        List<ActivityStreamsEntry> activities = repository.getActivitiesForProviders(new HashSet<String>(Arrays.asList("provider_displayname")),new Date(0));
     }
 
     @Ignore
@@ -63,10 +64,11 @@ public class CassandraActiivtyStreamsRepositoryTest {
         object.setId("object_id");
 
         provider.setUrl("provider_url");
+        provider.setDisplayName("provider_displayname");
 
         entry.setPublished(new Date());
         entry.setVerb("verb");
-        entry.setId("id");
+        entry.setId("newid");
         entry.setTags("tags");
         entry.setActor(actor);
         entry.setTarget(target);

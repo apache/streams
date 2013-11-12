@@ -84,10 +84,10 @@ public class StreamsActivityRepositoryServiceTest {
         activities.add(entry1);
         activities.add(entry2);
 
-        expect(activityStreamsRepository.getActivitiesForTags(tags, begin)).andReturn(activities);
+        expect(activityStreamsRepository.getActivitiesForProviders(tags, begin)).andReturn(activities);
         replay(activityStreamsRepository);
 
-        List<String> returned = activityRepositoryService.getActivitiesForTags(tags,begin);
+        List<String> returned = activityRepositoryService.getActivitiesForProviders(tags,begin);
 
         assertThat(returned.get(0),is(equalTo(entry2Json)));
         assertThat(returned.get(1),is(equalTo(entry1Json)));

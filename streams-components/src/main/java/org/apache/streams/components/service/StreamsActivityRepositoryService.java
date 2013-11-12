@@ -11,5 +11,5 @@ public interface StreamsActivityRepositoryService {
 
     void receiveActivity(ActivityStreamsPublisher publisher, String activityJSON) throws Exception;
 
-    List<String> getActivitiesForTags(Set<String> tags, Date lastUpdated);
+    List<String> getActivitiesForProviders(Set<String> providers, Date lastUpdated);
 }

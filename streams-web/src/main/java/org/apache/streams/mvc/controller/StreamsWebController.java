@@ -23,7 +23,7 @@ public class StreamsWebController {
     private StreamsSubscriberRegistrationService subscriberRegistrationService;
     private StreamsActivityPublishingService activityPublishingService;
     private StreamsActivityReceivingService activityReceivingService;
-    private StreamsTagsService tagsService;
+    private StreamsFiltersService filtersService;
 
     @Autowired
     public StreamsWebController(
@@ -31,12 +31,12 @@ public class StreamsWebController {
             StreamsSubscriberRegistrationService subscriberRegistrationService,
             StreamsActivityPublishingService activityPublishingService,
             StreamsActivityReceivingService activityReceivingService,
-            StreamsTagsService tagsService) {
+            StreamsFiltersService filtersService) {
         this.publisherRegistrationService = publisherRegistrationService;
         this.subscriberRegistrationService = subscriberRegistrationService;
         this.activityPublishingService = activityPublishingService;
         this.activityReceivingService = activityReceivingService;
-        this.tagsService = tagsService;
+        this.filtersService = filtersService;
     }
 
     /**
@@ -106,16 +106,16 @@ public class StreamsWebController {
     }
 
     /**
-     * this method is the entry point for updating tags
+     * this method is the entry point for updating filters
      *
      * @param subscriberID the id of the subscriber
      * @return a message indicating whether the update was successful
      */
-    @RequestMapping(value = "/updateTags/{subscriberID}", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateFilters/{subscriberID}", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> updateTags(@PathVariable("subscriberID") String subscriberID, @RequestBody String payload) {
         try {
-            return new ResponseEntity<String>(tagsService.updateTags(subscriberID, payload), HttpStatus.OK);
+            return new ResponseEntity<String>(filtersService.updateFilters(subscriberID, payload), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e);
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -123,16 +123,16 @@ public class StreamsWebController {
     }
 
     /**
-     * this method is the entry point for updating tags
+     * this method is the entry point for getting filters
      *
      * @param subscriberID the id of the subscriber
-     * @return an array of tags for this subscriber
+     * @return an array of filters for this subscriber
      */
-    @RequestMapping(value = "/getTags/{subscriberID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/getFilters/{subscriberID}", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<String> getTags(@PathVariable("subscriberID") String subscriberID) {
         try {
-            return new ResponseEntity<String>(tagsService.getTags(subscriberID), HttpStatus.OK);
+            return new ResponseEntity<String>(filtersService.getFilters(subscriberID), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e);
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
