@@ -21,7 +21,7 @@ public class CassandraKeyspace {
     public CassandraKeyspace(CassandraConfiguration configuration){
         this.configuration = configuration;
 
-        cluster = Cluster.builder().addContactPoint(configuration.getCassandraPort()).build();
+        cluster = Cluster.builder().addContactPoint(configuration.getCassandraHost()).withPort(configuration.getCassandraPort()).build();
         session = cluster.connect();
 
         //TODO: cassandra 2 will have support for CREATE KEYSPACE IF NOT EXISTS
