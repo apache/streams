@@ -24,7 +24,7 @@ public class StreamsPublisherRegistrationServiceIntegrationTest {
     public void setup(){
 
         CassandraConfiguration configuration = new CassandraConfiguration();
-        configuration.setCassandraPort("127.0.0.1");
+        configuration.setCassandraPort(9042);
         configuration.setPublisherColumnFamilyName("publishertestD");
         configuration.setKeyspaceName("keyspacetest");
 
