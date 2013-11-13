@@ -15,7 +15,8 @@ public class CassandraPublisherRepositoryTest {
     @Before
     public void setup(){
         CassandraConfiguration configuration = new CassandraConfiguration();
-        configuration.setCassandraPort("127.0.0.1");
+        configuration.setCassandraHost("127.0.0.1");
+        configuration.setCassandraPort(9042);
         configuration.setPublisherColumnFamilyName("publishersA");
         configuration.setKeyspaceName("keyspacetest");
         CassandraKeyspace keyspace = new CassandraKeyspace(configuration);

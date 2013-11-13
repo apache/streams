@@ -5,10 +5,9 @@ import org.apache.streams.persistence.model.ActivityStreamsEntry;
 import org.apache.streams.persistence.model.ActivityStreamsObject;
 import org.apache.streams.persistence.model.cassandra.CassandraActivityStreamsEntry;
 import org.apache.streams.persistence.model.cassandra.CassandraActivityStreamsObject;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -18,14 +17,19 @@ public class CassandraActiivtyStreamsRepositoryTest {
     private CassandraActivityStreamsRepository repository;
 
     @Before
-    public void setup(){
+    public void setup() throws Exception {
         CassandraConfiguration configuration = new CassandraConfiguration();
-        configuration.setCassandraPort("127.0.0.1");
-        configuration.setActivitystreamsColumnFamilyName("acitivites_Test7");
+        configuration.setCassandraHost("127.0.0.1");
+        configuration.setCassandraPort(9042);
+        configuration.setActivitystreamsColumnFamilyName("acitivites_Test8");
         configuration.setKeyspaceName("keyspacetest");
         CassandraKeyspace keyspace = new CassandraKeyspace(configuration);
 
         repository = new CassandraActivityStreamsRepository(keyspace,configuration);
+    }
+
+    @After
+    public void takedown(){
     }
 
     @Ignore
