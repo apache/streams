@@ -1,6 +1,8 @@
 package org.apache.streams.components.service;
 
+import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriber;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
+import org.apache.streams.components.activitysubscriber.impl.ActivityStreamsSubscriberDelegate;
 import org.apache.streams.components.service.impl.StreamsFiltersServiceImpl;
 import org.apache.streams.persistence.model.ActivityStreamsSubscription;
 import org.junit.Before;
@@ -32,10 +34,12 @@ public class StreamsFiltersServiceTest {
         String subscriberId = "subscriberId";
         String tagsJson = "{\"add\":[\"this\"], \"remove\":[\"that\"]}";
         ActivityStreamsSubscription subscription = createMock(ActivityStreamsSubscription.class);
+        ActivityStreamsSubscriber subscriber = new ActivityStreamsSubscriberDelegate();
 
         repositoryService.updateFilters(eq(subscriberId), isA(Set.class), isA(Set.class));
         expectLastCall();
         expect(repositoryService.getSubscriptionByInRoute(subscriberId)).andReturn(subscription);
+        expect(subscriberWarehouse.getSubscriber(subscriberId)).andReturn(subscriber);
         subscriberWarehouse.updateSubscriber(subscription);
         expectLastCall();
         replay(repositoryService,subscriberWarehouse);
@@ -43,6 +47,7 @@ public class StreamsFiltersServiceTest {
         String returned = filtersService.updateFilters(subscriberId,tagsJson);
 
         assertThat(returned,is(equalTo("Filters Updated Successfully!")));
+        assertThat(subscriber.getLastUpdated().getTime(),is(equalTo(0L)));
     }
 
     @Test
