@@ -28,7 +28,10 @@ public class CassandraConfiguration {
     private String publisherColumnFamilyName;
 
     @Value("${cassandra.cassandraPort}")
-    private String cassandraPort;
+    private int cassandraPort;
+
+    @Value("${cassandra.cassandraHost}")
+    private String cassandraHost;
 
     public String getKeyspaceName() {
         return keyspaceName;
@@ -62,12 +65,20 @@ public class CassandraConfiguration {
         this.publisherColumnFamilyName = publisherColumnFamilyName;
     }
 
-    public String getCassandraPort() {
+    public int getCassandraPort() {
         return cassandraPort;
     }
 
-    public void setCassandraPort(String cassandraPort) {
+    public void setCassandraPort(int cassandraPort) {
         this.cassandraPort = cassandraPort;
+    }
+
+    public String getCassandraHost() {
+        return cassandraHost;
+    }
+
+    public void setCassandraHost(String cassandraHost) {
+        this.cassandraHost = cassandraHost;
     }
 }
 
