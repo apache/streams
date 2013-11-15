@@ -4,7 +4,7 @@ import java.util.Set;
 
 public interface ActivityStreamsSubscription {
 
-    void setFilters(Set<String> tags);
+    void setFilters(Set<String> filters);
     Set<String> getFilters();
 
     String getInRoute();

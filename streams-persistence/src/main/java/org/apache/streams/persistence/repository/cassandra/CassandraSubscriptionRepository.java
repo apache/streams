@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Component
 public class CassandraSubscriptionRepository implements SubscriptionRepository {
     private Log LOG = LogFactory.getLog(CassandraSubscriptionRepository.class);
 

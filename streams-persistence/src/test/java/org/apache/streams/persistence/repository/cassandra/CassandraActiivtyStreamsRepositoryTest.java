@@ -35,13 +35,13 @@ public class CassandraActiivtyStreamsRepositoryTest {
     @Ignore
     @Test
     public void testNullTags(){
-       repository.getActivitiesForProviders(null,new Date(0));
+       repository.getActivitiesForFilters(null,new Date(0));
     }
 
     @Ignore
     @Test
     public void getActivitiesForTagsTest(){
-        List<ActivityStreamsEntry> activities = repository.getActivitiesForProviders(new HashSet<String>(Arrays.asList("provider_displayname")),new Date(0));
+        List<ActivityStreamsEntry> activities = repository.getActivitiesForFilters(new HashSet<String>(Arrays.asList("provider_displayname")),new Date(0));
     }
 
     @Ignore

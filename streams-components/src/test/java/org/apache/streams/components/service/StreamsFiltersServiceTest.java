@@ -5,6 +5,7 @@ import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscribe
 import org.apache.streams.components.activitysubscriber.impl.ActivityStreamsSubscriberDelegate;
 import org.apache.streams.components.service.impl.StreamsFiltersServiceImpl;
 import org.apache.streams.persistence.model.ActivityStreamsSubscription;
+import org.apache.streams.persistence.repository.SubscriptionRepository;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,14 +20,14 @@ import static org.junit.Assert.assertThat;
 
 public class StreamsFiltersServiceTest {
     private StreamsFiltersService filtersService;
-    private StreamsSubscriptionRepositoryService repositoryService;
+    private SubscriptionRepository subscriptionRepository;
     private ActivityStreamsSubscriberWarehouse subscriberWarehouse;
 
     @Before
     public void setup(){
-        repositoryService = createMock(StreamsSubscriptionRepositoryService.class);
+        subscriptionRepository = createMock(SubscriptionRepository.class);
         subscriberWarehouse = createMock(ActivityStreamsSubscriberWarehouse.class);
-        filtersService = new StreamsFiltersServiceImpl(repositoryService, subscriberWarehouse);
+        filtersService = new StreamsFiltersServiceImpl(subscriptionRepository, subscriberWarehouse);
     }
 
     @Test
@@ -36,13 +37,13 @@ public class StreamsFiltersServiceTest {
         ActivityStreamsSubscription subscription = createMock(ActivityStreamsSubscription.class);
         ActivityStreamsSubscriber subscriber = new ActivityStreamsSubscriberDelegate();
 
-        repositoryService.updateFilters(eq(subscriberId), isA(Set.class), isA(Set.class));
+        subscriptionRepository.updateFilters(eq(subscriberId), isA(Set.class), isA(Set.class));
         expectLastCall();
-        expect(repositoryService.getSubscriptionByInRoute(subscriberId)).andReturn(subscription);
+        expect(subscriptionRepository.getSubscriptionByInRoute(subscriberId)).andReturn(subscription);
         expect(subscriberWarehouse.getSubscriber(subscriberId)).andReturn(subscriber);
         subscriberWarehouse.updateSubscriber(subscription);
         expectLastCall();
-        replay(repositoryService,subscriberWarehouse);
+        replay(subscriptionRepository,subscriberWarehouse);
 
         String returned = filtersService.updateFilters(subscriberId,tagsJson);
 
@@ -56,9 +57,9 @@ public class StreamsFiltersServiceTest {
         ActivityStreamsSubscription subscription = createMock(ActivityStreamsSubscription.class);
         Set<String> filters = new HashSet<String>(Arrays.asList("tags"));
 
-        expect(repositoryService.getSubscriptionByInRoute(subscriberId)).andReturn(subscription);
+        expect(subscriptionRepository.getSubscriptionByInRoute(subscriberId)).andReturn(subscription);
         expect(subscription.getFilters()).andReturn(filters);
-        replay(subscription,repositoryService);
+        replay(subscription,subscriptionRepository);
 
         String returned = filtersService.getFilters(subscriberId);
 

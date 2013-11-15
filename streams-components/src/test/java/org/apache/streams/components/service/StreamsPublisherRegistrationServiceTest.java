@@ -1,8 +1,8 @@
 package org.apache.streams.components.service;
 
-import org.apache.streams.components.service.impl.CassandraPublisherService;
 import org.apache.streams.components.service.impl.StreamsPublisherRegistrationServiceImpl;
 import org.apache.streams.persistence.model.ActivityStreamsPublisher;
+import org.apache.streams.persistence.repository.PublisherRepository;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,15 +16,15 @@ import static org.junit.Assert.assertThat;
 
 public class StreamsPublisherRegistrationServiceTest {
     private StreamsPublisherRegistrationService publisherRegistrationService;
-    private StreamsPublisherRepositoryService publisherRepositoryService;
+    private PublisherRepository publisherRepository;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setup(){
-        publisherRepositoryService = createMock(CassandraPublisherService.class);
-        publisherRegistrationService = new StreamsPublisherRegistrationServiceImpl(publisherRepositoryService);
+        publisherRepository = createMock(PublisherRepository.class);
+        publisherRegistrationService = new StreamsPublisherRegistrationServiceImpl(publisherRepository);
     }
 
     @Test
@@ -43,9 +43,9 @@ public class StreamsPublisherRegistrationServiceTest {
         String inRoute = "this is returned inRoute";
         ActivityStreamsPublisher publisher= createMock(ActivityStreamsPublisher.class);
 
-        expect(publisherRepositoryService.getActivityStreamsPublisherBySrc("this is my src!")).andReturn(publisher);
+        expect(publisherRepository.getPublisherBySrc("this is my src!")).andReturn(publisher);
         expect(publisher.getInRoute()).andReturn(inRoute);
-        replay(publisherRepositoryService,publisher);
+        replay(publisherRepository,publisher);
 
         String returned = publisherRegistrationService.register(publisherJson);
 
@@ -57,14 +57,14 @@ public class StreamsPublisherRegistrationServiceTest {
         String publisherJson = "{\"src\":\"this is my src!\"}";
         String inRoute = "this is returned inRoute";
 
-        expect(publisherRepositoryService.getActivityStreamsPublisherBySrc("this is my src!")).andReturn(null);
-        publisherRepositoryService.savePublisher(isA(ActivityStreamsPublisher.class));
+        expect(publisherRepository.getPublisherBySrc("this is my src!")).andReturn(null);
+        publisherRepository.save(isA(ActivityStreamsPublisher.class));
         expectLastCall();
-        replay(publisherRepositoryService);
+        replay(publisherRepository);
 
         String returned = publisherRegistrationService.register(publisherJson);
 
         assertThat(returned, is(instanceOf(String.class)));
-        verify(publisherRepositoryService);
+        verify(publisherRepository);
     }
 }

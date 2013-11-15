@@ -12,7 +12,6 @@ import org.apache.streams.persistence.repository.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
 public class CassandraPublisherRepository implements PublisherRepository {
 
     private static final Log LOG = LogFactory.getLog(CassandraActivityStreamsRepository.class);

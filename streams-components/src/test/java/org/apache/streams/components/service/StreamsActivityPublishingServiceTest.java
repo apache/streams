@@ -2,6 +2,7 @@ package org.apache.streams.components.service;
 
 import org.apache.streams.components.service.impl.StreamsActivityPublishingServiceImpl;
 import org.apache.streams.persistence.model.ActivityStreamsPublisher;
+import org.apache.streams.persistence.repository.PublisherRepository;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,14 +15,14 @@ public class StreamsActivityPublishingServiceTest {
 
     private StreamsActivityPublishingService activityPublishingService;
     private StreamsActivityRepositoryService activityService;
-    private StreamsPublisherRepositoryService publisherService;
+    private PublisherRepository publisherRepository;
 
     @Before
     public void setup(){
         activityService = createMock(StreamsActivityRepositoryService.class);
-        publisherService = createMock(StreamsPublisherRepositoryService.class);
+        publisherRepository = createMock(PublisherRepository.class);
 
-        activityPublishingService = new StreamsActivityPublishingServiceImpl(activityService, publisherService);
+        activityPublishingService = new StreamsActivityPublishingServiceImpl(activityService, publisherRepository);
     }
 
     @Test
@@ -30,11 +31,11 @@ public class StreamsActivityPublishingServiceTest {
         String activityJson = "myActionJson";
         ActivityStreamsPublisher publisher = createMock(ActivityStreamsPublisher.class);
 
-        expect(publisherService.getActivityStreamsPublisherByInRoute(inRoute)).andReturn(publisher);
-        activityService.receiveActivity(publisher, activityJson);
+        expect(publisherRepository.getPublisherByInRoute(inRoute)).andReturn(publisher);
+        activityService.receiveActivity(activityJson);
         expectLastCall();
 
-        replay(publisherService,activityService);
+        replay(publisherRepository,activityService);
 
         assertThat(activityJson, is(equalTo(activityPublishingService.publish(inRoute, activityJson))));
     }

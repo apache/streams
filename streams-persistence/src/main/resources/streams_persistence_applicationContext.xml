@@ -9,4 +9,8 @@
     <context:annotation-config />
     <context:component-scan base-package="org.apache.streams.persistence"/>
 
+    <!--<bean id="activityStreamsRepository" class="org.apache.streams.persistence.repository.mongo.MongoActivityStreamsRepository"/>-->
+    <!--<bean id="publisherRepository" class="org.apache.streams.persistence.repository.mongo.MongoPublisherRepository"/>-->
+    <!--<bean id="subscriberRepository" class="org.apache.streams.persistence.repository.mongo.MongoSubscriptionRepository"/>-->
+    <!--<bean id="mongoDatabase" class="org.apache.streams.persistence.repository.mongo.MongoDatabase"/>-->
 </beans>

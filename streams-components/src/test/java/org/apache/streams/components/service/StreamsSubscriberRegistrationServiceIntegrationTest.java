@@ -1,7 +1,6 @@
 package org.apache.streams.components.service;
 
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
-import org.apache.streams.components.service.impl.CassandraSubscriptionService;
 import org.apache.streams.components.service.impl.StreamsSubscriberRegistrationServiceImpl;
 import org.apache.streams.persistence.configuration.CassandraConfiguration;
 import org.apache.streams.persistence.repository.SubscriptionRepository;
@@ -28,9 +27,8 @@ public class StreamsSubscriberRegistrationServiceIntegrationTest {
         SubscriptionRepository subscriptionRepository = new CassandraSubscriptionRepository(keyspace,configuration);
 
         ActivityStreamsSubscriberWarehouse warehouse = createMock(ActivityStreamsSubscriberWarehouse.class);
-        StreamsSubscriptionRepositoryService repositoryService = new CassandraSubscriptionService(subscriptionRepository);
 
-        streamsSubscriberRegistrationService = new StreamsSubscriberRegistrationServiceImpl(repositoryService, warehouse);
+        streamsSubscriberRegistrationService = new StreamsSubscriberRegistrationServiceImpl(subscriptionRepository, warehouse);
     }
 
     @Ignore

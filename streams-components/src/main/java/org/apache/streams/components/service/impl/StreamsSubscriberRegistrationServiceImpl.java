@@ -4,9 +4,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.components.service.StreamsSubscriberRegistrationService;
-import org.apache.streams.components.service.StreamsSubscriptionRepositoryService;
 import org.apache.streams.persistence.model.ActivityStreamsSubscription;
 import org.apache.streams.persistence.model.cassandra.CassandraSubscription;
+import org.apache.streams.persistence.model.mongo.MongoSubscription;
+import org.apache.streams.persistence.repository.SubscriptionRepository;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,18 +19,20 @@ import java.util.UUID;
 public class StreamsSubscriberRegistrationServiceImpl implements StreamsSubscriberRegistrationService {
     private Log log = LogFactory.getLog(StreamsSubscriberRegistrationServiceImpl.class);
 
-    private StreamsSubscriptionRepositoryService subscriptionRepositoryService;
+    private SubscriptionRepository subscriptionRepository;
     private ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse;
+    private Class subscriptionClass;
     private ObjectMapper mapper;
 
     @Autowired
     public StreamsSubscriberRegistrationServiceImpl(
-            StreamsSubscriptionRepositoryService subscriptionRepositoryService,
+            SubscriptionRepository subscriptionRepository,
             ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse
     ) {
-        this.subscriptionRepositoryService = subscriptionRepositoryService;
+        this.subscriptionRepository = subscriptionRepository;
         this.activityStreamsSubscriberWarehouse = activityStreamsSubscriberWarehouse;
         this.mapper = new ObjectMapper();
+        this.subscriptionClass = MongoSubscription.class;
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
@@ -43,14 +46,14 @@ public class StreamsSubscriberRegistrationServiceImpl implements StreamsSubscrib
     public String register(String subscriberJSON) throws Exception {
         log.info("registering subscriber: "+subscriberJSON);
 
-        ActivityStreamsSubscription subscription = mapper.readValue(subscriberJSON, CassandraSubscription.class);
-        ActivityStreamsSubscription fromDB = subscriptionRepositoryService.getSubscriptionByUsername(subscription.getUsername());
+        ActivityStreamsSubscription subscription = (ActivityStreamsSubscription)mapper.readValue(subscriberJSON, subscriptionClass);
+        ActivityStreamsSubscription fromDB = subscriptionRepository.getSubscriptionByUsername(subscription.getUsername());
 
         if (fromDB != null) {
             return fromDB.getInRoute();
         } else {
             subscription.setInRoute("" + UUID.randomUUID());
-            subscriptionRepositoryService.saveSubscription(subscription);
+            subscriptionRepository.save(subscription);
             activityStreamsSubscriberWarehouse.register(subscription);
 
             return subscription.getInRoute();

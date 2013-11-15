@@ -3,6 +3,7 @@ package org.apache.streams.components.service;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.components.service.impl.StreamsSubscriberRegistrationServiceImpl;
 import org.apache.streams.persistence.model.ActivityStreamsSubscription;
+import org.apache.streams.persistence.repository.SubscriptionRepository;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,15 +15,15 @@ import static org.junit.Assert.assertThat;
 
 public class StreamsSubscriberRegistrationServiceTest {
     private StreamsSubscriberRegistrationService subscriberRegistrationService;
-    private StreamsSubscriptionRepositoryService subscriptionRepositoryService;
+    private SubscriptionRepository subscriptionRepository;
     private ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse;
 
     @Before
     public void setup(){
-        subscriptionRepositoryService = createMock(StreamsSubscriptionRepositoryService.class);
+        subscriptionRepository = createMock(SubscriptionRepository.class);
         activityStreamsSubscriberWarehouse = createMock(ActivityStreamsSubscriberWarehouse.class);
 
-        subscriberRegistrationService = new StreamsSubscriberRegistrationServiceImpl(subscriptionRepositoryService,activityStreamsSubscriberWarehouse);
+        subscriberRegistrationService = new StreamsSubscriberRegistrationServiceImpl(subscriptionRepository,activityStreamsSubscriberWarehouse);
     }
 
     @Test
@@ -32,9 +33,9 @@ public class StreamsSubscriberRegistrationServiceTest {
         String subscriberJson = "{\"username\":\"blah\"}";
 
         ActivityStreamsSubscription subscription = createMock(ActivityStreamsSubscription.class);
-        expect(subscriptionRepositoryService.getSubscriptionByUsername(username)).andReturn(subscription);
+        expect(subscriptionRepository.getSubscriptionByUsername(username)).andReturn(subscription);
         expect(subscription.getInRoute()).andReturn(inRoute);
-        replay(subscriptionRepositoryService, subscription);
+        replay(subscriptionRepository, subscription);
 
         String returned = subscriberRegistrationService.register(subscriberJson);
 
@@ -46,16 +47,16 @@ public class StreamsSubscriberRegistrationServiceTest {
         String username = "blah";
         String subscriberJson = "{\"username\":\"blah\"}";
 
-        expect(subscriptionRepositoryService.getSubscriptionByUsername(username)).andReturn(null);
-        subscriptionRepositoryService.saveSubscription(isA(ActivityStreamsSubscription.class));
+        expect(subscriptionRepository.getSubscriptionByUsername(username)).andReturn(null);
+        subscriptionRepository.save(isA(ActivityStreamsSubscription.class));
         expectLastCall();
         activityStreamsSubscriberWarehouse.register(isA(ActivityStreamsSubscription.class));
         expectLastCall();
-        replay(subscriptionRepositoryService, activityStreamsSubscriberWarehouse);
+        replay(subscriptionRepository, activityStreamsSubscriberWarehouse);
 
         String returned = subscriberRegistrationService.register(subscriberJson);
 
         assertThat(returned, is(instanceOf(String.class)));
-        verify(subscriptionRepositoryService,activityStreamsSubscriberWarehouse);
+        verify(subscriptionRepository,activityStreamsSubscriberWarehouse);
     }
 }

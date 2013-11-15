@@ -9,7 +9,7 @@ import java.util.Set;
 
 public interface ActivityStreamsRepository {
     void save(ActivityStreamsEntry entry);
-    List<ActivityStreamsEntry> getActivitiesForProviders(Set<String> providers, Date lastUpdated);
+    List<ActivityStreamsEntry> getActivitiesForFilters(Set<String> filters, Date lastUpdated);
     void dropTable(String table);
 
 }

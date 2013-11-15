@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-@Component
 public class CassandraActivityStreamsRepository implements ActivityStreamsRepository {
 
     private static final Log LOG = LogFactory.getLog(CassandraActivityStreamsRepository.class);
@@ -90,10 +89,10 @@ public class CassandraActivityStreamsRepository implements ActivityStreamsReposi
     }
 
     @Override
-    public List<ActivityStreamsEntry> getActivitiesForProviders(Set<String> providers, Date lastUpdated) {
+    public List<ActivityStreamsEntry> getActivitiesForFilters(Set<String> filters, Date lastUpdated) {
         List<ActivityStreamsEntry> results = new ArrayList<ActivityStreamsEntry>();
 
-        for (String providerName : providers) {
+        for (String providerName : filters) {
             Select query = QueryBuilder.select().from(configuration.getActivitystreamsColumnFamilyName())
                     .where(QueryBuilder.eq("provider_displayname", providerName))
                     .and(QueryBuilder.gt("published", lastUpdated))

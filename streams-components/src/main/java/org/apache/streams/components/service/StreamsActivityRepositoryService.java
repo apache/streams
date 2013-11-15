@@ -10,7 +10,7 @@ import java.util.Set;
 
 public interface StreamsActivityRepositoryService {
 
-    void receiveActivity(ActivityStreamsPublisher publisher, String activityJSON) throws Exception;
+    void receiveActivity(String activityJSON) throws Exception;
 
     List<ActivityStreamsEntry> getActivitiesForProviders(Set<String> providers, Date lastUpdated);
 }

@@ -7,8 +7,8 @@ import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
-import org.apache.streams.components.service.StreamsSubscriptionRepositoryService;
 import org.apache.streams.persistence.model.ActivityStreamsSubscription;
+import org.apache.streams.persistence.repository.SubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -20,9 +20,8 @@ import java.util.Map;
 public class StormSubscriberSpout extends BaseRichSpout {
 
     private static ApplicationContext appContext;
-    private StreamsSubscriptionRepositoryService repositoryService;
+    private SubscriptionRepository subscriptionRepository;
     private SpoutOutputCollector _collector;
-    private Iterator iterator;
 
     @Autowired
     public StormSubscriberSpout(ApplicationContext ctx){
@@ -31,7 +30,7 @@ public class StormSubscriberSpout extends BaseRichSpout {
 
     @Override
     public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
-        repositoryService = (StreamsSubscriptionRepositoryService)appContext.getBean("cassandraSubscriptionService");
+        subscriptionRepository = (SubscriptionRepository)appContext.getBean("mongoSubscriptionRepository");
 
         _collector = collector;
     }
@@ -39,7 +38,7 @@ public class StormSubscriberSpout extends BaseRichSpout {
     @Override
     public void nextTuple() {
         Utils.sleep(10000);
-        for (ActivityStreamsSubscription subscription : repositoryService.getAllSubscriptions()) {
+        for (ActivityStreamsSubscription subscription : subscriptionRepository.getAllSubscriptions()) {
             _collector.emit(new Values(subscription));
         }
     }

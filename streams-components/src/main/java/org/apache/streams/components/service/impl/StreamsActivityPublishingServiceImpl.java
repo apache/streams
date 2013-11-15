@@ -4,8 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.streams.components.service.StreamsActivityPublishingService;
 import org.apache.streams.components.service.StreamsActivityRepositoryService;
-import org.apache.streams.components.service.StreamsPublisherRepositoryService;
 import org.apache.streams.persistence.model.ActivityStreamsPublisher;
+import org.apache.streams.persistence.repository.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +14,12 @@ public class StreamsActivityPublishingServiceImpl implements StreamsActivityPubl
     private Log log = LogFactory.getLog(StreamsActivityPublishingServiceImpl.class);
 
     private StreamsActivityRepositoryService activityService;
-    private StreamsPublisherRepositoryService publisherService;
+    private PublisherRepository publisherRepository;
 
     @Autowired
-    public StreamsActivityPublishingServiceImpl(StreamsActivityRepositoryService activityService, StreamsPublisherRepositoryService publisherService) {
+    public StreamsActivityPublishingServiceImpl(StreamsActivityRepositoryService activityService, PublisherRepository publisherRepository) {
         this.activityService = activityService;
-        this.publisherService = publisherService;
+        this.publisherRepository = publisherRepository;
     }
 
     /**
@@ -29,8 +29,9 @@ public class StreamsActivityPublishingServiceImpl implements StreamsActivityPubl
      * @return a success message if no errors were thrown
      * */
     public String publish(String publisherID, String activityJSON) throws Exception {
-        ActivityStreamsPublisher publisher = publisherService.getActivityStreamsPublisherByInRoute(publisherID);
-        activityService.receiveActivity(publisher,activityJSON);
+        //TODO: this should eventually authenticate
+        ActivityStreamsPublisher publisher = publisherRepository.getPublisherByInRoute(publisherID);
+        activityService.receiveActivity(activityJSON);
         return activityJSON;
     }
 }

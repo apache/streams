@@ -63,6 +63,8 @@
         <camel.version>2.12.1</camel.version>
         <logging.version>1.7.5</logging.version>
         <easymock.version>3.2</easymock.version>
+        <mongo-java-driver.version>2.11.3</mongo-java-driver.version>
+        <javax-servlet.version>2.5</javax-servlet.version>
     </properties>
 
     <packaging>pom</packaging>
