@@ -10,6 +10,4 @@ import java.util.Set;
 public interface ActivityStreamsRepository {
     void save(ActivityStreamsEntry entry);
     List<ActivityStreamsEntry> getActivitiesForFilters(Set<String> filters, Date lastUpdated);
-    void dropTable(String table);
-
 }

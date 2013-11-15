@@ -37,11 +37,13 @@ public class MongoActivityStreamsRepository implements ActivityStreamsRepository
 
     @Override
     public List<ActivityStreamsEntry> getActivitiesForFilters(Set<String> filters, Date lastUpdated) {
-
-
+        List<String> filterList = new ArrayList<String>(filters);
         DBObject query = QueryBuilder.start("published").greaterThan(lastUpdated).and(QueryBuilder.start().or(
-                QueryBuilder.start("provider.displayName").in(new ArrayList<String>(filters)).get(),
-                QueryBuilder.start("actor.displayName").in(new ArrayList<String>(filters)).get()
+                QueryBuilder.start("provider.displayName").in(filterList).get(),
+                QueryBuilder.start("actor.displayName").in(filterList).get(),
+                QueryBuilder.start("object.displayName").in(filterList).get(),
+                QueryBuilder.start("target.displayName").in(filterList).get(),
+                QueryBuilder.start("verb").in(filterList).get()
         ).get()).get();
 
         DBCursor cursor = activityStreamsCollection.find(query);
@@ -54,9 +56,5 @@ public class MongoActivityStreamsRepository implements ActivityStreamsRepository
         }
 
         return results;
-    }
-
-    @Override
-    public void dropTable(String table) {
     }
 }
