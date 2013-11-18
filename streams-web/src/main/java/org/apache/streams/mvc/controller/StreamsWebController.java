@@ -137,6 +137,8 @@ public class StreamsWebController {
     @ResponseBody
     public ResponseEntity<String> getTags(@PathVariable("subscriberID") String subscriberID) {
         try {
+        	HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.setContentType(MediaType.APPLICATION_JSON);
             return new ResponseEntity<String>(filtersService.getFilters(subscriberID), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e);
