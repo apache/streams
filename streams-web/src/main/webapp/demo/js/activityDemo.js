@@ -1,4 +1,16 @@
 var activityDemo = activityDemo || (function(){
+    Handlebars.registerHelper("formatDate", function(timestamp) {
+        var d = new Date(timestamp);
+
+        var curr_date = d.getDate();
+
+        var curr_month = d.getMonth();
+
+        var curr_year = d.getFullYear();
+
+        return (curr_month + 1 )+ "-" + curr_date + "-" + curr_year;
+    });
+
     var subscriberURL = "";
     var registerUrl = "/streams-web/app/subscriberRegister";
     var activityStream = "";
@@ -38,18 +50,17 @@ var activityDemo = activityDemo || (function(){
     setInterval(function(){
         // Gets activities streams array
        // var getActivitiesStream = function(){
-            if(!subscriberURL){
-                alert("Please enter a subscriber url first");
-            }else(
-                $.ajax({
-                    type:"GET",
-                    url: subscriberURL,
-                    success:function(data){
-                        setTemplate(data);
-                    }
-                }));
-        //};
-    },3000);
+        if(subscriberURL){
+            $.ajax({
+                type:"GET",
+                url: subscriberURL,
+                success:function(data){
+                    setTemplate(data);
+                }
+            })
+        };
+    }
+    ,3000);
 
 
     // Applies the array returned from Streams to the html template to be displayed

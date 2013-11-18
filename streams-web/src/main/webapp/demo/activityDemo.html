@@ -30,7 +30,7 @@
         <!--Iterates through each activity in the array that was returned from Streams-->
         {{#each this}}
         <div class='activity'>
-            <div class='actor'>{{actor.id}}   {{verb}}   {{published}}</div>
+            <img src={{actor.url}} height=25 width=25>   {{verb}}  <a href = {{target.url}}>{{target.displayName}}</a> on {{formatDate published}}
         </div>
         {{/each}}
     </script>
