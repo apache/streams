@@ -92,7 +92,7 @@ public class StreamsWebController {
     }
 
     /**
-     * this method is the entry point for receiving activity
+     * this method is the entry po int for receiving activity
      *
      * @param subscriberID the id of the subscriber
      * @return an array of activity for this subscriber
