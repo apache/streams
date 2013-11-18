@@ -2,6 +2,8 @@ package org.apache.streams.persistence.model.mongo;
 
 import com.mongodb.BasicDBObject;
 import org.apache.streams.persistence.model.ActivityStreamsObject;
+import org.apache.streams.persistence.model.ActivityStreamsMediaLink;
+
 
 public class MongoActivityStreamsObject extends BasicDBObject implements ActivityStreamsObject{
 
@@ -35,5 +37,13 @@ public class MongoActivityStreamsObject extends BasicDBObject implements Activit
 
     public void setUrl(String url) {
         put("url", url);
+    }
+    
+    public ActivityStreamsMediaLink getImage() {
+        return (ActivityStreamsMediaLink)get("image");
+    }
+
+    public void setImage(ActivityStreamsMediaLink image) {
+        put("image", image);
     }
 }

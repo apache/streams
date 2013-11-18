@@ -9,4 +9,6 @@ public interface ActivityStreamsObject {
     void setId(String id);
     String getUrl();
     void setUrl(String url);
+    ActivityStreamsMediaLink getImage();
+    void setImage(ActivityStreamsMediaLink image);
 }

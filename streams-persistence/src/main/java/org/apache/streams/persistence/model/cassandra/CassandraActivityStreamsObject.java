@@ -1,5 +1,6 @@
 package org.apache.streams.persistence.model.cassandra;
 
+import org.apache.streams.persistence.model.ActivityStreamsMediaLink;
 import org.apache.streams.persistence.model.ActivityStreamsObject;
 
 public class CassandraActivityStreamsObject implements ActivityStreamsObject {
@@ -7,6 +8,7 @@ public class CassandraActivityStreamsObject implements ActivityStreamsObject {
     private String id;
     private String objectType;
     private String url;
+    private ActivityStreamsMediaLink image;
 
     public String getDisplayName() {
         return displayName;
@@ -39,4 +41,14 @@ public class CassandraActivityStreamsObject implements ActivityStreamsObject {
     public void setUrl(String url) {
         this.url = url;
     }
+
+	@Override
+	public ActivityStreamsMediaLink getImage() {
+		return image;
+	}
+
+	@Override
+	public void setImage(ActivityStreamsMediaLink image) {
+		this.image = image;		
+	}
 }

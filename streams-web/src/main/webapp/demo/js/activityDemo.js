@@ -1,14 +1,9 @@
 var activityDemo = activityDemo || (function(){
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     Handlebars.registerHelper("formatDate", function(timestamp) {
-        var d = new Date(timestamp);
+        var date = new Date(timestamp);
+        return months[date.getMonth()]  + " " + date.getDate() + " " +  date.getFullYear() + " " + date.getHours() + ":" + (date.getMinutes()<10?'0':'') + date.getMinutes()
 
-        var curr_date = d.getDate();
-
-        var curr_month = d.getMonth();
-
-        var curr_year = d.getFullYear();
-
-        return (curr_month + 1 )+ "-" + curr_date + "-" + curr_year;
     });
 
     var subscriberURL = "";
