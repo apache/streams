@@ -16,6 +16,9 @@
 </head>
 
 <body>
+    <!-- This form submits the following JSON input to register a new Subscriber (Consumer), calling the CassandraSubscription class
+        and adding the filter, "tags". So, any Activity POSTed by a Publisher with a tag of "tags" will appear in this
+        Subscriber's Activity Stream -->
     <form  class="form-publisher">
         <label>Subscriber Registration JSON:</label>
         <textarea id="subscriberRegistrationJSON"
@@ -23,20 +26,55 @@
                   type="text"
                   rows="12"
                   cols="80">
-            {
-            "authToken": "token",
-            "@class":"org.apache.streams.persistence.model.cassandra.CassandraSubscription",
-            "filters": [
-            "tags"
-            ]
-            }
+            {"username":"chansen"}
+
         </textarea><br>
         <button type="button" class="btn btn-primary" onclick="subscriber.registerSubscriber()">Submit Registration JSON</button><br><br>
         <input id="registrationUrl" size="100">
     </form>
+
+    <!-- ... -->
+    <form class="form-publisher">
+        <label>Add Subscriber Filters</label>
+        <textarea id="addFilters"
+                  class="form-control"
+                  rows="12"
+                  cols="80">
+            {"add":["tag1","tag2"], "remove":[]}
+        </textarea><br>
+        <button type="button" class="btn btn-primary" onclick="subscriber.addFilters()">Add Filter(s)</button><br><br>
+        <p id="successAdd"></p>
+    </form>
+
+    <!-- ...-->
+    <form class="form-publisher">
+        <label>Remove Subscriber Filters</label>
+        <textarea id="removeFilters"
+                  class="form-control"
+                  rows="12"
+                  cols="80">
+            {"add":[], "remove":["tag2"]}
+        </textarea><br>
+        <button type="button" class="btn btn-primary" onclick="subscriber.removeFilters()">Remove Filters</button><br><br>
+        <p id="successRemove"></p>
+    </form>
+
+    <!-- ...-->
+    <form class="form-publisher">
+        <label>View Subscriber's Filters</label>
+        <textarea id="getFilters"
+                  class="form-control"
+                  rows="12"
+                  cols="80"></textarea><br>
+        <button type="button" class="btn btn-primary" onclick="subscriber.getFilters()">Get Filters</button><br><br>
+    </form>
+
+
+    <!-- This form GETs this Subscriber's Activity Stream (JSON), using the Subscriber's registration URL
+  (ex: http://localhost:8090/streams-web/app/getActivity/7c67ab09-d452-4ea1-8197-5d263505f515) -->
     <form class="form-publisher">
         <button type="button" class="btn btn-primary" onclick="subscriber.getActivities()">Get Activities</button><br><br>
-        <textarea id="successMessage"
+        <textarea id="getActivities"
                   class="form-control"
                   rows="16"
                   cols="80"></textarea>

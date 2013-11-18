@@ -17,61 +17,53 @@
 </head>
 
 <body>
+    <!-- This form submits the following JSON to register a new Publisher, calling the PushActivityConsumer class -->
     <form  class="form-publisher">
         <label>Publisher Registration JSON:</label>
         <textarea id="publisherRegistrationJSON"
                class="form-control"
-               type="text"
                rows="12"
-               cols="80">{
-                "authToken": "token",
-                "@class":"org.apache.streams.osgi.components.activityconsumer.impl.PushActivityConsumer",
-                "input_type": "http",
-                "method": "post",
-                "src": "http.example.com:8888",
-                "delivery_frequency": "60",
-                "auth_type": "none",
-                "username": "username",
-                "password": "password"
-                }
+               cols="80">
+            {"src":"www.example.com"}
         </textarea><br>
         <button type="button" class="btn btn-primary" onclick="publisher.registerPublisher()">Submit Registration JSON</button><br><br>
         <input id="registrationUrl" size="100">
     </form>
 
-
+    <!-- This form submits the following JSON to POST an Activity and store it in the database.
+        This Activity will be available to all Subscribers with the same tag/filter ("tags") -->
     <form  class="form-publisher">
         <label>Publisher Activity JSON:</label>
         <textarea id="publisherActivityJSON"
                   class="form-control"
-                  type="text"
                   rows="12"
                   cols="80">
-                  {
-                  "id": "id",
-                  "verb": "verb",
-                  "tags": "tags",
-                  "provider": {
-                  "url": "http.example.com:8888"
-                  },
-                  "actor": {
-                  "id": "actorid",
-                  "objectType": "actorobject",
-                  "displayName": "actorname",
-                  "url": "www.actorexampleurl.com"
-                  },
-                  "target": {
-                  "id": "targetid",
-                  "displayName": "targetname",
-                  "url": "www.targeturl.com"
-                  },
-                  "object": {
-                  "id": "objectid",
-                  "displayName": "objectname",
-                  "objectType": "object",
-                  "url": "www.objecturl.org"
-                  }
-                  }
+            {
+            "id": "id",
+            "verb": "verb",
+            "provider": {
+            "displayName":"danny",
+            "url": "http.example.com:8888"
+            },
+            "actor": {
+            "id": "actorid",
+            "objectType": "actorobject",
+            "displayName": "actorname",
+            "url": "www.actorexampleurl.com"
+            },
+            "target": {
+            "id": "targetid",
+            "displayName": "targetname",
+            "url": "www.targeturl.com"
+            },
+            "object": {
+            "id": "objectid",
+            "displayName": "objectname",
+            "objectType": "object",
+            "url": "www.objecturl.org"
+            }
+            }
+
         </textarea><br>
         <button type="button" class="btn btn-primary" onclick="publisher.postActivity()">Submit Activity JSON</button><br>
         <p id="successMessage"></p>

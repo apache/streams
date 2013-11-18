@@ -21,9 +21,13 @@
 <body>
 
     <form  class="form-activities">
-        <label>View Streams for the following tag:</label><br>
-        <input id="tag" type="text" class="form-control" placeholder="Enter tag here" autofocus><br>
-        <button type="button" class="btn btn-lg btn-primary btn-block" onclick="activityDemo.getActivitiesForGivenTag()">Get Activities</button><br><br>
+        <label>View Streams for the following user:</label><br>
+        <input id="username" type="text" class="form-control" placeholder="Enter username here" onkeypress="activityDemo.searchKeyPress(event);" autofocus><br>
+        <label>Filters to Add:</label>
+        <input id="addFilters" type="text" class="form-control" placeholder="Separate filters with spaces" autofocus><br>
+        <label>Filters to Remove:</label>
+        <input id="removeFilters" type="text" class="form-control" placeholder="Separate filters with spaces" autofocus><br>
+        <button id="submitButton" type="button" class="btn btn-lg btn-primary btn-block" onclick="activityDemo.registerSubscriber()">Get Activities</button><br><br>
     </form>
     <div id="activityStream"></div>
     <script type="text/x-handlebars-template" id='activity-template'>

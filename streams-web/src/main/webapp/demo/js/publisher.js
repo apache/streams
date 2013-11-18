@@ -1,25 +1,24 @@
 var publisher = publisher || (function(){
 
-    //registers a new publisher, and returns the publisher's unique URL that you can use to POST activities
+    // Registers a new publisher, and returns the publisher's unique URL that you can use to POST activities
     var registerPublisher = function(){
+        //clear success message on refresh
+        $("#successMessage").empty();
 
         var registrationUrl;
-        console.log($("#publisherRegistrationJSON").val());
         $.ajax({
             data: $("#publisherRegistrationJSON").val(),
             contentType:'application/json',
             type:'POST',
             url:'/streams-web/app/publisherRegister',
             success:function(data){
-                console.log(data);
-                console.log( $("#publisherRegistrationJSON").html());
                 registrationUrl = data;
                 $("#registrationUrl").val(registrationUrl);
             }
         });
     };
 
-    //uses the publisher's unique URL to POST activities
+    // Uses the publisher's unique URL to POST activities
     var postActivity = function(){
         var registrationUrl;
         $.ajax({
@@ -27,8 +26,7 @@ var publisher = publisher || (function(){
             url: $("#registrationUrl").val(),
             contentType:'application/json',
             type:'POST',
-            success:function(data){
-                console.log(data);
+            success:function(){
                 $("#successMessage").html("Success! Activity Posted");
             }
         })
