@@ -52,4 +52,9 @@ public class ActivityStreamsSubscriberDelegate implements ActivityStreamsSubscri
     public void receive(List<ActivityStreamsEntry> activities) {
         stream.addAll(activities);
     }
+    
+    public void reset(){
+    	this.lastUpdated = new Date(0);
+    	this.stream.clear();
+    }
 }

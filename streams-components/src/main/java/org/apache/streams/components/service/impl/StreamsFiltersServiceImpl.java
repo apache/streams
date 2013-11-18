@@ -44,7 +44,7 @@ public class StreamsFiltersServiceImpl implements StreamsFiltersService {
 
         Map<String, List> updateFilters = (Map<String, List>) mapper.readValue(tagsJson, Map.class);
         subscriptionRepository.updateFilters(subscriberId, new HashSet<String>(updateFilters.get("add")), new HashSet<String>(updateFilters.get("remove")));
-        subscriberWarehouse.getSubscriber(subscriberId).setLastUpdated(new Date(0));
+        subscriberWarehouse.getSubscriber(subscriberId).reset();
         subscriberWarehouse.updateSubscriber(subscriptionRepository.getSubscriptionByInRoute(subscriberId));
 
         return "Filters Updated Successfully!";

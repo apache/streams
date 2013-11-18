@@ -10,4 +10,5 @@ public interface ActivityStreamsSubscriber {
     String getStream() throws Exception;
     Date getLastUpdated();
     void setLastUpdated(Date lastUpdated);
+    void reset();
 }
