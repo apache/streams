@@ -24,10 +24,10 @@ public class StreamsPublisherRegistrationServiceImpl implements StreamsPublisher
     private ObjectMapper mapper;
 
     @Autowired
-    public StreamsPublisherRegistrationServiceImpl(PublisherRepository publisherRepositoryService) {
+    public StreamsPublisherRegistrationServiceImpl(PublisherRepository publisherRepositoryService, Class publisherClass) {
         this.publisherRepository = publisherRepositoryService;
         this.mapper = new ObjectMapper();
-        this.publisherClass = MongoPublisher.class;
+        this.publisherClass = publisherClass;
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 

@@ -3,6 +3,7 @@ package org.apache.streams.components.service;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.components.service.impl.StreamsSubscriberRegistrationServiceImpl;
 import org.apache.streams.persistence.configuration.CassandraConfiguration;
+import org.apache.streams.persistence.model.mongo.MongoSubscription;
 import org.apache.streams.persistence.repository.SubscriptionRepository;
 import org.apache.streams.persistence.repository.cassandra.CassandraKeyspace;
 import org.apache.streams.persistence.repository.cassandra.CassandraSubscriptionRepository;
@@ -28,7 +29,7 @@ public class StreamsSubscriberRegistrationServiceIntegrationTest {
 
         ActivityStreamsSubscriberWarehouse warehouse = createMock(ActivityStreamsSubscriberWarehouse.class);
 
-        streamsSubscriberRegistrationService = new StreamsSubscriberRegistrationServiceImpl(subscriptionRepository, warehouse);
+        streamsSubscriberRegistrationService = new StreamsSubscriberRegistrationServiceImpl(subscriptionRepository, warehouse, MongoSubscription.class);
     }
 
     @Ignore

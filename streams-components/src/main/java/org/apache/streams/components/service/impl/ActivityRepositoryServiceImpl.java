@@ -25,9 +25,9 @@ public class ActivityRepositoryServiceImpl implements StreamsActivityRepositoryS
     private ObjectMapper mapper;
 
     @Autowired
-    public ActivityRepositoryServiceImpl(ActivityStreamsRepository activityStreamsRepository) {
+    public ActivityRepositoryServiceImpl(ActivityStreamsRepository activityStreamsRepository, Class activityClass) {
         this.activityStreamsRepository = activityStreamsRepository;
-        this.activityClass = MongoActivityStreamsEntry.class;
+        this.activityClass = activityClass;
         this.mapper = new ObjectMapper();
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }

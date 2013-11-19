@@ -27,12 +27,13 @@ public class StreamsSubscriberRegistrationServiceImpl implements StreamsSubscrib
     @Autowired
     public StreamsSubscriberRegistrationServiceImpl(
             SubscriptionRepository subscriptionRepository,
-            ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse
+            ActivityStreamsSubscriberWarehouse activityStreamsSubscriberWarehouse,
+            Class subscriptionClass
     ) {
         this.subscriptionRepository = subscriptionRepository;
         this.activityStreamsSubscriberWarehouse = activityStreamsSubscriberWarehouse;
         this.mapper = new ObjectMapper();
-        this.subscriptionClass = MongoSubscription.class;
+        this.subscriptionClass = subscriptionClass;
         mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 

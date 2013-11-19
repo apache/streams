@@ -2,6 +2,7 @@ package org.apache.streams.components.service;
 
 import org.apache.streams.components.service.impl.StreamsPublisherRegistrationServiceImpl;
 import org.apache.streams.persistence.model.ActivityStreamsPublisher;
+import org.apache.streams.persistence.model.mongo.MongoPublisher;
 import org.apache.streams.persistence.repository.PublisherRepository;
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,7 +25,7 @@ public class StreamsPublisherRegistrationServiceTest {
     @Before
     public void setup(){
         publisherRepository = createMock(PublisherRepository.class);
-        publisherRegistrationService = new StreamsPublisherRegistrationServiceImpl(publisherRepository);
+        publisherRegistrationService = new StreamsPublisherRegistrationServiceImpl(publisherRepository, MongoPublisher.class);
     }
 
     @Test

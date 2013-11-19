@@ -3,6 +3,8 @@ package org.apache.streams.components.service;
 import org.apache.streams.components.activitysubscriber.ActivityStreamsSubscriberWarehouse;
 import org.apache.streams.components.service.impl.StreamsSubscriberRegistrationServiceImpl;
 import org.apache.streams.persistence.model.ActivityStreamsSubscription;
+import org.apache.streams.persistence.model.mongo.MongoActivityStreamsEntry;
+import org.apache.streams.persistence.model.mongo.MongoSubscription;
 import org.apache.streams.persistence.repository.SubscriptionRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +25,7 @@ public class StreamsSubscriberRegistrationServiceTest {
         subscriptionRepository = createMock(SubscriptionRepository.class);
         activityStreamsSubscriberWarehouse = createMock(ActivityStreamsSubscriberWarehouse.class);
 
-        subscriberRegistrationService = new StreamsSubscriberRegistrationServiceImpl(subscriptionRepository,activityStreamsSubscriberWarehouse);
+        subscriberRegistrationService = new StreamsSubscriberRegistrationServiceImpl(subscriptionRepository,activityStreamsSubscriberWarehouse, MongoSubscription.class);
     }
 
     @Test

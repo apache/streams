@@ -10,8 +10,16 @@
     <context:annotation-config />
     <context:component-scan base-package="org.apache.streams.components"/>
 
-    <!--<bean id="conversionClass" class="java.lang.Class" factory-method="forName">-->
-        <!--<constructor-arg value="org.apache.streams.persistence.model.mongo.MongoActivityStreamsEntry"/>-->
-    <!--</bean>-->
+    <bean id="activityClass" class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.apache.streams.persistence.model.mongo.MongoActivityStreamsEntry"/>
+    </bean>
+
+    <bean id="publisherClass" class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.apache.streams.persistence.model.mongo.MongoPublisher"/>
+    </bean>
+
+    <bean id="subscriptionClass" class="java.lang.Class" factory-method="forName">
+        <constructor-arg value="org.apache.streams.persistence.model.mongo.MongoSubscription"/>
+    </bean>
 
 </beans>
