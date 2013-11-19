@@ -47,9 +47,9 @@ public class StreamsWebController {
      */
     @RequestMapping(headers = {"content-type=application/json"}, value = "/publisherRegister", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<String> registerPublisher(@RequestBody String payload, @RequestHeader("host") String host) {
+    public ResponseEntity<String> registerPublisher(@RequestBody String payload) {
         try {
-            return new ResponseEntity<String>("http://" + host + "/streams-web/app/postActivity/" + publisherRegistrationService.register(payload), HttpStatus.OK);
+            return new ResponseEntity<String>(publisherRegistrationService.register(payload), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e);
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -64,9 +64,9 @@ public class StreamsWebController {
      */
     @RequestMapping(headers = {"content-type=application/json"}, value = "/subscriberRegister", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<String> registerSubscriber(@RequestBody String payload, @RequestHeader("host") String host) {
+    public ResponseEntity<String> registerSubscriber(@RequestBody String payload) {
         try {
-            return new ResponseEntity<String>("http://" + host + "/streams-web/app/getActivity/" + subscriberRegistrationService.register(payload), HttpStatus.OK);
+            return new ResponseEntity<String>(subscriberRegistrationService.register(payload), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e);
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -92,7 +92,7 @@ public class StreamsWebController {
     }
 
     /**
-     * this method is the entry po int for receiving activity
+     * this method is the entry point for receiving activity
      *
      * @param subscriberID the id of the subscriber
      * @return an array of activity for this subscriber
@@ -116,7 +116,7 @@ public class StreamsWebController {
      * @param subscriberID the id of the subscriber
      * @return a message indicating whether the update was successful
      */
-    @RequestMapping(value = "/updateFilters/{subscriberID}", method = RequestMethod.POST)
+    @RequestMapping(headers = {"content-type=application/json"}, value = "/updateFilters/{subscriberID}", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> updateTags(@PathVariable("subscriberID") String subscriberID, @RequestBody String payload) {
         try {
