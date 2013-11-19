@@ -41,7 +41,7 @@ public class ActivityRepositoryServiceImpl implements StreamsActivityRepositoryS
     }
 
     @Override
-    public List<ActivityStreamsEntry> getActivitiesForProviders(Set<String> providers, Date lastUpdated){
-        return activityStreamsRepository.getActivitiesForFilters(providers, lastUpdated);
+    public List<ActivityStreamsEntry> getActivitiesForFilters(Set<String> filters, Date lastUpdated){
+        return activityStreamsRepository.getActivitiesForFilters(filters, lastUpdated);
     }
 }

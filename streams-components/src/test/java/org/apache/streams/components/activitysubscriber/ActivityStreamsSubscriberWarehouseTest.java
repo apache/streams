@@ -58,7 +58,7 @@ public class ActivityStreamsSubscriberWarehouseTest {
 
         List<ActivityStreamsEntry> entryList = Arrays.asList(entry1, entry2);
 
-        expect(activityRepositoryService.getActivitiesForProviders(eq(filters),isA(Date.class))).andReturn(entryList);
+        expect(activityRepositoryService.getActivitiesForFilters(eq(filters),isA(Date.class))).andReturn(entryList);
         replay(activityRepositoryService);
 
         warehouse.register(subscription);

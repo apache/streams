@@ -52,7 +52,7 @@ public class ActivityStreamsSubscriberWarehouseImpl implements ActivityStreamsSu
     public synchronized void updateSubscriber(ActivityStreamsSubscription subscription) {
         ActivityStreamsSubscriber subscriber = getSubscriber(subscription.getInRoute());
         if (subscriber != null) {
-            subscriber.receive(activityService.getActivitiesForProviders(subscription.getFilters(), subscriber.getLastUpdated()));
+            subscriber.receive(activityService.getActivitiesForFilters(subscription.getFilters(), subscriber.getLastUpdated()));
             subscriber.setLastUpdated(new Date());
         }
     }
