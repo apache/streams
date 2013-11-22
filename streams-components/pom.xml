@@ -56,6 +56,12 @@
         </dependency>
 
         <dependency>
+            <groupId>storm-mongo</groupId>
+            <artifactId>storm-mongo</artifactId>
+            <version>${storm-mongo.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.datastax.cassandra</groupId>
             <artifactId>cassandra-driver-core</artifactId>
             <version>${datastax.version}</version>

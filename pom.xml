@@ -59,6 +59,7 @@
         <cglib.version>3.0</cglib.version>
         <asm.version>3.3.1</asm.version>
         <storm.version>0.8.2</storm.version>
+        <storm-mongo.version>0.0.1-SNAPSHOT</storm-mongo.version>
         <netty.version>3.2.9.Final</netty.version>
         <camel.version>2.12.1</camel.version>
         <logging.version>1.7.5</logging.version>
