@@ -26,6 +26,7 @@ public class StormActivityAggregator {
         TopologyBuilder builder = new TopologyBuilder();
 
         builder.setSpout("activity", spout, 10);
+
         builder.setBolt("distribute", bolt, 3).shuffleGrouping("activity");
 
         Config conf = new Config();

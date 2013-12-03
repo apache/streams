@@ -21,8 +21,8 @@
 <body>
 
 <form class="form-activities">
-    <input id="username" type="text" class="form-control" placeholder="Enter username here" autofocus><br>
-    <button id="submitButton" type="button" class="btn btn-lg btn-primary btn-block" onclick="Login.loginPressed()">Login</button><br><br>
+    <input id="username" type="text" class="form-control" onkeypress="Login.searchKeyPress(event)" placeholder="Enter username here" autofocus><br>
+    <button id="submitButton" type="button" class="btn btn-lg btn-primary btn-block" onclick="Login.loginPressed()" >Login</button><br><br>
 </form>
 
 <!-- Bootstrap core JavaScript

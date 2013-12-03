@@ -1,10 +1,11 @@
 var activityDemo = activityDemo || (function(){
     var activityStream = "";
     var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
-    var localPath = "";
     var appPath = "/streams-web/app";
     //TODO: replace this with SSO
     var subscriberId = subscriberId || $.cookie("subscriberId");
+    var addFilters = [];
+    var removeFilters = [];
 
     // Submits form if Enter key is pressed
     var searchKeyPress = function(e){
@@ -14,6 +15,29 @@ var activityDemo = activityDemo || (function(){
         if(e.keyCode == 13){
             e.preventDefault();
             document.getElementById('submitButton').click();
+        }
+    };
+
+    var newFilters = function(){
+        var filtersString = $("#addFilters").val();
+        var splitAddFilters = filtersString.split(",");
+        $.each(splitAddFilters, function(key, value){
+            var trimmedFilter = value.trim();
+            if(!$.inArray(trimmedFilter, addFilters)){
+                addFilters.push(trimmedFilter);
+            }
+            if($.inArray(trimmedFilter, removeFilters)){
+                removeFilters.pop(trimmedFilter);
+            }
+        });
+    };
+
+    var dropFilter = function(filter){
+        if(!$.inArray(filter, addFilters)){
+            addFilters.pop(filter);
+        }
+        if($.inArray(filter, removeFilters)){
+            removeFilters.push(filter);
         }
     };
 
@@ -91,7 +115,9 @@ var activityDemo = activityDemo || (function(){
     return {
         searchKeyPress: searchKeyPress,
         getActivities: getActivities,
-        setFilters: setFilters
+        setFilters: setFilters,
+        newFilters: newFilters,
+        dropFilter: dropFilter
         }
 
 })();

@@ -21,13 +21,27 @@
 </head>
 <body onload="activityDemo.getActivities()">
 
-    <form  class="form-activities">
-        <label>Filters to Add:</label>
-        <input id="addFilters" type="text" class="form-control" placeholder="Separate multiple filters with commas" autofocus><br>
-        <label>Filters to Remove:</label>
-        <input id="removeFilters" type="text" class="form-control" placeholder="Separate filters with spaces" autofocus><br>
-        <button id="submitButton" type="button" class="btn btn-lg btn-primary btn-block" onclick="activityDemo.setFilters()">Update Filters</button><br><br>
-    </form>
+<form class="form-activities">
+    <label>Filters to Add:</label>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="input-group">
+                <input id="addFilters" type="text" class="form-control" placeholder="Separate multiple filters with commas" autofocus>
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" onclick="activityDemo.newFilters()">+</button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <br>
+    <label>Filters to Remove:</label>
+    <input id="removeFilters" type="text" class="form-control" placeholder="Separate filters with spaces" autofocus><br>
+    <button id="submitButton" type="button" class="btn btn-lg btn-primary btn-block"
+            onclick="activityDemo.setFilters()">Update
+    </button>
+    <br><br>
+</form>
     <div id="activityStream"></div>
     <script type="text/x-handlebars-template" id='activity-template'>
         <!--Iterates through each activity in the array that was returned from Streams-->
