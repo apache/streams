@@ -2,8 +2,9 @@ var activityDemo = activityDemo || (function(){
     var activityStream = "";
     var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
     var localPath = "";
-    var subscriberId;
-    var registrationUrl;
+    var appPath = "/streams-web/app";
+    //TODO: replace this with SSO
+    var subscriberId = subscriberId || $.cookie("subscriberId");
 
     // Submits form if Enter key is pressed
     var searchKeyPress = function(e){
@@ -15,35 +16,6 @@ var activityDemo = activityDemo || (function(){
             document.getElementById('submitButton').click();
         }
     };
-
-
-    // Registers a new subscriber (returns the subscriber's unique url if username already exists in the DB)
-    // and sets the subscriber's filter(s) based on filter entered by the user on the demo webpage
-    var registerSubscriber = function(){
-        //reset localPath
-        localPath = "http://";
-        var username = $("#username").val();
-        var registrationObject = {"username":username};
-
-        $.ajax({
-            url:"/streams-web/app/subscriberRegister",
-            contentType: 'application/json',
-            type:"POST",
-            data:JSON.stringify(registrationObject),
-            success:function(data){
-                registrationUrl = data;
-
-                //setup path and subscriber id for later use
-                var segments = registrationUrl.split("/");
-                for(var i = 2; i <= 4; i++){
-                    localPath += (segments[i] + "/");
-                }
-                subscriberId = segments[segments.length - 1];
-                setFilters();
-            }
-        })
-    };
-
 
     // Sets the subscriber's filters based on input from the user.
     var setFilters = function(){
@@ -69,7 +41,7 @@ var activityDemo = activityDemo || (function(){
         $.ajax({
             contentType:"application/json",
             type:"POST",
-            url: localPath + "updateFilters/" + subscriberId,
+            url: appPath + "/updateFilters/" + subscriberId,
             data:JSON.stringify(filterObject),
             success:function(data){
                 getActivities();
@@ -82,7 +54,7 @@ var activityDemo = activityDemo || (function(){
     var getActivities = function(){
         $.ajax({
             type:"GET",
-            url: localPath + "getActivity/" + subscriberId,
+            url: appPath + "/getActivity/" + subscriberId,
             success:function(data){
                 setTemplate(data);
             }
@@ -92,7 +64,7 @@ var activityDemo = activityDemo || (function(){
 
     // Refreshes every 3 seconds to obtain the most recent Activity Stream
     setInterval(function(){
-            if(!registrationUrl && console){
+            if(!subscriberId && console){
                 //console.log("Please enter a subscriber url first");
             }else{
                 getActivities();
@@ -117,8 +89,9 @@ var activityDemo = activityDemo || (function(){
 
 
     return {
-            registerSubscriber: registerSubscriber,
-            searchKeyPress: searchKeyPress
+        searchKeyPress: searchKeyPress,
+        getActivities: getActivities,
+        setFilters: setFilters
         }
 
 })();

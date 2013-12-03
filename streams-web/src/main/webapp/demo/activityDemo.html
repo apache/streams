@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="js/handlebars.js"></script>
+    <script type="text/javascript" src="js/cookie.js"></script>
     <script type="text/javascript" src="js/activityDemo.js"></script>
     <link rel="stylesheet" type="text/css" href="css/activityStyles.css" />
 
@@ -18,16 +19,14 @@
     <title>Activity Streams Demo</title>
 
 </head>
-<body>
+<body onload="activityDemo.getActivities()">
 
     <form  class="form-activities">
-        <label>View Streams for the following user:</label><br>
-        <input id="username" type="text" class="form-control" placeholder="Enter username here" onkeypress="activityDemo.searchKeyPress(event);" autofocus><br>
         <label>Filters to Add:</label>
-        <input id="addFilters" type="text" class="form-control" placeholder="Separate filters with spaces" autofocus><br>
+        <input id="addFilters" type="text" class="form-control" placeholder="Separate multiple filters with commas" autofocus><br>
         <label>Filters to Remove:</label>
         <input id="removeFilters" type="text" class="form-control" placeholder="Separate filters with spaces" autofocus><br>
-        <button id="submitButton" type="button" class="btn btn-lg btn-primary btn-block" onclick="activityDemo.registerSubscriber()">Get Activities</button><br><br>
+        <button id="submitButton" type="button" class="btn btn-lg btn-primary btn-block" onclick="activityDemo.setFilters()">Update Filters</button><br><br>
     </form>
     <div id="activityStream"></div>
     <script type="text/x-handlebars-template" id='activity-template'>
