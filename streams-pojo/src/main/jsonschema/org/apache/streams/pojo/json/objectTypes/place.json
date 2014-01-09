@@ -1,0 +1,11 @@
+{
+  "type" : "object",
+  "title" : "place",
+  "extends": [{"$ref":"../object.json"},{"$ref":"http://www.json-schema.org/address"}],
+  "properties" :{
+    "objectType" :{
+      "type" :"string",
+      "default" : "photo"
+     }
+  }
+}

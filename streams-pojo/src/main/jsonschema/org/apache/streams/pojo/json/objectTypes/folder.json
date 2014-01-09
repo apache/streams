@@ -1,0 +1,11 @@
+{
+  "type" : "object",
+  "title" : "folder",
+  "extends": {"$ref":"../object.json"},
+  "properties" :{
+    "objectType" :{
+      "type" :"string",
+      "default" : "folder"
+    }
+  }
+}

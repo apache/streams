@@ -1,0 +1,72 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.blogscope.net/api/namespace/schema/SearchResponse" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="beatApi">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="beatRequest">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="heatbeatID"/>
+                            <xs:element type="xs:dateTime" name="startDate"/>
+                            <xs:element type="xs:dateTime" name="endDate"/>
+                            <xs:element type="xs:string" name="key"/>
+                            <xs:element type="xs:short" name="size"/>
+                            <xs:element type="xs:byte" name="offset"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="beatResponse">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="beat" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="docid"/>
+                                        <xs:element type="xs:string" name="mediaType"/>
+                                        <xs:element type="xs:dateTime" name="time"/>
+                                        <xs:element type="xs:string" name="title"/>
+                                        <xs:element type="xs:string" name="content"/>
+                                        <xs:element type="xs:anyURI" name="link"/>
+                                        <xs:element type="xs:string" name="gender" minOccurs="0"/>
+                                        <xs:element name="location">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="country"/>
+                                                    <xs:element type="xs:string" name="locationString"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element type="xs:string" name="influenceLevel"/>
+                                        <xs:element type="xs:string" name="sentiment"/>
+                                        <xs:element name="tag" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="value"/>
+                                                    <xs:element type="xs:string" name="displayName"/>
+                                                    <xs:element type="xs:string" name="systemType" minOccurs="0"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element type="xs:string" name="tweetid" minOccurs="0"/>
+                                        <xs:element type="xs:anyURI" name="tweetJsonLink" minOccurs="0"/>
+                                        <xs:element type="xs:anyURI" name="tweetHbLink" minOccurs="0"/>
+                                        <xs:element type="xs:string" name="twitterFollowers" minOccurs="0"/>
+                                        <xs:element type="xs:string" name="twitterFollowing" minOccurs="0"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element type="xs:short" name="count"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="errors" maxOccurs="1" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:boolean" name="error"/>
+                            <xs:element type="xs:string" name="errorMessage"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

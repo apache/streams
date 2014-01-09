@@ -1,0 +1,57 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "javaType": "com.sysomos.json.Sysomos",
+    "id": "#",
+    "properties": {
+        "tweetJsonLink": {
+            "type": "string"
+        },
+        "location": {
+            "properties": {
+                "locationString": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                }
+            }
+        },
+        "link": {
+            "type": "string"
+        },
+        "twitterFollowing": {
+            "type": "string"
+        },
+        "twitterFollowers": {
+            "type": "string"
+        },
+        "tweetid": {
+            "type": "string"
+        },
+        "mediaType": {
+            "type": "string"
+        },
+        "content": {
+            "type": "string"
+        },
+        "docid": {
+            "type": "string"
+        },
+        "sentiment": {
+            "type": "string"
+        },
+        "time": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string"
+        },
+        "tweetHbLink": {
+            "type": "string"
+        },
+        "influenceLevel": {
+            "type": "string"
+        }
+    }
+}

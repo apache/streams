@@ -1,0 +1,11 @@
+{
+  "type" : "object",
+  "title" : "note",
+  "extends": {"$ref":"../object.json"},
+  "properties" :{
+    "objectType" :{
+      "type" :"string",
+      "default" : "note"
+    }
+  }
+}

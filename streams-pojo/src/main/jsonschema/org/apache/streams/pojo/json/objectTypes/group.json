@@ -1,0 +1,11 @@
+{
+  "type" : "object",
+  "title" : "group",
+  "extends": {"$ref":"../object.json"},
+  "properties" :{
+    "objectType" :{
+      "type" :"string",
+      "default" : "group"
+    }
+  }
+}

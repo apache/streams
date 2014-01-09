@@ -1,0 +1,18 @@
+{
+  "type" : "object",
+  "title" : "list",
+  "extends": {"$ref":"../object.json"},
+  "properties" :{
+    "objectType" :{
+      "type" :"string",
+      "default" : "list"
+    },
+    "items" : {
+      "type" : "array",
+      "items" : {
+        "type" : "object",
+        "properties" : {"$ref":"../object.json"}
+      }
+    }
+  }
+}
