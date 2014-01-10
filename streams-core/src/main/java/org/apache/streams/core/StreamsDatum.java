@@ -27,7 +27,29 @@ import java.util.Map;
 /**
  * Created by sblackmon on 1/2/14.
  */
-public abstract class StreamsDatum {
+public class StreamsDatum implements Serializable {
+
+    public StreamsDatum(Object document) {
+        this.document = document;
+    }
+
+    public StreamsDatum(Object document, BigInteger sequenceid) {
+
+        this.document = document;
+        this.sequenceid = sequenceid;
+    }
+
+    public StreamsDatum(Object document, DateTime timestamp) {
+
+        this.document = document;
+        this.timestamp = timestamp;
+    }
+
+    public StreamsDatum(Object document, DateTime timestamp, BigInteger sequenceid) {
+        this.document = document;
+        this.timestamp = timestamp;
+        this.sequenceid = sequenceid;
+    }
 
     public DateTime timestamp;
 
@@ -35,7 +57,7 @@ public abstract class StreamsDatum {
 
     public Map<String, Object> metadata;
 
-    public Serializable document;
+    public Object document;
 
     public DateTime getTimestamp() {
         return timestamp;
@@ -61,11 +83,11 @@ public abstract class StreamsDatum {
         this.metadata = metadata;
     }
 
-    public Serializable getDocument() {
+    public Object getDocument() {
         return document;
     }
 
-    public void setDocument(Serializable document) {
+    public void setDocument(Object document) {
         this.document = document;
     }
 }

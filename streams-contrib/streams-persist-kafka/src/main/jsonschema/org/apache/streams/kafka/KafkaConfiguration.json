@@ -9,9 +9,13 @@
             "type": "string",
             "description": "A comma-delimited list of broker nodes"
         },
+        "zkconnect": {
+            "type": "string",
+            "description": "A comma-delimited list of zookeeper host:ports"
+        },
         "topic": {
             "type": "string",
-            "description": "A topic to write to by default"
+            "description": "A topic to read/write from"
         }
     }
 }

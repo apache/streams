@@ -16,6 +16,7 @@ import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.twitter.TwitterStreamConfiguration;
@@ -26,12 +27,13 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.*;
 
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class TwitterStreamProvider /*extends BaseRichSpout*/ implements StreamsProvider, Serializable, Runnable {
+public class TwitterStreamProvider /*extends BaseRichSpout*/ implements StreamsProvider, Serializable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterStreamProvider.class);
 
@@ -47,18 +49,18 @@ public class TwitterStreamProvider /*extends BaseRichSpout*/ implements StreamsP
         this.config = config;
     }
 
-    BlockingQueue<String> inQueue = new LinkedBlockingQueue<String>(10000);
+    protected BlockingQueue inQueue = new LinkedBlockingQueue<String>(10000);
 
-    private StreamingEndpoint endpoint;
-    private BasicClient client;
+    protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<StreamsDatum>();
 
-    public BlockingQueue<Object> getOutQueue() {
-        return outQueue;
+    protected StreamingEndpoint endpoint;
+    protected BasicClient client;
+
+    public BlockingQueue<Object> getInQueue() {
+        return inQueue;
     }
 
-    BlockingQueue<Object> outQueue = new LinkedBlockingQueue<Object>(10000);
-
-    private ListeningExecutorService executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
+    protected ListeningExecutorService executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
     private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
         return new ThreadPoolExecutor(nThreads, nThreads,
@@ -86,7 +88,8 @@ public class TwitterStreamProvider /*extends BaseRichSpout*/ implements StreamsP
         this.klass = klass;
     }
 
-    private void setup() {
+    @Override
+    public void start() {
 
         Preconditions.checkNotNull(this.klass);
 
@@ -123,29 +126,23 @@ public class TwitterStreamProvider /*extends BaseRichSpout*/ implements StreamsP
                 .processor(new StringDelimitedProcessor(inQueue))
                 .build();
 
-    }
-
-    @Override
-    public void run() {
-
-        setup();
-
         for (int i = 0; i < 10; i++) {
-            executor.submit(new TwitterEventProcessor(inQueue, outQueue, klass));
+            executor.submit(new TwitterEventProcessor(inQueue, providerQueue, klass));
         }
 
-        client.connect();
-
-    }
-
-    @Override
-    public void start() {
-
+        new Thread(new TwitterStreamProviderTask(this)).start();
     }
 
     @Override
     public void stop() {
+        for (int i = 0; i < 10; i++) {
+            inQueue.add(TwitterEventProcessor.TERMINATE);
+        }
+    }
 
+    @Override
+    public Queue<StreamsDatum> getProviderQueue() {
+        return this.providerQueue;
     }
 
     @Override

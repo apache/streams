@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
@@ -15,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
@@ -28,7 +31,7 @@ public class TwitterEventProcessor implements Runnable {
     private ObjectMapper mapper = new ObjectMapper();
 
     private BlockingQueue<String> inQueue;
-    private BlockingQueue<Object> outQueue;
+    private Queue<StreamsDatum> outQueue;
 
     private Class inClass;
     private Class outClass;
@@ -39,14 +42,14 @@ public class TwitterEventProcessor implements Runnable {
 
     public final static String TERMINATE = new String("TERMINATE");
 
-    public TwitterEventProcessor(BlockingQueue<String> inQueue, BlockingQueue<Object> outQueue, Class inClass, Class outClass) {
+    public TwitterEventProcessor(BlockingQueue<String> inQueue, Queue<StreamsDatum> outQueue, Class inClass, Class outClass) {
         this.inQueue = inQueue;
         this.outQueue = outQueue;
         this.inClass = inClass;
         this.outClass = outClass;
     }
 
-    public TwitterEventProcessor(BlockingQueue<String> inQueue, BlockingQueue<Object> outQueue, Class outClass) {
+    public TwitterEventProcessor(BlockingQueue<String> inQueue, Queue<StreamsDatum> outQueue, Class outClass) {
         this.inQueue = inQueue;
         this.outQueue = outQueue;
         this.outClass = outClass;
@@ -72,13 +75,13 @@ public class TwitterEventProcessor implements Runnable {
 
                 // if the target is string, just pass-through
                 if( java.lang.String.class.equals(outClass))
-                    outQueue.offer(item);
+                    outQueue.offer(new StreamsDatum(item));
                 else {
                     // convert to desired format
                     Object out = convert(node, inClass, outClass);
 
                     if( out != null && validate(out, outClass))
-                        outQueue.offer(out);
+                        outQueue.offer(new StreamsDatum(out));
                 }
 
             } catch (Exception e) {

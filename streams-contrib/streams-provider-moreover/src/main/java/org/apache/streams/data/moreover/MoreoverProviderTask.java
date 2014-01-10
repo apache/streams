@@ -1,5 +1,8 @@
 package org.apache.streams.data.moreover;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +21,11 @@ public class MoreoverProviderTask implements Runnable {
     private final String lastSequence;
     private final String apiKey;
     private final String apiId;
-    private final Queue<StreamsResultSet> results;
+    private final Queue<StreamsDatum> results;
     private final MoreoverClient moClient;
     private boolean started = false;
 
-    public MoreoverProviderTask(String apiId, String apiKey, Queue<StreamsResultSet> results, String lastSequence) {
+    public MoreoverProviderTask(String apiId, String apiKey, Queue<StreamsDatum> results, String lastSequence) {
         //logger.info("Constructed new task {} for {} {} {}", UUID.randomUUID().toString(), apiId, apiKey, lastSequence);
         this.apiId = apiId;
         this.apiKey = apiKey;
@@ -38,7 +41,8 @@ public class MoreoverProviderTask implements Runnable {
             ensureTime(moClient);
             MoreoverResult result = started ? moClient.getNextBatch() : moClient.getArticlesAfter(lastSequence, 500);
             started = true;
-            results.offer(new MoreoverResultSetWrapper(result));
+            for(StreamsDatum entry : ImmutableSet.copyOf(result.iterator()))
+                results.offer(entry);
             logger.info("ApiKey={}\tlastSequenceid={}", this.apiKey, result.getMaxSequencedId());
         } catch (Exception e) {
             logger.error("Exception while polling moreover", e);

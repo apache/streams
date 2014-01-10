@@ -1,6 +1,7 @@
 package org.apache.streams.data.moreover;
 
 import com.google.common.collect.Lists;
+import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.moreover.MoreoverConfiguration;
@@ -19,7 +20,9 @@ import java.util.concurrent.*;
 public class MoreoverProvider implements StreamsProvider {
 
     private static Logger logger = LoggerFactory.getLogger(MoreoverProvider.class);
-    private volatile Queue<StreamsResultSet> resultQueue = new ConcurrentLinkedQueue<StreamsResultSet>();
+
+    protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+
     private List<ExecutorService> tasks = new LinkedList<ExecutorService>();
     private List<MoreoverKeyData> keys;
     private boolean started = false;
@@ -42,7 +45,7 @@ public class MoreoverProvider implements StreamsProvider {
         if(!started) {
             logger.trace("Producer not started.  Initializing");
             for(MoreoverKeyData key : keys) {
-                MoreoverProviderTask task = new MoreoverProviderTask(key.getId(), key.getKey(), this.resultQueue, key.getStartingSequence());
+                MoreoverProviderTask task = new MoreoverProviderTask(key.getId(), key.getKey(), this.providerQueue, key.getStartingSequence());
                 ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
                 service.scheduleWithFixedDelay(task, 0, MoreoverProviderTask.LATENCY, TimeUnit.SECONDS);
                 logger.info("Started producer for {} with service {}", key.getKey(), service.toString());
@@ -60,8 +63,13 @@ public class MoreoverProvider implements StreamsProvider {
     }
 
     @Override
+    public Queue<StreamsDatum> getProviderQueue() {
+        return providerQueue;
+    }
+
+    @Override
     public StreamsResultSet readCurrent() {
-        return resultQueue.peek();
+        return null;
     }
 
     @Override

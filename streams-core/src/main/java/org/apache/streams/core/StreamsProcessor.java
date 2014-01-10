@@ -18,6 +18,9 @@
 
 package org.apache.streams.core;
 
+import java.io.Serializable;
+import java.util.Queue;
+
 /**
  * Created by sblackmon on 12/13/13.
  */
@@ -25,6 +28,12 @@ public interface StreamsProcessor {
 
     void start();
     void stop();
+
+    public void setProcessorInputQueue(Queue<StreamsDatum> inputQueue);
+    public Queue<StreamsDatum> getProcessorInputQueue();
+
+    public void setProcessorOutputQueue(Queue<StreamsDatum> outputQueue);
+    public Queue<StreamsDatum> getProcessorOutputQueue();
 
     public StreamsDatum process( StreamsDatum entry );
 

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.moreover.api.Article;
 import org.apache.streams.core.StreamsDatum;
 import org.slf4j.Logger;
@@ -19,9 +20,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.List;
 
 
 public class MoreoverResult implements Iterable<StreamsDatum> {
+
     private static final Logger logger = LoggerFactory.getLogger(MoreoverClient.class);
 
     private ObjectMapper mapper;
@@ -36,6 +39,7 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
     private String clientId;
     private BigInteger maxSequencedId = BigInteger.ZERO;
 
+    private List<StreamsDatum> list = Lists.newArrayList();
 
     protected MoreoverResult(String clientId, String xmlString, long start, long end) {
         this.xmlString = xmlString;
@@ -98,10 +102,11 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
 
         for (JsonNode articleNode : ImmutableList.copyOf(articlesArray.elements())) {
             Article article = mapper.convertValue(articleNode, Article.class);
-            BigInteger temp = new BigInteger(article.getSequenceId());
-            logger.trace("Prior max sequence Id {} current candidate {}", this.maxSequencedId, temp);
-            if (temp.compareTo(this.maxSequencedId) > 0) {
-                this.maxSequencedId = temp;
+            BigInteger sequenceid = new BigInteger(article.getSequenceId());
+            list.add(new StreamsDatum(article, sequenceid));
+            logger.trace("Prior max sequence Id {} current candidate {}", this.maxSequencedId, sequenceid);
+            if (sequenceid.compareTo(this.maxSequencedId) > 0) {
+                this.maxSequencedId = sequenceid;
                 logger.debug("New max sequence Id {}", this.maxSequencedId);
             }
 
@@ -118,11 +123,8 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Iterator<StreamsDatum> iterator() {
-        // TODO: I don't understand the purpose of this class.  destroy
-        //return new JsonStringIterator(articlesArray.iterator());
-        return null;
+        return list.iterator();
     }
 
     protected static class JsonStringIterator implements Iterator<Serializable> {

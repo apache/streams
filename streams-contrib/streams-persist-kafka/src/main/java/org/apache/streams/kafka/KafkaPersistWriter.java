@@ -28,7 +28,7 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable {
 
     private KafkaConfiguration config;
 
-    private Producer<String, StreamsDatum> producer;
+    private Producer<String, String> producer;
 
     public KafkaPersistWriter() {
         Config config = StreamsConfigurator.config.getConfig("kafka");
@@ -63,12 +63,22 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable {
 
         ProducerConfig config = new ProducerConfig(props);
 
-        producer = new Producer<String, StreamsDatum>(config);
+        producer = new Producer<String, String>(config);
     }
 
     @Override
     public void stop() {
         producer.close();
+    }
+
+    @Override
+    public void setPersistQueue(Queue<StreamsDatum> persistQueue) {
+        this.persistQueue = persistQueue;
+    }
+
+    @Override
+    public Queue<StreamsDatum> getPersistQueue() {
+        return this.persistQueue;
     }
 
     @Override
@@ -79,7 +89,7 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable {
 
             String hash = GuidUtils.generateGuid(text);
 
-            KeyedMessage<String, StreamsDatum> data = new KeyedMessage<String, StreamsDatum>(config.getTopic(), hash, entry);
+            KeyedMessage<String, String> data = new KeyedMessage<String, String>(config.getTopic(), hash, text);
 
             producer.send(data);
 
