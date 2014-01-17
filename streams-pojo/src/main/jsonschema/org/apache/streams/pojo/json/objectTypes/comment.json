@@ -1,0 +1,11 @@
+{
+  "type" : "object",
+  "title" : "comment",
+  "extends": {"$ref":"../object.json"},
+  "properties" :{
+    "objectType" :{
+      "type" :"string",
+      "default" : "comment"
+    }
+  }
+}

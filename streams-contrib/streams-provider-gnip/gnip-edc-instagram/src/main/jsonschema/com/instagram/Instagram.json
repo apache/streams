@@ -1,0 +1,204 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "com.instagram.pojo.Instagram",
+    "properties": {
+        "caption": {
+            "type": "object",
+            "properties": {
+                "created_time": {
+                    "format": "utc-millisec",
+                    "type": "string"
+                },
+                "from": {
+                    "$ref": "#/properties/user"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "comments": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "javaType" : "com.instagram.pojo.Comment",
+                        "properties": {
+                            "created_time": {
+                                "format": "utc-millisec",
+                                "type": "string"
+                            },
+                            "from": {
+                                "$ref": "#/properties/user"
+                            },
+                            "id": {
+                                "type": "string"
+                            },
+                            "text": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "created_time": {
+            "format": "utc-millisec",
+            "type": "string"
+        },
+        "filter": {
+            "type": "string"
+        },
+        "id": {
+            "type": "string"
+        },
+        "images": {
+            "type": "object",
+            "properties": {
+                "low_resolution": {
+                    "type": "object",
+                    "javaType" : "com.instagram.pojo.Media",
+                    "properties": {
+                        "height": {
+                            "type": "integer"
+                        },
+                        "url": {
+                            "format": "uri",
+                            "type": "string"
+                        },
+                        "width": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "standard_resolution": {
+                    "$ref": "#/properties/images/properties/low_resolution"
+                },
+                "thumbnail": {
+                    "$ref": "#/properties/images/properties/low_resolution"
+                }
+            }
+        },
+        "likes": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/properties/user"
+                    }
+                }
+            }
+        },
+        "link": {
+            "format": "uri",
+            "type": "string"
+        },
+        "location": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "street_address": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "type": {
+            "type": "string"
+        },
+        "user": {
+            "type": "object",
+            "javaType" : "com.instagram.pojo.User",
+            "properties": {
+                "bio": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "profile_picture": {
+                    "format": "uri",
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "website": {
+                    "format": "uri",
+                    "type": "string"
+                }
+            }
+        },
+        "user_has_liked": {
+            "type": "boolean"
+        },
+        "users_in_photo": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "javaType" : "com.instagram.pojo.UserPosition",
+                "properties": {
+                    "user": {
+                        "$ref": "#/properties/user"
+                    },
+                    "position": {
+                        "type": "object",
+                        "javaType" : "com.instagram.pojo.Position",
+                        "properties": {
+                            "x": {
+                                "type": "number"
+                            },
+                            "y": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "videos": {
+            "type": "object",
+            "properties": {
+                "low_resolution": {
+                    "$ref": "#/properties/images/properties/low_resolution"
+                },
+                "standard_resolution": {
+                    "$ref": "#/properties/images/properties/low_resolution"
+                }
+            }
+        }
+    }
+}

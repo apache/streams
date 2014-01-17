@@ -37,8 +37,9 @@
   <properties>
     <bundle.symbolicName>activity-consumer-bundle</bundle.symbolicName>
     <bundle.namespace>org.apache.streams.osgi.components.activityconsumer</bundle.namespace>
-    <commons.log>1.1</commons.log>
-    <jackson.version>1.9.11</jackson.version>
+    <commons.log>1.1</commons.log><!--
+    <jackson.version>1.9.11</jackson.version>-->
+      <jackson.old.version>1.9.11</jackson.old.version>
   </properties>
 
   <build>
@@ -103,13 +104,13 @@
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mrbean</artifactId>
-            <version>${jackson.version}</version>
+            <version>${jackson.old.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jackson.version}</version>
+            <version>${jackson.old.version}</version>
         </dependency>
 
         <dependency>

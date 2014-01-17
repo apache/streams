@@ -1,0 +1,33 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.twitter.pojo.Delete",
+    "properties": {
+        "delete": {
+            "type": "object",
+            "javaType" : "org.apache.streams.twitter.pojo.DeleteDetails",
+            "properties": {
+                "status": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "ignore_malformed": false,
+                            "type": "integer"
+                        },
+                        "user_id": {
+                            "ignore_malformed": false,
+                            "type": "integer"
+                        },
+                        "id_str": {
+                            "type": "string"
+                        },
+                        "user_id_str": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
