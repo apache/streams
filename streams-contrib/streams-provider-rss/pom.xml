@@ -9,7 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>streams-provider-sysomos</artifactId>
+    <artifactId>streams-provider-rss</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>com.typesafe</groupId>
@@ -45,25 +46,31 @@
             <artifactId>streams-pojo</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml</groupId>
-            <artifactId>aalto-xml</artifactId>
-            <version>0.9.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-config</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path-assert</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-persist-console</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>rome</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 
@@ -82,20 +89,6 @@
         </testResources>
         <plugins>
             <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>target</directory>
-                            <includes>
-                                <include>**/*</include>
-                            </includes>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>1.8</version>
@@ -108,19 +101,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>target/generated-sources/jsonschema2pojo/**/*.java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-source-jaxb2</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>target/generated-sources/jaxb2</source>
+                                <source>target/generated-sources/jsonschema2pojo</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -133,10 +114,10 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/sysomos</sourcePath>
+                        <sourcePath>src/main/jsonschema</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
-                    <targetPackage>com.sysomos</targetPackage>
+                    <targetPackage>org.apache.streams.rss.pojo</targetPackage>
                     <useLongIntegers>true</useLongIntegers>
                     <useJodaDates>false</useJodaDates>
                 </configuration>
@@ -148,30 +129,45 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.8.3</version>
-                <configuration>
-                    <schemaDirectory>src/main/xmlschema/com/sysomos/</schemaDirectory>
-                    <generateDirectory>target/generated-sources/jaxb2</generateDirectory>
-                    <verbose>true</verbose>
-                    <debug>true</debug>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <forceRegenerate>true</forceRegenerate>
-                    <removeOldOutput>false</removeOldOutput>
-                    <generatePackage>com.sysomos.xml</generatePackage>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.jvnet.jaxb2.maven2</groupId>-->
+                <!--<artifactId>maven-jaxb2-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--<schemaDirectory>src/main/xmlschema</schemaDirectory>-->
+                    <!--<generateDirectory>target/generated-sources/jaxb2</generateDirectory>-->
+                    <!--<verbose>true</verbose>-->
+                    <!--<debug>true</debug>-->
+                    <!--<encoding>${project.build.sourceEncoding}</encoding>-->
+                    <!--<forceRegenerate>true</forceRegenerate>-->
+                    <!--<removeOldOutput>false</removeOldOutput>-->
+                    <!--<generatePackage>org.apache.streams.rss</generatePackage>-->
+                    <!--<schemas>-->
+                        <!--<schema>-->
+                        <!--<fileset>-->
+                            <!--&lt;!&ndash; Defaults to schemaIncludes &ndash;&gt;-->
+                            <!--<includes>-->
+                                <!--<include>contents.xsd</include>-->
+                                <!--<include>opml.xsd</include>-->
+                            <!--</includes>-->
+                        <!--</fileset>-->
+                        <!--</schema>-->
+                    <!--</schemas>-->
+                    <!--&lt;!&ndash;<plugins>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<plugin>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<groupId>org.jvnet.jaxb2_commons</groupId>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<artifactId>jaxb2-basics</artifactId>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<version>0.6.5</version>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</plugin>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</plugins>&ndash;&gt;-->
+                <!--</configuration>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<goals>-->
+                            <!--<goal>generate</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
         </plugins>
-
     </build>
 </project>

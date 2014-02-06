@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema  targetNamespace="http://www.dlese.org/Metadata/opml" xmlns="http://www.dlese.org/Metadata/opml"  xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation>**********************</xs:documentation>
+		<xs:documentation>***** HISTORY  *****</xs:documentation>
+		<xs:documentation>**********************</xs:documentation>
+	</xs:annotation>
+
+	<xs:annotation>
+		<xs:documentation>******************************************</xs:documentation>
+		<xs:documentation>***** SCHEMAS TO INCLUDE  *****</xs:documentation>
+		<xs:documentation>*******************************************</xs:documentation>
+		<xs:documentation>contents.xsd - contains the elements and attributes that define the OPML 2.0 specification</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="contents.xsd"/>
+
+
+	<xs:annotation>
+		<xs:documentation>*********************************************</xs:documentation>
+		<xs:documentation>***** ROOT ELEMENT DEFINED  *****</xs:documentation>
+		<xs:documentation>*********************************************</xs:documentation>
+	</xs:annotation>
+	<xs:element name="opml" type="opmlType"/>
+
+	<xs:annotation>
+		<xs:documentation>***************************************************</xs:documentation>
+		<xs:documentation>*****  COMPLEX TYPES (alpha order)   *****</xs:documentation>
+		<xs:documentation>***************************************************</xs:documentation>
+		<xs:documentation>opmlType - is root element type</xs:documentation>
+		<xs:documentation>headType - provides title, date and window information</xs:documentation>
+		<xs:documentation>bodyType - is the main content of an OPML document</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="opmlType">
+		<xs:annotation>
+			<xs:documentation>version - is a number defining the edition of OPML used</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="head" type="headType" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="body" type="bodyType" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="version" type="versionType" use="required"/>
+	</xs:complexType>
+
+	<xs:annotation>
+		<xs:documentation>**********************************</xs:documentation>
+		<xs:documentation>***** SCHEMA PUPOSE *****</xs:documentation>
+		<xs:documentation>**********************************</xs:documentation>
+		<xs:documentation>Define an OPML 2.0 file format using XML schema</xs:documentation>
+		<xs:documentation>OPML stands for Outline Processor Markup Language and is used for exchanging information between outliners and Internet services. It is intended to be the file format for outliner applications. It can also be used to exchange subscription lists between feed readers and aggregators.</xs:documentation>
+
+		<xs:documentation>*******************************</xs:documentation>
+		<xs:documentation>*****SCHEMA INTENT  *****</xs:documentation>
+		<xs:documentation>*******************************</xs:documentation>
+		<xs:documentation>Act as an overarching schema that defines the root element of OPML 2.0 documents</xs:documentation>
+		<xs:documentation>A schema (see schemas to include) is called that defines the OPML sub-elements/attributes</xs:documentation>
+
+		<xs:documentation>******************************</xs:documentation>
+		<xs:documentation>*****  NAMESPACES  *****</xs:documentation>
+		<xs:documentation>******************************</xs:documentation>
+		<xs:documentation>This schema has a target namespaces of: http://www.dlese.org/Metadata/opml</xs:documentation>
+		<xs:documentation>This schema has a default namespace of: http://www.dlese.org/Metadata/opml</xs:documentation>
+		<xs:documentation>Namespace defaulting mechanism is used to suppress the need to qualify elements</xs:documentation>
+
+		<xs:documentation>********************************</xs:documentation>
+		<xs:documentation>*****  ROOT ELEMENT *****</xs:documentation>
+		<xs:documentation>********************************</xs:documentation>
+		<xs:documentation>This schema has a root element of: opml</xs:documentation>
+		<xs:documentation>See the root element defined section</xs:documentation>
+		<xs:documentation>Included schemas do not have a root element</xs:documentation>
+		
+		<xs:documentation>*******************************************</xs:documentation>
+		<xs:documentation>***** SCHEMA DEVELOPMENT  *****</xs:documentation>
+		<xs:documentation>*******************************************</xs:documentation>
+		<xs:documentation>Tends to follow the Venetian Blind approach that defines types that can be extended</xs:documentation>
+		<xs:documentation>Interprets the OPML 2.0 specification found at: http://www.opml.org/spec2</xs:documentation>
+		<xs:documentation>Created: 2006-04-20</xs:documentation>
+		<xs:documentation>Last Modified 2006-04-20</xs:documentation>
+
+		<xs:documentation>**********************************</xs:documentation>
+		<xs:documentation>***** SCHEMA AUTHOR  *****</xs:documentation>
+		<xs:documentation>**********************************</xs:documentation>
+		<xs:documentation>Katy Ginger, University Corporation for Atmospheric Research (UCAR), Digital Library for Earth System Education (DLESE) Program Center; email: support@dlese.org or ginger@ucar.edu</xs:documentation>
+
+		<xs:documentation>*******************************************</xs:documentation>
+		<xs:documentation>*****  LICENSE INFORMATION  *****</xs:documentation>
+		<xs:documentation>*******************************************</xs:documentation>
+		<xs:documentation>Copyright  (c) 2006 DLESE Program Center, University Corporation for Atmospheric Research (UCAR) P.O. Box 3000, Boulder, CO 80307, United States of America;  email: support@dlese.org;  website: http://www.dlese.org</xs:documentation>
+		<xs:documentation>This schema is free software; you can redistribute them and/or modify them under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version. These schemas are distributed in the hope that they will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this project; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA</xs:documentation>
+		
+		<xs:documentation>******************************************************</xs:documentation>
+		<xs:documentation>*****  OTHER COPYRIGHT INFORMATION  *****</xs:documentation>
+		<xs:documentation>******************************************************</xs:documentation>
+		
+		<xs:documentation>Parts of this page are copied and developed from Dave Winer's OPML specification found at: http://www.opml.org/spec2. Per the request of that document, its copyright notice is included here and applies to information in this directory and corresponding subdirectories:
+
+&#169; Copyright 2000 UserLand Software, Inc. All Rights Reserved.
+&#169; Copyright 2006 Scripting News, Inc. All Rights Reserved.
+
+UserLand Software, Inc. and Scripting News, Inc. are refererred to in the following as "the Companies."
+
+This document and translations of it may be copied and furnished to others, and derivative works that comment on or otherwise explain it or assist in its implementation may be prepared, copied, published and distributed, in whole or in part, without restriction of any kind, provided that the above copyright notice and these paragraphs are included on all such copies and derivative works. 
+
+This document may not be modified in any way, such as by removing the copyright notice or references to the Companies or other organizations. Further, while these copyright restrictions apply to the written OPML specification, no claim of ownership is made by the Companies to the format it describes. Any party may, for commercial or non-commercial purposes, implement this format without royalty or license fee to the Companies. The limited permissions granted herein are perpetual and will not be revoked by the Companies or their successors or assigns.
+
+This document and the information contained herein is provided on an "AS IS" basis and THE COMPANIES DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.</xs:documentation>
+	</xs:annotation>
+</xs:schema>

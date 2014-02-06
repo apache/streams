@@ -44,6 +44,7 @@
         <module>streams-provider-moreover</module>
         <module>streams-provider-twitter</module>
         <module>streams-provider-sysomos</module>
+        <module>streams-provider-rss</module>
         <!--<module>streams-proxy-semantria</module>-->
     </modules>
 
