@@ -35,7 +35,7 @@ import java.util.List;
  * Time: 3:07 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ActivityXMLActivitySerializer implements ActivitySerializer {
+public class ActivityXMLActivitySerializer implements ActivitySerializer<String> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActivityXMLActivitySerializer.class);
 

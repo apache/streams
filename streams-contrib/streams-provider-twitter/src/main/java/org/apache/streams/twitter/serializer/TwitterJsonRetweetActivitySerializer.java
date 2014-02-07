@@ -22,7 +22,7 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 * Time: 9:24 AM
 * To change this template use File | Settings | File Templates.
 */
-public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivitySerializer implements ActivitySerializer {
+public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivitySerializer implements ActivitySerializer<String> {
 
     public Activity convert(ObjectNode event) {
 

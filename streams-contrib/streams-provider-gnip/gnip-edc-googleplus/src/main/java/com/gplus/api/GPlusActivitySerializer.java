@@ -20,7 +20,7 @@ import java.util.Map;
  * Time: 10:48 AM
  * To change this template use File | Settings | File Templates.
  */
-public class GPlusActivitySerializer implements ActivitySerializer {
+public class GPlusActivitySerializer implements ActivitySerializer<String> {
     private final static Logger LOGGER = LoggerFactory.getLogger(GPlusActivitySerializer.class);
 
     @Override

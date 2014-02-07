@@ -2,7 +2,6 @@ package org.apache.streams.data;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * Deserializes Moreover JSON format into Activities
  */
-public class MoreoverJsonActivitySerializer implements ActivitySerializer {
+public class MoreoverJsonActivitySerializer implements ActivitySerializer<String> {
     @Override
     public String serializationFormat() {
         return "application/json+vnd.moreover.com.v1";
