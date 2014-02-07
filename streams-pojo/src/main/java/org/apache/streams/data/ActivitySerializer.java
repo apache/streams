@@ -23,9 +23,9 @@ import org.apache.streams.pojo.json.Activity;
 import java.util.List;
 
 /**
- * Serializes and deserializes Activities from a String
+ * Serializes and deserializes Activities
  */
-public interface ActivitySerializer {
+public interface ActivitySerializer<T> {
 
     /**
      * Gets the supported content type that can be deserialized/serialized
@@ -35,19 +35,19 @@ public interface ActivitySerializer {
     String serializationFormat();
 
     /**
-     * Converts the activity to a String representation.
+     * Converts the activity to a POJO representation.
      *
      * @param deserialized the string
      * @return a fully populated Activity object
      */
-    String serialize(Activity deserialized);
+    T serialize(Activity deserialized);
 
     /**
-     * Converts a string into an Activity
+     * Converts a POJO into an Activity
      * @param serialized the string representation
      * @return a fully populated Activity object
      */
-    Activity deserialize(String serialized);
+    Activity deserialize(T serialized);
 
     /**
      * Converts a string representing multiple activities into a list of Activity objects
