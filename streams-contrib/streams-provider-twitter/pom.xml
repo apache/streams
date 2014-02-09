@@ -15,7 +15,6 @@
         <dependency>
             <groupId>com.typesafe</groupId>
             <artifactId>config</artifactId>
-            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -63,8 +62,13 @@
         </dependency>
         <dependency>
             <groupId>com.twitter</groupId>
-            <artifactId>hbc-core</artifactId> <!-- or hbc-twitter4j -->
-            <version>1.4.2</version> <!-- or whatever the latest version is -->
+            <artifactId>hbc-core</artifactId>
+            <version>1.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.twitter4j</groupId>
+            <artifactId>twitter4j-core</artifactId>
+            <version>3.0.5</version>
         </dependency>
         <!--<dependency>-->
             <!--<groupId>com.twitter</groupId>-->
