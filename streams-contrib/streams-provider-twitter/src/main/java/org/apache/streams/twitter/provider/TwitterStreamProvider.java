@@ -33,7 +33,7 @@ import java.util.concurrent.*;
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class TwitterStreamProvider /*extends BaseRichSpout*/ implements StreamsProvider, Serializable {
+public class TwitterStreamProvider implements StreamsProvider, Serializable, Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterStreamProvider.class);
 
@@ -51,7 +51,7 @@ public class TwitterStreamProvider /*extends BaseRichSpout*/ implements StreamsP
 
     protected BlockingQueue inQueue = new LinkedBlockingQueue<String>(10000);
 
-    protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+    protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
 
     protected StreamingEndpoint endpoint;
     protected BasicClient client;
@@ -159,44 +159,19 @@ public class TwitterStreamProvider /*extends BaseRichSpout*/ implements StreamsP
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         return null;
     }
-//
-//    @Override
-//    public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-//        outputFieldsDeclarer.declare(new Fields("document"));
-//        outputFieldsDeclarer.declare(new Fields("type"));
-//    }
-//
-//    @Override
-//    public void open(Map map, TopologyContext topologyContext, SpoutOutputCollector spoutOutputCollector) {
-//        collector = spoutOutputCollector;
-//        run();
-//    }
-//
-//    @Override
-//    public void nextTuple() {
-//        try {
-//            collector.emit( new Values(outQueue.take(), klass) );
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
 
-    public class TwitterStreamCloser implements Runnable {
+    @Override
+    public void run() {
 
-        BlockingQueue<String> queue;
+        start();
 
-        public TwitterStreamCloser(BlockingQueue<String> queue) {
-            this.queue = queue;
+        while( !executor.isTerminated()) {
+            try {
+                executor.awaitTermination(1, TimeUnit.SECONDS);
+            } catch (InterruptedException e) { }
         }
 
-        public void run() {
-            for (int i = 0; i < 10; i++) {
-                queue.add(TwitterEventProcessor.TERMINATE);
-            }
-        }
-
+        stop();
     }
-
 
 }

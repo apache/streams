@@ -45,6 +45,8 @@ public class TwitterStreamConfigurator {
 
         twitterStreamConfiguration.setFilterLevel(twitter.getString("filter-level"));
         twitterStreamConfiguration.setEndpoint(twitter.getString("endpoint"));
+        twitterStreamConfiguration.setJsonStoreEnabled("true");
+        twitterStreamConfiguration.setIncludeEntities("true");
 
         return twitterStreamConfiguration;
     }

@@ -41,15 +41,15 @@ public class TwitterEventProcessor implements Runnable {
 
     public final static String TERMINATE = new String("TERMINATE");
 
-    public TwitterEventProcessor(Queue<String> inQueue, Queue<StreamsDatum> outQueue, Class inClass, Class outClass) {
-        this.inQueue = (BlockingQueue<String>)inQueue;
+    public TwitterEventProcessor(BlockingQueue<String> inQueue, Queue<StreamsDatum> outQueue, Class inClass, Class outClass) {
+        this.inQueue = inQueue;
         this.outQueue = outQueue;
         this.inClass = inClass;
         this.outClass = outClass;
     }
 
-    public TwitterEventProcessor(Queue<String> inQueue, Queue<StreamsDatum> outQueue, Class outClass) {
-        this.inQueue = (BlockingQueue<String>)inQueue;
+    public TwitterEventProcessor(BlockingQueue<String> inQueue, Queue<StreamsDatum> outQueue, Class outClass) {
+        this.inQueue = inQueue;
         this.outQueue = outQueue;
         this.outClass = outClass;
     }
