@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -42,15 +41,15 @@ public class TwitterEventProcessor implements Runnable {
 
     public final static String TERMINATE = new String("TERMINATE");
 
-    public TwitterEventProcessor(BlockingQueue<String> inQueue, Queue<StreamsDatum> outQueue, Class inClass, Class outClass) {
-        this.inQueue = inQueue;
+    public TwitterEventProcessor(Queue<String> inQueue, Queue<StreamsDatum> outQueue, Class inClass, Class outClass) {
+        this.inQueue = (BlockingQueue<String>)inQueue;
         this.outQueue = outQueue;
         this.inClass = inClass;
         this.outClass = outClass;
     }
 
-    public TwitterEventProcessor(BlockingQueue<String> inQueue, Queue<StreamsDatum> outQueue, Class outClass) {
-        this.inQueue = inQueue;
+    public TwitterEventProcessor(Queue<String> inQueue, Queue<StreamsDatum> outQueue, Class outClass) {
+        this.inQueue = (BlockingQueue<String>)inQueue;
         this.outQueue = outQueue;
         this.outClass = outClass;
     }
