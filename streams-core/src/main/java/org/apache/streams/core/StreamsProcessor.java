@@ -18,7 +18,7 @@
 
 package org.apache.streams.core;
 
-import java.io.Serializable;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -35,6 +35,6 @@ public interface StreamsProcessor {
     public void setProcessorOutputQueue(Queue<StreamsDatum> outputQueue);
     public Queue<StreamsDatum> getProcessorOutputQueue();
 
-    public StreamsDatum process( StreamsDatum entry );
+    public List<StreamsDatum> process( StreamsDatum entry );
 
 }

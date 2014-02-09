@@ -64,6 +64,8 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable {
         ProducerConfig config = new ProducerConfig(props);
 
         producer = new Producer<String, String>(config);
+
+        new Thread(new KafkaPersistWriterTask(this)).start();
     }
 
     @Override

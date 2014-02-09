@@ -20,13 +20,17 @@ public class KafkaPersistWriterTask implements Runnable {
     public void run() {
 
         while(true) {
-            try {
-                StreamsDatum entry = writer.persistQueue.remove();
-                writer.write(entry);
-                Thread.sleep(new Random().nextInt(100));
-            } catch (Exception e) {
-                e.printStackTrace();
+            if( writer.getPersistQueue().peek() != null ) {
+                try {
+                    StreamsDatum entry = writer.persistQueue.remove();
+                    writer.write(entry);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+            try {
+                Thread.sleep(new Random().nextInt(100));
+            } catch (InterruptedException e) {}
         }
 
     }
