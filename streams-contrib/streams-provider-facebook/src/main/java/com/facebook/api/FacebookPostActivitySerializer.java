@@ -28,6 +28,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 import static org.apache.streams.data.util.ActivityUtil.*;
 import static org.apache.streams.data.util.JsonUtil.jsonToJsonNode;
@@ -65,7 +66,7 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
     }
 
     @Override
-    public List<Activity> deserializeAll(List<String> serializedList) {
+    public java.util.List<Activity> deserializeAll(List<String> serializedList) {
         throw new NotImplementedException("Not currently supported by this deserializer");
     }
 
