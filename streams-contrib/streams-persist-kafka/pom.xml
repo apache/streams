@@ -110,7 +110,7 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/org/apache/streams/kafka</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/kafka/KafkaConfiguration.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.kafka.pojo</targetPackage>

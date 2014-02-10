@@ -127,7 +127,10 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/twitter</sourcePath>
+                        <sourcePath>src/main/jsonschema/com/twitter/TwitterStreamConfiguration.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/com/twitter/Delete.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/com/twitter/Retweet.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/com/twitter/tweet.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.twitter.pojo</targetPackage>

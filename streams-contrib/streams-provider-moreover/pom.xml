@@ -114,7 +114,8 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/moreover</sourcePath>
+                        <sourcePath>src/main/jsonschema/com/moreover/Moreover.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/com/moreover/MoreoverConfiguration.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>com.moreover</targetPackage>

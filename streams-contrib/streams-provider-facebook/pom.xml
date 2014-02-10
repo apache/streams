@@ -84,7 +84,7 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/facebook/graph</sourcePath>
+                        <sourcePath>src/main/jsonschema/com/facebook/graph/Post.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>com.facebook</targetPackage>

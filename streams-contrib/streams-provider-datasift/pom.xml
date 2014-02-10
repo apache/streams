@@ -74,7 +74,8 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/datasift</sourcePath>
+                        <sourcePath>src/main/jsonschema/com/datasift/Datasift.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/com/datasift/DatasiftConfiguration.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>com.datasift</targetPackage>

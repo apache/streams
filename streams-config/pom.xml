@@ -117,15 +117,14 @@
             <plugin>
                 <groupId>org.jsonschema2pojo</groupId>
                 <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-
                 <configuration>
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema</sourcePath>
+                        <sourcePath>src/main/jsonschema/StreamsConfiguration.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
-                    <targetPackage>org.apache.streams</targetPackage>
+                    <targetPackage>org.apache.streams.config</targetPackage>
                     <useLongIntegers>true</useLongIntegers>
                     <useJodaDates>false</useJodaDates>
                 </configuration>
