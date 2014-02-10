@@ -48,6 +48,10 @@
           <id>clojars.org</id>
           <url>http://clojars.org/repo</url>
         </repository>
+        <repository>
+            <id>cloudera</id>
+            <url>https://repository.cloudera.com/artifactory/repo</url>
+        </repository>
     </repositories>
 
     <properties>
@@ -69,6 +73,7 @@
         <logback.version>1.0.9</logback.version>
         <commons-io.version>2.4</commons-io.version>
         <commons-lang3.version>3.1</commons-lang3.version>
+        <typesafe.config.version>1.2.0</typesafe.config.version>
         <guava.version>15.0</guava.version>
         <scala.version>2.8.0</scala.version>
         <clojure.version>1.4.0</clojure.version>
@@ -173,6 +178,11 @@
                 <version>${jsonschema2pojo.version}</version>
                 <type>jar</type>
                 <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.typesafe</groupId>
+                <artifactId>config</artifactId>
+                <version>${typesafe.config.version}</version>
             </dependency>
 
             <dependency>

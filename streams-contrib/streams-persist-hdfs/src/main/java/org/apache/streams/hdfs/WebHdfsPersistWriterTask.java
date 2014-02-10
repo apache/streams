@@ -1,4 +1,4 @@
-package org.apache.streams.kafka;
+package org.apache.streams.hdfs;
 
 import org.apache.streams.core.StreamsDatum;
 import org.slf4j.Logger;
@@ -6,13 +6,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
-public class KafkaPersistWriterTask implements Runnable {
+public class WebHdfsPersistWriterTask implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPersistWriterTask.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebHdfsPersistWriterTask.class);
 
-    private KafkaPersistWriter writer;
+    private WebHdfsPersistWriter writer;
 
-    public KafkaPersistWriterTask(KafkaPersistWriter writer) {
+    public WebHdfsPersistWriterTask(WebHdfsPersistWriter writer) {
         this.writer = writer;
     }
 
@@ -29,7 +29,7 @@ public class KafkaPersistWriterTask implements Runnable {
                 }
             }
             try {
-                Thread.sleep(new Random().nextInt(100));
+                Thread.sleep(new Random().nextInt(1));
             } catch (InterruptedException e) {}
         }
 

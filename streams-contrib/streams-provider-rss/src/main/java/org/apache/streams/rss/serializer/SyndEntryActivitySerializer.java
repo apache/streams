@@ -9,31 +9,21 @@ import org.apache.streams.pojo.json.*;
 import java.util.List;
 
 /**
- * Deserializes the Moreover Article XML and converts it to an instance of {@link Activity}
+ * Deserializes the Rome SyndEntry POJO and converts it to an instance of {@link Activity}
  */
-public class SyndEntryActivitySerializer implements ActivitySerializer {
-
+public class SyndEntryActivitySerializer implements ActivitySerializer<SyndEntry> {
 
     @Override
     public String serializationFormat() {
-        return "application/xml+vnd.moreover.com.v1";
+        return "application/streams-provider-rss";
     }
 
     @Override
-    public String serialize(Activity deserialized) {
-        throw new UnsupportedOperationException("Cannot currently serialize to Moreover");
+    public SyndEntry serialize(Activity deserialized) {
+        throw new UnsupportedOperationException("Cannot currently serialize to Rome");
     }
 
     @Override
-    public Activity deserialize(String serialized) {
-        return null;
-    }
-
-    @Override
-    public List<Activity> deserializeAll(String serializedList) {
-        return null;
-    }
-
     public Activity deserialize(SyndEntry serialized) {
         Preconditions.checkNotNull(serialized);
         Activity activity = new Activity();
@@ -61,6 +51,7 @@ public class SyndEntryActivitySerializer implements ActivitySerializer {
         return activity;
     }
 
+    @Override
     public List<Activity> deserializeAll(List<SyndEntry> serializedList) {
         List<Activity> activityList = Lists.newArrayList();
         for(SyndEntry entry : serializedList) {

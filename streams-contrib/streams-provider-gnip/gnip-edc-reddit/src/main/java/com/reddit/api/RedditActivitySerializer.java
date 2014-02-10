@@ -21,7 +21,7 @@ import java.util.Map;
  * Time: 8:32 AM
  * To change this template use File | Settings | File Templates.
  */
-public class RedditActivitySerializer implements ActivitySerializer{
+public class RedditActivitySerializer implements ActivitySerializer<String> {
     private final static Logger LOGGER = LoggerFactory.getLogger(RedditActivitySerializer.class);
 
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
@@ -82,7 +82,7 @@ public class RedditActivitySerializer implements ActivitySerializer{
     }
 
     @Override
-    public List<Activity> deserializeAll(String serializedList) {
+    public List<Activity> deserializeAll(List<String> serializedList) {
         //TODO Support
         throw new NotImplementedException("Not currently supported by this deserializer");
     }

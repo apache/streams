@@ -20,7 +20,6 @@ package org.apache.streams.core;
 
 import org.joda.time.DateTime;
 
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Queue;
 
@@ -37,6 +36,5 @@ public interface StreamsProvider {
     public StreamsResultSet readCurrent();
     public StreamsResultSet readNew(BigInteger sequence);
     public StreamsResultSet readRange(DateTime start, DateTime end);
-
 
 }

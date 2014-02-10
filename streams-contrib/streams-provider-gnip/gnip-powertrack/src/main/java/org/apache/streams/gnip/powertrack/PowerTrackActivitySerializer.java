@@ -19,7 +19,7 @@ import java.util.List;
  * Time: 2:29 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PowerTrackActivitySerializer implements ActivitySerializer {
+public class PowerTrackActivitySerializer implements ActivitySerializer<String> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PowerTrackActivitySerializer.class);
 
@@ -96,8 +96,8 @@ public class PowerTrackActivitySerializer implements ActivitySerializer {
     }
 
     @Override
-    public List<Activity> deserializeAll(String serializedList) {
-        //TODO Support
+    public List<Activity> deserializeAll(List<String> serializedList) {
         throw new NotImplementedException("Not currently supported by this deserializer");
     }
+
 }

@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.pojo.json.*;
-import org.joda.time.DateTime;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -36,7 +35,7 @@ import static org.apache.streams.data.util.JsonUtil.jsonToJsonNode;
 /**
  * Serializes activity posts
  */
-public class FacebookPostActivitySerializer implements ActivitySerializer {
+public class FacebookPostActivitySerializer implements ActivitySerializer<String> {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
     public static final String PROVIDER_NAME = "facebook";
@@ -66,8 +65,7 @@ public class FacebookPostActivitySerializer implements ActivitySerializer {
     }
 
     @Override
-    public List<Activity> deserializeAll(String serializedList) {
-        //TODO Support
+    public List<Activity> deserializeAll(List<String> serializedList) {
         throw new NotImplementedException("Not currently supported by this deserializer");
     }
 

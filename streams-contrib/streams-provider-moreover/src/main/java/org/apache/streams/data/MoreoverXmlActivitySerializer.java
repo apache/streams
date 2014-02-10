@@ -12,14 +12,13 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Deserializes the Moreover Article XML and converts it to an instance of {@link Activity}
  */
-public class MoreoverXmlActivitySerializer implements ActivitySerializer {
+public class MoreoverXmlActivitySerializer implements ActivitySerializer<String> {
 
     //JAXBContext is threadsafe (supposedly)
     private final JAXBContext articleContext;
@@ -47,11 +46,13 @@ public class MoreoverXmlActivitySerializer implements ActivitySerializer {
     }
 
     @Override
-    public List<Activity> deserializeAll(String serializedList) {
-        ArticlesResponse response = deserializeMoreoverResponse(serializedList);
+    public List<Activity> deserializeAll(List<String> serializedList) {
         List<Activity> activities = new LinkedList<Activity>();
-        for(Article article : response.getArticles().getArticle()) {
-            activities.add(MoreoverUtils.convert(article));
+        for(String item : serializedList) {
+            ArticlesResponse response = deserializeMoreoverResponse(item);
+            for(Article article : response.getArticles().getArticle()) {
+                activities.add(MoreoverUtils.convert(article));
+            }
         }
         return activities;
     }

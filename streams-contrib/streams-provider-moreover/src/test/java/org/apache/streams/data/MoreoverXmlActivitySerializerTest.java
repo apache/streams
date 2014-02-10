@@ -1,6 +1,7 @@
 package org.apache.streams.data;
 
 
+import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Before;
@@ -12,10 +13,7 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static java.util.regex.Pattern.matches;
 import static org.apache.streams.data.util.MoreoverTestUtil.test;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
 
 public class MoreoverXmlActivitySerializerTest {
     ActivitySerializer serializer;
@@ -29,7 +27,7 @@ public class MoreoverXmlActivitySerializerTest {
 
     @Test
     public void loadData() throws Exception {
-        List<Activity> activities = serializer.deserializeAll(xml);
+        List<Activity> activities = serializer.deserializeAll(Lists.newArrayList(xml));
         for (Activity activity : activities) {
             test(activity);
         }
