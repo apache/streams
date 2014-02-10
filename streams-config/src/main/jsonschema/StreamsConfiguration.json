@@ -1,0 +1,12 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.StreamsConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "pipeline": {
+            "type" : "string"
+        }
+    }
+}
