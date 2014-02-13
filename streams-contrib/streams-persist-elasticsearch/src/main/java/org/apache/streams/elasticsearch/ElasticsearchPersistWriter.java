@@ -49,7 +49,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Runnabl
 
     private String index = null;
     private String type = null;
-    private int batchSize = 1000;
+    private int batchSize = 50;
     private int totalRecordsWritten = 0;
     private OutputStreamWriter currentWriter = null;
 
@@ -85,7 +85,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Runnabl
 
     public void setFlushThresholdSizeInBytes(long sizeInBytes)  { this.flushThresholdSizeInBytes = sizeInBytes; }
 
-    public boolean terminate = false;
     Thread task;
 
     protected volatile Queue<StreamsDatum> persistQueue;
@@ -173,8 +172,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Runnabl
     @Override
     public void stop() {
 
-        task.stop();
-
         try {
             flush();
         } catch (IOException e) {
@@ -203,13 +200,15 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Runnabl
 
         task.start();
 
-        while( !terminate ) {
-            try {
-                Thread.sleep(new Random().nextInt(100));
-            } catch (InterruptedException e) { }
+        try {
+            task.join(60000);
+        } catch (InterruptedException e) {
+            stop();
+            return;
         }
-
         stop();
+        return;
+
     }
 
     @Override
