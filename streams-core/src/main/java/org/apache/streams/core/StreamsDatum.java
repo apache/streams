@@ -22,6 +22,7 @@ import org.joda.time.DateTime;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,24 +32,28 @@ public class StreamsDatum implements Serializable {
 
     public StreamsDatum(Object document) {
         this.document = document;
+        this.metadata = new HashMap<String, Object>();
     }
 
     public StreamsDatum(Object document, BigInteger sequenceid) {
 
         this.document = document;
         this.sequenceid = sequenceid;
+        this.metadata = new HashMap<String, Object>();
     }
 
     public StreamsDatum(Object document, DateTime timestamp) {
 
         this.document = document;
         this.timestamp = timestamp;
+        this.metadata = new HashMap<String, Object>();
     }
 
     public StreamsDatum(Object document, DateTime timestamp, BigInteger sequenceid) {
         this.document = document;
         this.timestamp = timestamp;
         this.sequenceid = sequenceid;
+        this.metadata = new HashMap<String, Object>();
     }
 
     public DateTime timestamp;

@@ -22,8 +22,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
-
 /**
 * Created with IntelliJ IDEA.
 * User: mdelaet
@@ -74,12 +72,12 @@ public abstract class TwitterJsonEventActivitySerializer implements ActivitySeri
 
     }
 
+    public abstract Activity convert(ObjectNode event);
+
     @Override
     public List<Activity> deserializeAll(List<String> serializedList) {
         throw new NotImplementedException("Not currently implemented");
     }
-
-    public abstract Activity convert(ObjectNode event);
 
     public static Date parse(String str) {
         Date date;
@@ -118,7 +116,7 @@ public abstract class TwitterJsonEventActivitySerializer implements ActivitySeri
     }
 
     public static void addTwitterExtension(Activity activity, ObjectNode event) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = org.apache.streams.data.util.ActivityUtil.ensureExtensions(activity);
         extensions.put("twitter", event);
     }
 

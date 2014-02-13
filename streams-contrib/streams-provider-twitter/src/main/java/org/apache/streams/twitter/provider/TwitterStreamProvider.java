@@ -51,14 +51,10 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Run
 
     protected BlockingQueue inQueue = new LinkedBlockingQueue<String>(10000);
 
-    protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
+    protected volatile Queue<StreamsDatum> providerQueue;
 
     protected StreamingEndpoint endpoint;
     protected BasicClient client;
-
-    public BlockingQueue<Object> getInQueue() {
-        return inQueue;
-    }
 
     protected ListeningExecutorService executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
@@ -143,6 +139,10 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Run
     @Override
     public Queue<StreamsDatum> getProviderQueue() {
         return this.providerQueue;
+    }
+
+    public void setProviderQueue(Queue<StreamsDatum> providerQueue) {
+        this.providerQueue = providerQueue;
     }
 
     @Override

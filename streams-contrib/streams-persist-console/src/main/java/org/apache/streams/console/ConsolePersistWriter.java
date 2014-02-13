@@ -2,23 +2,19 @@ package org.apache.streams.console;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
-import org.apache.streams.core.StreamsResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.Queue;
-import java.util.Random;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ConsolePersistWriter implements StreamsPersistWriter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsolePersistWriter.class);
 
-    protected volatile Queue<StreamsDatum> persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+    protected volatile Queue<StreamsDatum> persistQueue;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -28,6 +24,7 @@ public class ConsolePersistWriter implements StreamsPersistWriter {
 
     @Override
     public void start() {
+        Preconditions.checkNotNull(persistQueue);
         new Thread(new ConsolePersistWriterTask(this)).start();
     }
 

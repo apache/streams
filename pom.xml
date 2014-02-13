@@ -69,7 +69,7 @@
         <jaxb2.version>0.8.3</jaxb2.version>
         <jaxbutil.version>1.2.6</jaxbutil.version>
         <junit.version>4.11</junit.version>
-        <slf4j.version>1.6.1</slf4j.version>
+        <slf4j.version>1.7.6</slf4j.version>
         <logback.version>1.0.9</logback.version>
         <commons-io.version>2.4</commons-io.version>
         <commons-lang3.version>3.1</commons-lang3.version>

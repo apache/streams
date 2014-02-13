@@ -18,7 +18,7 @@ import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class KafkaPersistWriter implements StreamsPersistWriter, Serializable {
+public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPersistWriter.class);
 
@@ -98,5 +98,12 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable {
         } catch (JsonProcessingException e) {
             LOGGER.warn("save: {}", e);
         }// put
+    }
+
+    @Override
+    public void run() {
+        start();
+
+        // stop();
     }
 }

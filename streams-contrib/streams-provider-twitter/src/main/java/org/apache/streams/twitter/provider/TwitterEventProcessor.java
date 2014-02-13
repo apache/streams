@@ -63,7 +63,7 @@ public class TwitterEventProcessor implements Runnable {
                 Thread.sleep(new Random().nextInt(100));
                 if(item==TERMINATE) {
                     LOGGER.info("Terminating!");
-                    break;
+                    return;
                 }
 
                 // first check for valid json

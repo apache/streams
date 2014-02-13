@@ -83,7 +83,12 @@ public class TwitterTimelineProviderTask implements Runnable {
         }
         while ((statuses != null) && (statuses.size() > 0) && KeepGoing);
 
+        LOGGER.info("Provider Finished.  Cleaning up...");
+
         twitter.shutdown();
+
+        LOGGER.info("Provider Exiting");
+
     }
 
 }
