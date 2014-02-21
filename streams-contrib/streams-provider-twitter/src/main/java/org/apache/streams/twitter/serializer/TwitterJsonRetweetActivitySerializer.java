@@ -2,15 +2,18 @@ package org.apache.streams.twitter.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.twitter.Url;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
@@ -44,6 +47,8 @@ public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivi
         activity.setProvider(buildProvider(event));
         activity.setTitle("");
         activity.setContent(retweet.getRetweetedStatus().getText());
+        activity.setUrl(getUrls(event));
+        activity.setLinks(getLinks(retweet));
         addTwitterExtension(activity, event);
         addLocationExtension(activity, retweet);
         return activity;
@@ -66,6 +71,14 @@ public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivi
         actObj.setId(formatId(tweet.getIdStr()));
         actObj.setObjectType("tweet");
         return actObj;
+    }
+
+    public static List<Object> getLinks(Retweet retweet) {
+        List<Object> links = Lists.newArrayList();
+        for( Url url : retweet.getRetweetedStatus().getEntities().getUrls() ) {
+            links.add(url.getExpandedUrl());
+        }
+        return links;
     }
 
     public static void addLocationExtension(Activity activity, Retweet retweet) {

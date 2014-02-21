@@ -18,18 +18,23 @@
 
 package org.apache.streams.core;
 
-import java.io.Serializable;
+import java.util.List;
 import java.util.Queue;
 
 /**
  * Created by sblackmon on 12/13/13.
  */
-public interface StreamsPersistWriter extends StreamsOperation{
+public interface StreamsFilter {
 
-    /**
-     * Persist the StreamsDatum to the corresponding data store.
-     * @param entry to be stored.
-     */
-    public void write( StreamsDatum entry );
+    void start();
+    void stop();
+
+    public void setProcessorInputQueue(Queue<StreamsDatum> inputQueue);
+    public Queue<StreamsDatum> getProcessorInputQueue();
+
+    public void setProcessorOutputQueue(Queue<StreamsDatum> outputQueue);
+    public Queue<StreamsDatum> getProcessorOutputQueue();
+
+    public boolean filter(StreamsDatum entry);
 
 }

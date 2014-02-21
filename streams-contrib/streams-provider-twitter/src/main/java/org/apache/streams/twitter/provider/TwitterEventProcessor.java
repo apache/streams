@@ -123,9 +123,12 @@ public class TwitterEventProcessor implements Runnable {
                 LOGGER.debug("DELETE");
                 result = mapper.convertValue(event, Delete.class);
             }
+        } else if( outClass.equals( ObjectNode.class )) {
+            LOGGER.debug("OBJECTNODE");
+            result = mapper.convertValue(event, ObjectNode.class);
         }
 
-        // no supported conversion were applied
+            // no supported conversion were applied
         if( result != null )
             return result;
 
