@@ -25,18 +25,22 @@ import java.math.BigInteger;
 import java.util.Queue;
 
 /**
- * Created by sblackmon on 12/13/13.
+ *
+ * Currently a duplicate interface.  Has exact same methods as StreamsProvider.
+ * Future work should make this interface necessary I'm told.
+ *
  */
-public interface StreamsPersistReader {
+public interface StreamsPersistReader extends StreamsProvider {
 
-    void start();
-    void stop();
+//    void start();
+//    void stop();
+//
+//    public void setPersistQueue(Queue<StreamsDatum> persistQueue);
+//    public Queue<StreamsDatum> getPersistQueue();
 
-    public void setPersistQueue(Queue<StreamsDatum> persistQueue);
-    public Queue<StreamsDatum> getPersistQueue();
+//    public StreamsResultSet readAll();
+//    public StreamsResultSet readNew(BigInteger sequence);
+//    public StreamsResultSet readRange(DateTime start, DateTime end);
 
-    public StreamsResultSet readAll();
-    public StreamsResultSet readNew(BigInteger sequence);
-    public StreamsResultSet readRange(DateTime start, DateTime end);
 
 }

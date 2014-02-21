@@ -9,11 +9,13 @@ import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
+import org.apache.streams.core.tasks.StreamsPersistWriterTask;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
-import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
+//import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
+import org.elasticsearch.action.admin.indices.settings.UpdateSettingsRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -36,7 +38,7 @@ import java.text.NumberFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class ElasticsearchPersistWriter implements StreamsPersistWriter, Runnable, Flushable, Closeable
+public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushable, Closeable
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistWriter.class);
     private final static NumberFormat MEGABYTE_FORMAT = new DecimalFormat("#.##");
@@ -46,12 +48,13 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Runnabl
     private Client client;
     private String parentID = null;
     private BulkRequestBuilder bulkRequest;
+    private OutputStreamWriter currentWriter = null;
 
     private String index = null;
     private String type = null;
     private int batchSize = 50;
     private int totalRecordsWritten = 0;
-    private OutputStreamWriter currentWriter = null;
+    private boolean veryLargeBulk = false;  // by default this setting is set to false
 
     private final static Long DEFAULT_BULK_FLUSH_THRESHOLD = 5l * 1024l * 1024l;
     private static final long WAITING_DOCS_LIMIT = 10000;
@@ -68,7 +71,22 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Runnabl
     private volatile long batchSizeInBytes = 0;
     private volatile int batchItemsSent = 0;
 
-    private boolean veryLargeBulk = false;  // by default this setting is set to false
+    public void setIndex(String index) {
+        this.index = index;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public void setVeryLargeBulk(boolean veryLargeBulk) {
+        this.veryLargeBulk = veryLargeBulk;
+    }
+
     private final List<String> affectedIndexes = new ArrayList<String>();
 
     public int getTotalOutstanding()                           { return this.totalSent - (this.totalFailed + this.totalOk); }
@@ -96,44 +114,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Runnabl
     public ElasticsearchPersistWriter() {
         Config config = StreamsConfigurator.config.getConfig("elasticsearch");
         this.config = ElasticsearchConfigurator.detectConfiguration(config);
-        this.persistQueue  = new ConcurrentLinkedQueue<StreamsDatum>();
-    }
-
-    public ElasticsearchPersistWriter(Queue<StreamsDatum> persistQueue) {
-        Config config = StreamsConfigurator.config.getConfig("elasticsearch");
-        this.config = ElasticsearchConfigurator.detectConfiguration(config);
-        this.persistQueue = persistQueue;
-    }
-
-    public ElasticsearchPersistWriter(ElasticsearchConfiguration config) {
-        this.config = config;
-        this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
-    }
-
-    public ElasticsearchPersistWriter(ElasticsearchConfiguration config, Queue<StreamsDatum> persistQueue) {
-        this.config = config;
-        this.persistQueue = persistQueue;
-    }
-
-    public ElasticsearchPersistWriter(ElasticsearchConfiguration config, Queue<StreamsDatum> persistQueue, String index) {
-        this.config = config;
-        this.persistQueue = persistQueue;
-        this.index = index;
-    }
-
-    public ElasticsearchPersistWriter(ElasticsearchConfiguration config, Queue<StreamsDatum> persistQueue, String index, String type) {
-        this.config = config;
-        this.persistQueue = persistQueue;
-        this.index = index;
-        this.type = type;
-    }
-
-    public ElasticsearchPersistWriter(ElasticsearchConfiguration config, Queue<StreamsDatum> persistQueue, String index, String type, boolean veryLargeBulk) {
-        this.config = config;
-        this.persistQueue = persistQueue;
-        this.index = index;
-        this.type = type;
-        this.veryLargeBulk = veryLargeBulk;
     }
 
     private static final int  BYTES_IN_MB = 1024*1024;
@@ -142,6 +122,25 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Runnabl
     private volatile int  byteCount = 0;
 
     public boolean isConnected() 		                { return (client != null); }
+
+    @Override
+    public void prepare(Object o) {
+        manager = new ElasticsearchClientManager(config);
+        client = manager.getClient();
+
+        LOGGER.info(client.toString());
+    }
+
+    @Override
+    public void cleanUp() {
+
+        try {
+            flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        close();
+    }
 
     @Override
     public void write(StreamsDatum streamsDatum) {
@@ -157,58 +156,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Runnabl
             LOGGER.warn("{} {}", e.getLocation(), e.getMessage());
 
         }
-    }
-
-    @Override
-    public void start() {
-
-        manager = new ElasticsearchClientManager(config);
-        client = manager.getClient();
-
-        LOGGER.info(client.toString());
-
-    }
-
-    @Override
-    public void stop() {
-
-        try {
-            flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        close();
-    }
-
-    @Override
-    public void setPersistQueue(Queue<StreamsDatum> persistQueue) {
-        this.persistQueue = persistQueue;
-    }
-
-    @Override
-    public Queue<StreamsDatum> getPersistQueue() {
-        return persistQueue;
-    }
-
-
-    @Override
-    public void run() {
-
-        start();
-
-        task = new Thread(new ElasticsearchPersistWriterTask(this));
-
-        task.start();
-
-        try {
-            task.join(60000);
-        } catch (InterruptedException e) {
-            stop();
-            return;
-        }
-        stop();
-        return;
-
     }
 
     @Override
@@ -579,4 +526,5 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Runnabl
 
         return toReturn;
     }
+
 }
