@@ -1,0 +1,16 @@
+{
+  "type" : "object",
+  "title" : "Like",
+  "description" : "To like an object",
+  "extends": {"$ref":"../activity.json"},
+  "properties" :{
+    "verb" :{
+      "type" : "string",
+      "default" : "like"
+    },
+    "title" : {
+      "type" : "string",
+      "default" : "{actor.displayName} likes {object.displayName}"
+    }
+  }
+}

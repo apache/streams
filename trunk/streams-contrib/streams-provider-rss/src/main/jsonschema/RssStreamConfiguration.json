@@ -1,0 +1,28 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.rss.RssStreamConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "feeds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "javaType" : "org.apache.streams.rss.FeedDetails",
+                "javaInterfaces": ["java.io.Serializable"],
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "The feed url"
+                    },
+                    "pollIntervalMillis": {
+                        "type": "integer",
+                        "description": "Polling interval in ms"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,9 @@
+.activity {
+    -moz-box-shadow:    3px 3px 5px 6px #ccc;
+    -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+    box-shadow:         3px 3px 5px 6px #ccc;
+    padding: .3em .7em .3em .7em;
+    width: 300px;
+    margin-top: 25px;
+    margin-bottom: 25px; }
+.actor { text-align: left; }

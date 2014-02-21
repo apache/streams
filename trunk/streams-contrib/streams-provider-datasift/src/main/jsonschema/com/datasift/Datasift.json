@@ -1,0 +1,1205 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "javaType": "com.datasift.Datasift",
+    "properties": {
+        "blog": {
+            "javaType": "com.datasift.blog.Blog",
+            "type": "object",
+            "dynamic": "true",
+            "properties": {
+                "author": {
+                    "type": "object",
+                    "javaType": "com.datasift.blog.BlogAuthor",
+                    "dynamic": "true",
+                    "properties": {
+                        "link": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "type": "string"
+                },
+                "contenttype": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "demographic": {
+            "dynamic": "true",
+            "properties": {
+                "gender": {
+                    "type": "string"
+                }
+            }
+        },
+        "facebook": {
+            "javaType": "com.datasift.config.Facebook",
+            "type": "object",
+            "dynamic": "true",
+            "properties": {
+                "application": {
+                    "type": "string"
+                },
+                "author": {
+                    "javaType": "com.datasift.config.Author",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "string"
+                        },
+                        "link": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "likes": {
+                    "javaType": "com.datasift.config.Likes",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "count": {
+                            "type": "long"
+                        },
+                        "ids": {
+                            "type": "string"
+                        },
+                        "names": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "to": {
+                    "javaType": "com.datasift.config.To",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "ids": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "names": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "interaction": {
+            "javaType": "com.datasift.interaction.Interaction",
+            "type": "object",
+            "dynamic": "true",
+            "properties": {
+                "author": {
+                    "javaType": "com.datasift.interaction.Author",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "long"
+                        },
+                        "link": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "content": {
+                    "type": "string"
+                },
+                "contenttype": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "geo": {
+                    "javaType": "com.datasift.interaction.Geo",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "latitude": {
+                            "type": "double"
+                        },
+                        "longitude": {
+                            "type": "double"
+                        }
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "schema": {
+                    "dynamic": "true",
+                    "properties": {
+                        "version": {
+                            "type": "long"
+                        }
+                    }
+                },
+                "source": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "klout": {
+            "javaType": "com.datasift.klout.Klout",
+            "type": "object",
+            "dynamic": "true",
+            "properties": {
+                "score": {
+                    "type": "long"
+                }
+            }
+        },
+        "language": {
+            "javaType": "com.datasift.interaction.Language",
+            "type": "object",
+            "dynamic": "true",
+            "properties": {
+                "confidence": {
+                    "type": "long"
+                },
+                "tag": {
+                    "type": "string"
+                }
+            }
+        },
+        "links": {
+            "javaType": "com.datasift.interaction.Links",
+            "type": "object",
+            "dynamic": "true",
+            "properties": {
+                "code": {
+                    "type": "long"
+                },
+                "created_at": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "hops": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "meta": {
+                    "dynamic": "true",
+                    "javaType": "com.datasift.interaction.Meta",
+                    "type": "object",
+                    "properties": {
+                        "charset": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "content_type": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "description": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "keywords": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "lang": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "opengraph": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "javaType": "com.datasift.interaction.meta.OpenGraph",
+                                    "type": "object",
+                                    "dynamic": "true",
+                                    "properties": {
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "image": {
+                                            "type": "string"
+                                        },
+                                        "site_name": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "twitter": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "javaType": "com.datasift.interaction.meta.Twitter",
+                                    "type": "object",
+                                    "dynamic": "true",
+                                    "properties": {
+                                        "card": {
+                                            "type": "string"
+                                        },
+                                        "creator": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "image": {
+                                            "type": "string"
+                                        },
+                                        "player": {
+                                            "type": "string"
+                                        },
+                                        "player_height": {
+                                            "type": "string"
+                                        },
+                                        "player_width": {
+                                            "type": "string"
+                                        },
+                                        "site": {
+                                            "type": "string"
+                                        },
+                                        "title": {
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "normalized_url": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "retweet_count": {
+                    "type": "long"
+                },
+                "title": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "url": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                }
+            }
+        },
+        "salience": {
+            "javaType": "com.datasift.salience.Salience",
+            "type": "object",
+            "dynamic": "true",
+            "properties": {
+                "content": {
+                    "javaType": "com.datasift.salience.content.Content",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "entities": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "javaType": "com.datasift.salience.content.Entities",
+                                    "type": "object",
+                                    "dynamic": "true",
+                                    "properties": {
+                                        "about": {
+                                            "type": "long"
+                                        },
+                                        "confident": {
+                                            "type": "long"
+                                        },
+                                        "evidence": {
+                                            "type": "long"
+                                        },
+                                        "label": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "sentiment": {
+                                            "type": "long"
+                                        },
+                                        "themes": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "sentiment": {
+                            "type": "long"
+                        }
+                    }
+                },
+                "title": {
+                    "javaType": "com.datasift.salience.title.Title",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "entities": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "javaType": "com.datasift.salience.title.Entities",
+                                    "type": "object",
+                                    "dynamic": "true",
+                                    "properties": {
+                                        "about": {
+                                            "type": "long"
+                                        },
+                                        "confident": {
+                                            "type": "long"
+                                        },
+                                        "evidence": {
+                                            "type": "long"
+                                        },
+                                        "label": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "sentiment": {
+                                            "type": "long"
+                                        },
+                                        "themes": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "sentiment": {
+                            "type": "long"
+                        }
+                    }
+                }
+            }
+        },
+        "trends": {
+            "javaType": "com.datasift.trends.Trends",
+            "type": "object",
+            "dynamic": "true",
+            "properties": {
+                "content": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "source": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "type": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                }
+            }
+        },
+        "twitter": {
+            "javaType": "com.datasift.twitter.Twitter",
+            "type": "object",
+            "dynamic": "true",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "domains": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "filter_level": {
+                    "type": "string"
+                },
+                "geo": {
+                    "javaType": "com.datasift.twitter.Geo",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "latitude": {
+                            "type": "double"
+                        },
+                        "longitude": {
+                            "type": "double"
+                        }
+                    }
+                },
+                "hashtags": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "in_reply_to_screen_name": {
+                    "type": "string"
+                },
+                "in_reply_to_status_id": {
+                    "type": "string"
+                },
+                "in_reply_to_user_id": {
+                    "type": "string"
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "links": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "media": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "javaType": "com.datasift.twitter.Media",
+                            "type": "object",
+                            "dynamic": "true",
+                            "properties": {
+                                "display_url": {
+                                    "type": "string"
+                                },
+                                "expanded_url": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "long"
+                                },
+                                "id_str": {
+                                    "type": "string"
+                                },
+                                "media_url": {
+                                    "type": "string"
+                                },
+                                "media_url_https": {
+                                    "type": "string"
+                                },
+                                "sizes": {
+                                    "dynamic": "true",
+                                    "properties": {
+                                        "large": {
+                                            "dynamic": "true",
+                                            "properties": {
+                                                "h": {
+                                                    "type": "long"
+                                                },
+                                                "resize": {
+                                                    "type": "string"
+                                                },
+                                                "w": {
+                                                    "type": "long"
+                                                }
+                                            }
+                                        },
+                                        "medium": {
+                                            "dynamic": "true",
+                                            "properties": {
+                                                "h": {
+                                                    "type": "long"
+                                                },
+                                                "resize": {
+                                                    "type": "string"
+                                                },
+                                                "w": {
+                                                    "type": "long"
+                                                }
+                                            }
+                                        },
+                                        "small": {
+                                            "dynamic": "true",
+                                            "properties": {
+                                                "h": {
+                                                    "type": "long"
+                                                },
+                                                "resize": {
+                                                    "type": "string"
+                                                },
+                                                "w": {
+                                                    "type": "long"
+                                                }
+                                            }
+                                        },
+                                        "thumb": {
+                                            "dynamic": "true",
+                                            "properties": {
+                                                "h": {
+                                                    "type": "long"
+                                                },
+                                                "resize": {
+                                                    "type": "string"
+                                                },
+                                                "w": {
+                                                    "type": "long"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "source_status_id": {
+                                    "type": "long"
+                                },
+                                "source_status_id_str": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                },
+                                "url": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "mention_ids": {
+                    "type": "long"
+                },
+                "mentions": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "place": {
+                    "javaType": "com.datasift.twitter.Place",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "attributes": {
+                            "dynamic": "true",
+                            "properties": {
+                                "street_address": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "country": {
+                            "type": "string"
+                        },
+                        "country_code": {
+                            "type": "string"
+                        },
+                        "full_name": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "place_type": {
+                            "type": "string"
+                        },
+                        "url": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "retweet": {
+                    "javaType": "com.datasift.twitter.Retweet",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "count": {
+                            "type": "long"
+                        },
+                        "created_at": {
+                            "type": "string"
+                        },
+                        "domains": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "hashtags": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "id": {
+                            "type": "string"
+                        },
+                        "lang": {
+                            "type": "string"
+                        },
+                        "links": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "media": {
+                            "dynamic": "true",
+                            "properties": {
+                                "display_url": {
+                                    "type": "string"
+                                },
+                                "expanded_url": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "long"
+                                },
+                                "id_str": {
+                                    "type": "string"
+                                },
+                                "media_url": {
+                                    "type": "string"
+                                },
+                                "media_url_https": {
+                                    "type": "string"
+                                },
+                                "sizes": {
+                                    "dynamic": "true",
+                                    "properties": {
+                                        "large": {
+                                            "dynamic": "true",
+                                            "properties": {
+                                                "h": {
+                                                    "type": "long"
+                                                },
+                                                "resize": {
+                                                    "type": "string"
+                                                },
+                                                "w": {
+                                                    "type": "long"
+                                                }
+                                            }
+                                        },
+                                        "medium": {
+                                            "dynamic": "true",
+                                            "properties": {
+                                                "h": {
+                                                    "type": "long"
+                                                },
+                                                "resize": {
+                                                    "type": "string"
+                                                },
+                                                "w": {
+                                                    "type": "long"
+                                                }
+                                            }
+                                        },
+                                        "small": {
+                                            "dynamic": "true",
+                                            "properties": {
+                                                "h": {
+                                                    "type": "long"
+                                                },
+                                                "resize": {
+                                                    "type": "string"
+                                                },
+                                                "w": {
+                                                    "type": "long"
+                                                }
+                                            }
+                                        },
+                                        "thumb": {
+                                            "dynamic": "true",
+                                            "properties": {
+                                                "h": {
+                                                    "type": "long"
+                                                },
+                                                "resize": {
+                                                    "type": "string"
+                                                },
+                                                "w": {
+                                                    "type": "long"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "source_status_id": {
+                                    "type": "long"
+                                },
+                                "source_status_id_str": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string"
+                                },
+                                "url": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "mention_ids": {
+                            "type": "long"
+                        },
+                        "mentions": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "source": {
+                            "type": "string"
+                        },
+                        "text": {
+                            "type": "string"
+                        },
+                        "user": {
+                            "javaType": "com.datasift.twitter.User",
+                            "type": "object",
+                            "dynamic": "true",
+                            "properties": {
+                                "created_at": {
+                                    "type": "string"
+                                },
+                                "description": {
+                                    "type": "string"
+                                },
+                                "followers_count": {
+                                    "type": "long"
+                                },
+                                "friends_count": {
+                                    "type": "long"
+                                },
+                                "geo_enabled": {
+                                    "type": "boolean"
+                                },
+                                "id": {
+                                    "type": "long"
+                                },
+                                "id_str": {
+                                    "type": "string"
+                                },
+                                "lang": {
+                                    "type": "string"
+                                },
+                                "listed_count": {
+                                    "type": "long"
+                                },
+                                "location": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "profile_image_url": {
+                                    "type": "string"
+                                },
+                                "screen_name": {
+                                    "type": "string"
+                                },
+                                "statuses_count": {
+                                    "type": "long"
+                                },
+                                "time_zone": {
+                                    "type": "string"
+                                },
+                                "url": {
+                                    "type": "string"
+                                },
+                                "utc_offset": {
+                                    "type": "long"
+                                }
+                            }
+                        }
+                    }
+                },
+                "retweeted": {
+                    "javaType": "com.datasift.twitter.Retweeted",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "created_at": {
+                            "type": "string"
+                        },
+                        "geo": {
+                            "dynamic": "true",
+                            "properties": {
+                                "latitude": {
+                                    "type": "double"
+                                },
+                                "longitude": {
+                                    "type": "double"
+                                }
+                            }
+                        },
+                        "id": {
+                            "type": "string"
+                        },
+                        "place": {
+                            "dynamic": "true",
+                            "properties": {
+                                "attributes": {
+                                    "type": "object",
+                                    "dynamic": "true"
+                                },
+                                "country": {
+                                    "type": "string"
+                                },
+                                "country_code": {
+                                    "type": "string"
+                                },
+                                "full_name": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "place_type": {
+                                    "type": "string"
+                                },
+                                "url": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "source": {
+                            "type": "string"
+                        },
+                        "user": {
+                            "dynamic": "true",
+                            "properties": {
+                                "created_at": {
+                                    "type": "string"
+                                },
+                                "description": {
+                                    "type": "string"
+                                },
+                                "followers_count": {
+                                    "type": "long"
+                                },
+                                "friends_count": {
+                                    "type": "long"
+                                },
+                                "geo_enabled": {
+                                    "type": "boolean"
+                                },
+                                "id": {
+                                    "type": "long"
+                                },
+                                "id_str": {
+                                    "type": "string"
+                                },
+                                "lang": {
+                                    "type": "string"
+                                },
+                                "listed_count": {
+                                    "type": "long"
+                                },
+                                "location": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "profile_image_url": {
+                                    "type": "string"
+                                },
+                                "screen_name": {
+                                    "type": "string"
+                                },
+                                "statuses_count": {
+                                    "type": "long"
+                                },
+                                "time_zone": {
+                                    "type": "string"
+                                },
+                                "url": {
+                                    "type": "string"
+                                },
+                                "utc_offset": {
+                                    "type": "long"
+                                },
+                                "verified": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                },
+                "source": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "user": {
+                    "javaType": "com.datasift.interaction.User",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "created_at": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "string"
+                        },
+                        "followers_count": {
+                            "type": "long"
+                        },
+                        "friends_count": {
+                            "type": "long"
+                        },
+                        "geo_enabled": {
+                            "type": "boolean"
+                        },
+                        "id": {
+                            "type": "long"
+                        },
+                        "id_str": {
+                            "type": "string"
+                        },
+                        "lang": {
+                            "type": "string"
+                        },
+                        "listed_count": {
+                            "type": "long"
+                        },
+                        "location": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "profile_image_url": {
+                            "type": "string"
+                        },
+                        "screen_name": {
+                            "type": "string"
+                        },
+                        "statuses_count": {
+                            "type": "long"
+                        },
+                        "time_zone": {
+                            "type": "string"
+                        },
+                        "url": {
+                            "type": "string"
+                        },
+                        "utc_offset": {
+                            "type": "long"
+                        },
+                        "verified": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "youtube": {
+            "javaType": "com.datasift.youtube.YouTube",
+            "type": "object",
+            "dynamic": "true",
+            "properties": {
+                "author": {
+                    "javaType": "com.datasift.youtube.Author",
+                    "type": "object",
+                    "dynamic": "true",
+                    "properties": {
+                        "link": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "commentslink": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "contenttype": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "videolink": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+  "type" : "object",
+  "title" : "bookmark",
+  "extends": {"$ref":"../object.json"},
+  "properties" :{
+    "objectType" :{
+      "type" :"string",
+      "default" : "bookmark"
+    }
+  }
+}

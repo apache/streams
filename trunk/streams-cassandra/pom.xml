@@ -1,0 +1,142 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.apache.streams</groupId>
+        <artifactId>streams-project</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>streams-cassandra</artifactId>
+
+    <name>${bundle.symbolicName} [${bundle.namespace}]</name>
+
+    <properties>
+        <bundle.symbolicName>streams-cassandra</bundle.symbolicName>
+        <bundle.namespace>org.apache.streams</bundle.namespace>
+        <easymock.version>3.2</easymock.version>
+    </properties>
+
+    <packaging>bundle</packaging>
+    <build>
+        <resources>
+        <resource>
+            <directory>src/main/resources</directory>
+        </resource>
+
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>plugin.xml</include>
+                    <include>plugin.properties</include>
+                    <include>icons/**</include>
+                </includes>
+            </resource>
+        </resources>
+    <plugins>
+        <plugin>
+            <groupId>org.ops4j</groupId>
+            <artifactId>maven-pax-plugin</artifactId>
+            <!--
+             | enable improved OSGi compilation support for the bundle life-cycle.
+             | to switch back to the standard bundle life-cycle, move this setting
+             | down to the maven-bundle-plugin section
+            -->
+            <extensions>true</extensions>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>maven-bundle-plugin</artifactId>
+            <version>1.4.3</version>
+            <!--
+             | the following instructions build a simple set of public/private classes into an OSGi bundle
+            -->
+            <configuration>
+                <instructions>
+                    <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                    <Bundle-Version>${project.version}</Bundle-Version>
+                    <Export-Package>
+                        ${bundle.namespace};version="${project.version}",org.apache.streams.cassandra.repository.impl, org.apache.streams.cassandra.model, org.apache.streams.cassandra.configuration
+                    </Export-Package>
+                    <Private-Package>${bundle.namespace}.cassandra.repository.impl.*,${bundle.namespace}.cassandra.model, ${bundle.namespace}.cassandra.configuration </Private-Package>
+                    <Import-Package>
+                        org.apache.rave.model,org.apache.rave.portal.model.impl,
+                        com.datastax.driver.core, com.datastax.driver.core.exceptions, org.codehaus.jackson.map.annotate,
+                        javax.persistence, org.apache.commons.logging, com.google.common.collect, org.codehaus.jackson.map,
+                        org.apache.commons.lang,
+                        org.apache.streams.osgi.components.activitysubscriber,
+                        org.springframework.beans.factory.annotation, org.springframework.stereotype
+                    </Import-Package>
+                </instructions>
+            </configuration>
+        </plugin>
+    </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.rave</groupId>
+            <artifactId>rave-core-api</artifactId>
+            <version>${rave.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.rave</groupId>
+            <artifactId>rave-core</artifactId>
+            <version>${rave.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.datastax.cassandra</groupId>
+            <artifactId>cassandra-driver-core</artifactId>
+            <version>${datastax.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.netty</groupId>
+            <artifactId>netty</artifactId>
+            <version>3.2.9.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams.osgi.components</groupId>
+            <artifactId>activity-subscriber</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>${easymock.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+</project>

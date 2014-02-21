@@ -1,0 +1,57 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         id="Shindig"
+         version="2.5">
+    <display-name>Streams</display-name>
+
+    <!--  tell Spring where it should load the XML file  -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            /WEB-INF/propertiesLoader.xml
+            /WEB-INF/spring/*.xml
+            /WEB-INF/spring-web-servlet.xml
+        </param-value>
+    </context-param>
+    <!-- the listener that kick-starts Spring -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+
+    <!-- Camel servlet -->
+    <servlet>
+        <servlet-name>CamelServlet</servlet-name>
+        <servlet-class>org.apache.camel.component.servlet.CamelHttpTransportServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Camel servlet mapping -->
+    <servlet-mapping>
+        <servlet-name>CamelServlet</servlet-name>
+        <url-pattern>/apps/*</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list><welcome-file>/demo/index.html</welcome-file></welcome-file-list>
+
+</web-app>

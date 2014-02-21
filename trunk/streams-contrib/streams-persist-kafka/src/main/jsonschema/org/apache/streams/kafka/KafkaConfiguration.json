@@ -1,0 +1,25 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.kafka.KafkaConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "brokerlist": {
+            "type": "string",
+            "description": "A comma-delimited list of broker nodes, used by producer"
+        },
+        "zkconnect": {
+            "type": "string",
+            "description": "A comma-delimited list of zookeeper host:ports, used by consumer"
+        },
+        "topic": {
+            "type": "string",
+            "description": "A topic to read/write from"
+        },
+        "groupId": {
+            "type": "string",
+            "description": "A required field for partitioning distributed consumers"
+        }
+    }
+}

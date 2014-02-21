@@ -1,0 +1,11 @@
+{
+  "type" : "object",
+  "title" : "article",
+  "extends": {"$ref":"../objectTypes/list.json"},
+  "properties" :{
+    "objectType" :{
+      "type" :"string",
+      "default" : "photo-album"
+    }
+  }
+}

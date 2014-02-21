@@ -1,0 +1,146 @@
+{
+    "gnip": {
+        "matching_rules": [
+            {
+                "tag": "cascade_CA_CA_en"
+            }
+        ],
+        "klout_score": 10,
+        "urls": [
+            {
+                "expanded_url": "https://itunes.apple.com/us/app/smurfs-village/id399648212?mt=8",
+                "url": "http://t.co/Ytn45Pbttk"
+            }
+        ],
+        "klout_profile": {
+            "topics": [],
+            "klout_user_id": "257268143479895040",
+            "link": "http://klout.com/user/id/257268143479895040"
+        },
+        "language": {
+            "value": "fr"
+        }
+    },
+    "body": "Le Grand Schtroumpf confirme que la cascade magique n'est \"Plus tr?®s loin.\" http://t.co/Ytn45Pbttk #SmurfsVillage @BeelineGames",
+    "favoritesCount": 0,
+    "link": "http://twitter.com/spoffff/statuses/372802927385403392",
+    "retweetCount": 0,
+    "twitter_lang": "fr",
+    "postedTime": "2013-08-28T19:28:38.000Z",
+    "provider": {
+        "id": "{link}",
+        "upstreamDuplicates": [],
+        "link": "http://www.twitter.com",
+        "attachments": [],
+        "displayName": "Twitter",
+        "objectType": "service",
+        "downstreamDuplicates": []
+    },
+    "links": [],
+    "actor": {
+        "twitterTimeZone": "Brussels",
+        "friendsCount": 6,
+        "favoritesCount": 0,
+        "link": "http://www.twitter.com/spoffff",
+        "image": {
+            "url": "https://si0.twimg.com/sticky/default_profile_images/default_profile_1_normal.png"
+        },
+        "postedTime": "2012-05-18T15:14:35.000Z",
+        "links": [
+            {
+                "rel": "me",
+                "href": null
+            }
+        ],
+        "listedCount": 0,
+        "downstreamDuplicates": [],
+        "id": "id:twitter.com:583891967",
+        "upstreamDuplicates": [],
+        "languages": [
+            "fr"
+        ],
+        "verified": false,
+        "utcOffset": "7200",
+        "followersCount": 0,
+        "attachments": [],
+        "displayName": "Sabine Chappuis",
+        "preferredUsername": "spoffff",
+        "statusesCount": 87,
+        "objectType": "person"
+    },
+    "object": {
+        "id": "object:search.twitter.com,2005:372802927385403392",
+        "summary": "Le Grand Schtroumpf confirme que la cascade magique n'est \"Plus tr?®s loin.\" http://t.co/Ytn45Pbttk #SmurfsVillage @BeelineGames",
+        "upstreamDuplicates": [],
+        "link": "http://twitter.com/spoffff/statuses/372802927385403392",
+        "postedTime": "2013-08-28T19:28:38.000Z",
+        "attachments": [],
+        "objectType": "note",
+        "downstreamDuplicates": []
+    },
+    "twitter_entities": {
+        "symbols": [],
+        "urls": [
+            {
+                "expanded_url": "http://bit.ly/hUmoRz",
+                "indices": [
+                    77,
+                    99
+                ],
+                "display_url": "bit.ly/hUmoRz",
+                "url": "http://t.co/Ytn45Pbttk"
+            }
+        ],
+        "hashtags": [
+            {
+                "text": "SmurfsVillage",
+                "indices": [
+                    100,
+                    114
+                ]
+            }
+        ],
+        "user_mentions": [
+            {
+                "id": 188075479,
+                "name": "Beeline Interactive",
+                "indices": [
+                    115,
+                    128
+                ],
+                "screen_name": "BeelineGames",
+                "id_str": "188075479"
+            }
+        ]
+    },
+    "extensions": {
+        "w2o": {
+            "tags": [
+                "brand-cascade",
+                "language-en",
+                "country-ca"
+            ],
+            "provider": "twitter",
+            "analyzer": "romance_analyzer",
+            "lang": {
+                "primaryLanguage": "en"
+            }
+        }
+    },
+    "twitter_filter_level": "medium",
+    "guid": "A8fccSz7rpKfDJY078VLyw==_201308",
+    "content": "Le Grand Schtroumpf confirme que la cascade magique n'est \"Plus tr?®s loin.\" http://t.co/Ytn45Pbttk #SmurfsVillage @BeelineGames",
+    "id": "tag:search.twitter.com,2005:372802927385403392",
+    "verb": "post",
+    "generator": {
+        "id": "{link}",
+        "upstreamDuplicates": [],
+        "link": "https://itunes.apple.com/us/app/smurfs-village/id399648212?mt=8&uo=4",
+        "attachments": [],
+        "displayName": "Smurfs' Village on iOS",
+        "downstreamDuplicates": []
+    },
+    "published": "2013-08-28T19:28:38Z",
+    "objectType": "activity"
+
+}
