@@ -42,17 +42,10 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
         this.persistQueue = persistQueue;
     }
 
-    public KafkaPersistWriter(KafkaConfiguration config) {
+    public void setConfig(KafkaConfiguration config) {
         this.config = config;
-        this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
     }
 
-    public KafkaPersistWriter(KafkaConfiguration config, Queue<StreamsDatum> persistQueue) {
-        this.config = config;
-        this.persistQueue = persistQueue;
-    }
-
-    @Override
     public void start() {
         Properties props = new Properties();
 
@@ -68,17 +61,14 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
         new Thread(new KafkaPersistWriterTask(this)).start();
     }
 
-    @Override
     public void stop() {
         producer.close();
     }
 
-    @Override
     public void setPersistQueue(Queue<StreamsDatum> persistQueue) {
         this.persistQueue = persistQueue;
     }
 
-    @Override
     public Queue<StreamsDatum> getPersistQueue() {
         return this.persistQueue;
     }
@@ -105,5 +95,15 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
         start();
 
         // stop();
+    }
+
+    @Override
+    public void prepare(Object configurationObject) {
+        start();
+    }
+
+    @Override
+    public void cleanUp() {
+        stop();
     }
 }

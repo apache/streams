@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -23,7 +26,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class TwitterEventProcessor implements Runnable {
+public class TwitterEventProcessor implements StreamsProcessor, Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterEventProcessor.class);
 
@@ -58,33 +61,25 @@ public class TwitterEventProcessor implements Runnable {
     public void run() {
 
         while(true) {
+            String item;
             try {
-                String item = inQueue.take();
-                Thread.sleep(new Random().nextInt(100));
-                if(item==TERMINATE) {
+                item = inQueue.poll();
+                if(item instanceof String && item.equals(TERMINATE)) {
                     LOGGER.info("Terminating!");
-                    return;
+                    break;
                 }
 
-                // first check for valid json
-                ObjectNode node = (ObjectNode)mapper.readTree(item);
+                ObjectNode objectNode = (ObjectNode) mapper.readTree(item);
 
-                // since data is coming from outside provider, we don't know what type the events are
-                Class inClass = TwitterEventClassifier.detectClass(item);
+                StreamsDatum rawDatum = new StreamsDatum(objectNode);
 
-                // if the target is string, just pass-through
-                if( java.lang.String.class.equals(outClass))
-                    outQueue.offer(new StreamsDatum(item));
-                else {
-                    // convert to desired format
-                    Object out = convert(node, inClass, outClass);
-
-                    if( out != null && validate(out, outClass))
-                        outQueue.offer(new StreamsDatum(out));
+                for( StreamsDatum entry : process(rawDatum)) {
+                    outQueue.offer(entry);
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
+
             }
         }
     }
@@ -161,4 +156,39 @@ public class TwitterEventProcessor implements Runnable {
         return valid;
     }
 
+    @Override
+    public List<StreamsDatum> process(StreamsDatum entry) {
+
+        // first check for valid json
+        ObjectNode node = (ObjectNode) entry.getDocument();
+
+        String json = node.asText();
+
+        // since data is coming from outside provider, we don't know what type the events are
+        Class inClass = TwitterEventClassifier.detectClass(json);
+
+        // if the target is string, just pass-through
+        if( java.lang.String.class.equals(outClass))
+            return Lists.newArrayList(new StreamsDatum(json));
+        else {
+            // convert to desired format
+            Object out = convert(node, inClass, outClass);
+
+            if( out != null && validate(out, outClass))
+                return Lists.newArrayList(new StreamsDatum(out));
+        }
+
+        return Lists.newArrayList();
+
+    }
+
+    @Override
+    public void prepare(Object configurationObject) {
+
+    }
+
+    @Override
+    public void cleanUp() {
+
+    }
 };

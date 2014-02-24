@@ -29,7 +29,7 @@ import java.util.concurrent.*;
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class TwitterTimelineProvider implements StreamsProvider, Serializable {
+public class TwitterTimelineProvider implements StreamsProvider, Serializable, Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProvider.class);
 
@@ -57,7 +57,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 //        return inQueue;
 //    }
 
-    protected ListeningExecutorService executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
+    protected ListeningExecutorService executor;
 
     protected DateTime start;
     protected DateTime end;
@@ -88,7 +88,13 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         this.klass = klass;
     }
 
+    public Queue<StreamsDatum> getProviderQueue() {
+        return this.providerQueue;
+    }
+
     public void run() {
+
+        executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
         Preconditions.checkNotNull(providerQueue);
 

@@ -17,6 +17,8 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.streams.kafka.KafkaConfiguration;
+
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.List;
@@ -56,17 +58,10 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable, R
         this.persistQueue = persistQueue;
     }
 
-    public KafkaPersistReader(KafkaConfiguration config) {
+    public void setConfig(KafkaConfiguration config) {
         this.config = config;
-        this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
     }
 
-    public KafkaPersistReader(KafkaConfiguration config, Queue<StreamsDatum> persistQueue) {
-        this.config = config;
-        this.persistQueue = persistQueue;
-    }
-
-    @Override
     public void start() {
         Properties props = new Properties();
         props.setProperty("serializer.encoding", "UTF8");
@@ -86,7 +81,6 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable, R
 
     }
 
-    @Override
     public void stop() {
         consumerConnector.shutdown();
         while( !executor.isTerminated()) {
@@ -96,18 +90,21 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable, R
         }
     }
 
-    @Override
     public void setPersistQueue(Queue<StreamsDatum> persistQueue) {
         this.persistQueue = persistQueue;
     }
 
-    @Override
     public Queue<StreamsDatum> getPersistQueue() {
         return this.persistQueue;
     }
 
     @Override
     public StreamsResultSet readAll() {
+        return readCurrent();
+    }
+
+    @Override
+    public StreamsResultSet readCurrent() {
         return null;
     }
 
@@ -137,5 +134,15 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable, R
 
         // once this class can be told when to shutdown by streams, it will run stop
         // stop();
+    }
+
+    @Override
+    public void prepare(Object configurationObject) {
+        start();
+    }
+
+    @Override
+    public void cleanUp() {
+        stop();
     }
 }

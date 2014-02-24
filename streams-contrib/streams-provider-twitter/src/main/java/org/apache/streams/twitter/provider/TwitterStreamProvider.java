@@ -56,7 +56,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
     protected StreamingEndpoint endpoint;
     protected BasicClient client;
 
-    protected ListeningExecutorService executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
+    protected ListeningExecutorService executor;
 
     private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
         return new ThreadPoolExecutor(nThreads, nThreads,
@@ -115,6 +115,8 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
 
     @Override
     public void prepare(Object o) {
+
+        executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
         Preconditions.checkNotNull(this.klass);
 

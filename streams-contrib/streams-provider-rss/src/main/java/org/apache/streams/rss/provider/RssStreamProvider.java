@@ -31,7 +31,7 @@ import java.util.concurrent.*;
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class RssStreamProvider /*extends BaseRichSpout*/ implements StreamsProvider, Serializable {
+public class RssStreamProvider implements StreamsProvider, Serializable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RssStreamProvider.class);
 
@@ -85,7 +85,6 @@ public class RssStreamProvider /*extends BaseRichSpout*/ implements StreamsProvi
         this.klass = klass;
     }
 
-    @Override
     public void start() {
 
         Preconditions.checkNotNull(this.klass);
@@ -105,21 +104,21 @@ public class RssStreamProvider /*extends BaseRichSpout*/ implements StreamsProvi
 
     }
 
-    @Override
     public void stop() {
         for (int i = 0; i < ((config.getFeeds().size() / 5) + 1); i++) {
             inQueue.add(RssEventProcessor.TERMINATE);
         }
     }
 
-    @Override
     public Queue<StreamsDatum> getProviderQueue() {
         return this.providerQueue;
     }
 
     @Override
     public StreamsResultSet readCurrent() {
-        return null;
+
+        return (StreamsResultSet) providerQueue;
+
     }
 
     @Override
@@ -131,28 +130,16 @@ public class RssStreamProvider /*extends BaseRichSpout*/ implements StreamsProvi
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         return null;
     }
-//
-//    @Override
-//    public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-//        outputFieldsDeclarer.declare(new Fields("document"));
-//        outputFieldsDeclarer.declare(new Fields("type"));
-//    }
-//
-//    @Override
-//    public void open(Map map, TopologyContext topologyContext, SpoutOutputCollector spoutOutputCollector) {
-//        collector = spoutOutputCollector;
-//        run();
-//    }
-//
-//    @Override
-//    public void nextTuple() {
-//        try {
-//            collector.emit( new Values(outQueue.take(), klass) );
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
+
+    @Override
+    public void prepare(Object configurationObject) {
+        start();
+    }
+
+    @Override
+    public void cleanUp() {
+        stop();
+    }
 
     private class RssFeedSetupTask implements Runnable {
 

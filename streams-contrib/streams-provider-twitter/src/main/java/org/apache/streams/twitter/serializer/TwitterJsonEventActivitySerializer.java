@@ -15,6 +15,7 @@ import org.apache.streams.pojo.json.Icon;
 import org.apache.streams.pojo.json.Provider;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,7 +30,7 @@ import java.util.Map;
 * Time: 9:24 AM
 * To change this template use File | Settings | File Templates.
 */
-public abstract class TwitterJsonEventActivitySerializer implements ActivitySerializer<String> {
+public abstract class TwitterJsonEventActivitySerializer implements ActivitySerializer<String>, Serializable {
 
     public static final String DATE_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
 

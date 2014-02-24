@@ -16,6 +16,8 @@ import org.apache.streams.core.StreamsPersistWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.streams.hdfs.HdfsConfiguration;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URI;
@@ -278,14 +280,12 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Runnable
                     .toString();
     }
 
-    @Override
     public void start() {
 
         connectToWebHDFS();
 
     }
 
-    @Override
     public void stop() {
 
         try {
@@ -300,12 +300,10 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Runnable
         }
     }
 
-    @Override
     public void setPersistQueue(Queue<StreamsDatum> persistQueue) {
         this.persistQueue = persistQueue;
     }
 
-    @Override
     public Queue<StreamsDatum> getPersistQueue() {
         return persistQueue;
     }
@@ -326,5 +324,24 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Runnable
         }
 
         stop();
+    }
+
+    @Override
+    public void prepare(Object configurationObject) {
+        connectToWebHDFS();
+    }
+
+    @Override
+    public void cleanUp() {
+        try {
+            flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
