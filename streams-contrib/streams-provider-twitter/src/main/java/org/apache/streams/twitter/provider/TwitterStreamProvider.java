@@ -33,7 +33,7 @@ import java.util.concurrent.*;
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class TwitterStreamProvider implements StreamsProvider, Serializable {
+public class TwitterStreamProvider implements StreamsProvider, Serializable, Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterStreamProvider.class);
 
@@ -77,44 +77,15 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
         Config config = StreamsConfigurator.config.getConfig("twitter");
         this.config = TwitterStreamConfigurator.detectConfiguration(config);
         this.klass = klass;
-        providerQueue = new LinkedBlockingQueue<StreamsDatum>();
     }
 
     public TwitterStreamProvider(TwitterStreamConfiguration config, Class klass) {
         this.config = config;
         this.klass = klass;
-        providerQueue = new LinkedBlockingQueue<StreamsDatum>();
-
-    }
-
-    public void run() {
-
-        for (int i = 0; i < 10; i++) {
-            executor.submit(new TwitterEventProcessor(inQueue, providerQueue, klass));
-        }
-
-        new Thread(new TwitterStreamProviderTask(this)).start();
     }
 
     @Override
-    public StreamsResultSet readCurrent() {
-        run();
-        StreamsResultSet result = (StreamsResultSet)providerQueue.iterator();
-        return result;
-    }
-
-    @Override
-    public StreamsResultSet readNew(BigInteger sequence) {
-        return null;
-    }
-
-    @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return null;
-    }
-
-    @Override
-    public void prepare(Object o) {
+    public void start() {
 
         Preconditions.checkNotNull(this.klass);
 
@@ -150,12 +121,57 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
                 .authentication(auth)
                 .processor(new StringDelimitedProcessor(inQueue))
                 .build();
+
+        for (int i = 0; i < 10; i++) {
+            executor.submit(new TwitterEventProcessor(inQueue, providerQueue, klass));
+        }
+
+        new Thread(new TwitterStreamProviderTask(this)).start();
     }
 
     @Override
-    public void cleanUp() {
+    public void stop() {
         for (int i = 0; i < 10; i++) {
             inQueue.add(TwitterEventProcessor.TERMINATE);
         }
     }
+
+    @Override
+    public Queue<StreamsDatum> getProviderQueue() {
+        return this.providerQueue;
+    }
+
+    public void setProviderQueue(Queue<StreamsDatum> providerQueue) {
+        this.providerQueue = providerQueue;
+    }
+
+    @Override
+    public StreamsResultSet readCurrent() {
+        return null;
+    }
+
+    @Override
+    public StreamsResultSet readNew(BigInteger sequence) {
+        return null;
+    }
+
+    @Override
+    public StreamsResultSet readRange(DateTime start, DateTime end) {
+        return null;
+    }
+
+    @Override
+    public void run() {
+
+        start();
+
+        while( !executor.isTerminated()) {
+            try {
+                executor.awaitTermination(1, TimeUnit.SECONDS);
+            } catch (InterruptedException e) { }
+        }
+
+        stop();
+    }
+
 }

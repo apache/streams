@@ -107,6 +107,10 @@ public abstract class TwitterJsonEventActivitySerializer implements ActivitySeri
         return provider;
     }
 
+    public static List<Object> getLinks(ObjectNode event) {
+        return null;
+    }
+
     public static String getUrls(ObjectNode event) {
         return null;
     }

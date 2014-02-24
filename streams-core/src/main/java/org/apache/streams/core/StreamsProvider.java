@@ -26,12 +26,12 @@ import java.util.Queue;
 /**
  * Created by sblackmon on 12/13/13.
  */
-public interface StreamsProvider extends StreamsOperation {
+public interface StreamsProvider {
 
-//    void start();
-//    void stop();
-//
-//    public Queue<StreamsDatum> getProviderQueue();
+    void start();
+    void stop();
+
+    public Queue<StreamsDatum> getProviderQueue();
 
     public StreamsResultSet readCurrent();
     public StreamsResultSet readNew(BigInteger sequence);

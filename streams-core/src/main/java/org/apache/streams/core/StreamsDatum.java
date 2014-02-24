@@ -95,21 +95,4 @@ public class StreamsDatum implements Serializable {
     public void setDocument(Object document) {
         this.document = document;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if(o instanceof StreamsDatum) {
-            StreamsDatum that = (StreamsDatum) o;
-            if(this.document != null && this.document.equals(that.document)) {
-                return (this.timestamp != null ? this.timestamp.equals(that.timestamp) : that.timestamp == null) &&
-                        (this.sequenceid != null ? this.sequenceid.equals(that.sequenceid) : that.sequenceid == null);
-            }
-            else {
-                return that.document == null && this.document == null;
-            }
-        }
-        else {
-            return false;
-        }
-    }
 }

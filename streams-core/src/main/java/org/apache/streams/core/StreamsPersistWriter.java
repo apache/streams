@@ -24,12 +24,14 @@ import java.util.Queue;
 /**
  * Created by sblackmon on 12/13/13.
  */
-public interface StreamsPersistWriter extends StreamsOperation{
+public interface StreamsPersistWriter {
 
-    /**
-     * Persist the StreamsDatum to the corresponding data store.
-     * @param entry to be stored.
-     */
+    void start();
+    void stop();
+
+    public void setPersistQueue(Queue<StreamsDatum> persistQueue);
+    public Queue<StreamsDatum> getPersistQueue();
+
     public void write( StreamsDatum entry );
 
 }

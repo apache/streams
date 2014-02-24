@@ -24,16 +24,17 @@ import java.util.Queue;
 /**
  * Created by sblackmon on 12/13/13.
  */
-public interface StreamsProcessor extends StreamsOperation{
+public interface StreamsProcessor {
 
+    void start();
+    void stop();
 
+    public void setProcessorInputQueue(Queue<StreamsDatum> inputQueue);
+    public Queue<StreamsDatum> getProcessorInputQueue();
 
-    /**
-     * Process/Analyze the {@link org.apache.streams.core.StreamsDatum} and return the the StreamsDatums that will
-     * passed to every down stream operation that reads from this processor.
-     * @param entry StreamsDatum to be process
-     * @return resulting StreamDatums from process. Should never be null or contain null object.  Empty list OK.
-     */
+    public void setProcessorOutputQueue(Queue<StreamsDatum> outputQueue);
+    public Queue<StreamsDatum> getProcessorOutputQueue();
+
     public List<StreamsDatum> process( StreamsDatum entry );
 
 }

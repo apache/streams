@@ -26,6 +26,7 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+
     <artifactId>streams-core</artifactId>
     <packaging>jar</packaging>
 
@@ -33,11 +34,6 @@
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-util</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
