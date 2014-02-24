@@ -168,11 +168,6 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
         }
     }
 
-    @Override
-    public void cleanUp() {
-        LOGGER.info("PersistReader done");
-    }
-
     public void setWithfields(String[] withfields) {
         this.withfields = withfields;
     }
@@ -311,19 +306,48 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
             item.getMetadata().put("type", hit.getType());
             currentQueue.add(item);
         }
+
+        cleanUp();
+
         return (StreamsResultSet)currentQueue;
+    }
+
+    public StreamsResultSet readAll() {
+        return readCurrent();
     }
 
     @Override
     public StreamsResultSet readNew(BigInteger sequence) {
-        return null;
+        return readCurrent();
     }
 
     @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return null;
+        return readCurrent();
     }
 
+    void shutdownAndAwaitTermination(ExecutorService pool) {
+        pool.shutdown(); // Disable new tasks from being submitted
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
+                pool.shutdownNow(); // Cancel currently executing tasks
+                // Wait a while for tasks to respond to being cancelled
+                if (!pool.awaitTermination(10, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            pool.shutdownNow();
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @Override
+    public void cleanUp() {
+        LOGGER.info("PersistReader done");
+    }
 }
 
 

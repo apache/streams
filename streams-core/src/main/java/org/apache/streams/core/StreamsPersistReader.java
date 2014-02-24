@@ -32,15 +32,9 @@ import java.util.Queue;
  */
 public interface StreamsPersistReader extends StreamsProvider {
 
-//    void start();
-//    void stop();
-//
-//    public void setPersistQueue(Queue<StreamsDatum> persistQueue);
-//    public Queue<StreamsDatum> getPersistQueue();
-
-//    public StreamsResultSet readAll();
-//    public StreamsResultSet readNew(BigInteger sequence);
-//    public StreamsResultSet readRange(DateTime start, DateTime end);
+    public StreamsResultSet readAll();
+    public StreamsResultSet readNew(BigInteger sequence);
+    public StreamsResultSet readRange(DateTime start, DateTime end);
 
 
 }

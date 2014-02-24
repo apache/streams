@@ -124,25 +124,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     public boolean isConnected() 		                { return (client != null); }
 
     @Override
-    public void prepare(Object o) {
-        manager = new ElasticsearchClientManager(config);
-        client = manager.getClient();
-
-        LOGGER.info(client.toString());
-    }
-
-    @Override
-    public void cleanUp() {
-
-        try {
-            flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        close();
-    }
-
-    @Override
     public void write(StreamsDatum streamsDatum) {
 
         String json;
@@ -156,6 +137,24 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
             LOGGER.warn("{} {}", e.getLocation(), e.getMessage());
 
         }
+    }
+
+    public void start() {
+
+        manager = new ElasticsearchClientManager(config);
+        client = manager.getClient();
+
+        LOGGER.info(client.toString());
+    }
+
+    public void cleanUp() {
+
+        try {
+            flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        close();
     }
 
     @Override
@@ -525,6 +524,11 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         }
 
         return toReturn;
+    }
+
+    @Override
+    public void prepare(Object configurationObject) {
+        start();
     }
 
 }

@@ -1,4 +1,4 @@
-package org.apache.streams.kafka;
+package org.apache.streams.elasticsearch;
 
 import org.apache.streams.core.StreamsDatum;
 import org.slf4j.Logger;
@@ -6,13 +6,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
-public class KafkaPersistWriterTask implements Runnable {
+public class ElasticsearchPersistWriterTask implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPersistWriterTask.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistWriterTask.class);
 
-    private KafkaPersistWriter writer;
+    private ElasticsearchPersistWriter writer;
 
-    public KafkaPersistWriterTask(KafkaPersistWriter writer) {
+    public ElasticsearchPersistWriterTask(ElasticsearchPersistWriter writer) {
         this.writer = writer;
     }
 
@@ -20,7 +20,7 @@ public class KafkaPersistWriterTask implements Runnable {
     public void run() {
 
         while(true) {
-            if( writer.getPersistQueue().peek() != null ) {
+            if( writer.persistQueue.peek() != null ) {
                 try {
                     StreamsDatum entry = writer.persistQueue.remove();
                     writer.write(entry);
@@ -29,7 +29,7 @@ public class KafkaPersistWriterTask implements Runnable {
                 }
             }
             try {
-                Thread.sleep(new Random().nextInt(100));
+                Thread.sleep(new Random().nextInt(1));
             } catch (InterruptedException e) {}
         }
 
