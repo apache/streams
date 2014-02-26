@@ -60,7 +60,7 @@ public class TwitterTimelineProviderTask implements Runnable {
                         // emit the record
                         String json = DataObjectFactory.getRawJSON(tStat);
 
-                        provider.inQueue.offer(json);
+                        //provider.offer(json);
 
                     }
 

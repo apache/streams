@@ -1,0 +1,18 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration",
+    "extends": {"$ref":"ElasticsearchConfiguration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "index": {
+            "type": "string",
+            "description": "Index to write to"
+        },
+        "type": {
+            "type": "string",
+            "description": "Type to write as"
+        }
+    }
+}

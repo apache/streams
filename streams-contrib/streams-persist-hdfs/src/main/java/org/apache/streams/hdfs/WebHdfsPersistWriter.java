@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.streams.hdfs.HdfsConfiguration;
 
+import java.io.Closeable;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URI;
@@ -26,7 +28,7 @@ import java.security.PrivilegedExceptionAction;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class WebHdfsPersistWriter implements StreamsPersistWriter, Runnable
+public class WebHdfsPersistWriter implements StreamsPersistWriter, Runnable, Flushable, Closeable
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(WebHdfsPersistWriter.class);
 
@@ -300,13 +302,13 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Runnable
         }
     }
 
-    public void setPersistQueue(Queue<StreamsDatum> persistQueue) {
-        this.persistQueue = persistQueue;
-    }
-
-    public Queue<StreamsDatum> getPersistQueue() {
-        return persistQueue;
-    }
+//    public void setPersistQueue(Queue<StreamsDatum> persistQueue) {
+//        this.persistQueue = persistQueue;
+//    }
+//
+//    public Queue<StreamsDatum> getPersistQueue() {
+//        return persistQueue;
+//    }
 
 
     @Override
