@@ -2,6 +2,7 @@
   "type" : "object",
   "title" : "activity",
   "javaType": "org.apache.streams.pojo.json.Activity",
+  "javaInterfaces": ["java.io.Serializable"],
   "description" : "An activity construct recounts what an actor did to an object in the past. If there is no actor it simply describes the change.",
   "additionalProperties": true,
   "properties": {

@@ -2,6 +2,7 @@
   "type" : "object",
   "title" : "object",
   "javaType": "org.apache.streams.pojo.json.ActivityObject",
+  "javaInterfaces": ["java.io.Serializable"],
   "description" : "Basic object on the web. The only required property is the id",
   "properties" : {
     "id" : {

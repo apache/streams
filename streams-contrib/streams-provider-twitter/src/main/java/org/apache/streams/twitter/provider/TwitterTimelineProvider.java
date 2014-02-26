@@ -25,10 +25,7 @@ import twitter4j.json.DataObjectFactory;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -183,7 +180,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
         Preconditions.checkArgument(ids.hasNext());
 
-        LOGGER.info("{} readCurrent", STREAMS_ID);
+        LOGGER.info("readCurrent");
 
         while( ids.hasNext() ) {
             Long currentId = ids.next();
@@ -191,11 +188,14 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
             captureTimeline(currentId);
         }
 
-        LOGGER.info("{} Finished.  Cleaning up...", STREAMS_ID);
+        LOGGER.info("Finished.  Cleaning up...");
 
-        StreamsResultSet result = (StreamsResultSet) ImmutableList.copyOf(Iterators.consumingIterator(providerQueue.iterator()));
-        LOGGER.info("{} providing {} docs", STREAMS_ID, providerQueue.size());
-        LOGGER.info("{} Exiting", STREAMS_ID);
+        LOGGER.info("Providing {} docs", providerQueue.size());
+
+        StreamsResultSet result =  new StreamsResultSet(providerQueue);
+
+        LOGGER.info("Exiting");
+
         return result;
 
     }
