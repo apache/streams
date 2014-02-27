@@ -30,6 +30,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Closeable
 {
+    public final static String STREAMS_ID = "WebHdfsPersistWriter";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(WebHdfsPersistWriter.class);
 
     private final static char DELIMITER = '\t';
@@ -245,7 +247,6 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
 
     @Override
     public void prepare(Object configurationObject) {
-        this.hdfsConfiguration = (HdfsWriterConfiguration)configurationObject;
         connectToWebHDFS();
         path = new Path(hdfsConfiguration.getPath());
     }

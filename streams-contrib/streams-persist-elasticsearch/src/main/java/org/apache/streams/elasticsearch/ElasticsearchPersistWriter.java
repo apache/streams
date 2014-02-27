@@ -40,6 +40,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushable, Closeable
 {
+    public final static String STREAMS_ID = "ElasticsearchPersistWriter";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistWriter.class);
     private final static NumberFormat MEGABYTE_FORMAT = new DecimalFormat("#.##");
     private final static NumberFormat NUMBER_FORMAT = new DecimalFormat("###,###,###,###");
