@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class ConsolePersistWriter implements StreamsPersistWriter, Runnable {
+public class ConsolePersistWriter implements StreamsPersistWriter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsolePersistWriter.class);
 
@@ -29,7 +29,7 @@ public class ConsolePersistWriter implements StreamsPersistWriter, Runnable {
     }
 
     public void prepare(Object o) {
-
+        Preconditions.checkNotNull(persistQueue);
     }
 
     public void cleanUp() {
@@ -49,12 +49,6 @@ public class ConsolePersistWriter implements StreamsPersistWriter, Runnable {
             LOGGER.warn("save: {}", e);
         }
 
-    }
-
-    @Override
-    public void run() {
-        Preconditions.checkNotNull(persistQueue);
-        new Thread(new ConsolePersistWriterTask(this)).start();
     }
 
 }
