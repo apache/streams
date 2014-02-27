@@ -153,7 +153,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
 
             if( clauses > 0 ) {
                 //    search.setPostFilter(allFilters);
-                search.setFilter(allFilters);
+                search.setPostFilter(allFilters);
             }
 
             // TODO: Replace when all clusters are upgraded past 0.90.4 so we can implement a RANDOM scroll.

@@ -98,12 +98,14 @@ public class PercolateProcessor implements StreamsProcessor, Runnable
             json = node.asText();
         }
 
-        PercolateResponse response = manager.getClient().preparePercolate(config.getIndex(), config.getType()).setSource(json).execute().actionGet();
+        PercolateResponse response = manager.getClient().preparePercolate().setDocumentType(config.getType()).setSource(json).execute().actionGet();
 
         ArrayNode tagArray = JsonNodeFactory.instance.arrayNode();
 
-        for( String match : response.getMatches())
-            tagArray.add(match);
+        for( PercolateResponse.Match match : response.getMatches()) {
+            tagArray.add(match.getId().string());
+
+        }
 
         // need utility methods for get / create specific node
         ObjectNode extensions = (ObjectNode) node.get("extensions");

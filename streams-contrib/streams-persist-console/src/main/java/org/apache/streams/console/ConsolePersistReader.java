@@ -62,10 +62,14 @@ public class ConsolePersistReader implements StreamsPersistReader {
 
         }
 
-        LOGGER.info("{} providing {} docs", STREAMS_ID, persistQueue.size());
+        LOGGER.info("Providing {} docs", persistQueue.size());
+
+        StreamsResultSet result =  new StreamsResultSet(persistQueue);
+
         LOGGER.info("{} Exiting", STREAMS_ID);
 
-        return (StreamsResultSet) persistQueue;
+        return result;
+
     }
 
     @Override

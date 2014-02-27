@@ -9,7 +9,6 @@ import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
-import org.apache.streams.core.tasks.StreamsPersistWriterTask;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -31,26 +30,30 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.Flushable;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushable, Closeable
+//import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
+
+public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter implements StreamsPersistWriter, Flushable, Closeable
 {
-    public final static String STREAMS_ID = "ElasticsearchPersistWriter";
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistWriter.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistUpdater.class);
     private final static NumberFormat MEGABYTE_FORMAT = new DecimalFormat("#.##");
     private final static NumberFormat NUMBER_FORMAT = new DecimalFormat("###,###,###,###");
 
-    private ElasticsearchClientManager manager;
-    private Client client;
+    protected ElasticsearchClientManager manager;
+    protected Client client;
     private String parentID = null;
-    private BulkRequestBuilder bulkRequest;
+    protected BulkRequestBuilder bulkRequest;
     private OutputStreamWriter currentWriter = null;
 
+    protected String index = null;
+    protected String type = null;
     private int batchSize = 50;
     private int totalRecordsWritten = 0;
     private boolean veryLargeBulk = false;  // by default this setting is set to false
@@ -69,6 +72,14 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
     private volatile long batchSizeInBytes = 0;
     private volatile int batchItemsSent = 0;
+
+    public void setIndex(String index) {
+        this.index = index;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
@@ -100,14 +111,14 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private ElasticsearchWriterConfiguration config;
+    private ElasticsearchConfiguration config;
 
-    public ElasticsearchPersistWriter() {
+    public ElasticsearchPersistUpdater() {
         Config config = StreamsConfigurator.config.getConfig("elasticsearch");
-        this.config = (ElasticsearchWriterConfiguration) ElasticsearchConfigurator.detectConfiguration(config);
+        this.config = ElasticsearchConfigurator.detectConfiguration(config);
     }
 
-    public ElasticsearchPersistWriter(ElasticsearchWriterConfiguration config) {
+    public ElasticsearchPersistUpdater(ElasticsearchConfiguration config) {
         this.config = config;
     }
 
@@ -121,15 +132,20 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     @Override
     public void write(StreamsDatum streamsDatum) {
 
+        Preconditions.checkNotNull(streamsDatum);
+        Preconditions.checkNotNull(streamsDatum.getDocument());
+        Preconditions.checkNotNull(streamsDatum.getMetadata());
+        Preconditions.checkNotNull(streamsDatum.getMetadata().get("id"));
+
+        String id;
         String json;
         try {
 
-            if( streamsDatum.getDocument() instanceof String )
-                json = streamsDatum.getDocument().toString();
-            else
-                json = mapper.writeValueAsString(streamsDatum.getDocument());
+            json = mapper.writeValueAsString(streamsDatum.getDocument());
 
-            add(config.getIndex(), config.getType(), null, json);
+            id = (String) streamsDatum.getMetadata().get("id");
+
+            add(index, type, id, json);
 
         } catch (JsonProcessingException e) {
             LOGGER.warn("{} {}", e.getLocation(), e.getMessage());
@@ -333,41 +349,19 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         this.notify();
     }
 
-    public void add(String indexName, String type, String json)
-    {
-        add(indexName, type, null, json);
-    }
-
     public void add(String indexName, String type, String id, String json)
     {
-        IndexRequest indexRequest;
+        UpdateRequest updateRequest;
 
         // They didn't specify an ID, so we will create one for them.
-        if(id == null)
-            indexRequest = new IndexRequest(indexName, type);
-        else
-            indexRequest = new IndexRequest(indexName, type, id);
+        updateRequest = new UpdateRequest()
+            .index(indexName)
+            .type(type)
+            .id(id)
+            .doc(json);
 
-        indexRequest.source(json);
+        add(updateRequest);
 
-        // If there is a parentID that is associated with this bulk, then we are
-        // going to have to parse the raw JSON and attempt to dereference
-        // what the parent document should be
-        if(parentID != null)
-        {
-            try
-            {
-                // The JSONObject constructor can throw an exception, it is called
-                // out explicitly here so we can catch it.
-                indexRequest = indexRequest.parent(new JSONObject(json).getString(parentID));
-            }
-            catch(JSONException e)
-            {
-                LOGGER.warn("Malformed JSON, cannot grab parentID: {}@{}[{}]: {}", id, indexName, type, e.getMessage());
-                totalFailed++;
-            }
-        }
-        add(indexRequest);
     }
 
     public void add(UpdateRequest updateRequest)
@@ -385,21 +379,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
                 trackItemAndBytesWritten(size.get().longValue());
             } catch( NullPointerException x) {
                 trackItemAndBytesWritten(1000);
-            }
-        }
-    }
-
-    public void add(IndexRequest indexRequest)
-    {
-        synchronized (this)
-        {
-            checkAndCreateBulkRequest();
-            checkIndexImplications(indexRequest.index());
-            bulkRequest.add(indexRequest);
-            try {
-                trackItemAndBytesWritten(indexRequest.source().length());
-            } catch( NullPointerException x) {
-                LOGGER.warn("NPE adding/sizing indexrequest");
             }
         }
     }
@@ -479,6 +458,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
             }
         }
     }
+
     public void add(String indexName, String type, Map<String, Object> toImport)
     {
         for (String id : toImport.keySet())
