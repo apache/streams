@@ -33,7 +33,7 @@ import java.util.concurrent.*;
  */
 public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
-    private final static String STREAMS_ID = "TwitterTimelineProvider";
+    public final static String STREAMS_ID = "TwitterTimelineProvider";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProvider.class);
 

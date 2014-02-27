@@ -1,10 +1,14 @@
 package org.apache.streams.core.tasks;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.util.SerializationUtil;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +24,13 @@ public abstract class BaseStreamsTask implements StreamsTask {
     private List<Queue<StreamsDatum>> inQueues = new ArrayList<Queue<StreamsDatum>>();
     private List<Queue<StreamsDatum>> outQueues = new LinkedList<Queue<StreamsDatum>>();
     private int inIndex = 0;
+    private ObjectMapper mapper;
+
+    public BaseStreamsTask() {
+        this.mapper = new ObjectMapper();
+        this.mapper.registerSubtypes(Activity.class);
+    }
+
 
     @Override
     public void addInputQueue(Queue<StreamsDatum> inputQueue) {
@@ -68,15 +79,61 @@ public abstract class BaseStreamsTask implements StreamsTask {
             this.outQueues.get(0).offer(datum);
         }
         else {
+            StreamsDatum newDatum = null;
             for(Queue<StreamsDatum> queue : this.outQueues) {
                 try {
-                    queue.offer((StreamsDatum) SerializationUtil.deserialize(SerializationUtil.serialize(datum)));
+                    newDatum = cloneStreamsDatum(datum);
+                    if(newDatum != null)
+                        queue.offer(newDatum);
                 } catch (RuntimeException e) {
                     LOGGER.debug("Failed to add StreamsDatum to outgoing queue : {}", datum);
                     LOGGER.error("Exception while offering StreamsDatum to outgoing queue: {}", e);
                 }
             }
         }
+    }
+
+    /**
+     * //TODO LOCAL MODE HACK. Need to fix
+     * In order for our data streams to ported to other data flow frame works(Storm, Hadoop, Spark, etc) we need to be able to
+     * enforce the serialization required by each framework.  This needs some thought and design before a final solution is
+     * made.
+     *
+     * In order to be able to copy/clone StreamDatums the orginal idea was to force all StreamsDatums to be java serializable.
+     * This was seen as unacceptable for local mode.  So until we come up with a solution to enforce serialization and be
+     * compatiable across multiple frame works, this hack is in place.
+     *
+     * If datum.document is Serializable, we use serialization to clone a new copy.  If it is not Serializable we attempt
+     * different methods using an com.fasterxml.jackson.databind.ObjectMapper to copy/clone the StreamsDatum. If the object
+     * is not clonable by these methods, an error is reported to the logging and a NULL object is returned.
+     *
+     * @param datum
+     * @return
+     */
+    protected StreamsDatum cloneStreamsDatum(StreamsDatum datum) {
+        try {
+            if(datum.document instanceof Serializable) {
+                return (StreamsDatum) SerializationUtil.cloneBySerialization(datum);
+            }
+            else if(datum.document instanceof ObjectNode) {
+                return new StreamsDatum(((ObjectNode) datum.document).deepCopy(), datum.timestamp, datum.sequenceid);
+            }
+            else if(datum.document instanceof Activity) {
+
+                return new StreamsDatum(this.mapper.readValue(this.mapper.writeValueAsString(datum.document), Activity.class),
+                                        datum.timestamp,
+                                        datum.sequenceid);
+            }
+            else if(this.mapper.canSerialize(datum.document.getClass())){
+                return new StreamsDatum(this.mapper.readValue(this.mapper.writeValueAsString(datum.document), datum.document.getClass()),
+                                        datum.timestamp,
+                                        datum.sequenceid);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception while trying to clone/copy StreamsDatum : {}", e);
+        }
+        LOGGER.error("Failed to clone/copy StreamsDatum with document of class : {}", datum.document.getClass().getName());
+        return null;
     }
 
     private int getNextInputQueueIndex() {

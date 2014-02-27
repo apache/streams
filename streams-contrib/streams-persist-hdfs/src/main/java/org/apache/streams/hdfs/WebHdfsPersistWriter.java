@@ -28,7 +28,7 @@ import java.security.PrivilegedExceptionAction;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class WebHdfsPersistWriter implements StreamsPersistWriter, Runnable, Flushable, Closeable
+public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Closeable
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(WebHdfsPersistWriter.class);
 
@@ -44,63 +44,24 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Runnable, Flu
     private int fileLineCounter = 0;
     private OutputStreamWriter currentWriter = null;
 
+    private static final int  BYTES_IN_MB = 1024*1024;
+    private static final int  BYTES_BEFORE_FLUSH = 5 * BYTES_IN_MB;
+    private volatile int  totalByteCount = 0;
+    private volatile int  byteCount = 0;
+
     public boolean terminate = false;
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private HdfsConfiguration config;
+    private HdfsConfiguration hdfsConfiguration;
 
-    public WebHdfsPersistWriter() {
-        Config config = StreamsConfigurator.config.getConfig("hdfs");
-        this.config = HdfsConfigurator.detectConfiguration(config);
-        this.persistQueue  = new ConcurrentLinkedQueue<StreamsDatum>();
+    public WebHdfsPersistWriter(HdfsConfiguration hdfsConfiguration) {
+        this.hdfsConfiguration = hdfsConfiguration;
     }
 
-    public WebHdfsPersistWriter(Queue<StreamsDatum> persistQueue) {
-        Config config = StreamsConfigurator.config.getConfig("hdfs");
-        this.config = HdfsConfigurator.detectConfiguration(config);
-        this.persistQueue = persistQueue;
-    }
-
-    public WebHdfsPersistWriter(HdfsConfiguration config) {
-        this.config = config;
-        this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
-    }
-
-    public WebHdfsPersistWriter(HdfsConfiguration config, Queue<StreamsDatum> persistQueue) {
-        this.config = config;
-        this.persistQueue = persistQueue;
-    }
-
-    public WebHdfsPersistWriter(HdfsConfiguration config, Queue<StreamsDatum> persistQueue, Path path) {
-        this.config = config;
-        this.persistQueue = persistQueue;
-        this.path = path;
-    }
-
-    public WebHdfsPersistWriter(HdfsConfiguration config, Queue<StreamsDatum> persistQueue, Path path, String filePart) {
-        this.config = config;
-        this.persistQueue = persistQueue;
-        this.path = path;
-        this.filePart = filePart;
-    }
-
-    public WebHdfsPersistWriter(HdfsConfiguration config, Queue<StreamsDatum> persistQueue, Path path, String filePart, int linesPerFile) {
-        this.config = config;
-        this.persistQueue = persistQueue;
-        this.path = path;
-        this.filePart = filePart;
-        this.linesPerFile = linesPerFile;
-    }
-
-    private static final int  BYTES_IN_MB = 1024*1024;
-    private static final int  BYTES_BEFORE_FLUSH = 5 * BYTES_IN_MB;
-    private volatile int  totalByteCount = 0;
-    private volatile int  byteCount = 0;
-
-    public URI getURI() throws URISyntaxException { return new URI(WebHdfsFileSystem.SCHEME + "://" + config.getHost() + ":" + config.getPort()); }
+    public URI getURI() throws URISyntaxException { return new URI(WebHdfsFileSystem.SCHEME + "://" + hdfsConfiguration.getHost() + ":" + hdfsConfiguration.getPort()); }
     public boolean isConnected() 		                { return (client != null); }
 
     public final synchronized FileSystem getFileSystem()
@@ -115,8 +76,8 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Runnable, Flu
     {
         try
         {
-            LOGGER.info("User : {}", this.config.getUser());
-            UserGroupInformation ugi = UserGroupInformation.createRemoteUser(this.config.getUser());
+            LOGGER.info("User : {}", this.hdfsConfiguration.getUser());
+            UserGroupInformation ugi = UserGroupInformation.createRemoteUser(this.hdfsConfiguration.getUser());
             ugi.setAuthenticationMethod(UserGroupInformation.AuthenticationMethod.SIMPLE);
 
             ugi.doAs(new PrivilegedExceptionAction<Void>() {
@@ -282,55 +243,11 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Runnable, Flu
                     .toString();
     }
 
-    public void start() {
-
-        connectToWebHDFS();
-
-    }
-
-    public void stop() {
-
-        try {
-            flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-//    public void setPersistQueue(Queue<StreamsDatum> persistQueue) {
-//        this.persistQueue = persistQueue;
-//    }
-//
-//    public Queue<StreamsDatum> getPersistQueue() {
-//        return persistQueue;
-//    }
-
-
-    @Override
-    public void run() {
-
-        start();
-
-        Thread task = new Thread(new WebHdfsPersistWriterTask(this));
-        task.start();
-
-        while( !terminate ) {
-            try {
-                Thread.sleep(new Random().nextInt(100));
-            } catch (InterruptedException e) { }
-        }
-
-        stop();
-    }
-
     @Override
     public void prepare(Object configurationObject) {
+        this.hdfsConfiguration = (HdfsWriterConfiguration)configurationObject;
         connectToWebHDFS();
+        path = new Path(hdfsConfiguration.getPath());
     }
 
     @Override

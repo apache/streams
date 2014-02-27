@@ -173,8 +173,13 @@ public class StreamComponent {
             }
         }
         else if(this.writer != null) {
-            task = new StreamsPersistWriterTask((StreamsPersistWriter) SerializationUtil.cloneBySerialization(this.writer));
-            task.addInputQueue(this.inQueue);
+            if(this.numTasks > 1) {
+                task = new StreamsPersistWriterTask((StreamsPersistWriter) SerializationUtil.cloneBySerialization(this.writer));
+                task.addInputQueue(this.inQueue);
+            } else {
+                task = new StreamsPersistWriterTask(this.writer);
+                task.addInputQueue(this.inQueue);
+            }
         }
         else if(this.provider != null) {
             StreamsProvider prov = (StreamsProvider)SerializationUtil.cloneBySerialization(this.provider);
