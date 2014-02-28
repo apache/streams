@@ -46,7 +46,7 @@ public class MoreoverClient {
     }
 
     public MoreoverResult getNextBatch() throws IOException{
-        //logger.debug("Getting next results for {} {} {}", this.id, this.apiKey, this.lastSequenceId);
+        logger.debug("Getting next results for {} {} {}", this.id, this.apiKey, this.lastSequenceId);
         return getArticlesAfter(this.lastSequenceId.toString(), 500);
     }
 

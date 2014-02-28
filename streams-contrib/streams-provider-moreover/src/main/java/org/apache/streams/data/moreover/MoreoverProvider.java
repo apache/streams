@@ -1,6 +1,8 @@
 package org.apache.streams.data.moreover;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Predicates;
+import com.google.common.collect.*;
+import net.jcip.annotations.Immutable;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
@@ -11,10 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class MoreoverProvider implements StreamsProvider {
@@ -50,16 +49,21 @@ public class MoreoverProvider implements StreamsProvider {
     }
 
     @Override
-    public StreamsResultSet readCurrent() {
+    public synchronized StreamsResultSet readCurrent() {
         LOGGER.debug("readCurrent");
 
         LOGGER.info("Providing {} docs", providerQueue.size());
 
-        StreamsResultSet result =  new StreamsResultSet(providerQueue);
+        Collection<StreamsDatum> currentIterator = Lists.newArrayList();
+        Iterators.addAll(currentIterator, providerQueue.iterator());
+
+        StreamsResultSet current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(currentIterator));
 
         LOGGER.info("Exiting");
 
-        return result;
+        providerQueue.clear();
+
+        return current;
     }
 
     @Override

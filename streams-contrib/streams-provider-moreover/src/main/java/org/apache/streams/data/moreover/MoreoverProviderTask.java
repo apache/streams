@@ -37,15 +37,18 @@ public class MoreoverProviderTask implements Runnable {
 
     @Override
     public void run() {
-        try {
-            ensureTime(moClient);
-            MoreoverResult result = started ? moClient.getNextBatch() : moClient.getArticlesAfter(lastSequence, 500);
-            started = true;
-            for(StreamsDatum entry : ImmutableSet.copyOf(result.iterator()))
-                results.offer(entry);
-            logger.info("ApiKey={}\tlastSequenceid={}", this.apiKey, result.getMaxSequencedId());
-        } catch (Exception e) {
-            logger.error("Exception while polling moreover", e);
+        while(true) {
+            try {
+                ensureTime(moClient);
+                MoreoverResult result = started ? moClient.getNextBatch() : moClient.getArticlesAfter(lastSequence, 500);
+                started = true;
+                result.process();
+                for(StreamsDatum entry : ImmutableSet.copyOf(result.iterator()))
+                    results.offer(entry);
+                logger.info("ApiKey={}\tlastSequenceid={}", this.apiKey, result.getMaxSequencedId());
+            } catch (Exception e) {
+                logger.error("Exception while polling moreover", e);
+            }
         }
     }
 
