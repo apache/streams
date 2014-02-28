@@ -45,6 +45,11 @@ public class ConsolePersistReader implements StreamsPersistReader {
     }
 
     @Override
+    public void startStream() {
+        // no op
+    }
+
+    @Override
     public StreamsResultSet readAll() {
         return readCurrent();
     }

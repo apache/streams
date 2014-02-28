@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class StreamsProviderTask extends BaseStreamsTask {
 
     private static enum Type {
+        PERPETUAL,
         READ_CURRENT,
         READ_NEW,
         READ_RANGE
@@ -36,9 +37,12 @@ public class StreamsProviderTask extends BaseStreamsTask {
      * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readCurrent()}
      * @param provider
      */
-    public StreamsProviderTask(StreamsProvider provider) {
+    public StreamsProviderTask(StreamsProvider provider, boolean perpetual) {
         this.provider = provider;
-        this.type = Type.READ_CURRENT;
+        if( perpetual )
+            this.type = Type.PERPETUAL;
+        else
+            this.type = Type.READ_CURRENT;
         this.keepRunning = new AtomicBoolean(true);
         this.isRunning = new AtomicBoolean(true);
     }
@@ -94,6 +98,19 @@ public class StreamsProviderTask extends BaseStreamsTask {
             StreamsResultSet resultSet = null;
             this.isRunning.set(true);
             switch(this.type) {
+                case PERPETUAL: {
+                    provider.startStream();
+                    while(this.keepRunning.get() == true) {
+                        try {
+                            resultSet = provider.readCurrent();
+                            flushResults(resultSet);
+                            Thread.sleep(DEFAULT_SLEEP_TIME_MS);
+                        } catch (InterruptedException e) {
+                            this.keepRunning.set(false);
+                        }
+                    }
+                }
+                    break;
                 case READ_CURRENT: resultSet = this.provider.readCurrent();
                     break;
                 case READ_NEW: resultSet = this.provider.readNew(this.sequence);
@@ -102,20 +119,7 @@ public class StreamsProviderTask extends BaseStreamsTask {
                     break;
                 default: throw new RuntimeException("Type has not been added to StreamsProviderTask.");
             }
-            for(StreamsDatum datum : resultSet) {
-                if(!this.keepRunning.get()) {
-                    break;
-                }
-                if(datum != null)
-                 super.addToOutgoingQueue(datum);
-                else {
-                    try {
-                        Thread.sleep(DEFAULT_SLEEP_TIME_MS);
-                    } catch (InterruptedException e) {
-                        this.keepRunning.set(false);
-                    }
-                }
-            }
+            flushResults(resultSet);
 
         } catch( Exception e ) {
             e.printStackTrace();
@@ -128,5 +132,22 @@ public class StreamsProviderTask extends BaseStreamsTask {
 
     public boolean isRunning() {
         return this.isRunning.get();
+    }
+
+    public void flushResults(StreamsResultSet resultSet) {
+        for(StreamsDatum datum : resultSet) {
+            if(!this.keepRunning.get()) {
+                break;
+            }
+            if(datum != null)
+                super.addToOutgoingQueue(datum);
+            else {
+                try {
+                    Thread.sleep(DEFAULT_SLEEP_TIME_MS);
+                } catch (InterruptedException e) {
+                    this.keepRunning.set(false);
+                }
+            }
+        }
     }
 }

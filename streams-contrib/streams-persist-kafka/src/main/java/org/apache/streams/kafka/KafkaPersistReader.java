@@ -29,7 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class KafkaPersistReader implements StreamsPersistReader, Serializable, Runnable {
+public class KafkaPersistReader implements StreamsPersistReader, Serializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPersistReader.class);
 
@@ -62,7 +62,9 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable, R
         this.config = config;
     }
 
-    public void start() {
+    @Override
+    public void startStream() {
+
         Properties props = new Properties();
         props.setProperty("serializer.encoding", "UTF8");
 
@@ -79,23 +81,6 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable, R
             executor.submit(new KafkaPersistReaderTask(this, stream));
         }
 
-    }
-
-    public void stop() {
-        consumerConnector.shutdown();
-        while( !executor.isTerminated()) {
-            try {
-                executor.awaitTermination(5, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {}
-        }
-    }
-
-    public void setPersistQueue(Queue<StreamsDatum> persistQueue) {
-        this.persistQueue = persistQueue;
-    }
-
-    public Queue<StreamsDatum> getPersistQueue() {
-        return this.persistQueue;
     }
 
     @Override
@@ -129,20 +114,17 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable, R
     }
 
     @Override
-    public void run() {
-        start();
-
-        // once this class can be told when to shutdown by streams, it will run stop
-        // stop();
-    }
-
-    @Override
     public void prepare(Object configurationObject) {
-        start();
+
     }
 
     @Override
     public void cleanUp() {
-        stop();
+        consumerConnector.shutdown();
+        while( !executor.isTerminated()) {
+            try {
+                executor.awaitTermination(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {}
+        }
     }
 }

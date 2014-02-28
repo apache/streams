@@ -33,15 +33,17 @@ public class StreamComponent {
     private DateTime[] dateRange;
     private BigInteger sequence;
     private int numTasks = 1;
+    private boolean perpetual;
 
     /**
      *
      * @param id
      * @param provider
      */
-    public StreamComponent(String id, StreamsProvider provider) {
+    public StreamComponent(String id, StreamsProvider provider, boolean perpetual) {
         this.id = id;
         this.provider = provider;
+        this.perpetual = perpetual;
         initializePrivateVariables();
     }
 
@@ -182,9 +184,14 @@ public class StreamComponent {
             }
         }
         else if(this.provider != null) {
-            StreamsProvider prov = (StreamsProvider)SerializationUtil.cloneBySerialization(this.provider);
+            StreamsProvider prov;
+            if(this.numTasks > 1) {
+                prov = (StreamsProvider)SerializationUtil.cloneBySerialization(this.provider);
+            } else {
+                prov = this.provider;
+            }
             if(this.dateRange == null && this.sequence == null)
-                task = new StreamsProviderTask(prov);
+                task = new StreamsProviderTask(prov, this.perpetual);
             else if(this.sequence != null)
                 task = new StreamsProviderTask(prov, this.sequence);
             else

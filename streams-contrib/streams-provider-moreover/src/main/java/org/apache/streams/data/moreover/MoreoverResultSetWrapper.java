@@ -5,37 +5,12 @@ import org.apache.streams.core.StreamsResultSet;
 
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.Queue;
 
-public class MoreoverResultSetWrapper implements StreamsResultSet {
-
-    private MoreoverResult underlying;
+public class MoreoverResultSetWrapper extends StreamsResultSet {
 
     public MoreoverResultSetWrapper(MoreoverResult underlying) {
-        this.underlying = underlying;
+        super((Queue<StreamsDatum>)underlying);
     }
 
-    @Override
-    public long getStartTime() {
-        return underlying.getStart();
-    }
-
-    @Override
-    public long getEndTime() {
-        return underlying.getEnd();
-    }
-
-    @Override
-    public String getSourceId() {
-        return underlying.getClientId();
-    }
-
-    @Override
-    public BigInteger getMaxSequence() {
-        return underlying.getMaxSequencedId();
-    }
-
-    @Override
-    public Iterator<StreamsDatum> iterator() {
-        return underlying.iterator();
-    }
 }

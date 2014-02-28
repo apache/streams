@@ -118,6 +118,11 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 //        }
 //    }
 
+    @Override
+    public void startStream() {
+        // no op
+    }
+
     private void captureTimeline(long currentId) {
 
         Paging paging = new Paging(1, 200);

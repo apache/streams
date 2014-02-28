@@ -67,9 +67,17 @@ public class LocalStreamBuilder implements StreamBuilder{
     }
 
     @Override
+    public StreamBuilder newPerpetualStream(String id, StreamsProvider provider) {
+        validateId(id);
+        this.providers.put(id, new StreamComponent(id, provider, true));
+        ++this.totalTasks;
+        return this;
+    }
+
+    @Override
     public StreamBuilder newReadCurrentStream(String id, StreamsProvider provider) {
         validateId(id);
-        this.providers.put(id, new StreamComponent(id, provider));
+        this.providers.put(id, new StreamComponent(id, provider, false));
         ++this.totalTasks;
         return this;
     }
@@ -139,7 +147,7 @@ public class LocalStreamBuilder implements StreamBuilder{
             }
 
             while(isRunning) {
-                isRunning = false;
+                //isRunning = false;
                 for(StreamsProviderTask task : provTasks.values()) {
                     isRunning = isRunning || task.isRunning();
                 }

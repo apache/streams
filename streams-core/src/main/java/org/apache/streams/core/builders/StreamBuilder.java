@@ -51,6 +51,15 @@ public interface StreamBuilder {
      * @param provider provider to execute
      * @return this
      */
+    public StreamBuilder newPerpetualStream(String streamId, StreamsProvider provider);
+
+    /**
+     * Add a {@link org.apache.streams.core.StreamsProvider} to the data processing stream.  The provider will execute
+     * {@link org.apache.streams.core.StreamsProvider:readCurrent()} to produce data.
+     * @param streamId unique if for this provider - must be unique across the entire stream.
+     * @param provider provider to execute
+     * @return this
+     */
     public StreamBuilder newReadCurrentStream(String streamId, StreamsProvider provider);
 
     /**

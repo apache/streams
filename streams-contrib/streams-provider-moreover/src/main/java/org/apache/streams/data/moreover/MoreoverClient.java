@@ -20,7 +20,7 @@ import java.util.Date;
 public class MoreoverClient {
     private static final Logger logger = LoggerFactory.getLogger(MoreoverClient.class);
 
-    private static final String BASE_URL = "http://metabase.moreover.com/com.facebook.api/v10/articles?key=%s&limit=%s&sequence_id=%s";
+    private static final String BASE_URL = "http://metabase.moreover.com/api/v10/articles?key=%s&limit=%s&sequence_id=%s";
     private final String id;
     private String apiKey;
     private BigInteger lastSequenceId = BigInteger.ZERO;

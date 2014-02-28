@@ -85,7 +85,8 @@ public class RssStreamProvider implements StreamsProvider, Serializable {
         this.klass = klass;
     }
 
-    public void start() {
+    @Override
+    public void startStream() {
 
         Preconditions.checkNotNull(this.klass);
 
@@ -133,7 +134,7 @@ public class RssStreamProvider implements StreamsProvider, Serializable {
 
     @Override
     public void prepare(Object configurationObject) {
-        start();
+        
     }
 
     @Override

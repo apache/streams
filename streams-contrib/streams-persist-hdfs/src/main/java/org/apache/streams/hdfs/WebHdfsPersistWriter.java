@@ -57,9 +57,9 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private HdfsConfiguration hdfsConfiguration;
+    private HdfsWriterConfiguration hdfsConfiguration;
 
-    public WebHdfsPersistWriter(HdfsConfiguration hdfsConfiguration) {
+    public WebHdfsPersistWriter(HdfsWriterConfiguration hdfsConfiguration) {
         this.hdfsConfiguration = hdfsConfiguration;
     }
 
@@ -180,7 +180,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
         this.fileLineCounter = 0;
 
         // Create the path for where the file is going to live.
-        Path filePath = this.path.suffix("/" + this.filePart + "-" + new Date().getTime() + ".tsv");
+        Path filePath = this.path.suffix("/" + hdfsConfiguration.getWriterFilePrefix() + "-" + new Date().getTime() + ".tsv");
 
         try
         {
@@ -248,7 +248,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
     @Override
     public void prepare(Object configurationObject) {
         connectToWebHDFS();
-        path = new Path(hdfsConfiguration.getPath());
+        path = new Path(hdfsConfiguration.getPath() + "/" + hdfsConfiguration.getWriterPath());
     }
 
     @Override

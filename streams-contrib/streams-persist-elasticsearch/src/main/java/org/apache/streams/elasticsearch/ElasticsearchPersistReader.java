@@ -121,6 +121,11 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
     }
 
     @Override
+    public void startStream() {
+
+    }
+
+    @Override
     public void prepare(Object o) {
 
         // If we haven't already set up the search, then set up the search.

@@ -90,9 +90,10 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
 
     }
 
-    public void run() {
+    @Override
+    public void startStream() {
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             executor.submit(new TwitterEventProcessor(inQueue, providerQueue, klass));
         }
 
@@ -101,7 +102,6 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
 
     @Override
     public StreamsResultSet readCurrent() {
-        run();
         StreamsResultSet result = (StreamsResultSet)providerQueue.iterator();
         return result;
     }
