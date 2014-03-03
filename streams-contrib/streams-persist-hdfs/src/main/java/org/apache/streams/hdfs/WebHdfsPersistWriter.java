@@ -47,7 +47,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
     private OutputStreamWriter currentWriter = null;
 
     private static final int  BYTES_IN_MB = 1024*1024;
-    private static final int  BYTES_BEFORE_FLUSH = 5 * BYTES_IN_MB;
+    private static final int  BYTES_BEFORE_FLUSH = 64 * BYTES_IN_MB;
     private volatile int  totalByteCount = 0;
     private volatile int  byteCount = 0;
 

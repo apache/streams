@@ -108,7 +108,7 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
         return end;
     }
 
-    public void process() {
+    public BigInteger process() {
 
         try {
             this.resultObject = xmlMapper.readValue(xmlString, ArticlesResponse.class);
@@ -124,11 +124,10 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
             logger.trace("Prior max sequence Id {} current candidate {}", this.maxSequencedId, sequenceid);
             if (sequenceid.compareTo(this.maxSequencedId) > 0) {
                 this.maxSequencedId = sequenceid;
-                logger.debug("New max sequence Id {}", this.maxSequencedId);
             }
-
         }
 
+        return this.maxSequencedId;
     }
 
     public String getXmlString() {

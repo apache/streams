@@ -7,6 +7,7 @@ import org.apache.streams.core.StreamsResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.util.Queue;
 
 /**
@@ -18,7 +19,7 @@ public class MoreoverProviderTask implements Runnable {
     public static final int REQUIRED_LATENCY = LATENCY * 1000;
     private static Logger logger = LoggerFactory.getLogger(MoreoverProviderTask.class);
 
-    private final String lastSequence;
+    private String lastSequence;
     private final String apiKey;
     private final String apiId;
     private final Queue<StreamsDatum> results;
@@ -31,7 +32,7 @@ public class MoreoverProviderTask implements Runnable {
         this.apiKey = apiKey;
         this.results = results;
         this.lastSequence = lastSequence;
-        this.moClient = new MoreoverClient(this.apiId, this.apiKey);
+        this.moClient = new MoreoverClient(this.apiId, this.apiKey, this.lastSequence);
         initializeClient(moClient);
     }
 
@@ -40,12 +41,13 @@ public class MoreoverProviderTask implements Runnable {
         while(true) {
             try {
                 ensureTime(moClient);
-                MoreoverResult result = started ? moClient.getNextBatch() : moClient.getArticlesAfter(lastSequence, 500);
+                MoreoverResult result = moClient.getArticlesAfter(lastSequence, 500);
                 started = true;
-                result.process();
+                lastSequence = result.process().toString();
                 for(StreamsDatum entry : ImmutableSet.copyOf(result.iterator()))
                     results.offer(entry);
-                logger.info("ApiKey={}\tlastSequenceid={}", this.apiKey, result.getMaxSequencedId());
+                logger.info("ApiKey={}\tlastSequenceid={}", this.apiKey, lastSequence);
+
             } catch (Exception e) {
                 logger.error("Exception while polling moreover", e);
             }
@@ -64,7 +66,7 @@ public class MoreoverProviderTask implements Runnable {
 
     private void initializeClient(MoreoverClient moClient) {
         try {
-            moClient.getArticlesAfter("0", 2);
+            moClient.getArticlesAfter(this.lastSequence, 2);
         } catch (Exception e) {
             logger.error("Failed to start stream, {}", this.apiKey);
             logger.error("Exception : ", e);

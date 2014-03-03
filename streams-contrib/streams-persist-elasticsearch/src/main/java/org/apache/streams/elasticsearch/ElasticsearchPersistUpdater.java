@@ -353,6 +353,9 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
     {
         UpdateRequest updateRequest;
 
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(json);
+
         // They didn't specify an ID, so we will create one for them.
         updateRequest = new UpdateRequest()
             .index(indexName)

@@ -28,14 +28,15 @@ public class MoreoverClient {
     public long pullTime;
     private boolean debug;
 
-    public MoreoverClient(String id, String apiKey) {
-        logger.info("Constructed new client for id:{} key:{}", id, apiKey);
+    public MoreoverClient(String id, String apiKey, String sequence) {
+        logger.info("Constructed new client for id:{} key:{} sequence:{}", id, apiKey, sequence);
         this.id = id;
         this.apiKey = apiKey;
+        this.lastSequenceId = new BigInteger(sequence);
     }
 
     public MoreoverResult getArticlesAfter(String sequenceId, int limit) throws IOException {
-        String urlString = String.format(BASE_URL, this.apiKey, limit, (sequenceId == null ? 0 : sequenceId));
+        String urlString = String.format(BASE_URL, this.apiKey, limit, sequenceId);
         logger.debug("Making call to {}", urlString);
         long start = System.nanoTime();
         MoreoverResult result = new MoreoverResult(id, getArticles(new URL(urlString)), start, System.nanoTime());

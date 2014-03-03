@@ -50,16 +50,13 @@ public class MoreoverProvider implements StreamsProvider {
 
     @Override
     public synchronized StreamsResultSet readCurrent() {
-        LOGGER.debug("readCurrent");
 
-        LOGGER.info("Providing {} docs", providerQueue.size());
+        LOGGER.debug("readCurrent: {}", providerQueue.size());
 
         Collection<StreamsDatum> currentIterator = Lists.newArrayList();
         Iterators.addAll(currentIterator, providerQueue.iterator());
 
         StreamsResultSet current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(currentIterator));
-
-        LOGGER.info("Exiting");
 
         providerQueue.clear();
 
