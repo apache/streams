@@ -12,7 +12,7 @@ import java.util.Queue;
  */
 public interface StreamsTask extends Runnable{
 
-    public static final long DEFAULT_SLEEP_TIME_MS = 500;
+    public static final long DEFAULT_SLEEP_TIME_MS = 5000;
 
     /**
      * Informs the task to stop. Tasks may or may not try to empty its inbound queue before halting.

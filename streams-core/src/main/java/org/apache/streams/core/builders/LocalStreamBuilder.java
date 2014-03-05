@@ -147,12 +147,12 @@ public class LocalStreamBuilder implements StreamBuilder{
             }
 
             while(isRunning) {
-                //isRunning = false;
+                isRunning = false;
                 for(StreamsProviderTask task : provTasks.values()) {
                     isRunning = isRunning || task.isRunning();
                 }
                 if(isRunning) {
-                    Thread.sleep(10000);
+                    Thread.sleep(100000);
                 }
             }
             this.executor.shutdown();

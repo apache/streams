@@ -112,10 +112,8 @@ public abstract class BaseStreamsTask implements StreamsTask {
      */
     protected StreamsDatum cloneStreamsDatum(StreamsDatum datum) {
         try {
-            if(datum.document instanceof Serializable) {
-                return (StreamsDatum) SerializationUtil.cloneBySerialization(datum);
-            }
-            else if(datum.document instanceof ObjectNode) {
+
+            if(datum.document instanceof ObjectNode) {
                 return new StreamsDatum(((ObjectNode) datum.document).deepCopy(), datum.timestamp, datum.sequenceid);
             }
             else if(datum.document instanceof Activity) {
@@ -124,10 +122,14 @@ public abstract class BaseStreamsTask implements StreamsTask {
                                         datum.timestamp,
                                         datum.sequenceid);
             }
-            else if(this.mapper.canSerialize(datum.document.getClass())){
-                return new StreamsDatum(this.mapper.readValue(this.mapper.writeValueAsString(datum.document), datum.document.getClass()),
-                                        datum.timestamp,
-                                        datum.sequenceid);
+//            else if(this.mapper.canSerialize(datum.document.getClass())){
+//                return new StreamsDatum(this.mapper.readValue(this.mapper.writeValueAsString(datum.document), datum.document.getClass()),
+//                                        datum.timestamp,
+//                                        datum.sequenceid);
+//            }
+
+            else if(datum.document instanceof Serializable) {
+                return (StreamsDatum) SerializationUtil.cloneBySerialization(datum);
             }
         } catch (Exception e) {
             LOGGER.error("Exception while trying to clone/copy StreamsDatum : {}", e);

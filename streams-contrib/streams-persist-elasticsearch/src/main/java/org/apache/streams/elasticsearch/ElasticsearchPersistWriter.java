@@ -10,6 +10,7 @@ import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.core.tasks.StreamsPersistWriterTask;
+import org.apache.streams.pojo.json.Activity;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -123,13 +124,14 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
         String json;
         try {
-
+            String id = streamsDatum.getId();
             if( streamsDatum.getDocument() instanceof String )
                 json = streamsDatum.getDocument().toString();
-            else
+            else {
                 json = mapper.writeValueAsString(streamsDatum.getDocument());
+            }
 
-            add(config.getIndex(), config.getType(), null, json);
+            add(config.getIndex(), config.getType(), id, json);
 
         } catch (JsonProcessingException e) {
             LOGGER.warn("{} {}", e.getLocation(), e.getMessage());

@@ -18,6 +18,7 @@
 
 package org.apache.streams.core;
 
+import org.apache.streams.pojo.json.Activity;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
@@ -31,26 +32,36 @@ import java.util.Map;
 public class StreamsDatum implements Serializable {
 
     public StreamsDatum(Object document) {
-        this.document = document;
-        this.metadata = new HashMap<String, Object>();
+        this(document, null, null, null);
+    }
+
+    public StreamsDatum(Object document, String id) {
+        this(document, id, null, null);
     }
 
     public StreamsDatum(Object document, BigInteger sequenceid) {
-
-        this.document = document;
-        this.sequenceid = sequenceid;
-        this.metadata = new HashMap<String, Object>();
+        this(document, null, null, sequenceid);
     }
 
     public StreamsDatum(Object document, DateTime timestamp) {
-
-        this.document = document;
-        this.timestamp = timestamp;
-        this.metadata = new HashMap<String, Object>();
+        this(document, null, timestamp, null);
     }
 
     public StreamsDatum(Object document, DateTime timestamp, BigInteger sequenceid) {
+        this(document, null, timestamp, sequenceid);
+    }
+
+    public StreamsDatum(Object document, String id, DateTime timestamp) {
+        this(document, id, timestamp, null);
+    }
+
+    public StreamsDatum(Object document, String id, BigInteger sequenceid) {
+        this(document, id, null, sequenceid);
+    }
+
+    public StreamsDatum(Object document, String id, DateTime timestamp, BigInteger sequenceid) {
         this.document = document;
+        this.id = id;
         this.timestamp = timestamp;
         this.sequenceid = sequenceid;
         this.metadata = new HashMap<String, Object>();
@@ -63,6 +74,8 @@ public class StreamsDatum implements Serializable {
     public Map<String, Object> metadata;
 
     public Object document;
+
+    private String id;
 
     public DateTime getTimestamp() {
         return timestamp;
@@ -96,6 +109,14 @@ public class StreamsDatum implements Serializable {
         this.document = document;
     }
 
+
+    public String getId(){
+        if(this.id == null && this.document instanceof Activity) {
+            return ((Activity)this.document).getId();
+        }
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if(o instanceof StreamsDatum) {
@@ -111,5 +132,10 @@ public class StreamsDatum implements Serializable {
         else {
             return false;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Document="+this.document+"\ttimestamp="+this.timestamp+"\tsequence="+this.sequenceid;
     }
 }

@@ -44,6 +44,7 @@ public class ConsolePersistWriter implements StreamsPersistWriter {
             String text = mapper.writeValueAsString(entry);
 
             System.out.println(text);
+//            LOGGER.info(text);
 
         } catch (JsonProcessingException e) {
             LOGGER.warn("save: {}", e);
