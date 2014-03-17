@@ -136,6 +136,7 @@ public class StreamsDatum implements Serializable {
 
     @Override
     public String toString() {
-        return "Document="+this.document+"\ttimestamp="+this.timestamp+"\tsequence="+this.sequenceid;
+        return this.id+"\tDocument="+this.document+"\ttimestamp="+this.timestamp+"\tsequence="+this.sequenceid;
     }
+
 }

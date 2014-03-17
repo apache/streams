@@ -133,9 +133,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
             add(config.getIndex(), config.getType(), id, json);
 
-        } catch (JsonProcessingException e) {
-            LOGGER.warn("{} {}", e.getLocation(), e.getMessage());
-
+        } catch (Exception e) {
+            LOGGER.warn("{} {}", e.getMessage());
+            e.printStackTrace();
         }
     }
 

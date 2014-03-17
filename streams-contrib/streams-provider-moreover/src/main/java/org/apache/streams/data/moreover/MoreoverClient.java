@@ -40,9 +40,13 @@ public class MoreoverClient {
         logger.debug("Making call to {}", urlString);
         long start = System.nanoTime();
         MoreoverResult result = new MoreoverResult(id, getArticles(new URL(urlString)), start, System.nanoTime());
-        logger.debug("Maximum sequence from last call {}", result.getMaxSequencedId());
         if(!result.getMaxSequencedId().equals(BigInteger.ZERO))
+        {
             this.lastSequenceId = result.getMaxSequencedId();
+            logger.debug("Maximum sequence from last call {}", this.lastSequenceId);
+        }
+        else
+            logger.debug("No maximum sequence returned in last call {}", this.lastSequenceId);
         return result;
     }
 
@@ -79,6 +83,10 @@ public class MoreoverClient {
         IOUtils.copy(new InputStreamReader(cn.getInputStream(), Charset.forName("UTF-8")), writer);
         writer.flush();
         pullTime = new Date().getTime();
+
+        // added after seeing java.net.SocketException: Too many open files
+        cn.disconnect();
+
         return writer.toString();
     }
 }

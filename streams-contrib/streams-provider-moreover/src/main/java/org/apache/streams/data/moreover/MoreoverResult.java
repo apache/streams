@@ -3,6 +3,7 @@ package org.apache.streams.data.moreover;
 import com.fasterxml.aalto.stax.InputFactoryImpl;
 import com.fasterxml.aalto.stax.OutputFactoryImpl;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -112,18 +113,34 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
 
         try {
             this.resultObject = xmlMapper.readValue(xmlString, ArticlesResponse.class);
-            this.articles = resultObject.getArticles();
-            this.articleArray = articles.getArticle();
-        } catch (IOException e) {
+        } catch (JsonMappingException e) {
+            // theory is this may not be fatal
+            this.resultObject = (ArticlesResponse) e.getPath().get(0).getFrom();
+        } catch (Exception e) {
             e.printStackTrace();
+            logger.warn("Unable to process document:");
+            logger.warn(xmlString);
         }
 
-        for (Article article : articleArray) {
-            BigInteger sequenceid = new BigInteger(article.getSequenceId());
-            list.add(new StreamsDatum(article, sequenceid));
-            logger.trace("Prior max sequence Id {} current candidate {}", this.maxSequencedId, sequenceid);
-            if (sequenceid.compareTo(this.maxSequencedId) > 0) {
-                this.maxSequencedId = sequenceid;
+        if( this.resultObject.getStatus().equals("FAILURE"))
+        {
+            logger.warn(this.resultObject.getStatus());
+            logger.warn(this.resultObject.getMessageCode());
+            logger.warn(this.resultObject.getUserMessage());
+            logger.warn(this.resultObject.getDeveloperMessage());
+        }
+        else
+        {
+            this.articles = resultObject.getArticles();
+            this.articleArray = articles.getArticle();
+
+            for (Article article : articleArray) {
+                BigInteger sequenceid = new BigInteger(article.getSequenceId());
+                list.add(new StreamsDatum(article, sequenceid));
+                logger.trace("Prior max sequence Id {} current candidate {}", this.maxSequencedId, sequenceid);
+                if (sequenceid.compareTo(this.maxSequencedId) > 0) {
+                    this.maxSequencedId = sequenceid;
+                }
             }
         }
 
