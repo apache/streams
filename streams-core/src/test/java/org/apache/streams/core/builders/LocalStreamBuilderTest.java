@@ -75,7 +75,7 @@ public class LocalStreamBuilderTest {
 
     @Test
     public void testBasicLinearStream2()  {
-        int numDatums = 1000;
+        int numDatums = 100;
         StreamBuilder builder = new LocalStreamBuilder();
         PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor();
         SystemOutWriter writer = new SystemOutWriter();
@@ -94,8 +94,8 @@ public class LocalStreamBuilderTest {
 
     @Test
     public void testParallelLinearStream1() {
-        int numDatums = 10000;
-        int parallelHint = 40;
+        int numDatums = 1000;
+        int parallelHint = 20;
         PassthroughDatumCounterProcessor.sawData = new HashSet<Integer>();
         PassthroughDatumCounterProcessor.claimedNumber = new HashSet<Integer>();
         StreamBuilder builder = new LocalStreamBuilder();
@@ -119,7 +119,7 @@ public class LocalStreamBuilderTest {
     @Test
     public void testBasicMergeStream() {
         int numDatums1 = 1;
-        int numDatums2 = 1000;
+        int numDatums2 = 100;
         PassthroughDatumCounterProcessor processor1 = new PassthroughDatumCounterProcessor();
         PassthroughDatumCounterProcessor processor2 = new PassthroughDatumCounterProcessor();
         SystemOutWriter writer = new SystemOutWriter();
@@ -141,7 +141,7 @@ public class LocalStreamBuilderTest {
 
     @Test
     public void testBasicBranch() {
-        int numDatums = 1000;
+        int numDatums = 100;
         StreamBuilder builder = new LocalStreamBuilder();
         builder.newReadCurrentStream("prov1", new NumericMessageProvider(numDatums))
                 .addStreamsProcessor("proc1", new PassthroughDatumCounterProcessor(), 1, "prov1")
