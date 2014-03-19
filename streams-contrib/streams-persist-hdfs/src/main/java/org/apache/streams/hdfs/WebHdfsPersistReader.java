@@ -170,26 +170,35 @@ public class WebHdfsPersistReader implements StreamsPersistReader {
     private void readSourceWritePersistQueue() {
         for( FileStatus fileStatus : status ) {
             BufferedReader reader;
-
-            if( fileStatus.isFile() && !fileStatus.getPath().getName().endsWith("_SUCCESS")) {
+            LOGGER.info("Found " + fileStatus.getPath().getName());
+            if( persistQueue.size() > 0 ) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                }
+            }
+            if( fileStatus.isFile() && !fileStatus.getPath().getName().startsWith("_")) {
+                LOGGER.info("Processing " + fileStatus.getPath().getName());
                 try {
                     reader = new BufferedReader(new InputStreamReader(client.open(fileStatus.getPath())));
 
-                    String line;
+                    String line = "";
                     do{
                         try {
                             line = reader.readLine();
-                            if( line != null ) {
+                            if( !Strings.isNullOrEmpty(line) ) {
                                 String[] fields = line.split(Character.toString(DELIMITER));
-                                persistQueue.offer(new StreamsDatum(fields[3]));
+                                StreamsDatum entry = new StreamsDatum(fields[3], fields[0], new DateTime(fields[2]));
+                                persistQueue.offer(entry);
                             }
-                        } catch (IOException e) {
-                            break;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            LOGGER.warn(e.getMessage());
                         }
                     } while( line != null );
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                    break;
+                    LOGGER.warn(e.getMessage());
                 }
             }
         }
