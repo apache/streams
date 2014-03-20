@@ -23,14 +23,14 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-project</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1.STREAMS26-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>streams-pojo-extensions</artifactId>
 
     <properties>
-    <streams.version>0.1-SNAPSHOT</streams.version>
+    <streams.version>0.1.STREAMS26-SNAPSHOT</streams.version>
     </properties>
     <dependencies>
         <dependency>
