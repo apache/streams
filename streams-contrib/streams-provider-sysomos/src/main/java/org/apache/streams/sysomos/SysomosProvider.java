@@ -64,7 +64,7 @@ public class SysomosProvider implements StreamsProvider {
     ScheduledExecutorService service;
 
     @Override
-    public void start() {
+    public void startStream() {
         LOGGER.trace("Starting Producer");
         if(!started) {
             LOGGER.trace("Producer not started.  Initializing");
@@ -80,16 +80,6 @@ public class SysomosProvider implements StreamsProvider {
     }
 
     @Override
-    public void stop() {
-        started = false;
-    }
-
-    @Override
-    public Queue<StreamsDatum> getProviderQueue() {
-        return providerQueue;
-    }
-
-    @Override
     public StreamsResultSet readCurrent() {
         return null;
     }
@@ -102,5 +92,15 @@ public class SysomosProvider implements StreamsProvider {
     @Override
     public StreamsResultSet readRange(DateTime dateTime, DateTime dateTime2) {
         return null;
+    }
+
+    @Override
+    public void prepare(Object configurationObject) {
+
+    }
+
+    @Override
+    public void cleanUp() {
+
     }
 }

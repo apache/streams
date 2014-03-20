@@ -31,7 +31,7 @@ import java.util.concurrent.*;
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class RssStreamProvider implements StreamsProvider, Serializable {
+public class RssStreamProvider implements StreamsProvider {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RssStreamProvider.class);
 

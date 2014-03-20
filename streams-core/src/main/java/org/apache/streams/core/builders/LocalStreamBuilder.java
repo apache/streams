@@ -152,7 +152,7 @@ public class LocalStreamBuilder implements StreamBuilder{
                     isRunning = isRunning || task.isRunning();
                 }
                 if(isRunning) {
-                    Thread.sleep(100000);
+                    Thread.sleep(3000);
                 }
             }
             this.executor.shutdown();
