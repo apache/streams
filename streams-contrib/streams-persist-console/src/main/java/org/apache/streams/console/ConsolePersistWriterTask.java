@@ -37,9 +37,9 @@ public class ConsolePersistWriterTask implements Runnable {
     @Override
     public void run() {
         while(true) {
-            if( writer.getPersistQueue().peek() != null ) {
+            if( writer.persistQueue.peek() != null ) {
                 try {
-                    StreamsDatum entry = writer.getPersistQueue().remove();
+                    StreamsDatum entry = writer.persistQueue.remove();
                     writer.write(entry);
                 } catch (Exception e) {
                     e.printStackTrace();

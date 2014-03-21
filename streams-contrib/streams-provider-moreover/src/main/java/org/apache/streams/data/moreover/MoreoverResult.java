@@ -3,6 +3,7 @@ package org.apache.streams.data.moreover;
 import com.fasterxml.aalto.stax.InputFactoryImpl;
 import com.fasterxml.aalto.stax.OutputFactoryImpl;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.moreover.api.Article;
+import com.moreover.api.ArticlesResponse;
 import org.apache.streams.core.StreamsDatum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,21 +27,23 @@ import java.util.List;
 
 public class MoreoverResult implements Iterable<StreamsDatum> {
 
-    private static final Logger logger = LoggerFactory.getLogger(MoreoverClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(MoreoverResult.class);
 
     private ObjectMapper mapper;
     private XmlMapper xmlMapper;
 
     private String xmlString;
     private String jsonString;
-    private ObjectNode resultObject;
-    private JsonNode articlesArray;
+    private ArticlesResponse resultObject;
+    private ArticlesResponse.Articles articles;
+    private List<Article> articleArray;
     private long start;
     private long end;
     private String clientId;
     private BigInteger maxSequencedId = BigInteger.ZERO;
 
-    private List<StreamsDatum> list = Lists.newArrayList();
+    protected ArticlesResponse response;
+    protected List<StreamsDatum> list = Lists.newArrayList();
 
     protected MoreoverResult(String clientId, String xmlString, long start, long end) {
         this.xmlString = xmlString;
@@ -70,6 +74,26 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
         xmlMapper.configure(
                 DeserializationFeature.READ_ENUMS_USING_TO_STRING,
                 Boolean.TRUE);
+        xmlMapper.configure(
+                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                Boolean.FALSE);
+
+        mapper = new ObjectMapper();
+
+        mapper
+                .configure(
+                        DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY,
+                        Boolean.TRUE);
+        mapper.configure(
+                DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,
+                Boolean.TRUE);
+        mapper
+                .configure(
+                        DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY,
+                        Boolean.TRUE);
+        mapper.configure(
+                DeserializationFeature.READ_ENUMS_USING_TO_STRING,
+                Boolean.TRUE);
 
     }
 
@@ -85,33 +109,42 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
         return end;
     }
 
-    public String getJSONString() {
+    public BigInteger process() {
 
-        if( this.jsonString != null ) {
-            return jsonString;
+        try {
+            this.resultObject = xmlMapper.readValue(xmlString, ArticlesResponse.class);
+        } catch (JsonMappingException e) {
+            // theory is this may not be fatal
+            this.resultObject = (ArticlesResponse) e.getPath().get(0).getFrom();
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("Unable to process document:");
+            logger.warn(xmlString);
         }
-        else {
-            try {
-                this.resultObject = xmlMapper.readValue(xmlString, ObjectNode.class);
-                this.jsonString = mapper.writeValueAsString(this.resultObject);
-                this.articlesArray = (JsonNode)this.resultObject.get("articles");
-            } catch (IOException e) {
-                e.printStackTrace();
+
+        if( this.resultObject.getStatus().equals("FAILURE"))
+        {
+            logger.warn(this.resultObject.getStatus());
+            logger.warn(this.resultObject.getMessageCode());
+            logger.warn(this.resultObject.getUserMessage());
+            logger.warn(this.resultObject.getDeveloperMessage());
+        }
+        else
+        {
+            this.articles = resultObject.getArticles();
+            this.articleArray = articles.getArticle();
+
+            for (Article article : articleArray) {
+                BigInteger sequenceid = new BigInteger(article.getSequenceId());
+                list.add(new StreamsDatum(article, sequenceid));
+                logger.trace("Prior max sequence Id {} current candidate {}", this.maxSequencedId, sequenceid);
+                if (sequenceid.compareTo(this.maxSequencedId) > 0) {
+                    this.maxSequencedId = sequenceid;
+                }
             }
         }
 
-        for (JsonNode articleNode : ImmutableList.copyOf(articlesArray.elements())) {
-            Article article = mapper.convertValue(articleNode, Article.class);
-            BigInteger sequenceid = new BigInteger(article.getSequenceId());
-            list.add(new StreamsDatum(article, sequenceid));
-            logger.trace("Prior max sequence Id {} current candidate {}", this.maxSequencedId, sequenceid);
-            if (sequenceid.compareTo(this.maxSequencedId) > 0) {
-                this.maxSequencedId = sequenceid;
-                logger.debug("New max sequence Id {}", this.maxSequencedId);
-            }
-
-        }
-        return jsonString;
+        return this.maxSequencedId;
     }
 
     public String getXmlString() {

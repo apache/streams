@@ -25,27 +25,25 @@ public class ElasticsearchPersistReaderTask implements Runnable {
     @Override
     public void run() {
 
-        while(true) {
-            StreamsDatum item;
-            while( reader.hasNext()) {
-                SearchHit hit = reader.next();
-                ObjectNode jsonObject = null;
-                try {
-                    jsonObject = mapper.readValue(hit.getSourceAsString(), ObjectNode.class);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    break;
-                }
-                item = new StreamsDatum(jsonObject);
-                item.getMetadata().put("id", hit.getId());
-                item.getMetadata().put("index", hit.getIndex());
-                item.getMetadata().put("type", hit.getType());
-                reader.persistQueue.offer(item);
-            }
+        StreamsDatum item;
+        while( reader.hasNext()) {
+            SearchHit hit = reader.next();
+            ObjectNode jsonObject = null;
             try {
-                Thread.sleep(new Random().nextInt(100));
-            } catch (InterruptedException e) {}
+                jsonObject = mapper.readValue(hit.getSourceAsString(), ObjectNode.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+                break;
+            }
+            item = new StreamsDatum(jsonObject);
+            item.getMetadata().put("id", hit.getId());
+            item.getMetadata().put("index", hit.getIndex());
+            item.getMetadata().put("type", hit.getType());
+            reader.persistQueue.offer(item);
         }
+        try {
+            Thread.sleep(new Random().nextInt(100));
+        } catch (InterruptedException e) {}
 
     }
 

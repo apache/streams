@@ -1,10 +1,16 @@
 package org.apache.streams.elasticsearch;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Objects;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.typesafe.config.Config;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistReader;
 import org.apache.streams.core.StreamsResultSet;
@@ -20,6 +26,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.*;
@@ -30,19 +37,21 @@ import java.util.concurrent.*;
  * steveblackmon
  **************************************************************************************************************/
 
-public class ElasticsearchPersistReader implements StreamsPersistReader, Iterable<SearchHit>, Iterator<SearchHit>, Runnable
+public class ElasticsearchPersistReader implements StreamsPersistReader, Iterable<SearchHit>, Iterator<SearchHit>
 {
+    public final static String STREAMS_ID = "ElasticsearchPersistReader";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistReader.class);
 
-    protected volatile Queue<StreamsDatum> persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+    protected volatile Queue<StreamsDatum> persistQueue;
 
     private static final int SCROLL_POSITION_NOT_INITIALIZED = -3;
     private static final Integer DEFAULT_BATCH_SIZE = 500;
     private static final String DEFAULT_SCROLL_TIMEOUT = "5m";
 
     private ElasticsearchClientManager elasticsearchClientManager;
-    private String[] indexes;
-    private String[] types;
+    private List<String> indexes = Lists.newArrayList();
+    private List<String> types = Lists.newArrayList();
     private String[] withfields;
     private String[] withoutfields;
     private DateTime startDate;
@@ -52,6 +61,12 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
     private int threadPoolSize = 10;
     private int batchSize = 100;
     private String scrollTimeout = null;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    private ElasticsearchConfiguration config;
+
+    private ExecutorService executor;
 
     private QueryBuilder queryBuilder;
     private FilterBuilder filterBuilder;
@@ -84,37 +99,71 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
     public void setQueryBuilder(QueryBuilder queryBuilder)      { this.queryBuilder = queryBuilder; }
     public void setFilterBuilder(FilterBuilder filterBuilder)   { this.filterBuilder = filterBuilder; }
 
-    ListenableFuture providerTaskComplete;
-
-    protected ListeningExecutorService executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
-
-    private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
-        return new ThreadPoolExecutor(nThreads, nThreads,
-                5000L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
+    public ElasticsearchPersistReader() {
+        Config config = StreamsConfigurator.config.getConfig("elasticsearch");
+        this.config = ElasticsearchConfigurator.detectConfiguration(config);
+    }
+    public ElasticsearchPersistReader(ElasticsearchReaderConfiguration elasticsearchConfiguration) {
+        this.elasticsearchClientManager = new ElasticsearchClientManager(elasticsearchConfiguration);
+        indexes.add(elasticsearchConfiguration.getIndex());
+        types.add(elasticsearchConfiguration.getType());
     }
 
-    public ElasticsearchPersistReader(ElasticsearchConfiguration elasticsearchConfiguration) {
-        this.elasticsearchClientManager = new ElasticsearchClientManager(elasticsearchConfiguration);
+    @Override
+    public void startStream() {
+        LOGGER.debug("startStream");
+        executor = Executors.newSingleThreadExecutor();
+        executor.submit(new ElasticsearchPersistReaderTask(this));
     }
 
-    public ElasticsearchPersistReader(ElasticsearchConfiguration elasticsearchConfiguration, String[] indexes) {
-        this.elasticsearchClientManager = new ElasticsearchClientManager(elasticsearchConfiguration);
-        this.indexes = indexes;
-    }
+    @Override
+    public void prepare(Object o) {
 
-    public ElasticsearchPersistReader(ElasticsearchConfiguration elasticsearchConfiguration, String[] indexes, String[] types) {
-        this.elasticsearchClientManager = new ElasticsearchClientManager(elasticsearchConfiguration);
-        this.indexes = indexes;
-        this.types = types;
-    }
+        persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
 
-    public ElasticsearchPersistReader(ElasticsearchConfiguration elasticsearchConfiguration, String[] indexes, String[] types, String[] withfields, String[] withoutfields) {
-        this.elasticsearchClientManager = new ElasticsearchClientManager(elasticsearchConfiguration);
-        this.indexes = indexes;
-        this.types = types;
-        this.withfields = withfields;
-        this.withoutfields = withoutfields;
+        // If we haven't already set up the search, then set up the search.
+        if(search == null)
+        {
+            search = elasticsearchClientManager.getClient()
+                    .prepareSearch(indexes.toArray(new String[0]))
+                    .setSearchType(SearchType.SCAN)
+                    .setSize(Objects.firstNonNull(batchSize, DEFAULT_BATCH_SIZE).intValue())
+                    .setScroll(Objects.firstNonNull(scrollTimeout, DEFAULT_SCROLL_TIMEOUT));
+
+            if(this.queryBuilder != null)
+                search.setQuery(this.queryBuilder);
+
+            // If the types are null, then don't specify a type
+            if(this.types != null && this.types.size() > 0)
+                search = search.setTypes(types.toArray(new String[0]));
+
+            Integer clauses = 0;
+            if(this.withfields != null || this.withoutfields != null) {
+                if( this.withfields != null )
+                    clauses += this.withfields.length;
+                if( this.withoutfields != null )
+                    clauses += this.withoutfields.length;
+            }
+
+            List<FilterBuilder> filterList = buildFilterList();
+
+            FilterBuilder allFilters = andFilters(filterList);
+
+            if( clauses > 0 ) {
+                //    search.setPostFilter(allFilters);
+                search.setPostFilter(allFilters);
+            }
+
+            // TODO: Replace when all clusters are upgraded past 0.90.4 so we can implement a RANDOM scroll.
+            if(this.random)
+                search = search.addSort(SortBuilders.scriptSort("random()", "number"));
+        }
+
+        // We don't have a scroll, we need to create a scroll
+        if(scrollResp == null) {
+            scrollResp = search.execute().actionGet();
+            LOGGER.trace(search.toString());
+        }
     }
 
     public void setWithfields(String[] withfields) {
@@ -135,49 +184,6 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
     {
         try
         {
-            // If we haven't already set up the search, then set up the search.
-            if(search == null)
-            {
-                search = elasticsearchClientManager.getClient()
-                        .prepareSearch(indexes)
-                        .setSearchType(SearchType.SCAN)
-                        .setSize(Objects.firstNonNull(batchSize, DEFAULT_BATCH_SIZE).intValue())
-                        .setScroll(Objects.firstNonNull(scrollTimeout, DEFAULT_SCROLL_TIMEOUT));
-
-                if(this.queryBuilder != null)
-                    search.setQuery(this.queryBuilder);
-
-                // If the types are null, then don't specify a type
-                if(this.types != null && this.types.length > 0)
-                    search = search.setTypes(types);
-
-                Integer clauses = 0;
-                if(this.withfields != null || this.withoutfields != null) {
-                    if( this.withfields != null )
-                        clauses += this.withfields.length;
-                    if( this.withoutfields != null )
-                        clauses += this.withoutfields.length;
-                }
-
-                List<FilterBuilder> filterList = buildFilterList();
-
-                FilterBuilder allFilters = andFilters(filterList);
-
-                if( clauses > 0 ) {
-                    search.setPostFilter(allFilters);
-                }
-
-                // TODO: Replace when all clusters are upgraded past 0.90.4 so we can implement a RANDOM scroll.
-                if(this.random)
-                    search = search.addSort(SortBuilders.scriptSort("random()", "number"));
-            }
-
-            // We don't have a scroll, we need to create a scroll
-            if(scrollResp == null) {
-                scrollResp = search.execute().actionGet();
-                LOGGER.trace(search.toString());
-            }
-
             // We have exhausted our scroll create another scroll.
             if(scrollPositionInScroll == SCROLL_POSITION_NOT_INITIALIZED || scrollPositionInScroll >= scrollResp.getHits().getHits().length)
             {
@@ -280,54 +286,33 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
     }
 
     @Override
-    public void run() {
+    public StreamsResultSet readCurrent() {
 
-        providerTaskComplete = executor.submit((new Thread(new ElasticsearchPersistReaderTask(this))));
+        LOGGER.debug("readCurrent: {}", persistQueue.size());
 
-        while( !providerTaskComplete.isDone()) {
-            try {
-                Thread.sleep(new Random().nextInt(100));
-            } catch (InterruptedException e) { }
-        }
+        Collection<StreamsDatum> currentIterator = Lists.newArrayList();
+        Iterators.addAll(currentIterator, persistQueue.iterator());
 
-        stop();
-    }
+        StreamsResultSet current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(currentIterator));
 
-    @Override
-    public void start() {
+        persistQueue.clear();
 
+        return current;
 
     }
 
-    @Override
-    public void stop() {
-        shutdownAndAwaitTermination(executor);
-        LOGGER.info("PersistReader done");
-    }
-
-    @Override
-    public void setPersistQueue(Queue<StreamsDatum> persistQueue) {
-        this.persistQueue = persistQueue;
-    }
-
-    @Override
-    public Queue<StreamsDatum> getPersistQueue() {
-        return this.persistQueue;
-    }
-
-    @Override
     public StreamsResultSet readAll() {
-        return null;
+        return readCurrent();
     }
 
     @Override
     public StreamsResultSet readNew(BigInteger sequence) {
-        return null;
+        return readCurrent();
     }
 
     @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return null;
+        return readCurrent();
     }
 
     void shutdownAndAwaitTermination(ExecutorService pool) {
@@ -347,4 +332,12 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
             Thread.currentThread().interrupt();
         }
     }
+
+    @Override
+    public void cleanUp() {
+        LOGGER.info("PersistReader done");
+    }
+
 }
+
+

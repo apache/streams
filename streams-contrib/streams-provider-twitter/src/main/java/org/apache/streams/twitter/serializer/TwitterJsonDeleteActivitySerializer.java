@@ -8,6 +8,8 @@ import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Tweet;
 
+import java.io.Serializable;
+
 /**
 * Created with IntelliJ IDEA.
 * User: mdelaet

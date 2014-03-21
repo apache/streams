@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "com.google.gmail.GMailConfiguration",
+    "properties": {
+        "userName": {
+            "type": "string"
+        },
+        "password": {
+            "type": "string"
+        }
+    }
+}

@@ -1,6 +1,8 @@
 package org.apache.streams.data.moreover;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Predicates;
+import com.google.common.collect.*;
+import net.jcip.annotations.Immutable;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
@@ -11,65 +13,54 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class MoreoverProvider implements StreamsProvider {
 
-    private static Logger logger = LoggerFactory.getLogger(MoreoverProvider.class);
+    public final static String STREAMS_ID = "MoreoverProvider";
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(MoreoverProvider.class);
 
     protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<StreamsDatum>();
 
-    private List<ExecutorService> tasks = new LinkedList<ExecutorService>();
     private List<MoreoverKeyData> keys;
-    private boolean started = false;
+
+    private MoreoverConfiguration config;
+
+    private ExecutorService executor;
 
     public MoreoverProvider(MoreoverConfiguration moreoverConfiguration) {
+        this.config = moreoverConfiguration;
         this.keys = Lists.newArrayList();
-        for( MoreoverKeyData apiKey : moreoverConfiguration.getApiKeys()) {
+        for( MoreoverKeyData apiKey : config.getApiKeys()) {
             this.keys.add(apiKey);
         }
-        this.keys = Arrays.asList();
     }
 
-    public MoreoverProvider(MoreoverKeyData... keys) {
-        this.keys = Arrays.asList(keys);
-    }
+    public void startStream() {
 
-    @Override
-    public synchronized void start() {
-        logger.trace("Starting Producer");
-        if(!started) {
-            logger.trace("Producer not started.  Initializing");
-            for(MoreoverKeyData key : keys) {
-                MoreoverProviderTask task = new MoreoverProviderTask(key.getId(), key.getKey(), this.providerQueue, key.getStartingSequence());
-                ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-                service.scheduleWithFixedDelay(task, 0, MoreoverProviderTask.LATENCY, TimeUnit.SECONDS);
-                logger.info("Started producer for {} with service {}", key.getKey(), service.toString());
-                this.tasks.add(service);
-            }
-            started = true;
+        for(MoreoverKeyData key : keys) {
+            MoreoverProviderTask task = new MoreoverProviderTask(key.getId(), key.getKey(), this.providerQueue, key.getStartingSequence());
+            executor.submit(new Thread(task));
+            LOGGER.info("Started producer for {}", key.getKey());
         }
+
     }
 
     @Override
-    public synchronized void stop() {
-        for(ExecutorService service: tasks) {
-            service.shutdown();
-        }
-    }
+    public synchronized StreamsResultSet readCurrent() {
 
-    @Override
-    public Queue<StreamsDatum> getProviderQueue() {
-        return providerQueue;
-    }
+        LOGGER.debug("readCurrent: {}", providerQueue.size());
 
-    @Override
-    public StreamsResultSet readCurrent() {
-        return null;
+        Collection<StreamsDatum> currentIterator = Lists.newArrayList();
+        Iterators.addAll(currentIterator, providerQueue.iterator());
+
+        StreamsResultSet current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(currentIterator));
+
+        providerQueue.clear();
+
+        return current;
     }
 
     @Override
@@ -82,4 +73,14 @@ public class MoreoverProvider implements StreamsProvider {
         return null;
     }
 
+    @Override
+    public void prepare(Object configurationObject) {
+        LOGGER.debug("Prepare");
+        executor = Executors.newSingleThreadExecutor();
+    }
+
+    @Override
+    public void cleanUp() {
+
+    }
 }

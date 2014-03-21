@@ -22,10 +22,16 @@ public class MoreoverConfigurator {
 
         List<MoreoverKeyData> apiKeys = Lists.newArrayList();
 
-        for( String key : moreover.getStringList("apiKeys")) {
-            apiKeys.add(new MoreoverKeyData().withId(key).withKey(key));
-            // TODO: implement starting sequence
-        }
+        Config apiKeysConfig = moreover.getConfig("apiKeys");
+
+        if( !apiKeysConfig.isEmpty())
+            for( String apiKeyId : apiKeysConfig.root().keySet() ) {
+                Config apiKeyConfig = apiKeysConfig.getConfig(apiKeyId);
+                apiKeys.add(new MoreoverKeyData()
+                        .withId(apiKeyConfig.getString("key"))
+                        .withKey(apiKeyConfig.getString("key"))
+                        .withStartingSequence(apiKeyConfig.getString("startingSequence")));
+            }
         moreoverConfiguration.setApiKeys(apiKeys);
 
         return moreoverConfiguration;

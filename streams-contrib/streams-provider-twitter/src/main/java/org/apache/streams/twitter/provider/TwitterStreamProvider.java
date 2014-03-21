@@ -20,6 +20,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.twitter.TwitterStreamConfiguration;
+import org.apache.streams.twitter.processor.TwitterEventProcessor;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,9 @@ import java.util.concurrent.*;
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class TwitterStreamProvider implements StreamsProvider, Serializable, Runnable {
+public class TwitterStreamProvider implements StreamsProvider, Serializable {
+
+    public final static String STREAMS_ID = "TwitterStreamProvider";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterStreamProvider.class);
 
@@ -56,7 +59,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Run
     protected StreamingEndpoint endpoint;
     protected BasicClient client;
 
-    protected ListeningExecutorService executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
+    protected ListeningExecutorService executor;
 
     private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
         return new ThreadPoolExecutor(nThreads, nThreads,
@@ -77,15 +80,46 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Run
         Config config = StreamsConfigurator.config.getConfig("twitter");
         this.config = TwitterStreamConfigurator.detectConfiguration(config);
         this.klass = klass;
+        providerQueue = new LinkedBlockingQueue<StreamsDatum>();
     }
 
     public TwitterStreamProvider(TwitterStreamConfiguration config, Class klass) {
         this.config = config;
         this.klass = klass;
+        providerQueue = new LinkedBlockingQueue<StreamsDatum>();
+
     }
 
     @Override
-    public void start() {
+    public void startStream() {
+
+        for (int i = 0; i < 5; i++) {
+            executor.submit(new TwitterEventProcessor(inQueue, providerQueue, klass));
+        }
+
+        new Thread(new TwitterStreamProviderTask(this)).start();
+    }
+
+    @Override
+    public StreamsResultSet readCurrent() {
+        StreamsResultSet result = (StreamsResultSet)providerQueue.iterator();
+        return result;
+    }
+
+    @Override
+    public StreamsResultSet readNew(BigInteger sequence) {
+        return null;
+    }
+
+    @Override
+    public StreamsResultSet readRange(DateTime start, DateTime end) {
+        return null;
+    }
+
+    @Override
+    public void prepare(Object o) {
+
+        executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
         Preconditions.checkNotNull(this.klass);
 
@@ -121,57 +155,12 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Run
                 .authentication(auth)
                 .processor(new StringDelimitedProcessor(inQueue))
                 .build();
-
-        for (int i = 0; i < 10; i++) {
-            executor.submit(new TwitterEventProcessor(inQueue, providerQueue, klass));
-        }
-
-        new Thread(new TwitterStreamProviderTask(this)).start();
     }
 
     @Override
-    public void stop() {
+    public void cleanUp() {
         for (int i = 0; i < 10; i++) {
             inQueue.add(TwitterEventProcessor.TERMINATE);
         }
     }
-
-    @Override
-    public Queue<StreamsDatum> getProviderQueue() {
-        return this.providerQueue;
-    }
-
-    public void setProviderQueue(Queue<StreamsDatum> providerQueue) {
-        this.providerQueue = providerQueue;
-    }
-
-    @Override
-    public StreamsResultSet readCurrent() {
-        return null;
-    }
-
-    @Override
-    public StreamsResultSet readNew(BigInteger sequence) {
-        return null;
-    }
-
-    @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return null;
-    }
-
-    @Override
-    public void run() {
-
-        start();
-
-        while( !executor.isTerminated()) {
-            try {
-                executor.awaitTermination(1, TimeUnit.SECONDS);
-            } catch (InterruptedException e) { }
-        }
-
-        stop();
-    }
-
 }

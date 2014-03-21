@@ -21,6 +21,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MongoPersistWriter implements StreamsPersistWriter, Runnable
@@ -110,14 +111,12 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable
         client.cleanCursors(true);
     }
 
-    @Override
     public void start() {
 
         connectToMongo();
 
     }
 
-    @Override
     public void stop() {
 
         try {
@@ -132,32 +131,39 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable
         }
     }
 
-    @Override
     public void setPersistQueue(Queue<StreamsDatum> persistQueue) {
         this.persistQueue = persistQueue;
     }
 
-    @Override
     public Queue<StreamsDatum> getPersistQueue() {
         return persistQueue;
     }
 
-
-    @Override
     public void run() {
 
-        start();
-
-        Thread task = new Thread(new MongoPersistWriterTask(this));
-        task.start();
-
-        try {
-            task.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return;
+        while(true) {
+            if( persistQueue.peek() != null ) {
+                try {
+                    StreamsDatum entry = persistQueue.remove();
+                    write(entry);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                Thread.sleep(new Random().nextInt(1));
+            } catch (InterruptedException e) {}
         }
 
+    }
+
+    @Override
+    public void prepare(Object configurationObject) {
+        start();
+    }
+
+    @Override
+    public void cleanUp() {
         stop();
     }
 }

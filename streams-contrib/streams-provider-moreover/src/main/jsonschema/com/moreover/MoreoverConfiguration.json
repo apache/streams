@@ -3,6 +3,7 @@
     "$schema": "http://json-schema.org/draft-03/schema",
     "id": "#",
     "javaType" : "org.apache.streams.moreover.MoreoverConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "apiKeys": {
             "type": "array",

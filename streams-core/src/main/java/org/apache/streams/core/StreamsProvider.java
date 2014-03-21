@@ -26,13 +26,9 @@ import java.util.Queue;
 /**
  * Created by sblackmon on 12/13/13.
  */
-public interface StreamsProvider {
+public interface StreamsProvider extends StreamsOperation {
 
-    void start();
-    void stop();
-
-    public Queue<StreamsDatum> getProviderQueue();
-
+    public void startStream();
     public StreamsResultSet readCurrent();
     public StreamsResultSet readNew(BigInteger sequence);
     public StreamsResultSet readRange(DateTime start, DateTime end);

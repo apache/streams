@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.hdfs.HdfsReaderConfiguration",
+    "extends": {"$ref":"HdfsConfiguration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "readerPath": {
+            "type": "string",
+            "description": "Path below root path"
+        }
+    }
+}

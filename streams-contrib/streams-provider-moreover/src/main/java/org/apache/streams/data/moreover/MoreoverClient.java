@@ -20,7 +20,7 @@ import java.util.Date;
 public class MoreoverClient {
     private static final Logger logger = LoggerFactory.getLogger(MoreoverClient.class);
 
-    private static final String BASE_URL = "http://metabase.moreover.com/com.facebook.api/v10/articles?key=%s&limit=%s&sequence_id=%s";
+    private static final String BASE_URL = "http://metabase.moreover.com/api/v10/articles?key=%s&limit=%s&sequence_id=%s";
     private final String id;
     private String apiKey;
     private BigInteger lastSequenceId = BigInteger.ZERO;
@@ -28,25 +28,30 @@ public class MoreoverClient {
     public long pullTime;
     private boolean debug;
 
-    public MoreoverClient(String id, String apiKey) {
-        logger.info("Constructed new client for id:{} key:{}", id, apiKey);
+    public MoreoverClient(String id, String apiKey, String sequence) {
+        logger.info("Constructed new client for id:{} key:{} sequence:{}", id, apiKey, sequence);
         this.id = id;
         this.apiKey = apiKey;
+        this.lastSequenceId = new BigInteger(sequence);
     }
 
     public MoreoverResult getArticlesAfter(String sequenceId, int limit) throws IOException {
-        String urlString = String.format(BASE_URL, this.apiKey, limit, (sequenceId == null ? 0 : sequenceId));
+        String urlString = String.format(BASE_URL, this.apiKey, limit, sequenceId);
         logger.debug("Making call to {}", urlString);
         long start = System.nanoTime();
         MoreoverResult result = new MoreoverResult(id, getArticles(new URL(urlString)), start, System.nanoTime());
-        logger.debug("Maximum sequence from last call {}", result.getMaxSequencedId());
         if(!result.getMaxSequencedId().equals(BigInteger.ZERO))
+        {
             this.lastSequenceId = result.getMaxSequencedId();
+            logger.debug("Maximum sequence from last call {}", this.lastSequenceId);
+        }
+        else
+            logger.debug("No maximum sequence returned in last call {}", this.lastSequenceId);
         return result;
     }
 
     public MoreoverResult getNextBatch() throws IOException{
-        //logger.debug("Getting next results for {} {} {}", this.id, this.apiKey, this.lastSequenceId);
+        logger.debug("Getting next results for {} {} {}", this.id, this.apiKey, this.lastSequenceId);
         return getArticlesAfter(this.lastSequenceId.toString(), 500);
     }
 
@@ -78,6 +83,10 @@ public class MoreoverClient {
         IOUtils.copy(new InputStreamReader(cn.getInputStream(), Charset.forName("UTF-8")), writer);
         writer.flush();
         pullTime = new Date().getTime();
+
+        // added after seeing java.net.SocketException: Too many open files
+        cn.disconnect();
+
         return writer.toString();
     }
 }

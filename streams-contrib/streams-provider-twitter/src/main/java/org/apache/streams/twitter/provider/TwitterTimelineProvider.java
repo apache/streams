@@ -2,6 +2,10 @@ package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -14,21 +18,22 @@ import org.apache.streams.twitter.TwitterStreamConfiguration;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import twitter4j.Twitter;
-import twitter4j.TwitterFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
+import twitter4j.json.DataObjectFactory;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Iterator;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class TwitterTimelineProvider implements StreamsProvider, Serializable, Runnable {
+public class TwitterTimelineProvider implements StreamsProvider, Serializable {
+
+    public final static String STREAMS_ID = "TwitterTimelineProvider";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProvider.class);
 
@@ -44,11 +49,10 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable, R
         this.config = config;
     }
 
-    protected volatile BlockingQueue<String> inQueue = new LinkedBlockingQueue<String>(10000);
-
     protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
 
     protected Twitter client;
+    protected Iterator<Long> ids;
 
     ListenableFuture providerTaskComplete;
 //
@@ -56,7 +60,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable, R
 //        return inQueue;
 //    }
 
-    protected ListeningExecutorService executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
+    protected ListeningExecutorService executor;
 
     protected DateTime start;
     protected DateTime end;
@@ -87,97 +91,134 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable, R
         this.klass = klass;
     }
 
-    @Override
-    public void start() {
-
-        Preconditions.checkNotNull(providerQueue);
-
-        Preconditions.checkNotNull(this.klass);
-
-        Preconditions.checkNotNull(config.getOauth().getConsumerKey());
-        Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
-        Preconditions.checkNotNull(config.getOauth().getAccessToken());
-        Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
-
-        Preconditions.checkNotNull(config.getFollow());
-
-        Preconditions.checkArgument(config.getEndpoint().equals("statuses/user_timeline"));
-
-        Boolean jsonStoreEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getJsonStoreEnabled()))).or(true);
-        Boolean includeEntitiesEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getIncludeEntities()))).or(true);
-
-        Iterator<Long> ids = config.getFollow().iterator();
-        while( ids.hasNext() ) {
-            Long id = ids.next();
-
-            String baseUrl = config.getProtocol() + "://" + config.getHost() + ":" + config.getPort() + "/" + config.getVersion() + "/";
-
-            ConfigurationBuilder builder = new ConfigurationBuilder()
-                    .setOAuthConsumerKey(config.getOauth().getConsumerKey())
-                    .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
-                    .setOAuthAccessToken(config.getOauth().getAccessToken())
-                    .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
-                    .setIncludeEntitiesEnabled(includeEntitiesEnabled)
-                    .setJSONStoreEnabled(jsonStoreEnabled)
-                    .setAsyncNumThreads(3)
-                    .setRestBaseURL(baseUrl);
-
-            Twitter twitter = new TwitterFactory(builder.build()).getInstance();
-
-            providerTaskComplete = executor.submit(new TwitterTimelineProviderTask(this, twitter, id));
-        }
-
-        for (int i = 0; i < 1; i++) {
-            executor.submit(new TwitterEventProcessor(inQueue, providerQueue, klass));
-        }
-    }
-
-    @Override
-    public void stop() {
-        for (int i = 0; i < 1; i++) {
-            inQueue.add(TwitterEventProcessor.TERMINATE);
-        }
-
-        shutdownAndAwaitTermination(executor);
-    }
-
-    @Override
     public Queue<StreamsDatum> getProviderQueue() {
         return this.providerQueue;
     }
 
+//    public void run() {
+//
+//        LOGGER.info("{} Running", STREAMS_ID);
+//
+//        while( ids.hasNext() ) {
+//            Long currentId = ids.next();
+//            LOGGER.info("Provider Task Starting: {}", currentId);
+//            captureTimeline(currentId);
+//        }
+//
+//        LOGGER.info("{} Finished.  Cleaning up...", STREAMS_ID);
+//
+//        client.shutdown();
+//
+//        LOGGER.info("{} Exiting", STREAMS_ID);
+//
+//        while(!providerTaskComplete.isDone() && !providerTaskComplete.isCancelled() ) {
+//            try {
+//                Thread.sleep(100);
+//            } catch (InterruptedException e) {}
+//        }
+//    }
+
     @Override
+    public void startStream() {
+        // no op
+    }
+
+    private void captureTimeline(long currentId) {
+
+        Paging paging = new Paging(1, 200);
+        List<Status> statuses = null;
+        boolean KeepGoing = true;
+        boolean hadFailure = false;
+
+        do
+        {
+            int keepTrying = 0;
+
+            // keep trying to load, give it 5 attempts.
+            //while (keepTrying < 10)
+            while (keepTrying < 1)
+            {
+
+                try
+                {
+                    statuses = client.getUserTimeline(currentId, paging);
+
+                    for (Status tStat : statuses)
+                    {
+//                        if( provider.start != null &&
+//                                provider.start.isAfter(new DateTime(tStat.getCreatedAt())))
+//                        {
+//                            // they hit the last date we wanted to collect
+//                            // we can now exit early
+//                            KeepGoing = false;
+//                        }
+                        // emit the record
+                        String json = DataObjectFactory.getRawJSON(tStat);
+
+                        providerQueue.offer(new StreamsDatum(json));
+
+                    }
+
+                    paging.setPage(paging.getPage() + 1);
+
+                    keepTrying = 10;
+                }
+                catch(TwitterException twitterException) {
+                    keepTrying += TwitterErrorHandler.handleTwitterError(client, twitterException);
+                }
+                catch(Exception e)
+                {
+                    hadFailure = true;
+                    keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
+                }
+                finally
+                {
+                    // Shutdown the twitter to release the resources
+                    client.shutdown();
+                }
+            }
+        }
+        while ((statuses != null) && (statuses.size() > 0) && KeepGoing);
+    }
+
     public StreamsResultSet readCurrent() {
-        return null;
+
+        Preconditions.checkArgument(ids.hasNext());
+
+        LOGGER.info("readCurrent");
+
+        while( ids.hasNext() ) {
+            Long currentId = ids.next();
+            LOGGER.info("Provider Task Starting: {}", currentId);
+            captureTimeline(currentId);
+        }
+
+        LOGGER.info("Finished.  Cleaning up...");
+
+        LOGGER.info("Providing {} docs", providerQueue.size());
+
+        StreamsResultSet result =  new StreamsResultSet(providerQueue);
+
+        LOGGER.info("Exiting");
+
+        return result;
+
     }
 
-    @Override
     public StreamsResultSet readNew(BigInteger sequence) {
-        return null;
+        LOGGER.debug("{} readNew", STREAMS_ID);
+        throw new NotImplementedException();
     }
 
-    @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
+        LOGGER.debug("{} readRange", STREAMS_ID);
         this.start = start;
         this.end = end;
-        start();
+        readCurrent();
         StreamsResultSet result = (StreamsResultSet)providerQueue.iterator();
         return result;
     }
 
-    @Override
-    public void run() {
-
-        start();
-
-        while( !providerTaskComplete.isDone()) {
-            try {
-                Thread.sleep(new Random().nextInt(100));
-            } catch (InterruptedException e) { }
-        }
-
-        stop();
-    }
     void shutdownAndAwaitTermination(ExecutorService pool) {
         pool.shutdown(); // Disable new tasks from being submitted
         try {
@@ -197,4 +238,50 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable, R
     }
 
 
+    @Override
+    public void prepare(Object o) {
+
+        executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
+
+        Preconditions.checkNotNull(providerQueue);
+
+        Preconditions.checkNotNull(this.klass);
+
+        Preconditions.checkNotNull(config.getOauth().getConsumerKey());
+        Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
+        Preconditions.checkNotNull(config.getOauth().getAccessToken());
+        Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
+
+        Preconditions.checkNotNull(config.getFollow());
+
+        Preconditions.checkArgument(config.getEndpoint().equals("statuses/user_timeline"));
+
+        Boolean jsonStoreEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getJsonStoreEnabled()))).or(true);
+        Boolean includeEntitiesEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getIncludeEntities()))).or(true);
+
+        ids = config.getFollow().iterator();
+
+        String baseUrl = config.getProtocol() + "://" + config.getHost() + ":" + config.getPort() + "/" + config.getVersion() + "/";
+
+        ConfigurationBuilder builder = new ConfigurationBuilder()
+                .setOAuthConsumerKey(config.getOauth().getConsumerKey())
+                .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
+                .setOAuthAccessToken(config.getOauth().getAccessToken())
+                .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
+                .setIncludeEntitiesEnabled(includeEntitiesEnabled)
+                .setJSONStoreEnabled(jsonStoreEnabled)
+                .setAsyncNumThreads(3)
+                .setRestBaseURL(baseUrl);
+
+        client = new TwitterFactory(builder.build()).getInstance();
+
+    }
+
+    @Override
+    public void cleanUp() {
+
+        client.shutdown();
+
+        shutdownAndAwaitTermination(executor);
+    }
 }

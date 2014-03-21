@@ -19,29 +19,19 @@
 package org.apache.streams.core;
 
 import java.math.BigInteger;
+import java.util.Iterator;
+import java.util.Queue;
 
-public interface StreamsResultSet extends Iterable<StreamsDatum> {
-    /**
-     * Get the time that the result set started collecting
-     * @return long representing time since epoch
-     */
-    long getStartTime();
+public class StreamsResultSet implements Iterable<StreamsDatum> {
 
-    /**
-     * Get the time that the result set stopped collecting
-     * @return long representing time since epoch
-     */
-    long getEndTime();
+    Queue<StreamsDatum> queue;
 
-    /**
-     * Get the source Unique identifier
-     * @return String id
-     */
-    String getSourceId();
+    public StreamsResultSet(Queue<StreamsDatum> queue) {
+        this.queue = queue;
+    }
 
-    /**
-     * Get the maximum id of the items in the result set
-     * @return the max sequence ID
-     */
-    BigInteger getMaxSequence();
+    @Override
+    public Iterator<StreamsDatum> iterator() {
+        return queue.iterator();
+    }
 }

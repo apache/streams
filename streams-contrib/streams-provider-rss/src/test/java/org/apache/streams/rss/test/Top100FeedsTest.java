@@ -2,6 +2,7 @@ package org.apache.streams.rss.test;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
+import org.apache.streams.core.tasks.StreamsProviderTask;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.rss.FeedDetails;
 import org.apache.streams.rss.RssStreamConfiguration;
@@ -53,7 +54,8 @@ public class Top100FeedsTest{
         configuration.setFeeds(feeds);
 
         RssStreamProvider provider = new RssStreamProvider(configuration, Activity.class);
-        provider.start();
+        provider.prepare(configuration);
+        provider.startStream();
 
         try {
             Thread.sleep(10000);
