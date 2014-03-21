@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-provider-google</artifactId>
-        <version>0.1.STREAMS26-SNAPSHOT</version>
+        <version>0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,9 +13,12 @@
 
     <repositories>
         <repository>
-            <id>typesafe</id>
+            <id>sonatype</id>
             <name>typesafe</name>
-            <url>http://repo.typesafe.com/typesafe/repo</url>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
