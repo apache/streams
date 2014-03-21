@@ -53,7 +53,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
     }
 
     /**
-     * NOTE NECCESSARY AT THE MOMENT.  MAY BECOME NECESSARY AS WE LOOK AT MAKING JOIN TASKS. CURRENTLY ALL TASK HAVE MAX
+     * NOTE NECESSARY AT THE MOMENT.  MAY BECOME NECESSARY AS WE LOOK AT MAKING JOIN TASKS. CURRENTLY ALL TASK HAVE MAX
      * OF 1 INPUT QUEUE.
      * Round Robins through input queues to get the next StreamsDatum. If all input queues are empty, it will return null.
      * @return the next StreamsDatum or null if all input queues are empty.

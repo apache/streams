@@ -70,7 +70,7 @@
         <jaxbutil.version>1.2.6</jaxbutil.version>
         <junit.version>4.11</junit.version>
         <slf4j.version>1.7.6</slf4j.version>
-        <logback.version>1.0.9</logback.version>
+        <logback.version>1.1.1</logback.version>
         <commons-io.version>2.4</commons-io.version>
         <commons-lang3.version>3.1</commons-lang3.version>
         <typesafe.config.version>1.2.0</typesafe.config.version>

@@ -4,6 +4,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.core.StreamsProvider;
+import org.apache.streams.core.tasks.LocalStreamMonitorThread;
 import org.apache.streams.core.tasks.StreamsProviderTask;
 import org.apache.streams.core.tasks.StreamsTask;
 import org.apache.streams.util.SerializationUtil;
@@ -11,10 +12,7 @@ import org.joda.time.DateTime;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * {@link org.apache.streams.core.builders.StreamBuilder} implementation to run a data processing stream in a single
@@ -29,6 +27,7 @@ public class LocalStreamBuilder implements StreamBuilder{
     private Map<String, Object> streamConfig;
     private ExecutorService executor;
     private int totalTasks;
+    private LocalStreamMonitorThread monitorThread;
 
     /**
      *
@@ -127,7 +126,9 @@ public class LocalStreamBuilder implements StreamBuilder{
         this.executor = Executors.newFixedThreadPool(this.totalTasks);
         Map<String, StreamsProviderTask> provTasks = new HashMap<String, StreamsProviderTask>();
         Map<String, List<StreamsTask>> streamsTasks = new HashMap<String, List<StreamsTask>>();
+        monitorThread = new LocalStreamMonitorThread(this.executor, 1000);
         try {
+            this.executor.submit(monitorThread);
             for(StreamComponent comp : this.components.values()) {
                 int tasks = comp.getNumTasks();
                 List<StreamsTask> compTasks = new LinkedList<StreamsTask>();
@@ -145,7 +146,6 @@ public class LocalStreamBuilder implements StreamBuilder{
                 this.executor.submit(task);
                 provTasks.put(prov.getId(), (StreamsProviderTask) task);
             }
-
             while(isRunning) {
                 isRunning = false;
                 for(StreamsProviderTask task : provTasks.values()) {
@@ -155,6 +155,7 @@ public class LocalStreamBuilder implements StreamBuilder{
                     Thread.sleep(3000);
                 }
             }
+            //monitorThread.shutdown();
             this.executor.shutdown();
             //complete stream shut down gracfully 
             for(StreamComponent prov : this.providers.values()) {

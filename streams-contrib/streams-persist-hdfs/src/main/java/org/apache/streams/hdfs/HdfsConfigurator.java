@@ -1,5 +1,6 @@
 package org.apache.streams.hdfs;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 public class HdfsConfigurator {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(HdfsConfigurator.class);
+
+    private final static ObjectMapper mapper = new ObjectMapper();
 
     public static HdfsConfiguration detectConfiguration(Config hdfs) {
         String host = hdfs.getString("host");
@@ -27,6 +30,18 @@ public class HdfsConfigurator {
         hdfsConfiguration.setPassword(password);
 
         return hdfsConfiguration;
+    }
+
+    public static HdfsReaderConfiguration detectReaderConfiguration(Config hdfs) {
+
+        HdfsConfiguration hdfsConfiguration = detectConfiguration(hdfs);
+        HdfsReaderConfiguration hdfsReaderConfiguration  = mapper.convertValue(hdfsConfiguration, HdfsReaderConfiguration.class);
+
+        String readerPath = hdfs.getString("readerPath");
+
+        hdfsReaderConfiguration.setReaderPath(readerPath);
+
+        return hdfsReaderConfiguration;
     }
 
 }

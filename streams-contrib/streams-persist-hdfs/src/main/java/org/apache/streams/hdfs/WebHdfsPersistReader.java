@@ -1,13 +1,14 @@
 package org.apache.streams.hdfs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.*;
+import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.web.WebHdfsFileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.streams.core.StreamsDatum;
@@ -17,16 +18,16 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Collection;
 import java.util.Queue;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by sblackmon on 2/28/14.
@@ -117,11 +118,19 @@ public class WebHdfsPersistReader implements StreamsPersistReader {
         connectToWebHDFS();
         path = new Path(hdfsConfiguration.getPath() + "/" + hdfsConfiguration.getReaderPath());
         try {
-            status = client.listStatus(path);
+            if( client.isFile(path)) {
+                FileStatus fileStatus = client.getFileStatus(path);
+                status = new FileStatus[1];
+                status[0] = fileStatus;
+            } else if( client.isDirectory(path)){
+                status = client.listStatus(path);
+            } else {
+                LOGGER.error("Neither file nor directory, wtf");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+        persistQueue = new LinkedBlockingQueue<StreamsDatum>(10000);
         executor = Executors.newSingleThreadExecutor();
     }
 
@@ -132,7 +141,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader {
 
     @Override
     public StreamsResultSet readAll() {
-        readSourceWritePersistQueue();
+        startStream();
         return new StreamsResultSet(persistQueue);
     }
 
@@ -167,40 +176,4 @@ public class WebHdfsPersistReader implements StreamsPersistReader {
         return null;
     }
 
-    private void readSourceWritePersistQueue() {
-        for( FileStatus fileStatus : status ) {
-            BufferedReader reader;
-            LOGGER.info("Found " + fileStatus.getPath().getName());
-            if( persistQueue.size() > 0 ) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                }
-            }
-            if( fileStatus.isFile() && !fileStatus.getPath().getName().startsWith("_")) {
-                LOGGER.info("Processing " + fileStatus.getPath().getName());
-                try {
-                    reader = new BufferedReader(new InputStreamReader(client.open(fileStatus.getPath())));
-
-                    String line = "";
-                    do{
-                        try {
-                            line = reader.readLine();
-                            if( !Strings.isNullOrEmpty(line) ) {
-                                String[] fields = line.split(Character.toString(DELIMITER));
-                                StreamsDatum entry = new StreamsDatum(fields[3], fields[0], new DateTime(fields[2]));
-                                persistQueue.offer(entry);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            LOGGER.warn(e.getMessage());
-                        }
-                    } while( line != null );
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    LOGGER.warn(e.getMessage());
-                }
-            }
-        }
-    }
 }
