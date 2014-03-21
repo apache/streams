@@ -128,7 +128,7 @@ public class LocalStreamBuilder implements StreamBuilder{
         Map<String, List<StreamsTask>> streamsTasks = new HashMap<String, List<StreamsTask>>();
         monitorThread = new LocalStreamMonitorThread(this.executor, 1000);
         try {
-            this.executor.submit(monitorThread);
+            //this.executor.submit(monitorThread);
             for(StreamComponent comp : this.components.values()) {
                 int tasks = comp.getNumTasks();
                 List<StreamsTask> compTasks = new LinkedList<StreamsTask>();
