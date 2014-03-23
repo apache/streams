@@ -4,6 +4,7 @@ streams-master-pom/
 # Compile directores and files #
 
 target/
+overlays/
 dependency-reduced-pom.xml
 
 # IDE directories/files #
