@@ -94,11 +94,11 @@
         <module>streams-config</module>
         <module>streams-config-graph</module>
         <module>streams-pojo</module>
-        <!--<module>streams-storm</module>-->
         <module>streams-util</module>
         <module>streams-pojo-extensions</module>
         <module>streams-contrib</module>
         <module>streams-core</module>
+        <module>streams-runtimes</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -153,10 +153,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
         </dependency>
     </dependencies>
 

@@ -18,7 +18,6 @@
 
 package org.apache.streams.core;
 
-import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.Queue;
 
@@ -26,12 +25,36 @@ public class StreamsResultSet implements Iterable<StreamsDatum> {
 
     Queue<StreamsDatum> queue;
 
+    DatumStatusCounter counter;
+
     public StreamsResultSet(Queue<StreamsDatum> queue) {
         this.queue = queue;
     }
+
 
     @Override
     public Iterator<StreamsDatum> iterator() {
         return queue.iterator();
     }
+
+    public int size() {
+        return queue.size();
+    }
+
+    public Queue<StreamsDatum> getQueue() {
+        return queue;
+    }
+
+    public void setQueue(Queue<StreamsDatum> queue) {
+        this.queue = queue;
+    }
+
+    public DatumStatusCounter getCounter() {
+        return counter;
+    }
+
+    public void setCounter(DatumStatusCounter counter) {
+        this.counter = counter;
+    }
 }
+

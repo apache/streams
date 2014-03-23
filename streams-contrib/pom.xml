@@ -38,6 +38,7 @@
     <modules>
         <module>streams-persist-console</module>
         <module>streams-persist-elasticsearch</module>
+        <module>streams-persist-hbase</module>
         <module>streams-persist-hdfs</module>
         <module>streams-persist-kafka</module>
         <module>streams-persist-mongo</module>
@@ -49,7 +50,6 @@
         <module>streams-provider-twitter</module>
         <module>streams-provider-sysomos</module>
         <module>streams-provider-rss</module>
-        <module>streams-components-test</module>
     </modules>
 
     <dependencyManagement>

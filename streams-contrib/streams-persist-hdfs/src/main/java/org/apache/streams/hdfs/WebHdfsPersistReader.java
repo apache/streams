@@ -154,8 +154,6 @@ public class WebHdfsPersistReader implements StreamsPersistReader {
     @Override
     public StreamsResultSet readCurrent() {
 
-        LOGGER.debug("readCurrent: {}", persistQueue.size());
-
         Collection<StreamsDatum> currentIterator = Lists.newArrayList();
         Iterators.addAll(currentIterator, persistQueue.iterator());
 

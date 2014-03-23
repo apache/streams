@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
-import org.apache.streams.core.tasks.StreamsPersistWriterTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,16 +1,16 @@
 {
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
-    "javaType": "com.datasift.Datasift",
+    "javaType": "org.apache.streams.datasift.Datasift",
     "properties": {
         "blog": {
-            "javaType": "com.datasift.blog.Blog",
+            "javaType": "org.apache.streams.datasift.blog.Blog",
             "type": "object",
             "dynamic": "true",
             "properties": {
                 "author": {
                     "type": "object",
-                    "javaType": "com.datasift.blog.BlogAuthor",
+                    "javaType": "org.apache.streams.datasift.blog.BlogAuthor",
                     "dynamic": "true",
                     "properties": {
                         "link": {
@@ -56,7 +56,7 @@
             }
         },
         "facebook": {
-            "javaType": "com.datasift.config.Facebook",
+            "javaType": "org.apache.streams.datasift.config.Facebook",
             "type": "object",
             "dynamic": "true",
             "properties": {
@@ -64,7 +64,7 @@
                     "type": "string"
                 },
                 "author": {
-                    "javaType": "com.datasift.config.Author",
+                    "javaType": "org.apache.streams.datasift.config.Author",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {
@@ -89,12 +89,12 @@
                     "type": "string"
                 },
                 "likes": {
-                    "javaType": "com.datasift.config.Likes",
+                    "javaType": "org.apache.streams.datasift.config.Likes",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {
                         "count": {
-                            "type": "long"
+                            "type": "integer"
                         },
                         "ids": {
                             "type": "string"
@@ -111,7 +111,7 @@
                     "type": "string"
                 },
                 "to": {
-                    "javaType": "com.datasift.config.To",
+                    "javaType": "org.apache.streams.datasift.config.To",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {
@@ -139,12 +139,12 @@
             }
         },
         "interaction": {
-            "javaType": "com.datasift.interaction.Interaction",
+            "javaType": "org.apache.streams.datasift.interaction.Interaction",
             "type": "object",
             "dynamic": "true",
             "properties": {
                 "author": {
-                    "javaType": "com.datasift.interaction.Author",
+                    "javaType": "org.apache.streams.datasift.interaction.Author",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {
@@ -152,7 +152,7 @@
                             "type": "string"
                         },
                         "id": {
-                            "type": "long"
+                            "type": "integer"
                         },
                         "link": {
                             "type": "string"
@@ -175,15 +175,15 @@
                     "type": "string"
                 },
                 "geo": {
-                    "javaType": "com.datasift.interaction.Geo",
+                    "javaType": "org.apache.streams.datasift.interaction.Geo",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {
                         "latitude": {
-                            "type": "double"
+                            "type": "number"
                         },
                         "longitude": {
-                            "type": "double"
+                            "type": "number"
                         }
                     }
                 },
@@ -197,7 +197,7 @@
                     "dynamic": "true",
                     "properties": {
                         "version": {
-                            "type": "long"
+                            "type": "integer"
                         }
                     }
                 },
@@ -221,22 +221,22 @@
             }
         },
         "klout": {
-            "javaType": "com.datasift.klout.Klout",
+            "javaType": "org.apache.streams.datasift.klout.Klout",
             "type": "object",
             "dynamic": "true",
             "properties": {
                 "score": {
-                    "type": "long"
+                    "type": "integer"
                 }
             }
         },
         "language": {
-            "javaType": "com.datasift.interaction.Language",
+            "javaType": "org.apache.streams.datasift.interaction.Language",
             "type": "object",
             "dynamic": "true",
             "properties": {
                 "confidence": {
-                    "type": "long"
+                    "type": "integer"
                 },
                 "tag": {
                     "type": "string"
@@ -244,12 +244,12 @@
             }
         },
         "links": {
-            "javaType": "com.datasift.interaction.Links",
+            "javaType": "org.apache.streams.datasift.interaction.Links",
             "type": "object",
             "dynamic": "true",
             "properties": {
                 "code": {
-                    "type": "long"
+                    "type": "integer"
                 },
                 "created_at": {
                     "type": "array",
@@ -269,7 +269,7 @@
                 },
                 "meta": {
                     "dynamic": "true",
-                    "javaType": "com.datasift.interaction.Meta",
+                    "javaType": "org.apache.streams.datasift.interaction.Meta",
                     "type": "object",
                     "properties": {
                         "charset": {
@@ -316,7 +316,7 @@
                             "type": "array",
                             "items": [
                                 {
-                                    "javaType": "com.datasift.interaction.meta.OpenGraph",
+                                    "javaType": "org.apache.streams.datasift.interaction.meta.OpenGraph",
                                     "type": "object",
                                     "dynamic": "true",
                                     "properties": {
@@ -346,7 +346,7 @@
                             "type": "array",
                             "items": [
                                 {
-                                    "javaType": "com.datasift.interaction.meta.Twitter",
+                                    "javaType": "org.apache.streams.datasift.interaction.meta.Twitter",
                                     "type": "object",
                                     "dynamic": "true",
                                     "properties": {
@@ -395,7 +395,7 @@
                     ]
                 },
                 "retweet_count": {
-                    "type": "long"
+                    "type": "integer"
                 },
                 "title": {
                     "type": "array",
@@ -416,12 +416,12 @@
             }
         },
         "salience": {
-            "javaType": "com.datasift.salience.Salience",
+            "javaType": "org.apache.streams.datasift.salience.Salience",
             "type": "object",
             "dynamic": "true",
             "properties": {
                 "content": {
-                    "javaType": "com.datasift.salience.content.Content",
+                    "javaType": "org.apache.streams.datasift.salience.content.Content",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {
@@ -429,18 +429,18 @@
                             "type": "array",
                             "items": [
                                 {
-                                    "javaType": "com.datasift.salience.content.Entities",
+                                    "javaType": "org.apache.streams.datasift.salience.content.Entities",
                                     "type": "object",
                                     "dynamic": "true",
                                     "properties": {
                                         "about": {
-                                            "type": "long"
+                                            "type": "integer"
                                         },
                                         "confident": {
-                                            "type": "long"
+                                            "type": "integer"
                                         },
                                         "evidence": {
-                                            "type": "long"
+                                            "type": "integer"
                                         },
                                         "label": {
                                             "type": "string"
@@ -449,7 +449,7 @@
                                             "type": "string"
                                         },
                                         "sentiment": {
-                                            "type": "long"
+                                            "type": "integer"
                                         },
                                         "themes": {
                                             "type": "string"
@@ -462,12 +462,12 @@
                             ]
                         },
                         "sentiment": {
-                            "type": "long"
+                            "type": "integer"
                         }
                     }
                 },
                 "title": {
-                    "javaType": "com.datasift.salience.title.Title",
+                    "javaType": "org.apache.streams.datasift.salience.title.Title",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {
@@ -475,18 +475,18 @@
                             "type": "array",
                             "items": [
                                 {
-                                    "javaType": "com.datasift.salience.title.Entities",
+                                    "javaType": "org.apache.streams.datasift.salience.title.Entities",
                                     "type": "object",
                                     "dynamic": "true",
                                     "properties": {
                                         "about": {
-                                            "type": "long"
+                                            "type": "integer"
                                         },
                                         "confident": {
-                                            "type": "long"
+                                            "type": "integer"
                                         },
                                         "evidence": {
-                                            "type": "long"
+                                            "type": "integer"
                                         },
                                         "label": {
                                             "type": "string"
@@ -495,7 +495,7 @@
                                             "type": "string"
                                         },
                                         "sentiment": {
-                                            "type": "long"
+                                            "type": "integer"
                                         },
                                         "themes": {
                                             "type": "string"
@@ -508,14 +508,14 @@
                             ]
                         },
                         "sentiment": {
-                            "type": "long"
+                            "type": "integer"
                         }
                     }
                 }
             }
         },
         "trends": {
-            "javaType": "com.datasift.trends.Trends",
+            "javaType": "org.apache.streams.datasift.trends.Trends",
             "type": "object",
             "dynamic": "true",
             "properties": {
@@ -546,7 +546,7 @@
             }
         },
         "twitter": {
-            "javaType": "com.datasift.twitter.Twitter",
+            "javaType": "org.apache.streams.datasift.twitter.Twitter",
             "type": "object",
             "dynamic": "true",
             "properties": {
@@ -565,15 +565,15 @@
                     "type": "string"
                 },
                 "geo": {
-                    "javaType": "com.datasift.twitter.Geo",
+                    "javaType": "org.apache.streams.datasift.twitter.Geo",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {
                         "latitude": {
-                            "type": "double"
+                            "type": "number"
                         },
                         "longitude": {
-                            "type": "double"
+                            "type": "number"
                         }
                     }
                 },
@@ -612,7 +612,7 @@
                     "type": "array",
                     "items": [
                         {
-                            "javaType": "com.datasift.twitter.Media",
+                            "javaType": "org.apache.streams.datasift.twitter.Media",
                             "type": "object",
                             "dynamic": "true",
                             "properties": {
@@ -623,7 +623,7 @@
                                     "type": "string"
                                 },
                                 "id": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "id_str": {
                                     "type": "string"
@@ -641,13 +641,13 @@
                                             "dynamic": "true",
                                             "properties": {
                                                 "h": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 },
                                                 "resize": {
                                                     "type": "string"
                                                 },
                                                 "w": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 }
                                             }
                                         },
@@ -655,13 +655,13 @@
                                             "dynamic": "true",
                                             "properties": {
                                                 "h": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 },
                                                 "resize": {
                                                     "type": "string"
                                                 },
                                                 "w": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 }
                                             }
                                         },
@@ -669,13 +669,13 @@
                                             "dynamic": "true",
                                             "properties": {
                                                 "h": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 },
                                                 "resize": {
                                                     "type": "string"
                                                 },
                                                 "w": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 }
                                             }
                                         },
@@ -683,20 +683,20 @@
                                             "dynamic": "true",
                                             "properties": {
                                                 "h": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 },
                                                 "resize": {
                                                     "type": "string"
                                                 },
                                                 "w": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
                                     }
                                 },
                                 "source_status_id": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "source_status_id_str": {
                                     "type": "string"
@@ -712,7 +712,7 @@
                     ]
                 },
                 "mention_ids": {
-                    "type": "long"
+                    "type": "integer"
                 },
                 "mentions": {
                     "type": "array",
@@ -723,7 +723,7 @@
                     ]
                 },
                 "place": {
-                    "javaType": "com.datasift.twitter.Place",
+                    "javaType": "org.apache.streams.datasift.twitter.Place",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {
@@ -759,12 +759,12 @@
                     }
                 },
                 "retweet": {
-                    "javaType": "com.datasift.twitter.Retweet",
+                    "javaType": "org.apache.streams.datasift.twitter.Retweet",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {
                         "count": {
-                            "type": "long"
+                            "type": "integer"
                         },
                         "created_at": {
                             "type": "string"
@@ -809,7 +809,7 @@
                                     "type": "string"
                                 },
                                 "id": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "id_str": {
                                     "type": "string"
@@ -827,13 +827,13 @@
                                             "dynamic": "true",
                                             "properties": {
                                                 "h": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 },
                                                 "resize": {
                                                     "type": "string"
                                                 },
                                                 "w": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 }
                                             }
                                         },
@@ -841,13 +841,13 @@
                                             "dynamic": "true",
                                             "properties": {
                                                 "h": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 },
                                                 "resize": {
                                                     "type": "string"
                                                 },
                                                 "w": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 }
                                             }
                                         },
@@ -855,13 +855,13 @@
                                             "dynamic": "true",
                                             "properties": {
                                                 "h": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 },
                                                 "resize": {
                                                     "type": "string"
                                                 },
                                                 "w": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 }
                                             }
                                         },
@@ -869,20 +869,20 @@
                                             "dynamic": "true",
                                             "properties": {
                                                 "h": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 },
                                                 "resize": {
                                                     "type": "string"
                                                 },
                                                 "w": {
-                                                    "type": "long"
+                                                    "type": "integer"
                                                 }
                                             }
                                         }
                                     }
                                 },
                                 "source_status_id": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "source_status_id_str": {
                                     "type": "string"
@@ -896,7 +896,7 @@
                             }
                         },
                         "mention_ids": {
-                            "type": "long"
+                            "type": "integer"
                         },
                         "mentions": {
                             "type": "array",
@@ -913,7 +913,7 @@
                             "type": "string"
                         },
                         "user": {
-                            "javaType": "com.datasift.twitter.User",
+                            "javaType": "org.apache.streams.datasift.twitter.User",
                             "type": "object",
                             "dynamic": "true",
                             "properties": {
@@ -924,16 +924,16 @@
                                     "type": "string"
                                 },
                                 "followers_count": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "friends_count": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "geo_enabled": {
                                     "type": "boolean"
                                 },
                                 "id": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "id_str": {
                                     "type": "string"
@@ -942,7 +942,7 @@
                                     "type": "string"
                                 },
                                 "listed_count": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "location": {
                                     "type": "string"
@@ -957,7 +957,7 @@
                                     "type": "string"
                                 },
                                 "statuses_count": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "time_zone": {
                                     "type": "string"
@@ -966,14 +966,14 @@
                                     "type": "string"
                                 },
                                 "utc_offset": {
-                                    "type": "long"
+                                    "type": "integer"
                                 }
                             }
                         }
                     }
                 },
                 "retweeted": {
-                    "javaType": "com.datasift.twitter.Retweeted",
+                    "javaType": "org.apache.streams.datasift.twitter.Retweeted",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {
@@ -984,10 +984,10 @@
                             "dynamic": "true",
                             "properties": {
                                 "latitude": {
-                                    "type": "double"
+                                    "type": "number"
                                 },
                                 "longitude": {
-                                    "type": "double"
+                                    "type": "number"
                                 }
                             }
                         },
@@ -1037,16 +1037,16 @@
                                     "type": "string"
                                 },
                                 "followers_count": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "friends_count": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "geo_enabled": {
                                     "type": "boolean"
                                 },
                                 "id": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "id_str": {
                                     "type": "string"
@@ -1055,7 +1055,7 @@
                                     "type": "string"
                                 },
                                 "listed_count": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "location": {
                                     "type": "string"
@@ -1070,7 +1070,7 @@
                                     "type": "string"
                                 },
                                 "statuses_count": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "time_zone": {
                                     "type": "string"
@@ -1079,7 +1079,7 @@
                                     "type": "string"
                                 },
                                 "utc_offset": {
-                                    "type": "long"
+                                    "type": "integer"
                                 },
                                 "verified": {
                                     "type": "boolean"
@@ -1095,7 +1095,7 @@
                     "type": "string"
                 },
                 "user": {
-                    "javaType": "com.datasift.interaction.User",
+                    "javaType": "org.apache.streams.datasift.interaction.User",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {
@@ -1106,16 +1106,16 @@
                             "type": "string"
                         },
                         "followers_count": {
-                            "type": "long"
+                            "type": "integer"
                         },
                         "friends_count": {
-                            "type": "long"
+                            "type": "integer"
                         },
                         "geo_enabled": {
                             "type": "boolean"
                         },
                         "id": {
-                            "type": "long"
+                            "type": "integer"
                         },
                         "id_str": {
                             "type": "string"
@@ -1124,7 +1124,7 @@
                             "type": "string"
                         },
                         "listed_count": {
-                            "type": "long"
+                            "type": "integer"
                         },
                         "location": {
                             "type": "string"
@@ -1139,7 +1139,7 @@
                             "type": "string"
                         },
                         "statuses_count": {
-                            "type": "long"
+                            "type": "integer"
                         },
                         "time_zone": {
                             "type": "string"
@@ -1148,7 +1148,7 @@
                             "type": "string"
                         },
                         "utc_offset": {
-                            "type": "long"
+                            "type": "integer"
                         },
                         "verified": {
                             "type": "boolean"
@@ -1158,12 +1158,12 @@
             }
         },
         "youtube": {
-            "javaType": "com.datasift.youtube.YouTube",
+            "javaType": "org.apache.streams.datasift.youtube.YouTube",
             "type": "object",
             "dynamic": "true",
             "properties": {
                 "author": {
-                    "javaType": "com.datasift.youtube.Author",
+                    "javaType": "org.apache.streams.datasift.youtube.Author",
                     "type": "object",
                     "dynamic": "true",
                     "properties": {

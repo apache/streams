@@ -26,7 +26,7 @@ public class WebHdfsPersistReaderTask implements Runnable {
             BufferedReader bufferedReader;
             LOGGER.info("Found " + fileStatus.getPath().getName());
             if( fileStatus.isFile() && !fileStatus.getPath().getName().startsWith("_")) {
-                LOGGER.info("Processing " + fileStatus.getPath().getName());
+                LOGGER.info("Started Processing " + fileStatus.getPath().getName());
                 try {
                     bufferedReader = new BufferedReader(new InputStreamReader(reader.client.open(fileStatus.getPath())));
                 } catch (Exception e) {
@@ -56,7 +56,12 @@ public class WebHdfsPersistReaderTask implements Runnable {
                     }
                 } while( !Strings.isNullOrEmpty(line) );
                 LOGGER.info("Finished Processing " + fileStatus.getPath().getName());
-
+                try {
+                    bufferedReader.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    LOGGER.error(e.getMessage());
+                }
             }
         }
 
