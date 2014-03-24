@@ -76,15 +76,16 @@ public abstract class BaseStreamsTask implements StreamsTask {
      */
     protected void addToOutgoingQueue(StreamsDatum datum) {
         if(this.outQueues.size() == 1) {
-            this.outQueues.get(0).offer(datum);
+            enqueue(outQueues.get(0), datum);
         }
         else {
             StreamsDatum newDatum = null;
             for(Queue<StreamsDatum> queue : this.outQueues) {
                 try {
                     newDatum = cloneStreamsDatum(datum);
-                    if(newDatum != null)
-                        queue.offer(newDatum);
+                    if(newDatum != null) {
+                        enqueue(queue, newDatum);
+                    }
                 } catch (RuntimeException e) {
                     LOGGER.debug("Failed to add StreamsDatum to outgoing queue : {}", datum);
                     LOGGER.error("Exception while offering StreamsDatum to outgoing queue: {}", e);
@@ -146,4 +147,12 @@ public abstract class BaseStreamsTask implements StreamsTask {
         return this.inIndex;
     }
 
+    private void enqueue( Queue<StreamsDatum> queue, StreamsDatum entry ) {
+        boolean success;
+        do {
+            success = queue.offer(entry);
+            Thread.yield();
+        }
+        while( !success );
+    }
 }
