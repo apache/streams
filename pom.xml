@@ -88,17 +88,13 @@
         <module>poms</module>
         <module>provision</module>
         <module>streams-osgi-components</module>
-        <module>streams-eip-routes</module>
-        <module>streams-cassandra</module>
-        <module>streams-web</module>
+        <module>streams-core</module>
         <module>streams-config</module>
-        <module>streams-config-graph</module>
         <module>streams-pojo</module>
         <module>streams-util</module>
-        <module>streams-pojo-extensions</module>
         <module>streams-contrib</module>
-        <module>streams-core</module>
         <module>streams-runtimes</module>
+        <module>streams-web</module>
     </modules>
 
     <packaging>pom</packaging>

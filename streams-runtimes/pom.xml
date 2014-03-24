@@ -35,5 +35,6 @@
     <modules>
         <module>streams-runtime-local</module>
         <module>streams-runtime-storm</module>
+        <module>streams-runtime-webapp</module>
     </modules>
 </project>
