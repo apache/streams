@@ -38,6 +38,14 @@
             "type": "string",
             "description": "Setting this parameter to one of none, low, or medium will set the minimum value of the filter_level Tweet attribute required to be included in the stream"
         },
+        "with": {
+            "type": "string",
+            "description": "Typically following or user"
+        },
+        "replies": {
+            "type": "string",
+            "description": "Set to all, to see all @replies"
+        },
         "follow": {
             "type": "array",
             "description": "A list of user IDs, indicating the users whose Tweets should be delivered on the stream",
@@ -71,6 +79,20 @@
                     "type": "string"
                 },
                 "accessTokenSecret": {
+                    "type": "string"
+                }
+            }
+        },
+        "basicauth": {
+            "type": "object",
+            "dynamic": "true",
+            "javaType" : "org.apache.streams.twitter.TwitterBasicAuthConfiguration",
+            "javaInterfaces": ["java.io.Serializable"],
+            "properties": {
+                "username": {
+                    "type": "string"
+                },
+                "password": {
                     "type": "string"
                 }
             }

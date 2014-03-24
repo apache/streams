@@ -1,8 +1,6 @@
 package org.apache.streams.hdfs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
@@ -11,9 +9,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.web.WebHdfsFileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsPersistReader;
-import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.core.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +19,6 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.PrivilegedExceptionAction;
-import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,7 +27,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Created by sblackmon on 2/28/14.
  */
-public class WebHdfsPersistReader implements StreamsPersistReader {
+public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCountable {
 
     public final static String STREAMS_ID = "WebHdfsPersistReader";
 
@@ -51,6 +46,9 @@ public class WebHdfsPersistReader implements StreamsPersistReader {
     private HdfsReaderConfiguration hdfsConfiguration;
 
     private ExecutorService executor;
+
+    protected DatumStatusCounter countersTotal = new DatumStatusCounter();
+    protected DatumStatusCounter countersCurrent = new DatumStatusCounter();
 
     public WebHdfsPersistReader(HdfsReaderConfiguration hdfsConfiguration) {
         this.hdfsConfiguration = hdfsConfiguration;
@@ -130,7 +128,8 @@ public class WebHdfsPersistReader implements StreamsPersistReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        persistQueue = new LinkedBlockingQueue<StreamsDatum>(10000);
+        persistQueue = Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(10000));
+        //persistQueue = Queues.synchronizedQueue(new ConcurrentLinkedQueue());
         executor = Executors.newSingleThreadExecutor();
     }
 
@@ -154,12 +153,16 @@ public class WebHdfsPersistReader implements StreamsPersistReader {
     @Override
     public StreamsResultSet readCurrent() {
 
-        Collection<StreamsDatum> currentIterator = Lists.newArrayList();
-        Iterators.addAll(currentIterator, persistQueue.iterator());
+        StreamsResultSet current;
 
-        StreamsResultSet current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(currentIterator));
-
-        persistQueue.clear();
+        synchronized( WebHdfsPersistReader.class ) {
+            current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(persistQueue));
+            current.setCounter(new DatumStatusCounter());
+            current.getCounter().add(countersCurrent);
+            countersTotal.add(countersCurrent);
+            countersCurrent = new DatumStatusCounter();
+            persistQueue.clear();
+        }
 
         return current;
     }
@@ -174,4 +177,8 @@ public class WebHdfsPersistReader implements StreamsPersistReader {
         return null;
     }
 
+    @Override
+    public DatumStatusCounter getDatumStatusCounter() {
+        return countersTotal;
+    }
 }

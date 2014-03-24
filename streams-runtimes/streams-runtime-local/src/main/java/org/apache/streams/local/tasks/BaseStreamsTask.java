@@ -145,4 +145,5 @@ public abstract class BaseStreamsTask implements StreamsTask {
         }
         return this.inIndex;
     }
+
 }

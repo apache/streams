@@ -1,9 +1,6 @@
 package org.apache.streams.local.tasks;
 
-import org.apache.streams.core.DatumStatusCounter;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsProvider;
-import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.core.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +13,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  *
  */
-public class StreamsProviderTask extends BaseStreamsTask {
+public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusCountable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsProviderTask.class);
+
+    @Override
+    public DatumStatusCounter getDatumStatusCounter() {
+        return this.statusCounter;
+    }
 
     private static enum Type {
         PERPETUAL,
@@ -41,7 +43,7 @@ public class StreamsProviderTask extends BaseStreamsTask {
     private AtomicBoolean isRunning;
 
     private int zeros = 0;
-    private DatumStatusCounter statusCounter;
+    private DatumStatusCounter statusCounter = new DatumStatusCounter();
 
     /**
      * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readCurrent()}
@@ -119,7 +121,7 @@ public class StreamsProviderTask extends BaseStreamsTask {
                                 zeros = 0;
                                 if( resultSet.getCounter() != null ) {
                                     LOGGER.debug(resultSet.getCounter().toString());
-                                    statusCounter.add(resultSet.getCounter());
+                                    this.statusCounter.add(resultSet.getCounter());
                                 }
                             }
                             flushResults(resultSet);

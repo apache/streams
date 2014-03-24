@@ -2,6 +2,7 @@ package org.apache.streams.hdfs;
 
 import com.google.common.base.Strings;
 import org.apache.hadoop.fs.FileStatus;
+import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.StreamsDatum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,19 +41,16 @@ public class WebHdfsPersistReaderTask implements Runnable {
                     try {
                         line = bufferedReader.readLine();
                         if( !Strings.isNullOrEmpty(line) ) {
+                            reader.countersCurrent.incrementAttempt();
                             String[] fields = line.split(Character.toString(reader.DELIMITER));
                             StreamsDatum entry = new StreamsDatum(fields[3], fields[0]);
-                            boolean success;
-                            do {
-                                success = reader.persistQueue.offer(entry);
-                                Thread.yield();
-                            }
-                            while( success == false );
-
+                            write( entry );
+                            reader.countersCurrent.incrementStatus(DatumStatus.SUCCESS);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                         LOGGER.warn(e.getMessage());
+                        reader.countersCurrent.incrementStatus(DatumStatus.FAIL);
                     }
                 } while( !Strings.isNullOrEmpty(line) );
                 LOGGER.info("Finished Processing " + fileStatus.getPath().getName());
@@ -65,6 +63,17 @@ public class WebHdfsPersistReaderTask implements Runnable {
             }
         }
 
+    }
+
+    private void write( StreamsDatum entry ) {
+        boolean success;
+        do {
+            synchronized( WebHdfsPersistReader.class ) {
+                success = reader.persistQueue.offer(entry);
+            }
+            Thread.yield();
+        }
+        while( !success );
     }
 
 }

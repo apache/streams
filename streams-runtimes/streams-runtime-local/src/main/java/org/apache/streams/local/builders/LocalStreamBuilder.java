@@ -2,6 +2,7 @@ package org.apache.streams.local.builders;
 
 import org.apache.streams.core.*;
 import org.apache.streams.local.tasks.LocalStreamProcessMonitorThread;
+import org.apache.streams.local.tasks.StatusCounterMonitorThread;
 import org.apache.streams.local.tasks.StreamsProviderTask;
 import org.apache.streams.local.tasks.StreamsTask;
 import org.apache.streams.util.SerializationUtil;
@@ -28,6 +29,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     private ExecutorService executor;
     private ExecutorService monitor;
     private int totalTasks;
+    private int monitorTasks;
     private LocalStreamProcessMonitorThread monitorThread;
 
     /**
@@ -64,6 +66,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         this.components = new HashMap<String, StreamComponent>();
         this.streamConfig = streamConfig;
         this.totalTasks = 0;
+        this.monitorTasks = 0;
     }
 
     @Override
@@ -71,6 +74,8 @@ public class LocalStreamBuilder implements StreamBuilder {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, true));
         ++this.totalTasks;
+        if( provider instanceof DatumStatusCountable )
+            ++this.monitorTasks;
         return this;
     }
 
@@ -79,6 +84,8 @@ public class LocalStreamBuilder implements StreamBuilder {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, false));
         ++this.totalTasks;
+        if( provider instanceof DatumStatusCountable )
+            ++this.monitorTasks;
         return this;
     }
 
@@ -87,6 +94,8 @@ public class LocalStreamBuilder implements StreamBuilder {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, sequence));
         ++this.totalTasks;
+        if( provider instanceof DatumStatusCountable )
+            ++this.monitorTasks;
         return this;
     }
 
@@ -95,6 +104,8 @@ public class LocalStreamBuilder implements StreamBuilder {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, start, end));
         ++this.totalTasks;
+        if( provider instanceof DatumStatusCountable )
+            ++this.monitorTasks;
         return this;
     }
 
@@ -105,6 +116,8 @@ public class LocalStreamBuilder implements StreamBuilder {
         this.components.put(id, comp);
         connectToOtherComponents(inBoundIds, comp);
         this.totalTasks += numTasks;
+        if( processor instanceof DatumStatusCountable )
+            ++this.monitorTasks;
         return this;
     }
 
@@ -115,6 +128,8 @@ public class LocalStreamBuilder implements StreamBuilder {
         this.components.put(id, comp);
         connectToOtherComponents(inBoundIds, comp);
         this.totalTasks += numTasks;
+        if( writer instanceof DatumStatusCountable )
+            ++this.monitorTasks;
         return this;
     }
 
@@ -125,11 +140,11 @@ public class LocalStreamBuilder implements StreamBuilder {
     public void start() {
         boolean isRunning = true;
         this.executor = Executors.newFixedThreadPool(this.totalTasks);
-        this.monitor = Executors.newSingleThreadExecutor();
+        this.monitor = Executors.newFixedThreadPool(this.monitorTasks+1);
         Map<String, StreamsProviderTask> provTasks = new HashMap<String, StreamsProviderTask>();
         Map<String, List<StreamsTask>> streamsTasks = new HashMap<String, List<StreamsTask>>();
-        monitorThread = new LocalStreamProcessMonitorThread(this.monitor, 1000);
         try {
+            monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
             this.monitor.submit(monitorThread);
             for(StreamComponent comp : this.components.values()) {
                 int tasks = comp.getNumTasks();
@@ -139,6 +154,8 @@ public class LocalStreamBuilder implements StreamBuilder {
                     task.setStreamConfig(this.streamConfig);
                     this.executor.submit(task);
                     compTasks.add(task);
+                    if( comp.isOperationCountable() )
+                        this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable)comp.getOperation(), 10));
                 }
                 streamsTasks.put(comp.getId(), compTasks);
             }
@@ -147,6 +164,10 @@ public class LocalStreamBuilder implements StreamBuilder {
                 task.setStreamConfig(this.streamConfig);
                 this.executor.submit(task);
                 provTasks.put(prov.getId(), (StreamsProviderTask) task);
+                if( prov.isOperationCountable() ) {
+                    this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) prov.getOperation(), 10));
+                    this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
+                }
             }
             while(isRunning) {
                 isRunning = false;

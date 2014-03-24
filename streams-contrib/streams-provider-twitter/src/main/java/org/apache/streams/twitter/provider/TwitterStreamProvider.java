@@ -13,6 +13,7 @@ import com.twitter.hbc.core.endpoint.StreamingEndpoint;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.BasicClient;
 import com.twitter.hbc.httpclient.auth.Authentication;
+import com.twitter.hbc.httpclient.auth.BasicAuth;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
@@ -143,10 +144,23 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
         else
             return;
 
-        Authentication auth = new OAuth1(config.getOauth().getConsumerKey(),
-                config.getOauth().getConsumerSecret(),
-                config.getOauth().getAccessToken(),
-                config.getOauth().getAccessTokenSecret());
+        Authentication auth;
+        if( config.getOauth() != null ) {
+            auth = new OAuth1(config.getOauth().getConsumerKey(),
+                    config.getOauth().getConsumerSecret(),
+                    config.getOauth().getAccessToken(),
+                    config.getOauth().getAccessTokenSecret());
+        } else if( config.getBasicauth() != null ) {
+            auth = new BasicAuth(
+                    config.getBasicauth().getUsername(),
+                    config.getBasicauth().getPassword()
+            );
+        } else {
+            return;
+        }
+
+        endpoint.addPostParameter("with", config.getWith());
+        endpoint.addPostParameter("replies", config.getReplies());
 
         client = new ClientBuilder()
                 .name("apache/streams/streams-contrib/streams-provider-twitter")

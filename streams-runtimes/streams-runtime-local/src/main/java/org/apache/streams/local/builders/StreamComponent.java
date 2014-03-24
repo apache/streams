@@ -1,9 +1,6 @@
 package org.apache.streams.local.builders;
 
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsPersistWriter;
-import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.core.StreamsProvider;
+import org.apache.streams.core.*;
 import org.apache.streams.local.tasks.StreamsPersistWriterTask;
 import org.apache.streams.local.tasks.StreamsProcessorTask;
 import org.apache.streams.local.tasks.StreamsProviderTask;
@@ -225,5 +222,24 @@ public class StreamComponent {
             return this.id.equals(((StreamComponent) o).id);
         else
             return false;
+    }
+
+    protected StreamsOperation getOperation() {
+        if(this.processor != null) {
+            return (StreamsOperation) this.processor;
+        }
+        else if(this.writer != null) {
+            return (StreamsOperation) this.writer;
+        }
+        else if(this.provider != null) {
+            return (StreamsOperation) this.provider;
+        }
+        else {
+            throw new InvalidStreamException("Underlying StreamComponoent was NULL.");
+        }
+    }
+
+    protected boolean isOperationCountable() {
+        return getOperation() instanceof DatumStatusCountable;
     }
 }

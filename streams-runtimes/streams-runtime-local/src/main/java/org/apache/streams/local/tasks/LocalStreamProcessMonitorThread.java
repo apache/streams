@@ -46,7 +46,7 @@ public class LocalStreamProcessMonitorThread implements Runnable
 
             String usedMemory = humanReadableByteCount(memoryUsage.getUsed(), true);
 
-            LOGGER.info("[monitor] Used Memory: {}, Max: {}",
+            LOGGER.debug("[monitor] Used Memory: {}, Max: {}",
                     usedMemory,
                     maxMemory);
 
