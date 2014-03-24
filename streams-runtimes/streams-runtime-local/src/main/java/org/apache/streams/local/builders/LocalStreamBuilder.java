@@ -154,8 +154,10 @@ public class LocalStreamBuilder implements StreamBuilder {
                     task.setStreamConfig(this.streamConfig);
                     this.executor.submit(task);
                     compTasks.add(task);
-                    if( comp.isOperationCountable() )
-                        this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable)comp.getOperation(), 10));
+                    if( comp.isOperationCountable() ) {
+                        this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10));
+                        this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
+                    }
                 }
                 streamsTasks.put(comp.getId(), compTasks);
             }
