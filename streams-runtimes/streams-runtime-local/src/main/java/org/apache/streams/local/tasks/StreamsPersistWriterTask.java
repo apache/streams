@@ -1,7 +1,8 @@
 package org.apache.streams.local.tasks;
 
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsPersistWriter;
+import org.apache.streams.core.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,9 +13,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  *
  */
-public class StreamsPersistWriterTask extends BaseStreamsTask {
+public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumStatusCountable {
 
-
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPersistWriterTask.class);
 
     private StreamsPersistWriter writer;
     private long sleepTime;
@@ -22,6 +23,14 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
     private Map<String, Object> streamConfig;
     private Queue<StreamsDatum> inQueue;
     private AtomicBoolean isRunning;
+
+    private DatumStatusCounter statusCounter = new DatumStatusCounter();
+
+    @Override
+    public DatumStatusCounter getDatumStatusCounter() {
+        return this.statusCounter;
+    }
+
 
     /**
      * Default constructor.  Uses default sleep of 500ms when inbound queue is empty.
@@ -65,7 +74,13 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
             StreamsDatum datum = this.inQueue.poll();
             while(datum != null || this.keepRunning.get()) {
                 if(datum != null) {
-                    this.writer.write(datum);
+                    try {
+                        this.writer.write(datum);
+                        statusCounter.incrementStatus(DatumStatus.SUCCESS);
+                    } catch (Exception e) {
+                        this.keepRunning.set(false);
+                        statusCounter.incrementStatus(DatumStatus.FAIL);
+                    }
                 }
                 else {
                     try {
@@ -100,4 +115,5 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
         queues.add(this.inQueue);
         return queues;
     }
+
 }

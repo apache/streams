@@ -29,6 +29,10 @@ public class DatumStatusCounter
         this.attempted += 1;
     }
 
+    public void incrementAttempt(int counter) {
+        this.attempted += counter;
+    }
+
     public synchronized void incrementStatus(DatumStatus workStatus) {
         // add this to the record counter
         switch(workStatus) {
@@ -37,6 +41,16 @@ public class DatumStatusCounter
             case FAIL: this.fail++; break;
         }
         this.emitted += 1;
+    }
+
+    public synchronized void incrementStatus(DatumStatus workStatus, int counter) {
+        // add this to the record counter
+        switch(workStatus) {
+            case SUCCESS: this.success += counter; break;
+            case PARTIAL: this.partial += counter; break;
+            case FAIL: this.fail += counter; break;
+        }
+        this.emitted += counter;
     }
 
     @Override

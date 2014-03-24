@@ -6,8 +6,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsPersistWriter;
+import org.apache.streams.core.*;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -37,7 +36,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 
-public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushable, Closeable
+public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushable, Closeable, DatumStatusCountable
 {
     public final static String STREAMS_ID = "ElasticsearchPersistWriter";
 
@@ -530,4 +529,12 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         start();
     }
 
+    @Override
+    public DatumStatusCounter getDatumStatusCounter() {
+        DatumStatusCounter counters = new DatumStatusCounter();
+        counters.incrementAttempt(this.batchItemsSent);
+        counters.incrementStatus(DatumStatus.SUCCESS, this.totalOk);
+        counters.incrementStatus(DatumStatus.FAIL, this.totalFailed);
+        return counters;
+    }
 }

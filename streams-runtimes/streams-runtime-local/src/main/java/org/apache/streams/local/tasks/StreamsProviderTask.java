@@ -119,10 +119,6 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                                 zeros++;
                             else {
                                 zeros = 0;
-                                if( resultSet.getCounter() != null ) {
-                                    LOGGER.debug(resultSet.getCounter().toString());
-                                    this.statusCounter.add(resultSet.getCounter());
-                                }
                             }
                             flushResults(resultSet);
                             if( zeros > (DEFAULT_TIMEOUT_MS / DEFAULT_SLEEP_TIME_MS))
@@ -162,8 +158,14 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             if(!this.keepRunning.get()) {
                 break;
             }
-            if(datum != null)
-                super.addToOutgoingQueue(datum);
+            if(datum != null) {
+                try {
+                    super.addToOutgoingQueue(datum);
+                    statusCounter.incrementStatus(DatumStatus.SUCCESS);
+                } catch( Exception e ) {
+                    statusCounter.incrementStatus(DatumStatus.FAIL);
+                }
+            }
             else {
                 try {
                     Thread.sleep(DEFAULT_SLEEP_TIME_MS);
