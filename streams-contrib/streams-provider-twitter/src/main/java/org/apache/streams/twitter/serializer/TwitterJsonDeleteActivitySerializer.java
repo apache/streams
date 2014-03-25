@@ -2,13 +2,13 @@ package org.apache.streams.twitter.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Strings;
+import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Tweet;
-
-import java.io.Serializable;
 
 /**
 * Created with IntelliJ IDEA.
@@ -19,7 +19,7 @@ import java.io.Serializable;
 */
 public class TwitterJsonDeleteActivitySerializer extends TwitterJsonEventActivitySerializer {
 
-    public Activity convert(ObjectNode event) {
+    public Activity convert(ObjectNode event) throws ActivitySerializerException {
 
         Delete delete = null;
         try {
@@ -33,6 +33,8 @@ public class TwitterJsonDeleteActivitySerializer extends TwitterJsonEventActivit
         activity.setVerb("delete");
         activity.setObject(buildActivityObject(delete));
         activity.setId(formatId(activity.getVerb(), delete.getDelete().getStatus().getIdStr()));
+        if(Strings.isNullOrEmpty(activity.getId()))
+            throw new ActivitySerializerException("Unable to determine activity id");
         activity.setProvider(buildProvider(event));
         addTwitterExtension(activity, event);
         return activity;

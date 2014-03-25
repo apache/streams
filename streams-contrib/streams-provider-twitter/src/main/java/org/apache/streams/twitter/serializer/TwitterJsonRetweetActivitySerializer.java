@@ -2,8 +2,10 @@ package org.apache.streams.twitter.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
@@ -27,7 +29,7 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 */
 public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivitySerializer implements ActivitySerializer<String> {
 
-    public Activity convert(ObjectNode event) {
+    public Activity convert(ObjectNode event) throws ActivitySerializerException {
 
         Retweet retweet = null;
         try {
@@ -41,7 +43,13 @@ public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivi
         activity.setVerb("share");
         activity.setObject(buildActivityObject(retweet.getRetweetedStatus()));
         activity.setId(formatId(activity.getVerb(), retweet.getIdStr()));
-        activity.setPublished(parse(retweet.getCreatedAt()));
+        if(Strings.isNullOrEmpty(activity.getId()))
+            throw new ActivitySerializerException("Unable to determine activity id");
+        try {
+            activity.setPublished(parse(retweet.getCreatedAt()));
+        } catch( Exception e ) {
+            throw new ActivitySerializerException("Unable to determine publishedDate", e);
+        }
         activity.setGenerator(buildGenerator(event));
         activity.setIcon(getIcon(event));
         activity.setProvider(buildProvider(event));

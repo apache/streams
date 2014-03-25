@@ -2,8 +2,11 @@ package org.apache.streams.twitter.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
@@ -26,7 +29,11 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 */
 public class TwitterJsonTweetActivitySerializer extends TwitterJsonEventActivitySerializer implements ActivitySerializer<String> {
 
-    public Activity convert(ObjectNode event) {
+    public TwitterJsonTweetActivitySerializer() {
+
+    }
+
+    public Activity convert(ObjectNode event) throws ActivitySerializerException {
 
         Tweet tweet = null;
         try {
@@ -35,13 +42,28 @@ public class TwitterJsonTweetActivitySerializer extends TwitterJsonEventActivity
             e.printStackTrace();
         }
 
+        System.out.println("10");
+
         Activity activity = new Activity();
+
+        System.out.println("11");
+
         activity.setActor(buildActor(tweet));
         activity.setVerb("post");
         activity.setObject(buildActivityObject(tweet));
-        activity.setId(formatId(activity.getVerb(), tweet.getIdStr()));
+        activity.setId(formatId(activity.getVerb(),
+                Optional.fromNullable(
+                        tweet.getIdStr())
+                        .or(Optional.of(tweet.getId().toString()))
+                        .orNull()));
+        if(Strings.isNullOrEmpty(activity.getId()))
+            throw new ActivitySerializerException("Unable to determine activity id");
+        try {
+            activity.setPublished(parse(tweet.getCreatedAt()));
+        } catch( Exception e ) {
+            throw new ActivitySerializerException("Unable to determine publishedDate", e);
+        }
         activity.setTarget(buildTarget(tweet));
-        activity.setPublished(parse(tweet.getCreatedAt()));
         activity.setGenerator(buildGenerator(event));
         activity.setIcon(getIcon(event));
         activity.setProvider(buildProvider(event));
@@ -49,6 +71,9 @@ public class TwitterJsonTweetActivitySerializer extends TwitterJsonEventActivity
         activity.setContent(tweet.getText());
         activity.setUrl(getUrls(event));
         activity.setLinks(getLinks(tweet));
+
+        System.out.println("12");
+
         addTwitterExtension(activity, event);
         addLocationExtension(activity, tweet);
         return activity;
@@ -57,9 +82,13 @@ public class TwitterJsonTweetActivitySerializer extends TwitterJsonEventActivity
     public static Actor buildActor(Tweet tweet) {
         Actor actor = new Actor();
         User user = tweet.getUser();
-        actor.setId(formatId(user.getIdStr(), tweet.getIdStr()));
+        actor.setId(formatId(
+                Optional.fromNullable(
+                        user.getIdStr())
+                        .or(Optional.of(user.getId().toString()))
+                        .orNull()
+        ));
         actor.setDisplayName(user.getScreenName());
-        actor.setId(user.getIdStr());
         if (user.getUrl()!=null){
             actor.setUrl(user.getUrl());
         }
@@ -68,8 +97,13 @@ public class TwitterJsonTweetActivitySerializer extends TwitterJsonEventActivity
 
     public static ActivityObject buildActivityObject(Tweet tweet) {
         ActivityObject actObj = new ActivityObject();
-        actObj.setId(formatId(tweet.getIdStr()));
         actObj.setObjectType("tweet");
+        actObj.setId(formatId(
+                Optional.fromNullable(
+                        tweet.getIdStr())
+                        .or(Optional.of(tweet.getId().toString()))
+                        .orNull()
+        ));
         return actObj;
     }
 
@@ -88,7 +122,12 @@ public class TwitterJsonTweetActivitySerializer extends TwitterJsonEventActivity
     public static void addLocationExtension(Activity activity, Tweet tweet) {
         Map<String, Object> extensions = ensureExtensions(activity);
         Map<String, Object> location = new HashMap<String, Object>();
-        location.put("id", formatId(tweet.getIdStr()));
+        location.put("id", formatId(
+                Optional.fromNullable(
+                        tweet.getIdStr())
+                        .or(Optional.of(tweet.getId().toString()))
+                        .orNull()
+        ));
         location.put("coordinates", tweet.getCoordinates());
         extensions.put("location", location);
     }

@@ -9,16 +9,18 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Generator;
 import org.apache.streams.pojo.json.Icon;
 import org.apache.streams.pojo.json.Provider;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +34,10 @@ import java.util.Map;
 */
 public abstract class TwitterJsonEventActivitySerializer implements ActivitySerializer<String>, Serializable {
 
-    public static final String DATE_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
+    public static final DateTimeFormatter TWITTER_FORMAT = DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyyy");
+    public static final DateTimeFormatter ACTIVITY_FORMAT = DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyyy");
 
-    ObjectMapper mapper = new ObjectMapper();
+    public static final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public String serializationFormat() {
@@ -47,10 +50,10 @@ public abstract class TwitterJsonEventActivitySerializer implements ActivitySeri
     }
 
     @Override
-    public Activity deserialize(String serialized) {
+    public Activity deserialize(String serialized) throws ActivitySerializerException {
         serialized = serialized.replaceAll("\\[[ ]*\\]", "null");
 
-//        System.out.println(serialized);
+        System.out.println(serialized);
 
         AnnotationIntrospector introspector = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
         mapper.setAnnotationIntrospector(introspector);
@@ -63,7 +66,11 @@ public abstract class TwitterJsonEventActivitySerializer implements ActivitySeri
         try {
             ObjectNode event = (ObjectNode) mapper.readTree(serialized);
 
+            System.out.println(event.toString());
+
             Activity activity = convert(event);
+
+            System.out.println(activity.toString());
 
             return activity;
 
@@ -73,25 +80,19 @@ public abstract class TwitterJsonEventActivitySerializer implements ActivitySeri
 
     }
 
-    public abstract Activity convert(ObjectNode event);
+    public abstract Activity convert(ObjectNode event) throws ActivitySerializerException;
 
     @Override
     public List<Activity> deserializeAll(List<String> serializedList) {
         throw new NotImplementedException("Not currently implemented");
     }
 
-    public static Date parse(String str) {
-        Date date;
+    public static Date parse(String str) throws ParseException {
+        DateTime dateTime;
         String dstr;
-        DateFormat fmt = new SimpleDateFormat(DATE_FORMAT);
-        DateFormat out = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        try {
-            date = fmt.parse(str);
-            dstr = out.format(date);
-            return out.parse(dstr);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Invalid date format", e);
-        }
+        dateTime = TWITTER_FORMAT.parseDateTime(str);
+        dstr = ACTIVITY_FORMAT.print(dateTime);
+        return ACTIVITY_FORMAT.parseDateTime(dstr).toDate();
     }
 
     public static Generator buildGenerator(ObjectNode event) {

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
@@ -58,7 +59,7 @@ public class TwitterTypeConverter implements StreamsProcessor {
         inQueue = inputQueue;
     }
 
-    public Object convert(ObjectNode event, Class inClass, Class outClass) {
+    public Object convert(ObjectNode event, Class inClass, Class outClass) throws ActivitySerializerException {
 
         Object result = null;
 

@@ -18,6 +18,7 @@
 
 package org.apache.streams.data;
 
+import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
 
 import java.util.List;
@@ -40,14 +41,14 @@ public interface ActivitySerializer<T> {
      * @param deserialized the string
      * @return a fully populated Activity object
      */
-    T serialize(Activity deserialized);
+    T serialize(Activity deserialized) throws ActivitySerializerException;
 
     /**
      * Converts a POJO into an Activity
      * @param serialized the string representation
      * @return a fully populated Activity object
      */
-    Activity deserialize(T serialized);
+    Activity deserialize(T serialized) throws ActivitySerializerException;
 
     /**
      * Converts multiple documents into a list of Activity objects
