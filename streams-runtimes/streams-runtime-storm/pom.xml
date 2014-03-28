@@ -21,7 +21,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>streams-project</artifactId>
+        <artifactId>streams-runtimes</artifactId>
         <groupId>org.apache.streams</groupId>
         <version>0.1-SNAPSHOT</version>
     </parent>
@@ -41,11 +41,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-config-graph</artifactId>
-            <version>0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
             <artifactId>streams-util</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
@@ -59,15 +54,15 @@
             <version>4.0</version>
         </dependency>
         <dependency>
-            <groupId>storm</groupId>
+            <groupId>org.apache.storm</groupId>
             <artifactId>storm-core</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>storm</groupId>
-            <artifactId>storm-netty</artifactId>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.storm</groupId>-->
+            <!--<artifactId>storm-netty</artifactId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>

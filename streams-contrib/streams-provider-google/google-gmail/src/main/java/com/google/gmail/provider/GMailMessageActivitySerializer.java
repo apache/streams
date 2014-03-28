@@ -85,7 +85,7 @@ public class GMailMessageActivitySerializer implements ActivitySerializer<GmailM
 
         Activity activity = new Activity();
         activity.setId(formatId(this.provider.getConfig().getUserName(), String.valueOf(gmailMessage.getMessageNumber())));
-        activity.setPublished(gmailMessage.getSendDate());
+        activity.setPublished(new DateTime(gmailMessage.getSendDate()));
         Provider provider = new Provider();
         provider.setId("http://gmail.com");
         provider.setDisplayName("GMail");

@@ -71,7 +71,7 @@ public class LocalStreamBuilderTest {
             ++count;
             scanner.nextLine();
         }
-        assertEquals(numDatums+2, count);
+        assertEquals(numDatums+1, count);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class LocalStreamBuilderTest {
             ++count;
             scanner.nextLine();
         }
-        assertEquals(numDatums+2, count);
+        assertEquals(numDatums+1, count);
     }
 
     @Test
@@ -112,7 +112,7 @@ public class LocalStreamBuilderTest {
             ++count;
             scanner.nextLine();
         }
-        assertEquals(numDatums+2, count); //+1 is to make sure cleanup is called on the writer
+        assertEquals(numDatums+1, count); //+1 is to make sure cleanup is called on the writer
         assertEquals(parallelHint, PassthroughDatumCounterProcessor.claimedNumber.size()); //test 40 were initialized
         assertTrue(PassthroughDatumCounterProcessor.sawData.size() > 1 && PassthroughDatumCounterProcessor.sawData.size() <= parallelHint); //test more than one processor got data
     }
@@ -137,7 +137,7 @@ public class LocalStreamBuilderTest {
             ++count;
             scanner.nextLine();
         }
-        assertEquals(numDatums1+numDatums2+2, count);
+        assertEquals(numDatums1+numDatums2+1, count);
     }
 
     @Test
@@ -155,7 +155,7 @@ public class LocalStreamBuilderTest {
             ++count;
             scanner.nextLine();
         }
-        assertEquals((numDatums*2)+2, count);
+        assertEquals((numDatums*2)+1, count);
     }
 
 

@@ -52,7 +52,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.8</version>
                 <executions>
                     <execution>
                         <id>add-source</id>
@@ -80,7 +79,7 @@
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>com.instagram</targetPackage>
                     <useLongIntegers>true</useLongIntegers>
-                    <useJodaDates>false</useJodaDates>
+                    <useJodaDates>true</useJodaDates>
                 </configuration>
                 <executions>
                     <execution>

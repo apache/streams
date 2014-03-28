@@ -177,7 +177,7 @@
 
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-cassandra</artifactId>
+            <artifactId>streams-persist-cassandra</artifactId>
             <version>${project.version}</version>
         </dependency>
 

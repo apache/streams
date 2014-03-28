@@ -19,11 +19,28 @@
 package com.facebook.api;
 
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.*;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,11 +52,37 @@ import static org.apache.streams.data.util.JsonUtil.jsonToJsonNode;
 
 /**
  * Serializes activity posts
+ *   sblackmon: This class needs a rewrite
  */
 public class FacebookPostActivitySerializer implements ActivitySerializer<String> {
 
-    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+    public static final DateTimeFormatter FACEBOOK_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+    public static final DateTimeFormatter ACTIVITY_FORMAT = ISODateTimeFormat.basicDateTime();
+
     public static final String PROVIDER_NAME = "facebook";
+
+    public static ObjectMapper mapper;
+    static {
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JodaModule());
+        mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.registerModule(new SimpleModule() {
+            {
+                addSerializer(DateTime.class, new StdSerializer<DateTime>(DateTime.class) {
+                    @Override
+                    public void serialize(DateTime value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonGenerationException {
+                        jgen.writeString(ACTIVITY_FORMAT.print(value));
+                    }
+                });
+                addDeserializer(DateTime.class, new StdDeserializer<DateTime>(DateTime.class) {
+                    @Override
+                    public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException, JsonProcessingException {
+                        return FACEBOOK_FORMAT.parseDateTime(jpar.getValueAsString());
+                    }
+                });
+            }
+        });
+    }
 
     @Override
     public String serializationFormat() {
@@ -52,7 +95,7 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
     }
 
     @Override
-    public Activity deserialize(String serialized) {
+    public Activity deserialize(String serialized) throws ActivitySerializerException {
         //Deserialize the JSON string into a Jackson JsonNode
         JsonNode node = jsonToJsonNode(serialized);
         Map.Entry<String, JsonNode> field = getObjectType(node);
@@ -107,7 +150,7 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
         return field;
     }
 
-    private void parseObject(Activity activity, JsonNode jsonNode) {
+    private void parseObject(Activity activity, JsonNode jsonNode) throws ActivitySerializerException {
         for(Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields(); fields.hasNext();) {
             Map.Entry<String, JsonNode> field = fields.next();
             String key = field.getKey();
@@ -116,15 +159,15 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
         }
     }
 
-    private void mapField(Activity activity, String name, JsonNode value) {
-        if("application".equals(name)) {
+    private void mapField(Activity activity, String name, JsonNode value) throws ActivitySerializerException {
+        if ("created_time".equals(name)) {
+            activity.setPublished(parseDate(value));
+        } else if("application".equals(name)) {
             addGenerator(activity, value);
         } else if ("caption".equals(name)) {
             addSummary(activity, value);
         } else if ("comments".equals(name)) {
             addAttachments(activity, value);
-        } else if ("created_time".equals(name)) {
-            addDate(activity, value);
         } else if ("description".equals(name)) {
             addObjectSummary(activity, value);
         } else if ("from".equals(name)) {
@@ -161,7 +204,11 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
     }
 
     private void addObjectUpdated(Activity activity, JsonNode value) {
-        activity.getObject().setUpdated(parseDate(value));
+        try {
+            activity.getObject().setUpdated(parseDate(value));
+        } catch( ActivitySerializerException e ) {
+            // losing this field is ok
+        }
     }
 
     private void addSummary(Activity activity, JsonNode value) {
@@ -248,10 +295,6 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
         activity.getObject().setSummary(value.asText());
     }
 
-    private void addDate(Activity activity, JsonNode value) {
-        activity.setPublished(parseDate(value));
-    }
-
     private void addGenerator(Activity activity, JsonNode value) {
         Generator generator = new Generator();
         if(value.has("id")) {
@@ -281,13 +324,11 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
         }
     }
 
-    private static Date parseDate(JsonNode value) {
-        DateFormat fmt = new SimpleDateFormat(DATE_FORMAT);
+    private static DateTime parseDate(JsonNode value) throws ActivitySerializerException {
         try {
-            return
-                    fmt.parse(value.asText());
-        } catch (ParseException e) {
-            throw new RuntimeException("Unable to parse date " + value.asText());
+            return FACEBOOK_FORMAT.parseDateTime(value.asText());
+        } catch (Exception e) {
+            throw new ActivitySerializerException("Unable to parse date " + value.asText());
         }
     }
 }

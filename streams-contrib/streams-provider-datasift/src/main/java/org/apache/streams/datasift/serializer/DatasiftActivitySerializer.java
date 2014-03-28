@@ -125,7 +125,7 @@ public class DatasiftActivitySerializer implements ActivitySerializer<Datasift>,
         activity.setObject(buildActivityObject(event.getInteraction()));
         activity.setId(formatId(activity.getVerb(), event.getInteraction().getId()));
         activity.setTarget(buildTarget(event.getInteraction()));
-        activity.setPublished(parse(event.getInteraction().getCreatedAt()));
+        activity.setPublished(event.getInteraction().getCreatedAt());
         activity.setGenerator(buildGenerator(event.getInteraction()));
         activity.setIcon(getIcon(event.getInteraction()));
         activity.setProvider(buildProvider(event.getInteraction()));

@@ -1,15 +1,22 @@
 package org.apache.streams.twitter.serializer;
 
-import com.fasterxml.jackson.databind.AnnotationIntrospector;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.jackson.StreamsJacksonModule;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Generator;
 import org.apache.streams.pojo.json.Icon;
@@ -17,6 +24,7 @@ import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -35,9 +43,24 @@ import java.util.Map;
 public abstract class TwitterJsonEventActivitySerializer implements ActivitySerializer<String>, Serializable {
 
     public static final DateTimeFormatter TWITTER_FORMAT = DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyyy");
-    public static final DateTimeFormatter ACTIVITY_FORMAT = DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyyy");
+    public static final DateTimeFormatter ACTIVITY_FORMAT = ISODateTimeFormat.basicDateTime();
 
-    public static final ObjectMapper mapper = new ObjectMapper();
+    public static ObjectMapper mapper;
+    static {
+        mapper = new ObjectMapper();
+        //mapper.registerModule(new JodaModule());
+        mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.registerModule(new StreamsJacksonModule() {
+            {
+                addDeserializer(DateTime.class, new StdDeserializer<DateTime>(DateTime.class) {
+                    @Override
+                    public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException, JsonProcessingException {
+                        return TWITTER_FORMAT.parseDateTime(jpar.getValueAsString());
+                    }
+                });
+            }
+        });
+    }
 
     @Override
     public String serializationFormat() {
@@ -85,14 +108,6 @@ public abstract class TwitterJsonEventActivitySerializer implements ActivitySeri
     @Override
     public List<Activity> deserializeAll(List<String> serializedList) {
         throw new NotImplementedException("Not currently implemented");
-    }
-
-    public static Date parse(String str) throws ParseException {
-        DateTime dateTime;
-        String dstr;
-        dateTime = TWITTER_FORMAT.parseDateTime(str);
-        dstr = ACTIVITY_FORMAT.print(dateTime);
-        return ACTIVITY_FORMAT.parseDateTime(dstr).toDate();
     }
 
     public static Generator buildGenerator(ObjectNode event) {

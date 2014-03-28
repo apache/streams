@@ -36,6 +36,7 @@
     </properties>
 
     <modules>
+        <module>streams-persist-cassandra</module>
         <module>streams-persist-console</module>
         <module>streams-persist-elasticsearch</module>
         <module>streams-persist-hbase</module>

@@ -137,7 +137,7 @@
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>com.sysomos</targetPackage>
                     <useLongIntegers>true</useLongIntegers>
-                    <useJodaDates>false</useJodaDates>
+                    <useJodaDates>true</useJodaDates>
                 </configuration>
                 <executions>
                     <execution>

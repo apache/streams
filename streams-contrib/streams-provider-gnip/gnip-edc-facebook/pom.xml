@@ -46,6 +46,10 @@
             <artifactId>streams-pojo</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-joda</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-provider-facebook</artifactId>
             <version>0.1-SNAPSHOT</version>
@@ -110,7 +114,7 @@
                         <plugin>
                             <groupId>org.jvnet.jaxb2_commons</groupId>
                             <artifactId>jaxb2-basics</artifactId>
-                            <version>0.6.5</version>
+                            <version>${jaxb2-basics.version}</version>
                         </plugin>
                     </plugins>
                 </configuration>

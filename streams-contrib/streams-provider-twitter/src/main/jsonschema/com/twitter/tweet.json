@@ -153,7 +153,8 @@
             "type": "integer"
         },
         "created_at": {
-            "type": "string"
+            "type" : "string",
+            "format" : "date-time"
         },
         "in_reply_to_user_id": {
             "ignore_malformed": false,
@@ -224,7 +225,8 @@
                     "type": "string"
                 },
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "date-time"
                 },
                 "default_profile_image": {
                     "type": "boolean"

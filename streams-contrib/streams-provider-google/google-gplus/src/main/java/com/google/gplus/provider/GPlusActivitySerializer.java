@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.pojo.json.*;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,7 @@ public class GPlusActivitySerializer implements ActivitySerializer<com.google.ap
 
         Activity activity = new Activity();
         activity.setId(formatId(gplusActivity.getId()));
-        activity.setPublished(new Date(gplusActivity.getPublished().getValue()));
+        activity.setPublished(new DateTime(gplusActivity.getPublished().getValue()));
         Provider provider = new Provider();
         provider.setId("http://plus.google.com");
         provider.setDisplayName("GPlus");

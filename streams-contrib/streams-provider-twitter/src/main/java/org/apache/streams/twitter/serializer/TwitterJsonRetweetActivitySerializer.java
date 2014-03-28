@@ -2,6 +2,7 @@ package org.apache.streams.twitter.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.streams.data.ActivitySerializer;
@@ -41,12 +42,13 @@ public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivi
         Activity activity = new Activity();
         activity.setActor(buildActor(retweet));
         activity.setVerb("share");
-        activity.setObject(buildActivityObject(retweet.getRetweetedStatus()));
+        if( retweet.getRetweetedStatus() != null )
+            activity.setObject(buildActivityObject(retweet.getRetweetedStatus()));
         activity.setId(formatId(activity.getVerb(), retweet.getIdStr()));
         if(Strings.isNullOrEmpty(activity.getId()))
             throw new ActivitySerializerException("Unable to determine activity id");
         try {
-            activity.setPublished(parse(retweet.getCreatedAt()));
+            activity.setPublished(retweet.getCreatedAt());
         } catch( Exception e ) {
             throw new ActivitySerializerException("Unable to determine publishedDate", e);
         }
@@ -56,18 +58,22 @@ public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivi
         activity.setTitle("");
         activity.setContent(retweet.getRetweetedStatus().getText());
         activity.setUrl(getUrls(event));
-        activity.setLinks(getLinks(retweet));
+        activity.setLinks(TwitterJsonTweetActivitySerializer.getLinks(retweet));
         addTwitterExtension(activity, event);
         addLocationExtension(activity, retweet);
         return activity;
     }
 
-    public static Actor buildActor(Tweet tweet) {
+    public static Actor buildActor(Retweet retweet) {
         Actor actor = new Actor();
-        User user = tweet.getUser();
-        actor.setId(formatId(user.getIdStr(), tweet.getIdStr()));
+        User user = retweet.getUser();
+        actor.setId(formatId(
+                Optional.fromNullable(
+                        user.getIdStr())
+                        .or(Optional.of(user.getId().toString()))
+                        .orNull()
+        ));
         actor.setDisplayName(user.getScreenName());
-        actor.setId(user.getIdStr());
         if (user.getUrl()!=null){
             actor.setUrl(user.getUrl());
         }
@@ -76,17 +82,14 @@ public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivi
 
     public static ActivityObject buildActivityObject(Tweet tweet) {
         ActivityObject actObj = new ActivityObject();
-        actObj.setId(formatId(tweet.getIdStr()));
+        String id =  Optional.fromNullable(
+                tweet.getIdStr())
+                .or(Optional.of(tweet.getId().toString()))
+                .orNull();
+        if( id != null )
+            actObj.setId(id);
         actObj.setObjectType("tweet");
         return actObj;
-    }
-
-    public static List<Object> getLinks(Retweet retweet) {
-        List<Object> links = Lists.newArrayList();
-        for( Url url : retweet.getRetweetedStatus().getEntities().getUrls() ) {
-            links.add(url.getExpandedUrl());
-        }
-        return links;
     }
 
     public static void addLocationExtension(Activity activity, Retweet retweet) {

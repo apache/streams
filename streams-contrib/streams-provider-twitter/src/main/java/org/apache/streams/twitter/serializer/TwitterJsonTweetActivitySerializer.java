@@ -50,7 +50,6 @@ public class TwitterJsonTweetActivitySerializer extends TwitterJsonEventActivity
 
         activity.setActor(buildActor(tweet));
         activity.setVerb("post");
-        activity.setObject(buildActivityObject(tweet));
         activity.setId(formatId(activity.getVerb(),
                 Optional.fromNullable(
                         tweet.getIdStr())
@@ -59,7 +58,7 @@ public class TwitterJsonTweetActivitySerializer extends TwitterJsonEventActivity
         if(Strings.isNullOrEmpty(activity.getId()))
             throw new ActivitySerializerException("Unable to determine activity id");
         try {
-            activity.setPublished(parse(tweet.getCreatedAt()));
+            activity.setPublished(tweet.getCreatedAt());
         } catch( Exception e ) {
             throw new ActivitySerializerException("Unable to determine publishedDate", e);
         }
@@ -95,23 +94,12 @@ public class TwitterJsonTweetActivitySerializer extends TwitterJsonEventActivity
         return actor;
     }
 
-    public static ActivityObject buildActivityObject(Tweet tweet) {
-        ActivityObject actObj = new ActivityObject();
-        actObj.setObjectType("tweet");
-        actObj.setId(formatId(
-                Optional.fromNullable(
-                        tweet.getIdStr())
-                        .or(Optional.of(tweet.getId().toString()))
-                        .orNull()
-        ));
-        return actObj;
-    }
-
     public static List<Object> getLinks(Tweet tweet) {
         List<Object> links = Lists.newArrayList();
-        for( Url url : tweet.getEntities().getUrls() ) {
-            links.add(url.getExpandedUrl());
-        }
+        if( tweet.getEntities().getUrls() != null )
+            for( Url url : tweet.getEntities().getUrls() ) {
+                links.add(url.getExpandedUrl());
+            }
         return links;
     }
 

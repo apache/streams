@@ -34,32 +34,27 @@
         <dependency>
             <groupId>com.fasterxml</groupId>
             <artifactId>jackson-xml-databind</artifactId>
-            <version>0.5.0</version>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.6.1</version>
         </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.0.9</version>
         </dependency>
 
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20090211</version>
         </dependency>
 
         <dependency>
@@ -92,7 +87,6 @@
         <plugins>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>2.5</version>
                 <configuration>
                     <filesets>
                         <fileset>
@@ -123,7 +117,7 @@
                     <!--<outputDirectory>src/main/java</outputDirectory>-->
                     <!--<targetPackage>org.apache.streams</targetPackage>-->
             <!--<useLongIntegers>true</useLongIntegers>-->
-            <!--<useJodaDates>false</useJodaDates>-->
+            <!--<useJodaDates>true</useJodaDates>-->
                 <!--</configuration>-->
                 <!--<executions>-->
                     <!--<execution>-->

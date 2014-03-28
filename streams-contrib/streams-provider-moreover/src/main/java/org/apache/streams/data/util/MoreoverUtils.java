@@ -30,7 +30,7 @@ public class MoreoverUtils {
         activity.setProvider(convert(source));
         activity.setTarget(convertTarget(source));
         activity.setObject(convertObject(article));
-        activity.setPublished(DateTime.parse(article.getPublishedDate()).toDate());
+        activity.setPublished(DateTime.parse(article.getPublishedDate()));
         activity.setContent(article.getContent());
         activity.setTitle(article.getTitle());
         activity.setVerb("posted");
@@ -73,7 +73,7 @@ public class MoreoverUtils {
         object.setObjectType(article.getDataFormat());
         String type = article.getDataFormat().equals("text") ? "article" : article.getDataFormat();
         object.setId(getObjectId(getProviderID(article.getSource().getFeed()), type, article.getId()));
-        object.setPublished(DateTime.parse(article.getPublishedDate()).toDate());
+        object.setPublished(DateTime.parse(article.getPublishedDate()));
         return object;
     }
 
