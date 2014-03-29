@@ -3,6 +3,7 @@
     "$schema": "http://json-schema.org/draft-03/schema",
     "id": "#",
     "javaType" : "org.apache.streams.twitter.pojo.Tweet",
+    "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "text": {
             "type": "string"
@@ -24,6 +25,7 @@
             "items": {
                 "type": "object",
                 "javaType" : "org.apache.streams.twitter.pojo.Contributor",
+                "javaInterfaces": ["java.io.Serializable"],
                 "properties": {
                     "id": {
                         "ignore_malformed": false,
@@ -41,6 +43,7 @@
         "coordinates": {
             "type": "object",
             "javaType" : "org.apache.streams.twitter.pojo.Coordinates",
+            "javaInterfaces": ["java.io.Serializable"],
             "items": {
                 "properties": {
                     "type": {
@@ -61,12 +64,14 @@
             "type": "object",
             "dynamic": "true",
             "javaType" : "org.apache.streams.twitter.pojo.Entities",
+            "javaInterfaces": ["java.io.Serializable"],
             "properties": {
                 "user_mentions": {
                     "type": "array",
                     "items": {
                         "type": "object",
                         "javaType" : "org.apache.streams.twitter.pojo.UserMentions",
+                        "javaInterfaces": ["java.io.Serializable"],
                         "properties": {
                             "id": {
                                 "ignore_malformed": false,
@@ -103,6 +108,7 @@
                     "items": {
                         "type": "object",
                         "javaType": "org.apache.streams.twitter.Url",
+                        "javaInterfaces": ["java.io.Serializable"],
                         "properties": {
                             "expanded_url": {
                                 "type": "string"
@@ -171,6 +177,7 @@
             "id": "user",
             "type": "object",
             "javaType" : "org.apache.streams.twitter.pojo.User",
+            "javaInterfaces": ["java.io.Serializable"],
             "dynamic": "true",
             "properties": {
                 "location": {
@@ -287,12 +294,6 @@
                     "type": "integer"
                 }
             }
-        },
-        "retweeted_status": {
-            "type": "object",
-            "required" : false,
-            "description" : "Describes the tweet being retweeted.",
-            "$ref" : "#"
         }
     }
 }

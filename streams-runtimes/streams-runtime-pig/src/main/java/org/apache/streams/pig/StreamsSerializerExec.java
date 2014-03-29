@@ -32,35 +32,26 @@ public class StreamsSerializerExec extends EvalFunc<String> {
 
     public StreamsSerializerExec(String... execArgs) throws ClassNotFoundException{
         Preconditions.checkNotNull(execArgs);
-        System.out.println("A");
         Preconditions.checkArgument(execArgs.length > 0);
-        System.out.println("B");
         String classFullName = execArgs[0];
         Preconditions.checkNotNull(classFullName);
-        System.out.println("C");
         String[] constructorArgs = new String[execArgs.length-1];
         ArrayUtils.remove(execArgs, 0);
         ArrayUtils.addAll(constructorArgs, execArgs);
-        System.out.println("D");
         activitySerializer = StreamsComponentFactory.getSerializerInstance(Class.forName(classFullName));
-        System.out.println("E");
     }
 
     @Override
     public String exec(Tuple input) throws IOException {
 
         Preconditions.checkNotNull(activitySerializer);
-        System.out.println("1");
         Preconditions.checkNotNull(input);
-        System.out.println("2");
         Preconditions.checkArgument(input.size() == 1);
-        System.out.println("3");
         Configuration conf = UDFContext.getUDFContext().getJobConf();
 
         String document = (String) input.get(0);
 
         Preconditions.checkNotNull(document);
-        System.out.println("4");
         Activity activity = null;
         try {
             activity = activitySerializer.deserialize(document);

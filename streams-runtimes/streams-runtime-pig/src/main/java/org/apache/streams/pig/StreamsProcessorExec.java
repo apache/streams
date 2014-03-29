@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by sblackmon on 3/25/14.
  */
-@MonitoredUDF(timeUnit = TimeUnit.SECONDS, duration = 10, intDefault = 10)
+@MonitoredUDF(timeUnit = TimeUnit.SECONDS, duration = 30, intDefault = 10)
 public class StreamsProcessorExec extends EvalFunc<DataBag> {
 
     TupleFactory mTupleFactory = TupleFactory.getInstance();

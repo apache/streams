@@ -2,6 +2,7 @@ package org.apache.streams.twitter.processor;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
@@ -13,6 +14,7 @@ import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
+import org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer;
 import org.apache.streams.twitter.serializer.TwitterJsonDeleteActivitySerializer;
 import org.apache.streams.twitter.serializer.TwitterJsonRetweetActivitySerializer;
 import org.apache.streams.twitter.serializer.TwitterJsonTweetActivitySerializer;
@@ -86,20 +88,23 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
         }
     }
 
-    public Object convert(ObjectNode event, Class inClass, Class outClass) throws ActivitySerializerException {
+    public Object convert(ObjectNode event, Class inClass, Class outClass) throws ActivitySerializerException, JsonProcessingException {
 
         Object result = null;
 
         if( outClass.equals( Activity.class )) {
             if( inClass.equals( Delete.class )) {
                 LOGGER.debug("ACTIVITY DELETE");
-                result = twitterJsonDeleteActivitySerializer.convert(event);
+                result = twitterJsonDeleteActivitySerializer.deserialize(
+                        TwitterJsonActivitySerializer.mapper.writeValueAsString(event));
             } else if ( inClass.equals( Retweet.class )) {
                 LOGGER.debug("ACTIVITY RETWEET");
-                result = twitterJsonRetweetActivitySerializer.convert(event);
+                result = twitterJsonRetweetActivitySerializer.deserialize(
+                        TwitterJsonActivitySerializer.mapper.writeValueAsString(event));
             } else if ( inClass.equals( Tweet.class )) {
                 LOGGER.debug("ACTIVITY TWEET");
-                result = twitterJsonTweetActivitySerializer.convert(event);
+                result = twitterJsonTweetActivitySerializer.deserialize(
+                        TwitterJsonActivitySerializer.mapper.writeValueAsString(event));
             } else {
                 return null;
             }
@@ -179,6 +184,9 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
                 out = convert(node, inClass, outClass);
             } catch (ActivitySerializerException e) {
                 LOGGER.warn("Failed deserializing", e);
+                return Lists.newArrayList();
+            } catch (JsonProcessingException e) {
+                LOGGER.warn("Failed parsing JSON", e);
                 return Lists.newArrayList();
             }
 

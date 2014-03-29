@@ -17,6 +17,10 @@ import java.util.List;
  * Deserializes Moreover JSON format into Activities
  */
 public class MoreoverJsonActivitySerializer implements ActivitySerializer<String> {
+
+    public MoreoverJsonActivitySerializer() {
+    }
+
     @Override
     public String serializationFormat() {
         return "application/json+vnd.moreover.com.v1";

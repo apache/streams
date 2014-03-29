@@ -3,12 +3,18 @@ package org.apache.streams.twitter.serializer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Tweet;
+
+import java.util.List;
+
+import static org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer.*;
 
 /**
 * Created with IntelliJ IDEA.
@@ -17,13 +23,33 @@ import org.apache.streams.twitter.pojo.Tweet;
 * Time: 9:24 AM
 * To change this template use File | Settings | File Templates.
 */
-public class TwitterJsonDeleteActivitySerializer extends TwitterJsonEventActivitySerializer {
+public class TwitterJsonDeleteActivitySerializer implements ActivitySerializer<String> {
+
+    @Override
+    public String serializationFormat() {
+        return null;
+    }
+
+    @Override
+    public String serialize(Activity deserialized) throws ActivitySerializerException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Activity deserialize(String serialized) throws ActivitySerializerException {
+        return null;
+    }
+
+    @Override
+    public List<Activity> deserializeAll(List<String> serializedList) {
+        return null;
+    }
 
     public Activity convert(ObjectNode event) throws ActivitySerializerException {
 
         Delete delete = null;
         try {
-            delete = mapper.treeToValue(event, Delete.class);
+            delete = TwitterJsonActivitySerializer.mapper.treeToValue(event, Delete.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -32,10 +58,10 @@ public class TwitterJsonDeleteActivitySerializer extends TwitterJsonEventActivit
         activity.setActor(buildActor(delete));
         activity.setVerb("delete");
         activity.setObject(buildActivityObject(delete));
-        activity.setId(formatId(activity.getVerb(), delete.getDelete().getStatus().getIdStr()));
+        activity.setId(TwitterJsonActivitySerializer.formatId(activity.getVerb(), delete.getDelete().getStatus().getIdStr()));
         if(Strings.isNullOrEmpty(activity.getId()))
             throw new ActivitySerializerException("Unable to determine activity id");
-        activity.setProvider(buildProvider(event));
+        activity.setProvider(getProvider());
         addTwitterExtension(activity, event);
         return activity;
     }

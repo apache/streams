@@ -15,10 +15,12 @@ import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer.*;
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
@@ -28,14 +30,31 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 * Time: 9:24 AM
 * To change this template use File | Settings | File Templates.
 */
-public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivitySerializer implements ActivitySerializer<String> {
+public class TwitterJsonRetweetActivitySerializer implements ActivitySerializer<String> {
 
-    public Activity convert(ObjectNode event) throws ActivitySerializerException {
+    public TwitterJsonRetweetActivitySerializer() {
+
+    }
+
+    @Override
+    public String serializationFormat() {
+        return null;
+    }
+
+    @Override
+    public String serialize(Activity deserialized) throws ActivitySerializerException {
+        return null;
+    }
+
+    @Override
+    public Activity deserialize(String event) throws ActivitySerializerException {
 
         Retweet retweet = null;
         try {
-            retweet = mapper.treeToValue(event, Retweet.class);
+            retweet = TwitterJsonActivitySerializer.mapper.readValue(event, Retweet.class);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -44,7 +63,12 @@ public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivi
         activity.setVerb("share");
         if( retweet.getRetweetedStatus() != null )
             activity.setObject(buildActivityObject(retweet.getRetweetedStatus()));
-        activity.setId(formatId(activity.getVerb(), retweet.getIdStr()));
+        activity.setId(TwitterJsonActivitySerializer.formatId(activity.getVerb(),
+                Optional.fromNullable(
+                        retweet.getIdStr())
+                        .or(Optional.of(retweet.getId().toString()))
+                        .orNull()
+        ));
         if(Strings.isNullOrEmpty(activity.getId()))
             throw new ActivitySerializerException("Unable to determine activity id");
         try {
@@ -52,16 +76,25 @@ public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivi
         } catch( Exception e ) {
             throw new ActivitySerializerException("Unable to determine publishedDate", e);
         }
-        activity.setGenerator(buildGenerator(event));
-        activity.setIcon(getIcon(event));
-        activity.setProvider(buildProvider(event));
+        //activity.setGenerator(buildGenerator(mapper));
+        //activity.setIcon(getIcon(event));
+        activity.setProvider(TwitterJsonActivitySerializer.getProvider());
         activity.setTitle("");
-        activity.setContent(retweet.getRetweetedStatus().getText());
-        activity.setUrl(getUrls(event));
-        activity.setLinks(TwitterJsonTweetActivitySerializer.getLinks(retweet));
-        addTwitterExtension(activity, event);
+        try {
+            activity.setContent(retweet.getRetweetedStatus().getText());
+        } catch( Exception e ) {
+            throw new ActivitySerializerException("Unable to determine content", e);
+        }
+        activity.setUrl("http://twitter.com/" + retweet.getIdStr());
+        activity.setLinks(TwitterJsonTweetActivitySerializer.getLinks(retweet.getRetweetedStatus()));
+        addTwitterExtension(activity, TwitterJsonActivitySerializer.mapper.convertValue(retweet, ObjectNode.class));
         addLocationExtension(activity, retweet);
         return activity;
+    }
+
+    @Override
+    public List<Activity> deserializeAll(List<String> serializedList) {
+        return null;
     }
 
     public static Actor buildActor(Retweet retweet) {
@@ -95,7 +128,7 @@ public class TwitterJsonRetweetActivitySerializer extends TwitterJsonEventActivi
     public static void addLocationExtension(Activity activity, Retweet retweet) {
         Map<String, Object> extensions = ensureExtensions(activity);
         Map<String, Object> location = new HashMap<String, Object>();
-        location.put("id", formatId(retweet.getIdStr()));
+        location.put("id", TwitterJsonActivitySerializer.formatId(retweet.getIdStr()));
         location.put("coordinates", retweet.getCoordinates());
         extensions.put("location", location);
     }

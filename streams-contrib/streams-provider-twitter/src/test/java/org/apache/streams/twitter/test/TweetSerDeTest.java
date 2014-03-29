@@ -9,9 +9,7 @@ import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
-import org.apache.streams.twitter.serializer.TwitterJsonDeleteActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonRetweetActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonTweetActivitySerializer;
+import org.apache.streams.twitter.serializer.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -23,6 +21,7 @@ import java.io.InputStreamReader;
 
 import static java.util.regex.Pattern.matches;
 import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -35,21 +34,19 @@ import static org.junit.Assert.assertThat;
 public class TweetSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TweetSerDeTest.class);
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = TwitterJsonActivitySerializer.mapper;
 
-    private TwitterJsonTweetActivitySerializer twitterJsonTweetActivitySerializer = new TwitterJsonTweetActivitySerializer();
-    private TwitterJsonRetweetActivitySerializer twitterJsonRetweetActivitySerializer = new TwitterJsonRetweetActivitySerializer();
-    private TwitterJsonDeleteActivitySerializer twitterJsonDeleteActivitySerializer = new TwitterJsonDeleteActivitySerializer();
+    private TwitterJsonActivitySerializer twitterJsonActivitySerializer = new TwitterJsonActivitySerializer();
 
     //    @Ignore
     @Test
     public void Tests()
     {
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-        InputStream is = TweetSerDeTest.class.getResourceAsStream("/twitter_jsons.txt");
+        InputStream is = TweetSerDeTest.class.getResourceAsStream("/testtweets.txt");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 
@@ -66,35 +63,38 @@ public class TweetSerDeTest {
 
                     assertThat(event, is(not(nullValue())));
 
-                    String tweetstring = mapper.writeValueAsString(event);
+                    if( detected == Tweet.class ) {
 
-                    LOGGER.info("{}: {}", detected.getName(), tweetstring);
+                        Tweet tweet = mapper.convertValue(event, Tweet.class);
 
-                    Activity activity;
-                    if( detected.equals( Delete.class )) {
-                        activity = twitterJsonDeleteActivitySerializer.convert(event);
-                    } else if ( detected.equals( Retweet.class )) {
-                        activity = twitterJsonRetweetActivitySerializer.convert(event);
-                    } else if ( detected.equals( Tweet.class )) {
-                        activity = twitterJsonTweetActivitySerializer.convert(event);
+                        assertThat(tweet, is(not(nullValue())));
+                        assertThat(tweet.getCreatedAt(), is(not(nullValue())));
+                        assertThat(tweet.getText(), is(not(nullValue())));
+                        assertThat(tweet.getUser(), is(not(nullValue())));
+
+                    } else if( detected == Retweet.class ) {
+
+                        Retweet retweet = mapper.convertValue(event, Retweet.class);
+
+                        assertThat(retweet.getRetweetedStatus(), is(not(nullValue())));
+                        assertThat(retweet.getRetweetedStatus().getCreatedAt(), is(not(nullValue())));
+                        assertThat(retweet.getRetweetedStatus().getText(), is(not(nullValue())));
+                        assertThat(retweet.getRetweetedStatus().getUser(), is(not(nullValue())));
+                        assertThat(retweet.getRetweetedStatus().getUser().getId(), is(not(nullValue())));
+                        assertThat(retweet.getRetweetedStatus().getUser().getCreatedAt(), is(not(nullValue())));
+
+                    } else if( detected == Delete.class ) {
+
+                        Delete delete = mapper.convertValue(event, Delete.class);
+
+                        assertThat(delete.getDelete(), is(not(nullValue())));
+                        assertThat(delete.getDelete().getStatus(), is(not(nullValue())));
+                        assertThat(delete.getDelete().getStatus().getId(), is(not(nullValue())));
+                        assertThat(delete.getDelete().getStatus().getUserId(), is(not(nullValue())));
+
                     } else {
                         Assert.fail();
-                        return;
                     }
-
-                    String activitystring = mapper.writeValueAsString(activity);
-
-                    LOGGER.info("activity: {}", activitystring);
-
-                    assertThat(activity, is(not(nullValue())));
-                    if(activity.getId() != null) {
-                        assertThat(matches("id:.*:[a-z]*:[a-zA-Z0-9]*", activity.getId()), is(true));
-                    }
-                    assertThat(activity.getActor(), is(not(nullValue())));
-                    assertThat(activity.getActor().getId(), is(not(nullValue())));
-                    assertThat(activity.getVerb(), is(not(nullValue())));
-                    assertThat(activity.getObject(), is(not(nullValue())));
-                    assertThat(activity.getObject().getObjectType(), is(not(nullValue())));
                 }
             }
         } catch( Exception e ) {

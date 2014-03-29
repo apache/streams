@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
@@ -14,10 +15,12 @@ import org.apache.streams.twitter.Url;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer.*;
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
@@ -27,26 +30,35 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 * Time: 9:24 AM
 * To change this template use File | Settings | File Templates.
 */
-public class TwitterJsonTweetActivitySerializer extends TwitterJsonEventActivitySerializer implements ActivitySerializer<String> {
+public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<String> {
 
     public TwitterJsonTweetActivitySerializer() {
 
     }
 
-    public Activity convert(ObjectNode event) throws ActivitySerializerException {
+    @Override
+    public String serializationFormat() {
+        return null;
+    }
+
+    @Override
+    public String serialize(Activity deserialized) throws ActivitySerializerException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Activity deserialize(String serialized) throws ActivitySerializerException {
 
         Tweet tweet = null;
         try {
-            tweet = mapper.treeToValue(event, Tweet.class);
+            tweet = TwitterJsonActivitySerializer.mapper.readValue(serialized, Tweet.class);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println("10");
-
         Activity activity = new Activity();
-
-        System.out.println("11");
 
         activity.setActor(buildActor(tweet));
         activity.setVerb("post");
@@ -63,19 +75,22 @@ public class TwitterJsonTweetActivitySerializer extends TwitterJsonEventActivity
             throw new ActivitySerializerException("Unable to determine publishedDate", e);
         }
         activity.setTarget(buildTarget(tweet));
-        activity.setGenerator(buildGenerator(event));
-        activity.setIcon(getIcon(event));
-        activity.setProvider(buildProvider(event));
+        activity.setProvider(getProvider());
         activity.setTitle("");
         activity.setContent(tweet.getText());
-        activity.setUrl(getUrls(event));
+        activity.setUrl("http://twitter.com/" + tweet.getIdStr());
         activity.setLinks(getLinks(tweet));
 
         System.out.println("12");
 
-        addTwitterExtension(activity, event);
+        addTwitterExtension(activity, TwitterJsonActivitySerializer.mapper.convertValue(tweet, ObjectNode.class));
         addLocationExtension(activity, tweet);
         return activity;
+    }
+
+    @Override
+    public List<Activity> deserializeAll(List<String> serializedList) {
+        return null;
     }
 
     public static Actor buildActor(Tweet tweet) {
@@ -96,10 +111,13 @@ public class TwitterJsonTweetActivitySerializer extends TwitterJsonEventActivity
 
     public static List<Object> getLinks(Tweet tweet) {
         List<Object> links = Lists.newArrayList();
-        if( tweet.getEntities().getUrls() != null )
-            for( Url url : tweet.getEntities().getUrls() ) {
+        if( tweet.getEntities().getUrls() != null ) {
+            for (Url url : tweet.getEntities().getUrls()) {
                 links.add(url.getExpandedUrl());
             }
+        }
+        else
+            System.out.println("  0 links");
         return links;
     }
 
