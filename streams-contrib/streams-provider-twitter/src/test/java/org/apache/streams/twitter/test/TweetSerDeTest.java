@@ -3,6 +3,7 @@ package org.apache.streams.twitter.test;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Optional;
 import org.apache.commons.lang.StringUtils;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Delete;
@@ -21,6 +22,7 @@ import java.io.InputStreamReader;
 
 import static java.util.regex.Pattern.matches;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -50,6 +52,9 @@ public class TweetSerDeTest {
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 
+        int tweetlinks = 0;
+        int retweetlinks = 0;
+
         try {
             while (br.ready()) {
                 String line = br.readLine();
@@ -72,6 +77,8 @@ public class TweetSerDeTest {
                         assertThat(tweet.getText(), is(not(nullValue())));
                         assertThat(tweet.getUser(), is(not(nullValue())));
 
+                        tweetlinks += Optional.fromNullable(tweet.getEntities().getUrls().size()).or(0);
+
                     } else if( detected == Retweet.class ) {
 
                         Retweet retweet = mapper.convertValue(event, Retweet.class);
@@ -82,6 +89,8 @@ public class TweetSerDeTest {
                         assertThat(retweet.getRetweetedStatus().getUser(), is(not(nullValue())));
                         assertThat(retweet.getRetweetedStatus().getUser().getId(), is(not(nullValue())));
                         assertThat(retweet.getRetweetedStatus().getUser().getCreatedAt(), is(not(nullValue())));
+
+                        retweetlinks += Optional.fromNullable(retweet.getRetweetedStatus().getEntities().getUrls().size()).or(0);
 
                     } else if( detected == Delete.class ) {
 
@@ -95,6 +104,7 @@ public class TweetSerDeTest {
                     } else {
                         Assert.fail();
                     }
+
                 }
             }
         } catch( Exception e ) {
@@ -102,5 +112,9 @@ public class TweetSerDeTest {
             e.printStackTrace();
             Assert.fail();
         }
+
+        assertThat(tweetlinks, is(greaterThan(0)));
+        assertThat(retweetlinks, is(greaterThan(0)));
+
     }
 }

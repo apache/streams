@@ -159,8 +159,8 @@ public class DatasiftActivitySerializer implements ActivitySerializer<Datasift>,
         return actObj;
     }
 
-    public static List<Object> getLinks(Interaction interaction) {
-        List<Object> links = Lists.newArrayList();
+    public static List<String> getLinks(Interaction interaction) {
+        List<String> links = Lists.newArrayList();
         return links;
     }
 

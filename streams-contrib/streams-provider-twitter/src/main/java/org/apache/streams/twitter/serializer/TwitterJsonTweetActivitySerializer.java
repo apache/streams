@@ -81,8 +81,6 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
         activity.setUrl("http://twitter.com/" + tweet.getIdStr());
         activity.setLinks(getLinks(tweet));
 
-        System.out.println("12");
-
         addTwitterExtension(activity, TwitterJsonActivitySerializer.mapper.convertValue(tweet, ObjectNode.class));
         addLocationExtension(activity, tweet);
         return activity;
@@ -109,8 +107,8 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
         return actor;
     }
 
-    public static List<Object> getLinks(Tweet tweet) {
-        List<Object> links = Lists.newArrayList();
+    public static List<String> getLinks(Tweet tweet) {
+        List<String> links = Lists.newArrayList();
         if( tweet.getEntities().getUrls() != null ) {
             for (Url url : tweet.getEntities().getUrls()) {
                 links.add(url.getExpandedUrl());

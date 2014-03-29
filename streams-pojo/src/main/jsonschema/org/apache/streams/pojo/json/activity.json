@@ -79,7 +79,9 @@
       "type" : "array",
       "description" :"Links between this object and other resources as defined in Web Linking",
       "note": "Tell JSON schema team to not put links inside http://json-schema.org/hyper-schema#properties",
-      "properties" : {"$ref" : "http://json-schema.org/links#properties"}
+      "items": {
+        "type" : "string"
+      }
     }
   },
   "links": [
