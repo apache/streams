@@ -3,20 +3,15 @@ package org.apache.streams.hdfs;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.typesafe.config.Config;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.web.WebHdfsFileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
-import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsPersistWriter;
+import org.apache.streams.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.apache.streams.hdfs.HdfsConfiguration;
 
 import java.io.Closeable;
 import java.io.Flushable;
@@ -25,10 +20,12 @@ import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.PrivilegedExceptionAction;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Queue;
 
-public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Closeable
+public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Closeable, DatumStatusCountable
 {
     public final static String STREAMS_ID = "WebHdfsPersistWriter";
 
@@ -263,5 +260,13 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public DatumStatusCounter getDatumStatusCounter() {
+        DatumStatusCounter counters = new DatumStatusCounter();
+        counters.incrementAttempt(this.totalRecordsWritten);
+        counters.incrementStatus(DatumStatus.SUCCESS, this.totalRecordsWritten);
+        return counters;
     }
 }

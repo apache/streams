@@ -44,4 +44,16 @@ public class HdfsConfigurator {
         return hdfsReaderConfiguration;
     }
 
+    public static HdfsWriterConfiguration detectWriterConfiguration(Config hdfs) {
+
+        HdfsConfiguration hdfsConfiguration = detectConfiguration(hdfs);
+        HdfsWriterConfiguration hdfsWriterConfiguration  = mapper.convertValue(hdfsConfiguration, HdfsWriterConfiguration.class);
+
+        String writerPath = hdfs.getString("writerPath");
+
+        hdfsWriterConfiguration.setWriterPath(writerPath);
+
+        return hdfsWriterConfiguration;
+    }
+
 }
