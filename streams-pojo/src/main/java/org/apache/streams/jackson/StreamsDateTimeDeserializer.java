@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
@@ -21,10 +22,13 @@ public class StreamsDateTimeDeserializer extends StdDeserializer<DateTime> {
     public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException {
         DateTime result = null;
 
-        Long numberValue = jpar.getValueAsLong();
-        if(numberValue != 0L) {
-            result = new DateTime(numberValue);
-        } else {
+        if( jpar.getCurrentToken().isNumeric() ) {
+            Long numberValue = jpar.getValueAsLong();
+            if (numberValue != 0L) {
+                result = new DateTime(numberValue);
+            }
+        }
+        else {
             String nodeValue = jpar.getValueAsString();
             if (nodeValue != null) {
                 result = StreamsJacksonMapper.ACTIVITY_FORMAT.parseDateTime(nodeValue);

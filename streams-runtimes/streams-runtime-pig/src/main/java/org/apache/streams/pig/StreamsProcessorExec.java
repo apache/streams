@@ -51,7 +51,7 @@ public class StreamsProcessorExec extends EvalFunc<DataBag> {
         Configuration conf = UDFContext.getUDFContext().getJobConf();
 
         String id = (String)line.get(0);
-        String source = (String)line.get(1);
+        String provider = (String)line.get(1);
         Long timestamp = (Long)line.get(2);
         String object = (String)line.get(3);
 
@@ -63,7 +63,7 @@ public class StreamsProcessorExec extends EvalFunc<DataBag> {
         for( StreamsDatum resultDatum : resultSet ) {
             Tuple tuple = mTupleFactory.newTuple();
             tuple.append(id);
-            tuple.append(source);
+            tuple.append(provider);
             tuple.append(timestamp);
             tuple.append(resultDatum.getDocument());
             resultTupleList.add(tuple);

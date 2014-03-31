@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ import java.io.IOException;
  */
 public class StreamsJacksonMapper extends ObjectMapper {
 
-    public static final DateTimeFormatter ACTIVITY_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    public static final DateTimeFormatter ACTIVITY_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     private static final StreamsJacksonMapper INSTANCE = new StreamsJacksonMapper();
 
