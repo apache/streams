@@ -1,15 +1,29 @@
 package org.apache.streams.urls;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.google.common.collect.Lists;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.jackson.StreamsJacksonModule;
 import org.apache.streams.urls.Link;
 import org.apache.streams.urls.LinkUnwinder;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -28,7 +42,7 @@ public class LinkUnwinderProcessor implements StreamsProcessor
 
     private final static Logger LOGGER = LoggerFactory.getLogger(LinkUnwinderProcessor.class);
 
-
+    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
@@ -37,31 +51,47 @@ public class LinkUnwinderProcessor implements StreamsProcessor
 
         LOGGER.debug("{} processing {}", STREAMS_ID, entry.getDocument().getClass());
 
+        Activity activity;
+
         // get list of shared urls
         if( entry.getDocument() instanceof Activity) {
-            Activity activity = (Activity) entry.getDocument();
-            List<String> inputLinks = activity.getLinks();
-            List<String> outputLinks = Lists.newArrayList();
-            for( String link : inputLinks ) {
-                try {
-                    LinkUnwinder unwinder = new LinkUnwinder((String)link);
-                    unwinder.run();
-                    if( !unwinder.isFailure()) {
-                        outputLinks.add(unwinder.getFinalURL());
-                    }
-                } catch (Exception e) {
-                    //if unwindable drop
-                    LOGGER.debug("Failed to unwind link : {}", link);
-                    LOGGER.debug("Excpetion unwind link : {}", e);
-                }
-            }
-            activity.setLinks(outputLinks);
+            activity = (Activity) entry.getDocument();
+
+            activity.setLinks(unwind(activity.getLinks()));
+
             entry.setDocument(activity);
+
             result.add(entry);
 
             return result;
+        } else if( entry.getDocument() instanceof String ) {
+
+            try {
+                activity = mapper.readValue((String) entry.getDocument(), Activity.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                LOGGER.warn(e.getMessage());
+                return(Lists.newArrayList(entry));
+            }
+
+            activity.setLinks(unwind(activity.getLinks()));
+
+            try {
+                entry.setDocument(mapper.writeValueAsString(activity));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                LOGGER.warn(e.getMessage());
+                return(Lists.newArrayList(entry));
+            }
+
+            result.add(entry);
+
+            return result;
+
         }
-        else throw new NotImplementedException();
+        else {
+            return(Lists.newArrayList(entry));
+        }
     }
 
     @Override
@@ -73,4 +103,21 @@ public class LinkUnwinderProcessor implements StreamsProcessor
 
     }
 
+    private List<String> unwind(List<String> inputLinks) {
+        List<String> outputLinks = Lists.newArrayList();
+        for( String link : inputLinks ) {
+            try {
+                LinkUnwinder unwinder = new LinkUnwinder((String)link);
+                unwinder.run();
+                if( !unwinder.isFailure()) {
+                    outputLinks.add(unwinder.getFinalURL());
+                }
+            } catch (Exception e) {
+                //if unwindable drop
+                LOGGER.debug("Failed to unwind link : {}", link);
+                LOGGER.debug("Exception unwinding link : {}", e);
+            }
+        }
+        return outputLinks;
+    }
 }

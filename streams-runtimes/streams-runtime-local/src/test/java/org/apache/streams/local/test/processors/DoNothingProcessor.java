@@ -13,6 +13,9 @@ public class DoNothingProcessor implements StreamsProcessor {
 
     List<StreamsDatum> result;
 
+    public DoNothingProcessor() {
+    }
+
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
         this.result = new LinkedList<StreamsDatum>();

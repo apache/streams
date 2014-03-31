@@ -1,6 +1,7 @@
 package org.apache.streams.twitter.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -8,6 +9,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
@@ -49,9 +51,10 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
     @Override
     public Activity deserialize(String serialized) throws ActivitySerializerException {
 
+        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
         Tweet tweet = null;
         try {
-            tweet = TwitterJsonActivitySerializer.mapper.readValue(serialized, Tweet.class);
+            tweet = mapper.readValue(serialized, Tweet.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -81,7 +84,7 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
         activity.setUrl("http://twitter.com/" + tweet.getIdStr());
         activity.setLinks(getLinks(tweet));
 
-        addTwitterExtension(activity, TwitterJsonActivitySerializer.mapper.convertValue(tweet, ObjectNode.class));
+        addTwitterExtension(activity, mapper.convertValue(tweet, ObjectNode.class));
         addLocationExtension(activity, tweet);
         return activity;
     }

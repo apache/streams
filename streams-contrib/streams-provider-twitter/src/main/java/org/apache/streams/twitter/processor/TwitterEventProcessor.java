@@ -14,10 +14,7 @@ import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
-import org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonDeleteActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonRetweetActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonTweetActivitySerializer;
+import org.apache.streams.twitter.serializer.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +32,7 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterEventProcessor.class);
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = StreamsTwitterMapper.getInstance();
 
     private BlockingQueue<String> inQueue;
     private Queue<StreamsDatum> outQueue;
@@ -96,15 +93,15 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
             if( inClass.equals( Delete.class )) {
                 LOGGER.debug("ACTIVITY DELETE");
                 result = twitterJsonDeleteActivitySerializer.deserialize(
-                        TwitterJsonActivitySerializer.mapper.writeValueAsString(event));
+                        mapper.writeValueAsString(event));
             } else if ( inClass.equals( Retweet.class )) {
                 LOGGER.debug("ACTIVITY RETWEET");
                 result = twitterJsonRetweetActivitySerializer.deserialize(
-                        TwitterJsonActivitySerializer.mapper.writeValueAsString(event));
+                        mapper.writeValueAsString(event));
             } else if ( inClass.equals( Tweet.class )) {
                 LOGGER.debug("ACTIVITY TWEET");
                 result = twitterJsonTweetActivitySerializer.deserialize(
-                        TwitterJsonActivitySerializer.mapper.writeValueAsString(event));
+                        mapper.writeValueAsString(event));
             } else {
                 return null;
             }

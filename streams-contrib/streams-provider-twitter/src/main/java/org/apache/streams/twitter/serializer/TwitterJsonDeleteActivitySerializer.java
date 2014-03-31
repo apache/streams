@@ -1,6 +1,7 @@
 package org.apache.streams.twitter.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import org.apache.commons.lang.NotImplementedException;
@@ -47,9 +48,10 @@ public class TwitterJsonDeleteActivitySerializer implements ActivitySerializer<S
 
     public Activity convert(ObjectNode event) throws ActivitySerializerException {
 
+        ObjectMapper mapper = StreamsTwitterMapper.getInstance();
         Delete delete = null;
         try {
-            delete = TwitterJsonActivitySerializer.mapper.treeToValue(event, Delete.class);
+            delete = mapper.treeToValue(event, Delete.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

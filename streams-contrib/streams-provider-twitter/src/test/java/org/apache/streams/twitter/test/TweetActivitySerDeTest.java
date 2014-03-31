@@ -8,6 +8,7 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
+import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 import org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer;
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,6 +34,7 @@ import static org.junit.Assert.assertThat;
 public class TweetActivitySerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TweetActivitySerDeTest.class);
+    private ObjectMapper mapper = StreamsTwitterMapper.getInstance();
 
     private TwitterJsonActivitySerializer twitterJsonActivitySerializer = new TwitterJsonActivitySerializer();
 
@@ -55,7 +57,7 @@ public class TweetActivitySerDeTest {
 
                     Activity activity = twitterJsonActivitySerializer.deserialize(line);
 
-                    String activitystring = TwitterJsonActivitySerializer.mapper.writeValueAsString(activity);
+                    String activitystring = mapper.writeValueAsString(activity);
 
                     LOGGER.info("activity: {}", activitystring);
 
@@ -72,7 +74,7 @@ public class TweetActivitySerDeTest {
 
                         assertEquals(activity.getVerb(), "post");
 
-                        Tweet tweet = TwitterJsonActivitySerializer.mapper.readValue(line, Tweet.class);
+                        Tweet tweet = mapper.readValue(line, Tweet.class);
 
                         if( tweet.getEntities() != null &&
                             tweet.getEntities().getUrls() != null &&
@@ -85,7 +87,7 @@ public class TweetActivitySerDeTest {
 
                     } else if( detected == Retweet.class ) {
 
-                        Retweet retweet = TwitterJsonActivitySerializer.mapper.readValue(line, Retweet.class);
+                        Retweet retweet = mapper.readValue(line, Retweet.class);
 
                         assertThat(retweet.getRetweetedStatus(), is(not(nullValue())));
 

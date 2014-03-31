@@ -1,5 +1,6 @@
 package org.apache.streams.pig;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -30,7 +31,10 @@ public class StreamsProcessorExec extends EvalFunc<DataBag> {
     StreamsProcessor streamsProcessor;
 
     public StreamsProcessorExec(String... execArgs) throws ClassNotFoundException{
+        Preconditions.checkNotNull(execArgs);
+        Preconditions.checkArgument(execArgs.length > 0);
         String classFullName = execArgs[0];
+        Preconditions.checkNotNull(classFullName);
         String[] constructorArgs = new String[execArgs.length-1];
         ArrayUtils.remove(execArgs, 0);
         ArrayUtils.addAll(constructorArgs, execArgs);
@@ -46,7 +50,7 @@ public class StreamsProcessorExec extends EvalFunc<DataBag> {
 
         Configuration conf = UDFContext.getUDFContext().getJobConf();
 
-        Long id = (Long)line.get(0);
+        String id = (String)line.get(0);
         String source = (String)line.get(1);
         Long timestamp = (Long)line.get(2);
         String object = (String)line.get(3);

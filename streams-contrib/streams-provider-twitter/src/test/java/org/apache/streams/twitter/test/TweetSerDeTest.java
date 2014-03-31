@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
 public class TweetSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TweetSerDeTest.class);
-    private ObjectMapper mapper = TwitterJsonActivitySerializer.mapper;
+    private ObjectMapper mapper = StreamsTwitterMapper.getInstance();
 
     private TwitterJsonActivitySerializer twitterJsonActivitySerializer = new TwitterJsonActivitySerializer();
 

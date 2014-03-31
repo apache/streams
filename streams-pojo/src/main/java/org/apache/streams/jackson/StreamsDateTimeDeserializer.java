@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import org.apache.streams.exceptions.ActivityDeserializerException;
+import org.apache.streams.exceptions.ActivitySerializerException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -26,7 +28,28 @@ public class StreamsDateTimeDeserializer extends StdDeserializer<DateTime> {
     }
 
     @Override
-    public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException, JsonProcessingException {
-        return ACTIVITY_FORMAT.parseDateTime(jpar.getValueAsString());
+    public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException {
+        DateTime result = null;
+
+        try {
+            result = ACTIVITY_FORMAT.parseDateTime(jpar.getText());
+            return result;
+        } catch( Exception e ) {}
+
+        try {
+            result = ACTIVITY_FORMAT.parseDateTime(jpar.getValueAsString());
+            return result;
+        } catch( Exception e ) {}
+
+
+        try {
+            result = jpar.readValueAs(DateTime.class);
+            return result;
+        } catch( Exception e ) {}
+
+        if( result == null )
+            throw new IOException(" could not deserialize " + jpar.toString());
+
+        return result;
     }
 }

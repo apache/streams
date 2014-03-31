@@ -22,7 +22,9 @@ public class StreamsDateTimeSerializer extends StdSerializer<DateTime> {
     }
 
     @Override
-    public void serialize(DateTime value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonGenerationException {
-        jgen.writeString(ACTIVITY_FORMAT.print(value));
+    public void serialize(DateTime value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        long timestamp = value.getMillis();
+        String result = ACTIVITY_FORMAT.print(timestamp);
+        jgen.writeString(result);
     }
 }

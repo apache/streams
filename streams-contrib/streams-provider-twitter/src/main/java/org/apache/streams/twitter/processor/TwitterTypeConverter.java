@@ -69,15 +69,15 @@ public class TwitterTypeConverter implements StreamsProcessor {
             if( inClass.equals( Delete.class )) {
                 LOGGER.debug("ACTIVITY DELETE");
                 result = twitterJsonDeleteActivitySerializer.deserialize(
-                        TwitterJsonActivitySerializer.mapper.writeValueAsString(event));
+                        mapper.writeValueAsString(event));
             } else if ( inClass.equals( Retweet.class )) {
                 LOGGER.debug("ACTIVITY RETWEET");
                 result = twitterJsonRetweetActivitySerializer.deserialize(
-                        TwitterJsonActivitySerializer.mapper.writeValueAsString(event));
+                        mapper.writeValueAsString(event));
             } else if ( inClass.equals( Tweet.class )) {
                 LOGGER.debug("ACTIVITY TWEET");
                 result = twitterJsonTweetActivitySerializer.deserialize(
-                        TwitterJsonActivitySerializer.mapper.writeValueAsString(event));
+                        mapper.writeValueAsString(event));
             } else {
                 return null;
             }
