@@ -22,7 +22,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,10 +42,10 @@ public class RFC3339Utils {
     private static final Pattern LOCAL_SUB_SECOND = Pattern.compile(BASE + SUB_SECOND + TZ);
 
     private static final String BASE_FMT = "yyyy-MM-dd'T'HH:mm:ss";
-    private static final DateTimeFormatter UTC_STANDARD_FMT = DateTimeFormat.forPattern(BASE_FMT + "'Z'").withZoneUTC();
-    private static final DateTimeFormatter UTC_SUB_SECOND_FMT = DateTimeFormat.forPattern(BASE_FMT + ".SSS'Z'").withZoneUTC();
-    private static final DateTimeFormatter LOCAL_STANDARD_FMT = DateTimeFormat.forPattern(BASE_FMT + "Z").withZoneUTC();
-    private static final DateTimeFormatter LOCAL_SUB_SECOND_FMT = DateTimeFormat.forPattern(BASE_FMT + ".SSSZ").withZoneUTC();
+    public static final DateTimeFormatter UTC_STANDARD_FMT = DateTimeFormat.forPattern(BASE_FMT + "'Z'").withZoneUTC();
+    public static final DateTimeFormatter UTC_SUB_SECOND_FMT = DateTimeFormat.forPattern(BASE_FMT + ".SSS'Z'").withZoneUTC();
+    public static final DateTimeFormatter LOCAL_STANDARD_FMT = DateTimeFormat.forPattern(BASE_FMT + "Z").withZoneUTC();
+    public static final DateTimeFormatter LOCAL_SUB_SECOND_FMT = DateTimeFormat.forPattern(BASE_FMT + ".SSSZ").withZoneUTC();
 
 
     private RFC3339Utils() {}
