@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -22,8 +23,6 @@ public class StreamsDateTimeSerializer extends StdSerializer<DateTime> {
 
     @Override
     public void serialize(DateTime value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        long timestamp = value.getMillis();
-        String result = StreamsJacksonMapper.ACTIVITY_FORMAT.print(timestamp);
-        jgen.writeString(result);
+        jgen.writeString(RFC3339Utils.getInstance().format(value));
     }
 }

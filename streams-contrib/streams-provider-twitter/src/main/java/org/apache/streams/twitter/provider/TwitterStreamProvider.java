@@ -3,6 +3,9 @@ package org.apache.streams.twitter.provider;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.twitter.hbc.ClientBuilder;
@@ -28,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
@@ -102,9 +106,15 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
     }
 
     @Override
-    public StreamsResultSet readCurrent() {
-        StreamsResultSet result = (StreamsResultSet)providerQueue.iterator();
-        return result;
+    public synchronized StreamsResultSet readCurrent() {
+        Collection<StreamsDatum> currentIterator = Lists.newArrayList();
+        Iterators.addAll(currentIterator, providerQueue.iterator());
+
+        StreamsResultSet current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(currentIterator));
+
+        providerQueue.clear();
+
+        return current;
     }
 
     @Override
@@ -124,11 +134,6 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
 
         Preconditions.checkNotNull(this.klass);
 
-        Preconditions.checkNotNull(config.getOauth().getConsumerKey());
-        Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
-        Preconditions.checkNotNull(config.getOauth().getAccessToken());
-        Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
-
         Preconditions.checkNotNull(config.getEndpoint());
         if(config.getEndpoint().endsWith("sample.json") ) {
             endpoint = new StatusesSampleEndpoint();
@@ -145,16 +150,26 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
             return;
 
         Authentication auth;
-        if( config.getOauth() != null ) {
-            auth = new OAuth1(config.getOauth().getConsumerKey(),
-                    config.getOauth().getConsumerSecret(),
-                    config.getOauth().getAccessToken(),
-                    config.getOauth().getAccessTokenSecret());
-        } else if( config.getBasicauth() != null ) {
+        if( config.getBasicauth() != null ) {
+
+            Preconditions.checkNotNull(config.getBasicauth().getUsername());
+            Preconditions.checkNotNull(config.getBasicauth().getPassword());
+
             auth = new BasicAuth(
                     config.getBasicauth().getUsername(),
                     config.getBasicauth().getPassword()
             );
+        } else if( config.getOauth() != null ) {
+
+            Preconditions.checkNotNull(config.getOauth().getConsumerKey());
+            Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
+            Preconditions.checkNotNull(config.getOauth().getAccessToken());
+            Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
+
+            auth = new OAuth1(config.getOauth().getConsumerKey(),
+                    config.getOauth().getConsumerSecret(),
+                    config.getOauth().getAccessToken(),
+                    config.getOauth().getAccessTokenSecret());
         } else {
             return;
         }

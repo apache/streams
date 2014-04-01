@@ -2,6 +2,7 @@ package com.google.gmail.provider;
 
 import com.googlecode.gmail4j.GmailMessage;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ public class GMailRssProviderTask implements Runnable {
 
             StreamsDatum entry = new StreamsDatum(message);
 
-            this.provider.providerQueue.offer(entry);
+            ComponentUtils.offerUntilSuccess(entry, this.provider.providerQueue);
         }
 
     }

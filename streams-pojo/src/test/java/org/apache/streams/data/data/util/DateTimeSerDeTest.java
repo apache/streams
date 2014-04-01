@@ -22,7 +22,6 @@ public class DateTimeSerDeTest {
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Test
-    @Ignore
     // this really needs to be able to pass...
     public void testActivityStringSer() {
         String input = "2012-01-17T21:21:46.000Z";
@@ -48,7 +47,7 @@ public class DateTimeSerDeTest {
     @Test
     public void testActivityStringDeser() {
         String output = "2012-01-17T21:21:46.000Z";
-        long inputMillis = 1326856906000l;
+        long inputMillis = 1326835306000L;
         DateTime input;
         try {
             input = new DateTime(inputMillis);

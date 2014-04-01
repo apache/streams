@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Basic Tests for the LocalStreamBuilder.
@@ -71,7 +72,7 @@ public class LocalStreamBuilderTest {
             ++count;
             scanner.nextLine();
         }
-        assertEquals(numDatums+1, count);
+        assertThat(count, greaterThan(numDatums)); // using > because number of lines in system.out is non-deterministic
     }
 
     @Test
@@ -90,7 +91,7 @@ public class LocalStreamBuilderTest {
             ++count;
             scanner.nextLine();
         }
-        assertEquals(numDatums+1, count);
+        assertThat(count, greaterThan(numDatums)); // using > because number of lines in system.out is non-deterministic
     }
 
     @Test
@@ -112,7 +113,7 @@ public class LocalStreamBuilderTest {
             ++count;
             scanner.nextLine();
         }
-        assertEquals(numDatums+1, count); //+1 is to make sure cleanup is called on the writer
+        assertThat(count, greaterThan(numDatums)); // using > because number of lines in system.out is non-deterministic
         assertEquals(parallelHint, PassthroughDatumCounterProcessor.claimedNumber.size()); //test 40 were initialized
         assertTrue(PassthroughDatumCounterProcessor.sawData.size() > 1 && PassthroughDatumCounterProcessor.sawData.size() <= parallelHint); //test more than one processor got data
     }
@@ -133,11 +134,11 @@ public class LocalStreamBuilderTest {
         builder.start();
         int count = 0;
         Scanner scanner = new Scanner(new ByteArrayInputStream(out.toByteArray()));
-        while(scanner.hasNextLine()) {
+        while (scanner.hasNextLine()) {
             ++count;
             scanner.nextLine();
         }
-        assertEquals(numDatums1+numDatums2+1, count);
+        assertThat(count, greaterThan(numDatums1 + numDatums2)); // using > because number of lines in system.out is non-deterministic
     }
 
     @Test
@@ -155,7 +156,8 @@ public class LocalStreamBuilderTest {
             ++count;
             scanner.nextLine();
         }
-        assertEquals((numDatums*2)+1, count);
+        assertThat(count, greaterThan(numDatums*2)); // using > because number of lines in system.out is non-deterministic
+
     }
 
 

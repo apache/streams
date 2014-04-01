@@ -51,7 +51,7 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
     @Override
     public Activity deserialize(String serialized) throws ActivitySerializerException {
 
-        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+        ObjectMapper mapper = StreamsTwitterMapper.getInstance();
         Tweet tweet = null;
         try {
             tweet = mapper.readValue(serialized, Tweet.class);

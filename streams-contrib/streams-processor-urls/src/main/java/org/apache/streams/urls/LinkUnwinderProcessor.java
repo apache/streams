@@ -78,10 +78,10 @@ public class LinkUnwinderProcessor implements StreamsProcessor
 
             try {
                 entry.setDocument(mapper.writeValueAsString(activity));
-            } catch (JsonProcessingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 LOGGER.warn(e.getMessage());
-                return(Lists.newArrayList(entry));
+                return(Lists.newArrayList());
             }
 
             result.add(entry);
@@ -90,7 +90,8 @@ public class LinkUnwinderProcessor implements StreamsProcessor
 
         }
         else {
-            return(Lists.newArrayList(entry));
+            //return(Lists.newArrayList(entry));
+            return( Lists.newArrayList());
         }
     }
 
@@ -107,15 +108,14 @@ public class LinkUnwinderProcessor implements StreamsProcessor
         List<String> outputLinks = Lists.newArrayList();
         for( String link : inputLinks ) {
             try {
-                LinkUnwinder unwinder = new LinkUnwinder((String)link);
+                LinkUnwinder unwinder = new LinkUnwinder(link);
                 unwinder.run();
-                if( !unwinder.isFailure()) {
-                    outputLinks.add(unwinder.getFinalURL());
-                }
+                outputLinks.add(unwinder.getFinalURL());
             } catch (Exception e) {
                 //if unwindable drop
                 LOGGER.debug("Failed to unwind link : {}", link);
                 LOGGER.debug("Exception unwinding link : {}", e);
+                e.printStackTrace();
             }
         }
         return outputLinks;

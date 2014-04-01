@@ -21,8 +21,6 @@ import java.io.IOException;
  */
 public class StreamsJacksonMapper extends ObjectMapper {
 
-    public static final DateTimeFormatter ACTIVITY_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
     private static final StreamsJacksonMapper INSTANCE = new StreamsJacksonMapper();
 
     public static StreamsJacksonMapper getInstance(){
