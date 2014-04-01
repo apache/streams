@@ -23,6 +23,6 @@ public class StreamsDateTimeSerializer extends StdSerializer<DateTime> {
 
     @Override
     public void serialize(DateTime value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        jgen.writeString(RFC3339Utils.format(value));
+        jgen.writeString(RFC3339Utils.getInstance().format(value));
     }
 }

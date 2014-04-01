@@ -59,9 +59,7 @@ public class StreamsSerializerExec extends EvalFunc<String> {
         } catch( Exception e ) {
             e.printStackTrace();
         }
-        System.out.println("5");
         Preconditions.checkNotNull(activity);
-        System.out.println("6");
 
         return mapper.writeValueAsString(activity);
 

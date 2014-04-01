@@ -19,6 +19,6 @@ public class StreamsDateTimeDeserializer extends StdDeserializer<DateTime> {
 
     @Override
     public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException {
-        return RFC3339Utils.parseUTC(jpar.getValueAsString());
+        return RFC3339Utils.getInstance().parseUTC(jpar.getValueAsString());
     }
 }

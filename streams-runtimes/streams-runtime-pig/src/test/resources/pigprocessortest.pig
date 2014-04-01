@@ -1,4 +1,4 @@
-DEFINE UNWINDER org.apache.streams.pig.StreamsProcessorExec('org.apache.streams.local.test.processors.DoNothingProcessor');
+DEFINE UNWINDER org.apache.streams.pig.StreamsProcessDatumExec('org.apache.streams.local.test.processors.DoNothingProcessor');
 
 activities = LOAD '*' USING PigStorage('\t') AS (activityid: chararray, source: chararray, timestamp: long, object: chararray);
 

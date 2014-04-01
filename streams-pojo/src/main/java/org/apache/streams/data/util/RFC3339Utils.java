@@ -30,6 +30,13 @@ import java.util.regex.Pattern;
  * Parses and formats Joda Time {@link org.joda.time.DateTime} dates to and from RFC3339 compatible Strings
  */
 public class RFC3339Utils {
+
+    private static final RFC3339Utils INSTANCE = new RFC3339Utils();
+
+    public static RFC3339Utils getInstance(){
+        return INSTANCE;
+    }
+
     private static final String BASE = "^[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}";
     private static final String TZ = "[+-][0-9]{2}:?[0-9]{2}$";
     private static final String SUB_SECOND = "\\.([0-9]*)";

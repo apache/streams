@@ -23,14 +23,14 @@ import java.util.concurrent.TimeUnit;
  * Created by sblackmon on 3/25/14.
  */
 @MonitoredUDF(timeUnit = TimeUnit.SECONDS, duration = 30, intDefault = 10)
-public class StreamsProcessorExec extends EvalFunc<DataBag> {
+public class StreamsProcessDatumExec extends EvalFunc<DataBag> {
 
     TupleFactory mTupleFactory = TupleFactory.getInstance();
     BagFactory mBagFactory = BagFactory.getInstance();
 
     StreamsProcessor streamsProcessor;
 
-    public StreamsProcessorExec(String... execArgs) throws ClassNotFoundException{
+    public StreamsProcessDatumExec(String... execArgs) throws ClassNotFoundException{
         Preconditions.checkNotNull(execArgs);
         Preconditions.checkArgument(execArgs.length > 0);
         String classFullName = execArgs[0];
