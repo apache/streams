@@ -1,6 +1,7 @@
 package com.google.gmail.provider;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gmail.GMailConfiguration;
@@ -13,9 +14,7 @@ import com.googlecode.gmail4j.javamail.ImapGmailConnection;
 import com.googlecode.gmail4j.rss.RssGmailClient;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsProvider;
-import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.core.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ import java.util.concurrent.*;
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class GMailProvider implements StreamsProvider {
+public class GMailProvider implements StreamsProvider, DatumStatusCountable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(GMailProvider.class);
 
@@ -54,7 +53,7 @@ public class GMailProvider implements StreamsProvider {
     protected GmailClient rssClient;
     protected ImapGmailClient imapClient;
 
-    protected ListeningExecutorService executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
+    private ExecutorService executor;
 
     private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
         return new ThreadPoolExecutor(nThreads, nThreads,
@@ -82,14 +81,31 @@ public class GMailProvider implements StreamsProvider {
         this.klass = klass;
     }
 
+    protected DatumStatusCounter countersTotal = new DatumStatusCounter();
+    protected DatumStatusCounter countersCurrent = new DatumStatusCounter();
+
     @Override
     public void startStream() {
-        new Thread(new GMailImapProviderTask(this)).start();
+
+        executor.submit(new GMailImapProviderTask(this));
+
     }
 
     @Override
     public StreamsResultSet readCurrent() {
-        return null;
+
+        StreamsResultSet current;
+
+        synchronized( GMailProvider.class ) {
+            current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(providerQueue));
+            current.setCounter(new DatumStatusCounter());
+            current.getCounter().add(countersCurrent);
+            countersTotal.add(countersCurrent);
+            countersCurrent = new DatumStatusCounter();
+            providerQueue.clear();
+        }
+
+        return current;
     }
 
     @Override
@@ -118,6 +134,10 @@ public class GMailProvider implements StreamsProvider {
         GmailConnection imapConnection = new ImapGmailConnection();
         imapConnection.setLoginCredentials(config.getUserName(), config.getPassword().toCharArray());
         imapClient.setConnection(imapConnection);
+
+        executor = Executors.newSingleThreadExecutor();
+
+        startStream();
     }
 
     @Override
@@ -127,5 +147,10 @@ public class GMailProvider implements StreamsProvider {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public DatumStatusCounter getDatumStatusCounter() {
+        return null;
     }
 }
