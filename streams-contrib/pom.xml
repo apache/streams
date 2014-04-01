@@ -30,6 +30,7 @@
     <artifactId>streams-contrib</artifactId>
 
     <packaging>pom</packaging>
+    <name>streams-contrib</name>
 
     <properties>
 
