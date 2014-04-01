@@ -36,30 +36,45 @@ public class StreamsProcessDocumentExec extends EvalFunc<String> {
     ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     public StreamsProcessDocumentExec(String... execArgs) throws ClassNotFoundException{
+        System.out.println("A");
         Preconditions.checkNotNull(execArgs);
+        System.out.println("B");
         Preconditions.checkArgument(execArgs.length > 0);
+        System.out.println("C");
         String processorFullName = execArgs[0];
+        System.out.println("D");
         Preconditions.checkNotNull(processorFullName);
+        System.out.println("E");
         streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(processorFullName));
+        System.out.println("F");
         streamsProcessor.prepare(null);
+        System.out.println("G");
     }
 
     @Override
     public String exec(Tuple input) throws IOException {
 
+        System.out.println("H");
         Preconditions.checkNotNull(streamsProcessor);
         Preconditions.checkNotNull(input);
         Preconditions.checkArgument(input.size() == 1);
+        System.out.println("I");
 
         String document = (String) input.get(0);
 
         Preconditions.checkNotNull(document);
 
+        System.out.println(document);
+
         StreamsDatum entry = new StreamsDatum(document);
 
         Preconditions.checkNotNull(entry);
 
+        System.out.println(entry);
+
         List<StreamsDatum> resultSet = streamsProcessor.process(entry);
+
+        System.out.println(resultSet);
 
         Object resultDoc = null;
         for( StreamsDatum resultDatum : resultSet ) {
@@ -67,6 +82,8 @@ public class StreamsProcessDocumentExec extends EvalFunc<String> {
         }
 
         Preconditions.checkNotNull(resultDoc);
+
+        System.out.println(resultDoc);
 
         if( resultDoc instanceof String )
             return (String) resultDoc;
