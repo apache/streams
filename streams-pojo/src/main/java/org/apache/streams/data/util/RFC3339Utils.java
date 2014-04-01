@@ -23,6 +23,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,14 +44,16 @@ public class RFC3339Utils {
 
     private static final String BASE_FMT = "yyyy-MM-dd'T'HH:mm:ss";
     private static final DateTimeFormatter UTC_STANDARD_FMT = DateTimeFormat.forPattern(BASE_FMT + "'Z'").withZoneUTC();
+    private static final DateTimeFormatter UTC_SUB_SECOND_FMT = DateTimeFormat.forPattern(BASE_FMT + ".SSS'Z'").withZoneUTC();
     private static final DateTimeFormatter LOCAL_STANDARD_FMT = DateTimeFormat.forPattern(BASE_FMT + "Z").withZoneUTC();
+    private static final DateTimeFormatter LOCAL_SUB_SECOND_FMT = DateTimeFormat.forPattern(BASE_FMT + ".SSSZ").withZoneUTC();
 
 
     private RFC3339Utils() {}
 
     public static DateTime parseUTC(String toParse) {
         if(MILLIS.matcher(toParse).matches()) {
-            return new DateTime(Long.valueOf(toParse));
+            return new DateTime(Long.valueOf(toParse), DateTimeZone.UTC);
         }
         if(UTC_STANDARD.matcher(toParse).matches()) {
             return parseUTC(UTC_STANDARD_FMT, toParse);
@@ -70,11 +73,11 @@ public class RFC3339Utils {
     }
 
     public static String format(DateTime toFormat) {
-        return UTC_STANDARD_FMT.print(toFormat.getMillis());
+        return UTC_SUB_SECOND_FMT.print(toFormat.getMillis());
     }
 
-    public static String format(DateTime toFormat, Locale locale) {
-        return LOCAL_STANDARD_FMT.withLocale(locale).print(toFormat.getMillis());
+    public static String format(DateTime toFormat, TimeZone tz) {
+        return LOCAL_SUB_SECOND_FMT.withZone(DateTimeZone.forTimeZone(tz)).print(toFormat.getMillis());
     }
 
     private static DateTime parseUTC(DateTimeFormatter formatter, String toParse) {
@@ -82,13 +85,21 @@ public class RFC3339Utils {
     }
 
     private static DateTimeFormatter getSubSecondFormat(String sub, String suffix) {
-        StringBuilder pattern = new StringBuilder();
-        pattern.append(BASE_FMT);
-        pattern.append(".");
-        for(int i=0; i<sub.length(); i++) {
-            pattern.append("S");
+        DateTimeFormatter result;
+        //Since RFC3339 allows for any number of sub-second notations, we need to flexibly support more or less than 3
+        //digits; however, if it is exactly 3, just use the standards.
+        if(sub.length() == 3) {
+            result = suffix.equals("Z") ? LOCAL_SUB_SECOND_FMT : UTC_SUB_SECOND_FMT;
+        } else {
+            StringBuilder pattern = new StringBuilder();
+            pattern.append(BASE_FMT);
+            pattern.append(".");
+            for (int i = 0; i < sub.length(); i++) {
+                pattern.append("S");
+            }
+            pattern.append(suffix);
+            result = DateTimeFormat.forPattern(pattern.toString()).withZoneUTC();
         }
-        pattern.append(suffix);
-        return DateTimeFormat.forPattern(pattern.toString()).withZoneUTC();
+        return result;
     }
 }

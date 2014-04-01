@@ -19,8 +19,13 @@ package org.apache.streams.data.data.util;
 
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
+import java.util.Locale;
+import java.util.TimeZone;
+
+import static org.apache.streams.data.util.RFC3339Utils.format;
 import static org.apache.streams.data.util.RFC3339Utils.parseUTC;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -142,6 +147,28 @@ public class RFC3339UtilsTest {
         assertThat(parsed.dayOfMonth().get(), is(equalTo(25)));
         assertThat(parsed.monthOfYear().get(), is(equalTo(12)));
         assertThat(parsed.millisOfSecond().get(), is(equalTo(734)));
-        System.out.println(parsed.getMillis());
+    }
+
+    @Test
+    public void validLong() {
+        DateTime parsed = parseUTC("1419505200734");
+        assertThat(parsed.minuteOfHour().get(), is(equalTo(0)));
+        assertThat(parsed.hourOfDay().get(), is(equalTo(11)));
+        assertThat(parsed.dayOfMonth().get(), is(equalTo(25)));
+        assertThat(parsed.monthOfYear().get(), is(equalTo(12)));
+        assertThat(parsed.millisOfSecond().get(), is(equalTo(734)));
+    }
+
+    @Test
+    public void validFormatUTC() {
+        DateTime parsed = new DateTime(1419505200734L);
+        assertThat(format(parsed), is(equalTo("2014-12-25T11:00:00.734Z")));
+    }
+
+    @Test
+    public void validFormat() {
+        TimeZone cet = TimeZone.getTimeZone("CET");
+        DateTime parsed = new DateTime(1419505200734L);
+        assertThat(format(parsed, cet), is(equalTo("2014-12-25T12:00:00.734+0100")));
     }
 }
