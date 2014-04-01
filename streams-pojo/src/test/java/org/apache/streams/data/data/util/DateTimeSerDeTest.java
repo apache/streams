@@ -22,7 +22,6 @@ public class DateTimeSerDeTest {
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Test
-    @Ignore
     // this really needs to be able to pass...
     public void testActivityStringSer() {
         String input = "2012-01-17T21:21:46.000Z";
