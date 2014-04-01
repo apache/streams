@@ -38,7 +38,7 @@ public class StreamsProcessorExec extends EvalFunc<DataBag> {
         String[] constructorArgs = new String[execArgs.length-1];
         ArrayUtils.remove(execArgs, 0);
         ArrayUtils.addAll(constructorArgs, execArgs);
-        streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(classFullName), constructorArgs);
+        streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(classFullName));
         streamsProcessor.prepare(null);
     }
 

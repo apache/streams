@@ -15,6 +15,7 @@ import org.apache.pig.impl.util.UDFContext;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class StreamsSerializerExec extends EvalFunc<String> {
 
     ActivitySerializer activitySerializer;
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     public StreamsSerializerExec(String... execArgs) throws ClassNotFoundException{
         Preconditions.checkNotNull(execArgs);

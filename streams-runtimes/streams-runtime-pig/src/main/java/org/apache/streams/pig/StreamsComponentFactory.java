@@ -33,21 +33,11 @@ public class StreamsComponentFactory {
 
     }
 
-    public static StreamsProcessor getProcessorInstance(Class<?> clazz, String... args) {
+    public static StreamsProcessor getProcessorInstance(Class<?> processorClazz) {
 
         Object object = null;
         try {
-            int constructorStringCount = args.length;
-            List<Class> constructorSignature;
-            if( constructorStringCount == 0 )
-                constructorSignature = Lists.newArrayList();
-            else {
-                constructorSignature = Lists.newArrayListWithCapacity(args.length);
-                for (int i = 0; i < constructorStringCount; i++)
-                    constructorSignature.add(String.class);
-            }
-            String[] constructorArgs = args;
-            object = clazz.getConstructor(constructorSignature.toArray(new Class[args.length])).newInstance(constructorArgs);
+            object = processorClazz.getConstructor().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }
