@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.twitter.TwitterBasicAuthConfiguration;
 import org.apache.streams.twitter.TwitterOAuthConfiguration;
 import org.apache.streams.twitter.TwitterStreamConfiguration;
 import org.slf4j.Logger;
@@ -19,23 +20,35 @@ public class TwitterStreamConfigurator {
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterStreamConfigurator.class);
 
     public static TwitterStreamConfiguration detectConfiguration(Config twitter) {
-        Config oauth = StreamsConfigurator.config.getConfig("twitter.oauth");
 
         TwitterStreamConfiguration twitterStreamConfiguration = new TwitterStreamConfiguration();
         twitterStreamConfiguration.setProtocol(twitter.getString("protocol"));
         twitterStreamConfiguration.setHost(twitter.getString("host"));
         twitterStreamConfiguration.setPort(twitter.getLong("port"));
         twitterStreamConfiguration.setVersion(twitter.getString("version"));
-        TwitterOAuthConfiguration twitterOAuthConfiguration = new TwitterOAuthConfiguration();
-        twitterOAuthConfiguration.setConsumerKey(oauth.getString("consumerKey"));
-        twitterOAuthConfiguration.setConsumerSecret(oauth.getString("consumerSecret"));
-        twitterOAuthConfiguration.setAccessToken(oauth.getString("accessToken"));
-        twitterOAuthConfiguration.setAccessTokenSecret(oauth.getString("accessTokenSecret"));
-        twitterStreamConfiguration.setOauth(twitterOAuthConfiguration);
+
+        try {
+            Config basicauth = StreamsConfigurator.config.getConfig("twitter.basicauth");
+            TwitterBasicAuthConfiguration twitterBasicAuthConfiguration = new TwitterBasicAuthConfiguration();
+            twitterBasicAuthConfiguration.setUsername(basicauth.getString("username"));
+            twitterBasicAuthConfiguration.setPassword(basicauth.getString("password"));
+            twitterStreamConfiguration.setBasicauth(twitterBasicAuthConfiguration);
+        } catch( ConfigException ce ) {}
+
+        try {
+            Config oauth = StreamsConfigurator.config.getConfig("twitter.oauth");
+            TwitterOAuthConfiguration twitterOAuthConfiguration = new TwitterOAuthConfiguration();
+            twitterOAuthConfiguration.setConsumerKey(oauth.getString("consumerKey"));
+            twitterOAuthConfiguration.setConsumerSecret(oauth.getString("consumerSecret"));
+            twitterOAuthConfiguration.setAccessToken(oauth.getString("accessToken"));
+            twitterOAuthConfiguration.setAccessTokenSecret(oauth.getString("accessTokenSecret"));
+            twitterStreamConfiguration.setOauth(twitterOAuthConfiguration);
+        } catch( ConfigException ce ) {}
 
         try {
             twitterStreamConfiguration.setTrack(twitter.getStringList("track"));
         } catch( ConfigException ce ) {}
+
         try {
             List<Long> follows = Lists.newArrayList();
             for( Integer id : twitter.getIntList("follow"))

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.joda.time.DateTime;
@@ -37,7 +38,9 @@ public class StreamsJacksonMapper extends ObjectMapper {
         configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
         configure(DeserializationFeature.WRAP_EXCEPTIONS, Boolean.FALSE);
         configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, Boolean.TRUE);
-        setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        // If a user has an 'object' that does not have an explicit mapping, don't cause the serialization to fail.
+        configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, Boolean.FALSE);
+        setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.DEFAULT);
     }
 
 }

@@ -6,13 +6,19 @@
     "extends": {"$ref":"ElasticsearchConfiguration.json"},
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
-        "index": {
-            "type": "string",
-            "description": "Index to write to"
+        "indexes": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "Indexes to read from"
         },
-        "type": {
-            "type": "string",
-            "description": "Type to write as"
+        "types": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "Types to read from"
         }
     }
 }

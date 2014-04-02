@@ -254,6 +254,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
         Preconditions.checkNotNull(config.getFollow());
 
+        Preconditions.checkArgument(config.getHost().equals("api.twitter.com"));
         Preconditions.checkArgument(config.getEndpoint().equals("statuses/user_timeline"));
 
         Boolean jsonStoreEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getJsonStoreEnabled()))).or(true);

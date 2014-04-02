@@ -105,8 +105,8 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
     }
     public ElasticsearchPersistReader(ElasticsearchReaderConfiguration elasticsearchConfiguration) {
         this.elasticsearchClientManager = new ElasticsearchClientManager(elasticsearchConfiguration);
-        indexes.add(elasticsearchConfiguration.getIndex());
-        types.add(elasticsearchConfiguration.getType());
+        indexes.addAll(elasticsearchConfiguration.getIndexes());
+        types.addAll(elasticsearchConfiguration.getTypes());
     }
 
     @Override

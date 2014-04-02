@@ -16,6 +16,7 @@ import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
 import org.apache.streams.twitter.serializer.*;
+import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +42,7 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
     private Class inClass;
     private Class outClass;
 
-    private TwitterJsonTweetActivitySerializer twitterJsonTweetActivitySerializer = new TwitterJsonTweetActivitySerializer();
-    private TwitterJsonRetweetActivitySerializer twitterJsonRetweetActivitySerializer = new TwitterJsonRetweetActivitySerializer();
-    private TwitterJsonDeleteActivitySerializer twitterJsonDeleteActivitySerializer = new TwitterJsonDeleteActivitySerializer();
+    private TwitterJsonActivitySerializer twitterJsonActivitySerializer;
 
     public final static String TERMINATE = new String("TERMINATE");
 
@@ -65,22 +64,20 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
         while(true) {
             String item;
             try {
-                item = inQueue.take();
+
+                item = ComponentUtils.pollUntilStringNotEmpty(inQueue);
+
                 if(item instanceof String && item.equals(TERMINATE)) {
                     LOGGER.info("Terminating!");
                     break;
                 }
 
-                System.out.println(item);
+                ObjectNode objectNode = (ObjectNode) mapper.readTree(item);
 
-                if( StringUtils.isNotEmpty(item) ) {
-                    ObjectNode objectNode = (ObjectNode) mapper.readTree(item);
+                StreamsDatum rawDatum = new StreamsDatum(objectNode);
 
-                    StreamsDatum rawDatum = new StreamsDatum(objectNode);
-
-                    for (StreamsDatum entry : process(rawDatum)) {
-                        outQueue.offer(entry);
-                    }
+                for (StreamsDatum entry : process(rawDatum)) {
+                    ComponentUtils.offerUntilSuccess(entry, outQueue);
                 }
 
             } catch (Exception e) {
@@ -95,21 +92,9 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
         Object result = null;
 
         if( outClass.equals( Activity.class )) {
-            if( inClass.equals( Delete.class )) {
-                LOGGER.debug("ACTIVITY DELETE");
-                result = twitterJsonDeleteActivitySerializer.deserialize(
+                LOGGER.debug("ACTIVITY");
+                result = twitterJsonActivitySerializer.deserialize(
                         mapper.writeValueAsString(event));
-            } else if ( inClass.equals( Retweet.class )) {
-                LOGGER.debug("ACTIVITY RETWEET");
-                result = twitterJsonRetweetActivitySerializer.deserialize(
-                        mapper.writeValueAsString(event));
-            } else if ( inClass.equals( Tweet.class )) {
-                LOGGER.debug("ACTIVITY TWEET");
-                result = twitterJsonTweetActivitySerializer.deserialize(
-                        mapper.writeValueAsString(event));
-            } else {
-                return null;
-            }
         } else if( outClass.equals( Tweet.class )) {
             if ( inClass.equals( Tweet.class )) {
                 LOGGER.debug("TWEET");
@@ -210,7 +195,7 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
 
     @Override
     public void prepare(Object configurationObject) {
-
+        twitterJsonActivitySerializer = new TwitterJsonActivitySerializer();
     }
 
     @Override

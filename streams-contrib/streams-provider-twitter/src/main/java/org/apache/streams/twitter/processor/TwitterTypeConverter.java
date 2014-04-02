@@ -31,7 +31,7 @@ public class TwitterTypeConverter implements StreamsProcessor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTypeConverter.class);
 
-    private ObjectMapper mapper = new StreamsTwitterMapper();
+    private ObjectMapper mapper;
 
     private Queue<StreamsDatum> inQueue;
     private Queue<StreamsDatum> outQueue;
@@ -39,7 +39,7 @@ public class TwitterTypeConverter implements StreamsProcessor {
     private Class inClass;
     private Class outClass;
 
-    private TwitterJsonActivitySerializer twitterJsonActivitySerializer = new TwitterJsonActivitySerializer();
+    private TwitterJsonActivitySerializer twitterJsonActivitySerializer;
 
     public final static String TERMINATE = new String("TERMINATE");
 
@@ -176,7 +176,8 @@ public class TwitterTypeConverter implements StreamsProcessor {
 
     @Override
     public void prepare(Object o) {
-
+        mapper = new StreamsTwitterMapper();
+        twitterJsonActivitySerializer = new TwitterJsonActivitySerializer();
     }
 
     @Override
