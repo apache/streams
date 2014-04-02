@@ -14,6 +14,7 @@ import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistReader;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -62,7 +63,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
     private int batchSize = 100;
     private String scrollTimeout = null;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     private ElasticsearchConfiguration config;
 
@@ -119,6 +120,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
     @Override
     public void prepare(Object o) {
 
+        mapper = StreamsJacksonMapper.getInstance();
         persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
 
         // If we haven't already set up the search, then set up the search.
