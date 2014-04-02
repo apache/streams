@@ -1,0 +1,80 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "properties": {
+        "siteStatus" : {
+            "type" : "string",
+            "enum" : ["SUCCESS", "ERROR"]
+        },
+        "title": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "body": {
+            "type": "string"
+        },
+        "plainText": {
+            "type": "string"
+        },
+        "medium": {
+            "type": "string"
+        },
+        "author": {
+            "type": "string"
+        },
+        "locale": {
+            "type": "string"
+        },
+        "publishedDate": {
+            "type": "string",
+            "format" : "date-time"
+        },
+        "lastModifiedDate": {
+            "type": "string",
+            "format" : "date-time"
+        },
+        "imageURL": {
+            "type": "string"
+        },
+        "languageDetected": {
+            "type": "object",
+            "properties": {
+                "languageCode": {
+                    "type": "string"
+                },
+                "isLanguageReasonablyCertain": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "textBlocks": {
+            "type": "array",
+            "items": {
+                "javaType": "de.l3s.boilerpipe.document.TextBlock",
+                "type": "object"
+            }
+        },
+        "keywords": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "twitterCreator": {
+            "type": "string"
+        },
+        "twitterSite": {
+            "type": "string"
+        },
+        "facebookPage": {
+            "type": "string"
+        },
+        "facebookApp": {
+            "type": "string"
+        }
+    }
+}
