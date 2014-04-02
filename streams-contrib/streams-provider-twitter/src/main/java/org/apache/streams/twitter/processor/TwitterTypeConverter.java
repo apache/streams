@@ -14,10 +14,7 @@ import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
-import org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonDeleteActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonRetweetActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonTweetActivitySerializer;
+import org.apache.streams.twitter.serializer.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +31,7 @@ public class TwitterTypeConverter implements StreamsProcessor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTypeConverter.class);
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new StreamsTwitterMapper();
 
     private Queue<StreamsDatum> inQueue;
     private Queue<StreamsDatum> outQueue;
@@ -42,9 +39,7 @@ public class TwitterTypeConverter implements StreamsProcessor {
     private Class inClass;
     private Class outClass;
 
-    private TwitterJsonTweetActivitySerializer twitterJsonTweetActivitySerializer = new TwitterJsonTweetActivitySerializer();
-    private TwitterJsonRetweetActivitySerializer twitterJsonRetweetActivitySerializer = new TwitterJsonRetweetActivitySerializer();
-    private TwitterJsonDeleteActivitySerializer twitterJsonDeleteActivitySerializer = new TwitterJsonDeleteActivitySerializer();
+    private TwitterJsonActivitySerializer twitterJsonActivitySerializer = new TwitterJsonActivitySerializer();
 
     public final static String TERMINATE = new String("TERMINATE");
 
@@ -66,21 +61,10 @@ public class TwitterTypeConverter implements StreamsProcessor {
         Object result = null;
 
         if( outClass.equals( Activity.class )) {
-            if( inClass.equals( Delete.class )) {
-                LOGGER.debug("ACTIVITY DELETE");
-                result = twitterJsonDeleteActivitySerializer.deserialize(
+                LOGGER.debug("ACTIVITY");
+                result = twitterJsonActivitySerializer.deserialize(
                         mapper.writeValueAsString(event));
-            } else if ( inClass.equals( Retweet.class )) {
-                LOGGER.debug("ACTIVITY RETWEET");
-                result = twitterJsonRetweetActivitySerializer.deserialize(
-                        mapper.writeValueAsString(event));
-            } else if ( inClass.equals( Tweet.class )) {
-                LOGGER.debug("ACTIVITY TWEET");
-                result = twitterJsonTweetActivitySerializer.deserialize(
-                        mapper.writeValueAsString(event));
-            } else {
-                return null;
-            }
+                return result;
         } else if( outClass.equals( Tweet.class )) {
             if ( inClass.equals( Tweet.class )) {
                 LOGGER.debug("TWEET");
@@ -200,24 +184,4 @@ public class TwitterTypeConverter implements StreamsProcessor {
 
     }
 
-//    public void run() {
-//        while(true) {
-//            StreamsDatum item;
-//            try {
-//                item = inQueue.poll();
-//                if(item.getDocument() instanceof String && item.equals(TERMINATE)) {
-//                    LOGGER.info("Terminating!");
-//                    break;
-//                }
-//
-//                for( StreamsDatum entry : process(item)) {
-//                    outQueue.offer(entry);
-//                }
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//
-//            }
-//        }
-//    }
 }

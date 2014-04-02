@@ -3,14 +3,13 @@ package org.apache.streams.twitter.test;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Optional;
-import org.apache.commons.lang.StringUtils;
+import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.provider.TwitterEventClassifier;
+import org.apache.streams.twitter.processor.TwitterTypeConverter;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 import org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer;
 import org.junit.Assert;
@@ -78,6 +77,15 @@ public class SimpleTweetTest {
         try {
             activity = twitterJsonActivitySerializer.deserialize(TWITTER_JSON);
         } catch (ActivitySerializerException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+
+        try {
+            TwitterTypeConverter converter = new TwitterTypeConverter(String.class, Activity.class);
+            converter.prepare(null);
+            converter.process(new StreamsDatum(TWITTER_JSON));
+        } catch (Throwable e) {
             e.printStackTrace();
             Assert.fail();
         }
