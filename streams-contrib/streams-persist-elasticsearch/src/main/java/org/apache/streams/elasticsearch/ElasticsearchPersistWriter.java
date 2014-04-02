@@ -7,6 +7,7 @@ import com.google.common.base.Preconditions;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -97,7 +98,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new StreamsJacksonMapper();
 
     private ElasticsearchWriterConfiguration config;
 
