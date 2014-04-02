@@ -165,10 +165,18 @@ public class StreamComponent {
     public StreamsTask createConnectedTask() {
         StreamsTask task;
         if(this.processor != null) {
-            task =  new StreamsProcessorTask((StreamsProcessor)SerializationUtil.cloneBySerialization(this.processor));
-            task.addInputQueue(this.inQueue);
-            for(Queue<StreamsDatum> q : this.outBound.values()) {
-                task.addOutputQueue(q);
+            if(this.numTasks > 1) {
+                task =  new StreamsProcessorTask((StreamsProcessor)SerializationUtil.cloneBySerialization(this.processor));
+                task.addInputQueue(this.inQueue);
+                for(Queue<StreamsDatum> q : this.outBound.values()) {
+                    task.addOutputQueue(q);
+                }
+            } else {
+                task = new StreamsProcessorTask(this.processor);
+                task.addInputQueue(this.inQueue);
+                for(Queue<StreamsDatum> q : this.outBound.values()) {
+                    task.addOutputQueue(q);
+                }
             }
         }
         else if(this.writer != null) {

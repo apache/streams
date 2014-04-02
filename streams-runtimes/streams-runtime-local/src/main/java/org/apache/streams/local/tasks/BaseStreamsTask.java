@@ -3,6 +3,7 @@ package org.apache.streams.local.tasks;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.util.SerializationUtil;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
     private ObjectMapper mapper;
 
     public BaseStreamsTask() {
-        this.mapper = new ObjectMapper();
+        this.mapper = new StreamsJacksonMapper();
         this.mapper.registerSubtypes(Activity.class);
     }
 

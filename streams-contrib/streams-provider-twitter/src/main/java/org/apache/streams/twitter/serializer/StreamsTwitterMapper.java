@@ -30,7 +30,7 @@ public class StreamsTwitterMapper extends StreamsJacksonMapper {
         return INSTANCE;
     }
 
-    private StreamsTwitterMapper() {
+    public StreamsTwitterMapper() {
         super();
         registerModule(new SimpleModule()
         {

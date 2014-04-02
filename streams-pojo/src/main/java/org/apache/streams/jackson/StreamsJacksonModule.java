@@ -14,5 +14,4 @@ public class StreamsJacksonModule extends SimpleModule {
         addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class));
     }
 
-
 }

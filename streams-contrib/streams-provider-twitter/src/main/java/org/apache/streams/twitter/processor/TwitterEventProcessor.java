@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.exceptions.ActivitySerializerException;
@@ -32,7 +33,7 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterEventProcessor.class);
 
-    private ObjectMapper mapper = StreamsTwitterMapper.getInstance();
+    private ObjectMapper mapper = new StreamsTwitterMapper();
 
     private BlockingQueue<String> inQueue;
     private Queue<StreamsDatum> outQueue;
@@ -64,18 +65,22 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
         while(true) {
             String item;
             try {
-                item = inQueue.poll();
+                item = inQueue.take();
                 if(item instanceof String && item.equals(TERMINATE)) {
                     LOGGER.info("Terminating!");
                     break;
                 }
 
-                ObjectNode objectNode = (ObjectNode) mapper.readTree(item);
+                System.out.println(item);
 
-                StreamsDatum rawDatum = new StreamsDatum(objectNode);
+                if( StringUtils.isNotEmpty(item) ) {
+                    ObjectNode objectNode = (ObjectNode) mapper.readTree(item);
 
-                for( StreamsDatum entry : process(rawDatum)) {
-                    outQueue.offer(entry);
+                    StreamsDatum rawDatum = new StreamsDatum(objectNode);
+
+                    for (StreamsDatum entry : process(rawDatum)) {
+                        outQueue.offer(entry);
+                    }
                 }
 
             } catch (Exception e) {
@@ -166,29 +171,37 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
 
         LOGGER.debug("{} processing {}", STREAMS_ID, node.getClass());
 
-        String json = node.asText();
+        String json = null;
+        try {
+            json = mapper.writeValueAsString(node);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
-        // since data is coming from outside provider, we don't know what type the events are
-        Class inClass = TwitterEventClassifier.detectClass(json);
+        if( StringUtils.isNotEmpty(json)) {
 
-        // if the target is string, just pass-through
-        if( java.lang.String.class.equals(outClass))
-            return Lists.newArrayList(new StreamsDatum(json));
-        else {
-            // convert to desired format
-            Object out = null;
-            try {
-                out = convert(node, inClass, outClass);
-            } catch (ActivitySerializerException e) {
-                LOGGER.warn("Failed deserializing", e);
-                return Lists.newArrayList();
-            } catch (JsonProcessingException e) {
-                LOGGER.warn("Failed parsing JSON", e);
-                return Lists.newArrayList();
+            // since data is coming from outside provider, we don't know what type the events are
+            Class inClass = TwitterEventClassifier.detectClass(json);
+
+            // if the target is string, just pass-through
+            if (java.lang.String.class.equals(outClass))
+                return Lists.newArrayList(new StreamsDatum(json));
+            else {
+                // convert to desired format
+                Object out = null;
+                try {
+                    out = convert(node, inClass, outClass);
+                } catch (ActivitySerializerException e) {
+                    LOGGER.warn("Failed deserializing", e);
+                    return Lists.newArrayList();
+                } catch (JsonProcessingException e) {
+                    LOGGER.warn("Failed parsing JSON", e);
+                    return Lists.newArrayList();
+                }
+
+                if (out != null && validate(out, outClass))
+                    return Lists.newArrayList(new StreamsDatum(out));
             }
-
-            if( out != null && validate(out, outClass))
-                return Lists.newArrayList(new StreamsDatum(out));
         }
 
         return Lists.newArrayList();
