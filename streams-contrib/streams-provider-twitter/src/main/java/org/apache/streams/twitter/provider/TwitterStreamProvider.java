@@ -13,6 +13,7 @@ import com.twitter.hbc.core.Constants;
 import com.twitter.hbc.core.endpoint.StatusesFirehoseEndpoint;
 import com.twitter.hbc.core.endpoint.StatusesSampleEndpoint;
 import com.twitter.hbc.core.endpoint.StreamingEndpoint;
+import com.twitter.hbc.core.endpoint.UserstreamEndpoint;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.BasicClient;
 import com.twitter.hbc.httpclient.auth.Authentication;
@@ -135,7 +136,18 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
         Preconditions.checkNotNull(this.klass);
 
         Preconditions.checkNotNull(config.getEndpoint());
-        if(config.getEndpoint().endsWith("sample.json") ) {
+
+        if(config.getEndpoint().endsWith("user.json") ) {
+            endpoint = new UserstreamEndpoint();
+
+            Optional<String> with = Optional.fromNullable(config.getWith());
+            Optional<String> replies = Optional.fromNullable(config.getReplies());
+
+            if( with.isPresent() ) endpoint.addPostParameter("with", with.get());
+            if( replies.isPresent() ) endpoint.addPostParameter("replies", replies.get());
+
+        }
+        else if(config.getEndpoint().endsWith("sample.json") ) {
             endpoint = new StatusesSampleEndpoint();
 
             Optional<List<String>> track = Optional.fromNullable(config.getTrack());
@@ -143,6 +155,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
 
             if( track.isPresent() ) endpoint.addPostParameter("track", Joiner.on(",").join(track.get()));
             if( follow.isPresent() ) endpoint.addPostParameter("follow", Joiner.on(",").join(follow.get()));
+
         }
         else if( config.getEndpoint().endsWith("firehose.json"))
             endpoint = new StatusesFirehoseEndpoint();
@@ -174,12 +187,10 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
             return;
         }
 
-        endpoint.addPostParameter("with", config.getWith());
-        endpoint.addPostParameter("replies", config.getReplies());
 
         client = new ClientBuilder()
                 .name("apache/streams/streams-contrib/streams-provider-twitter")
-                .hosts(Constants.STREAM_HOST)
+                .hosts(config.getProtocol() + "://" + config.getHost())
                 .endpoint(endpoint)
                 .authentication(auth)
                 .processor(new StringDelimitedProcessor(inQueue))

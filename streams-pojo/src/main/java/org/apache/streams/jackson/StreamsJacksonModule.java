@@ -18,4 +18,5 @@ public class StreamsJacksonModule extends SimpleModule {
         addDeserializer(Period.class, new StreamsPeriodDeserializer(Period.class));
     }
 
+
 }

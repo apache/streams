@@ -10,10 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  *
@@ -116,13 +113,13 @@ public abstract class BaseStreamsTask implements StreamsTask {
         try {
 
             if(datum.document instanceof ObjectNode) {
-                return new StreamsDatum(((ObjectNode) datum.document).deepCopy(), datum.timestamp, datum.sequenceid);
+                return copyMetaData(datum, new StreamsDatum(((ObjectNode) datum.document).deepCopy(), datum.timestamp, datum.sequenceid));
             }
             else if(datum.document instanceof Activity) {
 
-                return new StreamsDatum(this.mapper.readValue(this.mapper.writeValueAsString(datum.document), Activity.class),
+                return copyMetaData(datum, new StreamsDatum(this.mapper.readValue(this.mapper.writeValueAsString(datum.document), Activity.class),
                                         datum.timestamp,
-                                        datum.sequenceid);
+                                        datum.sequenceid));
             }
 //            else if(this.mapper.canSerialize(datum.document.getClass())){
 //                return new StreamsDatum(this.mapper.readValue(this.mapper.writeValueAsString(datum.document), datum.document.getClass()),
@@ -155,5 +152,18 @@ public abstract class BaseStreamsTask implements StreamsTask {
             Thread.yield();
         }
         while( !success );
+    }
+
+    private StreamsDatum copyMetaData(StreamsDatum copyFrom, StreamsDatum copyTo) {
+        Map<String, Object> fromMeta = copyFrom.getMetadata();
+        Map<String, Object> toMeta = copyTo.getMetadata();
+        for(String key : fromMeta.keySet()) {
+            Object value = fromMeta.get(key);
+            if(value instanceof Serializable)
+                toMeta.put(key, SerializationUtil.cloneBySerialization(value));
+            else //hope for the best - should be serializable
+                toMeta.put(key, value);
+        }
+        return copyTo;
     }
 }

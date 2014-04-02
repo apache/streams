@@ -61,6 +61,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
     private volatile int totalSent = 0;
     private volatile int totalSeconds = 0;
+    private volatile int totalAttempted = 0;
     private volatile int totalOk = 0;
     private volatile int totalFailed = 0;
     private volatile int totalBatchCount = 0;
@@ -310,6 +311,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
                         thisOk++;
                 }
 
+                totalAttempted += thisSent;
                 totalOk += thisOk;
                 totalFailed += thisFailed;
                 totalSeconds += (thisMillis / 1000);
