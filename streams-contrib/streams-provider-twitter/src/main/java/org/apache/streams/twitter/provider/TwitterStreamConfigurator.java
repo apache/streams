@@ -22,10 +22,8 @@ public class TwitterStreamConfigurator {
     public static TwitterStreamConfiguration detectConfiguration(Config twitter) {
 
         TwitterStreamConfiguration twitterStreamConfiguration = new TwitterStreamConfiguration();
-        twitterStreamConfiguration.setProtocol(twitter.getString("protocol"));
-        twitterStreamConfiguration.setHost(twitter.getString("host"));
-        twitterStreamConfiguration.setPort(twitter.getLong("port"));
-        twitterStreamConfiguration.setVersion(twitter.getString("version"));
+
+        twitterStreamConfiguration.setEndpoint(twitter.getString("endpoint"));
 
         try {
             Config basicauth = StreamsConfigurator.config.getConfig("twitter.basicauth");
@@ -57,7 +55,6 @@ public class TwitterStreamConfigurator {
         } catch( ConfigException ce ) {}
 
         twitterStreamConfiguration.setFilterLevel(twitter.getString("filter-level"));
-        twitterStreamConfiguration.setEndpoint(twitter.getString("endpoint"));
         twitterStreamConfiguration.setWith(twitter.getString("with"));
         twitterStreamConfiguration.setReplies(twitter.getString("replies"));
         twitterStreamConfiguration.setJsonStoreEnabled("true");
