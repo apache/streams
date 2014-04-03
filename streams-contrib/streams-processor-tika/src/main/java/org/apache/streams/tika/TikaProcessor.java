@@ -1,5 +1,6 @@
 package org.apache.streams.tika;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import com.google.common.collect.Lists;
@@ -39,37 +40,45 @@ public class TikaProcessor implements StreamsProcessor
 
         LOGGER.debug("{} processing {}", STREAMS_ID, entry.getDocument().getClass());
 
+        Activity activity;
+
+        System.out.println( STREAMS_ID + " processing " + entry.getDocument().getClass());
         // get list of shared urls
         if( entry.getDocument() instanceof Activity) {
 
-            Activity input = (Activity) entry.getDocument();
-
-            List<String> outputLinks = input.getLinks();
-            // for each
-            for( String link : outputLinks ) {
-                if( link instanceof String ) {
-                    // expand
-                    try {
-                        StreamsDatum outputDatum = expandLink((String) link, entry);
-                        result.add(outputDatum);
-                    } catch (Exception e) {
-                        //drop unexpandable links
-                        LOGGER.debug("Failed to expand link : {}", link);
-                        LOGGER.debug("Excpetion expanding link : {}", e);
-                    }
-                }
-                else {
-                    LOGGER.warn("Expected Links to be of type java.lang.String, but received {}", link.getClass().toString());
-                }
-            }
-
+            activity = (Activity) entry.getDocument();
 
         }
         else if(entry.getDocument() instanceof String) {
-            StreamsDatum outputDatum = expandLink((String) entry.getDocument(), entry);
-            result.add(outputDatum);
+
+            try {
+                activity = mapper.readValue((String) entry.getDocument(), Activity.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                LOGGER.warn(e.getMessage());
+                return(Lists.newArrayList(entry));
+            }
+
         }
         else throw new NotImplementedException();
+
+        List<String> outputLinks = activity.getLinks();
+        // for each
+        for( String link : outputLinks ) {
+
+            System.out.println( "pulling " + link);
+
+            try {
+                StreamsDatum outputDatum = expandLink(link, entry);
+                if( outputDatum != null )
+                    result.add(outputDatum);
+            } catch (Exception e) {
+                //drop unexpandable links
+                LOGGER.debug("Failed to expand link : {}", link);
+                LOGGER.debug("Excpetion expanding link : {}", e);
+            }
+
+        }
 
         return result;
     }
@@ -80,9 +89,19 @@ public class TikaProcessor implements StreamsProcessor
         expander.run();
         StreamsDatum datum = null;
         if(input.getId() == null)
-            datum = new StreamsDatum(this.mapper.convertValue(expander, JSONObject.class).toString(), expander.getFinalURL());
+            try {
+                datum = new StreamsDatum(this.mapper.writeValueAsString(expander.getArticle()), expander.getFinalURL());
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return null;
+            }
         else
-            datum = new StreamsDatum(this.mapper.convertValue(expander, JSONObject.class).toString(), input.getId());
+            try {
+                datum = new StreamsDatum(this.mapper.writeValueAsString(expander.getArticle()), input.getId());
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return null;
+            }
         datum.setSequenceid(input.getSequenceid());
         datum.setMetadata(input.getMetadata());
         datum.setTimestamp(input.getTimestamp());

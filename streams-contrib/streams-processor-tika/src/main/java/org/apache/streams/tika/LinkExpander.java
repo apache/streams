@@ -50,14 +50,6 @@ public class LinkExpander extends LinkUnwinder
 
     private BoilerPipeArticle article = new BoilerPipeArticle();
 
-    // sblackmon: I put this here so I wouldn't get NullPointerExceptions when serializing results
-    public TextBlock getContentTextBlock() {
-        for(TextBlock textBlock : article.getTextBlocks())
-            if(textBlock.isContent())
-                return textBlock;
-        return null;
-    }
-
     private static final Collection<String> AUTHOR_SEARCH = new ArrayList<String>() {{
         add("og:author");
         add("dc:author");
@@ -133,6 +125,9 @@ public class LinkExpander extends LinkUnwinder
         expandLink();
     }
 
+    public BoilerPipeArticle getArticle() {
+        return article;
+    }
 
     private void expandLink()
     {
@@ -186,7 +181,6 @@ public class LinkExpander extends LinkUnwinder
                 boilerpipeContentHandler,
                 rawMetaData);
 
-        article.setTextBlocks(boilerpipeContentHandler.getTextDocument().getTextBlocks());
         article.setBody(boilerpipeContentHandler.getTextDocument().getContent());
         article.setTitle(boilerpipeContentHandler.getTextDocument().getTitle());
 
