@@ -5,11 +5,13 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
@@ -90,6 +92,10 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
     public Object convert(ObjectNode event, Class inClass, Class outClass) throws ActivitySerializerException, JsonProcessingException {
 
         Object result = null;
+
+        Preconditions.checkNotNull(event);
+        Preconditions.checkNotNull(mapper);
+        Preconditions.checkNotNull(twitterJsonActivitySerializer);
 
         if( outClass.equals( Activity.class )) {
                 LOGGER.debug("ACTIVITY");
@@ -195,6 +201,7 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
 
     @Override
     public void prepare(Object configurationObject) {
+        mapper = new StreamsJacksonMapper();
         twitterJsonActivitySerializer = new TwitterJsonActivitySerializer();
     }
 
