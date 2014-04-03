@@ -272,7 +272,10 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                 .setIncludeEntitiesEnabled(includeEntitiesEnabled)
                 .setJSONStoreEnabled(jsonStoreEnabled)
                 .setAsyncNumThreads(3)
-                .setRestBaseURL(baseUrl);
+                .setRestBaseURL(baseUrl)
+                .setIncludeMyRetweetEnabled(Boolean.TRUE)
+                .setIncludeRTsEnabled(Boolean.TRUE)
+                .setPrettyDebugEnabled(Boolean.TRUE);
 
         client = new TwitterFactory(builder.build()).getInstance();
 
