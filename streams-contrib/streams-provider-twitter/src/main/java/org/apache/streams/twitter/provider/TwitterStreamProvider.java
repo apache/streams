@@ -10,10 +10,9 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Constants;
-import com.twitter.hbc.core.endpoint.StatusesFirehoseEndpoint;
-import com.twitter.hbc.core.endpoint.StatusesSampleEndpoint;
-import com.twitter.hbc.core.endpoint.StreamingEndpoint;
-import com.twitter.hbc.core.endpoint.UserstreamEndpoint;
+import com.twitter.hbc.core.Hosts;
+import com.twitter.hbc.core.HttpHosts;
+import com.twitter.hbc.core.endpoint.*;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.BasicClient;
 import com.twitter.hbc.httpclient.auth.Authentication;
@@ -62,6 +61,8 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
 
     protected volatile Queue<StreamsDatum> providerQueue;
 
+    protected Hosts hosebirdHosts;
+    protected Authentication auth;
     protected StreamingEndpoint endpoint;
     protected BasicClient client;
 
@@ -137,32 +138,42 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
 
         Preconditions.checkNotNull(config.getEndpoint());
 
-        if(config.getEndpoint().endsWith("user.json") ) {
-            endpoint = new UserstreamEndpoint();
+        if(config.getEndpoint().equals("userstream") ) {
 
-            Optional<String> with = Optional.fromNullable(config.getWith());
-            Optional<String> replies = Optional.fromNullable(config.getReplies());
+            hosebirdHosts = new HttpHosts(Constants.USERSTREAM_HOST);
 
-            if( with.isPresent() ) endpoint.addPostParameter("with", with.get());
-            if( replies.isPresent() ) endpoint.addPostParameter("replies", replies.get());
-
+            UserstreamEndpoint userstreamEndpoint = new UserstreamEndpoint();
+            userstreamEndpoint.withFollowings(true);
+            userstreamEndpoint.withUser(false);
+            userstreamEndpoint.allReplies(false);
+            endpoint = userstreamEndpoint;
         }
-        else if(config.getEndpoint().endsWith("sample.json") ) {
-            endpoint = new StatusesSampleEndpoint();
+        else if(config.getEndpoint().equals("sample") ) {
+
+            hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
 
             Optional<List<String>> track = Optional.fromNullable(config.getTrack());
             Optional<List<Long>> follow = Optional.fromNullable(config.getFollow());
 
-            if( track.isPresent() ) endpoint.addPostParameter("track", Joiner.on(",").join(track.get()));
-            if( follow.isPresent() ) endpoint.addPostParameter("follow", Joiner.on(",").join(follow.get()));
+            if( track.isPresent() || follow.isPresent() ) {
+                StatusesFilterEndpoint statusesFilterEndpoint = new StatusesFilterEndpoint();
+                if( track.isPresent() )
+                    statusesFilterEndpoint.trackTerms(track.get());
+                if( follow.isPresent() )
+                    statusesFilterEndpoint.followings(follow.get());
+            } else {
+                endpoint = new StatusesSampleEndpoint();
+            }
 
         }
-        else if( config.getEndpoint().endsWith("firehose.json"))
+        else if( config.getEndpoint().endsWith("firehose")) {
+            hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
             endpoint = new StatusesFirehoseEndpoint();
-        else
+        } else {
+            LOGGER.error("NO ENDPOINT RESOLVED");
             return;
+        }
 
-        Authentication auth;
         if( config.getBasicauth() != null ) {
 
             Preconditions.checkNotNull(config.getBasicauth().getUsername());
@@ -172,6 +183,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
                     config.getBasicauth().getUsername(),
                     config.getBasicauth().getPassword()
             );
+
         } else if( config.getOauth() != null ) {
 
             Preconditions.checkNotNull(config.getOauth().getConsumerKey());
@@ -183,23 +195,24 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
                     config.getOauth().getConsumerSecret(),
                     config.getOauth().getAccessToken(),
                     config.getOauth().getAccessTokenSecret());
+
         } else {
+            LOGGER.error("NO AUTH RESOLVED");
             return;
         }
 
-
         client = new ClientBuilder()
-                .name("apache/streams/streams-contrib/streams-provider-twitter")
-                .hosts(config.getProtocol() + "://" + config.getHost())
-                .endpoint(endpoint)
-                .authentication(auth)
-                .processor(new StringDelimitedProcessor(inQueue))
-                .build();
+            .name("apache/streams/streams-contrib/streams-provider-twitter")
+            .hosts(hosebirdHosts)
+            .endpoint(endpoint)
+            .authentication(auth)
+            .processor(new StringDelimitedProcessor(inQueue))
+            .build();
     }
 
     @Override
     public void cleanUp() {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             inQueue.add(TwitterEventProcessor.TERMINATE);
         }
     }
