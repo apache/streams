@@ -156,11 +156,15 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
             Optional<List<Long>> follow = Optional.fromNullable(config.getFollow());
 
             if( track.isPresent() || follow.isPresent() ) {
+                LOGGER.debug("***\tPRESENT\t***");
                 StatusesFilterEndpoint statusesFilterEndpoint = new StatusesFilterEndpoint();
-                if( track.isPresent() )
+                if( track.isPresent() ) {
                     statusesFilterEndpoint.trackTerms(track.get());
-                if( follow.isPresent() )
+                }
+                else {
                     statusesFilterEndpoint.followings(follow.get());
+                }
+                this.endpoint = statusesFilterEndpoint;
             } else {
                 endpoint = new StatusesSampleEndpoint();
             }
@@ -201,6 +205,8 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
             return;
         }
 
+        LOGGER.debug("host={}\tendpoint={}\taut={}", new Object[] {hosebirdHosts,endpoint,auth});
+
         client = new ClientBuilder()
             .name("apache/streams/streams-contrib/streams-provider-twitter")
             .hosts(hosebirdHosts)
@@ -208,6 +214,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
             .authentication(auth)
             .processor(new StringDelimitedProcessor(inQueue))
             .build();
+
     }
 
     @Override
