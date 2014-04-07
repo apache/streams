@@ -1,0 +1,26 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.lucene.LuceneTaggerConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "tags": {
+            "type": "array",
+            "items": {
+                "tag": {
+                    "type": "string",
+                    "description": "Tag Identifier"
+                },
+                "query": {
+                    "type": "string",
+                    "description": "Lucene Query"
+                },
+                "language": {
+                    "type": "string",
+                    "description": "Language"
+                }
+            }
+        }
+    }
+}

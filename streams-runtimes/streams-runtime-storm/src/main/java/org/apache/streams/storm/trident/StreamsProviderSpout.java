@@ -62,6 +62,6 @@ public class StreamsProviderSpout implements IBatchSpout {
 
     @Override
     public Fields getOutputFields() {
-        return new Fields("timestamp", "sequenceid", "datum");
+        return new Fields("timestamp", "sequenceid", "document");
     }
 };
