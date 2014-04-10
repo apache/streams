@@ -6,13 +6,10 @@ import com.google.common.collect.Sets;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonModule;
 import org.apache.streams.pojo.json.Activity;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Created by rebanks on 2/27/14.
@@ -64,7 +61,7 @@ public class TestLinkUnwinderProcessor {
         Activity activity = new Activity();
         activity.setLinks(input);
         StreamsDatum datum = new StreamsDatum(activity);
-        LinkUnwinderProcessor processor = new LinkUnwinderProcessor();
+        LinkResolverProcessor processor = new LinkResolverProcessor();
         processor.prepare(null);
         List<StreamsDatum> result = processor.process(datum);
         assertNotNull(result);
@@ -87,7 +84,7 @@ public class TestLinkUnwinderProcessor {
         activity.setLinks(input);
         String str = mapper.writeValueAsString(activity);
         StreamsDatum datum = new StreamsDatum(str);
-        LinkUnwinderProcessor processor = new LinkUnwinderProcessor();
+        LinkResolverProcessor processor = new LinkResolverProcessor();
         processor.prepare(null);
         List<StreamsDatum> result = processor.process(datum);
         assertNotNull(result);

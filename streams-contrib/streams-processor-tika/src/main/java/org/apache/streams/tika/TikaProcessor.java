@@ -9,7 +9,6 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,7 @@ import java.util.List;
 
 public class TikaProcessor implements StreamsProcessor
 {
-    private final static String STREAMS_ID = "LinkExpanderProcessor";
+    private final static String STREAMS_ID = "LinkCrawlerProcessor";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TikaProcessor.class);
 
@@ -85,7 +84,7 @@ public class TikaProcessor implements StreamsProcessor
 
     private StreamsDatum expandLink(String link, StreamsDatum input) {
 
-        LinkExpander expander = new LinkExpander((String)link);
+        LinkCrawler expander = new LinkCrawler((String)link);
         expander.run();
         StreamsDatum datum = null;
         if(input.getId() == null)

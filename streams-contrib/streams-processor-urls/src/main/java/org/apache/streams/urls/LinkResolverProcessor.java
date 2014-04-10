@@ -1,29 +1,14 @@
 package org.apache.streams.urls;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.google.common.collect.Lists;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.jackson.StreamsJacksonModule;
-import org.apache.streams.urls.Link;
-import org.apache.streams.urls.LinkUnwinder;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -36,11 +21,11 @@ import java.util.*;
  * [t.co behavior]      https://dev.twitter.com/docs/tco-redirection-behavior
  */
 
-public class LinkUnwinderProcessor implements StreamsProcessor
+public class LinkResolverProcessor implements StreamsProcessor
 {
-    private final static String STREAMS_ID = "LinkUnwinderProcessor";
+    private final static String STREAMS_ID = "LinkResolverProcessor";
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(LinkUnwinderProcessor.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(LinkResolverProcessor.class);
 
     private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
@@ -108,9 +93,9 @@ public class LinkUnwinderProcessor implements StreamsProcessor
         List<String> outputLinks = Lists.newArrayList();
         for( String link : inputLinks ) {
             try {
-                LinkUnwinder unwinder = new LinkUnwinder(link);
+                LinkResolver unwinder = new LinkResolver(link);
                 unwinder.run();
-                outputLinks.add(unwinder.getFinalURL());
+                outputLinks.add(unwinder.getLinkDetails().getFinalURL());
             } catch (Exception e) {
                 //if unwindable drop
                 LOGGER.debug("Failed to unwind link : {}", link);

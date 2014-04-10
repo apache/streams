@@ -30,7 +30,7 @@
 
     <properties>
         <storm.version>0.9.1-incubating</storm.version>
-        <scala.version>0.9.1</scala.version>
+        <scala.version>2.9.2</scala.version>
         <zkclient.version>0.4</zkclient.version>
     </properties>
 
@@ -68,36 +68,6 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <scope>compile</scope>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>com.101tec</groupId>
-            <artifactId>zkclient</artifactId>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-        <dependency>
-            <groupId>org.apache.storm</groupId>
-            <artifactId>storm-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
             <scope>compile</scope>
             <type>jar</type>
@@ -118,8 +88,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        </dependencies>
-    </dependencyManagement>
+    </dependencies>
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>

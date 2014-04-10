@@ -11,6 +11,10 @@
 
     <artifactId>streams-persist-mongo</artifactId>
 
+    <properties>
+        <mongo-driver.version>2.12.0-rc0</mongo-driver.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.streams</groupId>
@@ -35,7 +39,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>2.12.0-rc0</version>
+            <version>${mongo-driver.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>

@@ -1,5 +1,7 @@
 package org.apache.streams.urls;
 
+import com.google.common.base.Preconditions;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,31 +23,16 @@ import java.util.*;
  * [t.co behavior]      https://dev.twitter.com/docs/tco-redirection-behavior
  */
 
-public class LinkUnwinder implements Link
+public class LinkResolver
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(LinkUnwinder.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(LinkResolver.class);
 
     private static final int MAX_ALLOWED_REDIRECTS = 30;
     private static final int DEFAULT_HTTP_TIMEOUT = 5000; //originally 30000
     private static final String LOCATION_IDENTIFIER = "location";
     private static final String SET_COOKIE_IDENTIFIER = "set-cookie";
 
-    private Date startTime = new Date();
-    private String originalURL;
-    private LinkStatus status;
-    private String finalURL;
-    private String domain;
-    private boolean wasRedirected;
-    private List<String> redirects = new ArrayList<String>();
-    private boolean isTracked = false;
-    private int finalResponseCode;
-    private Collection<String> cookies;
-
-    private String normalizedUrl;
-    private List<String> urlParts;
-
-    private int redirectCount = 0;
-    private long tookInMillis = 0;
+    private LinkDetails linkDetails = new LinkDetails();
 
     private static final Collection<String> BOTS_ARE_OK = new ArrayList<String>() {{
        add("t.co");
@@ -77,52 +64,49 @@ public class LinkUnwinder implements Link
         add("([\\?&])utm_campaign(=)[^&?]*");
     }};
 
-    public boolean isFailure()              { return false; }
-    public String getOriginalURL()          { return this.originalURL; }
-    public LinkStatus getStatus()           { return this.status; }
-    public String getDomain()               { return this.domain; }
-    public String getFinalURL()             { return this.finalURL; }
-    public List<String> getRedirects()      { return this.redirects; }
-    public boolean wasRedirected()          { return this.wasRedirected; }
-    public boolean isTracked()              { return this.isTracked; }
-    public String getFinalResponseCode()    { return Integer.toString(this.finalResponseCode); }
-    public long getTookInMillis()           { return this.tookInMillis; }
-    public String getNormalizedURL()        { return this.normalizedUrl; }
-    public List<String> getUrlParts()       { return this.urlParts; }
+    public LinkDetails getLinkDetails()     { return linkDetails; }
 
-    public LinkUnwinder(String originalURL) {
-        this.originalURL = originalURL;
+    public LinkResolver(String originalURL) {
+        linkDetails.setOriginalURL(originalURL);
     }
 
     public void run() {
+
+        Preconditions.checkNotNull(linkDetails.getOriginalURL());
+
+        linkDetails.setStartTime(DateTime.now());
         // we are going to try three times just incase we catch the service off-guard
         // this is mainly to help us with our tests.
-        for(int i = 0; (i < 3) && this.finalURL == null ; i++) {
-            if(this.status != LinkStatus.SUCCESS)
-                unwindLink(this.originalURL);
+        for(int i = 0; (i < 3) && linkDetails.getFinalURL() == null ; i++) {
+            if(linkDetails.getLinkStatus() != LinkDetails.LinkStatus.SUCCESS)
+                unwindLink(linkDetails.getOriginalURL());
         }
-        this.finalURL = cleanURL(this.finalURL);
-        this.normalizedUrl = normalizeURL(this.finalURL);
-        this.urlParts = tokenizeURL(this.normalizedUrl);
+
+        linkDetails.setFinalURL(cleanURL(linkDetails.getFinalURL()));
+        linkDetails.setNormalizedURL(normalizeURL(linkDetails.getFinalURL()));
+        linkDetails.setUrlParts(tokenizeURL(linkDetails.getNormalizedURL()));
 
         this.updateTookInMillis();
     }
 
     protected void updateTookInMillis() {
-        this.tookInMillis = new Date().getTime() - this.startTime.getTime();
+        Preconditions.checkNotNull(linkDetails.getStartTime());
+        linkDetails.setTookInMills(DateTime.now().minus(linkDetails.getStartTime().getMillis()).getMillis());
     }
 
     public void unwindLink(String url)
     {
+        Preconditions.checkNotNull(linkDetails);
+
         // Check to see if they wound up in a redirect loop
-        if((this.redirectCount > 0 && (this.originalURL.equals(url) || this.redirects.contains(url))) || (this.redirectCount > MAX_ALLOWED_REDIRECTS))
+        if((linkDetails.getRedirectCount() != null && linkDetails.getRedirectCount().longValue() > 0 && (linkDetails.getOriginalURL().equals(url) || linkDetails.getRedirects().contains(url))) || (linkDetails.getRedirectCount().longValue() > MAX_ALLOWED_REDIRECTS))
         {
-            this.status = LinkStatus.LOOP;
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.LOOP);
             return;
         }
 
-        if(!this.originalURL.equals(url))
-            this.redirects.add(url);
+        if(!linkDetails.getOriginalURL().equals(url))
+            linkDetails.getRedirects().add(url);
 
         HttpURLConnection connection = null;
 
@@ -146,8 +130,8 @@ public class LinkUnwinder implements Link
                 // there is a list for URLS that behave this way at the top in BOTS_ARE_OK
                 // smashew 2013-13-2013
 
-                if(this.redirectCount > 0 && BOTS_ARE_OK.contains(thisURL.getHost()))
-                    connection.addRequestProperty("Referrer", this.originalURL);
+                if(linkDetails.getRedirectCount() > 0 && BOTS_ARE_OK.contains(thisURL.getHost()))
+                    connection.addRequestProperty("Referrer", linkDetails.getOriginalURL());
             }
 
             connection.setReadTimeout(DEFAULT_HTTP_TIMEOUT);
@@ -155,32 +139,32 @@ public class LinkUnwinder implements Link
 
             connection.setInstanceFollowRedirects(false);
 
-            if(this.cookies != null)
-                for (String cookie : cookies)
+            if(linkDetails.getCookies() != null)
+                for (String cookie : linkDetails.getCookies())
                     connection.addRequestProperty("Cookie", cookie.split(";", 1)[0]);
 
             connection.connect();
 
-            this.finalResponseCode = connection.getResponseCode();
+            linkDetails.setFinalResponseCode((long)connection.getResponseCode());
 
             /**************
              *
              */
-            Map<String,List<String>> headers = createCaseInsenitiveMap(connection.getHeaderFields());
+            Map<String,List<String>> headers = createCaseInsensitiveMap(connection.getHeaderFields());
             /******************************************************************
              * If they want us to set cookies, well, then we will set cookies
              * Example URL:
              * http://nyti.ms/1bCpesx
              *****************************************************************/
             if(headers.containsKey(SET_COOKIE_IDENTIFIER))
-                this.cookies = headers.get(SET_COOKIE_IDENTIFIER);
+                linkDetails.getCookies().add(headers.get(SET_COOKIE_IDENTIFIER).get(0));
 
-            switch (this.finalResponseCode)
+            switch (linkDetails.getFinalResponseCode().intValue())
             {
                 case 200: // HTTP OK
-                    this.finalURL = connection.getURL().toString();
-                    this.domain = new URL(this.finalURL).getHost();
-                    this.status = LinkStatus.SUCCESS;
+                    linkDetails.setFinalURL(connection.getURL().toString());
+                    linkDetails.setDomain(new URL(linkDetails.getFinalURL()).getHost());
+                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.SUCCESS);
                     break;
                 case 300: // Multiple choices
                 case 301: // URI has been moved permanently
@@ -205,30 +189,30 @@ public class LinkUnwinder implements Link
                      * still render the page with it's content, but for us to assert
                      * a success, we are really hoping for a 304 message.
                      *******************************************************************/
-                    if(!this.originalURL.toLowerCase().equals(connection.getURL().toString().toLowerCase()))
-                        this.finalURL = connection.getURL().toString();
+                    if(!linkDetails.getOriginalURL().toLowerCase().equals(connection.getURL().toString().toLowerCase()))
+                        linkDetails.setFinalURL(connection.getURL().toString());
                     if(!headers.containsKey(LOCATION_IDENTIFIER))
                     {
                         LOGGER.info("Headers: {}", headers);
-                        this.status = LinkStatus.REDIRECT_ERROR;
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.REDIRECT_ERROR);
                     }
                     else
                     {
-                        this.wasRedirected = true;
-                        this.redirectCount++;
+                        linkDetails.setRedirected(Boolean.TRUE);
+                        linkDetails.setRedirectCount(linkDetails.getRedirectCount().longValue()+1);
                         unwindLink(connection.getHeaderField(LOCATION_IDENTIFIER));
                     }
                     break;
                 case 305: // User must use the specified proxy (deprecated by W3C)
                     break;
                 case 401: // Unauthorized (nothing we can do here)
-                    this.status = LinkStatus.UNAUTHORIZED;
+                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.UNAUTHORIZED);
                     break;
                 case 403: // HTTP Forbidden (Nothing we can do here)
-                    this.status = LinkStatus.FORBIDDEN;
+                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.FORBIDDEN);
                     break;
                 case 404: // Not Found (Page is not found, nothing we can do with a 404)
-                    this.status = LinkStatus.NOT_FOUND;
+                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.NOT_FOUND);
                     break;
                 case 500: // Internal Server Error
                 case 501: // Not Implemented
@@ -236,28 +220,28 @@ public class LinkUnwinder implements Link
                 case 503: // Service Unavailable
                 case 504: // Gateway Timeout
                 case 505: // Version not supported
-                    this.status = LinkStatus.HTTP_ERROR_STATUS;
+                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.HTTP_ERROR_STATUS);
                     break;
                 default:
-                    LOGGER.info("Unrecognized HTTP Response Code: {}", this.finalResponseCode);
-                    this.status = LinkStatus.NOT_FOUND;
+                    LOGGER.info("Unrecognized HTTP Response Code: {}", linkDetails.getFinalResponseCode());
+                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.NOT_FOUND);
                     break;
             }
         }
         catch (MalformedURLException e)
         {
             // the URL is trash, so, it can't load it.
-            this.status = LinkStatus.MALFORMED_URL;
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.MALFORMED_URL);
         }
         catch (IOException ex)
         {
             // there was an issue we are going to set to error.
-            this.status = LinkStatus.ERROR;
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
         }
         catch (Exception ex)
         {
             // there was an unknown issue we are going to set to exception.
-            this.status = LinkStatus.EXCEPTION;
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.EXCEPTION);
         }
         finally
         {
@@ -266,7 +250,7 @@ public class LinkUnwinder implements Link
         }
     }
 
-    private Map<String,List<String>> createCaseInsenitiveMap(Map<String,List<String>> input) {
+    private Map<String,List<String>> createCaseInsensitiveMap(Map<String,List<String>> input) {
         Map<String,List<String>> toReturn = new HashMap<String, List<String>>();
         for(String k : input.keySet())
             if(k != null && input.get(k) != null)
@@ -289,7 +273,7 @@ public class LinkUnwinder implements Link
 
         // If the URL is smaller than when it came in. Then it had tracking information
         if(url.length() < startLength)
-            this.isTracked = true;
+            linkDetails.setTracked(Boolean.TRUE);
 
         // return our url.
         return url;

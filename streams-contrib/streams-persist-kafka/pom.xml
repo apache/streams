@@ -11,6 +11,11 @@
 
     <artifactId>streams-persist-kafka</artifactId>
 
+    <properties>
+        <scala.version>2.9.2</scala.version>
+        <kafka.version>0.8.0</kafka.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.streams</groupId>
@@ -34,8 +39,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_2.10</artifactId>
-            <version>0.8.0</version>
+            <artifactId>kafka_${scala.version}</artifactId>
+            <version>${kafka.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>

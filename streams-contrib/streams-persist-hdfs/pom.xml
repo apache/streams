@@ -11,6 +11,10 @@
 
     <artifactId>streams-persist-hdfs</artifactId>
 
+    <properties>
+        <hdfs.version>1.1.0</hdfs.version>
+    </properties>
+
     <repositories>
         <repository>
             <id>cloudera</id>
