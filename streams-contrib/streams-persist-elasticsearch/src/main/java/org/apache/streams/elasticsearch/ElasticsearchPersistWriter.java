@@ -99,7 +99,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
-    private ObjectMapper mapper;
+    private ObjectMapper mapper = new StreamsJacksonMapper();
 
     private ElasticsearchWriterConfiguration config;
 
