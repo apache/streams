@@ -11,9 +11,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsPersistReader;
-import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.core.*;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -121,7 +119,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
     public void prepare(Object o) {
 
         mapper = StreamsJacksonMapper.getInstance();
-        persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+        persistQueue = Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(10000));
 
         // If we haven't already set up the search, then set up the search.
         if(search == null)
@@ -290,14 +288,16 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Iterabl
     @Override
     public StreamsResultSet readCurrent() {
 
-        LOGGER.debug("readCurrent: {}", persistQueue.size());
+        StreamsResultSet current;
 
-        Collection<StreamsDatum> currentIterator = Lists.newArrayList();
-        Iterators.addAll(currentIterator, persistQueue.iterator());
-
-        StreamsResultSet current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(currentIterator));
-
-        persistQueue.clear();
+        synchronized( ElasticsearchPersistReader.class ) {
+            current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(persistQueue));
+            current.setCounter(new DatumStatusCounter());
+//            current.getCounter().add(countersCurrent);
+//            countersTotal.add(countersCurrent);
+//            countersCurrent = new DatumStatusCounter();
+            persistQueue.clear();
+        }
 
         return current;
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.SerializationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
      */
     protected void addToOutgoingQueue(StreamsDatum datum) {
         if(this.outQueues.size() == 1) {
-            enqueue(outQueues.get(0), datum);
+            ComponentUtils.offerUntilSuccess(datum, outQueues.get(0));
         }
         else {
             StreamsDatum newDatum = null;
@@ -82,7 +83,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
                 try {
                     newDatum = cloneStreamsDatum(datum);
                     if(newDatum != null) {
-                        enqueue(queue, newDatum);
+                        ComponentUtils.offerUntilSuccess(newDatum, queue);
                     }
                 } catch (RuntimeException e) {
                     LOGGER.debug("Failed to add StreamsDatum to outgoing queue : {}", datum);
@@ -143,15 +144,6 @@ public abstract class BaseStreamsTask implements StreamsTask {
             this.inIndex = 0;
         }
         return this.inIndex;
-    }
-
-    private void enqueue( Queue<StreamsDatum> queue, StreamsDatum entry ) {
-        boolean success;
-        do {
-            success = queue.offer(entry);
-            Thread.yield();
-        }
-        while( !success );
     }
 
     private StreamsDatum copyMetaData(StreamsDatum copyFrom, StreamsDatum copyTo) {
