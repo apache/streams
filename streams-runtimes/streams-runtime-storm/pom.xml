@@ -30,7 +30,7 @@
 
     <properties>
         <storm.version>0.9.1-incubating</storm.version>
-        <scala.version>0.9.1</scala.version>
+        <scala.version>2.10.4</scala.version>
         <zkclient.version>0.4</zkclient.version>
     </properties>
 
