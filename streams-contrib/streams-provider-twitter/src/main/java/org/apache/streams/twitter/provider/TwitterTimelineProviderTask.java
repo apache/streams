@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.Twitter;
+import twitter4j.TwitterObjectFactory;
 import twitter4j.json.DataObjectFactory;
 
 import java.util.List;
@@ -58,7 +59,7 @@ public class TwitterTimelineProviderTask implements Runnable {
                             KeepGoing = false;
                         }
                         // emit the record
-                        String json = DataObjectFactory.getRawJSON(tStat);
+                        String json = TwitterObjectFactory.getRawJSON(tStat);
 
                         //provider.offer(json);
 
@@ -74,18 +75,11 @@ public class TwitterTimelineProviderTask implements Runnable {
                     hadFailure = true;
                     keepTrying += TwitterErrorHandler.handleTwitterError(twitter, e);
                 }
-                finally
-                {
-                    // Shutdown the twitter to release the resources
-                    twitter.shutdown();
-                }
             }
         }
         while ((statuses != null) && (statuses.size() > 0) && KeepGoing);
 
         LOGGER.info("Provider Finished.  Cleaning up...");
-
-        twitter.shutdown();
 
         LOGGER.info("Provider Exiting");
 

@@ -74,6 +74,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     public TwitterTimelineProvider() {
         Config config = StreamsConfigurator.config.getConfig("twitter");
         this.config = TwitterStreamConfigurator.detectConfiguration(config);
+
     }
 
     public TwitterTimelineProvider(TwitterStreamConfiguration config) {
@@ -145,6 +146,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
                     for (Status tStat : statuses)
                     {
+
 //                        if( provider.start != null &&
 //                                provider.start.isAfter(new DateTime(tStat.getCreatedAt())))
 //                        {
@@ -153,7 +155,9 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 //                            KeepGoing = false;
 //                        }
                         // emit the record
-                        String json = DataObjectFactory.getRawJSON(tStat);
+
+
+                        String json = TwitterObjectFactory.getRawJSON(tStat);
 
                         providerQueue.offer(new StreamsDatum(json));
 
@@ -170,11 +174,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                 {
                     hadFailure = true;
                     keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
-                }
-                finally
-                {
-                    // Shutdown the twitter to release the resources
-                    client.shutdown();
                 }
             }
         }
@@ -254,9 +253,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
         Preconditions.checkNotNull(config.getFollow());
 
-        Boolean jsonStoreEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getJsonStoreEnabled()))).or(true);
-        Boolean includeEntitiesEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getIncludeEntities()))).or(true);
-
         ids = config.getFollow().iterator();
 
         String baseUrl = "https://api.twitter.com:443/1.1/";
@@ -266,12 +262,11 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                 .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
                 .setOAuthAccessToken(config.getOauth().getAccessToken())
                 .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
-                .setIncludeEntitiesEnabled(includeEntitiesEnabled)
-                .setJSONStoreEnabled(jsonStoreEnabled)
+                .setIncludeEntitiesEnabled(true)
+                .setJSONStoreEnabled(true)
                 .setAsyncNumThreads(3)
                 .setRestBaseURL(baseUrl)
                 .setIncludeMyRetweetEnabled(Boolean.TRUE)
-                .setIncludeRTsEnabled(Boolean.TRUE)
                 .setPrettyDebugEnabled(Boolean.TRUE);
 
         client = new TwitterFactory(builder.build()).getInstance();
@@ -280,9 +275,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     @Override
     public void cleanUp() {
-
-        client.shutdown();
-
         shutdownAndAwaitTermination(executor);
     }
 }
