@@ -51,33 +51,26 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     private BulkRequestBuilder bulkRequest;
     private OutputStreamWriter currentWriter = null;
 
-    private int batchSize = 50;
-    private int totalRecordsWritten = 0;
-    private boolean veryLargeBulk = false;  // by default this setting is set to false
+    private long batchSize;
+    private boolean veryLargeBulk;  // by default this setting is set to false
 
     private final static Long DEFAULT_BULK_FLUSH_THRESHOLD = 5l * 1024l * 1024l;
     private static final long WAITING_DOCS_LIMIT = 10000;
 
     public volatile long flushThresholdSizeInBytes = DEFAULT_BULK_FLUSH_THRESHOLD;
 
+    private volatile int currentItems = 0;
     private volatile int totalSent = 0;
     private volatile int totalSeconds = 0;
     private volatile int totalAttempted = 0;
     private volatile int totalOk = 0;
     private volatile int totalFailed = 0;
     private volatile int totalBatchCount = 0;
+    private volatile int totalRecordsWritten = 0;
     private volatile long totalSizeInBytes = 0;
 
     private volatile long batchSizeInBytes = 0;
     private volatile int batchItemsSent = 0;
-
-    public void setBatchSize(int batchSize) {
-        this.batchSize = batchSize;
-    }
-
-    public void setVeryLargeBulk(boolean veryLargeBulk) {
-        this.veryLargeBulk = veryLargeBulk;
-    }
 
     private final List<String> affectedIndexes = new ArrayList<String>();
 
@@ -99,7 +92,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
-    private ObjectMapper mapper = new StreamsJacksonMapper();
+    private ObjectMapper mapper;
 
     private ElasticsearchWriterConfiguration config;
 
@@ -245,6 +238,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
             // reset the current batch statistics
             this.batchSizeInBytes = 0;
             this.batchItemsSent = 0;
+            this.currentItems = 0;
 
             try
             {
@@ -323,6 +317,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
                 LOGGER.debug("Batch[{}mb {} items with {} failures in {}ms] - Total[{}mb {} items with {} failures in {}seconds] {} outstanding]",
                         MEGABYTE_FORMAT.format((double) thisSizeInBytes / (double)(1024*1024)), NUMBER_FORMAT.format(thisOk), NUMBER_FORMAT.format(thisFailed), NUMBER_FORMAT.format(thisMillis),
                         MEGABYTE_FORMAT.format((double) totalSizeInBytes / (double)(1024*1024)), NUMBER_FORMAT.format(totalOk), NUMBER_FORMAT.format(totalFailed), NUMBER_FORMAT.format(totalSeconds), NUMBER_FORMAT.format(getTotalOutstanding()));
+
             }
 
             @Override
@@ -409,11 +404,13 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
     private void trackItemAndBytesWritten(long sizeInBytes)
     {
+        currentItems++;
         batchItemsSent++;
         batchSizeInBytes += sizeInBytes;
 
         // If our queue is larger than our flush threashold, then we should flush the queue.
-        if(batchSizeInBytes > flushThresholdSizeInBytes)
+        if( (batchSizeInBytes > flushThresholdSizeInBytes) ||
+                (currentItems >= batchSize) )
             flushInternal();
     }
 
@@ -530,6 +527,8 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     @Override
     public void prepare(Object configurationObject) {
         mapper = StreamsJacksonMapper.getInstance();
+        veryLargeBulk = this.config.getBulk();
+        batchSize = this.config.getBatchSize();
         start();
     }
 

@@ -27,7 +27,7 @@ import java.util.Queue;
  */
 public class TwitterTypeConverter implements StreamsProcessor {
 
-    private final static String STREAMS_ID = "TwitterTypeConverter";
+    public final static String STREAMS_ID = "TwitterTypeConverter";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTypeConverter.class);
 

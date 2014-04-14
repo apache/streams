@@ -2,10 +2,6 @@ package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -25,7 +21,9 @@ import twitter4j.json.DataObjectFactory;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.*;
 
 /**
@@ -120,7 +118,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     @Override
     public void startStream() {
-        // no op
+        LOGGER.debug("{} startStream", STREAMS_ID);
+        throw new org.apache.commons.lang.NotImplementedException();
     }
 
     private void captureTimeline(long currentId) {
@@ -182,15 +181,20 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     }
 
     public StreamsResultSet readCurrent() {
+        LOGGER.debug("{} readCurrent", STREAMS_ID);
 
         Preconditions.checkArgument(ids.hasNext());
 
-        LOGGER.info("readCurrent");
+        StreamsResultSet current;
 
-        while( ids.hasNext() ) {
-            Long currentId = ids.next();
-            LOGGER.info("Provider Task Starting: {}", currentId);
-            captureTimeline(currentId);
+        synchronized( TwitterTimelineProvider.class ) {
+
+            while( ids.hasNext() ) {
+                Long currentId = ids.next();
+                LOGGER.info("Provider Task Starting: {}", currentId);
+                captureTimeline(currentId);
+            }
+
         }
 
         LOGGER.info("Finished.  Cleaning up...");
@@ -212,11 +216,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         LOGGER.debug("{} readRange", STREAMS_ID);
-        this.start = start;
-        this.end = end;
-        readCurrent();
-        StreamsResultSet result = (StreamsResultSet)providerQueue.iterator();
-        return result;
+        throw new NotImplementedException();
     }
 
     void shutdownAndAwaitTermination(ExecutorService pool) {

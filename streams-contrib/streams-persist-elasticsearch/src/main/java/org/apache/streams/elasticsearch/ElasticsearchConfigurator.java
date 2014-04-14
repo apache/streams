@@ -52,8 +52,15 @@ public class ElasticsearchConfigurator {
         String index = elasticsearch.getString("index");
         String type = elasticsearch.getString("type");
 
+        if( elasticsearch.hasPath("bulk"))
+            elasticsearchWriterConfiguration.setBulk(elasticsearch.getBoolean("bulk"));
+
+        if( elasticsearch.hasPath("batchSize"))
+            elasticsearchWriterConfiguration.setBatchSize(elasticsearch.getLong("batchSize"));
+
         elasticsearchWriterConfiguration.setIndex(index);
         elasticsearchWriterConfiguration.setType(type);
+
 
         return elasticsearchWriterConfiguration;
     }
