@@ -1,0 +1,22 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.s3.S3WriterConfiguration",
+    "extends": {"$ref":"S3Configuration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "writerPath": {
+            "type": "string",
+            "description": "Path "
+        },
+        "writerFilePrefix": {
+            "type": "string",
+            "description": "File Prefix"
+        },
+        "linesPerFile": {
+            "type": "integer",
+            "description": "The number of records that you want in each file"
+        }
+    }
+}
