@@ -38,7 +38,7 @@ public class ElasticsearchPersistReaderTask implements Runnable {
                 e.printStackTrace();
                 break;
             }
-            item = new StreamsDatum(jsonObject);
+            item = new StreamsDatum(jsonObject, hit.getId());
             item.getMetadata().put("id", hit.getId());
             item.getMetadata().put("index", hit.getIndex());
             item.getMetadata().put("type", hit.getType());
