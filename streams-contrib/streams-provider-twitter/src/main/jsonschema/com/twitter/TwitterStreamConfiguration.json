@@ -3,32 +3,10 @@
     "$schema": "http://json-schema.org/draft-03/schema",
     "id": "#",
     "javaType" : "org.apache.streams.twitter.TwitterStreamConfiguration",
+    "extends": {"$ref":"TwitterConfiguration.json"},
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
-        "protocol": {
-            "type": "string",
-            "description": "The protocol"
-        },
-        "host": {
-            "type": "string",
-            "description": "The host"
-        },
-        "port": {
-            "type": "integer",
-            "description": "The port"
-        },
-        "version": {
-            "type": "string",
-            "description": "The version"
-        },
-        "endpoint": {
-            "type": "string",
-            "description": "The endpoint"
-        },
         "includeEntities": {
-            "type": "string"
-        },
-        "jsonStoreEnabled": {
             "type": "string"
         },
         "truncated": {
@@ -58,43 +36,6 @@
             "description": "A list of phrases which will be used to determine what Tweets will be delivered on the stream",
             "items": {
                 "type": "string"
-            }
-        },
-        "oauth": {
-            "type": "object",
-            "dynamic": "true",
-            "javaType" : "org.apache.streams.twitter.TwitterOAuthConfiguration",
-            "javaInterfaces": ["java.io.Serializable"],
-            "properties": {
-                "appName": {
-                    "type": "string"
-                },
-                "consumerKey": {
-                    "type": "string"
-                },
-                "consumerSecret": {
-                    "type": "string"
-                },
-                "accessToken": {
-                    "type": "string"
-                },
-                "accessTokenSecret": {
-                    "type": "string"
-                }
-            }
-        },
-        "basicauth": {
-            "type": "object",
-            "dynamic": "true",
-            "javaType" : "org.apache.streams.twitter.TwitterBasicAuthConfiguration",
-            "javaInterfaces": ["java.io.Serializable"],
-            "properties": {
-                "username": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
             }
         }
     }

@@ -1,11 +1,6 @@
 package org.apache.streams.twitter.provider;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -21,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.json.DataObjectFactory;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -51,7 +45,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
 
-    protected Twitter client;
     protected Iterator<Long> ids;
 
     ListenableFuture providerTaskComplete;
@@ -73,7 +66,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     public TwitterTimelineProvider() {
         Config config = StreamsConfigurator.config.getConfig("twitter");
-        this.config = TwitterStreamConfigurator.detectConfiguration(config);
+        this.config = TwitterStreamConfigurator.detectTwitterStreamConfiguration(config);
 
     }
 
@@ -83,7 +76,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     public TwitterTimelineProvider(Class klass) {
         Config config = StreamsConfigurator.config.getConfig("twitter");
-        this.config = TwitterStreamConfigurator.detectConfiguration(config);
+        this.config = TwitterStreamConfigurator.detectTwitterStreamConfiguration(config);
         this.klass = klass;
     }
 
@@ -133,6 +126,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
         do
         {
+            Twitter client = getTwitterClient();
             int keepTrying = 0;
 
             // keep trying to load, give it 5 attempts.
@@ -144,23 +138,10 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                 {
                     statuses = client.getUserTimeline(currentId, paging);
 
-                    for (Status tStat : statuses)
-                    {
-
-//                        if( provider.start != null &&
-//                                provider.start.isAfter(new DateTime(tStat.getCreatedAt())))
-//                        {
-//                            // they hit the last date we wanted to collect
-//                            // we can now exit early
-//                            KeepGoing = false;
-//                        }
-                        // emit the record
-
-
+                    for (Status tStat : statuses) {
                         String json = TwitterObjectFactory.getRawJSON(tStat);
 
                         providerQueue.offer(new StreamsDatum(json));
-
                     }
 
                     paging.setPage(paging.getPage() + 1);
@@ -243,18 +224,18 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
         Preconditions.checkNotNull(providerQueue);
-
         Preconditions.checkNotNull(this.klass);
-
         Preconditions.checkNotNull(config.getOauth().getConsumerKey());
         Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
         Preconditions.checkNotNull(config.getOauth().getAccessToken());
         Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
-
         Preconditions.checkNotNull(config.getFollow());
 
         ids = config.getFollow().iterator();
+    }
 
+    protected Twitter getTwitterClient()
+    {
         String baseUrl = "https://api.twitter.com:443/1.1/";
 
         ConfigurationBuilder builder = new ConfigurationBuilder()
@@ -269,8 +250,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                 .setIncludeMyRetweetEnabled(Boolean.TRUE)
                 .setPrettyDebugEnabled(Boolean.TRUE);
 
-        client = new TwitterFactory(builder.build()).getInstance();
-
+        return new TwitterFactory(builder.build()).getInstance();
     }
 
     @Override

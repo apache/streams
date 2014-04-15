@@ -1,6 +1,5 @@
 package org.apache.streams.twitter.provider;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
@@ -76,7 +75,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
 
     public TwitterStreamProvider() {
         Config config = StreamsConfigurator.config.getConfig("twitter");
-        this.config = TwitterStreamConfigurator.detectConfiguration(config);
+        this.config = TwitterStreamConfigurator.detectTwitterStreamConfiguration(config);
     }
 
     public TwitterStreamProvider(TwitterStreamConfiguration config) {
@@ -85,7 +84,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
 
     public TwitterStreamProvider(Class klass) {
         Config config = StreamsConfigurator.config.getConfig("twitter");
-        this.config = TwitterStreamConfigurator.detectConfiguration(config);
+        this.config = TwitterStreamConfigurator.detectTwitterStreamConfiguration(config);
         this.klass = klass;
         providerQueue = new LinkedBlockingQueue<StreamsDatum>();
     }
