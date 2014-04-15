@@ -13,10 +13,7 @@ import org.apache.streams.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
-import java.io.Flushable;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.PrivilegedExceptionAction;
@@ -125,8 +122,14 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
         // Create the path for where the file is going to live.
         try
         {
-            String fileName = this.s3WriterConfiguration.getWriterFilePrefix() + "-" + new Date().getTime() + ".tsv";
-            this.currentWriter = new OutputStreamWriter(new S3OutputStreamWrapper(this.amazonS3Client, this.s3WriterConfiguration.getBucket(), this.s3WriterConfiguration.getWriterPath(), fileName));
+            String fileName = this.s3WriterConfiguration.getWriterFilePrefix() +
+                    (this.s3WriterConfiguration.getChuck() ? "/" : "-") + new Date().getTime() + ".tsv";
+            OutputStream outputStream = new S3OutputStreamWrapper(this.amazonS3Client,
+                    this.s3WriterConfiguration.getBucket(),
+                    this.s3WriterConfiguration.getWriterPath(),
+                    fileName);
+
+            this.currentWriter = new OutputStreamWriter(outputStream);
 
             // Add another file to the list of written files.
             writtenFiles.add(this.s3WriterConfiguration.getWriterPath() + fileName);
@@ -154,6 +157,7 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
     private String convertResultToString(StreamsDatum entry)
     {
         String metadata = null;
+
         try {
             metadata = mapper.writeValueAsString(entry.getMetadata());
         } catch (JsonProcessingException e) {
@@ -167,11 +171,14 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
             e.printStackTrace();
         }
 
+        // Save the class name that it came from
+        entry.metadata.put("class", entry.getDocument().getClass().getName());
+
         if(Strings.isNullOrEmpty(documentJson))
             return null;
         else
             return new StringBuilder()
-                    .append(entry.getSequenceid())
+                    .append(entry.getId())
                     .append(DELIMITER)
                     .append(entry.getTimestamp())
                     .append(DELIMITER)

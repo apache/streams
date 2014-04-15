@@ -17,6 +17,11 @@
         "linesPerFile": {
             "type": "integer",
             "description": "The number of records that you want in each file"
+        },
+        "chuck": {
+            "type": "boolean",
+            "default" : true,
+            "description": "Whether you want the file chunked inside of a folder or not"
         }
     }
 }

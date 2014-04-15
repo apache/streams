@@ -24,7 +24,17 @@ import java.io.*;
 import java.util.Date;
 
 /**
+ *
+ * Author:  Smashew
+ * Date:    2014-04-14
+ *
+ * Description:
  * This class uses ByteArrayOutputStreams to ensure files are written to S3 properly.
+ *
+ * There is a way to upload data in chunks (5mb or so) a peice, but the multi-part upload
+ * is kind of a PITA to deal with.
+ *
+ * // TODO: This should be refactored to allow a user to specify if they want one large file instead of many small ones
  */
 public class S3OutputStreamWrapper extends OutputStream
 {
@@ -89,19 +99,22 @@ public class S3OutputStreamWrapper extends OutputStream
     }
 
     private void addFile() throws Exception {
+
         TransferManager transferManager = new TransferManager(this.amazonS3Client);
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setExpirationTime(DateTime.now().plusDays(365*3).toDate());
         metadata.setContentLength(this.outputStream.size());
+        metadata.addUserMetadata("writer", "org.apache.streams");
 
         InputStream is = new ByteArrayInputStream(this.outputStream.toByteArray());
-        Upload upload = transferManager.upload(this.bucketName, this.path + fileName, is, metadata);
+        String fileNameToWrite = this.path + fileName;
+        Upload upload = transferManager.upload(this.bucketName, fileNameToWrite, is, metadata);
         upload.waitForUploadResult();
 
         is.close();
 
-        LOGGER.info("File Written Using S3 OutputStream", metadata);
+        LOGGER.info("File Written to S3: {}", metadata);
     }
 
 
