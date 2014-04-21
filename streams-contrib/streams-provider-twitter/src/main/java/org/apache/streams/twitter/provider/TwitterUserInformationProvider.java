@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
+import twitter4j.json.DataObjectFactory;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -102,7 +103,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
                     toQuery[i] = ids[i];
 
                 for (User tStat : client.lookupUsers(toQuery)) {
-                    String json = TwitterObjectFactory.getRawJSON(tStat);
+                    String json = DataObjectFactory.getRawJSON(tStat);
                     providerQueue.offer(new StreamsDatum(json));
                 }
                 keepTrying = 10;
@@ -127,7 +128,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
             try
             {
                 for (User tStat : client.lookupUsers(ids)) {
-                    String json = TwitterObjectFactory.getRawJSON(tStat);
+                    String json = DataObjectFactory.getRawJSON(tStat);
                     providerQueue.offer(new StreamsDatum(json));
                 }
                 keepTrying = 10;

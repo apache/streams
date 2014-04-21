@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
+import twitter4j.json.DataObjectFactory;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -139,7 +140,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                     statuses = client.getUserTimeline(currentId, paging);
 
                     for (Status tStat : statuses) {
-                        String json = TwitterObjectFactory.getRawJSON(tStat);
+                        String json = DataObjectFactory.getRawJSON(tStat);
 
                         providerQueue.offer(new StreamsDatum(json));
                     }

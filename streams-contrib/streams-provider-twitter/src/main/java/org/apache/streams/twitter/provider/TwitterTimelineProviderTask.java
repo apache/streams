@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.Twitter;
-import twitter4j.TwitterObjectFactory;
 import twitter4j.json.DataObjectFactory;
 
 import java.util.List;
@@ -59,7 +58,7 @@ public class TwitterTimelineProviderTask implements Runnable {
                             KeepGoing = false;
                         }
                         // emit the record
-                        String json = TwitterObjectFactory.getRawJSON(tStat);
+                        String json = DataObjectFactory.getRawJSON(tStat);
 
                         //provider.offer(json);
 
