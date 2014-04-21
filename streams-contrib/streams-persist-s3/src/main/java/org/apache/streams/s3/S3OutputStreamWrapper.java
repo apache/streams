@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Date;
+import java.util.Map;
 
 /**
  *
@@ -45,6 +46,7 @@ public class S3OutputStreamWrapper extends OutputStream
     private final String path;
     private final String fileName;
     private final ByteArrayOutputStream outputStream;
+    private final Map<String, String> metaData;
 
     private String errorMessage;
     private boolean isClosed = false;
@@ -54,13 +56,13 @@ public class S3OutputStreamWrapper extends OutputStream
     public boolean hasError()                                           { return this.errorMessage != null; }
 
 
-    public S3OutputStreamWrapper(AmazonS3Client amazonS3Client, String bucketName, String path, String fileName) throws IOException
+    public S3OutputStreamWrapper(AmazonS3Client amazonS3Client, String bucketName, String path, String fileName, Map<String, String> metaData) throws IOException
     {
         this.amazonS3Client = amazonS3Client;
         this.bucketName = bucketName;
         this.path = path;
         this.fileName = fileName;
-
+        this.metaData = metaData;
         this.outputStream = new ByteArrayOutputStream();
     }
 
@@ -105,7 +107,11 @@ public class S3OutputStreamWrapper extends OutputStream
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setExpirationTime(DateTime.now().plusDays(365*3).toDate());
         metadata.setContentLength(this.outputStream.size());
+
         metadata.addUserMetadata("writer", "org.apache.streams");
+        for(String s : this.metaData.keySet()) {
+            metadata.addUserMetadata(s, this.metaData.get(s));
+        }
 
         InputStream is = new ByteArrayInputStream(this.outputStream.toByteArray());
         String fileNameToWrite = this.path + fileName;

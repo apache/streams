@@ -9,20 +9,14 @@ import com.amazonaws.services.s3.S3ClientOptions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.google.common.util.concurrent.AtomicDouble;
 import org.apache.streams.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeable, DatumStatusCountable
 {
@@ -32,45 +26,35 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
 
     private final static char DELIMITER = '\t';
 
-    private final AtomicInteger totalRecordsWritten = new AtomicInteger();
-    private AtomicInteger fileLineCounter = new AtomicInteger();
-
+    private ObjectMapper objectMapper = new ObjectMapper();
     private AmazonS3Client amazonS3Client;
     private S3WriterConfiguration s3WriterConfiguration;
-
     private final List<String> writtenFiles = new ArrayList<String>();
-    private OutputStreamWriter currentWriter = null;
 
+    private final AtomicDouble totalBytesWritten = new AtomicDouble();
+    private final AtomicInteger totalRecordsWritten = new AtomicInteger();
+    private AtomicInteger fileLineCounter = new AtomicInteger();
+    private Map<String, String> objectMetaData = new HashMap<String, String>() {{
+        put("line[0]", "id");
+        put("line[1]", "timeStamp");
+        put("line[2]", "metaData");
+        put("line[3]", "document");
+    }};
+
+    private OutputStreamWriter currentWriter = null;
     protected volatile Queue<StreamsDatum> persistQueue;
 
-    private ObjectMapper mapper = new ObjectMapper();
-
     public AmazonS3Client getAmazonS3Client()                           { return this.amazonS3Client; }
+    public S3WriterConfiguration getS3WriterConfiguration()             { return this.s3WriterConfiguration; }
     public List<String> getWrittenFiles()                               { return this.writtenFiles; }
+    public Map<String, String> getObjectMetaData()                      { return this.objectMetaData; }
+    public ObjectMapper getObjectMapper()                               { return this.objectMapper; }
+    public void setObjectMetaData(Map<String, String> val)              { this.objectMetaData = val; }
+
 
 
     public S3PersistWriter(S3WriterConfiguration s3WriterConfiguration) {
         this.s3WriterConfiguration = s3WriterConfiguration;
-    }
-
-    private synchronized void connectToWebHDFS()
-    {
-        // Connect to S3
-        synchronized (this)
-        {
-            // Create the credentials Object
-            AWSCredentials credentials = new BasicAWSCredentials(s3WriterConfiguration.getKey(), s3WriterConfiguration.getSecretKey());
-
-            ClientConfiguration clientConfig = new ClientConfiguration();
-            clientConfig.setProtocol(Protocol.valueOf(s3WriterConfiguration.getProtocol().toUpperCase()));
-
-            // We want path style access
-            S3ClientOptions clientOptions = new S3ClientOptions();
-            clientOptions.setPathStyleAccess(true);
-
-            this.amazonS3Client = new AmazonS3Client(credentials, clientConfig);
-            this.amazonS3Client.setS3ClientOptions(clientOptions);
-        }
     }
 
     @Override
@@ -92,10 +76,9 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            int bytesInLine = line.getBytes().length;
 
-            totalRecordsWritten.incrementAndGet();
-
+            this.totalBytesWritten.addAndGet(line.getBytes().length);
+            this.totalRecordsWritten.incrementAndGet();
             this.fileLineCounter.incrementAndGet();
         }
     }
@@ -127,7 +110,8 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
             OutputStream outputStream = new S3OutputStreamWrapper(this.amazonS3Client,
                     this.s3WriterConfiguration.getBucket(),
                     this.s3WriterConfiguration.getWriterPath(),
-                    fileName);
+                    fileName,
+                    this.objectMetaData);
 
             this.currentWriter = new OutputStreamWriter(outputStream);
 
@@ -159,14 +143,14 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
         String metadata = null;
 
         try {
-            metadata = mapper.writeValueAsString(entry.getMetadata());
+            metadata = objectMapper.writeValueAsString(entry.getMetadata());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
         String documentJson = null;
         try {
-            documentJson = mapper.writeValueAsString(entry.getDocument());
+            documentJson = objectMapper.writeValueAsString(entry.getDocument());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -190,7 +174,21 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
     }
 
     public void prepare(Object configurationObject) {
-        connectToWebHDFS();
+        // Connect to S3
+        synchronized (this) {
+            // Create the credentials Object
+            AWSCredentials credentials = new BasicAWSCredentials(s3WriterConfiguration.getKey(), s3WriterConfiguration.getSecretKey());
+
+            ClientConfiguration clientConfig = new ClientConfiguration();
+            clientConfig.setProtocol(Protocol.valueOf(s3WriterConfiguration.getProtocol().toUpperCase()));
+
+            // We want path style access
+            S3ClientOptions clientOptions = new S3ClientOptions();
+            clientOptions.setPathStyleAccess(true);
+
+            this.amazonS3Client = new AmazonS3Client(credentials, clientConfig);
+            this.amazonS3Client.setS3ClientOptions(clientOptions);
+        }
     }
 
     public void cleanUp() {

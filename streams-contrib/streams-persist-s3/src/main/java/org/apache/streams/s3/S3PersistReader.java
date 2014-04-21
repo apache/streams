@@ -35,21 +35,21 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
 
     private S3ReaderConfiguration s3ReaderConfiguration;
     private AmazonS3Client amazonS3Client;
-    private ExecutorService executor;
     private ObjectMapper mapper = new ObjectMapper();
     private Collection<String> files;
+    private ExecutorService executor;
     protected volatile Queue<StreamsDatum> persistQueue;
 
     protected DatumStatusCounter countersTotal = new DatumStatusCounter();
     protected DatumStatusCounter countersCurrent = new DatumStatusCounter();
 
     public AmazonS3Client getAmazonS3Client()                           { return this.amazonS3Client; }
+    public S3ReaderConfiguration getS3ReaderConfiguration()             { return this.s3ReaderConfiguration; }
     public String getBucketName()                                       { return this.s3ReaderConfiguration.getBucket(); }
     public StreamsResultSet readNew(BigInteger sequence)                { return null; }
     public StreamsResultSet readRange(DateTime start, DateTime end)     { return null; }
     public DatumStatusCounter getDatumStatusCounter()                   { return countersTotal; }
     public Collection<String> getFiles()                                { return this.files; }
-
 
     public S3PersistReader(S3ReaderConfiguration s3ReaderConfiguration) {
         this.s3ReaderConfiguration = s3ReaderConfiguration;
@@ -73,24 +73,36 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
             this.amazonS3Client.setS3ClientOptions(clientOptions);
         }
 
-
         final ListObjectsRequest request = new ListObjectsRequest()
                 .withBucketName(this.s3ReaderConfiguration.getBucket())
                 .withPrefix(s3ReaderConfiguration.getReaderPath())
-                .withDelimiter("/");
+                .withMaxKeys(50);
+
 
         ObjectListing listing = this.amazonS3Client.listObjects(request);
 
         this.files = new ArrayList<String>();
 
-        do
-        {
-            for (String file : listing.getCommonPrefixes())
-                this.files.add(file);
+        /**
+         * If you can list files that are in this path, then you must be dealing with a directory
+         * if you cannot list files that are in this path, then you are most likely dealing with
+         * a simple file.
+         */
+        if(listing.getCommonPrefixes().size() > 0) {
+            // Handle the 'directory' use case
+            do
+            {
+                for (String file : listing.getCommonPrefixes())
+                    this.files.add(file);
 
-            // get the next batch.
-            listing = this.amazonS3Client.listNextBatchOfObjects(listing);
-        } while (listing.isTruncated());
+                // get the next batch.
+                listing = this.amazonS3Client.listNextBatchOfObjects(listing);
+            } while (listing.isTruncated());
+        }
+        else {
+            // handle the single file use-case
+            this.files.add(s3ReaderConfiguration.getReaderPath());
+        }
 
         if(this.files.size() <= 0)
             LOGGER.error("There are no files to read");
@@ -123,7 +135,6 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
             countersCurrent = new DatumStatusCounter();
             persistQueue.clear();
         }
-
         return current;
     }
 
