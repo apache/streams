@@ -15,6 +15,8 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * ***********************************************************************************************************
@@ -35,6 +37,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
     private ElasticsearchReaderConfiguration config;
     private int threadPoolSize = 10;
     private ExecutorService executor;
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public ElasticsearchPersistReader() {
     }
@@ -68,13 +71,16 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
 
         StreamsResultSet current;
 
-        synchronized (ElasticsearchPersistReader.class) {
+        try {
+            lock.writeLock().lock();
             current = new StreamsResultSet(persistQueue);
             current.setCounter(new DatumStatusCounter());
 //            current.getCounter().add(countersCurrent);
 //            countersTotal.add(countersCurrent);
 //            countersCurrent = new DatumStatusCounter();
             persistQueue = constructQueue();
+        } finally {
+            lock.writeLock().unlock();
         }
 
         return current;
@@ -99,11 +105,19 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
         LOGGER.info("PersistReader done");
     }
 
+    //The locking may appear to be counter intuitive but we really don't care if multiple threads offer to the queue
+    //as it is a synchronized queue.  What we do care about is that we don't want to be offering to the current reference
+    //if the queue is being replaced with a new instance
     protected void write(StreamsDatum entry) {
         boolean success;
         do {
-            success = persistQueue.offer(entry);
-            Thread.yield();
+            try {
+                lock.readLock().lock();
+                success = persistQueue.offer(entry);
+                Thread.yield();
+            }finally {
+                lock.readLock().unlock();
+            }
         }
         while (!success);
     }
