@@ -33,7 +33,7 @@ public class ElasticsearchConfigurator {
     public static ElasticsearchReaderConfiguration detectReaderConfiguration(Config elasticsearch) {
 
         ElasticsearchConfiguration elasticsearchConfiguration = detectConfiguration(elasticsearch);
-        ElasticsearchReaderConfiguration elasticsearchReaderConfiguration  = mapper.convertValue(elasticsearchConfiguration, ElasticsearchReaderConfiguration.class);
+        ElasticsearchReaderConfiguration elasticsearchReaderConfiguration = mapper.convertValue(elasticsearchConfiguration, ElasticsearchReaderConfiguration.class);
 
         List<String> indexes = elasticsearch.getStringList("indexes");
         List<String> types = elasticsearch.getStringList("types");
@@ -47,7 +47,7 @@ public class ElasticsearchConfigurator {
     public static ElasticsearchWriterConfiguration detectWriterConfiguration(Config elasticsearch) {
 
         ElasticsearchConfiguration elasticsearchConfiguration = detectConfiguration(elasticsearch);
-        ElasticsearchWriterConfiguration elasticsearchWriterConfiguration  = mapper.convertValue(elasticsearchConfiguration, ElasticsearchWriterConfiguration.class);
+        ElasticsearchWriterConfiguration elasticsearchWriterConfiguration = mapper.convertValue(elasticsearchConfiguration, ElasticsearchWriterConfiguration.class);
 
         String index = elasticsearch.getString("index");
         String type = elasticsearch.getString("type");

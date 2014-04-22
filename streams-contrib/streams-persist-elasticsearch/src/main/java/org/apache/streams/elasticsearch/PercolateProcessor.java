@@ -30,8 +30,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * [t.co behavior]      https://dev.twitter.com/docs/tco-redirection-behavior
  */
 
-public class PercolateProcessor implements StreamsProcessor, Runnable
-{
+public class PercolateProcessor implements StreamsProcessor, Runnable {
     private final static Logger LOGGER = LoggerFactory.getLogger(PercolateProcessor.class);
 
     private ObjectMapper mapper = new ObjectMapper();
@@ -85,7 +84,7 @@ public class PercolateProcessor implements StreamsProcessor, Runnable
         String json;
         ObjectNode node;
         // first check for valid json
-        if( entry.getDocument() instanceof String ) {
+        if (entry.getDocument() instanceof String) {
             json = (String) entry.getDocument();
             try {
                 node = (ObjectNode) mapper.readTree(json);
@@ -102,7 +101,7 @@ public class PercolateProcessor implements StreamsProcessor, Runnable
 
         ArrayNode tagArray = JsonNodeFactory.instance.arrayNode();
 
-        for( PercolateResponse.Match match : response.getMatches()) {
+        for (PercolateResponse.Match match : response.getMatches()) {
             tagArray.add(match.getId().string());
 
         }
@@ -131,14 +130,14 @@ public class PercolateProcessor implements StreamsProcessor, Runnable
     @Override
     public void run() {
 
-        while(true) {
+        while (true) {
             StreamsDatum item;
             try {
                 item = inQueue.poll();
 
                 Thread.sleep(new Random().nextInt(100));
 
-                for( StreamsDatum entry : process(item)) {
+                for (StreamsDatum entry : process(item)) {
                     outQueue.offer(entry);
                 }
 
