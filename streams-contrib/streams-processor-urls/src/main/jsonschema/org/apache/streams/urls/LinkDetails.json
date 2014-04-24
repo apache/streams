@@ -2,6 +2,8 @@
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
     "id": "#",
+    "javaType": "org.apache.streams.urls.LinkDetails",
+    "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "linkStatus" : {
             "type" : "string",

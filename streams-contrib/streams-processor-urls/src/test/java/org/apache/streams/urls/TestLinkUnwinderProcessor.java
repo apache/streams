@@ -3,6 +3,7 @@ package org.apache.streams.urls;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonModule;
 import org.apache.streams.pojo.json.Activity;
@@ -17,6 +18,18 @@ import java.util.List;
 public class TestLinkUnwinderProcessor {
 
     private static String activityString;
+
+    @Test
+    public void testLinkResolverSerializability() {
+        LinkResolver resolver = new LinkResolver("http://bit.ly/1cX5Rh4");
+        LinkResolver clone = SerializationUtils.clone(resolver);
+    }
+
+    @Test
+    public void testLinkResolverProcessorSerializability() {
+        LinkResolverProcessor processor = new LinkResolverProcessor();
+        LinkResolverProcessor clone = SerializationUtils.clone(processor);
+    }
 
     @Test
     public void testActivityLinkUnwinderProcessorBitly() throws Exception{
