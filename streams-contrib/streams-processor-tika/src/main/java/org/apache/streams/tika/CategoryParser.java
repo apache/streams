@@ -1,10 +1,11 @@
 package org.apache.streams.tika;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 
-public class CategoryParser
+public class CategoryParser implements Serializable
 {
     /**
      * This method takes a URL and from that text alone determines what categories that URL belongs in.

@@ -38,6 +38,11 @@ public class TestLucenSimpleTaggingProcessor {
         mapper = new ObjectMapper();
     }
 
+    @Test
+    public void testSerializability() {
+        LuceneSimpleTaggingProcessor processor = new LuceneSimpleTaggingProcessor("testCommunity", new String[]{"test","path"});
+        LuceneSimpleTaggingProcessor clone = SerializationUtils.clone(processor);
+    }
 
     @Test
     public void testActivityJsonString() {
