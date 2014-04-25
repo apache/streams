@@ -1,6 +1,7 @@
 package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -44,15 +45,10 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         this.config = config;
     }
 
-    protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
+    protected final Queue<StreamsDatum> providerQueue = Queues.synchronizedQueue(new ArrayBlockingQueue<StreamsDatum>(500));
 
+    protected int idsCount;
     protected Iterator<Long> ids;
-
-    ListenableFuture providerTaskComplete;
-//
-//    public BlockingQueue<Object> getInQueue() {
-//        return inQueue;
-//    }
 
     protected ListeningExecutorService executor;
 
@@ -90,40 +86,15 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         return this.providerQueue;
     }
 
-//    public void run() {
-//
-//        LOGGER.info("{} Running", STREAMS_ID);
-//
-//        while( ids.hasNext() ) {
-//            Long currentId = ids.next();
-//            LOGGER.info("Provider Task Starting: {}", currentId);
-//            captureTimeline(currentId);
-//        }
-//
-//        LOGGER.info("{} Finished.  Cleaning up...", STREAMS_ID);
-//
-//        client.shutdown();
-//
-//        LOGGER.info("{} Exiting", STREAMS_ID);
-//
-//        while(!providerTaskComplete.isDone() && !providerTaskComplete.isCancelled() ) {
-//            try {
-//                Thread.sleep(100);
-//            } catch (InterruptedException e) {}
-//        }
-//    }
-
     @Override
     public void startStream() {
         // no op
     }
 
-    private void captureTimeline(long currentId) {
+    protected void captureTimeline(long currentId) {
 
         Paging paging = new Paging(1, 200);
         List<Status> statuses = null;
-        boolean KeepGoing = true;
-        boolean hadFailure = false;
 
         do
         {
@@ -140,9 +111,11 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                     statuses = client.getUserTimeline(currentId, paging);
 
                     for (Status tStat : statuses) {
-                        String json = DataObjectFactory.getRawJSON(tStat);
+                        String json = TwitterObjectFactory.getRawJSON(tStat);
 
-                        providerQueue.offer(new StreamsDatum(json));
+                        while(!providerQueue.offer(new StreamsDatum(json))) {
+                            sleep();
+                        }
                     }
 
                     paging.setPage(paging.getPage() + 1);
@@ -152,14 +125,30 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                 catch(TwitterException twitterException) {
                     keepTrying += TwitterErrorHandler.handleTwitterError(client, twitterException);
                 }
-                catch(Exception e)
-                {
-                    hadFailure = true;
+                catch(Exception e) {
                     keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
                 }
             }
         }
-        while ((statuses != null) && (statuses.size() > 0) && KeepGoing);
+        while ((statuses != null) && (statuses.size() > 0));
+    }
+
+    private void sleep()
+    {
+        Thread.yield();
+        try {
+            // wait one tenth of a millisecond
+            Thread.yield();
+            Thread.sleep(new Random().nextInt(2));
+            Thread.yield();
+        }
+        catch(IllegalArgumentException e) {
+            // passing in static values, this will never happen
+        }
+        catch(InterruptedException e) {
+            // noOp, there must have been an issue sleeping
+        }
+        Thread.yield();
     }
 
     public StreamsResultSet readCurrent() {
@@ -232,6 +221,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
         Preconditions.checkNotNull(config.getFollow());
 
+        idsCount = config.getFollow().size();
         ids = config.getFollow().iterator();
     }
 
