@@ -17,8 +17,9 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
-public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeable, DatumStatusCountable
+public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountable
 {
     public final static String STREAMS_ID = "S3PersistWriter";
 
@@ -31,9 +32,13 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
     private S3WriterConfiguration s3WriterConfiguration;
     private final List<String> writtenFiles = new ArrayList<String>();
 
-    private final AtomicDouble totalBytesWritten = new AtomicDouble();
+    private final AtomicLong totalBytesWritten = new AtomicLong();
+    private AtomicLong bytesWrittenThisFile = new AtomicLong();
+
     private final AtomicInteger totalRecordsWritten = new AtomicInteger();
     private AtomicInteger fileLineCounter = new AtomicInteger();
+
+
     private Map<String, String> objectMetaData = new HashMap<String, String>() {{
         put("line[0]", "id");
         put("line[1]", "timeStamp");
@@ -51,7 +56,16 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
     public ObjectMapper getObjectMapper()                               { return this.objectMapper; }
     public void setObjectMetaData(Map<String, String> val)              { this.objectMetaData = val; }
 
-
+    /**
+     * Instantiator with a pre-existing amazonS3Client, this is used to help with re-use.
+     * @param amazonS3Client
+     * If you have an existing amazonS3Client, it wont' bother to create another one
+     * @param s3WriterConfiguration
+     * Configuration of the write paths and instructions are still required.
+     */
+    public S3PersistWriter(AmazonS3Client amazonS3Client, S3WriterConfiguration s3WriterConfiguration) {
+        this.s3WriterConfiguration = s3WriterConfiguration;
+    }
 
     public S3PersistWriter(S3WriterConfiguration s3WriterConfiguration) {
         this.s3WriterConfiguration = s3WriterConfiguration;
@@ -63,62 +77,70 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
         synchronized (this)
         {
             // Check to see if we need to reset the file that we are currently working with
-            if (this.currentWriter == null || (this.fileLineCounter.get() > this.s3WriterConfiguration.getLinesPerFile()))
+            if (this.currentWriter == null || (this.fileLineCounter.get() >= this.s3WriterConfiguration.getLinesPerFile())) {
                 try {
-                    resetFile();
-                } catch (Exception e) {
+                    LOGGER.info("Resetting the file");
+                    this.currentWriter = resetFile();
+                }
+                catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
 
             String line = convertResultToString(streamsDatum);
+
             try {
                 this.currentWriter.write(line);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            this.totalBytesWritten.addAndGet(line.getBytes().length);
+            // add the bytes we've written
+            int recordSize = line.getBytes().length;
+            this.totalBytesWritten.addAndGet(recordSize);
+            this.bytesWrittenThisFile.addAndGet(recordSize);
+
+            // increment the record count
             this.totalRecordsWritten.incrementAndGet();
             this.fileLineCounter.incrementAndGet();
         }
+
     }
 
-    public void flush() throws IOException {
-        // This is wrapped with a ByteArrayOutputStream, so this is reallly safe.
-        this.currentWriter.flush();
-    }
-
-    private synchronized void resetFile() throws Exception
+    private synchronized OutputStreamWriter resetFile() throws Exception
     {
         // this will keep it thread safe, so we don't create too many files
         if(this.fileLineCounter.get() == 0 && this.currentWriter != null)
-            return;
+            return this.currentWriter;
 
-        // if there is a current writer, we must close it first.
-        if (this.currentWriter != null) {
-            flush();
-            close();
-        }
-
-        this.fileLineCounter = new AtomicInteger();
+        closeAndDestroyWriter();
 
         // Create the path for where the file is going to live.
         try
         {
+            // generate a file name
             String fileName = this.s3WriterConfiguration.getWriterFilePrefix() +
                     (this.s3WriterConfiguration.getChuck() ? "/" : "-") + new Date().getTime() + ".tsv";
+
+            // create the output stream
             OutputStream outputStream = new S3OutputStreamWrapper(this.amazonS3Client,
                     this.s3WriterConfiguration.getBucket(),
                     this.s3WriterConfiguration.getWriterPath(),
                     fileName,
                     this.objectMetaData);
 
-            this.currentWriter = new OutputStreamWriter(outputStream);
+            // reset the counter
+            this.fileLineCounter = new AtomicInteger();
+            this.bytesWrittenThisFile = new AtomicLong();
 
-            // Add another file to the list of written files.
+            // add this to the list of written files
             writtenFiles.add(this.s3WriterConfiguration.getWriterPath() + fileName);
 
+            // Log that we are creating this file
             LOGGER.info("File Created: Bucket[{}] - {}", this.s3WriterConfiguration.getBucket(), this.s3WriterConfiguration.getWriterPath() + fileName);
+
+            // return the output stream
+            return new OutputStreamWriter(outputStream);
         }
         catch (Exception e)
         {
@@ -127,16 +149,43 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
         }
     }
 
-    public synchronized void close() throws IOException
-    {
-        if(this.currentWriter != null)
-        {
-            this.currentWriter.flush();
-            this.currentWriter.close();
+    private synchronized void closeAndDestroyWriter() {
+        // if there is a current writer, we must close it first.
+        if (this.currentWriter != null) {
+            this.safeFlush(this.currentWriter);
+            this.closeSafely(this.currentWriter);
             this.currentWriter = null;
-            LOGGER.info("File Closed");
+
+            //
+            LOGGER.debug("File Closed: Records[{}] Bytes[{}] {} ", this.fileLineCounter.get(), this.bytesWrittenThisFile.get(), this.writtenFiles.get(this.writtenFiles.size()-1));
         }
     }
+
+    private synchronized void closeSafely(Writer writer)  {
+        if(writer != null) {
+            try {
+                writer.flush();
+                writer.close();
+            }
+            catch(Exception e) {
+                // noOp
+            }
+            LOGGER.debug("File Closed");
+        }
+    }
+
+    private void safeFlush(Flushable flushable) {
+        // This is wrapped with a ByteArrayOutputStream, so this is really safe.
+        if(flushable != null) {
+            try {
+                flushable.flush();
+            }
+            catch(IOException e) {
+                // noOp
+            }
+        }
+    }
+
 
     private String convertResultToString(StreamsDatum entry)
     {
@@ -161,47 +210,36 @@ public class S3PersistWriter implements StreamsPersistWriter, Flushable, Closeab
         if(Strings.isNullOrEmpty(documentJson))
             return null;
         else
-            return new StringBuilder()
-                    .append(entry.getId())
-                    .append(DELIMITER)
-                    .append(entry.getTimestamp())
-                    .append(DELIMITER)
-                    .append(metadata)
-                    .append(DELIMITER)
-                    .append(documentJson)
-                    .append("\n")
-                    .toString();
+            return  entry.getId()           + DELIMITER +   // [0] = Unique id of the verbatim
+                    entry.getTimestamp()    + DELIMITER +   // [1] = Timestamp of the item
+                    metadata                + DELIMITER +   // [2] = Metadata of the item
+                    documentJson            + "\n";         // [3] = The actual object
     }
 
     public void prepare(Object configurationObject) {
         // Connect to S3
         synchronized (this) {
             // Create the credentials Object
-            AWSCredentials credentials = new BasicAWSCredentials(s3WriterConfiguration.getKey(), s3WriterConfiguration.getSecretKey());
+            if(this.amazonS3Client == null)
+            {
+                AWSCredentials credentials = new BasicAWSCredentials(s3WriterConfiguration.getKey(), s3WriterConfiguration.getSecretKey());
 
-            ClientConfiguration clientConfig = new ClientConfiguration();
-            clientConfig.setProtocol(Protocol.valueOf(s3WriterConfiguration.getProtocol().toUpperCase()));
+                ClientConfiguration clientConfig = new ClientConfiguration();
+                clientConfig.setProtocol(Protocol.valueOf(s3WriterConfiguration.getProtocol().toUpperCase()));
 
-            // We want path style access
-            S3ClientOptions clientOptions = new S3ClientOptions();
-            clientOptions.setPathStyleAccess(true);
+                // We want path style access
+                S3ClientOptions clientOptions = new S3ClientOptions();
+                clientOptions.setPathStyleAccess(true);
 
-            this.amazonS3Client = new AmazonS3Client(credentials, clientConfig);
-            this.amazonS3Client.setS3ClientOptions(clientOptions);
+                this.amazonS3Client = new AmazonS3Client(credentials, clientConfig);
+                this.amazonS3Client.setS3ClientOptions(clientOptions);
+            }
         }
     }
 
     public void cleanUp() {
-        try {
-            flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        LOGGER.info("Cleaning up persist writer");
+        closeAndDestroyWriter();
     }
 
     public DatumStatusCounter getDatumStatusCounter() {
