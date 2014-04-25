@@ -112,7 +112,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             switch(this.type) {
                 case PERPETUAL: {
                     provider.startStream();
-                    while(this.keepRunning.get() == true) {
+                    while(this.keepRunning.get()) {
                         try {
                             resultSet = provider.readCurrent();
                             if( resultSet.size() == 0 )
@@ -168,6 +168,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             }
             else {
                 try {
+                    LOGGER.info("Provider is forced to wait");
                     Thread.sleep(DEFAULT_SLEEP_TIME_MS);
                 } catch (InterruptedException e) {
                     this.keepRunning.set(false);

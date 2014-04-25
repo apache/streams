@@ -232,7 +232,7 @@ public class StreamComponent {
             return false;
     }
 
-    protected StreamsOperation getOperation() {
+    public StreamsOperation getOperation() {
         if(this.processor != null) {
             return (StreamsOperation) this.processor;
         }
@@ -247,7 +247,7 @@ public class StreamComponent {
         }
     }
 
-    protected boolean isOperationCountable() {
+    public boolean isOperationCountable() {
         return getOperation() instanceof DatumStatusCountable;
     }
 }

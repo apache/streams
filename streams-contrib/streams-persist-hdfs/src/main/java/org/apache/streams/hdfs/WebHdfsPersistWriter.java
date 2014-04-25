@@ -115,7 +115,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
             e.printStackTrace();
         }
     }
-    
+
     @Override
     public void write(StreamsDatum streamsDatum) {
 
@@ -207,7 +207,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
             this.currentWriter.flush();
             this.currentWriter.close();
             this.currentWriter = null;
-            LOGGER.info("File Closed");
+            LOGGER.debug("File Closed");
         }
     }
 

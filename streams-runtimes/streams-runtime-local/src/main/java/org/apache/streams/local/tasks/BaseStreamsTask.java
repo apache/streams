@@ -146,12 +146,17 @@ public abstract class BaseStreamsTask implements StreamsTask {
     }
 
     private void enqueue( Queue<StreamsDatum> queue, StreamsDatum entry ) {
-        boolean success;
-        do {
-            success = queue.offer(entry);
+        while(!queue.offer(entry)) {
+            Thread.yield();
+            try {
+                // stagger our sleeping...
+                Thread.sleep(new Random().nextInt(2));
+            }
+            catch (Exception e) {
+                // No Op
+            }
             Thread.yield();
         }
-        while( !success );
     }
 
     private StreamsDatum copyMetaData(StreamsDatum copyFrom, StreamsDatum copyTo) {

@@ -4,7 +4,7 @@ import org.apache.streams.core.DatumStatusCountable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StatusCounterMonitorThread implements Runnable
+public class StatusCounterMonitorThread implements StreamsMonitorThread
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusCounterMonitorThread.class);
 
@@ -19,6 +19,7 @@ public class StatusCounterMonitorThread implements Runnable
         this.seconds = delayInSeconds;
     }
 
+    @Override
     public void shutdown(){
         this.run = false;
     }
@@ -36,7 +37,7 @@ public class StatusCounterMonitorThread implements Runnable
              * overflow, this will be very apparent by the information shown here.
              */
 
-            LOGGER.debug("{}: {} attempted, {} success, {} partial, {} failed, {} total",
+            LOGGER.info("{}: {} attempted, {} success, {} partial, {} failed, {} total",
                     task.getClass(),
                     task.getDatumStatusCounter().getAttempted(),
                     task.getDatumStatusCounter().getSuccess(),

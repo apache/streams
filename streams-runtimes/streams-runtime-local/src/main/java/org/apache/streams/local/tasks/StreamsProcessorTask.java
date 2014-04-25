@@ -2,6 +2,8 @@ package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class StreamsProcessorTask extends BaseStreamsTask {
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsProcessorTask.class);
 
     private StreamsProcessor processor;
     private long sleepTime;

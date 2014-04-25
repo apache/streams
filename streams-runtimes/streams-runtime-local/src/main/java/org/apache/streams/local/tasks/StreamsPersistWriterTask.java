@@ -82,6 +82,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                         statusCounter.incrementStatus(DatumStatus.FAIL);
                     }
                 }
+                // sleep and wait for the next item
                 else {
                     try {
                         Thread.sleep(this.sleepTime);

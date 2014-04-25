@@ -7,7 +7,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.util.concurrent.Executor;
 
-public class LocalStreamProcessMonitorThread implements Runnable
+public class LocalStreamProcessMonitorThread implements StreamsMonitorThread
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalStreamProcessMonitorThread.class);
 
@@ -46,9 +46,7 @@ public class LocalStreamProcessMonitorThread implements Runnable
 
             String usedMemory = humanReadableByteCount(memoryUsage.getUsed(), true);
 
-            LOGGER.debug("[monitor] Used Memory: {}, Max: {}",
-                    usedMemory,
-                    maxMemory);
+            LOGGER.info("[monitor] Used Memory: {}, Max: {}", usedMemory, maxMemory);
 
             try
             {
