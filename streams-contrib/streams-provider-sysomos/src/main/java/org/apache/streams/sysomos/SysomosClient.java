@@ -19,7 +19,11 @@
 
 package org.apache.streams.sysomos;
 
+import com.google.common.base.Strings;
+import com.sysomos.json.Sysomos;
 import org.apache.commons.io.IOUtils;
+import org.apache.streams.sysomos.data.HeartbeatInfo;
+import org.apache.streams.sysomos.util.SysomosUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -35,9 +39,7 @@ import java.util.regex.Pattern;
 public class SysomosClient {
 
     public static final String BASE_URL_STRING = "http://api.sysomos.com/";
-    private static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'hh:mm:ssZ";
     private static final String HEARTBEAT_INFO_URL = "http://api.sysomos.com/v1/heartbeat/info?apiKey={api_key}&hid={hid}";
-    private static Pattern _pattern = Pattern.compile("code: ([0-9]+)");
 
     private String apiKey;
 
@@ -50,37 +52,12 @@ public class SysomosClient {
     public HeartbeatInfo getHeartbeatInfo(String hid) throws Exception {
         String urlString = HEARTBEAT_INFO_URL.replace("{api_key}", this.apiKey);
         urlString = urlString.replace("{hid}", hid);
-        String xmlResponse = execute(new URL(urlString));
+        String xmlResponse = SysomosUtils.queryUrl(new URL(urlString));
         return new HeartbeatInfo(xmlResponse);
     }
 
-    private String execute(URL url) throws SysomosException {
-        String urlString = url.toString();
-
-        try {
-            client = (HttpURLConnection) url.openConnection();
-            client.setRequestMethod("GET");
-            client.addRequestProperty("Content-Type", "text/xml;charset=UTF-8");
-            client.setDoInput(true);
-            client.setDoOutput(false);
-            StringWriter writer = new StringWriter();
-            IOUtils.copy(new InputStreamReader(client.getInputStream()), writer);
-            writer.flush();
-            //System.out.println(writer.toString());
-            return writer.toString();
-        } catch (IOException e) {
-//            e.printStackTrace();
-            //log.error("Error executing request : {}", e, urlString);
-            String message = e.getMessage();
-            Matcher match = _pattern.matcher(message);
-            if(match.find()) {
-                int errorCode = Integer.parseInt(match.group(1));
-                throw new SysomosException(message, e, errorCode);
-            }
-            else {
-                throw new SysomosException(e.getMessage(), e);
-            }
-        }
+    public RequestBuilder createRequestBuilder() {
+        return new ContentRequestBuilder(BASE_URL_STRING, this.apiKey);
     }
 
 }
