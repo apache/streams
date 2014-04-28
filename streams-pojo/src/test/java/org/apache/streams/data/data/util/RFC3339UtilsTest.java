@@ -18,18 +18,20 @@
 package org.apache.streams.data.data.util;
 
 
+import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
-import java.util.Locale;
 import java.util.TimeZone;
 
 import static org.apache.streams.data.util.RFC3339Utils.format;
 import static org.apache.streams.data.util.RFC3339Utils.parseUTC;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class RFC3339UtilsTest {
 
@@ -170,5 +172,52 @@ public class RFC3339UtilsTest {
         TimeZone cet = TimeZone.getTimeZone("CET");
         DateTime parsed = new DateTime(1419505200734L);
         assertThat(format(parsed, cet), is(equalTo("2014-12-25T12:00:00.734+0100")));
+    }
+
+    @Test
+    public void testParseVariousDateFormats() {
+        String date = "Thu April 24 04:43:10 -0500 2014";
+        DateTime expected = new DateTime(2014, 4, 24, 9, 43, 10, DateTimeZone.forOffsetHours(0));
+        testHelper(expected, date);
+        date = "2014/04/24 04:43:10";
+        expected = new DateTime(2014, 4, 24, 4, 43, 10, DateTimeZone.forOffsetHours(0));
+        testHelper(expected, date);
+        date = "2014-04-24T04:43:10Z";
+        testHelper(expected, date);
+        date = "04:43:10 2014/04/24";
+        testHelper(expected, date);
+        date = "4/24/2014 04:43:10";
+        testHelper(expected, date);
+        date = "04:43:10 4/24/2014";
+        testHelper(expected, date);
+        date = "04:43:10 2014-04-24";
+        testHelper(expected, date);
+        date = "4-24-2014 04:43:10";
+        testHelper(expected, date);
+        date = "04:43:10 4-24-2014";
+        testHelper(expected, date);
+        expected = new DateTime(2014, 4, 24, 0, 0, 0, DateTimeZone.forOffsetHours(0));
+        date = "24-4-2014";
+        testHelper(expected, date);
+        date = "2014-4-24";
+        testHelper(expected, date);
+        date = "2014/4/24";
+        testHelper(expected, date);
+        date = "2014/4/24 fesdfs";
+        try {
+            RFC3339Utils.parseToUTC(date);
+            fail("Should not have been able to parse : "+date);
+        } catch (Exception e) {
+        }
+    }
+
+    private void testHelper(DateTime expected, String dateString) {
+        DateTime parsedDate = RFC3339Utils.parseToUTC(dateString);
+        assertEquals("Failed to parse : "+dateString, expected, parsedDate);
+        String rfc3339String = RFC3339Utils.format(dateString);
+        String parsedRfc3339String = RFC3339Utils.format(parsedDate);
+        assertEquals("Parsed String should be equal.", parsedRfc3339String, rfc3339String);
+        DateTime convertedBack = RFC3339Utils.parseToUTC(parsedRfc3339String);
+        assertEquals(expected, convertedBack);
     }
 }

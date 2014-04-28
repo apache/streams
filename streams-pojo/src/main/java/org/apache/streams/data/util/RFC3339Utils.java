@@ -21,13 +21,15 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
+import org.joda.time.format.DateTimeParser;
 
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Parses and formats Joda Time {@link org.joda.time.DateTime} dates to and from RFC3339 compatible Strings
+ * Parses and formats dates to Joda Time {@link org.joda.time.DateTime} and to RFC3339 compatible Strings
  */
 public class RFC3339Utils {
 
@@ -53,6 +55,68 @@ public class RFC3339Utils {
     public static final DateTimeFormatter UTC_SUB_SECOND_FMT = DateTimeFormat.forPattern(BASE_FMT + ".SSS'Z'").withZoneUTC();
     public static final DateTimeFormatter LOCAL_STANDARD_FMT = DateTimeFormat.forPattern(BASE_FMT + "Z").withZoneUTC();
     public static final DateTimeFormatter LOCAL_SUB_SECOND_FMT = DateTimeFormat.forPattern(BASE_FMT + ".SSSZ").withZoneUTC();
+
+    /**
+     * Contains various formats.  All formats should be of international standards when comes to the ordering of the
+     * days and month.
+     */
+    private static final  DateTimeFormatter DEFAULT_FORMATTER;
+    /**
+     * Contains alternative formats that will succeed after failures from the DEFAULT_FORMATTER.
+     * i.e. 4/24/2014 will throw an exception on the default formatter because it will assume international date standards
+     * However, the date will parse in the ALT_FORMATTER because it contains the US format of MM/dd/yyyy.
+     */
+    private static final DateTimeFormatter ALT_FORMATTER;
+
+    static {
+        DateTimeParser[] parsers = new DateTimeParser[]{
+                DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyyy").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("dd MMMM yyyy HH:mm:ss").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("yyyyMMdd").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("dd-MM-yyyy").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("yyyy/MM/dd").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("dd MMM yyyy").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("dd MMMM yyyy").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("yyyyMMddHHmm").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("yyyyMMdd HHmm").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("dd-MM-yyyy HH:mm").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("yyyy/MM/dd HH:mm").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("dd MMM yyyy HH:mm").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("dd MMMM yyyy HH:mm").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("yyyyMMddHHmmss").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("yyyyMMdd HHmmss").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("dd-MM-yyyy HH:mm:ss").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("yyyy/MM/dd HH:mm:ss").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("dd MMM yyyy HH:mm:ss").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("HH:mm:ss yyyy/MM/dd").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("HH:mm:ss MM/dd/yyyy").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("HH:mm:ss yyyy-MM-dd").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("HH:mm:ss MM-dd-yyyy").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("dd/MM/yyyy HH:mm").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("dd/MM/yyyy").withZoneUTC().getParser(),
+                UTC_STANDARD_FMT.getParser(),
+                UTC_SUB_SECOND_FMT.getParser(),
+                LOCAL_STANDARD_FMT.getParser(),
+                LOCAL_SUB_SECOND_FMT.getParser()
+        };
+        DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder();
+        builder.append(null, parsers);
+        DEFAULT_FORMATTER = builder.toFormatter().withZoneUTC();
+
+        DateTimeParser[] altParsers = new DateTimeParser[] {
+                DateTimeFormat.forPattern("MM-dd-yyyy HH:mm:ss").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("MM/dd/yyyy HH:mm").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().getParser(),
+        };
+        builder = new DateTimeFormatterBuilder();
+        builder.append(null, altParsers);
+        ALT_FORMATTER = builder.toFormatter().withZoneUTC();
+    }
 
 
     private RFC3339Utils() {}
@@ -84,6 +148,30 @@ public class RFC3339Utils {
 
     public static String format(DateTime toFormat, TimeZone tz) {
         return LOCAL_SUB_SECOND_FMT.withZone(DateTimeZone.forTimeZone(tz)).print(toFormat.getMillis());
+    }
+
+    /**
+     * Parses arbitrarily formatted Strings representing dates or dates and times to a {@link org.joda.time.DateTime}
+     * objects.  It first attempts parse with international standards, assuming the dates are either dd MM yyyy or
+     * yyyy MM dd.  If that fails it will try American formats where the month precedes the days of the month.
+     * @param dateString abitrarily formatted date or date and time string
+     * @return {@link org.joda.time.DateTime} representation of the dateString
+     */
+    public static DateTime parseToUTC(String dateString) {
+        try {
+            return DEFAULT_FORMATTER.parseDateTime(dateString);
+        } catch (Exception e) {
+            return ALT_FORMATTER.parseDateTime(dateString);
+        }
+    }
+
+    /**
+     * Formats an arbitrarily formatted into RFC3339 Specifications.
+     * @param dateString date string to be formatted
+     * @return RFC3339 compliant date string
+     */
+    public static String format(String dateString) {
+        return format(parseToUTC(dateString));
     }
 
     private static DateTime parseUTC(DateTimeFormatter formatter, String toParse) {
