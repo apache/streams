@@ -157,7 +157,7 @@ public class RFC3339Utils {
      * @param dateString abitrarily formatted date or date and time string
      * @return {@link org.joda.time.DateTime} representation of the dateString
      */
-    public static DateTime parseToDateTime(String dateString) {
+    public static DateTime parseToUTC(String dateString) {
         try {
             return DEFAULT_FORMATTER.parseDateTime(dateString);
         } catch (Exception e) {
@@ -171,7 +171,7 @@ public class RFC3339Utils {
      * @return RFC3339 compliant date string
      */
     public static String format(String dateString) {
-        return format(parseToDateTime(dateString));
+        return format(parseToUTC(dateString));
     }
 
     private static DateTime parseUTC(DateTimeFormatter formatter, String toParse) {
