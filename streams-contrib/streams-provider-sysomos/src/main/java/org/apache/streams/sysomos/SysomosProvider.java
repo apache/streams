@@ -19,9 +19,9 @@
 
 package org.apache.streams.sysomos;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.sysomos.SysomosConfiguration;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
@@ -29,45 +29,41 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Wrapper for the Sysomos API.
+ * Streams Provider for the Sysomos Heartbeat API
  */
 public class SysomosProvider implements StreamsProvider {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SysomosProvider.class);
+    public static final int LATENCY = 10000;  //Default latency for querying the Sysomos API in milliseconds
+    public static final long PROVIDER_BATCH_SIZE = 10000L; //Default maximum size of the queue
+    public static final long API_BATCH_SIZE = 1000L; //Default maximum size of an API request
 
+    protected volatile Queue<StreamsDatum> providerQueue;
+
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final long maxQueued;
+    private final long latency;
+    private final long maxApiBatch;
+
+    private SysomosClient client;
     private SysomosConfiguration config;
-
-    private List<String> apiKeys;
-    private List<ExecutorService> tasks = new LinkedList<ExecutorService>();
+    private ScheduledExecutorService stream;
     private boolean started = false;
 
     public SysomosProvider(SysomosConfiguration sysomosConfiguration) {
-        this.apiKeys = Lists.newArrayList();
+        this.config = sysomosConfiguration;
+        this.client = new SysomosClient(sysomosConfiguration.getApiKey());
+        this.maxQueued = sysomosConfiguration.getMaxBatchSize() == null ? PROVIDER_BATCH_SIZE : sysomosConfiguration.getMaxBatchSize();
+        this.latency = sysomosConfiguration.getMinDelayMs() == null ? LATENCY : sysomosConfiguration.getMinDelayMs();
+        this.maxApiBatch = sysomosConfiguration.getMinDelayMs() == null ? API_BATCH_SIZE : sysomosConfiguration.getApiBatchSize();
     }
-
-    public static final String BASE_URL_STRING = "http://api.sysomos.com/";
-    private static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'hh:mm:ssZ";
-    private static final String HEARTBEAT_INFO_URL = "http://api.sysomos.com/v1/heartbeat/info?apiKey={api_key}&hid={hid}";
-    private static Pattern _pattern = Pattern.compile("code: ([0-9]+)");
-
-    public static final int LATENCY = 10;
-
-    private String apiKey;
 
     public SysomosConfiguration getConfig() {
         return config;
@@ -77,22 +73,16 @@ public class SysomosProvider implements StreamsProvider {
         this.config = config;
     }
 
-    protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<StreamsDatum>();
-
-    SysomosProviderTask task;
-    ScheduledExecutorService service;
-
     @Override
     public void startStream() {
         LOGGER.trace("Starting Producer");
-        if(!started) {
+        if (!started) {
             LOGGER.trace("Producer not started.  Initializing");
-            service = Executors.newScheduledThreadPool(getConfig().getHeartbeatIds().size() + 1);
-            for(String heartbeatId : getConfig().getHeartbeatIds()) {
-                task = new SysomosProviderTask(this, heartbeatId);
-                service.scheduleWithFixedDelay(task, 0, LATENCY, TimeUnit.SECONDS);
-                LOGGER.info("Started producer for {} with service {}", getConfig().getApiKey(), service.toString());
-                this.tasks.add(service);
+            stream = Executors.newScheduledThreadPool(getConfig().getHeartbeatIds().size() + 1);
+            for (String heartbeatId : getConfig().getHeartbeatIds()) {
+                Runnable task = new SysomosHeartbeatTask(this, this.client, heartbeatId, this.maxApiBatch);
+                stream.scheduleWithFixedDelay(task, 0, this.latency, TimeUnit.MILLISECONDS);
+                LOGGER.info("Started producer task for heartbeat {}", heartbeatId);
             }
             started = true;
         }
@@ -100,26 +90,83 @@ public class SysomosProvider implements StreamsProvider {
 
     @Override
     public StreamsResultSet readCurrent() {
-        return null;
+        StreamsResultSet current;
+        try {
+            lock.writeLock().lock();
+            current = new StreamsResultSet(providerQueue);
+            providerQueue = constructQueue();
+        } finally {
+            lock.writeLock().unlock();
+        }
+
+        return current;
     }
 
     @Override
     public StreamsResultSet readNew(BigInteger bigInteger) {
-        return null;
+        throw new NotImplementedException("readNew not currently implemented");
     }
 
     @Override
     public StreamsResultSet readRange(DateTime dateTime, DateTime dateTime2) {
-        return null;
+        throw new NotImplementedException("readRange not currently implemented");
     }
 
     @Override
     public void prepare(Object configurationObject) {
-
+        //NOP
     }
 
     @Override
     public void cleanUp() {
-
+        stream.shutdown(); // Disable new tasks from being submitted
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!stream.awaitTermination(60, TimeUnit.SECONDS)) {
+                stream.shutdownNow(); // Cancel currently executing tasks
+                // Wait a while for tasks to respond to being cancelled
+                if (!stream.awaitTermination(60, TimeUnit.SECONDS)) {
+                    LOGGER.error("Stream did not terminate");
+                }
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            stream.shutdownNow();
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
     }
+
+    protected void enqueueItem(StreamsDatum datum) {
+        boolean success;
+        do {
+            try {
+                pauseForSpace(); //Dont lock before this pause. We don't want to block the readCurrent method
+                lock.readLock().lock();
+                success = providerQueue.offer(datum);
+                Thread.yield();
+            }finally {
+                lock.readLock().unlock();
+            }
+        }
+        while (!success);
+    }
+
+    /**
+     * Wait for the queue size to be below threshold before allowing execution to continue on this thread
+     */
+    private void pauseForSpace() {
+        while(this.providerQueue.size() >= maxQueued) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                LOGGER.warn("Thread was interrupted", e);
+            }
+        }
+    }
+
+    private Queue<StreamsDatum> constructQueue() {
+        return Queues.newConcurrentLinkedQueue();
+    }
+
 }
