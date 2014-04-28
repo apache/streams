@@ -19,7 +19,10 @@
 
 package org.apache.streams.sysomos;
 
-public class SysomosException extends Exception {
+/**
+ * Runtime exception wrapper for Sysomos Errors
+ */
+public class SysomosException extends RuntimeException {
 
     private int errorCode = -1;
 
