@@ -16,8 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.sysomos;
+package org.apache.streams.sysomos.data;
 
+import org.apache.streams.sysomos.data.SysomosTagDefinition;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,18 +32,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: rebanks
- * Date: 5/1/13
- * Time: 4:56 PM
- * To change this template use File | Settings | File Templates.
+ * Represents Heatbeat metadata from the Sysomos API
  */
 public class HeartbeatInfo {
 
     private Document doc;
     private List<SysomosTagDefinition> tags;
 
-    protected HeartbeatInfo(String xmlString) throws Exception {
+    public HeartbeatInfo(String xmlString) throws Exception {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = dbFactory.newDocumentBuilder();
         this.doc = docBuilder.parse(new InputSource(new ByteArrayInputStream(xmlString.getBytes("utf-8"))));

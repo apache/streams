@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.sysomos;
+package org.apache.streams.sysomos.data;
 
 import java.util.ArrayList;
 import java.util.List;
