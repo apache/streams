@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static org.apache.streams.sysomos.util.SysomosUtils.*;
+
 /**
  * Builds requests for the Sysomos Heartbeat Content API.  This is the preferred method of
  * accessing data from Sysomoos Heartbeat
