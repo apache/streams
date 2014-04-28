@@ -41,7 +41,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class SysomosProvider implements StreamsProvider {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SysomosProvider.class);
-    public static final int LATENCY = 10000;  //Default latency for querying the Sysomos API in milliseconds
+    public static final int LATENCY = 10000;  //Default minLatency for querying the Sysomos API in milliseconds
     public static final long PROVIDER_BATCH_SIZE = 10000L; //Default maximum size of the queue
     public static final long API_BATCH_SIZE = 1000L; //Default maximum size of an API request
 
@@ -49,7 +49,8 @@ public class SysomosProvider implements StreamsProvider {
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final long maxQueued;
-    private final long latency;
+    private final long minLatency;
+    private final long scheduledLatency;
     private final long maxApiBatch;
 
     private SysomosClient client;
@@ -61,7 +62,8 @@ public class SysomosProvider implements StreamsProvider {
         this.config = sysomosConfiguration;
         this.client = new SysomosClient(sysomosConfiguration.getApiKey());
         this.maxQueued = sysomosConfiguration.getMaxBatchSize() == null ? PROVIDER_BATCH_SIZE : sysomosConfiguration.getMaxBatchSize();
-        this.latency = sysomosConfiguration.getMinDelayMs() == null ? LATENCY : sysomosConfiguration.getMinDelayMs();
+        this.minLatency = sysomosConfiguration.getMinDelayMs() == null ? LATENCY : sysomosConfiguration.getMinDelayMs();
+        this.scheduledLatency = sysomosConfiguration.getScheduledDelayMs() == null ? (LATENCY * 15) : sysomosConfiguration.getScheduledDelayMs();
         this.maxApiBatch = sysomosConfiguration.getMinDelayMs() == null ? API_BATCH_SIZE : sysomosConfiguration.getApiBatchSize();
     }
 
@@ -80,8 +82,8 @@ public class SysomosProvider implements StreamsProvider {
             LOGGER.trace("Producer not started.  Initializing");
             stream = Executors.newScheduledThreadPool(getConfig().getHeartbeatIds().size() + 1);
             for (String heartbeatId : getConfig().getHeartbeatIds()) {
-                Runnable task = new SysomosHeartbeatTask(this, this.client, heartbeatId, this.maxApiBatch);
-                stream.scheduleWithFixedDelay(task, 0, this.latency, TimeUnit.MILLISECONDS);
+                Runnable task = new SysomosHeartbeatStream(this, heartbeatId);
+                stream.scheduleWithFixedDelay(task, 0, this.scheduledLatency, TimeUnit.MILLISECONDS);
                 LOGGER.info("Started producer task for heartbeat {}", heartbeatId);
             }
             started = true;
@@ -137,6 +139,18 @@ public class SysomosProvider implements StreamsProvider {
         }
     }
 
+    public long getMinLatency() {
+        return minLatency;
+    }
+
+    public long getMaxApiBatch() {
+        return maxApiBatch;
+    }
+
+    public SysomosClient getClient() {
+        return client;
+    }
+
     protected void enqueueItem(StreamsDatum datum) {
         boolean success;
         do {
@@ -168,5 +182,4 @@ public class SysomosProvider implements StreamsProvider {
     private Queue<StreamsDatum> constructQueue() {
         return Queues.newConcurrentLinkedQueue();
     }
-
 }

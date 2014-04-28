@@ -120,14 +120,14 @@ public class ContentRequestBuilder extends AbstractRequestBuilder implements Req
     }
 
     @Override
-    public RequestBuilder setReturnSetSize(int size) {
-        this.size = Integer.toString(Math.min(size, MAX_ALLOWED_PER_REQUEST));
+    public RequestBuilder setReturnSetSize(long size) {
+        this.size = Long.toString(Math.min(size, MAX_ALLOWED_PER_REQUEST));
         return this;
     }
 
     @Override
-    public RequestBuilder setOffset(int offset) {
-        this.offset = Integer.toString(offset);
+    public RequestBuilder setOffset(long offset) {
+        this.offset = Long.toString(offset);
         return this;
     }
 

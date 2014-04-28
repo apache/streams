@@ -23,6 +23,10 @@
             "type": "String",
 			"format": "utc-millisec"
         },
+        "scheduledDelayMs": {
+            "type": "String",
+			"format": "utc-millisec"
+        },
         "maxBatchSize": {
             "type": "String",
 			"format": "utc-millisec"

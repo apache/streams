@@ -50,7 +50,7 @@ public interface RequestBuilder {
      *
      * @return The RequestBuilder for continued Chaining
      */
-    RequestBuilder setReturnSetSize(int size);
+    RequestBuilder setReturnSetSize(long size);
 
     /**
      * Sets the starting offset for the number of documents given the other parameters
@@ -58,7 +58,7 @@ public interface RequestBuilder {
      *
      * @return The RequestBuilder for continued Chaining
      */
-    RequestBuilder setOffset(int offset);
+    RequestBuilder setOffset(long offset);
 
     /**
      * Sets the Sysomos Heartbeat ID
