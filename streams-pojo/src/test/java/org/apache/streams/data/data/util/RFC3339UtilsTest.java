@@ -205,19 +205,19 @@ public class RFC3339UtilsTest {
         testHelper(expected, date);
         date = "2014/4/24 fesdfs";
         try {
-            RFC3339Utils.parseToDateTime(date);
+            RFC3339Utils.parseToUTC(date);
             fail("Should not have been able to parse : "+date);
         } catch (Exception e) {
         }
     }
 
     private void testHelper(DateTime expected, String dateString) {
-        DateTime parsedDate = RFC3339Utils.parseToDateTime(dateString);
+        DateTime parsedDate = RFC3339Utils.parseToUTC(dateString);
         assertEquals("Failed to parse : "+dateString, expected, parsedDate);
         String rfc3339String = RFC3339Utils.format(dateString);
         String parsedRfc3339String = RFC3339Utils.format(parsedDate);
         assertEquals("Parsed String should be equal.", parsedRfc3339String, rfc3339String);
-        DateTime convertedBack = RFC3339Utils.parseToDateTime(parsedRfc3339String);
+        DateTime convertedBack = RFC3339Utils.parseToUTC(parsedRfc3339String);
         assertEquals(expected, convertedBack);
     }
 }
