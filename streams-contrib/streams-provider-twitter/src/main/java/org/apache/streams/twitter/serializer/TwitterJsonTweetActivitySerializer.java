@@ -14,11 +14,9 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.twitter.Url;
-import org.apache.streams.twitter.pojo.Entities;
-import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.pojo.User;
-import org.apache.streams.twitter.pojo.UserMentions;
+import org.apache.streams.twitter.pojo.*;
 import org.apache.streams.urls.LinkDetails;
+import twitter4j.HashtagEntity;
 
 import java.io.IOException;
 import java.util.*;
@@ -95,7 +93,11 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
     public static void addTwitterExtensions(Activity activity, Tweet tweet) {
         Map<String, Object> extensions = ensureExtensions(activity);
 
-        extensions.put("hashtags", tweet.getEntities().getHashtags());
+        List<String> hashtags = new ArrayList<String>();
+        for(Hashtag hashtag : tweet.getEntities().getHashtags()) {
+            hashtags.add(hashtag.getText());
+        }
+        extensions.put("hashtags", hashtags);
 
         Map<String, Object> likes = new HashMap<String, Object>();
         likes.put("perspectival", tweet.getFavorited());
