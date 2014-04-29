@@ -40,7 +40,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class SysomosProvider implements StreamsProvider {
 
+    public final static String STREAMS_ID = "SysomosProvider";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(SysomosProvider.class);
+
     public static final int LATENCY = 10000;  //Default minLatency for querying the Sysomos API in milliseconds
     public static final long PROVIDER_BATCH_SIZE = 10000L; //Default maximum size of the queue
     public static final long API_BATCH_SIZE = 1000L; //Default maximum size of an API request
@@ -95,6 +98,7 @@ public class SysomosProvider implements StreamsProvider {
         StreamsResultSet current;
         try {
             lock.writeLock().lock();
+            LOGGER.debug("Creating new result set for {} items", providerQueue.size());
             current = new StreamsResultSet(providerQueue);
             providerQueue = constructQueue();
         } finally {
@@ -116,7 +120,7 @@ public class SysomosProvider implements StreamsProvider {
 
     @Override
     public void prepare(Object configurationObject) {
-        //NOP
+        this.providerQueue = constructQueue();
     }
 
     @Override
@@ -171,8 +175,10 @@ public class SysomosProvider implements StreamsProvider {
      */
     private void pauseForSpace() {
         while(this.providerQueue.size() >= maxQueued) {
+            LOGGER.trace("Sleeping the current thread due to a full queue");
             try {
                 Thread.sleep(100);
+                LOGGER.trace("Resuming thread after wait period");
             } catch (InterruptedException e) {
                 LOGGER.warn("Thread was interrupted", e);
             }

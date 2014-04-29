@@ -53,13 +53,14 @@ public class SysomosHeartbeatStream implements Runnable {
         QueryResult result;
         //Iff we are trying to get to a specific document ID, continue to query after minimum delay
         do {
+            LOGGER.debug("Querying API to match last ID of {}", lastID);
             result = executeAPIRequest();
-            LOGGER.debug("Querying API to match last ID of {}");
             sleep();
         } while (lastID != null && !result.isMatchedLastId());
         //Set the last ID so that the next time we are executed we will continue to query only so long as we haven't
         //found the specific ID
         lastID = result.getCurrentId();
+        LOGGER.debug("Completed current execution with a final docID of {}", lastID);
     }
 
     protected void sleep() {
@@ -75,6 +76,8 @@ public class SysomosHeartbeatStream implements Runnable {
                 .setHeartBeatId(heartbeatId)
                 .setOffset(0)
                 .setReturnSetSize(maxApiBatch).execute();
+
+        LOGGER.debug("Received {} results from API query", response.getCount());
 
         String currentId = null;
         boolean matched = false;
