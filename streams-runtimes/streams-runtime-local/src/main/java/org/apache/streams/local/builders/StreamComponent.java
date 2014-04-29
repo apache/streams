@@ -160,9 +160,11 @@ public class StreamComponent {
     /**
      * Creates a {@link org.apache.streams.local.tasks.StreamsTask} that is running a clone of this component whose
      * inbound and outbound queues are appropriately connected to the parent and child nodes.
+     *
      * @return StreamsTask for this component
+     * @param timeout The timeout to use in milliseconds for any tasks that support configurable timeout
      */
-    public StreamsTask createConnectedTask() {
+    public StreamsTask createConnectedTask(int timeout) {
         StreamsTask task;
         if(this.processor != null) {
             if(this.numTasks > 1) {
@@ -201,6 +203,10 @@ public class StreamComponent {
                 task = new StreamsProviderTask(prov, this.sequence);
             else
                 task = new StreamsProviderTask(prov, this.dateRange[0], this.dateRange[1]);
+            //Adjust the timeout if necessary
+            if(timeout > 0) {
+                ((StreamsProviderTask)task).setTimeout(timeout);
+            }
             for(Queue<StreamsDatum> q : this.outBound.values()) {
                 task.addOutputQueue(q);
             }
