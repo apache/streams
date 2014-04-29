@@ -18,6 +18,7 @@ import org.apache.streams.twitter.pojo.Entities;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.pojo.UserMentions;
+import org.apache.streams.urls.LinkDetails;
 
 import java.io.IOException;
 import java.util.*;
@@ -121,7 +122,18 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
         }
 
         extensions.put("user_mentions", userMentions);
-        extensions.put("urls", entities.getUrls());
+
+        List<LinkDetails> urls = new ArrayList<LinkDetails>();
+        for(Url url : entities.getUrls()) {
+            LinkDetails linkDetails = new LinkDetails();
+
+            linkDetails.setFinalURL(url.getExpandedUrl());
+            linkDetails.setNormalizedURL(url.getDisplayUrl());
+            linkDetails.setOriginalURL(url.getUrl());
+
+            urls.add(linkDetails);
+        }
+        extensions.put("urls", urls);
     }
 
     @Override
