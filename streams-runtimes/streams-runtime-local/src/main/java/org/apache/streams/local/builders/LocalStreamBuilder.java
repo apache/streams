@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class LocalStreamBuilder implements StreamBuilder {
 
+    public static final String TIMEOUT_KEY = "TIMEOUT";
     private Map<String, StreamComponent> providers;
     private Map<String, StreamComponent> components;
     private Queue<StreamsDatum> queue;
@@ -150,7 +151,7 @@ public class LocalStreamBuilder implements StreamBuilder {
                 int tasks = comp.getNumTasks();
                 List<StreamsTask> compTasks = new LinkedList<StreamsTask>();
                 for(int i=0; i < tasks; ++i) {
-                    StreamsTask task = comp.createConnectedTask();
+                    StreamsTask task = comp.createConnectedTask(getTimeout());
                     task.setStreamConfig(this.streamConfig);
                     this.executor.submit(task);
                     compTasks.add(task);
@@ -162,7 +163,7 @@ public class LocalStreamBuilder implements StreamBuilder {
                 streamsTasks.put(comp.getId(), compTasks);
             }
             for(StreamComponent prov : this.providers.values()) {
-                StreamsTask task = prov.createConnectedTask();
+                StreamsTask task = prov.createConnectedTask(getTimeout());
                 task.setStreamConfig(this.streamConfig);
                 this.executor.submit(task);
                 provTasks.put(prov.getId(), (StreamsProviderTask) task);
@@ -175,6 +176,9 @@ public class LocalStreamBuilder implements StreamBuilder {
                 isRunning = false;
                 for(StreamsProviderTask task : provTasks.values()) {
                     isRunning = isRunning || task.isRunning();
+                }
+                for(StreamComponent task: components.values()) {
+                    isRunning = isRunning || task.getInBoundQueue().size() > 0;
                 }
                 if(isRunning) {
                     Thread.sleep(3000);
@@ -295,5 +299,8 @@ public class LocalStreamBuilder implements StreamBuilder {
         return (Queue<StreamsDatum>) SerializationUtil.cloneBySerialization(this.queue);
     }
 
+    protected int getTimeout() {
+        return streamConfig != null && streamConfig.containsKey(TIMEOUT_KEY) ? (Integer)streamConfig.get(TIMEOUT_KEY) : 3000;
+    }
 
 }
