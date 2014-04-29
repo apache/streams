@@ -20,10 +20,20 @@
             }
         },
         "minDelayMs": {
-            "type": "long"
+            "type": "String",
+			"format": "utc-millisec"
+        },
+        "scheduledDelayMs": {
+            "type": "String",
+			"format": "utc-millisec"
         },
         "maxBatchSize": {
-            "type": "long"
+            "type": "String",
+			"format": "utc-millisec"
+        },
+        "apiBatchSize": {
+            "type": "String",
+			"format": "utc-millisec"
         }
     }
 }

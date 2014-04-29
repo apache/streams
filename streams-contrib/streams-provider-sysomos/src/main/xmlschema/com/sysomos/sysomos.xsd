@@ -25,6 +25,7 @@
                                         <xs:element type="xs:dateTime" name="time"/>
                                         <xs:element type="xs:string" name="title"/>
                                         <xs:element type="xs:string" name="content"/>
+                                        <xs:element type="xs:string" name="host"/>
                                         <xs:element type="xs:anyURI" name="link"/>
                                         <xs:element type="xs:string" name="gender" minOccurs="0"/>
                                         <xs:element name="location">
