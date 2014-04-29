@@ -97,24 +97,22 @@
                 },
                 "hashtags": {
                     "type": "array",
-                    "items": [
-                        {
-                            "type": "object",
-                            "javaType": "org.apache.streams.twitter.Hashtag",
-                            "javaInterfaces": ["java.io.Serializable"],
-                            "properties": {
-                                "text": {
-                                    "type": "string"
-                                },
-                                "indices": {
-                                    "type": "array",
-                                    "items": [{
-                                            "type": "integer"
-                                    }]
-                                }
+                    "items": {
+                        "type": "object",
+                        "javaType": "org.apache.streams.twitter.pojo.Hashtag",
+                        "javaInterfaces": ["java.io.Serializable"],
+                        "properties": {
+                            "text": {
+                                "type": "string"
+                            },
+                            "indices": {
+                                "type": "array",
+                                "items": [{
+                                        "type": "integer"
+                                }]
                             }
                         }
-                    ]
+                    }
                 },
                 "urls": {
                     "type": "array",
