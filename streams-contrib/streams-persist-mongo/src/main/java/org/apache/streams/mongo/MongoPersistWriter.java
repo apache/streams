@@ -31,7 +31,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
     private final static Logger LOGGER = LoggerFactory.getLogger(MongoPersistWriter.class);
     private final static long MAX_WRITE_LATENCY = 1000;
-    private final static long MIN_WRITE_LATENCY = 100;
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
@@ -153,7 +152,9 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
 
     protected void flushIfNecessary() {
         long lastLatency = System.currentTimeMillis() - lastWrite.get();
-        if (insertBatch.size() % 100 == 0 || (insertBatch.size() > 0 && lastLatency > MIN_WRITE_LATENCY && lastLatency > MAX_WRITE_LATENCY)) {
+        //Flush iff the size > 0 AND the size is divisible by 100 or the time between now and the last flush is greater
+        //than the maximum desired latency
+        if (insertBatch.size() > 0 && (insertBatch.size() % 100 == 0 || lastLatency > MAX_WRITE_LATENCY)) {
             try {
                 flush();
             } catch (IOException e) {
