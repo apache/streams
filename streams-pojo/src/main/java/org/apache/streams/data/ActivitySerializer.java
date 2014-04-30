@@ -23,6 +23,7 @@ import org.apache.streams.pojo.json.Activity;
 
 import java.util.List;
 
+//TODO:  Change the name of this class to ActivityConverter  STREAMS-68
 /**
  * Serializes and deserializes Activities
  */

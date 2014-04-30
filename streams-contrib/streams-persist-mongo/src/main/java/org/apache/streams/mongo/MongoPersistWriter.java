@@ -14,6 +14,7 @@ import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
     private volatile AtomicLong lastWrite = new AtomicLong(System.currentTimeMillis());
     private ScheduledExecutorService backgroundFlushTask = Executors.newSingleThreadScheduledExecutor();
 
