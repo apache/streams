@@ -5,12 +5,12 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>streams-processor-urls</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.0-W2O-SNAPSHOT</version>
 
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-contrib</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1.0-W2O-SNAPSHOT</version>
     </parent>
 
     <dependencies>

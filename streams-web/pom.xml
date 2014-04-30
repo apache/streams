@@ -22,7 +22,7 @@
   <parent>
     <artifactId>streams-project</artifactId>
     <groupId>org.apache.streams</groupId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.0-W2O-SNAPSHOT</version>
   </parent>
   <artifactId>streams-web</artifactId>
   <packaging>war</packaging>
