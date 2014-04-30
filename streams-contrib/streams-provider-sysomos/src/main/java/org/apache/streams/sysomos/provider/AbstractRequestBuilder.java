@@ -17,10 +17,11 @@
  * under the License.
  */
 
-package org.apache.streams.sysomos;
+package org.apache.streams.sysomos.provider;
 
 import com.sysomos.xml.BeatApi;
 import com.sysomos.xml.ObjectFactory;
+import org.apache.streams.sysomos.SysomosException;
 import org.apache.streams.sysomos.util.SysomosUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

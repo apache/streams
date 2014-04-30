@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.streams.sysomos;
+package org.apache.streams.sysomos.provider;
 
 import com.sysomos.xml.BeatApi;
 import org.joda.time.DateTime;

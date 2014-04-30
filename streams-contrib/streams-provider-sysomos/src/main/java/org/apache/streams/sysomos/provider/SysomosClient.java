@@ -17,21 +17,13 @@
  * under the License.
  */
 
-package org.apache.streams.sysomos;
+package org.apache.streams.sysomos.provider;
 
-import com.google.common.base.Strings;
-import com.sysomos.json.Sysomos;
-import org.apache.commons.io.IOUtils;
 import org.apache.streams.sysomos.data.HeartbeatInfo;
 import org.apache.streams.sysomos.util.SysomosUtils;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Wrapper for the Sysomos API.
