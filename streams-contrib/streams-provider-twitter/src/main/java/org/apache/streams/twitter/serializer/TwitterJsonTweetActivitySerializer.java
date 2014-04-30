@@ -136,6 +136,8 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
             urls.add(linkDetails);
         }
         extensions.put("urls", urls);
+
+        extensions.put("keywords", tweet.getText());
     }
 
     @Override
