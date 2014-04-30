@@ -23,7 +23,7 @@
     <parent>
         <artifactId>streams-runtimes</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1.0-W2O-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>streams-runtime-pig</artifactId>
@@ -37,35 +37,35 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-config</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1.0-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-core</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1.0-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-runtime-local</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1.0-W2O-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-runtime-local</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1.0-W2O-SNAPSHOT</version>
             <scope>test-jar</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-provider-twitter</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1.0-W2O-SNAPSHOT</version>
             <scope>test-jar</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-util</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1.0-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

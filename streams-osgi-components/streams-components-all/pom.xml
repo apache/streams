@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.apache.streams.osgi.components</groupId>
     <artifactId>streams-osgi-components</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.0-W2O-SNAPSHOT</version>
   </parent>
 
   <artifactId>streams-components-all</artifactId>
