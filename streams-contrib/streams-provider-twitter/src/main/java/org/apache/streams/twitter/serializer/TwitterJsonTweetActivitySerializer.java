@@ -14,13 +14,12 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.twitter.Url;
-import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.pojo.User;
+import org.apache.streams.twitter.pojo.*;
+import org.apache.streams.urls.LinkDetails;
+import twitter4j.HashtagEntity;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer.*;
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
@@ -86,7 +85,59 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
 
         addTwitterExtension(activity, mapper.convertValue(tweet, ObjectNode.class));
         addLocationExtension(activity, tweet);
+        addTwitterExtensions(activity, tweet);
+
         return activity;
+    }
+
+    public static void addTwitterExtensions(Activity activity, Tweet tweet) {
+        Map<String, Object> extensions = ensureExtensions(activity);
+
+        List<String> hashtags = new ArrayList<String>();
+        for(Hashtag hashtag : tweet.getEntities().getHashtags()) {
+            hashtags.add(hashtag.getText());
+        }
+        extensions.put("hashtags", hashtags);
+
+        Map<String, Object> likes = new HashMap<String, Object>();
+        likes.put("perspectival", tweet.getFavorited());
+        likes.put("count", tweet.getAdditionalProperties().get("favorite_count"));
+
+        extensions.put("likes", likes);
+
+        Map<String, Object> rebroadcasts = new HashMap<String, Object>();
+        rebroadcasts.put("perspectival", tweet.getRetweeted());
+        rebroadcasts.put("count", tweet.getRetweetCount());
+
+        extensions.put("rebroadcasts", rebroadcasts);
+
+        List<Map<String, Object>> userMentions = new ArrayList<Map<String, Object>>();
+        Entities entities = tweet.getEntities();
+
+        for(UserMentions user : entities.getUserMentions()) {
+            //Map the twitter user object into an actor
+            Map<String, Object> actor = new HashMap<String, Object>();
+            actor.put("id", "id:twitter:" + user.getIdStr());
+            actor.put("displayName", user.getScreenName());
+
+            userMentions.add(actor);
+        }
+
+        extensions.put("user_mentions", userMentions);
+
+        List<LinkDetails> urls = new ArrayList<LinkDetails>();
+        for(Url url : entities.getUrls()) {
+            LinkDetails linkDetails = new LinkDetails();
+
+            linkDetails.setFinalURL(url.getExpandedUrl());
+            linkDetails.setNormalizedURL(url.getDisplayUrl());
+            linkDetails.setOriginalURL(url.getUrl());
+
+            urls.add(linkDetails);
+        }
+        extensions.put("urls", urls);
+
+        extensions.put("keywords", tweet.getText());
     }
 
     @Override
