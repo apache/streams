@@ -13,6 +13,10 @@
         "type": {
             "type": "string",
             "description": "Type to write as"
-        }
+        },
+		"MaxTimeBetweenFlushMs": {
+			"type": "String",
+			"format": "utc-millisec"
+		}
     }
 }
