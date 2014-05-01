@@ -54,7 +54,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     private static final long WAITING_DOCS_LIMIT = 10000;
     private static final int BYTES_IN_MB = 1024 * 1024;
     private static final int BYTES_BEFORE_FLUSH = 5 * BYTES_IN_MB;
-    private static final long MAX_MS_BEFORE_FLUSH = 10000;
+    private static final long DEFAULT_MAX_WAIT = 10000;
 
     private final List<String> affectedIndexes = new ArrayList<String>();
     private final ScheduledExecutorService backgroundFlushTask = Executors.newSingleThreadScheduledExecutor();
@@ -251,7 +251,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
     @Override
     public void prepare(Object configurationObject) {
-        maxMsBeforeFlush = config.getMaxTimeBetweenFlushMs() == null ? MAX_MS_BEFORE_FLUSH : config.getMaxTimeBetweenFlushMs();
+        maxMsBeforeFlush = config.getMaxTimeBetweenFlushMs() == null ? DEFAULT_MAX_WAIT : config.getMaxTimeBetweenFlushMs();
         mapper = StreamsJacksonMapper.getInstance();
         start();
     }
@@ -284,7 +284,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     }
 
     public void flushInternal() {
-        //This is unlocked in the callback
         lock.writeLock().lock();
         // we do not have a working bulk request, we can just exit here.
         if (this.bulkRequest == null || batchItemsSent == 0)
@@ -339,6 +338,8 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
             }
         } catch (Exception e) {
             LOGGER.info("We were broken from our loop: {}", e.getMessage());
+        } finally {
+            lock.writeLock().unlock();
         }
 
     }
@@ -472,11 +473,20 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         return toReturn;
     }
 
+    /**
+     * This method is to ONLY be called by flushInternal otherwise the counts will be off.
+     * @param bulkRequest
+     * @param thisSent
+     * @param thisSizeInBytes
+     */
     private void flush(final BulkRequestBuilder bulkRequest, final Integer thisSent, final Long thisSizeInBytes) {
+        final Object messenger = new Object();
         LOGGER.debug("Attempting to write {} items to ES", thisSent);
         bulkRequest.execute().addListener(new ActionListener<BulkResponse>() {
             @Override
             public void onResponse(BulkResponse bulkItemResponses) {
+                lastWrite.set(System.currentTimeMillis());
+
                 if (bulkItemResponses.hasFailures())
                     LOGGER.warn("Bulk Uploading had totalFailed: " + bulkItemResponses.buildFailureMessage());
 
@@ -500,9 +510,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
                 if (thisSent != (thisOk + thisFailed))
                     LOGGER.error("We sent more items than this");
 
-                lastWrite.set(System.currentTimeMillis());
-                lock.writeLock().unlock();
-
                 LOGGER.debug("Batch[{}mb {} items with {} failures in {}ms] - Total[{}mb {} items with {} failures in {}seconds] {} outstanding]",
                         MEGABYTE_FORMAT.format((double) thisSizeInBytes / (double) (1024 * 1024)), NUMBER_FORMAT.format(thisOk), NUMBER_FORMAT.format(thisFailed), NUMBER_FORMAT.format(thisMillis),
                         MEGABYTE_FORMAT.format((double) totalSizeInBytes / (double) (1024 * 1024)), NUMBER_FORMAT.format(totalOk), NUMBER_FORMAT.format(totalFailed), NUMBER_FORMAT.format(totalSeconds), NUMBER_FORMAT.format(getTotalOutstanding()));
@@ -510,7 +517,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
             @Override
             public void onFailure(Throwable e) {
-                lock.writeLock().unlock();
                 LOGGER.error("Error bulk loading: {}", e.getMessage());
                 e.printStackTrace();
             }
