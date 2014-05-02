@@ -7,7 +7,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.util.concurrent.Executor;
 
-public class LocalStreamProcessMonitorThread implements Runnable
+public class LocalStreamProcessMonitorThread implements StatusCounterMonitorRunnable
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalStreamProcessMonitorThread.class);
 
@@ -22,8 +22,14 @@ public class LocalStreamProcessMonitorThread implements Runnable
         this.seconds = delayInSeconds;
     }
 
+    @Override
     public void shutdown(){
         this.run = false;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return this.run;
     }
 
     @Override
