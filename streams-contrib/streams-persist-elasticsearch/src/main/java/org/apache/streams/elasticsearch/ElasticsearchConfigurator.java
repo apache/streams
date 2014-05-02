@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * Converts a {@link com.typesafe.config.Config} element into an instance of ElasticSearchConfiguration
  */
 public class ElasticsearchConfigurator {
 
@@ -51,9 +51,11 @@ public class ElasticsearchConfigurator {
 
         String index = elasticsearch.getString("index");
         String type = elasticsearch.getString("type");
+        Long maxMsBeforeFlush = elasticsearch.hasPath("MaxTimeBetweenFlushMs") ? elasticsearch.getLong("MaxTimeBetweenFlushMs") : null;
 
         elasticsearchWriterConfiguration.setIndex(index);
         elasticsearchWriterConfiguration.setType(type);
+        elasticsearchWriterConfiguration.setMaxTimeBetweenFlushMs(maxMsBeforeFlush);
 
         return elasticsearchWriterConfiguration;
     }
