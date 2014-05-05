@@ -9,7 +9,6 @@ import org.apache.streams.twitter.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,23 +75,7 @@ public class TwitterStreamConfigurator {
     }
 
     public static TwitterUserInformationConfiguration detectTwitterUserInformationConfiguration(Config config) {
-
-        TwitterUserInformationConfiguration twitterUserInformationConfiguration = mapper.convertValue(detectTwitterConfiguration(config), TwitterUserInformationConfiguration.class);
-
-        try {
-            if(config.hasPath("info"))
-            {
-                List<String> info = new ArrayList<String>();
-
-                for (String s : config.getStringList("info"))
-                    info.add(s);
-            }
-        }
-        catch(Exception e) {
-            LOGGER.error("There was an error: {}", e.getMessage());
-        }
-
-        return twitterUserInformationConfiguration;
+        return mapper.convertValue(detectTwitterConfiguration(config), TwitterUserInformationConfiguration.class);
     }
 
 }
