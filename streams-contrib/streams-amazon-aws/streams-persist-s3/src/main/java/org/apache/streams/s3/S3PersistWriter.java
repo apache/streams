@@ -9,7 +9,6 @@ import com.amazonaws.services.s3.S3ClientOptions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.google.common.util.concurrent.AtomicDouble;
 import org.apache.streams.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,7 +187,6 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
         }
     }
 
-
     private String convertResultToString(StreamsDatum entry)
     {
         String metadata = null;
@@ -227,8 +225,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
                 this.objectMapper = new ObjectMapper();
 
             // Create the credentials Object
-            if(this.amazonS3Client == null)
-            {
+            if(this.amazonS3Client == null) {
                 AWSCredentials credentials = new BasicAWSCredentials(s3WriterConfiguration.getKey(), s3WriterConfiguration.getSecretKey());
 
                 ClientConfiguration clientConfig = new ClientConfiguration();

@@ -9,33 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.Upload;
-import org.apache.commons.io.FilenameUtils;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.util.Date;
 import java.util.Map;
 
 /**
- *
- * Author:  Smashew
- * Date:    2014-04-14
- *
- * Description:
- * This class uses ByteArrayOutputStreams to ensure files are written to S3 properly.
- *
- * There is a way to upload data in chunks (5mb or so) a peice, but the multi-part upload
- * is kind of a PITA to deal with.
- *
- * // TODO: This should be refactored to allow a user to specify if they want one large file instead of many small ones
+ * This class uses ByteArrayOutputStreams to ensure files are written to S3 properly. The stream is written to the
+ * in memory ByteArrayOutPutStream before it is finally written to Amazon S3. The size the file is allowed to become
+ * is directly controlled by the S3PersistWriter.
  */
 public class S3OutputStreamWrapper extends OutputStream
 {
@@ -47,11 +26,24 @@ public class S3OutputStreamWrapper extends OutputStream
     private final String fileName;
     private ByteArrayOutputStream outputStream;
     private final Map<String, String> metaData;
-
     private boolean isClosed = false;
 
-    public S3OutputStreamWrapper(AmazonS3Client amazonS3Client, String bucketName, String path, String fileName, Map<String, String> metaData) throws IOException
-    {
+    /**
+     * Create an OutputStream Wrapper
+     * @param amazonS3Client
+     * The Amazon S3 Client which will be handling the file
+     * @param bucketName
+     * The Bucket Name you are wishing to write to.
+     * @param path
+     * The path where the object will live
+     * @param fileName
+     * The fileName you ware wishing to write.
+     * @param metaData
+     * Any meta data that is to be written along with the object
+     * @throws IOException
+     * If there is an issue creating the stream, this
+     */
+    public S3OutputStreamWrapper(AmazonS3Client amazonS3Client, String bucketName, String path, String fileName, Map<String, String> metaData) throws IOException {
         this.amazonS3Client = amazonS3Client;
         this.bucketName = bucketName;
         this.path = path;
@@ -60,14 +52,21 @@ public class S3OutputStreamWrapper extends OutputStream
         this.outputStream = new ByteArrayOutputStream();
     }
 
-    /*
-     * The Methods that are overriden to support the 'OutputStream' object.
-     */
+    public void write(int b) throws IOException {
+        this.outputStream.write(b);
+    }
 
-    public void write(int b) throws IOException                         { this.outputStream.write(b); }
-    public void write(byte[] b) throws IOException                      { this.outputStream.write(b); }
-    public void write(byte[] b, int off, int len) throws IOException    { this.outputStream.write(b, off, len); }
-    public void flush() throws IOException                              { this.outputStream.flush(); }
+    public void write(byte[] b) throws IOException {
+        this.outputStream.write(b);
+    }
+
+    public void write(byte[] b, int off, int len) throws IOException {
+        this.outputStream.write(b, off, len);
+    }
+
+    public void flush() throws IOException {
+        this.outputStream.flush();
+    }
 
     /**
      * Whenever the output stream is closed we are going to kick the ByteArrayOutputStream off to Amazon S3.

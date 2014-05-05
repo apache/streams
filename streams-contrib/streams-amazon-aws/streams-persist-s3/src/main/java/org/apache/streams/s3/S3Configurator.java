@@ -24,6 +24,7 @@ public class S3Configurator {
 
         if(!(protocol.equals("https") || protocol.equals("http"))) {
             // you must specify either HTTP or HTTPS
+            throw new RuntimeException("You must specify either HTTP or HTTPS as a protocol");
         }
 
         s3Configuration.setProtocol(protocol.toLowerCase());
