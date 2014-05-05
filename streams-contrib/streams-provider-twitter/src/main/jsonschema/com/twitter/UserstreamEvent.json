@@ -1,0 +1,47 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.twitter.pojo.UserstreamEvent",
+    "properties": {
+        "created_at": {
+            "type": "string",
+            "format" : "date-time"
+        },
+        "event_type": {
+            "type": "string",
+            "enum" : [
+                "access_revoked",
+                "block",
+                "unblock",
+                "favorite",
+                "unfavorite",
+                "follow",
+                "unfollow",
+                "list_created",
+                "list_destroyed",
+                "list_updated",
+                "list_member_added",
+                "list_member_removed",
+                "list_user_subscribed",
+                "list_user_unsubscribed",
+                "user_update"
+            ]
+        },
+        "source": {
+            "type": "string",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "target": {
+            "type": "string",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "target_object": {
+            "type": "object"
+        }
+    }
+}
