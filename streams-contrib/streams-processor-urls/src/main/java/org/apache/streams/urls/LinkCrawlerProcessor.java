@@ -1,15 +1,18 @@
 package org.apache.streams.urls;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import com.google.common.collect.Lists;
-import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * References:
@@ -21,13 +24,13 @@ import java.util.*;
  * [t.co behavior]      https://dev.twitter.com/docs/tco-redirection-behavior
  */
 
-public class LinkResolverProcessor implements StreamsProcessor
+public class LinkCrawlerProcessor implements StreamsProcessor
 {
-    private final static String STREAMS_ID = "LinkResolverProcessor";
+    public final static String STREAMS_ID = "LinkCrawlerProcessor";
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(LinkResolverProcessor.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(LinkCrawlerProcessor.class);
 
-    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private ObjectMapper mapper;
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
@@ -38,11 +41,14 @@ public class LinkResolverProcessor implements StreamsProcessor
 
         Activity activity;
 
+        System.out.println( STREAMS_ID + " processing " + entry.getDocument().getClass());
         // get list of shared urls
         if( entry.getDocument() instanceof Activity) {
+
             activity = (Activity) entry.getDocument();
 
-        } else if( entry.getDocument() instanceof String ) {
+        }
+        else if(entry.getDocument() instanceof String) {
 
             try {
                 activity = mapper.readValue((String) entry.getDocument(), Activity.class);
@@ -53,10 +59,7 @@ public class LinkResolverProcessor implements StreamsProcessor
             }
 
         }
-        else {
-            //return(Lists.newArrayList(entry));
-            return( Lists.newArrayList());
-        }
+        else throw new NotImplementedException();
 
         for( int i = 0; i < activity.getLinks().size(); i++ )
         {
@@ -66,12 +69,12 @@ public class LinkResolverProcessor implements StreamsProcessor
                 if( linkObject instanceof String )
                     linkUrl = (String) linkObject;
                 else if( linkObject instanceof LinkDetails )
-                    linkUrl = (String)((LinkDetails)linkObject).getAdditionalProperties().get("originalURL");
+                    linkUrl = (String)((LinkDetails)linkObject).getOriginalURL();
                 else {
                     LOGGER.warn("can't locate url in doc");
                     return result;
                 }
-                LinkDetails details = resolve(linkUrl);
+                LinkDetails details = crawlLink(linkUrl, entry);
                 if( details != null ) {
                     activity.getLinks().set(i, details);
                 } else {
@@ -85,21 +88,21 @@ public class LinkResolverProcessor implements StreamsProcessor
 
         }
 
-        try {
-            entry.setDocument(activity);
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.warn(e.getMessage());
-            return(Lists.newArrayList());
-        }
-
-        result.add(entry);
-
         return result;
+    }
+
+    private LinkDetails crawlLink(String link, StreamsDatum input) {
+
+        LinkCrawler crawler = new LinkCrawler((String)link);
+        crawler.run();
+        return crawler.getLinkDetails();
+
     }
 
     @Override
     public void prepare(Object o) {
+        this.mapper = StreamsJacksonMapper.getInstance();
+        this.mapper.registerModule(new JsonOrgModule());
     }
 
     @Override
@@ -107,19 +110,4 @@ public class LinkResolverProcessor implements StreamsProcessor
 
     }
 
-    private LinkDetails resolve(String inputLink) {
-        LinkDetails result;
-        try {
-            LinkResolver resolver = new LinkResolver(inputLink);
-            resolver.run();
-            result = resolver.getLinkDetails();
-            return result;
-        } catch (Exception e) {
-            //if resolvable drop
-            LOGGER.debug("Failed to resolve link : {}", inputLink);
-            LOGGER.debug("Exception resolving link : {}", e);
-            e.printStackTrace();
-            return null;
-        }
-    }
 }

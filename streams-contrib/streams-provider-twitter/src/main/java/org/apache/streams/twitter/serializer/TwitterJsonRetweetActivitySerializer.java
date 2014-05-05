@@ -87,7 +87,7 @@ public class TwitterJsonRetweetActivitySerializer implements ActivitySerializer<
         } catch( Exception e ) {
             throw new ActivitySerializerException("Unable to determine content", e);
         }
-        activity.setUrl("http://twitter.com/" + retweet.getIdStr());
+        activity.setUrl("http://twitter.com/" + retweet.getUser().getIdStr() + "/status/" + retweet.getIdStr());
         activity.setLinks(TwitterJsonTweetActivitySerializer.getLinks(retweet.getRetweetedStatus()));
         addTwitterExtension(activity, mapper.convertValue(retweet, ObjectNode.class));
         addLocationExtension(activity, retweet);
@@ -130,7 +130,6 @@ public class TwitterJsonRetweetActivitySerializer implements ActivitySerializer<
     public static void addLocationExtension(Activity activity, Retweet retweet) {
         Map<String, Object> extensions = ensureExtensions(activity);
         Map<String, Object> location = new HashMap<String, Object>();
-        location.put("id", TwitterJsonActivitySerializer.formatId(retweet.getIdStr()));
         location.put("coordinates", retweet.getCoordinates());
         extensions.put("location", location);
     }

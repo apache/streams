@@ -1,16 +1,20 @@
 package org.apache.streams.datasift.serializer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.datasift.Datasift;
-import org.apache.streams.datasift.interaction.Interaction;
+import org.apache.streams.datasift.interaction.*;
 import org.apache.streams.pojo.json.*;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -24,16 +28,11 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
 * Created with IntelliJ IDEA.
-* User: mdelaet
-* Date: 9/30/13
-* Time: 9:24 AM
-* To change this template use File | Settings | File Templates.
+* User: sblackmon
 */
-public class DatasiftActivitySerializer implements ActivitySerializer<Datasift>, Serializable {
+public class DatasiftInteractionActivitySerializer implements ActivitySerializer<String>, Serializable {
 
-    public static final String DATE_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
-
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = new StreamsDatasiftMapper();
 
     @Override
     public String serializationFormat() {
@@ -41,53 +40,46 @@ public class DatasiftActivitySerializer implements ActivitySerializer<Datasift>,
     }
 
     @Override
-    public Datasift serialize(Activity deserialized) {
+    public String serialize(Activity deserialized) {
         throw new UnsupportedOperationException("Cannot currently serialize to Datasift JSON");
     }
 
     @Override
-    public Activity deserialize(Datasift serialized) {
+    public Activity deserialize(String serialized) {
 
-        AnnotationIntrospector introspector = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
-        mapper.setAnnotationIntrospector(introspector);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
-        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
-        mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
-        mapper.configure(DeserializationFeature.WRAP_EXCEPTIONS, Boolean.TRUE);
+        mapper = StreamsDatasiftMapper.getInstance();
+
+        Datasift datasift = null;
 
         try {
+            datasift = mapper.readValue(serialized, Datasift.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            Activity activity = convert(serialized);
+        Activity activity = new Activity();
+        try {
+
+            activity = convert(datasift);
 
             return activity;
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new IllegalArgumentException("Unable to deserialize", e);
         }
 
     }
 
     @Override
-    public List<Activity> deserializeAll(List<Datasift> datasifts) {
+    public List<Activity> deserializeAll(List<String> serializedList) {
         List<Activity> activities = Lists.newArrayList();
-        for( Datasift datasift : datasifts ) {
+        for( String datasift : serializedList ) {
             activities.add(deserialize(datasift));
         }
         return activities;
-    }
-
-    public static Date parse(String str) {
-        Date date;
-        String dstr;
-        DateFormat fmt = new SimpleDateFormat(DATE_FORMAT);
-        DateFormat out = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        try {
-            date = fmt.parse(str);
-            dstr = out.format(date);
-            return out.parse(dstr);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Invalid date format", e);
-        }
     }
 
     public static Generator buildGenerator(Interaction interaction) {
@@ -100,7 +92,7 @@ public class DatasiftActivitySerializer implements ActivitySerializer<Datasift>,
 
     public static Provider buildProvider(Interaction interaction) {
         Provider provider = new Provider();
-        provider.setId("id:providers:twitter");
+        provider.setId(interaction.getType());
         return provider;
     }
 
@@ -142,14 +134,27 @@ public class DatasiftActivitySerializer implements ActivitySerializer<Datasift>,
 
     public static Actor buildActor(Interaction interaction) {
         Actor actor = new Actor();
-        actor.setId(formatId(interaction.getAuthor().getId().toString()));
-        actor.setDisplayName(interaction.getAuthor().getUsername());
-        Image image = new Image();
-        image.setUrl(interaction.getAuthor().getAvatar());
-        actor.setImage(image);
-        if (interaction.getAuthor().getLink()!=null){
-            actor.setUrl(interaction.getAuthor().getLink());
+        org.apache.streams.datasift.interaction.Author author = interaction.getAuthor();
+        if( author != null ) {
+            if( author.getId() != null )
+                actor.setId(formatId(
+                    Optional.fromNullable(
+                            author.getId().toString())
+                            .orNull()
+            ));
+            actor.setDisplayName(
+                    Optional.fromNullable(interaction.getAuthor().getUsername()).orNull()
+            );
+            if( author.getAvatar() != null ) {
+                Image image = new Image();
+                image.setUrl(interaction.getAuthor().getAvatar());
+                actor.setImage(image);
+            }
+            if (interaction.getAuthor().getLink()!=null){
+                actor.setUrl(interaction.getAuthor().getLink());
+            }
         }
+
         return actor;
     }
 

@@ -2,11 +2,8 @@ package org.apache.streams.twitter.provider;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
-import com.jayway.jsonassert.JsonAssert;
 import org.apache.commons.lang.StringUtils;
-import org.apache.streams.twitter.pojo.Delete;
-import org.apache.streams.twitter.pojo.Retweet;
-import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.twitter.pojo.*;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 
 import java.io.IOException;
@@ -21,20 +18,6 @@ public class TwitterEventClassifier {
         Preconditions.checkNotNull(json);
         Preconditions.checkArgument(StringUtils.isNotEmpty(json));
 
-//        try {
-//            JsonAssert.with(json).assertNull("$.delete");
-//        } catch( AssertionError ae ) {
-//            return Delete.class;
-//        }
-//
-//        try {
-//            JsonAssert.with(json).assertNull("$.retweeted_status");
-//        } catch( AssertionError ae ) {
-//            return Retweet.class;
-//        }
-//
-//        return Tweet.class;
-
         ObjectNode objectNode;
         try {
             objectNode = (ObjectNode) StreamsTwitterMapper.getInstance().readTree(json);
@@ -47,6 +30,11 @@ public class TwitterEventClassifier {
             return Retweet.class;
         else if( objectNode.findValue("delete") != null )
             return Delete.class;
+        else if( objectNode.findValue("friends") != null ||
+                 objectNode.findValue("friends_str") != null )
+            return FriendList.class;
+        else if( objectNode.findValue("target_object") != null )
+            return UserstreamEvent.class;
         else
             return Tweet.class;
     }
