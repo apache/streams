@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.streams.s3;
 
 import com.amazonaws.ClientConfiguration;
@@ -47,14 +64,33 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
     private OutputStreamWriter currentWriter = null;
     protected volatile Queue<StreamsDatum> persistQueue;
 
-    public AmazonS3Client getAmazonS3Client()                           { return this.amazonS3Client; }
-    public S3WriterConfiguration getS3WriterConfiguration()             { return this.s3WriterConfiguration; }
-    public List<String> getWrittenFiles()                               { return this.writtenFiles; }
-    public Map<String, String> getObjectMetaData()                      { return this.objectMetaData; }
-    public ObjectMapper getObjectMapper()                               { return this.objectMapper; }
+    public AmazonS3Client getAmazonS3Client() {
+        return this.amazonS3Client;
+    }
 
-    public void setObjectMapper(ObjectMapper mapper)                    { this.objectMapper = mapper; }
-    public void setObjectMetaData(Map<String, String> val)              { this.objectMetaData = val; }
+    public S3WriterConfiguration getS3WriterConfiguration() {
+        return this.s3WriterConfiguration;
+    }
+
+    public List<String> getWrittenFiles() {
+        return this.writtenFiles;
+    }
+
+    public Map<String, String> getObjectMetaData() {
+        return this.objectMetaData;
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return this.objectMapper;
+    }
+
+    public void setObjectMapper(ObjectMapper mapper) {
+        this.objectMapper = mapper;
+    }
+
+    public void setObjectMetaData(Map<String, String> val) {
+        this.objectMetaData = val;
+    }
 
     /**
      * Instantiator with a pre-existing amazonS3Client, this is used to help with re-use.
@@ -75,15 +111,13 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
     @Override
     public void write(StreamsDatum streamsDatum) {
 
-        synchronized (this)
-        {
+        synchronized (this) {
             // Check to see if we need to reset the file that we are currently working with
             if (this.currentWriter == null || ( this.bytesWrittenThisFile.get()  >= (this.s3WriterConfiguration.getMaxFileSize() * 1024 * 1024))) {
                 try {
                     LOGGER.info("Resetting the file");
                     this.currentWriter = resetFile();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -108,8 +142,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
 
     }
 
-    private synchronized OutputStreamWriter resetFile() throws Exception
-    {
+    private synchronized OutputStreamWriter resetFile() throws Exception {
         // this will keep it thread safe, so we don't create too many files
         if(this.fileLineCounter.get() == 0 && this.currentWriter != null)
             return this.currentWriter;
@@ -117,8 +150,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
         closeAndDestroyWriter();
 
         // Create the path for where the file is going to live.
-        try
-        {
+        try {
             // generate a file name
             String fileName = this.s3WriterConfiguration.getWriterFilePrefix() +
                     (this.s3WriterConfiguration.getChunk() ? "/" : "-") + new Date().getTime() + ".tsv";
@@ -142,9 +174,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
 
             // return the output stream
             return new OutputStreamWriter(outputStream);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage());
             throw e;
         }
@@ -157,8 +187,8 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
             this.closeSafely(this.currentWriter);
             this.currentWriter = null;
 
-            //
-            LOGGER.info("File Closed: Records[{}] Bytes[{}] {} ", this.fileLineCounter.get(), this.bytesWrittenThisFile.get(), this.writtenFiles.get(this.writtenFiles.size()-1));
+            // Logging of information to alert the user to the activities of this class
+            LOGGER.debug("File Closed: Records[{}] Bytes[{}] {} ", this.fileLineCounter.get(), this.bytesWrittenThisFile.get(), this.writtenFiles.get(this.writtenFiles.size()-1));
         }
     }
 
@@ -167,8 +197,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
             try {
                 writer.flush();
                 writer.close();
-            }
-            catch(Exception e) {
+            } catch(Exception e) {
                 // noOp
             }
             LOGGER.debug("File Closed");
@@ -180,8 +209,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
         if(flushable != null) {
             try {
                 flushable.flush();
-            }
-            catch(IOException e) {
+            } catch(IOException e) {
                 // noOp
             }
         }
