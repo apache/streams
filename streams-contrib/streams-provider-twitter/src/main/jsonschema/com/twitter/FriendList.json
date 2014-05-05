@@ -1,0 +1,20 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.twitter.pojo.FriendList",
+    "properties": {
+        "friends": {
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "friends_str": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

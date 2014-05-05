@@ -1,9 +1,10 @@
 {
     "type": "object",
-    "$schema": "http://json-schema.org/draft-03/schema",
-    "id": "#",
+    "title" : "linkdetails",
     "javaType": "org.apache.streams.urls.LinkDetails",
     "javaInterfaces": ["java.io.Serializable"],
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
     "properties": {
         "linkStatus" : {
             "type" : "string",
@@ -70,6 +71,12 @@
         },
         "tookInMills": {
             "type": "integer"
+        },
+        "content": {
+            "type": "string"
+        },
+        "contentType": {
+            "type": "string"
         }
     }
 }

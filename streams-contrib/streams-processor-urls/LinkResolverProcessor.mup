@@ -1,0 +1,145 @@
+{
+  "title": "LinkResolverProcessor",
+  "id": 1,
+  "formatVersion": 2,
+  "ideas": {
+    "1": {
+      "title": "activity",
+      "id": 2,
+      "ideas": {
+        "1": {
+          "title": "links\nList<LinkDetails>",
+          "id": 5,
+          "ideas": {
+            "3": {
+              "title": "finalUrl",
+              "id": 11,
+              "ideas": {
+                "1": {
+                  "title": "Processor follows link redirects to resolve finalURL",
+                  "id": 16,
+                  "attr": {
+                    "style": {
+                      "background": "#00ffff"
+                    }
+                  }
+                }
+              }
+            },
+            "4": {
+              "title": "normalizedUrl",
+              "id": 12
+            },
+            "5": {
+              "title": "urlParts",
+              "id": 13
+            },
+            "6": {
+              "title": "domain",
+              "id": 14,
+              "ideas": {
+                "1": {
+                  "title": "Processor retains only domain portion of finalURL",
+                  "attr": {
+                    "style": {
+                      "background": "#00ffff"
+                    }
+                  },
+                  "id": 17
+                }
+              }
+            },
+            "0.5": {
+              "title": "originalURL",
+              "id": 10
+            },
+            "3.5": {
+              "title": "linkStatus",
+              "id": 8,
+              "ideas": {
+                "1": {
+                  "title": "Processor retains HTTP status code when hitting finalURL",
+                  "attr": {
+                    "style": {
+                      "background": "#00ffff"
+                    }
+                  },
+                  "id": 18
+                }
+              }
+            }
+          },
+          "attr": {
+            "style": {
+              "background": "#E0E0E0"
+            }
+          }
+        }
+      }
+    },
+    "-1": {
+      "title": "activity",
+      "id": 3,
+      "ideas": {
+        "2": {
+          "title": "links\nList<String>",
+          "id": 20,
+          "ideas": {
+            "1": {
+              "title": "String",
+              "id": 4,
+              "ideas": {},
+              "attr": {
+                "style": {
+                  "background": "#ffffff"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "links": [
+    {
+      "ideaIdFrom": 10,
+      "ideaIdTo": 11,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 11,
+      "ideaIdTo": 14,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 11,
+      "ideaIdTo": 8,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 4,
+      "ideaIdTo": 10,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    }
+  ]
+}
