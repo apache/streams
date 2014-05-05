@@ -26,6 +26,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.twitter.TwitterUserInformationConfiguration;
+import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,7 +123,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
                 for (User tStat : client.lookupUsers(toQuery)) {
                     String json = DataObjectFactory.getRawJSON(tStat);
-                    providerQueue.offer(new StreamsDatum(json));
+                    ComponentUtils.offerUntilSuccess(new StreamsDatum(json), providerQueue);
                 }
                 keepTrying = 10;
             }

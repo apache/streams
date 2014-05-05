@@ -20,6 +20,7 @@ package org.apache.streams.s3;
 import com.google.common.base.Strings;
 import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,7 @@ public class S3PersistReaderTask implements Runnable {
                         reader.countersCurrent.incrementAttempt();
                         String[] fields = line.split(Character.toString(reader.DELIMITER));
                         StreamsDatum entry = new StreamsDatum(fields[3], fields[0]);
-                        write( entry );
+                        ComponentUtils.offerUntilSuccess(entry, reader.persistQueue);
                         reader.countersCurrent.incrementStatus(DatumStatus.SUCCESS);
                     }
                 }
@@ -81,17 +82,4 @@ public class S3PersistReaderTask implements Runnable {
             LOGGER.error("There was an issue closing file: {}", file);
         }
     }
-
-
-    private void write( StreamsDatum entry ) {
-        boolean success;
-        do {
-            synchronized( S3PersistReader.class ) {
-                success = reader.persistQueue.offer(entry);
-            }
-            Thread.yield();
-        }
-        while( !success );
-    }
-
 }

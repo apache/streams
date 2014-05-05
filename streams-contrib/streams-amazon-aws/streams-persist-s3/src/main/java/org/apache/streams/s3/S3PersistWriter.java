@@ -62,7 +62,6 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
     }};
 
     private OutputStreamWriter currentWriter = null;
-    protected volatile Queue<StreamsDatum> persistQueue;
 
     public AmazonS3Client getAmazonS3Client() {
         return this.amazonS3Client;
