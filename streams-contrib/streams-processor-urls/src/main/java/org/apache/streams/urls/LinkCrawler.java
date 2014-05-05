@@ -5,9 +5,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,95 +22,31 @@ import java.util.*;
  * [t.co behavior]      https://dev.twitter.com/docs/tco-redirection-behavior
  */
 
-public class LinkResolver implements Serializable
+public class LinkCrawler extends LinkResolver
 {
-    private final static Logger LOGGER = LoggerFactory.getLogger(LinkResolver.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(LinkCrawler.class);
 
-    protected static final int MAX_ALLOWED_REDIRECTS = 30;
-    protected static final int DEFAULT_HTTP_TIMEOUT = 5000; //originally 30000
-    protected static final String LOCATION_IDENTIFIER = "location";
-    protected static final String SET_COOKIE_IDENTIFIER = "set-cookie";
-
-    protected LinkDetails linkDetails = new LinkDetails();
-
-    protected static final Collection<String> BOTS_ARE_OK = new ArrayList<String>() {{
-       add("t.co");
-    }};
-
-    protected static final Collection<String> URL_TRACKING_TO_REMOVE = new ArrayList<String>() {{
-        /******************************************************************
-         * Google uses parameters in the URL string to track referrers
-         * on their Google Analytics and promotions. These are the
-         * identified URL patterns.
-         *
-         * URL:
-         * https://support.google.com/analytics/answer/1033867?hl=en
-         *****************************************************************/
-
-        // Required. Use utm_source to identify a search engine, newsletter name, or other source.
-        add("([\\?&])utm_source(=)[^&?]*");
-
-        // Required. Use utm_medium to identify a medium such as email or cost-per- click.
-        add("([\\?&])utm_medium(=)[^&?]*");
-
-        // Used for paid search. Use utm_term to note the keywords for this ad.
-        add("([\\?&])utm_term(=)[^&?]*");
-
-        // Used for A/B testing and content-targeted ads. Use utm_content to differentiate ads or links that point to the same
-        add("([\\?&])utm_content(=)[^&?]*");
-
-        // Used for keyword analysis. Use utm_campaign to identify a specific product promotion or strategic campaign.
-        add("([\\?&])utm_campaign(=)[^&?]*");
-    }};
-
-    public LinkDetails getLinkDetails()     { return linkDetails; }
-
-    public LinkResolver(String originalURL) {
-
-        linkDetails = new LinkDetails();
-
-        linkDetails.setOriginalURL(originalURL);
-
-        System.out.print(linkDetails.getOriginalURL());
+    public LinkCrawler(String originalURL) {
+        super(originalURL);
     }
 
     public void run() {
 
-        Preconditions.checkNotNull(linkDetails.getOriginalURL());
-
-        linkDetails.setStartTime(DateTime.now());
-        // we are going to try three times just incase we catch the service off-guard
-        // this is mainly to help us with our tests.
-        for(int i = 0; (i < 3) && linkDetails.getFinalURL() == null ; i++) {
-            if(linkDetails.getLinkStatus() != LinkDetails.LinkStatus.SUCCESS)
-                unwindLink(linkDetails.getOriginalURL());
-        }
-
-        linkDetails.setFinalURL(cleanURL(linkDetails.getFinalURL()));
-        linkDetails.setNormalizedURL(normalizeURL(linkDetails.getFinalURL()));
-        linkDetails.setUrlParts(tokenizeURL(linkDetails.getNormalizedURL()));
-
-        this.updateTookInMillis();
-    }
-
-    protected void updateTookInMillis() {
-        Preconditions.checkNotNull(linkDetails.getStartTime());
-        linkDetails.setTookInMills(DateTime.now().minus(linkDetails.getStartTime().getMillis()).getMillis());
-    }
-
-    public void unwindLink(String url)
-    {
         Preconditions.checkNotNull(linkDetails);
 
-        // Check to see if they wound up in a redirect loop
-        if((linkDetails.getRedirectCount() != null && linkDetails.getRedirectCount().longValue() > 0 && (linkDetails.getOriginalURL().equals(url) || linkDetails.getRedirects().contains(url))) || (linkDetails.getRedirectCount().longValue() > MAX_ALLOWED_REDIRECTS))
-        {
-            linkDetails.setLinkStatus(LinkDetails.LinkStatus.LOOP);
-            return;
-        }
+        Preconditions.checkNotNull(linkDetails.getOriginalURL());
 
-        if(!linkDetails.getOriginalURL().equals(url))
-            linkDetails.getRedirects().add(url);
+        super.run();
+
+        Preconditions.checkNotNull(linkDetails.getFinalURL());
+
+        crawlLink(linkDetails.getFinalURL());
+
+    }
+
+
+    public void crawlLink(String url)
+    {
 
         HttpURLConnection connection = null;
 
@@ -152,6 +86,18 @@ public class LinkResolver implements Serializable
             connection.connect();
 
             linkDetails.setFinalResponseCode((long)connection.getResponseCode());
+
+            InputStreamReader in = new InputStreamReader((InputStream) connection.getContent());
+            BufferedReader buff = new BufferedReader(in);
+            StringBuffer contentBuffer = new StringBuffer();
+            String line;
+            do {
+                line = buff.readLine();
+                contentBuffer.append(line + "\n");
+            } while (line != null);
+
+            linkDetails.setContentType(connection.getContentType());
+            linkDetails.setContent(contentBuffer.toString());
 
             /**************
              *
@@ -255,108 +201,5 @@ public class LinkResolver implements Serializable
                 connection.disconnect();
         }
     }
-
-    protected Map<String,List<String>> createCaseInsensitiveMap(Map<String,List<String>> input) {
-        Map<String,List<String>> toReturn = new HashMap<String, List<String>>();
-        for(String k : input.keySet())
-            if(k != null && input.get(k) != null)
-                toReturn.put(k.toLowerCase(), input.get(k));
-        return toReturn;
-    }
-
-    protected String cleanURL(String url)
-    {
-        // If they pass us a null URL then we are going to pass that right back to them.
-        if(url == null)
-            return null;
-
-        // remember how big the URL was at the start
-        int startLength = url.length();
-
-        // Iterate through all the known URL parameters of tracking URLs
-        for(String pattern : URL_TRACKING_TO_REMOVE)
-            url = url.replaceAll(pattern, "");
-
-        // If the URL is smaller than when it came in. Then it had tracking information
-        if(url.length() < startLength)
-            linkDetails.setTracked(Boolean.TRUE);
-
-        // return our url.
-        return url;
-    }
-
-    /**
-     * Removes the protocol, if it exists, from the front and
-     * removes any random encoding characters
-     * Extend this to do other url cleaning/pre-processing
-     * @param url - The String URL to normalize
-     * @return normalizedUrl - The String URL that has no junk or surprises
-     */
-    public static String normalizeURL(String url)
-    {
-        // Decode URL to remove any %20 type stuff
-        String normalizedUrl = url;
-        try {
-            // I've used a URLDecoder that's part of Java here,
-            // but this functionality exists in most modern languages
-            // and is universally called url decoding
-            normalizedUrl = URLDecoder.decode(url, "UTF-8");
-        }
-        catch(UnsupportedEncodingException uee)
-        {
-            System.err.println("Unable to Decode URL. Decoding skipped.");
-            uee.printStackTrace();
-        }
-
-        // Remove the protocol, http:// ftp:// or similar from the front
-        if (normalizedUrl.contains("://"))
-            normalizedUrl = normalizedUrl.split(":/{2}")[1];
-
-        // Room here to do more pre-processing
-
-        return normalizedUrl;
-    }
-
-    /**
-     * Goal is to get the different parts of the URL path. This can be used
-     * in a classifier to help us determine if we are working with
-     *
-     * Reference:
-     * http://stackoverflow.com/questions/10046178/pattern-matching-for-url-classification
-     * @param url - Url to be tokenized
-     * @return tokens - A String array of all the tokens
-     */
-    public static List<String> tokenizeURL(String url)
-    {
-        url = normalizeURL(url);
-        // I assume that we're going to use the whole URL to find tokens in
-        // If you want to just look in the GET parameters, or you want to ignore the domain
-        // or you want to use the domain as a token itself, that would have to be
-        // processed above the next line, and only the remaining parts split
-        List<String> toReturn = new ArrayList<String>();
-
-        // Split the URL by forward slashes. Most modern browsers will accept a URL
-        // this malformed such as http://www.smashew.com/hello//how////are/you
-        // hence the '+' in the regular expression.
-        for(String part: url.split("/+"))
-            toReturn.add(part.toLowerCase());
-
-        // return our object.
-        return toReturn;
-
-        // One could alternatively use a more complex regex to remove more invalid matches
-        // but this is subject to your (?:in)?ability to actually write the regex you want
-
-        // These next two get rid of tokens that are too short, also.
-
-        // Destroys anything that's not alphanumeric and things that are
-        // alphanumeric but only 1 character long
-        //String[] tokens = url.split("(?:[\\W_]+\\w)*[\\W_]+");
-
-        // Destroys anything that's not alphanumeric and things that are
-        // alphanumeric but only 1 or 2 characters long
-        //String[] tokens = url.split("(?:[\\W_]+\\w{1,2})*[\\W_]+");
-    }
-
 
 }
