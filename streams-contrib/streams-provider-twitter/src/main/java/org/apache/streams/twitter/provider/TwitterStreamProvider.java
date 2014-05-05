@@ -1,6 +1,5 @@
 package org.apache.streams.twitter.provider;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;

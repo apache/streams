@@ -21,45 +21,32 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>streams-project</artifactId>
+        <artifactId>streams-contrib</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.1.0-W2O-SNAPSHOT</version>
+        <version>0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>streams-contrib</artifactId>
+    <artifactId>streams-amazon-aws</artifactId>
 
     <packaging>pom</packaging>
-    <name>streams-contrib</name>
+    <name>streams-amazon-aws</name>
 
     <properties>
 
     </properties>
 
     <modules>
-        <module>streams-persist-cassandra</module>
-        <module>streams-persist-console</module>
-        <module>streams-persist-elasticsearch</module>
-        <module>streams-persist-hbase</module>
-        <module>streams-persist-hdfs</module>
-        <module>streams-persist-kafka</module>
-        <module>streams-persist-mongo</module>
-		<module>streams-amazon-aws</module>
-        <!--<module>streams-processor-lucene</module>-->
-        <!--<module>streams-processor-tika</module>-->
-        <module>streams-processor-urls</module>
-        <module>streams-provider-datasift</module>
-        <module>streams-provider-facebook</module>
-        <module>streams-provider-google</module>
-        <module>streams-provider-gnip</module>
-        <module>streams-provider-moreover</module>
-        <module>streams-provider-twitter</module>
-        <module>streams-provider-sysomos</module>
-        <module>streams-provider-rss</module>
+        <module>streams-persist-s3</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+	        <dependency>
+	            <groupId>com.amazonaws</groupId>
+	            <artifactId>aws-java-sdk</artifactId>
+	            <version>1.7.5</version>
+	        </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-config</artifactId>

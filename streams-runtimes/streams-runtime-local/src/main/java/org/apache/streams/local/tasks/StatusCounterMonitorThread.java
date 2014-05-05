@@ -4,7 +4,7 @@ import org.apache.streams.core.DatumStatusCountable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StatusCounterMonitorThread implements Runnable
+public class StatusCounterMonitorThread implements StatusCounterMonitorRunnable
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(StatusCounterMonitorThread.class);
 
@@ -19,8 +19,14 @@ public class StatusCounterMonitorThread implements Runnable
         this.seconds = delayInSeconds;
     }
 
+    @Override
     public void shutdown(){
         this.run = false;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return this.run;
     }
 
     @Override

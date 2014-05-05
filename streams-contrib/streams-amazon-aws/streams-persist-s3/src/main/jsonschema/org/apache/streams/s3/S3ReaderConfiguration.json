@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.s3.S3ReaderConfiguration",
+    "extends": {"$ref":"S3Configuration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "readerPath": {
+            "type": "string",
+            "description": "Path below root path"
+        }
+    }
+}
