@@ -158,6 +158,24 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
         if (user.getUrl()!=null){
             actor.setUrl(user.getUrl());
         }
+
+        actor.setDisplayName(user.getName());
+        actor.setSummary(user.getDescription());
+
+        Map<String, Object> extensions = new HashMap<String, Object>();
+        extensions.put("location", user.getLocation());
+        extensions.put("posts", user.getStatusesCount());
+        extensions.put("favorites", user.getFavouritesCount());
+        extensions.put("followers", user.getFollowersCount());
+
+        Map<String, Object> image = new HashMap<String, Object>();
+        image.put("url", user.getProfileImageUrlHttps());
+
+        extensions.put("image", image);
+        extensions.put("screenName", user.getScreenName());
+
+        actor.setAdditionalProperty("extensions", extensions);
+
         return actor;
     }
 
