@@ -74,18 +74,11 @@ public class TwitterTimelineProviderTask implements Runnable {
                     hadFailure = true;
                     keepTrying += TwitterErrorHandler.handleTwitterError(twitter, e);
                 }
-                finally
-                {
-                    // Shutdown the twitter to release the resources
-                    twitter.shutdown();
-                }
             }
         }
         while ((statuses != null) && (statuses.size() > 0) && KeepGoing);
 
         LOGGER.info("Provider Finished.  Cleaning up...");
-
-        twitter.shutdown();
 
         LOGGER.info("Provider Exiting");
 

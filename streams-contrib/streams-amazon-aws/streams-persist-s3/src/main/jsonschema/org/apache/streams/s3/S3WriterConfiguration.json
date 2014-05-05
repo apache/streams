@@ -1,0 +1,28 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.s3.S3WriterConfiguration",
+    "extends": {"$ref":"S3Configuration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "writerPath": {
+            "type": "string",
+            "description": "Path "
+        },
+        "writerFilePrefix": {
+            "type": "string",
+            "description": "File Prefix"
+        },
+        "maxFileSize": {
+            "type": "integer",
+            "default" : 20,
+            "description": "If files are elected to be 'chunked' which they are by default, this is the maximum size of that file before the byte array stream is vacated and the file is created."
+        },
+        "chunk": {
+            "type": "boolean",
+            "default" : true,
+            "description": "Whether you want the file chunked inside of a folder or not"
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.twitter.TwitterUserInformationConfiguration",
+    "extends": {"$ref":"TwitterConfiguration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "info": {
+            "type": "array",
+            "description": "A list of user IDs, indicating the users whose Tweets should be delivered on the stream",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

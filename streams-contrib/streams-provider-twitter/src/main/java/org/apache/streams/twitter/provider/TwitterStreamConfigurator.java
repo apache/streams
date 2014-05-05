@@ -1,12 +1,11 @@
 package org.apache.streams.twitter.provider;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.twitter.TwitterBasicAuthConfiguration;
-import org.apache.streams.twitter.TwitterOAuthConfiguration;
-import org.apache.streams.twitter.TwitterStreamConfiguration;
+import org.apache.streams.twitter.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,19 +17,18 @@ import java.util.List;
 public class TwitterStreamConfigurator {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterStreamConfigurator.class);
+    private final static ObjectMapper mapper = new ObjectMapper();
 
-    public static TwitterStreamConfiguration detectConfiguration(Config twitter) {
 
-        TwitterStreamConfiguration twitterStreamConfiguration = new TwitterStreamConfiguration();
-
-        twitterStreamConfiguration.setEndpoint(twitter.getString("endpoint"));
+    public static TwitterConfiguration detectTwitterConfiguration(Config config) {
+        TwitterConfiguration twitterConfiguration = new TwitterConfiguration();
 
         try {
             Config basicauth = StreamsConfigurator.config.getConfig("twitter.basicauth");
             TwitterBasicAuthConfiguration twitterBasicAuthConfiguration = new TwitterBasicAuthConfiguration();
             twitterBasicAuthConfiguration.setUsername(basicauth.getString("username"));
             twitterBasicAuthConfiguration.setPassword(basicauth.getString("password"));
-            twitterStreamConfiguration.setBasicauth(twitterBasicAuthConfiguration);
+            twitterConfiguration.setBasicauth(twitterBasicAuthConfiguration);
         } catch( ConfigException ce ) {}
 
         try {
@@ -40,27 +38,44 @@ public class TwitterStreamConfigurator {
             twitterOAuthConfiguration.setConsumerSecret(oauth.getString("consumerSecret"));
             twitterOAuthConfiguration.setAccessToken(oauth.getString("accessToken"));
             twitterOAuthConfiguration.setAccessTokenSecret(oauth.getString("accessTokenSecret"));
-            twitterStreamConfiguration.setOauth(twitterOAuthConfiguration);
+            twitterConfiguration.setOauth(twitterOAuthConfiguration);
+        } catch( ConfigException ce ) {}
+
+        twitterConfiguration.setEndpoint(config.getString("endpoint"));
+
+        return twitterConfiguration;
+    }
+
+    public static TwitterStreamConfiguration detectConfiguration(Config config) {
+
+        TwitterStreamConfiguration twitterStreamConfiguration = mapper.convertValue(detectTwitterConfiguration(config), TwitterStreamConfiguration.class);
+
+        try {
+            twitterStreamConfiguration.setTrack(config.getStringList("track"));
         } catch( ConfigException ce ) {}
 
         try {
-            twitterStreamConfiguration.setTrack(twitter.getStringList("track"));
-        } catch( ConfigException ce ) {}
-
-        try {
+            // create the array
             List<Long> follows = Lists.newArrayList();
-            for( Integer id : twitter.getIntList("follow"))
-                follows.add(new Long(id));
+            // add the ids of the people we want to 'follow'
+            for(Integer id : config.getIntList("follow"))
+                follows.add((long)id);
+            // set the array
             twitterStreamConfiguration.setFollow(follows);
+
         } catch( ConfigException ce ) {}
 
-        twitterStreamConfiguration.setFilterLevel(twitter.getString("filter-level"));
-        twitterStreamConfiguration.setWith(twitter.getString("with"));
-        twitterStreamConfiguration.setReplies(twitter.getString("replies"));
+        twitterStreamConfiguration.setFilterLevel(config.getString("filter-level"));
+        twitterStreamConfiguration.setWith(config.getString("with"));
+        twitterStreamConfiguration.setReplies(config.getString("replies"));
         twitterStreamConfiguration.setJsonStoreEnabled("true");
         twitterStreamConfiguration.setIncludeEntities("true");
 
         return twitterStreamConfiguration;
+    }
+
+    public static TwitterUserInformationConfiguration detectTwitterUserInformationConfiguration(Config config) {
+        return mapper.convertValue(detectTwitterConfiguration(config), TwitterUserInformationConfiguration.class);
     }
 
 }
