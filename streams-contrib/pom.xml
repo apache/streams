@@ -46,6 +46,7 @@
         <module>streams-persist-mongo</module>
         <!--<module>streams-processor-lucene</module>-->
         <!--<module>streams-processor-tika</module>-->
+        <module>streams-processor-json</module>
         <module>streams-processor-urls</module>
         <module>streams-provider-datasift</module>
         <module>streams-provider-facebook</module>
