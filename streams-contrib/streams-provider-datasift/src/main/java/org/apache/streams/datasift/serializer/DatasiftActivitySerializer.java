@@ -33,7 +33,7 @@ public class DatasiftActivitySerializer implements ActivitySerializer<Datasift>,
 
     public static final String DATE_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
 
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = new StreamsDatasiftMapper();
 
     @Override
     public String serializationFormat() {
