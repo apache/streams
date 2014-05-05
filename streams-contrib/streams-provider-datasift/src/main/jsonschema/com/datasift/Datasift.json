@@ -6,12 +6,10 @@
         "blog": {
             "javaType": "org.apache.streams.datasift.blog.Blog",
             "type": "object",
-            "dynamic": "true",
             "properties": {
                 "author": {
                     "type": "object",
                     "javaType": "org.apache.streams.datasift.blog.BlogAuthor",
-                    "dynamic": "true",
                     "properties": {
                         "link": {
                             "type": "string"
@@ -48,8 +46,105 @@
                 }
             }
         },
+        "board": {
+            "javaType": "org.apache.streams.datasift.board.Board",
+            "type": "object",
+            "properties": {
+                "anchor": {
+                    "type": "string"
+                },
+                "author": {
+                    "type": "object",
+                    "javaType": "org.apache.streams.datasift.board.BoardAuthor",
+                    "properties": {
+                        "avatar": {
+                            "type": "string"
+                        },
+                        "link": {
+                            "type": "string"
+                        },
+                        "location": {
+                            "type": "string"
+                        },
+                        "registered": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "boardname": {
+                    "type": "string"
+                },
+                "categories": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "contenttype": {
+                    "type": "string"
+                },
+                "countrycode": {
+                    "type": "string"
+                },
+                "crawled": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "forumid": {
+                    "type": "string"
+                },
+                "forumname": {
+                    "type": "string"
+                },
+                "forumurl": {
+                    "type": "string"
+                },
+                "gmt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "siteid": {
+                    "type": "string"
+                },
+                "thread": {
+                    "type": "string"
+                },
+                "threadid": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "topics": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "demographic": {
-            "dynamic": "true",
             "properties": {
                 "gender": {
                     "type": "string"
@@ -59,7 +154,6 @@
         "facebook": {
             "javaType": "org.apache.streams.datasift.config.Facebook",
             "type": "object",
-            "dynamic": "true",
             "properties": {
                 "application": {
                     "type": "string"
@@ -67,7 +161,6 @@
                 "author": {
                     "javaType": "org.apache.streams.datasift.config.Author",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "avatar": {
                             "type": "string"
@@ -83,6 +176,9 @@
                         }
                     }
                 },
+                "caption": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string",
                     "format": "date-time"
@@ -93,18 +189,30 @@
                 "likes": {
                     "javaType": "org.apache.streams.datasift.config.Likes",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "count": {
                             "type": "integer"
                         },
                         "ids": {
-                            "type": "string"
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
                         },
                         "names": {
-                            "type": "string"
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
                         }
                     }
+                },
+                "link": {
+                    "type": "string"
                 },
                 "message": {
                     "type": "string"
@@ -115,7 +223,6 @@
                 "to": {
                     "javaType": "org.apache.streams.datasift.config.To",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "ids": {
                             "type": "array",
@@ -143,12 +250,10 @@
         "interaction": {
             "javaType": "org.apache.streams.datasift.interaction.Interaction",
             "type": "object",
-            "dynamic": "true",
             "properties": {
                 "author": {
                     "javaType": "org.apache.streams.datasift.interaction.Author",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "avatar": {
                             "type": "string"
@@ -180,7 +285,6 @@
                 "geo": {
                     "javaType": "org.apache.streams.datasift.interaction.Geo",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "latitude": {
                             "type": "number"
@@ -197,7 +301,6 @@
                     "type": "string"
                 },
                 "schema": {
-                    "dynamic": "true",
                     "properties": {
                         "version": {
                             "type": "integer"
@@ -220,13 +323,15 @@
                 },
                 "type": {
                     "type": "string"
+                },
+                "subtype": {
+                    "type": "string"
                 }
             }
         },
         "klout": {
             "javaType": "org.apache.streams.datasift.klout.Klout",
             "type": "object",
-            "dynamic": "true",
             "properties": {
                 "score": {
                     "type": "integer"
@@ -236,7 +341,6 @@
         "language": {
             "javaType": "org.apache.streams.datasift.interaction.Language",
             "type": "object",
-            "dynamic": "true",
             "properties": {
                 "confidence": {
                     "type": "integer"
@@ -249,10 +353,14 @@
         "links": {
             "javaType": "org.apache.streams.datasift.interaction.Links",
             "type": "object",
-            "dynamic": "true",
             "properties": {
                 "code": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "integer"
+                        }
+                    ]
                 },
                 "created_at": {
                     "type": "array",
@@ -271,7 +379,6 @@
                     ]
                 },
                 "meta": {
-                    "dynamic": "true",
                     "javaType": "org.apache.streams.datasift.interaction.Meta",
                     "type": "object",
                     "properties": {
@@ -321,7 +428,6 @@
                                 {
                                     "javaType": "org.apache.streams.datasift.interaction.meta.OpenGraph",
                                     "type": "object",
-                                    "dynamic": "true",
                                     "properties": {
                                         "description": {
                                             "type": "string"
@@ -351,7 +457,6 @@
                                 {
                                     "javaType": "org.apache.streams.datasift.interaction.meta.Twitter",
                                     "type": "object",
-                                    "dynamic": "true",
                                     "properties": {
                                         "card": {
                                             "type": "string"
@@ -398,7 +503,12 @@
                     ]
                 },
                 "retweet_count": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "integer"
+                        }
+                    ]
                 },
                 "title": {
                     "type": "array",
@@ -421,12 +531,10 @@
         "salience": {
             "javaType": "org.apache.streams.datasift.salience.Salience",
             "type": "object",
-            "dynamic": "true",
             "properties": {
                 "content": {
                     "javaType": "org.apache.streams.datasift.salience.content.Content",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "entities": {
                             "type": "array",
@@ -434,7 +542,6 @@
                                 {
                                     "javaType": "org.apache.streams.datasift.salience.content.Entities",
                                     "type": "object",
-                                    "dynamic": "true",
                                     "properties": {
                                         "about": {
                                             "type": "integer"
@@ -472,7 +579,6 @@
                 "title": {
                     "javaType": "org.apache.streams.datasift.salience.title.Title",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "entities": {
                             "type": "array",
@@ -480,7 +586,6 @@
                                 {
                                     "javaType": "org.apache.streams.datasift.salience.title.Entities",
                                     "type": "object",
-                                    "dynamic": "true",
                                     "properties": {
                                         "about": {
                                             "type": "integer"
@@ -520,7 +625,6 @@
         "trends": {
             "javaType": "org.apache.streams.datasift.trends.Trends",
             "type": "object",
-            "dynamic": "true",
             "properties": {
                 "content": {
                     "type": "array",
@@ -551,10 +655,10 @@
         "twitter": {
             "javaType": "org.apache.streams.datasift.twitter.Twitter",
             "type": "object",
-            "dynamic": "true",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "date-time"
                 },
                 "domains": {
                     "type": "array",
@@ -570,7 +674,6 @@
                 "geo": {
                     "javaType": "org.apache.streams.datasift.twitter.Geo",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "latitude": {
                             "type": "number"
@@ -617,7 +720,6 @@
                         {
                             "javaType": "org.apache.streams.datasift.twitter.Media",
                             "type": "object",
-                            "dynamic": "true",
                             "properties": {
                                 "display_url": {
                                     "type": "string"
@@ -638,10 +740,8 @@
                                     "type": "string"
                                 },
                                 "sizes": {
-                                    "dynamic": "true",
                                     "properties": {
                                         "large": {
-                                            "dynamic": "true",
                                             "properties": {
                                                 "h": {
                                                     "type": "integer"
@@ -655,7 +755,6 @@
                                             }
                                         },
                                         "medium": {
-                                            "dynamic": "true",
                                             "properties": {
                                                 "h": {
                                                     "type": "integer"
@@ -669,7 +768,6 @@
                                             }
                                         },
                                         "small": {
-                                            "dynamic": "true",
                                             "properties": {
                                                 "h": {
                                                     "type": "integer"
@@ -683,7 +781,6 @@
                                             }
                                         },
                                         "thumb": {
-                                            "dynamic": "true",
                                             "properties": {
                                                 "h": {
                                                     "type": "integer"
@@ -715,7 +812,12 @@
                     ]
                 },
                 "mention_ids": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "integer"
+                        }
+                    ]
                 },
                 "mentions": {
                     "type": "array",
@@ -728,10 +830,8 @@
                 "place": {
                     "javaType": "org.apache.streams.datasift.twitter.Place",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "attributes": {
-                            "dynamic": "true",
                             "properties": {
                                 "street_address": {
                                     "type": "string"
@@ -764,13 +864,13 @@
                 "retweet": {
                     "javaType": "org.apache.streams.datasift.twitter.Retweet",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "count": {
                             "type": "integer"
                         },
                         "created_at": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "date-time"
                         },
                         "domains": {
                             "type": "array",
@@ -803,7 +903,6 @@
                             ]
                         },
                         "media": {
-                            "dynamic": "true",
                             "properties": {
                                 "display_url": {
                                     "type": "string"
@@ -824,10 +923,8 @@
                                     "type": "string"
                                 },
                                 "sizes": {
-                                    "dynamic": "true",
                                     "properties": {
                                         "large": {
-                                            "dynamic": "true",
                                             "properties": {
                                                 "h": {
                                                     "type": "integer"
@@ -841,7 +938,6 @@
                                             }
                                         },
                                         "medium": {
-                                            "dynamic": "true",
                                             "properties": {
                                                 "h": {
                                                     "type": "integer"
@@ -855,7 +951,6 @@
                                             }
                                         },
                                         "small": {
-                                            "dynamic": "true",
                                             "properties": {
                                                 "h": {
                                                     "type": "integer"
@@ -869,7 +964,6 @@
                                             }
                                         },
                                         "thumb": {
-                                            "dynamic": "true",
                                             "properties": {
                                                 "h": {
                                                     "type": "integer"
@@ -899,7 +993,12 @@
                             }
                         },
                         "mention_ids": {
-                            "type": "integer"
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "integer"
+                                }
+                            ]
                         },
                         "mentions": {
                             "type": "array",
@@ -918,10 +1017,10 @@
                         "user": {
                             "javaType": "org.apache.streams.datasift.twitter.User",
                             "type": "object",
-                            "dynamic": "true",
                             "properties": {
                                 "created_at": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "format": "date-time"
                                 },
                                 "description": {
                                     "type": "string"
@@ -978,13 +1077,12 @@
                 "retweeted": {
                     "javaType": "org.apache.streams.datasift.twitter.Retweeted",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "created_at": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "date-time"
                         },
                         "geo": {
-                            "dynamic": "true",
                             "properties": {
                                 "latitude": {
                                     "type": "number"
@@ -998,7 +1096,6 @@
                             "type": "string"
                         },
                         "place": {
-                            "dynamic": "true",
                             "properties": {
                                 "attributes": {
                                     "type": "object",
@@ -1031,10 +1128,10 @@
                             "type": "string"
                         },
                         "user": {
-                            "dynamic": "true",
                             "properties": {
                                 "created_at": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "format": "date-time"
                                 },
                                 "description": {
                                     "type": "string"
@@ -1100,10 +1197,10 @@
                 "user": {
                     "javaType": "org.apache.streams.datasift.interaction.User",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "created_at": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "date-time"
                         },
                         "description": {
                             "type": "string"
@@ -1160,47 +1257,217 @@
                 }
             }
         },
-        "youtube": {
-            "javaType": "org.apache.streams.datasift.youtube.YouTube",
+        "wikipedia": {
             "type": "object",
-            "dynamic": "true",
             "properties": {
                 "author": {
-                    "javaType": "org.apache.streams.datasift.youtube.Author",
                     "type": "object",
-                    "dynamic": "true",
                     "properties": {
                         "link": {
                             "type": "string"
                         },
-                        "name": {
+                        "username": {
                             "type": "string"
                         }
                     }
                 },
-                "commentslink": {
+                "body": {
                     "type": "string"
                 },
-                "content": {
-                    "type": "string"
-                },
-                "contenttype": {
-                    "type": "string"
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "diff": {
+                    "type": "object",
+                    "properties": {
+                        "changes": {
+                            "type": "object",
+                            "properties": {
+                                "added": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "removed": {
+                                    "type": "array"
+                                }
+                            }
+                        },
+                        "from": {
+                            "type": "string"
+                        },
+                        "htmldiff": {
+                            "type": "string"
+                        },
+                        "to": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "externallinks": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "id": {
                     "type": "string"
                 },
-                "title": {
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "langlinks": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "autonym": {
+                                "type": "string"
+                            },
+                            "lang": {
+                                "type": "string"
+                            },
+                            "langname": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "url": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "links": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "link": {
+                                "type": "string"
+                            },
+                            "namespace": {
+                                "type": "string"
+                            },
+                            "ns": {
+                                "type": "number"
+                            }
+                        }
+                    }
+
+
+                },
+                "namespace": {
+                    "type": "string",
+                    "id": "http://jsonschema.net/wikipedia/namespace",
+                    "required": false
+                },
+                "newlen": {
+                    "type": "number",
+                    "id": "http://jsonschema.net/wikipedia/newlen",
+                    "required": false
+                },
+                "ns": {
+                    "type": "number"
+                },
+                "oldlen": {
+                    "type": "number"
+                },
+                "pageid": {
                     "type": "string"
                 },
-                "type": {
+                "parentid": {
                     "type": "string"
                 },
-                "videolink": {
+                "previousid": {
                     "type": "string"
+                },
+                "sections": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "anchor": {
+                                "type": "string"
+                            },
+                            "byteoffset": {
+                                "type": "number"
+                            },
+                            "fromtitle": {
+                                "type": "string"
+                            },
+                            "index": {
+                                "type": "string"
+                            },
+                            "level": {
+                                "type": "string"
+                            },
+                            "line": {
+                                "type": "string"
+                            },
+                            "number": {
+                                "type": "string"
+                            },
+                            "toclevel": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                },
+                "youtube": {
+                    "javaType": "org.apache.streams.datasift.youtube.YouTube",
+                    "type": "object",
+                    "properties": {
+                        "author": {
+                            "javaType": "org.apache.streams.datasift.youtube.Author",
+                            "type": "object",
+                            "properties": {
+                                "link": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "commentslink": {
+                            "type": "string"
+                        },
+                        "content": {
+                            "type": "string"
+                        },
+                        "contenttype": {
+                            "type": "string"
+                        },
+                        "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "id": {
+                            "type": "string"
+                        },
+                        "title": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        },
+                        "videolink": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         }

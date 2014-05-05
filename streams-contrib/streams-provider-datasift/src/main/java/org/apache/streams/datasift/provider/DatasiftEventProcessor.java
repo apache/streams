@@ -2,12 +2,18 @@ package org.apache.streams.datasift.provider;
 
 import com.datasift.client.stream.Interaction;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.datasift.Datasift;
-import org.apache.streams.datasift.serializer.DatasiftActivitySerializer;
+import org.apache.streams.datasift.serializer.DatasiftInteractionActivitySerializer;
+import org.apache.streams.datasift.serializer.DatasiftJsonActivitySerializer;
+import org.apache.streams.datasift.serializer.StreamsDatasiftMapper;
 import org.apache.streams.datasift.twitter.Twitter;
+import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,26 +27,26 @@ public class DatasiftEventProcessor implements Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftEventProcessor.class);
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = StreamsDatasiftMapper.getInstance();
 
-    private Queue<Interaction> inQueue;
+    private Queue<String> inQueue;
     private Queue<StreamsDatum> outQueue;
 
     private Class inClass;
     private Class outClass;
 
-    private DatasiftActivitySerializer datasiftInteractionActivitySerializer = new DatasiftActivitySerializer();
+    private DatasiftJsonActivitySerializer datasiftJsonActivitySerializer = new DatasiftJsonActivitySerializer();
 
     public final static String TERMINATE = new String("TERMINATE");
 
-    public DatasiftEventProcessor(Queue<Interaction> inQueue, Queue<StreamsDatum> outQueue, Class inClass, Class outClass) {
+    public DatasiftEventProcessor(Queue<String> inQueue, Queue<StreamsDatum> outQueue, Class inClass, Class outClass) {
         this.inQueue = inQueue;
         this.outQueue = outQueue;
         this.inClass = inClass;
         this.outClass = outClass;
     }
 
-    public DatasiftEventProcessor(Queue<Interaction> inQueue, Queue<StreamsDatum> outQueue, Class outClass) {
+    public DatasiftEventProcessor(Queue<String> inQueue, Queue<StreamsDatum> outQueue, Class outClass) {
         this.inQueue = inQueue;
         this.outQueue = outQueue;
         this.outClass = outClass;
@@ -52,19 +58,31 @@ public class DatasiftEventProcessor implements Runnable {
         while(true) {
             Object item;
             try {
-                item = inQueue.poll();
+                item = ComponentUtils.pollUntilStringNotEmpty(inQueue);
+
                 if(item instanceof String && item.equals(TERMINATE)) {
                     LOGGER.info("Terminating!");
                     break;
                 }
 
-                Thread.sleep(new Random().nextInt(100));
-
-                org.apache.streams.datasift.Datasift datasift = mapper.convertValue(item, Datasift.class);
+                String json;
+                ObjectNode wrapper;
+                org.apache.streams.datasift.Datasift datasift;
+                if( item instanceof String ) {
+                    json = (String) item;
+                    wrapper = mapper.readValue(json, ObjectNode.class);
+                    datasift = mapper.convertValue(wrapper.get("data"), Datasift.class);
+                    json = mapper.writeValueAsString(datasift);
+                } else if( item instanceof Interaction ) {
+                    datasift = mapper.convertValue(item, Datasift.class);
+                    json = mapper.writeValueAsString(datasift);
+                } else {
+                    throw new ActivitySerializerException("unrecognized type " + item.getClass().getCanonicalName());
+                }
 
                 // if the target is string, just pass-through
                 if( String.class.equals(outClass)) {
-                    outQueue.offer(new StreamsDatum(datasift.toString()));
+                    outQueue.offer(new StreamsDatum(json));
 
                 }
                 else if( Interaction.class.equals(outClass))
@@ -87,13 +105,11 @@ public class DatasiftEventProcessor implements Runnable {
                 else if( Activity.class.equals(outClass))
                 {
                     // convert to desired format
-                    Interaction entry = (Interaction) item;
-                    if( entry != null ) {
-                        Activity out = datasiftInteractionActivitySerializer.deserialize(datasift);
+                    Activity out = datasiftJsonActivitySerializer.deserialize(json);
 
-                        if( out != null )
-                            outQueue.offer(new StreamsDatum(out));
-                    }
+                    if( out != null )
+                        outQueue.offer(new StreamsDatum(out));
+
                 }
 
             } catch (Exception e) {

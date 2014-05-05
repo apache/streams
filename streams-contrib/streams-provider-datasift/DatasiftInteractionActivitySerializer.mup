@@ -1,0 +1,324 @@
+{
+  "title": "DatasiftInteractionActivitySerializer",
+  "id": 1,
+  "formatVersion": 2,
+  "ideas": {
+    "1": {
+      "title": "activity",
+      "id": 2,
+      "ideas": {
+        "1": {
+          "title": "provider\nid:providers:datasift",
+          "id": 5
+        },
+        "14": {
+          "title": "extensions",
+          "id": 8,
+          "ideas": {
+            "1": {
+              "title": "datasift",
+              "id": 9
+            },
+            "2": {
+              "title": "location",
+              "id": 22,
+              "ideas": {
+                "3": {
+                  "title": "coordinates",
+                  "id": 29,
+                  "ideas": {
+                    "2": {
+                      "title": "lat",
+                      "id": 27,
+                      "attr": {
+                        "style": {
+                          "background": "#E0E0E0"
+                        }
+                      }
+                    },
+                    "12": {
+                      "title": "lon",
+                      "id": 28,
+                      "attr": {
+                        "style": {
+                          "background": "#E0E0E0"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "15": {
+          "title": "verb\npost",
+          "id": 30
+        },
+        "16": {
+          "title": "id\npost:$.interaction.id",
+          "id": 32
+        },
+        "17": {
+          "title": "published",
+          "id": 36
+        },
+        "18": {
+          "title": "content",
+          "id": 39
+        },
+        "19": {
+          "title": "title",
+          "id": 41
+        },
+        "20": {
+          "title": "url",
+          "id": 42
+        },
+        "0.5": {
+          "title": "actor",
+          "id": 10,
+          "ideas": {
+            "1": {
+              "title": "id",
+              "id": 11
+            },
+            "2": {
+              "title": "displayName",
+              "id": 12
+            },
+            "3": {
+              "title": "image",
+              "id": 13,
+              "ideas": {
+                "1": {
+                  "title": "url",
+                  "id": 14
+                }
+              }
+            },
+            "4": {
+              "title": "url",
+              "id": 18
+            }
+          }
+        },
+        "0.75": {
+          "title": "object",
+          "id": 19,
+          "ideas": {
+            "1": {
+              "title": "objectType",
+              "id": 20
+            }
+          }
+        }
+      }
+    },
+    "-1": {
+      "title": "datasift",
+      "id": 3,
+      "ideas": {
+        "1": {
+          "title": "interaction",
+          "id": 4,
+          "ideas": {
+            "1": {
+              "title": "author",
+              "id": 15,
+              "ideas": {
+                "1": {
+                  "title": "avatar",
+                  "id": 16
+                },
+                "2": {
+                  "title": "link",
+                  "id": 17
+                },
+                "0.5": {
+                  "title": "id",
+                  "id": 44
+                },
+                "0.75": {
+                  "title": "username",
+                  "id": 45
+                }
+              }
+            },
+            "2": {
+              "title": "contentType",
+              "id": 21
+            },
+            "3": {
+              "title": "geo",
+              "id": 23,
+              "ideas": {
+                "1": {
+                  "title": "latitude",
+                  "id": 25
+                },
+                "2": {
+                  "title": "longitude",
+                  "id": 26
+                }
+              }
+            },
+            "4": {
+              "title": "id",
+              "id": 33,
+              "ideas": {}
+            },
+            "5": {
+              "title": "createdAt",
+              "id": 37
+            },
+            "6": {
+              "title": "content",
+              "id": 38
+            },
+            "7": {
+              "title": "title",
+              "id": 40
+            },
+            "8": {
+              "title": "link",
+              "id": 43
+            }
+          }
+        }
+      }
+    }
+  },
+  "links": [
+    {
+      "ideaIdFrom": 3,
+      "ideaIdTo": 9,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 16,
+      "ideaIdTo": 14,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 17,
+      "ideaIdTo": 18,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 21,
+      "ideaIdTo": 20,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 25,
+      "ideaIdTo": 27,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 26,
+      "ideaIdTo": 28,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 33,
+      "ideaIdTo": 32,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 37,
+      "ideaIdTo": 36,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 38,
+      "ideaIdTo": 39,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 40,
+      "ideaIdTo": 41,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 43,
+      "ideaIdTo": 42,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 44,
+      "ideaIdTo": 11,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 45,
+      "ideaIdTo": 12,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    }
+  ]
+}

@@ -3,6 +3,7 @@ package com.datasift.test;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.streams.datasift.Datasift;
+import org.apache.streams.datasift.serializer.StreamsDatasiftMapper;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -24,19 +25,18 @@ public class DatasiftSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftSerDeTest.class);
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = StreamsDatasiftMapper.getInstance();
 
-    @Ignore
     @Test
     public void Tests()
     {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.TRUE);
-        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
-        mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
         InputStream is = DatasiftSerDeTest.class.getResourceAsStream("/part-r-00000.json");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
+
+        int linenumber = 1;
 
         try {
             while (br.ready()) {
@@ -49,13 +49,10 @@ public class DatasiftSerDeTest {
 
                 LOGGER.debug(de);
 
-                Datasift serde = mapper.readValue(de, Datasift.class);
-
-                Assert.assertEquals(ser, serde);
-
-                LOGGER.debug(mapper.writeValueAsString(serde));
+                linenumber++;
             }
         } catch( Exception e ) {
+            LOGGER.error("Failed on line: {}", + linenumber);
             e.printStackTrace();
             Assert.fail();
         }
