@@ -45,4 +45,20 @@ public class StreamsComponentFactory {
         return processor;
 
     }
+
+    public static StreamsProcessor getProcessorInstance(Class<?> processorClazz, String[] constructorArgs) {
+
+        Object object = null;
+        try {
+            System.out.println("E2");
+            object = processorClazz.getConstructor(String.class).newInstance(constructorArgs[0]);
+            System.out.println("E3");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        StreamsProcessor processor = (StreamsProcessor) object;
+        System.out.println("E4");
+        return processor;
+
+    }
 }

@@ -3,6 +3,7 @@ package org.apache.streams.pig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import datafu.pig.util.SimpleEvalFunc;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.pig.EvalFunc;
@@ -26,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * Created by sblackmon on 3/25/14.
  */
 @MonitoredUDF(timeUnit = TimeUnit.SECONDS, duration = 10, intDefault = 10)
-public class StreamsSerializerExec extends EvalFunc<String> {
+public class StreamsSerializerExec extends SimpleEvalFunc<String> {
 
     ActivitySerializer activitySerializer;
     ObjectMapper mapper = StreamsJacksonMapper.getInstance();
@@ -42,26 +43,24 @@ public class StreamsSerializerExec extends EvalFunc<String> {
         activitySerializer = StreamsComponentFactory.getSerializerInstance(Class.forName(classFullName));
     }
 
-    @Override
-    public String exec(Tuple input) throws IOException {
+    public String call(String input) throws IOException {
 
         Preconditions.checkNotNull(activitySerializer);
         Preconditions.checkNotNull(input);
-        Preconditions.checkArgument(input.size() == 1);
-        Configuration conf = UDFContext.getUDFContext().getJobConf();
 
-        String document = (String) input.get(0);
-
-        Preconditions.checkNotNull(document);
         Activity activity = null;
         try {
-            activity = activitySerializer.deserialize(document);
+            activity = activitySerializer.deserialize(input);
+
+            Preconditions.checkNotNull(activity);
+
+            return mapper.writeValueAsString(activity);
+
         } catch( Exception e ) {
             e.printStackTrace();
-        }
-        Preconditions.checkNotNull(activity);
 
-        return mapper.writeValueAsString(activity);
+            return null;
+        }
 
     }
 
