@@ -43,7 +43,7 @@
         <dependency>
             <groupId>com.datasift.client</groupId>
             <artifactId>datasift-java</artifactId>
-            <version>3.0.0-Beta2</version>
+            <version>3.0.0-Beta3.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

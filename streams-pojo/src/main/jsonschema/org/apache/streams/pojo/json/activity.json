@@ -78,10 +78,15 @@
     "links" : {
       "type" : "array",
       "description" :"Links between this object and other resources as defined in Web Linking",
-      "note": "Tell JSON schema team to not put links inside http://json-schema.org/hyper-schema#properties",
+      "note": "Links to web pages - the objects in the array can be strings (just url) or some other structure with additional metadata",
       "items": {
-        "type" : "string"
+          "type": "object",
+          "javaType": "java.lang.Object"
       }
+    },
+    "extensions" : {
+      "type": "object",
+      "description": "Collection of annotations by processing modules"
     }
   },
   "links": [

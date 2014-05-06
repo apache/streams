@@ -39,17 +39,6 @@
         "imageURL": {
             "type": "string"
         },
-        "languageDetected": {
-            "type": "object",
-            "properties": {
-                "languageCode": {
-                    "type": "string"
-                },
-                "isLanguageReasonablyCertain": {
-                    "type": "boolean"
-                }
-            }
-        },
         "keywords": {
             "type": "array",
             "uniqueItems": true,
@@ -57,17 +46,11 @@
                 "type": "string"
             }
         },
-        "twitterCreator": {
-            "type": "string"
-        },
-        "twitterSite": {
-            "type": "string"
-        },
-        "facebookPage": {
-            "type": "string"
-        },
-        "facebookApp": {
-            "type": "string"
+        "textBlocks": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
         }
     }
 }

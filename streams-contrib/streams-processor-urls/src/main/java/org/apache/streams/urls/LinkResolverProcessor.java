@@ -42,13 +42,6 @@ public class LinkResolverProcessor implements StreamsProcessor
         if( entry.getDocument() instanceof Activity) {
             activity = (Activity) entry.getDocument();
 
-            activity.setLinks(unwind(activity.getLinks()));
-
-            entry.setDocument(activity);
-
-            result.add(entry);
-
-            return result;
         } else if( entry.getDocument() instanceof String ) {
 
             try {
@@ -59,25 +52,50 @@ public class LinkResolverProcessor implements StreamsProcessor
                 return(Lists.newArrayList(entry));
             }
 
-            activity.setLinks(unwind(activity.getLinks()));
-
-            try {
-                entry.setDocument(mapper.writeValueAsString(activity));
-            } catch (Exception e) {
-                e.printStackTrace();
-                LOGGER.warn(e.getMessage());
-                return(Lists.newArrayList());
-            }
-
-            result.add(entry);
-
-            return result;
-
         }
         else {
             //return(Lists.newArrayList(entry));
             return( Lists.newArrayList());
         }
+
+        for( int i = 0; i < activity.getLinks().size(); i++ )
+        {
+            Object linkObject = activity.getLinks().get(i);
+            String linkUrl;
+            try {
+                if( linkObject instanceof String )
+                    linkUrl = (String) linkObject;
+                else if( linkObject instanceof LinkDetails )
+                    linkUrl = (String)((LinkDetails)linkObject).getAdditionalProperties().get("originalURL");
+                else {
+                    LOGGER.warn("can't locate url in doc");
+                    return result;
+                }
+                LinkDetails details = resolve(linkUrl);
+                if( details != null ) {
+                    activity.getLinks().set(i, details);
+                } else {
+                    activity.getLinks().remove(i);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                LOGGER.warn(e.getMessage());
+                activity.getLinks().remove(i);
+            }
+
+        }
+
+        try {
+            entry.setDocument(activity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn(e.getMessage());
+            return(Lists.newArrayList());
+        }
+
+        result.add(entry);
+
+        return result;
     }
 
     @Override
@@ -89,20 +107,19 @@ public class LinkResolverProcessor implements StreamsProcessor
 
     }
 
-    private List<String> unwind(List<String> inputLinks) {
-        List<String> outputLinks = Lists.newArrayList();
-        for( String link : inputLinks ) {
-            try {
-                LinkResolver unwinder = new LinkResolver(link);
-                unwinder.run();
-                outputLinks.add(unwinder.getLinkDetails().getFinalURL());
-            } catch (Exception e) {
-                //if unwindable drop
-                LOGGER.debug("Failed to unwind link : {}", link);
-                LOGGER.debug("Exception unwinding link : {}", e);
-                e.printStackTrace();
-            }
+    private LinkDetails resolve(String inputLink) {
+        LinkDetails result;
+        try {
+            LinkResolver resolver = new LinkResolver(inputLink);
+            resolver.run();
+            result = resolver.getLinkDetails();
+            return result;
+        } catch (Exception e) {
+            //if resolvable drop
+            LOGGER.debug("Failed to resolve link : {}", inputLink);
+            LOGGER.debug("Exception resolving link : {}", e);
+            e.printStackTrace();
+            return null;
         }
-        return outputLinks;
     }
 }

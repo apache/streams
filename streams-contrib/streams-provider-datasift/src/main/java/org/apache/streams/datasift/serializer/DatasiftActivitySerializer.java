@@ -33,7 +33,7 @@ public class DatasiftActivitySerializer implements ActivitySerializer<Datasift>,
 
     public static final String DATE_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
 
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = new StreamsDatasiftMapper();
 
     @Override
     public String serializationFormat() {
@@ -159,8 +159,8 @@ public class DatasiftActivitySerializer implements ActivitySerializer<Datasift>,
         return actObj;
     }
 
-    public static List<String> getLinks(Interaction interaction) {
-        List<String> links = Lists.newArrayList();
+    public static List<Object> getLinks(Interaction interaction) {
+        List<Object> links = Lists.newArrayList();
         return links;
     }
 

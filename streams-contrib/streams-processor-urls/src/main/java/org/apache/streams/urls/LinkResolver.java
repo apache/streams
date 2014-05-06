@@ -28,18 +28,18 @@ public class LinkResolver implements Serializable
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(LinkResolver.class);
 
-    private static final int MAX_ALLOWED_REDIRECTS = 30;
-    private static final int DEFAULT_HTTP_TIMEOUT = 5000; //originally 30000
-    private static final String LOCATION_IDENTIFIER = "location";
-    private static final String SET_COOKIE_IDENTIFIER = "set-cookie";
+    protected static final int MAX_ALLOWED_REDIRECTS = 30;
+    protected static final int DEFAULT_HTTP_TIMEOUT = 5000; //originally 30000
+    protected static final String LOCATION_IDENTIFIER = "location";
+    protected static final String SET_COOKIE_IDENTIFIER = "set-cookie";
 
-    private LinkDetails linkDetails = new LinkDetails();
+    protected LinkDetails linkDetails = new LinkDetails();
 
-    private static final Collection<String> BOTS_ARE_OK = new ArrayList<String>() {{
+    protected static final Collection<String> BOTS_ARE_OK = new ArrayList<String>() {{
        add("t.co");
     }};
 
-    private static final Collection<String> URL_TRACKING_TO_REMOVE = new ArrayList<String>() {{
+    protected static final Collection<String> URL_TRACKING_TO_REMOVE = new ArrayList<String>() {{
         /******************************************************************
          * Google uses parameters in the URL string to track referrers
          * on their Google Analytics and promotions. These are the
@@ -68,7 +68,12 @@ public class LinkResolver implements Serializable
     public LinkDetails getLinkDetails()     { return linkDetails; }
 
     public LinkResolver(String originalURL) {
+
+        linkDetails = new LinkDetails();
+
         linkDetails.setOriginalURL(originalURL);
+
+        System.out.print(linkDetails.getOriginalURL());
     }
 
     public void run() {
@@ -251,7 +256,7 @@ public class LinkResolver implements Serializable
         }
     }
 
-    private Map<String,List<String>> createCaseInsensitiveMap(Map<String,List<String>> input) {
+    protected Map<String,List<String>> createCaseInsensitiveMap(Map<String,List<String>> input) {
         Map<String,List<String>> toReturn = new HashMap<String, List<String>>();
         for(String k : input.keySet())
             if(k != null && input.get(k) != null)
@@ -259,7 +264,7 @@ public class LinkResolver implements Serializable
         return toReturn;
     }
 
-    private String cleanURL(String url)
+    protected String cleanURL(String url)
     {
         // If they pass us a null URL then we are going to pass that right back to them.
         if(url == null)

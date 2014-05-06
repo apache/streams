@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import datafu.pig.util.SimpleEvalFunc;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.pig.EvalFunc;
@@ -20,6 +21,7 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,70 +29,53 @@ import java.util.concurrent.TimeUnit;
  * Created by sblackmon on 3/25/14.
  */
 @MonitoredUDF(timeUnit = TimeUnit.SECONDS, duration = 30, intDefault = 10)
-public class StreamsProcessDocumentExec extends EvalFunc<String> {
-
-    TupleFactory mTupleFactory = TupleFactory.getInstance();
-    BagFactory mBagFactory = BagFactory.getInstance();
+public class StreamsProcessDocumentExec extends SimpleEvalFunc<String> {
 
     StreamsProcessor streamsProcessor;
     ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     public StreamsProcessDocumentExec(String... execArgs) throws ClassNotFoundException{
-        System.out.println("A");
         Preconditions.checkNotNull(execArgs);
-        System.out.println("B");
         Preconditions.checkArgument(execArgs.length > 0);
-        System.out.println("C");
-        String processorFullName = execArgs[0];
-        System.out.println("D");
-        Preconditions.checkNotNull(processorFullName);
-        System.out.println("E");
-        streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(processorFullName));
-        System.out.println("F");
-        streamsProcessor.prepare(null);
-        System.out.println("G");
+        String classFullName = execArgs[0];
+        Preconditions.checkNotNull(classFullName);
+        String[] prepareArgs = (String[]) ArrayUtils.remove(execArgs, 0);
+        streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(classFullName));
+        if( execArgs.length == 1 ) {
+            streamsProcessor.prepare(null);
+        } else if( execArgs.length > 1 ) {
+            streamsProcessor.prepare(prepareArgs);
+        }
     }
 
-    @Override
-    public String exec(Tuple input) throws IOException {
+    public String call(String input) throws IOException {
 
-        System.out.println("H");
         Preconditions.checkNotNull(streamsProcessor);
-        Preconditions.checkNotNull(input);
-        Preconditions.checkArgument(input.size() == 1);
-        System.out.println("I");
 
-        String document = (String) input.get(0);
+        try {
 
-        Preconditions.checkNotNull(document);
+            Preconditions.checkNotNull(input);
 
-        System.out.println(document);
+            StreamsDatum entry = new StreamsDatum(input);
 
-        StreamsDatum entry = new StreamsDatum(document);
+            Preconditions.checkNotNull(entry);
 
-        Preconditions.checkNotNull(entry);
+            List<StreamsDatum> resultSet = streamsProcessor.process(entry);
 
-        System.out.println(entry);
+            Object resultDoc = null;
+            resultDoc = resultSet.get(0).getDocument();
 
-        List<StreamsDatum> resultSet = streamsProcessor.process(entry);
+            Preconditions.checkNotNull(resultDoc);
 
-        System.out.println(resultSet);
+            if( resultDoc instanceof String )
+                return (String) resultDoc;
+            else
+                return mapper.writeValueAsString(resultDoc);
 
-        Object resultDoc = null;
-        for( StreamsDatum resultDatum : resultSet ) {
-            resultDoc = resultDatum.getDocument();
-        }
-
-        Preconditions.checkNotNull(resultDoc);
-
-        System.out.println(resultDoc);
-
-        if( resultDoc instanceof String )
-            return (String) resultDoc;
-        else if( resultDoc instanceof ObjectNode)
-            return mapper.writeValueAsString(resultDoc);
-        else
+        } catch (Exception e) {
+            System.err.println("Error with " + input.toString());
             return null;
+        }
 
     }
 

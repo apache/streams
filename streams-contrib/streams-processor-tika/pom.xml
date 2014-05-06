@@ -118,7 +118,8 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/org/apache/streams/tika/LinkDetails.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/tika/BoilerPipeArticle.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/tika/LanguageDetails.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.tika</targetPackage>

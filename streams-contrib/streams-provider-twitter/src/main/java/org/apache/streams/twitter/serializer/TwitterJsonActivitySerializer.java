@@ -22,6 +22,7 @@ import org.apache.streams.jackson.StreamsJacksonModule;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Provider;
 import org.apache.streams.twitter.pojo.Delete;
+import org.apache.streams.twitter.pojo.UserstreamEvent;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
@@ -47,6 +48,7 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
     TwitterJsonTweetActivitySerializer tweetActivitySerializer = new TwitterJsonTweetActivitySerializer();
     TwitterJsonRetweetActivitySerializer retweetActivitySerializer = new TwitterJsonRetweetActivitySerializer();
     TwitterJsonDeleteActivitySerializer deleteActivitySerializer = new TwitterJsonDeleteActivitySerializer();
+    TwitterJsonUserstreameventActivitySerializer userstreameventActivitySerializer = new TwitterJsonUserstreameventActivitySerializer();
 
     @Override
     public String serializationFormat() {
@@ -70,6 +72,8 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
             activity = retweetActivitySerializer.deserialize(serialized);
         else if( documentSubType == Delete.class )
             activity = deleteActivitySerializer.deserialize(serialized);
+        else if( documentSubType == UserstreamEvent.class )
+            activity = userstreameventActivitySerializer.deserialize(serialized);
         else throw new ActivitySerializerException("unrecognized type");
 
         return activity;

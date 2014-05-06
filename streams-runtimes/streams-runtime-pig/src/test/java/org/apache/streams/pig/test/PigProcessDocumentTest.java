@@ -1,3 +1,5 @@
+package org.apache.streams.pig.test;
+
 import org.apache.pig.pigunit.PigTest;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -9,8 +11,10 @@ import java.text.ParseException;
 /**
  * Created by sblackmon on 3/30/14.
  */
-public class PigProcessorTest {
+public class PigProcessDocumentTest {
 
+    // ignored because need to figure out how to get an equality comparison to pass
+    // pigunit doesn't run methods of PigStorage that result in string equality...
     @Ignore
     @Test
     public void testPigProcessor() throws Exception {
@@ -25,7 +29,7 @@ public class PigProcessorTest {
         };
 
         PigTest test;
-        test = new PigTest("src/test/resources/pigprocessortest.pig", args);
+        test = new PigTest("src/test/resources/pigprocessdocument.pig", args);
         test.assertOutput("activities", input, "result", output);
 
     }
