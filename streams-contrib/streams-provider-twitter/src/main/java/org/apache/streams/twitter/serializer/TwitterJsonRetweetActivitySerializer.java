@@ -12,11 +12,13 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.twitter.Url;
-import org.apache.streams.twitter.pojo.Retweet;
-import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.pojo.User;
+import org.apache.streams.twitter.pojo.*;
+import org.apache.streams.urls.LinkDetails;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,8 @@ public class TwitterJsonRetweetActivitySerializer implements ActivitySerializer<
     public TwitterJsonRetweetActivitySerializer() {
 
     }
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(TwitterJsonRetweetActivitySerializer.class);
 
     @Override
     public String serializationFormat() {
@@ -61,7 +65,7 @@ public class TwitterJsonRetweetActivitySerializer implements ActivitySerializer<
         }
 
         Activity activity = new Activity();
-        activity.setActor(buildActor(retweet));
+        activity.setActor(buildActorRetweet(retweet));
         activity.setVerb("share");
         if( retweet.getRetweetedStatus() != null )
             activity.setObject(buildActivityObject(retweet.getRetweetedStatus()));
@@ -89,30 +93,67 @@ public class TwitterJsonRetweetActivitySerializer implements ActivitySerializer<
         }
         activity.setUrl("http://twitter.com/" + retweet.getIdStr());
         activity.setLinks(TwitterJsonTweetActivitySerializer.getLinks(retweet.getRetweetedStatus()));
+
+        addTwitterExtensions(activity, retweet);
         addTwitterExtension(activity, mapper.convertValue(retweet, ObjectNode.class));
         addLocationExtension(activity, retweet);
+
         return activity;
+    }
+
+    public static void addTwitterExtensions(Activity activity, Retweet retweet) {
+        Map<String, Object> extensions = ensureExtensions(activity);
+
+        List<String> hashtags = new ArrayList<String>();
+        for(Hashtag hashtag : retweet.getEntities().getHashtags()) {
+            hashtags.add(hashtag.getText());
+        }
+        extensions.put("hashtags", hashtags);
+
+        Map<String, Object> likes = new HashMap<String, Object>();
+        likes.put("perspectival", retweet.getFavorited());
+        likes.put("count", retweet.getAdditionalProperties().get("favorite_count"));
+
+        extensions.put("likes", likes);
+
+        Map<String, Object> rebroadcasts = new HashMap<String, Object>();
+        rebroadcasts.put("perspectival", retweet.getRetweeted());
+        rebroadcasts.put("count", retweet.getRetweetCount());
+
+        extensions.put("rebroadcasts", rebroadcasts);
+
+        List<Map<String, Object>> userMentions = new ArrayList<Map<String, Object>>();
+        Entities entities = retweet.getEntities();
+
+        for(UserMentions user : entities.getUserMentions()) {
+            //Map the twitter user object into an actor
+            Map<String, Object> actor = new HashMap<String, Object>();
+            actor.put("id", "id:twitter:" + user.getIdStr());
+            actor.put("displayName", user.getScreenName());
+
+            userMentions.add(actor);
+        }
+
+        extensions.put("user_mentions", userMentions);
+
+        List<LinkDetails> urls = new ArrayList<LinkDetails>();
+        for(Url url : entities.getUrls()) {
+            LinkDetails linkDetails = new LinkDetails();
+
+            linkDetails.setFinalURL(url.getExpandedUrl());
+            linkDetails.setNormalizedURL(url.getDisplayUrl());
+            linkDetails.setOriginalURL(url.getUrl());
+
+            urls.add(linkDetails);
+        }
+        extensions.put("urls", urls);
+
+        extensions.put("keywords", retweet.getText());
     }
 
     @Override
     public List<Activity> deserializeAll(List<String> serializedList) {
         return null;
-    }
-
-    public static Actor buildActor(Retweet retweet) {
-        Actor actor = new Actor();
-        User user = retweet.getUser();
-        actor.setId(formatId(
-                Optional.fromNullable(
-                        user.getIdStr())
-                        .or(Optional.of(user.getId().toString()))
-                        .orNull()
-        ));
-        actor.setDisplayName(user.getScreenName());
-        if (user.getUrl()!=null){
-            actor.setUrl(user.getUrl());
-        }
-        return actor;
     }
 
     public static ActivityObject buildActivityObject(Tweet tweet) {

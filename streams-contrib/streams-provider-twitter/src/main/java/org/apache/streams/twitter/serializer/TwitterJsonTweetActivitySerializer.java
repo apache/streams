@@ -62,7 +62,7 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
 
         Activity activity = new Activity();
 
-        activity.setActor(buildActor(tweet));
+        activity.setActor(buildActorTweet(tweet));
         activity.setVerb("post");
         activity.setId(formatId(activity.getVerb(),
                 Optional.fromNullable(
@@ -143,40 +143,6 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
     @Override
     public List<Activity> deserializeAll(List<String> serializedList) {
         return null;
-    }
-
-    public static Actor buildActor(Tweet tweet) {
-        Actor actor = new Actor();
-        User user = tweet.getUser();
-        actor.setId(formatId(
-                Optional.fromNullable(
-                        user.getIdStr())
-                        .or(Optional.of(user.getId().toString()))
-                        .orNull()
-        ));
-        actor.setDisplayName(user.getScreenName());
-        if (user.getUrl()!=null){
-            actor.setUrl(user.getUrl());
-        }
-
-        actor.setDisplayName(user.getName());
-        actor.setSummary(user.getDescription());
-
-        Map<String, Object> extensions = new HashMap<String, Object>();
-        extensions.put("location", user.getLocation());
-        extensions.put("posts", user.getStatusesCount());
-        extensions.put("favorites", user.getFavouritesCount());
-        extensions.put("followers", user.getFollowersCount());
-
-        Map<String, Object> image = new HashMap<String, Object>();
-        image.put("url", user.getProfileImageUrlHttps());
-
-        extensions.put("image", image);
-        extensions.put("screenName", user.getScreenName());
-
-        actor.setAdditionalProperty("extensions", extensions);
-
-        return actor;
     }
 
     public static List<String> getLinks(Tweet tweet) {

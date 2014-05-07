@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
@@ -20,19 +21,24 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.jackson.StreamsJacksonModule;
 import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
-import org.apache.streams.twitter.pojo.Delete;
-import org.apache.streams.twitter.pojo.Retweet;
-import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.twitter.Url;
+import org.apache.streams.twitter.pojo.*;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
+import org.apache.streams.urls.LinkDetails;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
  * Created by sblackmon on 3/26/14.
@@ -78,6 +84,48 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
     @Override
     public List<Activity> deserializeAll(List<String> serializedList) {
         throw new NotImplementedException();
+    }
+
+    public static Actor buildActorRetweet(Retweet tweet) {
+        return buildActor(tweet.getUser());
+    }
+
+    public static Actor buildActorTweet(Tweet tweet) {
+        return buildActor(tweet.getUser());
+    }
+
+    public static Actor buildActor(User user) {
+        Actor actor = new Actor();
+
+        actor.setId(formatId(
+                Optional.fromNullable(
+                        user.getIdStr())
+                        .or(Optional.of(user.getId().toString()))
+                        .orNull()
+        ));
+        actor.setDisplayName(user.getScreenName());
+        if (user.getUrl()!=null){
+            actor.setUrl(user.getUrl());
+        }
+
+        actor.setDisplayName(user.getName());
+        actor.setSummary(user.getDescription());
+
+        Map<String, Object> extensions = new HashMap<String, Object>();
+        extensions.put("location", user.getLocation());
+        extensions.put("posts", user.getStatusesCount());
+        extensions.put("favorites", user.getFavouritesCount());
+        extensions.put("followers", user.getFollowersCount());
+
+        Map<String, Object> image = new HashMap<String, Object>();
+        image.put("url", user.getProfileImageUrlHttps());
+
+        extensions.put("image", image);
+        extensions.put("screenName", user.getScreenName());
+
+        actor.setAdditionalProperty("extensions", extensions);
+
+        return actor;
     }
 
     public static Provider getProvider() {
