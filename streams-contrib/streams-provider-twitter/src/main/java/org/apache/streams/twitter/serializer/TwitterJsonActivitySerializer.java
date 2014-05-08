@@ -31,13 +31,14 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Created by sblackmon on 3/26/14.
  */
-public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
+public class TwitterJsonActivitySerializer implements ActivitySerializer<String>, Serializable
 {
 
     public TwitterJsonActivitySerializer() {

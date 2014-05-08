@@ -50,9 +50,9 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
         this.config = config;
     }
 
-    protected BlockingQueue hosebirdQueue = new LinkedBlockingQueue<String>(1000);
+    protected BlockingQueue<String> hosebirdQueue;
 
-    protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>(1000);
+    protected volatile Queue<StreamsDatum> providerQueue;
 
     protected Hosts hosebirdHosts;
     protected Authentication auth;
@@ -193,6 +193,9 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
         }
 
         LOGGER.debug("host={}\tendpoint={}\taut={}", new Object[] {hosebirdHosts,endpoint,auth});
+
+        hosebirdQueue = new LinkedBlockingQueue<String>(1000);
+        providerQueue = new LinkedBlockingQueue<StreamsDatum>(1000);
 
         client = new ClientBuilder()
             .name("apache/streams/streams-contrib/streams-provider-twitter")

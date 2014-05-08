@@ -23,9 +23,7 @@ import twitter4j.json.DataObjectFactory;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -260,7 +258,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                 .setAsyncNumThreads(3)
                 .setRestBaseURL(baseUrl)
                 .setIncludeMyRetweetEnabled(Boolean.TRUE)
-                .setIncludeRTsEnabled(Boolean.TRUE)
+                // not sure where this method went...
+                //.setIncludeRTsEnabled(Boolean.TRUE)
                 .setPrettyDebugEnabled(Boolean.TRUE);
 
         return new TwitterFactory(builder.build()).getInstance();
