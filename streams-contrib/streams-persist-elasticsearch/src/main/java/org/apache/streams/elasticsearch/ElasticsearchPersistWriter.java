@@ -59,20 +59,23 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     private String parentID = null;
     private BulkRequestBuilder bulkRequest;
     private OutputStreamWriter currentWriter = null;
-    private int batchSize = 50;
-    private int totalRecordsWritten = 0;
-    private boolean veryLargeBulk = false;  // by default this setting is set to false
 
+    private long batchSize;
+    private boolean veryLargeBulk;  // by default this setting is set to false
+    private int totalRecordsWritten = 0;
+    
     protected Thread task;
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
+    private volatile int currentItems = 0;
     private volatile int totalSent = 0;
     private volatile int totalSeconds = 0;
     private volatile int totalAttempted = 0;
     private volatile int totalOk = 0;
     private volatile int totalFailed = 0;
     private volatile int totalBatchCount = 0;
+    private volatile int totalRecordsWritten = 0;
     private volatile long totalSizeInBytes = 0;
     private volatile long batchSizeInBytes = 0;
     private volatile int batchItemsSent = 0;
@@ -96,6 +99,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         this.veryLargeBulk = veryLargeBulk;
     }
 
+    private final List<String> affectedIndexes = new ArrayList<String>();
 
     public int getTotalOutstanding() {
         return this.totalSent - (this.totalFailed + this.totalOk);
@@ -116,6 +120,8 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     public int getTotalOk() {
         return totalOk;
     }
+    
+    private ObjectMapper mapper = new StreamsJacksonMapper();
 
     public int getTotalFailed() {
         return totalFailed;
@@ -149,6 +155,13 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         return (client != null);
     }
 
+    private ElasticsearchWriterConfiguration config;
+
+    private static final int  BYTES_IN_MB = 1024*1024;
+    private static final int  BYTES_BEFORE_FLUSH = 5 * BYTES_IN_MB;
+    private volatile int  totalByteCount = 0;
+    private volatile int  byteCount = 0;
+    
     @Override
     public void write(StreamsDatum streamsDatum) {
 
@@ -280,6 +293,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
             // reset the current batch statistics
             this.batchSizeInBytes = 0;
             this.batchItemsSent = 0;
+            this.currentItems = 0;
 
             try {
                 int count = 0;
@@ -381,6 +395,58 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         }
     }
 
+    private void trackItemAndBytesWritten(long sizeInBytes)
+    {
+        currentItems++;
+        batchItemsSent++;
+        batchSizeInBytes += sizeInBytes;
+
+        // If our queue is larger than our flush threashold, then we should flush the queue.
+        if( (batchSizeInBytes > flushThresholdSizeInBytes) ||
+                (currentItems >= batchSize) )
+            flushInternal();
+    }
+
+    private void checkAndCreateBulkRequest()
+    {
+        // Synchronize to ensure that we don't lose any records
+        synchronized (this)
+        {
+            if(bulkRequest == null)
+                bulkRequest = this.manager.getClient().prepareBulk();
+        }
+    }
+
+    private void checkIndexImplications(String indexName)
+    {
+
+        // check to see if we have seen this index before.
+        if(this.affectedIndexes.contains(indexName))
+            return;
+
+        // we haven't log this index.
+        this.affectedIndexes.add(indexName);
+
+        // Check to see if we are in 'veryLargeBulk' mode
+        // if we aren't, exit early
+        if(!this.veryLargeBulk)
+            return;
+
+
+        // They are in 'very large bulk' mode we want to turn off refreshing the index.
+
+        // Create a request then add the setting to tell it to stop refreshing the interval
+        UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(indexName);
+        updateSettingsRequest.settings(ImmutableSettings.settingsBuilder().put("refresh_interval", -1));
+
+        // submit to ElasticSearch
+        this.manager.getClient()
+                .admin()
+                .indices()
+                .updateSettings(updateSettingsRequest)
+                .actionGet();
+    }
+
     public void createIndexIfMissing(String indexName) {
         if (!this.manager.getClient()
                 .admin()
@@ -446,6 +512,14 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         return toReturn;
     }
 
+    @Override
+    public void prepare(Object configurationObject) {
+        mapper = StreamsJacksonMapper.getInstance();
+        veryLargeBulk = this.config.getBulk();
+        batchSize = this.config.getBatchSize();
+        start();
+    }
+    
     private void flush(final BulkRequestBuilder bulkRequest, final Integer thisSent, final Long thisSizeInBytes) {
         bulkRequest.execute().addListener(new ActionListener<BulkResponse>() {
             @Override

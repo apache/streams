@@ -2,8 +2,6 @@ package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -18,10 +16,9 @@ import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.BasicAuth;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 import com.typesafe.config.Config;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsProvider;
-import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.core.*;
 import org.apache.streams.twitter.TwitterStreamConfiguration;
 import org.apache.streams.twitter.processor.TwitterEventProcessor;
 import org.joda.time.DateTime;
@@ -30,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
@@ -38,15 +34,13 @@ import java.util.concurrent.*;
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class TwitterStreamProvider implements StreamsProvider, Serializable {
+public class TwitterStreamProvider implements StreamsProvider, Serializable, DatumStatusCountable {
 
     public final static String STREAMS_ID = "TwitterStreamProvider";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterStreamProvider.class);
 
     private TwitterStreamConfiguration config;
-
-    private Class klass;
 
     public TwitterStreamConfiguration getConfig() {
         return config;
@@ -56,9 +50,9 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
         this.config = config;
     }
 
-    protected BlockingQueue inQueue = new LinkedBlockingQueue<String>(10000);
+    protected BlockingQueue hosebirdQueue = new LinkedBlockingQueue<String>(1000);
 
-    protected volatile Queue<StreamsDatum> providerQueue;
+    protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>(1000);
 
     protected Hosts hosebirdHosts;
     protected Authentication auth;
@@ -66,6 +60,9 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
     protected BasicClient client;
 
     protected ListeningExecutorService executor;
+
+    private DatumStatusCounter countersCurrent = new DatumStatusCounter();
+    private DatumStatusCounter countersTotal = new DatumStatusCounter();
 
     private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
         return new ThreadPoolExecutor(nThreads, nThreads,
@@ -82,58 +79,49 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
         this.config = config;
     }
 
-    public TwitterStreamProvider(Class klass) {
-        Config config = StreamsConfigurator.config.getConfig("twitter");
-        this.config = TwitterStreamConfigurator.detectConfiguration(config);
-        this.klass = klass;
-        providerQueue = new LinkedBlockingQueue<StreamsDatum>();
-    }
-
-    public TwitterStreamProvider(TwitterStreamConfiguration config, Class klass) {
-        this.config = config;
-        this.klass = klass;
-        providerQueue = new LinkedBlockingQueue<StreamsDatum>();
-
-    }
-
     @Override
     public void startStream() {
 
         for (int i = 0; i < 5; i++) {
-            executor.submit(new TwitterEventProcessor(inQueue, providerQueue, klass));
+            executor.submit(new TwitterEventProcessor(hosebirdQueue, providerQueue, String.class));
         }
 
         new Thread(new TwitterStreamProviderTask(this)).start();
+
     }
 
     @Override
     public synchronized StreamsResultSet readCurrent() {
-        Collection<StreamsDatum> currentIterator = Lists.newArrayList();
-        Iterators.addAll(currentIterator, providerQueue.iterator());
 
-        StreamsResultSet current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(currentIterator));
+        StreamsResultSet current;
 
-        providerQueue.clear();
+        synchronized( TwitterStreamProvider.class ) {
+            current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(providerQueue));
+            current.setCounter(new DatumStatusCounter());
+            current.getCounter().add(countersCurrent);
+            countersTotal.add(countersCurrent);
+            countersCurrent = new DatumStatusCounter();
+            providerQueue.clear();
+        }
 
         return current;
     }
 
     @Override
     public StreamsResultSet readNew(BigInteger sequence) {
-        return null;
+        throw new NotImplementedException();
     }
 
     @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return null;
+    public StreamsResultSet readRange(DateTime start, DateTime end)
+    {
+        throw new NotImplementedException();
     }
 
     @Override
     public void prepare(Object o) {
 
         executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
-
-        Preconditions.checkNotNull(this.klass);
 
         Preconditions.checkNotNull(config.getEndpoint());
 
@@ -211,7 +199,8 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
             .hosts(hosebirdHosts)
             .endpoint(endpoint)
             .authentication(auth)
-            .processor(new StringDelimitedProcessor(inQueue))
+            .connectionTimeout(1200000)
+            .processor(new StringDelimitedProcessor(hosebirdQueue))
             .build();
 
     }
@@ -219,7 +208,12 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable {
     @Override
     public void cleanUp() {
         for (int i = 0; i < 5; i++) {
-            inQueue.add(TwitterEventProcessor.TERMINATE);
+            hosebirdQueue.add(TwitterEventProcessor.TERMINATE);
         }
+    }
+
+    @Override
+    public DatumStatusCounter getDatumStatusCounter() {
+        return countersTotal;
     }
 }
