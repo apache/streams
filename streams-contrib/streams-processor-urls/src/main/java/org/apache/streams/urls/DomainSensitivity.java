@@ -8,14 +8,11 @@ import java.util.concurrent.ConcurrentMap;
  * This is a static utility helper class to obey domain sensitivity. It cannot be
  * instantiated and can only be referenced through the static accessor functions
  *
- * @see
- *
- *
  */
 public abstract class DomainSensitivity {
 
     // The amount of time we want to space between domain calls
-    public static final long RECENT_DOMAINS_BACKOFF = 5000;
+    public static final long RECENT_DOMAINS_BACKOFF = 1000;
     public static final long DEFAULT_STAGGER = RECENT_DOMAINS_BACKOFF / 10;
 
     // Map to store the information of recent domains, with the last time they were accessed.
