@@ -80,7 +80,7 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
         activity.setProvider(getProvider());
         activity.setTitle("");
         activity.setContent(tweet.getText());
-        activity.setUrl("http://twitter.com/" + tweet.getIdStr());
+        activity.setUrl("http://twitter.com/" + tweet.getUser().getIdStr() + "/status/" + tweet.getIdStr());
         activity.setLinks(getLinks(tweet));
 
         addTwitterExtension(activity, mapper.convertValue(tweet, ObjectNode.class));
