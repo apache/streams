@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 
 import java.io.IOException;
@@ -47,7 +48,9 @@ public class TwitterEventClassifier {
             return Retweet.class;
         else if( objectNode.findValue("delete") != null )
             return Delete.class;
-        else
+        else if(objectNode.findValue("user") != null)
             return Tweet.class;
+        else
+            return User.class;
     }
 }
