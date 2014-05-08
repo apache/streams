@@ -72,29 +72,36 @@ public class SysomosHeartbeatStream implements Runnable {
     }
 
     protected QueryResult executeAPIRequest() {
-        BeatApi.BeatResponse response = this.client.createRequestBuilder()
-                .setHeartBeatId(heartbeatId)
-                .setOffset(0)
-                .setReturnSetSize(maxApiBatch).execute();
+        BeatApi.BeatResponse response = null;
+        try {
+            response = this.client.createRequestBuilder()
+                    .setHeartBeatId(heartbeatId)
+                    .setOffset(0)
+                    .setReturnSetSize(maxApiBatch).execute();
 
-        LOGGER.debug("Received {} results from API query", response.getCount());
+            LOGGER.debug("Received {} results from API query", response.getCount());
+        } catch (Exception e) {
+            LOGGER.warn("Error querying Sysomos API", e);
+        }
 
         String currentId = null;
         boolean matched = false;
-        for(BeatApi.BeatResponse.Beat beat : response.getBeat()) {
-            String docId = beat.getDocid();
-            //We get documents in descending time order.  This will set the id to the latest document
-            if(currentId == null) {
-                currentId = docId;
+        if(response != null) {
+            for (BeatApi.BeatResponse.Beat beat : response.getBeat()) {
+                String docId = beat.getDocid();
+                //We get documents in descending time order.  This will set the id to the latest document
+                if (currentId == null) {
+                    currentId = docId;
+                }
+                //We only want to process documents that we know we have not seen before
+                if (lastID != null && lastID.equals(docId)) {
+                    matched = true;
+                    break;
+                }
+                StreamsDatum item = new StreamsDatum(beat, docId);
+                item.getMetadata().put("heartbeat", this.heartbeatId);
+                this.provider.enqueueItem(item);
             }
-            //We only want to process documents that we know we have not seen before
-            if(lastID != null && lastID.equals(docId)) {
-                matched = true;
-                break;
-            }
-            StreamsDatum item = new StreamsDatum(beat, docId);
-            item.getMetadata().put("heartbeat", this.heartbeatId);
-            this.provider.enqueueItem(item);
         }
         return new QueryResult(matched, currentId);
     }
