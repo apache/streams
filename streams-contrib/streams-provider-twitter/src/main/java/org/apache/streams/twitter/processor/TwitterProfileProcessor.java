@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
+import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +25,7 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterProfileProcessor.class);
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new StreamsTwitterMapper();
 
     private Queue<StreamsDatum> inQueue;
     private Queue<StreamsDatum> outQueue;
@@ -78,14 +80,19 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
                 LOGGER.debug("TWEET");
                 Tweet tweet = mapper.readValue(item, Tweet.class);
                 user = tweet.getUser();
-                result.add(new StreamsDatum(user));
+                result.add(new StreamsDatum(user, user.getIdStr()));
             }
             else if ( inClass.equals( Retweet.class )) {
                 LOGGER.debug("RETWEET");
-                Retweet retweet = mapper.readValue(item, Retweet.class);
-                user = retweet.getRetweetedStatus().getUser();
-                result.add(new StreamsDatum(user));
-            } else {
+                user = mapper.readValue(item, User.class);
+                result.add(new StreamsDatum(user, user.getIdStr()));
+            }
+            else if( inClass.equals( User.class)) {
+                LOGGER.debug("USER");
+                user = mapper.readValue(item, User.class);
+                result.add(new StreamsDatum(user, user.getIdStr()));
+            }
+            else {
                 return Lists.newArrayList();
             }
 
