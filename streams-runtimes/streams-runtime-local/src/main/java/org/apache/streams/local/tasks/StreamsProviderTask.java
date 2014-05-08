@@ -130,7 +130,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                                 zeros = 0;
                             }
                             flushResults(resultSet);
-                            if( zeros > (timeout / DEFAULT_SLEEP_TIME_MS))
+                            // the way this works needs to change...
+                            if( zeros > (timeout))
                                 this.keepRunning.set(false);
                             Thread.sleep(DEFAULT_SLEEP_TIME_MS);
                         } catch (InterruptedException e) {
