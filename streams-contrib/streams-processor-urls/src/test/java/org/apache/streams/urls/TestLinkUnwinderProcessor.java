@@ -8,9 +8,10 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonModule;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Created by rebanks on 2/27/14.
@@ -68,6 +69,7 @@ public class TestLinkUnwinderProcessor {
     }
 
     public void testActivityUnwinderHelper(List<String> input, List<String> expected) throws Exception{
+        DomainSensitivity.purgeAllDomainWaitTimes();
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.registerModule(new StreamsJacksonModule());
@@ -90,6 +92,7 @@ public class TestLinkUnwinderProcessor {
     }
 
     public void testStringActivityUnwinderHelper(List<String> input, List<String> expected) throws Exception{
+        DomainSensitivity.purgeAllDomainWaitTimes();
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.registerModule(new StreamsJacksonModule());
