@@ -418,8 +418,10 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
         // If our queue is larger than our flush threashold, then we should flush the queue.
         if( (batchSizeInBytes > flushThresholdSizeInBytes) ||
-                (currentItems >= batchSize) )
+                (currentItems >= batchSize) ) {
             flushInternal();
+            this.currentItems = 0;
+        }
     }
 
     private void checkIndexImplications(String indexName)
