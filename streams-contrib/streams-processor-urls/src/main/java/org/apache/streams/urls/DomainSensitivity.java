@@ -94,10 +94,6 @@ public abstract class DomainSensitivity {
                 if(ableToRemove.size() > 0)         // if there are domains to remove, then remove them
                     for(String k : ableToRemove) // iterate through every domain that we can remove
                         RECENT_DOMAINS.remove(k);   // remove the domain from our map.
-
-                for(String k : ableToRemove)
-                    System.out.println("Removing: " + k);
-
             }
         }
     }
