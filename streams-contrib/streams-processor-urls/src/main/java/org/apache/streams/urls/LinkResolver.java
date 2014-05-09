@@ -107,12 +107,16 @@ public class LinkResolver implements Serializable {
         Preconditions.checkNotNull(linkDetails.getOriginalURL());
 
         linkDetails.setStartTime(DateTime.now());
-        // we are going to try three times just incase we catch the service off-guard
-        // this is mainly to help us with our tests.
-        for (int i = 0; (i < 3) && linkDetails.getFinalURL() == null; i++) {
+
+        // we are going to try three times just in case we catch a slow server or one that needs
+        // to be warmed up. This tends to happen many times with smaller private servers
+        for (int i = 0; (i < 3) && linkDetails.getFinalURL() == null; i++)
             if (linkDetails.getLinkStatus() != LinkDetails.LinkStatus.SUCCESS)
                 unwindLink(linkDetails.getOriginalURL());
-        }
+
+        // because this is a POJO we need to make sure that we set this to false if it was never re-directed
+        if(this.linkDetails.getRedirectCount() == 0 || this.linkDetails.getRedirected() == null)
+            this.linkDetails.setRedirected(false);
 
         linkDetails.setFinalURL(cleanURL(linkDetails.getFinalURL()));
         linkDetails.setNormalizedURL(normalizeURL(linkDetails.getFinalURL()));
