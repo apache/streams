@@ -32,7 +32,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     private static final int START = 0;
     private static final int END = 1;
 
-    private static final int DEFAULT_TIMEOUT_MS = 30000;
+    private static final int DEFAULT_TIMEOUT_MS = 1000000;
 
     private StreamsProvider provider;
     private AtomicBoolean keepRunning;
@@ -130,7 +130,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                                 zeros = 0;
                             }
                             flushResults(resultSet);
-                            if( zeros > (timeout / DEFAULT_SLEEP_TIME_MS))
+                            // the way this works needs to change...
+                            if( zeros > (timeout))
                                 this.keepRunning.set(false);
                             Thread.sleep(DEFAULT_SLEEP_TIME_MS);
                         } catch (InterruptedException e) {

@@ -11,11 +11,14 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Created by sblackmon on 3/27/14.
  */
-public class StreamsDateTimeSerializer extends StdSerializer<DateTime> {
+public class StreamsDateTimeSerializer extends StdSerializer<DateTime> implements Serializable {
+
+
 
     protected StreamsDateTimeSerializer(Class<DateTime> dateTimeClass) {
         super(dateTimeClass);

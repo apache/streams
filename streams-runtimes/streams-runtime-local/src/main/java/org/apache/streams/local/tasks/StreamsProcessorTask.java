@@ -67,7 +67,7 @@ public class StreamsProcessorTask extends BaseStreamsTask {
         try {
             this.processor.prepare(this.streamConfig);
             StreamsDatum datum = this.inQueue.poll();
-            while(datum != null || this.keepRunning.get()) {
+            while(this.keepRunning.get()) {
                 if(datum != null) {
                     List<StreamsDatum> output = this.processor.process(datum);
                     if(output != null) {
