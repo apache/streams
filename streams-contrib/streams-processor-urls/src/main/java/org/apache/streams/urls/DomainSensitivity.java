@@ -20,6 +20,10 @@ public abstract class DomainSensitivity {
 
     private static Timer timer;
 
+    private DomainSensitivity() {
+        // force it not to be instantiated.
+    }
+
     public static void purgeAllDomainWaitTimes() {
         RECENT_DOMAINS.clear();
     }
