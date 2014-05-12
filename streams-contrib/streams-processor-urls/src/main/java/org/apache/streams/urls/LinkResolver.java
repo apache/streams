@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.streams.urls;
 
 import com.google.common.base.Preconditions;
@@ -14,31 +31,43 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.*;
 
-/**
- * References:
- * Some helpful references to help
- * Purpose              URL
- * -------------        ----------------------------------------------------------------
- * [Status Codes]       http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
- * [Test Cases]         http://greenbytes.de/tech/tc/httpredirects/
- * [t.co behavior]      https://dev.twitter.com/docs/tco-redirection-behavior
- */
+public class LinkResolver implements Serializable {
 
-public class LinkResolver implements Serializable
-{
+    /**
+     * References:
+     * Some helpful references to demonstrate the different types of browser re-directs that
+     * can happen. If you notice a redirect that was not followed to the proper place please
+     * submit a bug at :
+     * https://issues.apache.org/jira/browse/STREAMS
+     * <p/>
+     * Purpose              URL
+     * -------------        ----------------------------------------------------------------
+     * [Status Codes]       http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+     * [Test Cases]         http://greenbytes.de/tech/tc/httpredirects/
+     * [t.co behavior]      https://dev.twitter.com/docs/tco-redirection-behavior
+     */
+
+
     private final static Logger LOGGER = LoggerFactory.getLogger(LinkResolver.class);
 
-    private static final int MAX_ALLOWED_REDIRECTS = 30;
-    private static final int DEFAULT_HTTP_TIMEOUT = 5000; //originally 30000
+    private static final int MAX_ALLOWED_REDIRECTS = 30;                // We will only chase the link to it's final destination a max of 30 times.
+    private static final int DEFAULT_HTTP_TIMEOUT = 10000;              // We will only wait a max of 10,000 milliseconds (10 seconds) for any HTTP response
     private static final String LOCATION_IDENTIFIER = "location";
     private static final String SET_COOKIE_IDENTIFIER = "set-cookie";
 
-    private LinkDetails linkDetails = new LinkDetails();
-
-    private static final Collection<String> BOTS_ARE_OK = new ArrayList<String>() {{
-       add("t.co");
+    // if Bots are not 'ok' this is the spoof settings that we'll use
+    private static final Map<String, String> SPOOF_HTTP_HEADERS = new HashMap<String, String>() {{
+        put("Connection", "Keep-Alive");
+        put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.48 Safari/537.36");
+        put("Accept-Language", "en-US,en;q=0.8,zh;q=0.6");
     }};
 
+    // These are the known domains that are 'bot' friendly.
+    private static final Collection<String> BOTS_ARE_OK = new ArrayList<String>() {{
+        add("t.co");
+    }};
+
+    // To help canonicalize the URL, these parts are 'known' to be 'ok' to remove
     private static final Collection<String> URL_TRACKING_TO_REMOVE = new ArrayList<String>() {{
         /******************************************************************
          * Google uses parameters in the URL string to track referrers
@@ -65,9 +94,28 @@ public class LinkResolver implements Serializable
         add("([\\?&])utm_campaign(=)[^&?]*");
     }};
 
-    public LinkDetails getLinkDetails()     { return linkDetails; }
 
+    // This element holds all the information about all the re-directs that have taken place
+    // and the steps and HTTP codes that occurred inside of each step.
+    private final LinkDetails linkDetails;
+    private Collection<String> domainsSensitiveTo = new HashSet<String>();
+
+    /**
+     * Get the link details
+     *
+     * @return Detailed log of every redirection that took place with the browser along with it it's ultimate status code.
+     */
+    public LinkDetails getLinkDetails() {
+        return linkDetails;
+    }
+
+    /**
+     * Raw string input of the URL. If the URL is invalid, the response code that is returned will indicate such.
+     *
+     * @param originalURL The URL you wish to unwind represented as a string.
+     */
     public LinkResolver(String originalURL) {
+        linkDetails = new LinkDetails();
         linkDetails.setOriginalURL(originalURL);
     }
 
@@ -76,12 +124,16 @@ public class LinkResolver implements Serializable
         Preconditions.checkNotNull(linkDetails.getOriginalURL());
 
         linkDetails.setStartTime(DateTime.now());
-        // we are going to try three times just incase we catch the service off-guard
-        // this is mainly to help us with our tests.
-        for(int i = 0; (i < 3) && linkDetails.getFinalURL() == null ; i++) {
-            if(linkDetails.getLinkStatus() != LinkDetails.LinkStatus.SUCCESS)
+
+        // we are going to try three times just in case we catch a slow server or one that needs
+        // to be warmed up. This tends to happen many times with smaller private servers
+        for (int i = 0; (i < 3) && linkDetails.getFinalURL() == null; i++)
+            if (linkDetails.getLinkStatus() != LinkDetails.LinkStatus.SUCCESS)
                 unwindLink(linkDetails.getOriginalURL());
-        }
+
+        // because this is a POJO we need to make sure that we set this to false if it was never re-directed
+        if(this.linkDetails.getRedirectCount() == 0 || this.linkDetails.getRedirected() == null)
+            this.linkDetails.setRedirected(false);
 
         linkDetails.setFinalURL(cleanURL(linkDetails.getFinalURL()));
         linkDetails.setNormalizedURL(normalizeURL(linkDetails.getFinalURL()));
@@ -95,73 +147,97 @@ public class LinkResolver implements Serializable
         linkDetails.setTookInMills(DateTime.now().minus(linkDetails.getStartTime().getMillis()).getMillis());
     }
 
-    public void unwindLink(String url)
-    {
+    public void unwindLink(String url) {
         Preconditions.checkNotNull(linkDetails);
+        Preconditions.checkNotNull(url);
 
-        // Check to see if they wound up in a redirect loop
-        if((linkDetails.getRedirectCount() != null && linkDetails.getRedirectCount().longValue() > 0 && (linkDetails.getOriginalURL().equals(url) || linkDetails.getRedirects().contains(url))) || (linkDetails.getRedirectCount().longValue() > MAX_ALLOWED_REDIRECTS))
-        {
+        // Check to see if they wound up in a redirect loop,
+        // IE: 'A' redirects to 'B', then 'B' redirects to 'A'
+        if ((linkDetails.getRedirectCount() != null && linkDetails.getRedirectCount() > 0 &&
+                (linkDetails.getOriginalURL().equals(url) || linkDetails.getRedirects().contains(url)))
+                || (linkDetails.getRedirectCount() != null && linkDetails.getRedirectCount() > MAX_ALLOWED_REDIRECTS)) {
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.LOOP);
             return;
         }
 
-        if(!linkDetails.getOriginalURL().equals(url))
+        if (!linkDetails.getOriginalURL().equals(url))
             linkDetails.getRedirects().add(url);
 
         HttpURLConnection connection = null;
 
-        try
-        {
+        // Store where the redirected link will go (if there is one)
+        String reDirectedLink = null;
+
+        try {
+            // Turn the string into a URL
             URL thisURL = new URL(url);
-            connection = (HttpURLConnection)new URL(url).openConnection();
+
+            // Be sensitive to overloading domains STREAMS-77
+            try {
+                String host = thisURL.getHost().toLowerCase();
+                if(!domainsSensitiveTo.contains(host)) {
+                    domainsSensitiveTo.add(host);
+                    long domainWait = LinkResolverHelperFunctions.waitTimeForDomain(thisURL.getHost());
+                    if (domainWait > 0) {
+                        LOGGER.debug("Waiting for domain: {}", domainWait);
+                        Thread.sleep(domainWait);
+                    }
+                }
+            } catch(Exception e) {
+                // noOp
+            }
+
+            connection = (HttpURLConnection) new URL(url).openConnection();
 
             // now we are going to pretend that we are a browser...
             // This is the way my mac works.
-            if(!BOTS_ARE_OK.contains(thisURL.getHost()))
-            {
+            if (!BOTS_ARE_OK.contains(thisURL.getHost())) {
                 connection.addRequestProperty("Host", thisURL.getHost());
-                connection.addRequestProperty("Connection", "Keep-Alive");
-                connection.addRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.48 Safari/537.36");
-                connection.addRequestProperty("Accept-Language", "en-US,en;q=0.8,zh;q=0.6");
+
+                // Bots are not 'ok', so we need to spoof the headers
+                for (String k : SPOOF_HTTP_HEADERS.keySet())
+                    connection.addRequestProperty(k, SPOOF_HTTP_HEADERS.get(k));
 
                 // the test to seattlemamadoc.com prompted this change.
                 // they auto detect bots by checking the referrer chain and the 'user-agent'
                 // this broke the t.co test. t.co URLs are EXPLICITLY ok with bots
                 // there is a list for URLS that behave this way at the top in BOTS_ARE_OK
                 // smashew 2013-13-2013
-
-                if(linkDetails.getRedirectCount() > 0 && BOTS_ARE_OK.contains(thisURL.getHost()))
+                if (linkDetails.getRedirectCount() > 0 && BOTS_ARE_OK.contains(thisURL.getHost()))
                     connection.addRequestProperty("Referrer", linkDetails.getOriginalURL());
             }
 
             connection.setReadTimeout(DEFAULT_HTTP_TIMEOUT);
             connection.setConnectTimeout(DEFAULT_HTTP_TIMEOUT);
 
+            // we want to follow this behavior on our own to ensure that we are getting to the
+            // proper place. This is especially true with links that are wounded by special
+            // link winders,
+            // IE:
             connection.setInstanceFollowRedirects(false);
 
-            if(linkDetails.getCookies() != null)
+            if (linkDetails.getCookies() != null)
                 for (String cookie : linkDetails.getCookies())
                     connection.addRequestProperty("Cookie", cookie.split(";", 1)[0]);
 
             connection.connect();
 
-            linkDetails.setFinalResponseCode((long)connection.getResponseCode());
+            linkDetails.setFinalResponseCode((long) connection.getResponseCode());
 
-            /**************
-             *
-             */
-            Map<String,List<String>> headers = createCaseInsensitiveMap(connection.getHeaderFields());
+            Map<String, List<String>> headers = createCaseInsensitiveMap(connection.getHeaderFields());
             /******************************************************************
              * If they want us to set cookies, well, then we will set cookies
              * Example URL:
              * http://nyti.ms/1bCpesx
              *****************************************************************/
-            if(headers.containsKey(SET_COOKIE_IDENTIFIER))
+            if (headers.containsKey(SET_COOKIE_IDENTIFIER))
                 linkDetails.getCookies().add(headers.get(SET_COOKIE_IDENTIFIER).get(0));
 
-            switch (linkDetails.getFinalResponseCode().intValue())
-            {
+            switch (linkDetails.getFinalResponseCode().intValue()) {
+                /**
+                 * W3C HTTP Response Codes:
+                 * http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+                 */
                 case 200: // HTTP OK
                     linkDetails.setFinalURL(connection.getURL().toString());
                     linkDetails.setDomain(new URL(linkDetails.getFinalURL()).getHost());
@@ -190,18 +266,15 @@ public class LinkResolver implements Serializable
                      * still render the page with it's content, but for us to assert
                      * a success, we are really hoping for a 304 message.
                      *******************************************************************/
-                    if(!linkDetails.getOriginalURL().toLowerCase().equals(connection.getURL().toString().toLowerCase()))
+                    if (!linkDetails.getOriginalURL().toLowerCase().equals(connection.getURL().toString().toLowerCase()))
                         linkDetails.setFinalURL(connection.getURL().toString());
-                    if(!headers.containsKey(LOCATION_IDENTIFIER))
-                    {
+                    if (!headers.containsKey(LOCATION_IDENTIFIER)) {
                         LOGGER.info("Headers: {}", headers);
                         linkDetails.setLinkStatus(LinkDetails.LinkStatus.REDIRECT_ERROR);
-                    }
-                    else
-                    {
+                    } else {
                         linkDetails.setRedirected(Boolean.TRUE);
-                        linkDetails.setRedirectCount(linkDetails.getRedirectCount().longValue()+1);
-                        unwindLink(connection.getHeaderField(LOCATION_IDENTIFIER));
+                        linkDetails.setRedirectCount(linkDetails.getRedirectCount() + 1);
+                        reDirectedLink = connection.getHeaderField(LOCATION_IDENTIFIER);
                     }
                     break;
                 case 305: // User must use the specified proxy (deprecated by W3C)
@@ -228,52 +301,51 @@ public class LinkResolver implements Serializable
                     linkDetails.setLinkStatus(LinkDetails.LinkStatus.NOT_FOUND);
                     break;
             }
-        }
-        catch (MalformedURLException e)
-        {
+        } catch (MalformedURLException e) {
             // the URL is trash, so, it can't load it.
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.MALFORMED_URL);
-        }
-        catch (IOException ex)
-        {
+        } catch (IOException ex) {
             // there was an issue we are going to set to error.
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             // there was an unknown issue we are going to set to exception.
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.EXCEPTION);
-        }
-        finally
-        {
+        } finally {
+            // if the connection is not null, then we need to disconnect to close any underlying resources
             if (connection != null)
                 connection.disconnect();
         }
+
+        // If there was a redirection, then we have to keep going
+        // Placing this code here should help to satisfy ensuring that the connection object
+        // is closed successfully.
+        if (reDirectedLink != null)
+            unwindLink(reDirectedLink);
+
     }
 
-    private Map<String,List<String>> createCaseInsensitiveMap(Map<String,List<String>> input) {
-        Map<String,List<String>> toReturn = new HashMap<String, List<String>>();
-        for(String k : input.keySet())
-            if(k != null && input.get(k) != null)
+    private Map<String, List<String>> createCaseInsensitiveMap(Map<String, List<String>> input) {
+        Map<String, List<String>> toReturn = new HashMap<String, List<String>>();
+        for (String k : input.keySet())
+            if (k != null && input.get(k) != null)
                 toReturn.put(k.toLowerCase(), input.get(k));
         return toReturn;
     }
 
-    private String cleanURL(String url)
-    {
+    private String cleanURL(String url) {
         // If they pass us a null URL then we are going to pass that right back to them.
-        if(url == null)
+        if (url == null)
             return null;
 
         // remember how big the URL was at the start
         int startLength = url.length();
 
         // Iterate through all the known URL parameters of tracking URLs
-        for(String pattern : URL_TRACKING_TO_REMOVE)
+        for (String pattern : URL_TRACKING_TO_REMOVE)
             url = url.replaceAll(pattern, "");
 
         // If the URL is smaller than when it came in. Then it had tracking information
-        if(url.length() < startLength)
+        if (url.length() < startLength)
             linkDetails.setTracked(Boolean.TRUE);
 
         // return our url.
@@ -284,11 +356,11 @@ public class LinkResolver implements Serializable
      * Removes the protocol, if it exists, from the front and
      * removes any random encoding characters
      * Extend this to do other url cleaning/pre-processing
+     *
      * @param url - The String URL to normalize
      * @return normalizedUrl - The String URL that has no junk or surprises
      */
-    public static String normalizeURL(String url)
-    {
+    public static String normalizeURL(String url) {
         // Decode URL to remove any %20 type stuff
         String normalizedUrl = url;
         try {
@@ -296,9 +368,7 @@ public class LinkResolver implements Serializable
             // but this functionality exists in most modern languages
             // and is universally called url decoding
             normalizedUrl = URLDecoder.decode(url, "UTF-8");
-        }
-        catch(UnsupportedEncodingException uee)
-        {
+        } catch (UnsupportedEncodingException uee) {
             System.err.println("Unable to Decode URL. Decoding skipped.");
             uee.printStackTrace();
         }
@@ -315,14 +385,14 @@ public class LinkResolver implements Serializable
     /**
      * Goal is to get the different parts of the URL path. This can be used
      * in a classifier to help us determine if we are working with
-     *
+     * <p/>
      * Reference:
      * http://stackoverflow.com/questions/10046178/pattern-matching-for-url-classification
+     *
      * @param url - Url to be tokenized
      * @return tokens - A String array of all the tokens
      */
-    public static List<String> tokenizeURL(String url)
-    {
+    public static List<String> tokenizeURL(String url) {
         url = normalizeURL(url);
         // I assume that we're going to use the whole URL to find tokens in
         // If you want to just look in the GET parameters, or you want to ignore the domain
@@ -333,7 +403,7 @@ public class LinkResolver implements Serializable
         // Split the URL by forward slashes. Most modern browsers will accept a URL
         // this malformed such as http://www.smashew.com/hello//how////are/you
         // hence the '+' in the regular expression.
-        for(String part: url.split("/+"))
+        for (String part : url.split("/+"))
             toReturn.add(part.toLowerCase());
 
         // return our object.
