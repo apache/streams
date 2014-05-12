@@ -80,7 +80,7 @@ public abstract class DomainSensitivity {
      */
     private static void purgeAnyExpiredDomains() {
         // ensure this method is synchronized to get the proper information
-        synchronized (RECENT_DOMAINS) {
+        synchronized (DomainSensitivity.class) {
             // figure the time that we would like for these domains to expire
             long currentTime = new Date().getTime();
             // see if there is any work that 'can' be done
