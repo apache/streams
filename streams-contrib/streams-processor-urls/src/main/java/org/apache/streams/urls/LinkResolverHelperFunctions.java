@@ -20,13 +20,36 @@ package org.apache.streams.urls;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.regex.Pattern;
 
 /**
- * This is a static utility helper class to obey domain sensitivity. It cannot be
- * instantiated and can only be referenced through the static accessor functions
+ * This is a static utility helper class to verify strings are URLs,
+ * obey domain sensitivity, and find URLs within a string.
+ * It cannot be, instantiated and can only be referenced through
+ * the static accessor functions
  *
  */
-public abstract class DomainSensitivity {
+public final class LinkResolverHelperFunctions {
+
+    private static final String REGEX_URL =
+            "(?:(?:https?|ftp)://)" +                                               // protocol identifier
+                    "(?:\\S+(?::\\S*)?@)?" +                                                // user:pass authentication
+                    "(?:" +
+                    "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +                                    // IP address exclusion
+                    "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +                       // private & local networks
+                    "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +
+                    "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +                              // IP address dotted notation octets
+                    "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +                          // excludes loop-back network 0.0.0.0, excludes network & broadcast addresses
+                    "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +                      // excludes reserved space >= 224.0.0.0, (first & last IP address of each class)
+                    "|" +
+                    "(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)" +         // host name
+                    "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*" +     // domain name
+                    "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))" +                                 // TLD identifier
+                    ")" +
+                    "(?::\\d{2,5})?" +                                                      // port number
+                    "(?:/[^\\s]*)?";                                                        // resource path
+
+    private static final String REGEX_URL_EXPLICIT = "^" + REGEX_URL + "$";
 
     // The amount of time we want to space between domain calls
     public static final long RECENT_DOMAINS_BACKOFF = 1000;
@@ -37,7 +60,22 @@ public abstract class DomainSensitivity {
 
     private static Timer timer;
 
-    private DomainSensitivity() {
+    /**
+     * Check to see if this string is a URL or not
+     * @param possibleURL
+     * The possible URL that we would like to test
+     * @return
+     * Whether or not it is a URL
+     */
+    public static boolean isURL(String possibleURL) {
+        return possibleURL.matches(REGEX_URL_EXPLICIT);
+    }
+
+    public static boolean containsURLs(String possiblyHasURLs) {
+        return possiblyHasURLs != null && Pattern.compile(REGEX_URL).matcher(possiblyHasURLs).find();
+    }
+
+    private LinkResolverHelperFunctions() {
         // force it not to be instantiated.
     }
 
@@ -49,7 +87,7 @@ public abstract class DomainSensitivity {
         domain = domain.toLowerCase();
 
         long toReturn = 0;
-        synchronized (DomainSensitivity.class) {
+        synchronized (LinkResolverHelperFunctions.class) {
             purgeAnyExpiredDomains();
             // if the timer doesn't exist, then setup the timer (IE: first time called)
             if(timer == null)
@@ -97,7 +135,7 @@ public abstract class DomainSensitivity {
      */
     private static void purgeAnyExpiredDomains() {
         // ensure this method is synchronized to get the proper information
-        synchronized (DomainSensitivity.class) {
+        synchronized (LinkResolverHelperFunctions.class) {
             // figure the time that we would like for these domains to expire
             long currentTime = new Date().getTime();
             // see if there is any work that 'can' be done

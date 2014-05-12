@@ -69,7 +69,7 @@ public class TestLinkUnwinderProcessor {
     }
 
     public void testActivityUnwinderHelper(List<String> input, List<String> expected) throws Exception{
-        DomainSensitivity.purgeAllDomainWaitTimes();
+        LinkResolverHelperFunctions.purgeAllDomainWaitTimes();
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.registerModule(new StreamsJacksonModule());
@@ -92,7 +92,7 @@ public class TestLinkUnwinderProcessor {
     }
 
     public void testStringActivityUnwinderHelper(List<String> input, List<String> expected) throws Exception{
-        DomainSensitivity.purgeAllDomainWaitTimes();
+        LinkResolverHelperFunctions.purgeAllDomainWaitTimes();
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.registerModule(new StreamsJacksonModule());

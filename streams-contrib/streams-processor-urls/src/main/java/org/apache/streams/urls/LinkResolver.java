@@ -177,7 +177,7 @@ public class LinkResolver implements Serializable {
                 String host = thisURL.getHost().toLowerCase();
                 if(!domainsSensitiveTo.contains(host)) {
                     domainsSensitiveTo.add(host);
-                    long domainWait = DomainSensitivity.waitTimeForDomain(thisURL.getHost());
+                    long domainWait = LinkResolverHelperFunctions.waitTimeForDomain(thisURL.getHost());
                     if (domainWait > 0) {
                         LOGGER.debug("Waiting for domain: {}", domainWait);
                         Thread.sleep(domainWait);
