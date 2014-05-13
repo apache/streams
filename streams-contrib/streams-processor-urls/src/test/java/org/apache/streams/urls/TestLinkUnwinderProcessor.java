@@ -8,9 +8,10 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonModule;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Created by rebanks on 2/27/14.
@@ -63,11 +64,12 @@ public class TestLinkUnwinderProcessor {
 
     @Test
     public void testActivityLinkUnwinderProcessorUnwindable() throws Exception{
-        testActivityUnwinderHelper(Lists.newArrayList("http://bit.ly/1cX5Rh4", "http://nope@#$%"), Lists.newArrayList("http://www.wcgworld.com/"));
-        testStringActivityUnwinderHelper(Lists.newArrayList("http://bit.ly/1cX5Rh4", "http://nope@#$%"), Lists.newArrayList("http://www.wcgworld.com/"));
+        testActivityUnwinderHelper(Lists.newArrayList("http://bit.ly/1cX5Rh4", "http://nope@#$%e"), Lists.newArrayList("http://www.wcgworld.com/"));
+        testStringActivityUnwinderHelper(Lists.newArrayList("http://bit.ly/1cX5Rh4", "http://nope@#$%s"), Lists.newArrayList("http://www.wcgworld.com/"));
     }
 
     public void testActivityUnwinderHelper(List<String> input, List<String> expected) throws Exception{
+        LinkResolverHelperFunctions.purgeAllDomainWaitTimes();
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.registerModule(new StreamsJacksonModule());
@@ -90,6 +92,7 @@ public class TestLinkUnwinderProcessor {
     }
 
     public void testStringActivityUnwinderHelper(List<String> input, List<String> expected) throws Exception{
+        LinkResolverHelperFunctions.purgeAllDomainWaitTimes();
         ObjectMapper mapper = new ObjectMapper();
         mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.registerModule(new StreamsJacksonModule());

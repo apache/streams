@@ -1,7 +1,9 @@
 package org.apache.streams.twitter.provider;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Queues;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
@@ -17,10 +19,15 @@ import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
+import twitter4j.json.DataObjectFactory;
 
 import java.io.Serializable;
+import java.lang.Math;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -47,15 +54,19 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         this.config = config;
     }
 
-    protected final Queue<StreamsDatum> providerQueue = Queues.synchronizedQueue(new ArrayBlockingQueue<StreamsDatum>(500));
+    protected final Queue<StreamsDatum> providerQueue = Queues.synchronizedQueue(new ArrayBlockingQueue<StreamsDatum>(5000));
 
     protected int idsCount;
+    protected Twitter client;
     protected Iterator<Long> ids;
 
     protected ListeningExecutorService executor;
 
     protected DateTime start;
     protected DateTime end;
+
+    Boolean jsonStoreEnabled;
+    Boolean includeEntitiesEnabled;
 
     private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
         return new ThreadPoolExecutor(nThreads, nThreads,
@@ -66,7 +77,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     public TwitterTimelineProvider() {
         Config config = StreamsConfigurator.config.getConfig("twitter");
         this.config = TwitterStreamConfigurator.detectConfiguration(config);
-
     }
 
     public TwitterTimelineProvider(TwitterStreamConfiguration config) {
@@ -90,23 +100,26 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     @Override
     public void startStream() {
-        // no op
+        LOGGER.debug("{} startStream", STREAMS_ID);
+        throw new org.apache.commons.lang.NotImplementedException();
     }
 
     protected void captureTimeline(long currentId) {
 
         Paging paging = new Paging(1, 200);
         List<Status> statuses = null;
+        boolean KeepGoing = true;
+        boolean hadFailure = false;
 
         do
         {
-            Twitter client = getTwitterClient();
             int keepTrying = 0;
 
             // keep trying to load, give it 5 attempts.
             //while (keepTrying < 10)
             while (keepTrying < 1)
             {
+
                 try
                 {
                     statuses = client.getUserTimeline(currentId, paging);
@@ -143,7 +156,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         try {
             // wait one tenth of a millisecond
             Thread.yield();
-            Thread.sleep(new Random().nextInt(2));
+            Thread.sleep(1);
             Thread.yield();
         }
         catch(IllegalArgumentException e) {
@@ -156,15 +169,20 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     }
 
     public StreamsResultSet readCurrent() {
+        LOGGER.debug("{} readCurrent", STREAMS_ID);
 
         Preconditions.checkArgument(ids.hasNext());
 
-        LOGGER.info("readCurrent");
+        StreamsResultSet current;
 
-        while( ids.hasNext() ) {
-            Long currentId = ids.next();
-            LOGGER.info("Provider Task Starting: {}", currentId);
-            captureTimeline(currentId);
+        synchronized( TwitterTimelineProvider.class ) {
+
+            while( ids.hasNext() ) {
+                Long currentId = ids.next();
+                LOGGER.info("Provider Task Starting: {}", currentId);
+                captureTimeline(currentId);
+            }
+
         }
 
         LOGGER.info("Finished.  Cleaning up...");
@@ -186,11 +204,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         LOGGER.debug("{} readRange", STREAMS_ID);
-        this.start = start;
-        this.end = end;
-        readCurrent();
-        StreamsResultSet result = (StreamsResultSet)providerQueue.iterator();
-        return result;
+        throw new NotImplementedException();
     }
 
     void shutdownAndAwaitTermination(ExecutorService pool) {
@@ -227,8 +241,14 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
         idsCount = config.getFollow().size();
         ids = config.getFollow().iterator();
+
+        jsonStoreEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getJsonStoreEnabled()))).or(true);
+        includeEntitiesEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getIncludeEntities()))).or(true);
+
+        client = getTwitterClient();
     }
 
+    
     protected Twitter getTwitterClient()
     {
         String baseUrl = "https://api.twitter.com:443/1.1/";
@@ -238,8 +258,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                 .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
                 .setOAuthAccessToken(config.getOauth().getAccessToken())
                 .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
-                .setIncludeEntitiesEnabled(true)
-                .setJSONStoreEnabled(true)
+                .setIncludeEntitiesEnabled(includeEntitiesEnabled)
+                .setJSONStoreEnabled(jsonStoreEnabled)
                 .setAsyncNumThreads(3)
                 .setRestBaseURL(baseUrl)
                 .setIncludeMyRetweetEnabled(Boolean.TRUE)

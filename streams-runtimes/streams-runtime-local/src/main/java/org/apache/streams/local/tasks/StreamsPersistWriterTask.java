@@ -72,12 +72,13 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
         try {
             this.writer.prepare(this.streamConfig);
             StreamsDatum datum = this.inQueue.poll();
-            while(datum != null || this.keepRunning.get()) {
+            while(this.keepRunning.get()) {
                 if(datum != null) {
                     try {
                         this.writer.write(datum);
                         statusCounter.incrementStatus(DatumStatus.SUCCESS);
                     } catch (Exception e) {
+                        LOGGER.error("Error writing to persist writer {}", this.writer.getClass().getSimpleName(), e);
                         this.keepRunning.set(false);
                         statusCounter.incrementStatus(DatumStatus.FAIL);
                     }
@@ -86,12 +87,15 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                     try {
                         Thread.sleep(this.sleepTime);
                     } catch (InterruptedException e) {
+                        LOGGER.warn("Thread interrupted in Writer task for {}",this.writer.getClass().getSimpleName(), e);
                         this.keepRunning.set(false);
                     }
                 }
                 datum = this.inQueue.poll();
             }
 
+        } catch(Exception e) {
+            LOGGER.error("Failed to execute Persist Writer {}",this.writer.getClass().getSimpleName(), e);
         } finally {
             this.writer.cleanUp();
             this.isRunning.set(false);
