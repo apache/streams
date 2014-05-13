@@ -8,8 +8,9 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 
 import java.io.IOException;
+import java.io.Serializable;
 
-public class StreamsPeriodSerializer extends StdSerializer<Period>
+public class StreamsPeriodSerializer extends StdSerializer<Period> implements Serializable
 {
     protected StreamsPeriodSerializer(Class<Period> dateTimeClass) {
         super(dateTimeClass);

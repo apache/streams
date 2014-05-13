@@ -13,6 +13,19 @@
         "type": {
             "type": "string",
             "description": "Type to write as"
-        }
+        },
+        "bulk": {
+            "type": "boolean",
+            "description": "Index in large or small batches",
+            "default": "false"
+        },
+        "batchSize": {
+            "type": "integer",
+            "description": "Item Count before flush",
+            "default": 100
+        },
+		"maxTimeBetweenFlushMs": {
+			"type": "integer"
+		}
     }
 }
