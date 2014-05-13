@@ -27,6 +27,7 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -56,10 +57,11 @@ public class RegexUtilsTest {
                 {"#\\w+", "This is #freakingcrazydude.", 1, 1},
                 {"#\\w+", "This is #freakingcrazydude!", 1, 1},
                 {"#\\w+", "This is #freakingcrazydude I went to the moon", 1, 1},
-                {"#\\w+", "This is #freakingcrazydude I went to the #freakingcrazydude? party", 2, 2},
-                {"#\\w+", "This is #freakingcrazydude I went to the #freakingcrazydude; party", 2, 2},
-                {"#\\w+", "This is #freakingcrazydude I went to the #freakingcrazydude, party", 2, 2},
-                {"#\\w+", "This is#freakingcrazydude I went to the #freakingcrazydude party", 2, 1},
+                {"#\\w+", "This is #freakingcrazydude I went to the #crazy? party", 2, 2},
+                {"#\\w+", "This is #freakingcrazydude I went to the #crazy; party", 2, 2},
+                {"#\\w+", "This is #freakingcrazydude I went to the #crazy, party", 2, 2},
+                {"#\\w+", "This is#freakingcrazydude I went to the #crazy party", 2, 1},
+                {"#\\w+", "This is #freakingcrazydude I went to the #freakingcrazydude party", 1, 1},
                 {"#\\w+", "#what does the fox say?", 1, 1},
                 {"#\\w+", "#what does the fox #say", 2, 2}
         });
@@ -68,10 +70,10 @@ public class RegexUtilsTest {
 
     @Test
     public void testMatches_simple() {
-        List<String> wordResults = RegexUtils.extractWordMatches(this.pattern, this.content);
+        Map<String, List<Integer>> wordResults = RegexUtils.extractWordMatches(this.pattern, this.content);
         assertThat(wordResults.size(), is(equalTo(wordMatchCount)));
 
-        List<String> regularResults = RegexUtils.extractMatches(this.pattern, this.content);
+        Map<String, List<Integer>> regularResults = RegexUtils.extractMatches(this.pattern, this.content);
         assertThat(regularResults.size(), is(equalTo(regularMatchCount)));
     }
 

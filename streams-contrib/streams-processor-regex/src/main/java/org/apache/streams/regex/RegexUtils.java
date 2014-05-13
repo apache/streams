@@ -19,10 +19,11 @@
 
 package org.apache.streams.regex;
 
-import java.util.LinkedList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +32,7 @@ import java.util.regex.Pattern;
  */
 public class RegexUtils {
 
-    private static final Map<String, Pattern> patternCache = new ConcurrentHashMap<String, Pattern>();
+    private static final Map<String, Pattern> patternCache = Maps.newConcurrentMap();
 
     private RegexUtils() {}
 
@@ -41,7 +42,7 @@ public class RegexUtils {
      * @param content the complete content to find matches in.
      * @return a non-null list of matches.
      */
-    public static List<String> extractMatches(String pattern, String content) {
+    public static Map<String, List<Integer>> extractMatches(String pattern, String content) {
         return getMatches(pattern, content, -1);
     }
 
@@ -51,21 +52,28 @@ public class RegexUtils {
      * @param content the complete content to find matches in.
      * @return a non-null list of matches.
      */
-    public static List<String> extractWordMatches(String pattern, String content) {
+    public static Map<String, List<Integer>> extractWordMatches(String pattern, String content) {
         pattern = "(^|\\s)(" + pattern + ")([\\s!\\.;,?]|$)";
         return getMatches(pattern, content, 2);
     }
 
-    protected static List<String> getMatches(String pattern, String content, int capture) {
+    protected static Map<String, List<Integer>> getMatches(String pattern, String content, int capture) {
         Matcher m = getPattern(pattern).matcher(content);
-        List<String> result = new LinkedList<String>();
+        Map<String, List<Integer>> matches = Maps.newHashMap();
         while(m.find()) {
             String group = capture > 0 ? m.group(capture) : m.group();
             if(group != null && !group.equals("")) {
-                result.add(group);
+                List<Integer> indices;
+                if(matches.containsKey(group)) {
+                    indices = matches.get(group);
+                } else {
+                    indices = Lists.newArrayList();
+                    matches.put(group, indices);
+                }
+                indices.add(m.start());
             }
         }
-        return result;
+        return matches;
     }
 
     private static Pattern getPattern(String pattern) {

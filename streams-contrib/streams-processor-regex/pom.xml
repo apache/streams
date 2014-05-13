@@ -30,5 +30,14 @@
 
     <artifactId>streams-processor-regex</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-pojo</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-core</artifactId>
+        </dependency>
+    </dependencies>
 </project>
