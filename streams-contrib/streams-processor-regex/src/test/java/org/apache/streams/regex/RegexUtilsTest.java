@@ -56,7 +56,9 @@ public class RegexUtilsTest {
                 {"#\\w+", "This is #freakingcrazydude.", 1, 1},
                 {"#\\w+", "This is #freakingcrazydude!", 1, 1},
                 {"#\\w+", "This is #freakingcrazydude I went to the moon", 1, 1},
-                {"#\\w+", "This is #freakingcrazydude I went to the #freakingcrazydude party", 2, 2},
+                {"#\\w+", "This is #freakingcrazydude I went to the #freakingcrazydude? party", 2, 2},
+                {"#\\w+", "This is #freakingcrazydude I went to the #freakingcrazydude; party", 2, 2},
+                {"#\\w+", "This is #freakingcrazydude I went to the #freakingcrazydude, party", 2, 2},
                 {"#\\w+", "This is#freakingcrazydude I went to the #freakingcrazydude party", 2, 1},
                 {"#\\w+", "#what does the fox say?", 1, 1},
                 {"#\\w+", "#what does the fox #say", 2, 2}

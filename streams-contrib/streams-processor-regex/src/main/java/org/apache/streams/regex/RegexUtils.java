@@ -52,7 +52,7 @@ public class RegexUtils {
      * @return a non-null list of matches.
      */
     public static List<String> extractWordMatches(String pattern, String content) {
-        pattern = "(^|\\s)(" + pattern + ")([\\s!\\.;,]|$)";
+        pattern = "(^|\\s)(" + pattern + ")([\\s!\\.;,?]|$)";
         return getMatches(pattern, content, 2);
     }
 
