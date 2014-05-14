@@ -34,7 +34,7 @@ public class RegexMentionsExtractor extends AbstractRegexExtensionExtractor<Map<
     public static final String EXTENSION_KEY = "user_mentions";
     public static final String DISPLAY_KEY = "displayName";
 
-    protected RegexMentionsExtractor() {
+    public RegexMentionsExtractor() {
         super(PATTERN_CONFIG_KEY, EXTENSION_KEY, DEFAULT_PATTERN);
     }
 
