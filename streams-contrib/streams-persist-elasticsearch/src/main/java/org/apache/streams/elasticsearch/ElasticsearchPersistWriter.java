@@ -45,6 +45,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushable, Closeable, DatumStatusCountable {
     public static final String STREAMS_ID = "ElasticsearchPersistWriter";
+
     public volatile long flushThresholdSizeInBytes = DEFAULT_BULK_FLUSH_THRESHOLD;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistWriter.class);
@@ -55,6 +56,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     private static final int BYTES_IN_MB = 1024 * 1024;
     private static final int BYTES_BEFORE_FLUSH = 5 * BYTES_IN_MB;
     private static final long DEFAULT_MAX_WAIT = 10000;
+    private static final int DEFAULT_BATCH_SIZE = 100;
 
     private final List<String> affectedIndexes = new ArrayList<String>();
     private final ScheduledExecutorService backgroundFlushTask = Executors.newSingleThreadScheduledExecutor();
@@ -67,21 +69,22 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     private String parentID = null;
     private BulkRequestBuilder bulkRequest;
     private OutputStreamWriter currentWriter = null;
-    private int batchSize = 50;
-    private int totalRecordsWritten = 0;
-    private long maxMsBeforeFlush;
+    private int batchSize;
+    private long maxTimeBetweenFlushMs;
     private boolean veryLargeBulk = false;  // by default this setting is set to false
 
     protected Thread task;
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
+    private volatile int currentItems = 0;
     private volatile int totalSent = 0;
     private volatile int totalSeconds = 0;
     private volatile int totalAttempted = 0;
     private volatile int totalOk = 0;
     private volatile int totalFailed = 0;
     private volatile int totalBatchCount = 0;
+    private volatile int totalRecordsWritten = 0;
     private volatile long totalSizeInBytes = 0;
     private volatile long batchSizeInBytes = 0;
     private volatile int batchItemsSent = 0;
@@ -105,7 +108,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     public void setVeryLargeBulk(boolean veryLargeBulk) {
         this.veryLargeBulk = veryLargeBulk;
     }
-
 
     public int getTotalOutstanding() {
         return this.totalSent - (this.totalFailed + this.totalOk);
@@ -153,6 +155,14 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
     public void setFlushThresholdSizeInBytes(long sizeInBytes) {
         this.flushThresholdSizeInBytes = sizeInBytes;
+    }
+
+    public long getMaxTimeBetweenFlushMs() {
+        return maxTimeBetweenFlushMs;
+    }
+
+    public void setMaxTimeBetweenFlushMs(long maxTimeBetweenFlushMs) {
+        this.maxTimeBetweenFlushMs = maxTimeBetweenFlushMs;
     }
 
     public boolean isConnected() {
@@ -250,13 +260,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     }
 
     @Override
-    public void prepare(Object configurationObject) {
-        maxMsBeforeFlush = config.getMaxTimeBetweenFlushMs() == null ? DEFAULT_MAX_WAIT : config.getMaxTimeBetweenFlushMs();
-        mapper = StreamsJacksonMapper.getInstance();
-        start();
-    }
-
-    @Override
     public DatumStatusCounter getDatumStatusCounter() {
         DatumStatusCounter counters = new DatumStatusCounter();
         counters.incrementAttempt(this.batchItemsSent);
@@ -271,12 +274,12 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
             public void run() {
                 LOGGER.debug("Checking to see if data needs to be flushed");
                 long time = System.currentTimeMillis() - lastWrite.get();
-                if (time > maxMsBeforeFlush && batchItemsSent > 0) {
+                if (time > maxTimeBetweenFlushMs && batchItemsSent > 0) {
                     LOGGER.debug("Background Flush task determined {} are waiting to be flushed.  It has been {} since the last write to ES", batchItemsSent, time);
                     flushInternal();
                 }
             }
-        }, 0, maxMsBeforeFlush * 2, TimeUnit.MILLISECONDS);
+        }, 0, maxTimeBetweenFlushMs * 2, TimeUnit.MILLISECONDS);
         manager = new ElasticsearchClientManager(config);
         client = manager.getClient();
 
@@ -405,7 +408,50 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         } finally {
             lock.writeLock().unlock();
         }
+    }
 
+    private void trackItemAndBytesWritten(long sizeInBytes)
+    {
+        currentItems++;
+        batchItemsSent++;
+        batchSizeInBytes += sizeInBytes;
+
+        // If our queue is larger than our flush threashold, then we should flush the queue.
+        if( (batchSizeInBytes > flushThresholdSizeInBytes) ||
+                (currentItems >= batchSize) ) {
+            flushInternal();
+            this.currentItems = 0;
+        }
+    }
+
+    private void checkIndexImplications(String indexName)
+    {
+
+        // check to see if we have seen this index before.
+        if(this.affectedIndexes.contains(indexName))
+            return;
+
+        // we haven't log this index.
+        this.affectedIndexes.add(indexName);
+
+        // Check to see if we are in 'veryLargeBulk' mode
+        // if we aren't, exit early
+        if(!this.veryLargeBulk)
+            return;
+
+
+        // They are in 'very large bulk' mode we want to turn off refreshing the index.
+
+        // Create a request then add the setting to tell it to stop refreshing the interval
+        UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(indexName);
+        updateSettingsRequest.settings(ImmutableSettings.settingsBuilder().put("refresh_interval", -1));
+
+        // submit to ElasticSearch
+        this.manager.getClient()
+                .admin()
+                .indices()
+                .updateSettings(updateSettingsRequest)
+                .actionGet();
     }
 
     public void createIndexIfMissing(String indexName) {
@@ -473,6 +519,15 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         return toReturn;
     }
 
+    @Override
+    public void prepare(Object configurationObject) {
+        mapper = StreamsJacksonMapper.getInstance();
+        veryLargeBulk = config.getBulk() == null ? Boolean.FALSE : config.getBulk();
+        batchSize = config.getBatchSize() == null ? DEFAULT_BATCH_SIZE : (int)(config.getBatchSize().longValue());
+        maxTimeBetweenFlushMs = config.getMaxTimeBetweenFlushMs() == null ? DEFAULT_MAX_WAIT : config.getMaxTimeBetweenFlushMs().longValue();
+        start();
+    }
+    
     /**
      * This method is to ONLY be called by flushInternal otherwise the counts will be off.
      * @param bulkRequest
@@ -523,14 +578,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         });
     }
 
-    private void trackItemAndBytesWritten(long sizeInBytes) {
-        batchItemsSent++;
-        batchSizeInBytes += sizeInBytes;
 
-        // If our queue is larger than our flush threashold, then we should flush the queue.
-        if (batchSizeInBytes > flushThresholdSizeInBytes)
-            flushInternal();
-    }
 
     private void checkAndCreateBulkRequest() {
         // Synchronize to ensure that we don't lose any records
@@ -543,32 +591,5 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         }
     }
 
-    private void checkIndexImplications(String indexName) {
-
-        // check to see if we have seen this index before.
-        if (this.affectedIndexes.contains(indexName))
-            return;
-
-        // we haven't log this index.
-        this.affectedIndexes.add(indexName);
-
-        // Check to see if we are in 'veryLargeBulk' mode
-        // if we aren't, exit early
-        if (!this.veryLargeBulk)
-            return;
-
-
-        // They are in 'very large bulk' mode we want to turn off refreshing the index.
-
-        // Create a request then add the setting to tell it to stop refreshing the interval
-        UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(indexName);
-        updateSettingsRequest.settings(ImmutableSettings.settingsBuilder().put("refresh_interval", -1));
-
-        // submit to ElasticSearch
-        this.manager.getClient()
-                .admin()
-                .indices()
-                .updateSettings(updateSettingsRequest)
-                .actionGet();
-    }
 }
+

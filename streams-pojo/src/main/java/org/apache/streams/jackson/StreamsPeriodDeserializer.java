@@ -7,8 +7,9 @@ import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.Period;
 
 import java.io.IOException;
+import java.io.Serializable;
 
-public class StreamsPeriodDeserializer extends StdDeserializer<Period>
+public class StreamsPeriodDeserializer extends StdDeserializer<Period> implements Serializable
 {
 
     protected StreamsPeriodDeserializer(Class<Period> dateTimeClass) {

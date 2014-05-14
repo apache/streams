@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.io.Serializable;
 import java.util.Map;
 
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
@@ -43,7 +44,7 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 /**
  * Created by sblackmon on 3/26/14.
  */
-public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
+public class TwitterJsonActivitySerializer implements ActivitySerializer<String>, Serializable
 {
 
     public TwitterJsonActivitySerializer() {

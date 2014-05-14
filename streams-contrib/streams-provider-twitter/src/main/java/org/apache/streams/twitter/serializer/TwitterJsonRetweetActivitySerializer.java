@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 * Time: 9:24 AM
 * To change this template use File | Settings | File Templates.
 */
-public class TwitterJsonRetweetActivitySerializer implements ActivitySerializer<String> {
+public class TwitterJsonRetweetActivitySerializer implements ActivitySerializer<String>, Serializable {
 
     public TwitterJsonRetweetActivitySerializer() {
 

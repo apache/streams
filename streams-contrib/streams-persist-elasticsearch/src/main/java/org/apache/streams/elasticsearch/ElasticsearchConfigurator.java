@@ -53,9 +53,16 @@ public class ElasticsearchConfigurator {
         String type = elasticsearch.getString("type");
         Long maxMsBeforeFlush = elasticsearch.hasPath("MaxTimeBetweenFlushMs") ? elasticsearch.getLong("MaxTimeBetweenFlushMs") : null;
 
+        if( elasticsearch.hasPath("bulk"))
+            elasticsearchWriterConfiguration.setBulk(elasticsearch.getBoolean("bulk"));
+
+        if( elasticsearch.hasPath("batchSize"))
+            elasticsearchWriterConfiguration.setBatchSize(elasticsearch.getLong("batchSize"));
+
         elasticsearchWriterConfiguration.setIndex(index);
         elasticsearchWriterConfiguration.setType(type);
         elasticsearchWriterConfiguration.setMaxTimeBetweenFlushMs(maxMsBeforeFlush);
+
 
         return elasticsearchWriterConfiguration;
     }

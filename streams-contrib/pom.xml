@@ -49,14 +49,15 @@
         <!--<module>streams-processor-tika</module>-->
         <module>streams-processor-json</module>
         <module>streams-processor-urls</module>
-        <module>streams-provider-datasift</module>
+        <module>streams-provider-gnip</module>
         <module>streams-provider-facebook</module>
         <module>streams-provider-google</module>
-        <module>streams-provider-gnip</module>
         <module>streams-provider-moreover</module>
         <module>streams-provider-twitter</module>
+        <module>streams-provider-datasift</module>
         <module>streams-provider-sysomos</module>
         <module>streams-provider-rss</module>
+        <module>streams-processor-regex</module>
     </modules>
 
     <dependencyManagement>

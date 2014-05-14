@@ -19,7 +19,11 @@ import org.apache.streams.urls.LinkDetails;
 import twitter4j.HashtagEntity;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer.*;
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
@@ -31,11 +35,7 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 * Time: 9:24 AM
 * To change this template use File | Settings | File Templates.
 */
-public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<String> {
-
-    public TwitterJsonTweetActivitySerializer() {
-
-    }
+public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<String>, Serializable {
 
     @Override
     public String serializationFormat() {
