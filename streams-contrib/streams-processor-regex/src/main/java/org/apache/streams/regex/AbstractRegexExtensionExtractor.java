@@ -26,6 +26,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,7 +64,7 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
         }
         Activity activity = (Activity)entry.getDocument();
         Map<String, List<Integer>> matches = RegexUtils.extractMatches(pattern, activity.getContent());
-        Set<T> entities = ensureMentionExtension(activity);
+        Collection<T> entities = ensureTargetObject(activity);
         for(String key : matches.keySet()) {
             entities.add(prepareObject(key));
         }
@@ -96,7 +97,7 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
     protected abstract T prepareObject(String extracted);
 
     @SuppressWarnings("unchecked")
-    protected Set<T> ensureMentionExtension(Activity activity) {
+    protected Collection<T> ensureTargetObject(Activity activity) {
         Map<String, Object> extensions = ensureExtensions(activity);
         Set<T> hashtags;
         if(extensions.containsKey(extensionKey)) {
