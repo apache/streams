@@ -19,79 +19,25 @@
 
 package org.apache.streams.regex;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.pojo.json.Activity;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
  * Processes the content of an {@link org.apache.streams.pojo.json.Activity} object to extract the Hashtags and add
  * them to the appropriate extensions object
  */
-public class RegexHashtagExtractor implements StreamsProcessor{
+public class RegexHashtagExtractor extends AbstractRegexExtensionExtractor<String> implements StreamsProcessor{
 
     public final static String DEFAULT_PATTERN = "#\\w+";
     public final static String PATTERN_CONFIG_KEY = "HashtagPattern";
     public final static String EXTENSION_KEY = "hashtags";
 
-    private String hashPattern;
-
-    public String getHashPattern() {
-        return hashPattern;
+    public RegexHashtagExtractor() {
+        super(PATTERN_CONFIG_KEY, EXTENSION_KEY, DEFAULT_PATTERN);
     }
+
 
     @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        if(!(entry.getDocument() instanceof Activity)) {
-            return Lists.newArrayList();
-        }
-        if(Strings.isNullOrEmpty(hashPattern)) {
-            prepare(null);
-        }
-        Activity activity = (Activity)entry.getDocument();
-        Map<String, List<Integer>> matches = RegexUtils.extractMatches(hashPattern, activity.getContent());
-        Set<String> hashtags = ensureHashtagsExtension(activity);
-        for(String key : matches.keySet()) {
-            hashtags.add(key.substring(1));
-        }
-        return Lists.newArrayList(entry);
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-        if(configurationObject instanceof Map) {
-            if(((Map)configurationObject).containsKey(PATTERN_CONFIG_KEY)) {
-                hashPattern = (String)((Map)configurationObject).get(PATTERN_CONFIG_KEY);
-            }
-        } else if(configurationObject instanceof String) {
-            hashPattern = (String)configurationObject;
-        } else {
-            hashPattern = DEFAULT_PATTERN;
-        }
-    }
-
-    @Override
-    public void cleanUp() {
-        //NOP
-    }
-
-    protected Set<String> ensureHashtagsExtension(Activity activity) {
-        Map<String, Object> extensions = ensureExtensions(activity);
-        Set<String> hashtags;
-        if(extensions.containsKey(EXTENSION_KEY)) {
-            hashtags = Sets.newHashSet((Iterable<String>) extensions.get(EXTENSION_KEY));
-        } else {
-            hashtags = Sets.newHashSet();
-            extensions.put(EXTENSION_KEY, hashtags);
-        }
-        return hashtags;
+    protected String prepareObject(String extracted) {
+        return extracted.substring(1);
     }
 }

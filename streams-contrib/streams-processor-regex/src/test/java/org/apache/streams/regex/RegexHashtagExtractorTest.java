@@ -55,11 +55,13 @@ public class RegexHashtagExtractorTest {
                 {"This is the #content of a standard tweet", Sets.newHashSet("content")},
                 {"This is the content of a standard tweet", Sets.newHashSet()},
                 {"This is the #content of a standard #tweet", Sets.newHashSet("content", "tweet")},
-                {"This is the body of a #fbpost.  It can have multiple lines of #content, as well as much more detailed and flowery #language.", Sets.newHashSet("content", "fbpost", "language")}
+                {"UNIX 时间1400000000 秒…… （该睡觉了，各位夜猫子）#程序员#", Sets.newHashSet("程序员")},
+                {"This is the body of a #fbpost. It can have multiple lines of #content, as well as much more detailed and flowery #language.", Sets.newHashSet("content", "fbpost", "language")}
         });
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testExtraction() {
         StreamsDatum datum = new StreamsDatum(activity, "Test");
         List<StreamsDatum> result = new RegexHashtagExtractor().process(datum);
