@@ -2,10 +2,7 @@ package org.apache.streams.local.builders;
 
 import org.apache.log4j.spi.LoggerFactory;
 import org.apache.streams.core.*;
-import org.apache.streams.local.tasks.LocalStreamProcessMonitorThread;
-import org.apache.streams.local.tasks.StatusCounterMonitorThread;
-import org.apache.streams.local.tasks.StreamsProviderTask;
-import org.apache.streams.local.tasks.StreamsTask;
+import org.apache.streams.local.tasks.*;
 import org.apache.streams.util.SerializationUtil;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -26,6 +23,9 @@ public class LocalStreamBuilder implements StreamBuilder {
 
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(LocalStreamBuilder.class);
 
+
+    private Collection<StatusCounterMonitorRunnable> statusCounterMonitors = new ArrayList<StatusCounterMonitorRunnable>();
+
     public static final String TIMEOUT_KEY = "TIMEOUT";
     private Map<String, StreamComponent> providers;
     private Map<String, StreamComponent> components;
@@ -35,7 +35,6 @@ public class LocalStreamBuilder implements StreamBuilder {
     private ExecutorService monitor;
     private int totalTasks;
     private int monitorTasks;
-    private LocalStreamProcessMonitorThread monitorThread;
     private Map<String, List<StreamsTask>> tasks;
 
     /**
@@ -151,8 +150,13 @@ public class LocalStreamBuilder implements StreamBuilder {
         Map<String, StreamsProviderTask> provTasks = new HashMap<String, StreamsProviderTask>();
         tasks = new HashMap<String, List<StreamsTask>>();
         try {
-            monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
-            this.monitor.submit(monitorThread);
+
+            LocalStreamProcessMonitorThread processMonitor = new LocalStreamProcessMonitorThread(executor, 10);
+
+            // add it to our Collection so we can kill it later
+            this.statusCounterMonitors.add(processMonitor);
+            this.monitor.submit(processMonitor);
+
             setupComponentTasks(tasks);
             setupProviderTasks(provTasks);
             LOGGER.info("Started stream with {} components", tasks.size());
@@ -223,8 +227,10 @@ public class LocalStreamBuilder implements StreamBuilder {
     private void shutdownMonitor() {
         try {
 
-            // turn off the monitor thread, then it's executor pool.
-            this.monitorThread.shutdown();
+            // Turn off any monitors that we have added to track. (break their loops)
+            for(StatusCounterMonitorRunnable r : statusCounterMonitors)
+                r.shutdown();
+
             this.monitor.shutdown();
 
             if (!this.monitor.awaitTermination(2, TimeUnit.SECONDS))
@@ -256,8 +262,17 @@ public class LocalStreamBuilder implements StreamBuilder {
             this.executor.submit(task);
             provTasks.put(prov.getId(), (StreamsProviderTask) task);
             if( prov.isOperationCountable() ) {
-                this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) prov.getOperation(), 10));
-                this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
+
+                StatusCounterMonitorThread opCounter = new StatusCounterMonitorThread((DatumStatusCountable) prov.getOperation(), 10);
+                StatusCounterMonitorThread taskCounter = new StatusCounterMonitorThread((DatumStatusCountable) task, 10);
+
+                // add it to our collection so we can kill it later
+                this.statusCounterMonitors.add(opCounter);
+                this.statusCounterMonitors.add(taskCounter);
+
+                // start running it on the monitor thread pool.
+                this.monitor.submit(opCounter);
+                this.monitor.submit(taskCounter);
             }
         }
     }
@@ -272,8 +287,17 @@ public class LocalStreamBuilder implements StreamBuilder {
                 this.executor.submit(task);
                 compTasks.add(task);
                 if( comp.isOperationCountable() ) {
-                    this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10));
-                    this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
+
+                    StatusCounterMonitorThread opCounter = new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10);
+                    StatusCounterMonitorThread taskCounter = new StatusCounterMonitorThread((DatumStatusCountable) task, 10);
+
+                    // add it to our collection so we can kill it later
+                    this.statusCounterMonitors.add(opCounter);
+                    this.statusCounterMonitors.add(taskCounter);
+
+                    // start running it on the monitor thread pool.
+                    this.monitor.submit(opCounter);
+                    this.monitor.submit(taskCounter);
                 }
             }
             streamsTasks.put(comp.getId(), compTasks);
