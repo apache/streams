@@ -196,39 +196,57 @@ public class LocalStreamBuilder implements StreamBuilder {
                 task.stopTask();
             }
         }
-        this.executor.shutdown();
-        this.monitor.shutdown();
+
+        shutdownMonitor();
+        shutdownExecutor();
+    }
+
+    private void shutdownExecutor() {
+        // make sure that
         try {
-            if(!this.executor.awaitTermination(3, TimeUnit.SECONDS)){
+            // tell the executor to shutdown.
+            this.executor.shutdown();
+
+            if(!this.executor.awaitTermination(3, TimeUnit.SECONDS)) {
                 this.executor.shutdownNow();
             }
-            if(!this.monitor.awaitTermination(3, TimeUnit.SECONDS)){
+            if(!this.monitor.awaitTermination(3, TimeUnit.SECONDS)) {
                 this.monitor.shutdownNow();
             }
-        }catch (InterruptedException ie) {
+        } catch (InterruptedException ie) {
             this.executor.shutdownNow();
             this.monitor.shutdownNow();
             throw new RuntimeException(ie);
         }
     }
 
+    private void shutdownMonitor() {
+        try {
+
+            // turn off the monitor thread, then it's executor pool.
+            this.monitorThread.shutdown();
+            this.monitor.shutdown();
+
+            if (!this.monitor.awaitTermination(2, TimeUnit.SECONDS))
+                this.monitor.shutdownNow();
+        }
+        catch(InterruptedException ie) {
+            LOGGER.warn("There was a problem shutting down the monitor thread: {}", ie);
+            ie.printStackTrace(); // following the previous pattern
+            throw new RuntimeException(ie);
+        }
+    }
+
     protected void shutdown(Map<String, List<StreamsTask>> streamsTasks) throws InterruptedException {
-        LOGGER.info("Attempting to shutdown tasks");
-        monitorThread.shutdown();
-        this.executor.shutdown();
-        //complete stream shut down gracfully
-        for(StreamComponent prov : this.providers.values()) {
+
+        LOGGER.info("Shutting down LocalStreamsBuilder");
+
+        //complete stream shut down gracefully, ask them to shutdown
+        for(StreamComponent prov : this.providers.values())
             shutDownTask(prov, streamsTasks);
-        }
-        //need to make this configurable
-        if(!this.executor.awaitTermination(10, TimeUnit.SECONDS)) { // all threads should have terminated already.
-            this.executor.shutdownNow();
-            this.executor.awaitTermination(10, TimeUnit.SECONDS);
-        }
-        if(!this.monitor.awaitTermination(5, TimeUnit.SECONDS)) { // all threads should have terminated already.
-            this.monitor.shutdownNow();
-            this.monitor.awaitTermination(5, TimeUnit.SECONDS);
-        }
+
+        shutdownMonitor();
+        shutdownExecutor();
     }
 
     protected void setupProviderTasks(Map<String, StreamsProviderTask> provTasks) {
@@ -288,8 +306,8 @@ public class LocalStreamBuilder implements StreamBuilder {
                 }
                 for(StreamsTask task : tasks) {
                     int count = 0;
-                    while(count < 20 && task.isRunning()) {
-                        Thread.sleep(500);
+                    while(count < 200 && task.isRunning()) {
+                        Thread.sleep(50);
                         count++;
                     }
                     if(task.isRunning()) {
