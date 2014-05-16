@@ -182,6 +182,11 @@ public class LocalStreamBuilder implements StreamBuilder {
             LOGGER.info("Worker Counts - Components[{}] - Providers[{}] - Tasks[{}]", this.components.size(), this.providers.size(), tasks.size());
             LOGGER.info("----------------------------------------------------------------------------------------------------");
 
+            /*
+            if(this.totalTasks != this.providers.size() + tasks.size())
+                throw new RuntimeException("Not Equal");
+            */
+
             boolean isRunning = true;
 
             while (isRunning) {

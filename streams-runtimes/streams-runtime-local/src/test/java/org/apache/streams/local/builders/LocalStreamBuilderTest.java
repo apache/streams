@@ -116,25 +116,6 @@ public class LocalStreamBuilderTest {
     }
 
     @Test
-    public void testParallelLinearStream1() {
-        int numDatums = 1000;
-        int parallelHint = 20;
-        StreamBuilder builder = new LocalStreamBuilder();
-        PassThroughStaticCounterProcessor.clear();
-        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
-        DatumCounterWriter writer = new DatumCounterWriter();
-        builder.newReadCurrentStream("sp1", new NumericMessageProvider(numDatums))
-                .addStreamsProcessor("proc1", processor, parallelHint, "sp1")
-                .addStreamsPersistWriter("writer1", writer, 1, "proc1");
-
-        builder.start();
-
-        assertEquals("number of items in should equal number of items out", writer.getDatumsCounted(), numDatums);
-        assertEquals("Correct number of processors created", PassThroughStaticCounterProcessor.CLAIMED_NUMBERS.size(), parallelHint);
-        assertEquals("All should have seen the data", PassThroughStaticCounterProcessor.SEEN_DATA.size(), parallelHint);
-    }
-
-    @Test
     public void testBasicMergeStream() {
         int numDatums1 = 1;
         int numDatums2 = 100;

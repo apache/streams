@@ -154,8 +154,24 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                 default:
                     throw new RuntimeException("Type has not been added to StreamsProviderTask.");
             }
-            flushResults(resultSet);
-
+            if(resultSet != null) {
+                /**
+                 * We keep running while the provider tells us that we are running or we still have
+                 * items in queue to be processed.
+                 *
+                 * IF, the keep running flag is turned to off, then we exit immediately
+                 */
+                while ((resultSet.isRunning() || resultSet.getQueue().size() > 0) && this.keepRunning.get()) {
+                    if(resultSet.getQueue().size() == 0) {
+                        // The process is still running, but there is nothing on the queue...
+                        // we just need to be patient and wait, we yield the execution and
+                        // wait for 1ms to see if anything changes.
+                        safeQuickRest();
+                    } else {
+                        flushResults(resultSet);
+                    }
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -170,28 +186,21 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     }
 
     public void flushResults(StreamsResultSet resultSet) {
-        while (resultSet.isRunning() || resultSet.getQueue().size() > 0) {
-            if (resultSet.getQueue().size() == 0) {
-                // The process is still running, but there is nothing on the queue...
-                // we just need to be patient and wait, we yield the execution and
-                // wait for 1ms to see if anything changes.
-                Thread.yield();
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException ie) {
-                    // No Operation Required
-                }
-            } else {
-                // we have stuff, let's process it
-                StreamsDatum datum;
-                while((datum = resultSet.getQueue().poll()) != null) {
-                    try {
-                        super.addToOutgoingQueue(datum);
-                        statusCounter.incrementStatus(DatumStatus.SUCCESS);
-                    } catch (Exception e) {
-                        statusCounter.incrementStatus(DatumStatus.FAIL);
-                    }
-                }
+        StreamsDatum datum;
+        while((datum = resultSet.getQueue().poll()) != null) {
+            /**
+             * This is meant to be a hard exit from the system. If we are running
+             * and this flag gets set to false, we are to exit immediately and
+             * abandon anything that is in our queue.
+             */
+            if(!this.keepRunning.get())
+                break;
+
+            try {
+                super.addToOutgoingQueue(datum);
+                statusCounter.incrementStatus(DatumStatus.SUCCESS);
+            } catch (Exception e) {
+                statusCounter.incrementStatus(DatumStatus.FAIL);
             }
         }
     }
