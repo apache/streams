@@ -94,7 +94,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
      */
     private StreamsDatum cloneStreamsDatum(StreamsDatum datum) throws SerializationException {
         if (datum.document instanceof ObjectNode)
-            return copyMetaData(datum, new StreamsDatum(((ObjectNode) datum.document).deepCopy(), datum.timestamp, datum.sequenceid));
+            return copyMetaData(datum, new StreamsDatum(((ObjectNode) datum.getDocument()).deepCopy(), datum.getTimestamp(), datum.getSequenceid()));
         else
             return (StreamsDatum) org.apache.commons.lang.SerializationUtils.clone(datum);
     }
@@ -107,16 +107,17 @@ public abstract class BaseStreamsTask implements StreamsTask {
         return this.inIndex;
     }
 
+    /**
+     * A quick rest for 1 ms that yields the execution of the processor.
+     */
     protected void safeQuickRest() {
         // The queue is empty, we might as well sleep.
         Thread.yield();
         try {
             Thread.sleep(1);
-        }
-        catch(InterruptedException ie) {
+        } catch(InterruptedException ie) {
             // No Operation
         }
-        Thread.yield();
     }
 
     private StreamsDatum copyMetaData(StreamsDatum copyFrom, StreamsDatum copyTo) {

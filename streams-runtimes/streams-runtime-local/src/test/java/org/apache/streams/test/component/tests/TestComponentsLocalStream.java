@@ -7,17 +7,15 @@ import org.apache.streams.test.component.StringToDocumentConverter;
 import org.junit.Test;
 
 /**
- * Created by rebanks on 2/28/14.
+ * test with realistic readers and writers
  */
 public class TestComponentsLocalStream {
 
     @Test
     public void testLocalStreamWithComponent() {
         LocalStreamBuilder builder = new LocalStreamBuilder();
-        builder.newReadCurrentStream("provider", new FileReaderProvider("/TestFile.txt",
-                                                                        new StringToDocumentConverter()));
-        builder.addStreamsPersistWriter("writer", new ExpectedDatumsPersistWriter(new StringToDocumentConverter(),
-                "/TestFile.txt"), 1, "provider")
+        builder.newReadCurrentStream("provider", new FileReaderProvider("/TestFile.txt", new StringToDocumentConverter()));
+        builder.addStreamsPersistWriter("writer", new ExpectedDatumsPersistWriter(new StringToDocumentConverter(), "/TestFile.txt"), 1, "provider")
         .start();
     }
 }

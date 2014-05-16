@@ -160,11 +160,7 @@ public class BasicTasksTest {
         service.submit(task);
         int attempts = 0;
         while (outQueue.size() != incoming * numMessages) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                //Ignore
-            }
+            Thread.yield();
             ++attempts;
             if (attempts == 10) {
                 assertEquals("Processor task failed to output " + (numMessages * incoming) + " in a timely fashion.", (numMessages * incoming), outQueue.size());

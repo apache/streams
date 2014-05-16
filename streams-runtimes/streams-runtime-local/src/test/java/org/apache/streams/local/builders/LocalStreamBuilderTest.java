@@ -7,8 +7,6 @@ import org.apache.streams.local.test.providers.NumericMessageProviderDelayed;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -24,8 +22,6 @@ import static org.junit.Assert.*;
 public class LocalStreamBuilderTest {
 
     ByteArrayOutputStream out;
-    private final static Logger LOGGER = LoggerFactory.getLogger(LocalStreamBuilderTest.class);
-
 
     @Before
     public void setSystemOut() {

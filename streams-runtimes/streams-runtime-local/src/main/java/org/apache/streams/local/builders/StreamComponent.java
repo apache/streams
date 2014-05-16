@@ -220,22 +220,18 @@ public class StreamComponent {
     /**
      * The unique of this component
      * @return
+     * The ID of this element
      */
     public String getId() {
         return this.id;
     }
 
-    @Override
     public int hashCode() {
         return this.id.hashCode();
     }
 
-    @Override
     public boolean equals(Object o) {
-        if(o instanceof StreamComponent)
-            return this.id.equals(((StreamComponent) o).id);
-        else
-            return false;
+        return o instanceof StreamComponent && this.id.equals(((StreamComponent) o).id);
     }
 
     protected StreamsOperation getOperation() {
