@@ -16,7 +16,7 @@ public class LocalStreamBuilderParallelTest {
 
     @Test
     public void testParallelProcessors() {
-        int numDatums = 1000;
+        int numDatums = 20;
         int parallelHint = 20;
         StreamBuilder builder = new LocalStreamBuilder();
         PassThroughStaticCounterProcessor.clear();

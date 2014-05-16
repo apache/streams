@@ -100,11 +100,6 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     }
 
     @Override
-    public void stopTask() {
-        this.keepRunning.set(false);
-    }
-
-    @Override
     public void addInputQueue(Queue<StreamsDatum> inputQueue) {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support method - setInputQueue()");
     }
@@ -118,28 +113,25 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     @Override
     public void run() {
         try {
-            this.provider.prepare(this.config); //TODO allow for configuration objects
+            // TODO allow for configuration objects
+            this.provider.prepare(this.config);
             StreamsResultSet resultSet = null;
             this.isRunning.set(true);
             switch (this.type) {
                 case PERPETUAL:
                     provider.startStream();
                     while (this.keepRunning.get()) {
-                        try {
-                            resultSet = provider.readCurrent();
-                            if (resultSet.size() == 0)
-                                zeros++;
-                            else {
-                                zeros = 0;
-                            }
-                            flushResults(resultSet);
-                            // the way this works needs to change...
-                            if (zeros > (timeout))
-                                this.keepRunning.set(false);
-                            Thread.sleep(DEFAULT_SLEEP_TIME_MS);
-                        } catch (InterruptedException e) {
-                            this.keepRunning.set(false);
+                        resultSet = provider.readCurrent();
+                        if (resultSet.size() == 0)
+                            zeros++;
+                        else {
+                            zeros = 0;
                         }
+                        flushResults(resultSet);
+                        // the way this works needs to change...
+                        if (zeros > (timeout))
+                            this.keepRunning.set(false);
+                        safeQuickRest();
                     }
                     break;
                 case READ_CURRENT:

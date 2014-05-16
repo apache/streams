@@ -18,7 +18,7 @@ public class StatusCounterMonitorThread extends TimerTask
 
     public void run() {
         LOGGER.info("{}: {} attempted, {} success, {} partial, {} failed, {} total",
-                task.getClass(),
+                task.toString(),
                 task.getDatumStatusCounter().getAttempted(),
                 task.getDatumStatusCounter().getSuccess(),
                 task.getDatumStatusCounter().getPartial(),

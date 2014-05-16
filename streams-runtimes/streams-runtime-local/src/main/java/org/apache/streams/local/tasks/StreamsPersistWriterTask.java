@@ -17,12 +17,9 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPersistWriterTask.class);
 
-    private StreamsPersistWriter writer;
-    private long sleepTime;
-    private AtomicBoolean keepRunning;
+    private final StreamsPersistWriter writer;
+    private final AtomicBoolean isRunning = new AtomicBoolean(true);
     private Map<String, Object> streamConfig;
-    private Queue<StreamsDatum> inQueue;
-    private AtomicBoolean isRunning;
 
     private DatumStatusCounter statusCounter = new DatumStatusCounter();
 
@@ -31,35 +28,17 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
         return this.statusCounter;
     }
 
-
     /**
      * Default constructor.  Uses default sleep of 500ms when inbound queue is empty.
      * @param writer writer to execute in task
      */
     public StreamsPersistWriterTask(StreamsPersistWriter writer) {
-        this(writer, DEFAULT_SLEEP_TIME_MS);
-    }
-
-    /**
-     *
-     * @param writer writer to execute in task
-     * @param sleepTime time to sleep when inbound queue is empty.
-     */
-    public StreamsPersistWriterTask(StreamsPersistWriter writer, long sleepTime) {
         this.writer = writer;
-        this.sleepTime = sleepTime;
-        this.keepRunning = new AtomicBoolean(true);
-        this.isRunning = new AtomicBoolean(true);
     }
 
     @Override
     public void setStreamConfig(Map<String, Object> config) {
         this.streamConfig = config;
-    }
-
-    @Override
-    public void addInputQueue(Queue<StreamsDatum> inputQueue) {
-        this.inQueue = inputQueue;
     }
 
     @Override
@@ -75,16 +54,17 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
             while(this.keepRunning.get()) {
                 // The queue is empty, we might as well yield
                 // and take a very quick rest
-                if(this.inQueue.size() == 0)
+                if(!isDatumAvailable())
                     safeQuickRest();
 
                 StreamsDatum datum = null;
-                while((datum = this.inQueue.poll()) != null) {
+
+                while((datum = pollNextDatum()) != null) {
                     try {
                         this.writer.write(datum);
                         statusCounter.incrementStatus(DatumStatus.SUCCESS);
                     } catch (Exception e) {
-                        LOGGER.error("Error writing to persist writer {}", this.writer.getClass().getSimpleName(), e);
+                        LOGGER.error("Error writing to persist writer {} - {}", this.writer.toString(), e);
                         this.keepRunning.set(false);
                         statusCounter.incrementStatus(DatumStatus.FAIL);
                     }
@@ -92,7 +72,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
             }
 
         } catch(Exception e) {
-            LOGGER.error("Failed to execute Persist Writer {}",this.writer.getClass().getSimpleName(), e);
+            LOGGER.error("Failed to execute Persist Writer {} - {}", this.writer.toString(), e);
         } finally {
             this.writer.cleanUp();
             this.isRunning.set(false);
@@ -100,21 +80,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     }
 
     @Override
-    public void stopTask() {
-        this.keepRunning.set(false);
-    }
-
-
-    @Override
     public void addOutputQueue(Queue<StreamsDatum> outputQueue) {
         throw new UnsupportedOperationException(this.getClass().getName()+" does not support method - setOutputQueue()");
     }
-
-    @Override
-    public List<Queue<StreamsDatum>> getInputQueues() {
-        List<Queue<StreamsDatum>> queues = new LinkedList<Queue<StreamsDatum>>();
-        queues.add(this.inQueue);
-        return queues;
-    }
-
 }

@@ -248,8 +248,4 @@ public class StreamComponent {
             throw new InvalidStreamException("Underlying StreamComponoent was NULL.");
         }
     }
-
-    protected boolean isOperationCountable() {
-        return getOperation() instanceof DatumStatusCountable;
-    }
 }

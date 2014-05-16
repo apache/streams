@@ -148,6 +148,7 @@ public class BasicTasksTest {
 
     @Test
     public void testMergeTask() {
+
         int numMessages = 100;
         int incoming = 5;
         StreamsMergeTask task = new StreamsMergeTask();
@@ -209,7 +210,7 @@ public class BasicTasksTest {
 
         service.shutdown();
         try {
-            if (!service.awaitTermination(5, TimeUnit.SECONDS)) {
+            if (!service.awaitTermination(5, TimeUnit.MINUTES)) {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }

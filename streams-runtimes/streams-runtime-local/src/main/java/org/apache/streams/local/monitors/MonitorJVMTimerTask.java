@@ -7,17 +7,16 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.util.TimerTask;
 
-public class MonitorJVMTask extends TimerTask {
+public class MonitorJVMTimerTask extends TimerTask {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MonitorJVMTask.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MonitorJVMTimerTask.class);
 
-    public MonitorJVMTask() {
+    public MonitorJVMTimerTask() {
 
     }
 
     public void run() {
         /**
-         *
          * Note:
          * Quick class and method to let us see what is going on with the JVM. We need to make sure
          * that everything is running with as little memory as possible. If we are generating a heap
