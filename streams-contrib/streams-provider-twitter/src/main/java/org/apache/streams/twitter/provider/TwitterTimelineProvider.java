@@ -54,7 +54,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         this.config = config;
     }
 
-    protected final Queue<StreamsDatum> providerQueue = Queues.synchronizedQueue(new ArrayBlockingQueue<StreamsDatum>(5000));
+    protected final Queue<StreamsDatum> providerQueue = new ArrayBlockingQueue<StreamsDatum>(500);
 
     protected int idsCount;
     protected Iterator<Long> ids;

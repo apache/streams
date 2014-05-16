@@ -26,6 +26,10 @@
         "finalURL": {
             "type": "string"
         },
+        "contentType" : {
+            "type" : "string",
+            "default" : ""
+        },
         "normalizedURL": {
             "type": "string"
         },

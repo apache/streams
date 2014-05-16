@@ -49,11 +49,10 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     public static final String STREAMS_ID = "TwitterUserInformationProvider";
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitterUserInformationProvider.class);
 
-
     private TwitterUserInformationConfiguration twitterUserInformationConfiguration;
 
     private Class klass;
-    protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
+    protected volatile Queue<StreamsDatum> providerQueue = new ArrayBlockingQueue<StreamsDatum>(50);
 
     public TwitterUserInformationConfiguration getConfig()              { return twitterUserInformationConfiguration; }
 
@@ -143,7 +142,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
             {
                 for (User tStat : client.lookupUsers(ids)) {
                     LOGGER.info("Offering: {}", tStat.getScreenName());
-                    providerQueue.offer(new StreamsDatum(TwitterObjectFactory.getRawJSON(tStat)));
+                    ComponentUtils.offerUntilSuccess(new StreamsDatum(TwitterObjectFactory.getRawJSON(tStat)), providerQueue);
                 }
                 keepTrying = 10;
             }

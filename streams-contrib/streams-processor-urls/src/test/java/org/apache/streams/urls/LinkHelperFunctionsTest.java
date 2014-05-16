@@ -101,6 +101,22 @@ public class LinkHelperFunctionsTest {
     }
 
     @Test
+    public void testUnprotectedDomain() {
+        assertEquals("t.co: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain("t.co"));
+        assertEquals("t.co: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain("t.co"));
+        assertEquals("t.co: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain("t.co"));
+        assertEquals("t.co: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain("t.co"));
+        assertEquals("t.co: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain("www.t.co"));
+        assertEquals("t.co: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain("www.t.co"));
+        assertEquals("t.co: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain("www.t.co"));
+        assertEquals("t.co: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain("www.t.co"));
+        assertEquals("t.co: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain("www.bit.ly"));
+        assertEquals("t.co: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain("www.bit.ly"));
+        assertEquals("t.co: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain("bit.ly"));
+        assertEquals("t.co: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain("bit.ly"));
+    }
+
+    @Test
     public void testMulti() {
 
         LinkResolverHelperFunctions.purgeAllDomainWaitTimes();

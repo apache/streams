@@ -48,24 +48,10 @@ public class LinkResolver implements Serializable {
      */
 
 
+
     private final static Logger LOGGER = LoggerFactory.getLogger(LinkResolver.class);
 
     private static final int MAX_ALLOWED_REDIRECTS = 30;                // We will only chase the link to it's final destination a max of 30 times.
-    private static final int DEFAULT_HTTP_TIMEOUT = 10000;              // We will only wait a max of 10,000 milliseconds (10 seconds) for any HTTP response
-    private static final String LOCATION_IDENTIFIER = "location";
-    private static final String SET_COOKIE_IDENTIFIER = "set-cookie";
-
-    // if Bots are not 'ok' this is the spoof settings that we'll use
-    private static final Map<String, String> SPOOF_HTTP_HEADERS = new HashMap<String, String>() {{
-        put("Connection", "Keep-Alive");
-        put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.48 Safari/537.36");
-        put("Accept-Language", "en-US,en;q=0.8,zh;q=0.6");
-    }};
-
-    // These are the known domains that are 'bot' friendly.
-    private static final Collection<String> BOTS_ARE_OK = new ArrayList<String>() {{
-        add("t.co");
-    }};
 
     // To help canonicalize the URL, these parts are 'known' to be 'ok' to remove
     private static final Collection<String> URL_TRACKING_TO_REMOVE = new ArrayList<String>() {{
@@ -98,7 +84,6 @@ public class LinkResolver implements Serializable {
     // This element holds all the information about all the re-directs that have taken place
     // and the steps and HTTP codes that occurred inside of each step.
     private final LinkDetails linkDetails;
-    private Collection<String> domainsSensitiveTo = new HashSet<String>();
 
     /**
      * Get the link details
@@ -169,58 +154,7 @@ public class LinkResolver implements Serializable {
         String reDirectedLink = null;
 
         try {
-            // Turn the string into a URL
-            URL thisURL = new URL(url);
-
-            // Be sensitive to overloading domains STREAMS-77
-            try {
-                String host = thisURL.getHost().toLowerCase();
-                if(!domainsSensitiveTo.contains(host)) {
-                    domainsSensitiveTo.add(host);
-                    long domainWait = LinkResolverHelperFunctions.waitTimeForDomain(thisURL.getHost());
-                    if (domainWait > 0) {
-                        LOGGER.debug("Waiting for domain: {}", domainWait);
-                        Thread.sleep(domainWait);
-                    }
-                }
-            } catch(Exception e) {
-                // noOp
-            }
-
-            connection = (HttpURLConnection) new URL(url).openConnection();
-
-            // now we are going to pretend that we are a browser...
-            // This is the way my mac works.
-            if (!BOTS_ARE_OK.contains(thisURL.getHost())) {
-                connection.addRequestProperty("Host", thisURL.getHost());
-
-                // Bots are not 'ok', so we need to spoof the headers
-                for (String k : SPOOF_HTTP_HEADERS.keySet())
-                    connection.addRequestProperty(k, SPOOF_HTTP_HEADERS.get(k));
-
-                // the test to seattlemamadoc.com prompted this change.
-                // they auto detect bots by checking the referrer chain and the 'user-agent'
-                // this broke the t.co test. t.co URLs are EXPLICITLY ok with bots
-                // there is a list for URLS that behave this way at the top in BOTS_ARE_OK
-                // smashew 2013-13-2013
-                if (linkDetails.getRedirectCount() > 0 && BOTS_ARE_OK.contains(thisURL.getHost()))
-                    connection.addRequestProperty("Referrer", linkDetails.getOriginalURL());
-            }
-
-            connection.setReadTimeout(DEFAULT_HTTP_TIMEOUT);
-            connection.setConnectTimeout(DEFAULT_HTTP_TIMEOUT);
-
-            // we want to follow this behavior on our own to ensure that we are getting to the
-            // proper place. This is especially true with links that are wounded by special
-            // link winders,
-            // IE:
-            connection.setInstanceFollowRedirects(false);
-
-            if (linkDetails.getCookies() != null)
-                for (String cookie : linkDetails.getCookies())
-                    connection.addRequestProperty("Cookie", cookie.split(";", 1)[0]);
-
-            connection.connect();
+            connection = LinkResolverHelperFunctions.constructHTTPConnection(url, this.linkDetails);
 
             linkDetails.setFinalResponseCode((long) connection.getResponseCode());
 
@@ -230,8 +164,8 @@ public class LinkResolver implements Serializable {
              * Example URL:
              * http://nyti.ms/1bCpesx
              *****************************************************************/
-            if (headers.containsKey(SET_COOKIE_IDENTIFIER))
-                linkDetails.getCookies().add(headers.get(SET_COOKIE_IDENTIFIER).get(0));
+            if (headers.containsKey(LinkResolverHelperFunctions.SET_COOKIE_IDENTIFIER))
+                linkDetails.getCookies().add(headers.get(LinkResolverHelperFunctions.SET_COOKIE_IDENTIFIER).get(0));
 
             switch (linkDetails.getFinalResponseCode().intValue()) {
                 /**
@@ -242,6 +176,7 @@ public class LinkResolver implements Serializable {
                     linkDetails.setFinalURL(connection.getURL().toString());
                     linkDetails.setDomain(new URL(linkDetails.getFinalURL()).getHost());
                     linkDetails.setLinkStatus(LinkDetails.LinkStatus.SUCCESS);
+                    linkDetails.setContentType(connection.getContentType());
                     break;
                 case 300: // Multiple choices
                 case 301: // URI has been moved permanently
@@ -268,13 +203,13 @@ public class LinkResolver implements Serializable {
                      *******************************************************************/
                     if (!linkDetails.getOriginalURL().toLowerCase().equals(connection.getURL().toString().toLowerCase()))
                         linkDetails.setFinalURL(connection.getURL().toString());
-                    if (!headers.containsKey(LOCATION_IDENTIFIER)) {
+                    if (!headers.containsKey(LinkResolverHelperFunctions.LOCATION_IDENTIFIER)) {
                         LOGGER.info("Headers: {}", headers);
                         linkDetails.setLinkStatus(LinkDetails.LinkStatus.REDIRECT_ERROR);
                     } else {
                         linkDetails.setRedirected(Boolean.TRUE);
                         linkDetails.setRedirectCount(linkDetails.getRedirectCount() + 1);
-                        reDirectedLink = connection.getHeaderField(LOCATION_IDENTIFIER);
+                        reDirectedLink = connection.getHeaderField(LinkResolverHelperFunctions.LOCATION_IDENTIFIER);
                     }
                     break;
                 case 305: // User must use the specified proxy (deprecated by W3C)

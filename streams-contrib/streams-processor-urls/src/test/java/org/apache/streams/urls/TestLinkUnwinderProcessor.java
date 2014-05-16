@@ -39,6 +39,12 @@ public class TestLinkUnwinderProcessor {
     }
 
     @Test
+    public void testActivityLinkUnwinderProcessorTdotCo() throws Exception{
+        testActivityUnwinderHelper(Lists.newArrayList("http://t.co/lLFgFynv2G"), Lists.newArrayList("http://www.holmesreport.com/news-info/14877/Holmes-Report-Names-Americas-Specialist-PR-Agencies-Of-The-Year.aspx"));
+        testStringActivityUnwinderHelper(Lists.newArrayList("http://t.co/lLFgFynv2G"), Lists.newArrayList("http://www.holmesreport.com/news-info/14877/Holmes-Report-Names-Americas-Specialist-PR-Agencies-Of-The-Year.aspx"));
+    }
+
+    @Test
     public void testActivityLinkUnwinderProcessorGoogle() throws Exception{
         testActivityUnwinderHelper(Lists.newArrayList("http://goo.gl/wSrHDA"), Lists.newArrayList("http://www.wcgworld.com/"));
         testStringActivityUnwinderHelper(Lists.newArrayList("http://goo.gl/wSrHDA"), Lists.newArrayList("http://www.wcgworld.com/"));
