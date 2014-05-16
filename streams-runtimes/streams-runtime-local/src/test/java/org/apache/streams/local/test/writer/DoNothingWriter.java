@@ -1,24 +1,23 @@
-package org.apache.streams.core.test.writer;
+package org.apache.streams.local.test.writer;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Created by rebanks on 2/20/14.
+ * This writer does exactly what you'd expect, nothing.
  */
 public class DoNothingWriter implements StreamsPersistWriter {
-    @Override
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(DoNothingWriter.class);
+
     public void write(StreamsDatum entry) {
-
     }
 
-    @Override
     public void prepare(Object configurationObject) {
-
     }
 
-    @Override
     public void cleanUp() {
-        System.out.println("Writer Clean Up!");
     }
 }

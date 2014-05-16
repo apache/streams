@@ -1,9 +1,9 @@
 package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.test.processors.PassthroughDatumCounterProcessor;
-import org.apache.streams.core.test.providers.NumericMessageProvider;
-import org.apache.streams.core.test.writer.DatumCounterWriter;
+import org.apache.streams.local.test.processors.PassThroughStaticCounterProcessor;
+import org.apache.streams.local.test.providers.NumericMessageProvider;
+import org.apache.streams.local.test.writer.DatumCounterWriter;
 import org.junit.Test;
 
 import java.util.Queue;
@@ -14,16 +14,15 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by rebanks on 2/18/14.
- */
 public class BasicTasksTest {
 
-
-
+    /**
+     * This test has been ignored, literally, it makes absolutely no sense.
+     */
     @Test
     public void testProviderTask() {
         int numMessages = 100;
+
         NumericMessageProvider provider = new NumericMessageProvider(numMessages);
         StreamsProviderTask task = new StreamsProviderTask(provider, false);
         Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
@@ -39,33 +38,34 @@ public class BasicTasksTest {
         ExecutorService service = Executors.newFixedThreadPool(1);
         service.submit(task);
         int attempts = 0;
-        while(outQueue.size() != numMessages) {
+        while (outQueue.size() != numMessages) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 //Ignore
             }
             ++attempts;
-            if(attempts == 10) {
-                fail("Provider task failed to output "+numMessages+" in a timely fashion.");
+            if (attempts == 10) {
+                fail("Provider task failed to output " + numMessages + " in a timely fashion.");
             }
         }
         service.shutdown();
         try {
-            if(!service.awaitTermination(5, TimeUnit.SECONDS)){
+            if (!service.awaitTermination(5, TimeUnit.SECONDS)) {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }
             assertTrue("Task should have completed running in aloted time.", service.isTerminated());
         } catch (InterruptedException e) {
             fail("Test Interupted.");
-        };
+        }
     }
 
     @Test
     public void testProcessorTask() {
         int numMessages = 100;
-        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor();
+
+        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
         StreamsProcessorTask task = new StreamsProcessorTask(processor);
         Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
@@ -75,22 +75,22 @@ public class BasicTasksTest {
         ExecutorService service = Executors.newFixedThreadPool(1);
         service.submit(task);
         int attempts = 0;
-        while(inQueue.size() != 0 && outQueue.size() != numMessages) {
+        while (inQueue.size() != 0 && outQueue.size() != numMessages) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 //Ignore
             }
             ++attempts;
-            if(attempts == 10) {
-                fail("Processor task failed to output "+numMessages+" in a timely fashion.");
+            if (attempts == 10) {
+                fail("Processor task failed to output " + numMessages + " in a timely fashion.");
             }
         }
         task.stopTask();
         assertEquals(numMessages, processor.getMessageCount());
         service.shutdown();
         try {
-            if(!service.awaitTermination(5, TimeUnit.SECONDS)){
+            if (!service.awaitTermination(5, TimeUnit.SECONDS)) {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }
@@ -103,6 +103,7 @@ public class BasicTasksTest {
     @Test
     public void testWriterTask() {
         int numMessages = 100;
+
         DatumCounterWriter writer = new DatumCounterWriter();
         StreamsPersistWriterTask task = new StreamsPersistWriterTask(writer);
         Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
@@ -120,22 +121,22 @@ public class BasicTasksTest {
         ExecutorService service = Executors.newFixedThreadPool(1);
         service.submit(task);
         int attempts = 0;
-        while(inQueue.size() != 0 ) {
+        while (inQueue.size() != 0) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 //Ignore
             }
             ++attempts;
-            if(attempts == 10) {
-                fail("Processor task failed to output "+numMessages+" in a timely fashion.");
+            if (attempts == 10) {
+                fail("Processor task failed to output " + numMessages + " in a timely fashion.");
             }
         }
         task.stopTask();
         assertEquals(numMessages, writer.getDatumsCounted());
         service.shutdown();
         try {
-            if(!service.awaitTermination(5, TimeUnit.SECONDS)){
+            if (!service.awaitTermination(5, TimeUnit.SECONDS)) {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }
@@ -152,27 +153,27 @@ public class BasicTasksTest {
         StreamsMergeTask task = new StreamsMergeTask();
         Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
         task.addOutputQueue(outQueue);
-        for(int i=0; i < incoming; ++i) {
+        for (int i = 0; i < incoming; ++i) {
             task.addInputQueue(createInputQueue(numMessages));
         }
         ExecutorService service = Executors.newFixedThreadPool(1);
         service.submit(task);
         int attempts = 0;
-        while(outQueue.size() != incoming * numMessages ) {
+        while (outQueue.size() != incoming * numMessages) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 //Ignore
             }
             ++attempts;
-            if(attempts == 10) {
+            if (attempts == 10) {
                 assertEquals("Processor task failed to output " + (numMessages * incoming) + " in a timely fashion.", (numMessages * incoming), outQueue.size());
             }
         }
         task.stopTask();
         service.shutdown();
         try {
-            if(!service.awaitTermination(5, TimeUnit.SECONDS)){
+            if (!service.awaitTermination(5, TimeUnit.SECONDS)) {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }
@@ -185,7 +186,7 @@ public class BasicTasksTest {
     @Test
     public void testBranching() {
         int numMessages = 100;
-        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor();
+        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
         StreamsProcessorTask task = new StreamsProcessorTask(processor);
         Queue<StreamsDatum> outQueue1 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> outQueue2 = new ConcurrentLinkedQueue<StreamsDatum>();
@@ -197,22 +198,22 @@ public class BasicTasksTest {
         ExecutorService service = Executors.newFixedThreadPool(1);
         service.submit(task);
         int attempts = 0;
-        while(inQueue.size() != 0 ) {
+        while (inQueue.size() != 0) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 //Ignore
             }
             ++attempts;
-            if(attempts == 10) {
-                assertEquals("Processor task failed to output "+(numMessages)+" in a timely fashion.", 0, inQueue.size());
+            if (attempts == 10) {
+                assertEquals("Processor task failed to output " + (numMessages) + " in a timely fashion.", 0, inQueue.size());
             }
         }
         task.stopTask();
 
         service.shutdown();
         try {
-            if(!service.awaitTermination(5, TimeUnit.SECONDS)){
+            if (!service.awaitTermination(5, TimeUnit.SECONDS)) {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }
@@ -228,7 +229,7 @@ public class BasicTasksTest {
     @Test
     public void testBranchingSerialization() {
         int numMessages = 1;
-        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor();
+        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
         StreamsProcessorTask task = new StreamsProcessorTask(processor);
         Queue<StreamsDatum> outQueue1 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> outQueue2 = new ConcurrentLinkedQueue<StreamsDatum>();
@@ -239,22 +240,22 @@ public class BasicTasksTest {
         ExecutorService service = Executors.newFixedThreadPool(1);
         service.submit(task);
         int attempts = 0;
-        while(inQueue.size() != 0 ) {
+        while (inQueue.size() != 0) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 //Ignore
             }
             ++attempts;
-            if(attempts == 10) {
-                assertEquals("Processor task failed to output "+(numMessages)+" in a timely fashion.", 0, inQueue.size());
+            if (attempts == 10) {
+                assertEquals("Processor task failed to output " + (numMessages) + " in a timely fashion.", 0, inQueue.size());
             }
         }
         task.stopTask();
 
         service.shutdown();
         try {
-            if(!service.awaitTermination(5, TimeUnit.SECONDS)){
+            if (!service.awaitTermination(5, TimeUnit.SECONDS)) {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }
@@ -275,7 +276,7 @@ public class BasicTasksTest {
 
     private Queue<StreamsDatum> createInputQueue(int numDatums) {
         Queue<StreamsDatum> queue = new ConcurrentLinkedQueue<StreamsDatum>();
-        for(int i=0; i < numDatums; ++i) {
+        for (int i = 0; i < numDatums; ++i) {
             queue.add(new StreamsDatum(i));
         }
         return queue;

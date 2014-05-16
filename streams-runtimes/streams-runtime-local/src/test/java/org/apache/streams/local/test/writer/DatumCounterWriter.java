@@ -1,28 +1,45 @@
-package org.apache.streams.core.test.writer;
+package org.apache.streams.local.test.writer;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 
 /**
- * Created by rebanks on 2/18/14.
+ * A simple counter to count how many times the 'write' was
+ * called.
  */
 public class DatumCounterWriter implements StreamsPersistWriter{
 
     private int counter = 0;
+    private int delayInMilliseconds = 0;
 
-    @Override
-    public void write(StreamsDatum entry) {
-        ++this.counter;
+    public DatumCounterWriter() {
+        this(0);
     }
 
-    @Override
+    public DatumCounterWriter(int delayInMilliseconds) {
+        this.delayInMilliseconds = delayInMilliseconds;
+    }
+
+    private void safeSleep() {
+        try {
+            Thread.sleep(this.delayInMilliseconds);
+        }
+        catch(InterruptedException ie) {
+            // no Operation
+        }
+    }
+
+    public void write(StreamsDatum entry) {
+        safeSleep();
+        this.counter++;
+    }
+
     public void prepare(Object configurationObject) {
 
     }
 
-    @Override
     public void cleanUp() {
-        System.out.println("clean up called");
+
     }
 
     public int getDatumsCounted() {

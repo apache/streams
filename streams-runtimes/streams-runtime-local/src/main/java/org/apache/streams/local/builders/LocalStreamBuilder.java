@@ -206,7 +206,6 @@ public class LocalStreamBuilder implements StreamBuilder {
 
                 if (isRunning) {
                     Thread.yield();
-                    Thread.sleep(5);
                 }
             }
 
