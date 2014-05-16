@@ -54,21 +54,6 @@ public class LocalStreamBuilderTest {
     }
 
     @Test
-    public void testBasicLinearStream1()  {
-        int numDatums = 1;
-
-
-        StreamBuilder builder = new LocalStreamBuilder();
-        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
-        DatumCounterWriter writer = new DatumCounterWriter();
-        builder.newReadCurrentStream("sp1", new NumericMessageProvider(numDatums))
-                .addStreamsProcessor("proc1", processor, 1, "sp1")
-                .addStreamsPersistWriter("writer1", writer, 1, "proc1");
-        builder.start();
-        assertEquals("Should have same number", numDatums, writer.getDatumsCounted());
-    }
-
-    @Test
     public void testBasicLinearStreamFinite()  {
         int numDatums = 1;
         StreamBuilder builder = new LocalStreamBuilder();
