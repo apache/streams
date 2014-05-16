@@ -10,9 +10,7 @@ import java.util.Queue;
  * Interface for all task that will be used to execute instances of {@link org.apache.streams.core.StreamsOperation}
  * in local mode.
  */
-public interface StreamsTask extends Runnable{
-
-    public static final long DEFAULT_SLEEP_TIME_MS = 5000;
+public interface StreamsTask extends Runnable {
 
     /**
      * Informs the task to stop. Tasks may or may not try to empty its inbound queue before halting.

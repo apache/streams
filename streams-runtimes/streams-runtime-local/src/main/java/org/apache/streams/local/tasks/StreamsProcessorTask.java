@@ -5,10 +5,8 @@ import org.apache.streams.core.StreamsProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -18,11 +16,8 @@ public class StreamsProcessorTask extends BaseStreamsTask {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsProviderTask.class);
 
-    private StreamsProcessor processor;
-    private long sleepTime;
-    private AtomicBoolean keepRunning;
+    private final StreamsProcessor processor;
     private Map<String, Object> streamConfig;
-    private Queue<StreamsDatum> inQueue;
     private AtomicBoolean isRunning;
 
     /**
@@ -30,34 +25,15 @@ public class StreamsProcessorTask extends BaseStreamsTask {
      * @param processor process to run in task
      */
     public StreamsProcessorTask(StreamsProcessor processor) {
-        this(processor, DEFAULT_SLEEP_TIME_MS);
-    }
-
-    /**
-     *
-     * @param processor processor to run in task
-     * @param sleepTime time to sleep when incoming queue is empty
-     */
-    public StreamsProcessorTask(StreamsProcessor processor, long sleepTime) {
         this.processor = processor;
-        this.sleepTime = sleepTime;
-        this.keepRunning = new AtomicBoolean(true);
         this.isRunning = new AtomicBoolean(true);
     }
 
     @Override
-    public void stopTask() {
-        this.keepRunning.set(false);
-    }
-
-    @Override
     public void setStreamConfig(Map<String, Object> config) {
+        if(this.streamConfig != null)
+            throw new RuntimeException("This variable has already been set, you cannot set it.");
         this.streamConfig = config;
-    }
-
-    @Override
-    public void addInputQueue(Queue<StreamsDatum> inputQueue) {
-        this.inQueue = inputQueue;
     }
 
     @Override
@@ -69,8 +45,8 @@ public class StreamsProcessorTask extends BaseStreamsTask {
     public void run() {
         try {
             this.processor.prepare(this.streamConfig);
-
             while(this.keepRunning.get()) {
+
                 if(!this.keepRunning.get()) {
                     // this is a hard kill we are going to break.
                     LOGGER.info("Processor Terminated while executing: {}", this.processor);
@@ -80,12 +56,12 @@ public class StreamsProcessorTask extends BaseStreamsTask {
                 // we don't have anything to do, let's yield
                 // and take a quick rest and wait for people to
                 // catch up
-                if(this.inQueue.size() == 0)
+                if(!isDatumAvailable())
                     safeQuickRest();
 
                 // try to get the output from the processor
                 StreamsDatum datum = null;
-                while((datum = this.inQueue.poll()) != null) {
+                while((datum = super.pollNextDatum()) != null) {
                     try {
                         List<StreamsDatum> output = this.processor.process(datum);
                         if (output != null)
@@ -103,12 +79,5 @@ public class StreamsProcessorTask extends BaseStreamsTask {
             this.processor.cleanUp();
             this.isRunning.set(false);
         }
-    }
-
-    @Override
-    public List<Queue<StreamsDatum>> getInputQueues() {
-        List<Queue<StreamsDatum>> queues = new LinkedList<Queue<StreamsDatum>>();
-        queues.add(this.inQueue);
-        return queues;
     }
 }

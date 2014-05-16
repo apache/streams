@@ -1,7 +1,7 @@
 package org.apache.streams.local.builders;
 
 import org.apache.streams.core.*;
-import org.apache.streams.local.monitors.MonitorJVMTask;
+import org.apache.streams.local.monitors.MonitorJVMTimerTask;
 import org.apache.streams.local.monitors.StatusCounterMonitorThread;
 import org.apache.streams.local.tasks.*;
 import org.apache.streams.util.SerializationUtil;
@@ -152,9 +152,6 @@ public class LocalStreamBuilder implements StreamBuilder {
         Map<String, StreamsProviderTask> provTasks = new HashMap<String, StreamsProviderTask>();
 
         try {
-            // track the JVM
-            timer.schedule(new MonitorJVMTask(), 0);
-
             setupComponentTasks(tasks, timer);
             setupProviderTasks(provTasks, timer);
 
@@ -162,10 +159,9 @@ public class LocalStreamBuilder implements StreamBuilder {
             LOGGER.info("Worker Counts - Components[{}] - Providers[{}] - Tasks[{}]", this.components.size(), this.providers.size(), tasks.size());
             LOGGER.info("----------------------------------------------------------------------------------------------------");
 
-            /*
-            if(this.totalTasks != this.providers.size() + tasks.size())
-                throw new RuntimeException("Not Equal");
-            */
+
+            // track the JVM every 500ms
+            timer.schedule(new MonitorJVMTimerTask(), 0, 500);
 
             boolean isRunning = true;
 
@@ -191,6 +187,7 @@ public class LocalStreamBuilder implements StreamBuilder {
 
                 if (isRunning) {
                     Thread.yield();
+                    Thread.sleep(1);
                 }
             }
 
@@ -256,10 +253,14 @@ public class LocalStreamBuilder implements StreamBuilder {
             task.setStreamConfig(this.streamConfig);
             this.executor.submit(task);
             provTasks.put(prov.getId(), (StreamsProviderTask) task);
-            if (prov.isOperationCountable()) {
-                timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable)prov.getOperation()), 0, 2);
-                timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable)task), 0, 2);
-            }
+
+            // Count whatever the provider is telling us
+            if (prov instanceof DatumStatusCountable)
+                timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable) prov.getOperation()), 0, 1000);
+
+            // Count whatever we are telling ourselves
+            if(prov instanceof DatumStatusCountable)
+                timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable)prov), 0, 1000);
         }
     }
 
@@ -272,10 +273,15 @@ public class LocalStreamBuilder implements StreamBuilder {
                 task.setStreamConfig(this.streamConfig);
                 this.executor.submit(task);
                 compTasks.add(task);
-                if (comp.isOperationCountable()) {
-                    timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation()), 0, 2);
-                    timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable) task), 0, 2);
-                }
+
+                // Count whatever the task is telling us
+                if (comp instanceof DatumStatusCountable)
+                    timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation()), 0, 1000);
+
+                //
+                if(task instanceof DatumStatusCountable)
+                    timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable) task), 0, 1000);
+
             }
             streamsTasks.put(comp.getId(), compTasks);
         }
@@ -358,7 +364,7 @@ public class LocalStreamBuilder implements StreamBuilder {
 
 
     private Queue<StreamsDatum> cloneQueue() {
-        return (Queue<StreamsDatum>) SerializationUtil.cloneBySerialization(this.queue);
+        return (Queue<StreamsDatum>)SerializationUtil.cloneBySerialization(this.queue);
     }
 
     protected int getTimeout() {

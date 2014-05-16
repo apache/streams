@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -18,9 +20,17 @@ public abstract class BaseStreamsTask implements StreamsTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStreamsTask.class);
 
-    private List<Queue<StreamsDatum>> inQueues = new ArrayList<Queue<StreamsDatum>>();
-    private List<Queue<StreamsDatum>> outQueues = new LinkedList<Queue<StreamsDatum>>();
-    private int inIndex = 0;
+
+    protected final AtomicBoolean keepRunning = new AtomicBoolean(true);
+    private final List<Queue<StreamsDatum>> inQueues = new ArrayList<Queue<StreamsDatum>>();
+    private final List<Queue<StreamsDatum>> outQueues = new LinkedList<Queue<StreamsDatum>>();
+
+    private final AtomicInteger queueCycleCounter = new AtomicInteger(0);
+
+    @Override
+    public final void stopTask() {
+        this.keepRunning.set(false);
+    }
 
     @Override
     public void addInputQueue(Queue<StreamsDatum> inputQueue) {
@@ -33,31 +43,49 @@ public abstract class BaseStreamsTask implements StreamsTask {
     }
 
     @Override
-    public List<Queue<StreamsDatum>> getInputQueues() {
+    public final List<Queue<StreamsDatum>> getInputQueues() {
         return this.inQueues;
     }
 
     @Override
-    public List<Queue<StreamsDatum>> getOutputQueues() {
+    public final List<Queue<StreamsDatum>> getOutputQueues() {
         return this.outQueues;
     }
 
     /**
-     * NOTE NECESSARY AT THE MOMENT.  MAY BECOME NECESSARY AS WE LOOK AT MAKING JOIN TASKS. CURRENTLY ALL TASK HAVE MAX
-     * OF 1 INPUT QUEUE.
-     * Round Robins through input queues to get the next StreamsDatum. If all input queues are empty, it will return null.
-     *
+     * Get the next datum to be processed, if a null datum is returned,
+     * then there are no more datums to be processed.
      * @return the next StreamsDatum or null if all input queues are empty.
      */
-    protected StreamsDatum getNextDatum() {
-        int startIndex = this.inIndex;
-        int index = startIndex;
-        StreamsDatum datum = null;
+    protected StreamsDatum pollNextDatum() {
+        StreamsDatum datum;
         do {
-            datum = this.inQueues.get(index).poll();
-            index = getNextInputQueueIndex();
-        } while (datum == null && startIndex != index);
-        return datum;
+            synchronized (queueCycleCounter) {
+
+                datum = this.inQueues.get(queueCycleCounter.get()).poll();
+
+                // increment our queue counter
+                if (queueCycleCounter.incrementAndGet() >= this.inQueues.size())
+                    queueCycleCounter.set(0);
+
+                if (datum != null)
+                    return datum;
+            }
+        } while (isDatumAvailable());
+
+        return null;
+    }
+
+    /**
+     * Check all the inbound queues and see if there is a datum that is available
+     * to be processed.
+     * @return whether or not there is another datum available
+     */
+    protected synchronized boolean isDatumAvailable() {
+        for(Queue q : this.inQueues)
+            if(q.size() > 0)
+                return true;
+        return false;
     }
 
     /**
@@ -97,14 +125,6 @@ public abstract class BaseStreamsTask implements StreamsTask {
             return copyMetaData(datum, new StreamsDatum(((ObjectNode) datum.getDocument()).deepCopy(), datum.getTimestamp(), datum.getSequenceid()));
         else
             return (StreamsDatum) org.apache.commons.lang.SerializationUtils.clone(datum);
-    }
-
-    private int getNextInputQueueIndex() {
-        ++this.inIndex;
-        if (this.inIndex >= this.inQueues.size()) {
-            this.inIndex = 0;
-        }
-        return this.inIndex;
     }
 
     /**
