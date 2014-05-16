@@ -57,7 +57,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     protected final Queue<StreamsDatum> providerQueue = Queues.synchronizedQueue(new ArrayBlockingQueue<StreamsDatum>(5000));
 
     protected int idsCount;
-    protected Twitter client;
     protected Iterator<Long> ids;
 
     protected ListeningExecutorService executor;
@@ -116,12 +115,11 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
             int keepTrying = 0;
 
             // keep trying to load, give it 5 attempts.
-            //while (keepTrying < 10)
-            while (keepTrying < 1)
-            {
+            while (keepTrying < 5) {
+                Twitter client = null;
+                try {
+                    client = getTwitterClient();
 
-                try
-                {
                     statuses = client.getUserTimeline(currentId, paging);
 
                     for (Status tStat : statuses) {
@@ -244,11 +242,9 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
         jsonStoreEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getJsonStoreEnabled()))).or(true);
         includeEntitiesEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getIncludeEntities()))).or(true);
-
-        client = getTwitterClient();
     }
 
-    
+
     protected Twitter getTwitterClient()
     {
         String baseUrl = "https://api.twitter.com:443/1.1/";

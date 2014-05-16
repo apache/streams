@@ -7,23 +7,19 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.util.concurrent.Executor;
 
-public class LocalStreamProcessMonitorThread implements StatusCounterMonitorRunnable
-{
+public class LocalStreamProcessMonitorThread implements StatusCounterMonitorRunnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalStreamProcessMonitorThread.class);
-
-    private Executor executor;
 
     private int seconds;
 
     private boolean run = true;
 
-    public LocalStreamProcessMonitorThread(Executor executor, int delayInSeconds) {
-        this.executor = executor;
+    public LocalStreamProcessMonitorThread(int delayInSeconds) {
         this.seconds = delayInSeconds;
     }
 
     @Override
-    public void shutdown(){
+    public void shutdown() {
         this.run = false;
     }
 
@@ -33,9 +29,8 @@ public class LocalStreamProcessMonitorThread implements StatusCounterMonitorRunn
     }
 
     @Override
-    public void run()
-    {
-        while(run){
+    public void run() {
+        while (run) {
 
             /**
              *
@@ -52,16 +47,15 @@ public class LocalStreamProcessMonitorThread implements StatusCounterMonitorRunn
 
             String usedMemory = humanReadableByteCount(memoryUsage.getUsed(), true);
 
-            LOGGER.debug("[monitor] Used Memory: {}, Max: {}",
+            LOGGER.info("[monitor] Used Memory: {}, Max: {}",
                     usedMemory,
                     maxMemory);
 
-            try
-            {
-                Thread.sleep(seconds*1000);
+            try {
+                Thread.sleep(seconds * 1000);
+            } catch (InterruptedException e) {
+                // No Operation
             }
-            catch (InterruptedException e)
-            { }
         }
     }
 
@@ -69,7 +63,7 @@ public class LocalStreamProcessMonitorThread implements StatusCounterMonitorRunn
         int unit = si ? 1000 : 1024;
         if (bytes < unit) return bytes + " B";
         int exp = (int) (Math.log(bytes) / Math.log(unit));
-        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 }

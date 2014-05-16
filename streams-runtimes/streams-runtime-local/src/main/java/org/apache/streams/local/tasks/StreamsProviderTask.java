@@ -48,11 +48,12 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
 
     /**
      * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readCurrent()}
+     *
      * @param provider
      */
     public StreamsProviderTask(StreamsProvider provider, boolean perpetual) {
         this.provider = provider;
-        if( perpetual )
+        if (perpetual)
             this.type = Type.PERPETUAL;
         else
             this.type = Type.READ_CURRENT;
@@ -63,6 +64,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
 
     /**
      * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readNew(BigInteger)}
+     *
      * @param provider
      * @param sequence
      */
@@ -77,6 +79,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
 
     /**
      * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readRange(DateTime,DateTime)}
+     *
      * @param provider
      * @param start
      * @param end
@@ -103,7 +106,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
 
     @Override
     public void addInputQueue(Queue<StreamsDatum> inputQueue) {
-        throw new UnsupportedOperationException(this.getClass().getName()+" does not support method - setInputQueue()");
+        throw new UnsupportedOperationException(this.getClass().getName() + " does not support method - setInputQueue()");
     }
 
     @Override
@@ -118,42 +121,44 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             this.provider.prepare(this.config); //TODO allow for configuration objects
             StreamsResultSet resultSet = null;
             this.isRunning.set(true);
-            switch(this.type) {
-                case PERPETUAL: {
+            switch (this.type) {
+                case PERPETUAL:
                     provider.startStream();
-                    while(this.keepRunning.get()) {
+                    while (this.keepRunning.get()) {
                         try {
                             resultSet = provider.readCurrent();
-                            if( resultSet.size() == 0 )
+                            if (resultSet.size() == 0)
                                 zeros++;
                             else {
                                 zeros = 0;
                             }
                             flushResults(resultSet);
                             // the way this works needs to change...
-                            if( zeros > (timeout))
+                            if (zeros > (timeout))
                                 this.keepRunning.set(false);
                             Thread.sleep(DEFAULT_SLEEP_TIME_MS);
                         } catch (InterruptedException e) {
                             this.keepRunning.set(false);
                         }
                     }
-                }
                     break;
-                case READ_CURRENT: resultSet = this.provider.readCurrent();
+                case READ_CURRENT:
+                    resultSet = this.provider.readCurrent();
                     break;
-                case READ_NEW: resultSet = this.provider.readNew(this.sequence);
+                case READ_NEW:
+                    resultSet = this.provider.readNew(this.sequence);
                     break;
-                case READ_RANGE: resultSet = this.provider.readRange(this.dateRange[START], this.dateRange[END]);
+                case READ_RANGE:
+                    resultSet = this.provider.readRange(this.dateRange[START], this.dateRange[END]);
                     break;
-                default: throw new RuntimeException("Type has not been added to StreamsProviderTask.");
+                default:
+                    throw new RuntimeException("Type has not been added to StreamsProviderTask.");
             }
             flushResults(resultSet);
 
-        } catch( Exception e ) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally
-        {
+        } finally {
             this.provider.cleanUp();
             this.isRunning.set(false);
         }
@@ -165,26 +170,29 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     }
 
     public void flushResults(StreamsResultSet resultSet) {
-        for(StreamsDatum datum : resultSet) {
-            if(!this.keepRunning.get()) {
-                break;
-            }
-            if(datum != null) {
+        while (resultSet.isRunning() || resultSet.getQueue().size() > 0) {
+            if (resultSet.getQueue().size() == 0) {
+                // The process is still running, but there is nothing on the queue...
+                // we just need to be patient and wait, we yield the execution and
+                // wait for 1ms to see if anything changes.
+                Thread.yield();
                 try {
-                    super.addToOutgoingQueue(datum);
-                    statusCounter.incrementStatus(DatumStatus.SUCCESS);
-                } catch( Exception e ) {
-                    statusCounter.incrementStatus(DatumStatus.FAIL);
+                    Thread.sleep(1);
+                } catch (InterruptedException ie) {
+                    // No Operation Required
                 }
-            }
-            else {
-                try {
-                    Thread.sleep(DEFAULT_SLEEP_TIME_MS);
-                } catch (InterruptedException e) {
-                    this.keepRunning.set(false);
+            } else {
+                // we have stuff, let's process it
+                StreamsDatum datum;
+                while((datum = resultSet.getQueue().poll()) != null) {
+                    try {
+                        super.addToOutgoingQueue(datum);
+                        statusCounter.incrementStatus(DatumStatus.SUCCESS);
+                    } catch (Exception e) {
+                        statusCounter.incrementStatus(DatumStatus.FAIL);
+                    }
                 }
             }
         }
     }
-
 }

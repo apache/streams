@@ -42,7 +42,7 @@ public class StatusCounterMonitorThread implements StatusCounterMonitorRunnable
              * overflow, this will be very apparent by the information shown here.
              */
 
-            LOGGER.debug("{}: {} attempted, {} success, {} partial, {} failed, {} total",
+            LOGGER.info("{}: {} attempted, {} success, {} partial, {} failed, {} total",
                     task.getClass(),
                     task.getDatumStatusCounter().getAttempted(),
                     task.getDatumStatusCounter().getSuccess(),
@@ -50,12 +50,12 @@ public class StatusCounterMonitorThread implements StatusCounterMonitorRunnable
                     task.getDatumStatusCounter().getFail(),
                     task.getDatumStatusCounter().getEmitted());
 
-            try
-            {
+            try {
                 Thread.sleep(seconds*1000);
             }
-            catch (InterruptedException e)
-            { }
+            catch (InterruptedException e) {
+                // no Operation
+            }
         }
     }
 

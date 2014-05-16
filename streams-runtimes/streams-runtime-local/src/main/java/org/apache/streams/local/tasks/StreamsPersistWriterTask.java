@@ -71,9 +71,15 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     public void run() {
         try {
             this.writer.prepare(this.streamConfig);
-            StreamsDatum datum = this.inQueue.poll();
+
             while(this.keepRunning.get()) {
-                if(datum != null) {
+                // The queue is empty, we might as well yield
+                // and take a very quick rest
+                if(this.inQueue.size() == 0)
+                    safeQuickRest();
+
+                StreamsDatum datum = null;
+                while((datum = this.inQueue.poll()) != null) {
                     try {
                         this.writer.write(datum);
                         statusCounter.incrementStatus(DatumStatus.SUCCESS);
@@ -83,15 +89,6 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                         statusCounter.incrementStatus(DatumStatus.FAIL);
                     }
                 }
-                else {
-                    try {
-                        Thread.sleep(this.sleepTime);
-                    } catch (InterruptedException e) {
-                        LOGGER.warn("Thread interrupted in Writer task for {}",this.writer.getClass().getSimpleName(), e);
-                        this.keepRunning.set(false);
-                    }
-                }
-                datum = this.inQueue.poll();
             }
 
         } catch(Exception e) {

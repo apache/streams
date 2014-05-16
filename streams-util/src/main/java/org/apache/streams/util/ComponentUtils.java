@@ -10,29 +10,27 @@ import java.util.Queue;
 public class ComponentUtils {
 
     public static void offerUntilSuccess(Object entry, Queue queue) {
-
         boolean success;
         do {
-            synchronized( ComponentUtils.class ) {
-                success = queue.offer(entry);
-            }
+            success = queue.offer(entry);
             Thread.yield();
         }
-        while( !success );
+        while (!success);
     }
 
-    public static String pollUntilStringNotEmpty(Queue queue) {
+    public static String pollUntilStringNotEmpty(final Queue queue) {
 
         String result = null;
         do {
-            synchronized( ComponentUtils.class ) {
-                try {
-                    result = (String) queue.remove();
-                } catch( Exception e ) {}
+            try {
+                result = (String) queue.remove();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
             }
             Thread.yield();
         }
-        while( result == null && !StringUtils.isNotEmpty(result) );
+        while (result == null && !StringUtils.isNotEmpty(result));
 
         return result;
     }
