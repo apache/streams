@@ -9,7 +9,7 @@ import org.apache.streams.core.StreamsPersistWriter;
  */
 public class DatumCounterWriter implements StreamsPersistWriter{
 
-    private int counter = 0;
+    protected int counter = 0;
     private int delayInMilliseconds = 0;
 
     public DatumCounterWriter() {
@@ -20,7 +20,7 @@ public class DatumCounterWriter implements StreamsPersistWriter{
         this.delayInMilliseconds = delayInMilliseconds;
     }
 
-    private void safeSleep() {
+    protected void safeSleep() {
         try {
             Thread.sleep(this.delayInMilliseconds);
         }

@@ -14,8 +14,8 @@ public class PassThroughStaticCounterProcessor implements StreamsProcessor {
     public static final Set<String> CLAIMED_NUMBERS = new HashSet<String>();
     public static final Set<String> SEEN_DATA = new HashSet<String>();
 
-    private int count = 0;
-    private String id;
+    protected int count = 0;
+    protected String id;
     private int delay;
 
     public PassThroughStaticCounterProcessor() {
@@ -58,7 +58,7 @@ public class PassThroughStaticCounterProcessor implements StreamsProcessor {
         return result;
     }
 
-    private void sleepSafely() {
+    protected void sleepSafely() {
         try {
             Thread.sleep(this.delay);
         }
