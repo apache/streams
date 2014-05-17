@@ -152,8 +152,6 @@ public class LocalStreamBuilder implements StreamBuilder {
                     timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable)task), 0, 1000);
             }
 
-
-
             // track the JVM every 500ms
             timer.schedule(new MonitorJVMTimerTask(), 0, 500);
 
@@ -187,8 +185,14 @@ public class LocalStreamBuilder implements StreamBuilder {
             LOGGER.debug("Components are no longer running, we can turn it off");
             shutdown();
 
-        } catch (InterruptedException e) {
+        } catch (Throwable e) {
             // No Operation
+            try {
+                shutdown();
+            }
+            catch (Throwable omgE) {
+                LOGGER.error("Unexpected Error: {}", omgE);
+            }
         } finally {
             if (!Runtime.getRuntime().removeShutdownHook(this.shutDownHandler))
                 LOGGER.warn("We should have removed the shutdown handler...");
@@ -218,7 +222,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     }
 
     protected void shutdown() throws InterruptedException {
-        LOGGER.warn("Shutdown failed. Forcing shutdown");
+        LOGGER.debug("Shutting down...");
         //give the stream 30secs to try to shutdown gracefully, then force shutdown otherwise
         for(BaseStreamsTask task : this.tasks.values())
             task.stopTask();

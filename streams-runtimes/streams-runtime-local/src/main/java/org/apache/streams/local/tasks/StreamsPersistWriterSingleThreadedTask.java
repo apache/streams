@@ -79,7 +79,7 @@ public class StreamsPersistWriterSingleThreadedTask extends BaseStreamsTask impl
             this.writer.write(datum);
             statusCounter.incrementStatus(DatumStatus.SUCCESS);
         } catch (Throwable e) {
-            LOGGER.error("Error writing to persist writer {} - {}", this.writer.toString(), e);
+            LOGGER.error("Error writing to persist writer {}", this.writer.toString(), e);
             statusCounter.incrementStatus(DatumStatus.FAIL);
         }
         finally {

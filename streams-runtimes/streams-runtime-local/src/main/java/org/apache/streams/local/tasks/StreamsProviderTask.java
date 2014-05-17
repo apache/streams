@@ -166,8 +166,11 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            LOGGER.error("There was an unknown error while attempting to read from the provider. This provider cannot continue with this exception.");
+            LOGGER.error("The stream will continue running, but not with this provider.");
+            LOGGER.error("Exception: {}", e);
+            this.isRunning.set(false);
         } finally {
             this.provider.cleanUp();
             this.isRunning.set(false);
@@ -180,23 +183,32 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     }
 
     public void flushResults(StreamsResultSet resultSet) {
-        StreamsDatum datum;
-        while((datum = resultSet.getQueue().poll()) != null) {
-            /**
-             * This is meant to be a hard exit from the system. If we are running
-             * and this flag gets set to false, we are to exit immediately and
-             * abandon anything that is in this queue. The remaining processors
-             * will shutdown gracefully once they have depleted their queue
-             */
-            if(!this.keepRunning.get())
-                break;
+        try {
+            StreamsDatum datum;
+            while ((datum = resultSet.getQueue().poll()) != null) {
+                /**
+                 * This is meant to be a hard exit from the system. If we are running
+                 * and this flag gets set to false, we are to exit immediately and
+                 * abandon anything that is in this queue. The remaining processors
+                 * will shutdown gracefully once they have depleted their queue
+                 */
+                if (!this.keepRunning.get())
+                    break;
 
-            try {
-                super.addToOutgoingQueue(datum);
-                statusCounter.incrementStatus(DatumStatus.SUCCESS);
-            } catch (Exception e) {
-                statusCounter.incrementStatus(DatumStatus.FAIL);
+                processNext(datum);
             }
+        }
+        catch(Throwable e) {
+            LOGGER.warn("Unknown problem reading the queue, no datums affected: {}", e.getMessage());
+        }
+    }
+
+    private void processNext(StreamsDatum datum) {
+        try {
+            super.addToOutgoingQueue(datum);
+            statusCounter.incrementStatus(DatumStatus.SUCCESS);
+        } catch (Throwable e) {
+            statusCounter.incrementStatus(DatumStatus.FAIL);
         }
     }
 }

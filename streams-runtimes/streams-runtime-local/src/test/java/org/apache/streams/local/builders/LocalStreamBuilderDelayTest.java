@@ -73,8 +73,8 @@ public class LocalStreamBuilderDelayTest {
     }
 
     @Test
-    public void everythingDelayedTest()  {
-        int numDatums = 100;
+    public void noDataTest()  {
+        int numDatums = 8;
         StreamBuilder builder = new LocalStreamBuilder();
         PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor(100);
         DatumCounterWriter writer = new DatumCounterWriter(200);
@@ -87,7 +87,7 @@ public class LocalStreamBuilderDelayTest {
 
     @Test
     public void dualDelayedProcessorsLinearTest() {
-        int numDatums = 100;
+        int numDatums = 12;
 
         StreamBuilder builder = new LocalStreamBuilder();
         PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(100);
@@ -108,7 +108,7 @@ public class LocalStreamBuilderDelayTest {
 
     @Test
     public void dualDelayedProcessorsBranchTest() {
-        int numDatums = 100;
+        int numDatums = 10;
 
         StreamBuilder builder = new LocalStreamBuilder();
         PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(100);
@@ -129,7 +129,7 @@ public class LocalStreamBuilderDelayTest {
 
     @Test
     public void dualDelayedProviderTest() {
-        int numDatums = 100;
+        int numDatums = 4;
 
         StreamBuilder builder = new LocalStreamBuilder();
         PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(100);
@@ -148,7 +148,7 @@ public class LocalStreamBuilderDelayTest {
 
     @Test
     public void dualDelayedMergedTest() {
-        int numDatums = 100;
+        int numDatums = 6;
 
         StreamBuilder builder = new LocalStreamBuilder();
         PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(100);

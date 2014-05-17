@@ -26,7 +26,7 @@ public class StreamsProcessorSingleThreadedTask extends BaseStreamsTask implemen
      */
     public StreamsProcessorSingleThreadedTask(StreamsProcessor processor) {
         this.processor = processor;
-        this.isRunning = new AtomicBoolean(true);
+        this.isRunning = new AtomicBoolean(false);
     }
 
     @Override

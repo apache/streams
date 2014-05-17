@@ -33,7 +33,7 @@ public class LocalStreamBuilderExceptionTest {
         assertEquals("Should have same number", 0, writer.getDatumsCounted());
     }
 
-    @Test @Ignore //I currently fail :(
+    @Test
     public void testProviderMultipleException() {
         int numDatums = 100;
         int numErrors = 3;
@@ -46,7 +46,7 @@ public class LocalStreamBuilderExceptionTest {
                 .addStreamsPersistWriter("writer1", writer, 1, "proc1");
         builder.start();
 
-        assertEquals("Should have same number", numDatums - numErrors, writer.getDatumsCounted());
+        assertEquals("Should have same number", 0, writer.getDatumsCounted());
     }
 
     @Test
@@ -63,6 +63,37 @@ public class LocalStreamBuilderExceptionTest {
         builder.start();
 
         assertEquals("Should have same number", 0, writer.getDatumsCounted());
+    }
+
+    /**
+     * This test is cool, one of the providers throws an exception upfront
+     * rendering it completely useless. Another provider in the stream, however,
+     * is good.
+     *
+     * Testing for:
+     * - The bad provider doesn't affect the stream.
+     * - The good provider continues working
+     * - Even through there is 1 processing error, stream continues
+     * - counts should match up at the end
+     */
+    @Test
+    public void testStreamsOneProviderFailsOtherWorks() {
+        int numDatumsGood = 10;
+        int numDatumsBad = 10;
+        int numErrors = 1;
+
+        StreamBuilder builder = new LocalStreamBuilder();
+        NumericMessageProvider providerGood = new NumericMessageProvider(numDatumsGood);
+        NumericMessageProvider providerBad = new NumericMessageThrowExceptionProvider(numDatumsBad, 10);
+        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterExceptionProcessor(0, numErrors);
+        DatumCounterWriter writer = new DatumCounterWriter();
+        builder.newReadCurrentStream("sp1_bad", providerBad)
+                .newReadCurrentStream("sp1_good", providerGood)
+                .addStreamsProcessor("proc1", processor, 1, "sp1_good", "sp1_bad")
+                .addStreamsPersistWriter("writer1", writer, 1, "proc1");
+        builder.start();
+
+        assertEquals("Should have same number", numDatumsGood - numErrors, writer.getDatumsCounted());
     }
 
     @Test
