@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.*;
@@ -48,11 +65,12 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
 
     /**
      * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readCurrent()}
+     *
      * @param provider
      */
     public StreamsProviderTask(StreamsProvider provider, boolean perpetual) {
         this.provider = provider;
-        if( perpetual )
+        if (perpetual)
             this.type = Type.PERPETUAL;
         else
             this.type = Type.READ_CURRENT;
@@ -63,6 +81,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
 
     /**
      * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readNew(BigInteger)}
+     *
      * @param provider
      * @param sequence
      */
@@ -77,6 +96,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
 
     /**
      * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readRange(DateTime,DateTime)}
+     *
      * @param provider
      * @param start
      * @param end
@@ -97,13 +117,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     }
 
     @Override
-    public void stopTask() {
-        this.keepRunning.set(false);
-    }
-
-    @Override
     public void addInputQueue(Queue<StreamsDatum> inputQueue) {
-        throw new UnsupportedOperationException(this.getClass().getName()+" does not support method - setInputQueue()");
+        throw new UnsupportedOperationException(this.getClass().getName() + " does not support method - setInputQueue()");
     }
 
     @Override
@@ -114,46 +129,66 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
 
     @Override
     public void run() {
+        // lock, yes, I am running
+        this.isRunning.set(true);
+
         try {
-            this.provider.prepare(this.config); //TODO allow for configuration objects
+            // TODO allow for configuration objects
+            this.provider.prepare(this.config);
             StreamsResultSet resultSet = null;
-            this.isRunning.set(true);
-            switch(this.type) {
-                case PERPETUAL: {
+            switch (this.type) {
+                case PERPETUAL:
                     provider.startStream();
-                    while(this.keepRunning.get()) {
-                        try {
-                            resultSet = provider.readCurrent();
-                            if( resultSet.size() == 0 )
-                                zeros++;
-                            else {
-                                zeros = 0;
-                            }
-                            flushResults(resultSet);
-                            // the way this works needs to change...
-                            if( zeros > (timeout))
-                                this.keepRunning.set(false);
-                            Thread.sleep(DEFAULT_SLEEP_TIME_MS);
-                        } catch (InterruptedException e) {
-                            this.keepRunning.set(false);
+                    while (this.keepRunning.get()) {
+                        resultSet = provider.readCurrent();
+                        if (resultSet.size() == 0)
+                            zeros++;
+                        else {
+                            zeros = 0;
                         }
+                        flushResults(resultSet);
+                        // the way this works needs to change...
+                        if (zeros > (timeout))
+                            this.keepRunning.set(false);
+                        safeQuickRest();
+                    }
+                    break;
+                case READ_CURRENT:
+                    resultSet = this.provider.readCurrent();
+                    break;
+                case READ_NEW:
+                    resultSet = this.provider.readNew(this.sequence);
+                    break;
+                case READ_RANGE:
+                    resultSet = this.provider.readRange(this.dateRange[START], this.dateRange[END]);
+                    break;
+                default:
+                    throw new RuntimeException("Type has not been added to StreamsProviderTask.");
+            }
+            if(resultSet != null) {
+                /**
+                 * We keep running while the provider tells us that we are running or we still have
+                 * items in queue to be processed.
+                 *
+                 * IF, the keep running flag is turned to off, then we exit immediately
+                 */
+                while ((resultSet.isRunning() || resultSet.getQueue().size() > 0) && this.keepRunning.get()) {
+                    if(resultSet.getQueue().size() == 0) {
+                        // The process is still running, but there is nothing on the queue...
+                        // we just need to be patient and wait, we yield the execution and
+                        // wait for 1ms to see if anything changes.
+                        safeQuickRest();
+                    } else {
+                        flushResults(resultSet);
                     }
                 }
-                    break;
-                case READ_CURRENT: resultSet = this.provider.readCurrent();
-                    break;
-                case READ_NEW: resultSet = this.provider.readNew(this.sequence);
-                    break;
-                case READ_RANGE: resultSet = this.provider.readRange(this.dateRange[START], this.dateRange[END]);
-                    break;
-                default: throw new RuntimeException("Type has not been added to StreamsProviderTask.");
             }
-            flushResults(resultSet);
-
-        } catch( Exception e ) {
-            e.printStackTrace();
-        } finally
-        {
+        } catch (Throwable e) {
+            LOGGER.error("There was an unknown error while attempting to read from the provider. This provider cannot continue with this exception.");
+            LOGGER.error("The stream will continue running, but not with this provider.");
+            LOGGER.error("Exception: {}", e);
+            this.isRunning.set(false);
+        } finally {
             this.provider.cleanUp();
             this.isRunning.set(false);
         }
@@ -165,26 +200,32 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     }
 
     public void flushResults(StreamsResultSet resultSet) {
-        for(StreamsDatum datum : resultSet) {
-            if(!this.keepRunning.get()) {
-                break;
+        try {
+            StreamsDatum datum;
+            while ((datum = resultSet.getQueue().poll()) != null) {
+                /**
+                 * This is meant to be a hard exit from the system. If we are running
+                 * and this flag gets set to false, we are to exit immediately and
+                 * abandon anything that is in this queue. The remaining processors
+                 * will shutdown gracefully once they have depleted their queue
+                 */
+                if (!this.keepRunning.get())
+                    break;
+
+                processNext(datum);
             }
-            if(datum != null) {
-                try {
-                    super.addToOutgoingQueue(datum);
-                    statusCounter.incrementStatus(DatumStatus.SUCCESS);
-                } catch( Exception e ) {
-                    statusCounter.incrementStatus(DatumStatus.FAIL);
-                }
-            }
-            else {
-                try {
-                    Thread.sleep(DEFAULT_SLEEP_TIME_MS);
-                } catch (InterruptedException e) {
-                    this.keepRunning.set(false);
-                }
-            }
+        }
+        catch(Throwable e) {
+            LOGGER.warn("Unknown problem reading the queue, no datums affected: {}", e.getMessage());
         }
     }
 
+    private void processNext(StreamsDatum datum) {
+        try {
+            super.addToOutgoingQueue(datum);
+            statusCounter.incrementStatus(DatumStatus.SUCCESS);
+        } catch (Throwable e) {
+            statusCounter.incrementStatus(DatumStatus.FAIL);
+        }
+    }
 }

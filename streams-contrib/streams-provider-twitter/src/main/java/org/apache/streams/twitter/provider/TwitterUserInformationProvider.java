@@ -31,10 +31,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.User;
+import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.json.DataObjectFactory;
 
@@ -52,11 +49,10 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     public static final String STREAMS_ID = "TwitterUserInformationProvider";
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitterUserInformationProvider.class);
 
-
     private TwitterUserInformationConfiguration twitterUserInformationConfiguration;
 
     private Class klass;
-    protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
+    protected volatile Queue<StreamsDatum> providerQueue = new ArrayBlockingQueue<StreamsDatum>(50);
 
     public TwitterUserInformationConfiguration getConfig()              { return twitterUserInformationConfiguration; }
 
@@ -107,14 +103,12 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     }
 
 
-    private void loadBatch(Long[] ids) {
-        Twitter client = getTwitterClient();
+    protected void loadBatch(Long[] ids) {
         int keepTrying = 0;
 
         // keep trying to load, give it 5 attempts.
-        //while (keepTrying < 10)
-        while (keepTrying < 1)
-        {
+        while (keepTrying < 5) {
+            Twitter client = getTwitterClient();
             try
             {
                 long[] toQuery = new long[ids.length];
@@ -122,7 +116,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
                     toQuery[i] = ids[i];
 
                 for (User tStat : client.lookupUsers(toQuery)) {
-                    String json = DataObjectFactory.getRawJSON(tStat);
+                    String json = TwitterObjectFactory.getRawJSON(tStat);
                     ComponentUtils.offerUntilSuccess(new StreamsDatum(json), providerQueue);
                 }
                 keepTrying = 10;
@@ -132,23 +126,23 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
             }
             catch(Exception e) {
                 keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
+                e.printStackTrace();
             }
         }
     }
 
-    private void loadBatch(String[] ids) {
-        Twitter client = getTwitterClient();
+    protected void loadBatch(String[] ids) {
         int keepTrying = 0;
+        LOGGER.info("Starting batch of ScreenNames: {}", ids);
 
         // keep trying to load, give it 5 attempts.
-        //while (keepTrying < 10)
-        while (keepTrying < 1)
-        {
+        while (keepTrying < 5) {
+            Twitter client = getTwitterClient();
             try
             {
                 for (User tStat : client.lookupUsers(ids)) {
-                    String json = DataObjectFactory.getRawJSON(tStat);
-                    providerQueue.offer(new StreamsDatum(json));
+                    LOGGER.info("Offering: {}", tStat.getScreenName());
+                    ComponentUtils.offerUntilSuccess(new StreamsDatum(TwitterObjectFactory.getRawJSON(tStat)), providerQueue);
                 }
                 keepTrying = 10;
             }
@@ -157,8 +151,11 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
             }
             catch(Exception e) {
                 keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
+                e.printStackTrace();
             }
         }
+        LOGGER.info("Completed batch of ScreenNames: {}", ids);
+
     }
 
     public StreamsResultSet readCurrent() {

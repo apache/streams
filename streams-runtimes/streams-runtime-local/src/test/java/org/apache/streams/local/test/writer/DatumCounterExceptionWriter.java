@@ -15,18 +15,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.test.component;
+package org.apache.streams.local.test.writer;
 
 import org.apache.streams.core.StreamsDatum;
 
-/**
- * Created by rebanks on 2/28/14.
- */
-public class StringToDocumentConverter implements StreamsDatumConverter {
+public class DatumCounterExceptionWriter extends DatumCounterWriter{
+    private final int numErrorsToThrow;
+    private int numErrorsThrown;
 
-    @Override
-    public StreamsDatum convert(String s) {
-        return new StreamsDatum(s);
+    public DatumCounterExceptionWriter(int numErrorsToThrow) {
+        super(0);
+
+        this.numErrorsToThrow = numErrorsToThrow <= 0 ? 1 : numErrorsToThrow;
+        this.numErrorsThrown = 0;
     }
 
+    public void write(StreamsDatum entry) {
+        if(numErrorsThrown++ < numErrorsToThrow) {
+            throw new RuntimeException();
+        } else {
+
+            super.safeSleep();
+            super.counter.incrementAndGet();
+        }
+    }
 }

@@ -1,10 +1,24 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.streams.local.builders;
 
 import org.apache.streams.core.*;
-import org.apache.streams.local.tasks.StreamsPersistWriterTask;
-import org.apache.streams.local.tasks.StreamsProcessorTask;
-import org.apache.streams.local.tasks.StreamsProviderTask;
-import org.apache.streams.local.tasks.StreamsTask;
+import org.apache.streams.local.tasks.*;
 import org.apache.streams.util.SerializationUtil;
 import org.joda.time.DateTime;
 
@@ -150,50 +164,39 @@ public class StreamComponent {
     }
 
     /**
-     * The number of tasks this to run this component
-     * @return
-     */
-    public int getNumTasks() {
-        return this.numTasks;
-    }
-
-    /**
      * Creates a {@link org.apache.streams.local.tasks.StreamsTask} that is running a clone of this component whose
      * inbound and outbound queues are appropriately connected to the parent and child nodes.
      *
      * @return StreamsTask for this component
      * @param timeout The timeout to use in milliseconds for any tasks that support configurable timeout
      */
-    public StreamsTask createConnectedTask(int timeout) {
-        StreamsTask task;
+    public BaseStreamsTask createConnectedTask(int timeout) {
+
+        BaseStreamsTask task;
+
         if(this.processor != null) {
-            if(this.numTasks > 1) {
-                task =  new StreamsProcessorTask((StreamsProcessor)SerializationUtil.cloneBySerialization(this.processor));
-                task.addInputQueue(this.inQueue);
-                for(Queue<StreamsDatum> q : this.outBound.values()) {
-                    task.addOutputQueue(q);
-                }
-            } else {
-                task = new StreamsProcessorTask(this.processor);
-                task.addInputQueue(this.inQueue);
-                for(Queue<StreamsDatum> q : this.outBound.values()) {
-                    task.addOutputQueue(q);
-                }
+            task = this.numTasks > 1 ?
+                    new StreamsProcessorMultiThreadedTask(this.processor, this.numTasks) :
+                    new StreamsProcessorSingleThreadedTask(this.processor);
+
+            task.addInputQueue(this.inQueue);
+            for(Queue<StreamsDatum> q : this.outBound.values()) {
+                task.addOutputQueue(q);
             }
+
         }
         else if(this.writer != null) {
-            if(this.numTasks > 1) {
-                task = new StreamsPersistWriterTask((StreamsPersistWriter) SerializationUtil.cloneBySerialization(this.writer));
-                task.addInputQueue(this.inQueue);
-            } else {
-                task = new StreamsPersistWriterTask(this.writer);
-                task.addInputQueue(this.inQueue);
-            }
+            task = this.numTasks > 1 ?
+                    new StreamsPersistWriterMultiThreadedTask(this.writer, this.numTasks) :
+                    new StreamsPersistWriterSingleThreadedTask(this.writer);
+
+            task.addInputQueue(this.inQueue);
         }
         else if(this.provider != null) {
             StreamsProvider prov;
+
             if(this.numTasks > 1) {
-                prov = (StreamsProvider)SerializationUtil.cloneBySerialization(this.provider);
+                throw new IllegalArgumentException("Having multiple providers is not accepted");
             } else {
                 prov = this.provider;
             }
@@ -214,28 +217,25 @@ public class StreamComponent {
         else {
             throw new InvalidStreamException("Underlying StreamComponoent was NULL.");
         }
+
         return task;
     }
 
     /**
      * The unique of this component
      * @return
+     * The ID of this element
      */
     public String getId() {
         return this.id;
     }
 
-    @Override
     public int hashCode() {
         return this.id.hashCode();
     }
 
-    @Override
     public boolean equals(Object o) {
-        if(o instanceof StreamComponent)
-            return this.id.equals(((StreamComponent) o).id);
-        else
-            return false;
+        return o instanceof StreamComponent && this.id.equals(((StreamComponent) o).id);
     }
 
     protected StreamsOperation getOperation() {
@@ -251,9 +251,5 @@ public class StreamComponent {
         else {
             throw new InvalidStreamException("Underlying StreamComponoent was NULL.");
         }
-    }
-
-    protected boolean isOperationCountable() {
-        return getOperation() instanceof DatumStatusCountable;
     }
 }

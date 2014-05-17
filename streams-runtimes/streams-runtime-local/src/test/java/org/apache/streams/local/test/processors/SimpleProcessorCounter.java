@@ -20,24 +20,57 @@ package org.apache.streams.local.test.processors;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
- * A processor that does nothing. This processor will
- * drop the message
+ * Unlike the other implementation, this doesn't record anything statically
  */
-public class DoNothingProcessor implements StreamsProcessor {
+public class SimpleProcessorCounter implements StreamsProcessor {
 
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        return null;
+    private int count = 0;
+    private int delay;
+
+    public SimpleProcessorCounter() {
+        this(0);
     }
 
+    public SimpleProcessorCounter(int delay) {
+        this.delay = delay;
+    }
+
+    /**
+     * How many messages we saw
+     * @return
+     * The number of messages this instance saw
+     */
+    public int getMessageCount() {
+        return this.count;
+    }
+
+    public List<StreamsDatum> process(StreamsDatum entry) {
+        sleepSafely();
+        this.count++;
+        List<StreamsDatum> result = new LinkedList<StreamsDatum>();
+        result.add(entry);
+        return result;
+    }
+
+    private void sleepSafely() {
+        try {
+            Thread.sleep(this.delay);
+        }
+        catch(InterruptedException ie) {
+            // no Operation
+        }
+    }
+
+
     public void prepare(Object configurationObject) {
-        // no Operation
+        // noOperation
     }
 
     public void cleanUp() {
-        // no Operation
+
     }
+
 }
