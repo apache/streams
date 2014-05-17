@@ -30,30 +30,6 @@ public class LocalStreamBuilderTest {
     }
 
     @Test
-    public void testStreamIdValidations() {
-
-        StreamBuilder builder = new LocalStreamBuilder();
-        builder.newReadCurrentStream("id", new NumericMessageProvider(1));
-
-        PassThroughStaticCounterProcessor.clear();
-
-        try {
-            builder.newReadCurrentStream("id", new NumericMessageProvider(1));
-            fail("Should have had a runtime exception");
-        } catch (RuntimeException e) {
-            // noOperation
-        }
-
-        builder.addStreamsProcessor("1", new PassThroughStaticCounterProcessor(), 1, "id");
-        try {
-            builder.addStreamsProcessor("2", new PassThroughStaticCounterProcessor(), 1, "id", "id2");
-            fail("Should have had a runtime exception");
-        } catch (RuntimeException e) {
-            // no Operation
-        }
-    }
-
-    @Test
     public void testBasicLinearStream1()  {
         int numDatums = 1;
 
@@ -116,7 +92,6 @@ public class LocalStreamBuilderTest {
         int numDatums1 = 1;
         int numDatums2 = 100;
 
-        PassThroughStaticCounterProcessor.clear();
         PassThroughStaticCounterProcessor processor1 = new PassThroughStaticCounterProcessor();
         PassThroughStaticCounterProcessor processor2 = new PassThroughStaticCounterProcessor();
         DatumCounterWriter writer = new DatumCounterWriter();

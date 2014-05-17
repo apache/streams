@@ -10,10 +10,7 @@ import org.slf4j.Logger;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * {@link org.apache.streams.local.builders.LocalStreamBuilder} implementation to run a data processing stream in a single
@@ -25,28 +22,26 @@ public class LocalStreamBuilder implements StreamBuilder {
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(LocalStreamBuilder.class);
 
     public static final String TIMEOUT_KEY = "TIMEOUT";
-    private Map<String, StreamComponent> providers;
-    private Map<String, StreamComponent> components;
-    private Queue<StreamsDatum> queue;
-    private Map<String, Object> streamConfig;
-    private ExecutorService executor;
-    private int totalTasks;
+    private final Queue<StreamsDatum> queue;
+    private final Map<String, StreamComponent> providers;
+    private final Map<String, StreamComponent> components;
+    private final Map<String, Object> streamConfig;
+    private Map<String, BaseStreamsTask> tasks;
 
-    private final Map<String, List<StreamsTask>> tasks = new HashMap<String, List<StreamsTask>>();
     private Thread shutDownHandler;
 
     /**
      *
      */
     public LocalStreamBuilder() {
-        this(new ConcurrentLinkedQueue<StreamsDatum>(), null);
+        this(new ArrayBlockingQueue<StreamsDatum>(50), null);
     }
 
     /**
      * @param streamConfig
      */
     public LocalStreamBuilder(Map<String, Object> streamConfig) {
-        this(new ConcurrentLinkedQueue<StreamsDatum>(), streamConfig);
+        this(new ArrayBlockingQueue<StreamsDatum>(50), streamConfig);
     }
 
     /**
@@ -65,14 +60,12 @@ public class LocalStreamBuilder implements StreamBuilder {
         this.providers = new HashMap<String, StreamComponent>();
         this.components = new HashMap<String, StreamComponent>();
         this.streamConfig = streamConfig;
-        this.totalTasks = 0;
     }
 
     @Override
     public StreamBuilder newPerpetualStream(String id, StreamsProvider provider) {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, true));
-        ++this.totalTasks;
         return this;
     }
 
@@ -80,7 +73,6 @@ public class LocalStreamBuilder implements StreamBuilder {
     public StreamBuilder newReadCurrentStream(String id, StreamsProvider provider) {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, false));
-        ++this.totalTasks;
         return this;
     }
 
@@ -88,7 +80,6 @@ public class LocalStreamBuilder implements StreamBuilder {
     public StreamBuilder newReadNewStream(String id, StreamsProvider provider, BigInteger sequence) {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, sequence));
-        ++this.totalTasks;
         return this;
     }
 
@@ -96,7 +87,6 @@ public class LocalStreamBuilder implements StreamBuilder {
     public StreamBuilder newReadRangeStream(String id, StreamsProvider provider, DateTime start, DateTime end) {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, start, end));
-        ++this.totalTasks;
         return this;
     }
 
@@ -106,7 +96,6 @@ public class LocalStreamBuilder implements StreamBuilder {
         StreamComponent comp = new StreamComponent(id, processor, cloneQueue(), numTasks);
         this.components.put(id, comp);
         connectToOtherComponents(inBoundIds, comp);
-        this.totalTasks += numTasks;
         return this;
     }
 
@@ -116,9 +105,11 @@ public class LocalStreamBuilder implements StreamBuilder {
         StreamComponent comp = new StreamComponent(id, writer, cloneQueue(), numTasks);
         this.components.put(id, comp);
         connectToOtherComponents(inBoundIds, comp);
-        this.totalTasks += numTasks;
         return this;
     }
+
+
+    private ExecutorService executor;
 
     /**
      * Runs the data stream in the this JVM and blocks till completion.
@@ -126,7 +117,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     @Override
     public synchronized void start() {
 
-        Timer timer = new Timer(true);
+        final Timer timer = new Timer(true);
 
         if (this.shutDownHandler != null) {
             String message = "The stream builder has already been started and has not been successfully shutdown. Nothing will execute.";
@@ -147,17 +138,20 @@ public class LocalStreamBuilder implements StreamBuilder {
 
         Runtime.getRuntime().addShutdownHook(shutDownHandler);
 
-        this.executor = Executors.newFixedThreadPool(this.totalTasks);
-
-        Map<String, StreamsProviderTask> provTasks = new HashMap<String, StreamsProviderTask>();
+        this.tasks = createTasks();
+        this.executor = Executors.newFixedThreadPool(tasks.size());
 
         try {
-            setupComponentTasks(tasks, timer);
-            setupProviderTasks(provTasks, timer);
-
             LOGGER.info("----------------------------------- Starting LocalStream Builder -----------------------------------");
-            LOGGER.info("Worker Counts - Components[{}] - Providers[{}] - Tasks[{}]", this.components.size(), this.providers.size(), tasks.size());
-            LOGGER.info("----------------------------------------------------------------------------------------------------");
+
+            for(StreamsTask task : this.tasks.values()) {
+                this.executor.execute(task);
+
+                // Count whatever we are telling ourselves
+                if(task instanceof DatumStatusCountable)
+                    timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable)task), 0, 1000);
+            }
+
 
 
             // track the JVM every 500ms
@@ -169,20 +163,19 @@ public class LocalStreamBuilder implements StreamBuilder {
                 isRunning = false;
 
                 // check to see if it is running, if it is, then set the flag and break.
-                for (StreamsProviderTask task : provTasks.values()) {
-                    if (task.isRunning()) {
-                        isRunning = true;
-                        break;
-                    }
-                }
-
-                // if we haven't already asserted that we are running, check these too.
-                if (!isRunning) {
-                    for (StreamComponent task : components.values())
-                        if (task.getInBoundQueue().size() > 0) {
+                for (BaseStreamsTask task : this.tasks.values()) {
+                    if(task instanceof StreamsProviderTask) {
+                        if(task.isRunning()) {
                             isRunning = true;
                             break;
                         }
+                    }
+                    else {
+                        if(task.isRunning() || task.isDatumAvailable()) {
+                            isRunning = true;
+                            break;
+                        }
+                    }
                 }
 
                 if (isRunning) {
@@ -192,9 +185,10 @@ public class LocalStreamBuilder implements StreamBuilder {
             }
 
             LOGGER.debug("Components are no longer running, we can turn it off");
-            shutdown(tasks);
+            shutdown();
+
         } catch (InterruptedException e) {
-            forceShutdown(tasks);
+            // No Operation
         } finally {
             if (!Runtime.getRuntime().removeShutdownHook(this.shutDownHandler))
                 LOGGER.warn("We should have removed the shutdown handler...");
@@ -205,19 +199,6 @@ public class LocalStreamBuilder implements StreamBuilder {
             timer.cancel();
         }
 
-    }
-
-    protected void forceShutdown(Map<String, List<StreamsTask>> streamsTasks) {
-
-        LOGGER.warn("Shutdown failed.  Forcing shutdown");
-        //give the stream 30secs to try to shutdown gracefully, then force shutdown otherwise
-        for (List<StreamsTask> tasks : streamsTasks.values()) {
-            for (StreamsTask task : tasks) {
-                task.stopTask();
-            }
-        }
-
-        shutdownExecutor();
     }
 
     private void shutdownExecutor() {
@@ -236,113 +217,43 @@ public class LocalStreamBuilder implements StreamBuilder {
         }
     }
 
-    protected void shutdown(Map<String, List<StreamsTask>> streamsTasks) throws InterruptedException {
-
-        LOGGER.info("Shutting down LocalStreamsBuilder");
-
-        //complete stream shut down gracefully, ask them to shutdown
-        for (StreamComponent prov : this.providers.values())
-            shutDownTask(prov, streamsTasks);
+    protected void shutdown() throws InterruptedException {
+        LOGGER.warn("Shutdown failed. Forcing shutdown");
+        //give the stream 30secs to try to shutdown gracefully, then force shutdown otherwise
+        for(BaseStreamsTask task : this.tasks.values())
+            task.stopTask();
 
         shutdownExecutor();
     }
 
-    protected void setupProviderTasks(Map<String, StreamsProviderTask> provTasks, Timer timer) {
+    protected Map<String, BaseStreamsTask> createTasks() {
+        Map<String, BaseStreamsTask> toReturn = new LinkedHashMap<String, BaseStreamsTask>();
+
         for (StreamComponent prov : this.providers.values()) {
-            StreamsTask task = prov.createConnectedTask(getTimeout());
+            BaseStreamsTask task = prov.createConnectedTask(getTimeout());
             task.setStreamConfig(this.streamConfig);
-            this.executor.submit(task);
-            provTasks.put(prov.getId(), (StreamsProviderTask) task);
-
-            // Count whatever the provider is telling us
-            if (prov instanceof DatumStatusCountable)
-                timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable) prov.getOperation()), 0, 1000);
-
-            // Count whatever we are telling ourselves
-            if(prov instanceof DatumStatusCountable)
-                timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable)prov), 0, 1000);
+            toReturn.put(prov.getId(), task);
         }
-    }
 
-    protected void setupComponentTasks(Map<String, List<StreamsTask>> streamsTasks, Timer timer) {
         for (StreamComponent comp : this.components.values()) {
-            int tasks = comp.getNumTasks();
-            List<StreamsTask> compTasks = new LinkedList<StreamsTask>();
-            for (int i = 0; i < tasks; ++i) {
-                StreamsTask task = comp.createConnectedTask(getTimeout());
-                task.setStreamConfig(this.streamConfig);
-                this.executor.submit(task);
-                compTasks.add(task);
-
-                // Count whatever the task is telling us
-                if (comp instanceof DatumStatusCountable)
-                    timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation()), 0, 1000);
-
-                //
-                if(task instanceof DatumStatusCountable)
-                    timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable) task), 0, 1000);
-
-            }
-            streamsTasks.put(comp.getId(), compTasks);
+            BaseStreamsTask task = comp.createConnectedTask(getTimeout());
+            task.setStreamConfig(this.streamConfig);
+            toReturn.put(comp.getId(), task);
         }
-    }
 
-    /**
-     * Shutdown the running tasks in sudo depth first search kind of way. Checks that the upstream components have
-     * finished running before shutting down. Waits till inbound queue is empty to shutdown.
-     *
-     * @param comp        StreamComponent to shut down.
-     * @param streamTasks the list of non-StreamsProvider tasks for this stream.
-     * @throws InterruptedException
-     */
-    private void shutDownTask(StreamComponent comp, Map<String, List<StreamsTask>> streamTasks) throws InterruptedException {
-        List<StreamsTask> tasks = streamTasks.get(comp.getId());
-        if (tasks != null) { //not a StreamProvider
-            boolean parentsShutDown = true;
-            for (StreamComponent parent : comp.getUpStreamComponents()) {
-                List<StreamsTask> parentTasks = streamTasks.get(parent.getId());
-                //if parentTask == null, its a provider and is not running anymore
-                if (parentTasks != null) {
-                    for (StreamsTask task : parentTasks) {
-                        parentsShutDown = parentsShutDown && !task.isRunning();
-                    }
-                }
-            }
-            if (parentsShutDown) {
-                for (StreamsTask task : tasks) {
-                    task.stopTask();
-                }
-                for (StreamsTask task : tasks) {
-                    int count = 0;
-                    while (count++ < 2000 && task.isRunning()) {
-                        Thread.yield();
-                        Thread.sleep(5);
-                    }
-                    if (task.isRunning()) {
-                        LOGGER.warn("Task {} failed to terminate in allotted time-frame", task.toString());
-                    }
-                }
-            }
-        }
-        Collection<StreamComponent> children = comp.getDownStreamComponents();
-        if (children != null) {
-            for (StreamComponent child : comp.getDownStreamComponents()) {
-                shutDownTask(child, streamTasks);
-            }
-        }
+        return toReturn;
     }
 
     public void stop() {
         try {
-            shutdown(tasks);
+            shutdown();
         } catch (Exception e) {
             LOGGER.warn("Forcing Shutdown: There was an error stopping: {}", e.getMessage());
-            forceShutdown(tasks);
         }
     }
 
-    private void connectToOtherComponents(String[] conntectToIds, StreamComponent toBeConnected) {
-        for (String id : conntectToIds) {
+    private void connectToOtherComponents(String[] connectToIds, StreamComponent toBeConnected) {
+        for (String id : connectToIds) {
             StreamComponent upStream = null;
             if (this.providers.containsKey(id)) {
                 upStream = this.providers.get(id);
@@ -362,9 +273,13 @@ public class LocalStreamBuilder implements StreamBuilder {
         }
     }
 
-
+    @SuppressWarnings("unchecked")
     private Queue<StreamsDatum> cloneQueue() {
-        return (Queue<StreamsDatum>)SerializationUtil.cloneBySerialization(this.queue);
+        Object toReturn = SerializationUtil.cloneBySerialization(this.queue);
+        if(toReturn instanceof Queue)
+            return (Queue<StreamsDatum>)toReturn;
+        else
+            throw new RuntimeException("Unable to clone the queue");
     }
 
     protected int getTimeout() {

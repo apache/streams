@@ -3,14 +3,16 @@ package org.apache.streams.local.test.writer;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * A simple counter to count how many times the 'write' was
  * called.
  */
 public class DatumCounterWriter implements StreamsPersistWriter{
 
-    private int counter = 0;
-    private int delayInMilliseconds = 0;
+    private final AtomicInteger counter = new AtomicInteger(0);
+    private final int delayInMilliseconds;
 
     public DatumCounterWriter() {
         this(0);
@@ -21,17 +23,18 @@ public class DatumCounterWriter implements StreamsPersistWriter{
     }
 
     private void safeSleep() {
-        try {
-            Thread.sleep(this.delayInMilliseconds);
-        }
-        catch(InterruptedException ie) {
-            // no Operation
+        if(this.delayInMilliseconds > 0) {
+            try {
+                Thread.sleep(this.delayInMilliseconds);
+            } catch (InterruptedException ie) {
+                // no Operation
+            }
         }
     }
 
     public void write(StreamsDatum entry) {
         safeSleep();
-        this.counter++;
+        this.counter.incrementAndGet();
     }
 
     public void prepare(Object configurationObject) {
@@ -43,6 +46,6 @@ public class DatumCounterWriter implements StreamsPersistWriter{
     }
 
     public int getDatumsCounted() {
-        return this.counter;
+        return this.counter.get();
     }
 }

@@ -81,7 +81,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
      * to be processed.
      * @return whether or not there is another datum available
      */
-    protected synchronized boolean isDatumAvailable() {
+    public boolean isDatumAvailable() {
         for(Queue q : this.inQueues)
             if(q.size() > 0)
                 return true;
