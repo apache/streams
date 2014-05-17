@@ -3,6 +3,7 @@ package org.apache.streams.local.test.providers;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.local.tasks.WaitUntilAvailableExecutionHandler;
 import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
 
@@ -71,14 +72,14 @@ public class NumericMessageProviderDelayed implements StreamsProvider {
             final int threadCount = 5;
             final int maxWaitingCount = threadCount * 3;
 
-            ThreadPoolExecutor executorService =  new ThreadPoolExecutor(threadCount,
+            ThreadPoolExecutor executorService = new ThreadPoolExecutor(threadCount,
                     maxWaitingCount,
                     0L,
                     TimeUnit.MILLISECONDS,
                     new LinkedBlockingQueue<Runnable>(maxWaitingCount),
-                    new WaitRejectedExecutionHandler());
+                    new WaitUntilAvailableExecutionHandler());
 
-            for(int i = 0; i < numMessages; i++) {
+            for (int i = 0; i < numMessages; i++) {
                 final int toOffer = i;
                 executorService.execute(new Runnable() {
                     public void run() {
@@ -88,43 +89,29 @@ public class NumericMessageProviderDelayed implements StreamsProvider {
                 });
             }
 
-            try
-            {
+            try {
                 // Shut down our thread pool
                 executorService.shutdown();
 
                 // wait for the thread pool to finish executing
                 executorService.awaitTermination(10, TimeUnit.MINUTES);
-            }
-            catch(InterruptedException e) {
+            } catch (InterruptedException e) {
                 // no operation
-            }
-            finally {
+            } finally {
                 // Shutdown the result set
                 streamsResultSet.shutDown();
             }
         }
     }
 
-    class WaitRejectedExecutionHandler implements RejectedExecutionHandler {
-        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-            // Wait until the pool is free for another item
-            while(executor.getMaximumPoolSize() == executor.getQueue().size()) {
-                safeSleep();
-            }
-            executor.submit(r);
-        }
-    }
 
-    public static void safeSleep()
-    {
+    public static void safeSleep() {
         Thread.yield();
         try {
             // wait one tenth of a millisecond
             Thread.sleep(0, (1000000 / 10));
             Thread.yield();
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             // no operation
         }
         Thread.yield();

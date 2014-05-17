@@ -35,8 +35,6 @@ public class LocalStreamBuilderTest {
         StreamBuilder builder = new LocalStreamBuilder();
         builder.newReadCurrentStream("id", new NumericMessageProvider(1));
 
-        PassThroughStaticCounterProcessor.clear();
-
         try {
             builder.newReadCurrentStream("id", new NumericMessageProvider(1));
             fail("Should have had a runtime exception");
@@ -51,6 +49,20 @@ public class LocalStreamBuilderTest {
         } catch (RuntimeException e) {
             // no Operation
         }
+    }
+
+    public void testBasicLinearStream1()  {
+        int numDatums = 1;
+
+
+        StreamBuilder builder = new LocalStreamBuilder();
+        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
+        DatumCounterWriter writer = new DatumCounterWriter();
+        builder.newReadCurrentStream("sp1", new NumericMessageProvider(numDatums))
+                .addStreamsProcessor("proc1", processor, 1, "sp1")
+                .addStreamsPersistWriter("writer1", writer, 1, "proc1");
+        builder.start();
+        assertEquals("Should have same number", numDatums, writer.getDatumsCounted());
     }
 
     @Test
@@ -101,7 +113,6 @@ public class LocalStreamBuilderTest {
         int numDatums1 = 1;
         int numDatums2 = 100;
 
-        PassThroughStaticCounterProcessor.clear();
         PassThroughStaticCounterProcessor processor1 = new PassThroughStaticCounterProcessor();
         PassThroughStaticCounterProcessor processor2 = new PassThroughStaticCounterProcessor();
         DatumCounterWriter writer = new DatumCounterWriter();

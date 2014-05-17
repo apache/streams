@@ -112,11 +112,13 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
 
     @Override
     public void run() {
+        // lock, yes, I am running
+        this.isRunning.set(true);
+
         try {
             // TODO allow for configuration objects
             this.provider.prepare(this.config);
             StreamsResultSet resultSet = null;
-            this.isRunning.set(true);
             switch (this.type) {
                 case PERPETUAL:
                     provider.startStream();
@@ -183,7 +185,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             /**
              * This is meant to be a hard exit from the system. If we are running
              * and this flag gets set to false, we are to exit immediately and
-             * abandon anything that is in our queue.
+             * abandon anything that is in this queue. The remaining processors
+             * will shutdown gracefully once they have depleted their queue
              */
             if(!this.keepRunning.get())
                 break;

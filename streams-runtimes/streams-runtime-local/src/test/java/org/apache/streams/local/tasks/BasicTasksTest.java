@@ -66,7 +66,7 @@ public class BasicTasksTest {
         int numMessages = 100;
 
         PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
-        StreamsProcessorTask task = new StreamsProcessorTask(processor);
+        StreamsProcessorSingleThreadedTask task = new StreamsProcessorSingleThreadedTask(processor);
         Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
         task.addOutputQueue(outQueue);
@@ -105,7 +105,7 @@ public class BasicTasksTest {
         int numMessages = 100;
 
         DatumCounterWriter writer = new DatumCounterWriter();
-        StreamsPersistWriterTask task = new StreamsPersistWriterTask(writer);
+        StreamsPersistWriterSingleThreadedTask task = new StreamsPersistWriterSingleThreadedTask(writer);
         Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
 
@@ -161,6 +161,12 @@ public class BasicTasksTest {
         service.submit(task);
         int attempts = 0;
         while (outQueue.size() != incoming * numMessages) {
+            try {
+                Thread.sleep(10);
+            }
+            catch(Exception e) {
+                // No Operation
+            }
             Thread.yield();
             ++attempts;
             if (attempts == 10) {
@@ -184,7 +190,7 @@ public class BasicTasksTest {
     public void testBranching() {
         int numMessages = 100;
         PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
-        StreamsProcessorTask task = new StreamsProcessorTask(processor);
+        StreamsProcessorSingleThreadedTask task = new StreamsProcessorSingleThreadedTask(processor);
         Queue<StreamsDatum> outQueue1 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> outQueue2 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
@@ -227,7 +233,7 @@ public class BasicTasksTest {
     public void testBranchingSerialization() {
         int numMessages = 1;
         PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
-        StreamsProcessorTask task = new StreamsProcessorTask(processor);
+        StreamsProcessorSingleThreadedTask task = new StreamsProcessorSingleThreadedTask(processor);
         Queue<StreamsDatum> outQueue1 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> outQueue2 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);

@@ -2,9 +2,6 @@ package org.apache.streams.local.test.writer;
 
 import org.apache.streams.core.StreamsDatum;
 
-/**
- * Created by rdouglas on 5/16/14.
- */
 public class DatumCounterExceptionWriter extends DatumCounterWriter{
     private final int numErrorsToThrow;
     private int numErrorsThrown;
@@ -20,8 +17,9 @@ public class DatumCounterExceptionWriter extends DatumCounterWriter{
         if(numErrorsThrown++ < numErrorsToThrow) {
             throw new RuntimeException();
         } else {
+
             super.safeSleep();
-            super.counter++;
+            super.counter.incrementAndGet();
         }
     }
 }

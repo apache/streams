@@ -5,9 +5,7 @@ import org.apache.streams.core.StreamsDatum;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by rdouglas on 5/16/14.
- */
+
 public class PassThroughStaticCounterExceptionProcessor extends PassThroughStaticCounterProcessor{
     private final int numErrorsToThrow;
     private int numErrorsThrown;
@@ -22,14 +20,13 @@ public class PassThroughStaticCounterExceptionProcessor extends PassThroughStati
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
         super.sleepSafely();
-        super.count++;
+        super.count.incrementAndGet();
         List<StreamsDatum> result = new LinkedList<StreamsDatum>();
 
         if(this.numErrorsThrown++ < this.numErrorsToThrow) {
             throw new RuntimeException();
         } else {
             result.add(entry);
-            SEEN_DATA.add(super.id);
         }
 
         return result;
