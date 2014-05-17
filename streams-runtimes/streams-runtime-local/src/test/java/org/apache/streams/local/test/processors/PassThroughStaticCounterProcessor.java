@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class PassThroughStaticCounterProcessor implements StreamsProcessor {
 
-    private final AtomicInteger count = new AtomicInteger(0);
+    protected final AtomicInteger count = new AtomicInteger(0);
     private final int delay;
 
     public PassThroughStaticCounterProcessor() {
@@ -39,7 +39,7 @@ public class PassThroughStaticCounterProcessor implements StreamsProcessor {
         return result;
     }
 
-    private void sleepSafely() {
+    protected void sleepSafely() {
         try {
             Thread.sleep(this.delay);
         }

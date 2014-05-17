@@ -76,8 +76,8 @@ public class LocalStreamBuilderDelayTest {
     public void everythingDelayedTest()  {
         int numDatums = 100;
         StreamBuilder builder = new LocalStreamBuilder();
-        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
-        DatumCounterWriter writer = new DatumCounterWriter();
+        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor(100);
+        DatumCounterWriter writer = new DatumCounterWriter(200);
         builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums, 100))
                 .addStreamsProcessor("proc1", processor, 1, "sp1")
                 .addStreamsPersistWriter("writer1", writer, 1, "proc1");
@@ -85,5 +85,86 @@ public class LocalStreamBuilderDelayTest {
         assertEquals("Should have same number", numDatums, writer.getDatumsCounted());
     }
 
+    @Test
+    public void dualDelayedProcessorsLinearTest() {
+        int numDatums = 100;
 
+        StreamBuilder builder = new LocalStreamBuilder();
+        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(100);
+        PassThroughStaticCounterProcessor proc2 = new PassThroughStaticCounterProcessor(200);
+        DatumCounterWriter writer = new DatumCounterWriter();
+
+        builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums))
+                .addStreamsProcessor("proc1", proc1, 1, "sp1")
+                .addStreamsProcessor("proc2", proc2, 1, "proc1")
+                .addStreamsPersistWriter("writer1", writer, 1, "proc2");
+
+        builder.start();
+
+        assertEquals("Should have same number", numDatums, writer.getDatumsCounted());
+        assertEquals("Should have same number", numDatums, proc1.getMessageCount());
+        assertEquals("Should have same number", numDatums, proc2.getMessageCount());
+    }
+
+    @Test
+    public void dualDelayedProcessorsBranchTest() {
+        int numDatums = 100;
+
+        StreamBuilder builder = new LocalStreamBuilder();
+        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(100);
+        PassThroughStaticCounterProcessor proc2 = new PassThroughStaticCounterProcessor(200);
+        DatumCounterWriter writer = new DatumCounterWriter();
+
+        builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums))
+                .addStreamsProcessor("proc1", proc1, 1, "sp1")
+                .addStreamsProcessor("proc2", proc2, 1, "sp1")
+                .addStreamsPersistWriter("writer1", writer, 1, "proc1", "proc2");
+
+        builder.start();
+
+        assertEquals("Should have same number", 2 * numDatums, writer.getDatumsCounted());
+        assertEquals("Should have same number", numDatums, proc1.getMessageCount());
+        assertEquals("Should have same number", numDatums, proc2.getMessageCount());
+    }
+
+    @Test
+    public void dualDelayedProviderTest() {
+        int numDatums = 100;
+
+        StreamBuilder builder = new LocalStreamBuilder();
+        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(100);
+        DatumCounterWriter writer = new DatumCounterWriter();
+
+        builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums, 300))
+                .newReadCurrentStream("sp2", new NumericMessageProviderDelayed(numDatums, 200))
+                .addStreamsProcessor("proc1", proc1, 1, "sp1", "sp2")
+                .addStreamsPersistWriter("writer1", writer, 1, "proc1");
+
+        builder.start();
+
+        assertEquals("Should have same number", 2 * numDatums, writer.getDatumsCounted());
+        assertEquals("Should have same number", 2 * numDatums, proc1.getMessageCount());
+    }
+
+    @Test
+    public void dualDelayedMergedTest() {
+        int numDatums = 100;
+
+        StreamBuilder builder = new LocalStreamBuilder();
+        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(100);
+        PassThroughStaticCounterProcessor proc2 = new PassThroughStaticCounterProcessor(150);
+        DatumCounterWriter writer = new DatumCounterWriter(150);
+
+        builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums, 300))
+                .newReadCurrentStream("sp2", new NumericMessageProviderDelayed(numDatums, 350))
+                .addStreamsProcessor("proc1", proc1, 1, "sp1")
+                .addStreamsProcessor("proc2", proc2, 1, "sp2")
+                .addStreamsPersistWriter("writer1", writer, 1, "proc1", "proc2");
+
+        builder.start();
+
+        assertEquals("Should have same number", 2 * numDatums, writer.getDatumsCounted());
+        assertEquals("Should have same number", numDatums, proc1.getMessageCount());
+        assertEquals("Should have same number", numDatums, proc2.getMessageCount());
+    }
 }

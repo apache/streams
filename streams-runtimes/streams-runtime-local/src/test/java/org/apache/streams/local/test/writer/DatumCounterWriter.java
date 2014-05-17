@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class DatumCounterWriter implements StreamsPersistWriter{
 
-    private final AtomicInteger counter = new AtomicInteger(0);
+    protected final AtomicInteger counter = new AtomicInteger(0);
     private final int delayInMilliseconds;
 
     public DatumCounterWriter() {
@@ -22,7 +22,7 @@ public class DatumCounterWriter implements StreamsPersistWriter{
         this.delayInMilliseconds = delayInMilliseconds;
     }
 
-    private void safeSleep() {
+    protected void safeSleep() {
         if(this.delayInMilliseconds > 0) {
             try {
                 Thread.sleep(this.delayInMilliseconds);

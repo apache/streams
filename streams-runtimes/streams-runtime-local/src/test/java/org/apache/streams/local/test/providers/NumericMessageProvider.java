@@ -14,8 +14,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class NumericMessageProvider implements StreamsProvider {
 
-    private int numMessages;
+    protected int numMessages;
 
+    public NumericMessageProvider() {this.numMessages = 0;}
     public NumericMessageProvider(int numMessages) {
         this.numMessages = numMessages;
     }
