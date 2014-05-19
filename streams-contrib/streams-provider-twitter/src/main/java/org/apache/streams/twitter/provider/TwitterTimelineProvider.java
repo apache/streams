@@ -116,10 +116,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
             int keepTrying = 0;
 
             // keep trying to load, give it 5 attempts.
-            //while (keepTrying < 10)
-            while (keepTrying < 1)
+            while (keepTrying < 5)
             {
-
                 try
                 {
                     statuses = client.getUserTimeline(currentId, paging);
