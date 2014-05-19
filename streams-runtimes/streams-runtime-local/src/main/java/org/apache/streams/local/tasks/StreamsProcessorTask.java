@@ -72,7 +72,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
 
     @Override
     public boolean isRunning() {
-        return (executorService.getActiveCount() > 0);
+        return (executorService.getActiveCount() > 0) || this.isDatumAvailable();
     }
 
     @Override

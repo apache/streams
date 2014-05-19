@@ -65,7 +65,7 @@ public class StreamsPersistWriterdTask extends BaseStreamsTask implements DatumS
 
     @Override
     public boolean isRunning() {
-        return this.executorService.getActiveCount() > 0;
+        return (this.executorService.getActiveCount() > 0) || this.isDatumAvailable();
     }
 
     @Override
