@@ -175,6 +175,8 @@
                         <inceptionYear>${project.inceptionYear}</inceptionYear>
                         <organizationName>${project.organization.name}</organizationName>
                         <licenseName>apache_v2</licenseName>
+                        <failOnMissingHeader>true</failOnMissingHeader>
+                        <dryRun>false</dryRun>
                     </configuration>
                     <executions>
                         <execution>
