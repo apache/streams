@@ -1,3 +1,21 @@
+/*
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+ */
 package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Optional;
@@ -8,6 +26,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
@@ -19,11 +38,12 @@ import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.json.DataObjectFactory;
 
 import java.io.Serializable;
-import java.lang.Math;
 import java.math.BigInteger;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +53,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by sblackmon on 12/10/13.
- */
 public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     public final static String STREAMS_ID = "TwitterTimelineProvider";
@@ -45,6 +62,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     private TwitterStreamConfiguration config;
 
     private Class klass;
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public TwitterStreamConfiguration getConfig() {
         return config;
@@ -54,11 +72,13 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         this.config = config;
     }
 
-    protected final Queue<StreamsDatum> providerQueue = Queues.synchronizedQueue(new ArrayBlockingQueue<StreamsDatum>(5000));
+    protected volatile Queue<StreamsDatum> providerQueue;
 
     protected int idsCount;
     protected Twitter client;
     protected Iterator<Long> ids;
+
+    ListenableFuture providerTaskComplete;
 
     protected ListeningExecutorService executor;
 
@@ -116,17 +136,20 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
             int keepTrying = 0;
 
             // keep trying to load, give it 5 attempts.
-            //while (keepTrying < 10)
             while (keepTrying < 1)
             {
 
                 try
                 {
                     statuses = client.getUserTimeline(currentId, paging);
-
                     for (Status tStat : statuses) {
                         String json = TwitterObjectFactory.getRawJSON(tStat);
-                        ComponentUtils.offerUntilSuccess(new StreamsDatum(json), providerQueue);
+                        try {
+                            lock.readLock().lock();
+                            ComponentUtils.offerUntilSuccess(new StreamsDatum(json), providerQueue);
+                        } finally {
+                            lock.readLock().unlock();
+                        }
                     }
 
                     paging.setPage(paging.getPage() + 1);
@@ -172,6 +195,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         LOGGER.debug("{} readCurrent", STREAMS_ID);
 
         Preconditions.checkArgument(ids.hasNext());
+        StreamsResultSet result;
 
         StreamsResultSet current;
 
@@ -189,12 +213,23 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
         LOGGER.info("Providing {} docs", providerQueue.size());
 
-        StreamsResultSet result =  new StreamsResultSet(providerQueue);
+        try {
+            lock.writeLock().lock();
+            result = new StreamsResultSet(providerQueue);
+            result.setCounter(new DatumStatusCounter());
+            providerQueue = constructQueue();
+        } finally {
+            lock.writeLock().unlock();
+        }
 
         LOGGER.info("Exiting");
 
         return result;
 
+    }
+
+    private Queue<StreamsDatum> constructQueue() {
+        return Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(10000));
     }
 
     public StreamsResultSet readNew(BigInteger sequence) {
@@ -246,9 +281,15 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         includeEntitiesEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getIncludeEntities()))).or(true);
 
         client = getTwitterClient();
+
+        try {
+            lock.writeLock().lock();
+            providerQueue = constructQueue();
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
-    
     protected Twitter getTwitterClient()
     {
         String baseUrl = "https://api.twitter.com:443/1.1/";
