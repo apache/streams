@@ -17,44 +17,65 @@
  */
 package org.apache.streams.local.tasks;
 
-import org.apache.streams.core.DatumStatus;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsPersistWriter;
+import org.apache.streams.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Mult-threaded version of Streamsbuilder
+ * Streams persist writer
  */
-public class StreamsPersistWriterMultiThreadedTask extends StreamsPersistWriterSingleThreadedTask {
+public class StreamsPersistWriterdTask extends BaseStreamsTask implements DatumStatusCountable {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPersistWriterMultiThreadedTask.class);
-    private final int numThreads;
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPersistWriterdTask.class);
+    private final ThreadPoolExecutor executorService;
 
-    public StreamsPersistWriterMultiThreadedTask(StreamsPersistWriter writer, int numThreads) {
-        super(writer);
-        this.numThreads = numThreads;
+    protected final StreamsPersistWriter writer;
+    protected Map<String, Object> streamConfig;
+    protected final DatumStatusCounter statusCounter = new DatumStatusCounter();
+
+    public StreamsPersistWriterdTask(StreamsPersistWriter writer) {
+        this(writer, 1);
+    }
+
+    public StreamsPersistWriterdTask(StreamsPersistWriter writer, int numThreads) {
+        this.writer = writer;
+        this.executorService = new ThreadPoolExecutor(numThreads,
+                numThreads,
+                0L,
+                TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<Runnable>(numThreads, false),
+                new WaitUntilAvailableExecutionHandler());
+    }
+
+    @Override
+    public DatumStatusCounter getDatumStatusCounter() {
+        return this.statusCounter;
+    }
+
+    @Override
+    public void setStreamConfig(Map<String, Object> config) {
+        this.streamConfig = config;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return this.executorService.getActiveCount() > 0;
     }
 
     @Override
     public void run() {
 
-        ThreadPoolExecutor executorService = new ThreadPoolExecutor(this.numThreads,
-                this.numThreads,
-                0L,
-                TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(this.numThreads, false),
-                new WaitUntilAvailableExecutionHandler());
-
         try {
 
             this.writer.prepare(this.streamConfig);
 
-            while(this.keepRunning.get() || super.isDatumAvailable()) {
+            while (this.keepRunning.get() || super.isDatumAvailable()) {
 
                 // we don't have anything to do, let's yield
                 // and take a quick rest and wait for people to
@@ -63,7 +84,7 @@ public class StreamsPersistWriterMultiThreadedTask extends StreamsPersistWriterS
                     safeQuickRest();
 
                 StreamsDatum datum;
-                while((datum = pollNextDatum()) != null) {
+                while ((datum = pollNextDatum()) != null) {
                     final StreamsDatum workingDatum = datum;
                     executorService.execute(new Runnable() {
                         public void run() {
@@ -86,8 +107,24 @@ public class StreamsPersistWriterMultiThreadedTask extends StreamsPersistWriterS
         } finally {
             // clean everything up
             this.writer.cleanUp();
-            this.isRunning.set(false);
         }
     }
+
+    protected final void processThisDatum(StreamsDatum datum) {
+        // Lock, yes, I am running
+        try {
+            this.writer.write(datum);
+            statusCounter.incrementStatus(DatumStatus.SUCCESS);
+        } catch (Throwable e) {
+            LOGGER.error("Error writing to persist writer {}", this.writer.toString(), e);
+            statusCounter.incrementStatus(DatumStatus.FAIL);
+        }
+    }
+
+    @Override
+    public void addOutputQueue(Queue<StreamsDatum> outputQueue) {
+        throw new UnsupportedOperationException(this.getClass().getName() + " does not support method - setOutputQueue()");
+    }
+
 
 }

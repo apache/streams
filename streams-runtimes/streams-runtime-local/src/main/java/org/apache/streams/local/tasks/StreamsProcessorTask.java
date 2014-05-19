@@ -21,6 +21,8 @@ import org.apache.streams.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -28,35 +30,55 @@ import java.util.concurrent.TimeUnit;
 /**
  * Processor task that is multi-threaded
  */
-public class StreamsProcessorMultiThreadedTask extends StreamsProcessorSingleThreadedTask  {
+public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatusCountable {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsProcessorMultiThreadedTask.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsProcessorTask.class);
 
-    private final int numThreads;
+    protected final StreamsProcessor processor;
+    protected Map<String, Object> streamConfig;
+    protected final DatumStatusCounter statusCounter = new DatumStatusCounter();
+    private final ThreadPoolExecutor executorService;
 
     /**
      * Default constructor, uses default sleep time of 500ms when inbound queue is empty
      *
      * @param processor process to run in task
      */
-    public StreamsProcessorMultiThreadedTask(StreamsProcessor processor, int numThreads) {
-        super(processor);
-        this.numThreads = numThreads;
+    public StreamsProcessorTask(StreamsProcessor processor, int numThreads) {
+        this.processor = processor;
+        this.executorService = new ThreadPoolExecutor(numThreads,
+                numThreads,
+                0L,
+                TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<Runnable>(numThreads, false),
+                new WaitUntilAvailableExecutionHandler());
     }
 
+    /**
+     * Default constructor, uses default sleep time of 500ms when inbound queue is empty
+     *
+     * @param processor process to run in task
+     */
+    public StreamsProcessorTask(StreamsProcessor processor) {
+        this(processor, 1);
+    }
+
+    @Override
+    public void setStreamConfig(Map<String, Object> config) {
+        if (this.streamConfig != null)
+            throw new RuntimeException("This variable has already been set, you cannot set it.");
+        this.streamConfig = config;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return (executorService.getActiveCount() > 0);
+    }
 
     @Override
     public void run() {
 
-        ThreadPoolExecutor executorService = new ThreadPoolExecutor(this.numThreads,
-                this.numThreads,
-                0L,
-                TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(this.numThreads, false),
-                new WaitUntilAvailableExecutionHandler());
-
         try {
-
             this.processor.prepare(this.streamConfig);
 
             while (this.keepRunning.get() || super.isDatumAvailable()) {
@@ -91,7 +113,26 @@ public class StreamsProcessorMultiThreadedTask extends StreamsProcessorSingleThr
         } finally {
             // clean everything up
             this.processor.cleanUp();
-            this.isRunning.set(false);
         }
     }
+
+    protected final void processThisDatum(StreamsDatum datum) {
+        try {
+            // get the outputs from the queue and pass them down the row
+            List<StreamsDatum> output = this.processor.process(datum);
+            if (output != null)
+                for (StreamsDatum outDatum : output)
+                    super.addToOutgoingQueue(outDatum);
+
+            this.statusCounter.incrementStatus(DatumStatus.SUCCESS);
+        } catch (Throwable e) {
+            LOGGER.warn("There was an error processing datum: {}", datum);
+            this.statusCounter.incrementStatus(DatumStatus.FAIL);
+        }
+    }
+
+    public DatumStatusCounter getDatumStatusCounter() {
+        return this.statusCounter;
+    }
+
 }

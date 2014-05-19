@@ -19,7 +19,6 @@ package org.apache.streams.local.builders;
 
 import org.apache.streams.core.*;
 import org.apache.streams.local.tasks.*;
-import org.apache.streams.util.SerializationUtil;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
@@ -175,21 +174,21 @@ public class StreamComponent {
         BaseStreamsTask task;
 
         if(this.processor != null) {
-            task = this.numTasks > 1 ?
-                    new StreamsProcessorMultiThreadedTask(this.processor, this.numTasks) :
-                    new StreamsProcessorSingleThreadedTask(this.processor);
+            // create the task
+            task = new StreamsProcessorTask(this.processor, this.numTasks);
 
+            // Processor has an input queue
             task.addInputQueue(this.inQueue);
+
+            // Processor also has any number of output queues
             for(Queue<StreamsDatum> q : this.outBound.values()) {
                 task.addOutputQueue(q);
             }
 
         }
         else if(this.writer != null) {
-            task = this.numTasks > 1 ?
-                    new StreamsPersistWriterMultiThreadedTask(this.writer, this.numTasks) :
-                    new StreamsPersistWriterSingleThreadedTask(this.writer);
-
+            // create the task
+            task = new StreamsPersistWriterdTask(this.writer, this.numTasks);
             task.addInputQueue(this.inQueue);
         }
         else if(this.provider != null) {

@@ -83,7 +83,8 @@ public class BasicTasksTest {
         int numMessages = 100;
 
         PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
-        StreamsProcessorSingleThreadedTask task = new StreamsProcessorSingleThreadedTask(processor);
+
+        StreamsProcessorTask task = new StreamsProcessorTask(processor);
         Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
         task.addOutputQueue(outQueue);
@@ -122,7 +123,7 @@ public class BasicTasksTest {
         int numMessages = 100;
 
         DatumCounterWriter writer = new DatumCounterWriter();
-        StreamsPersistWriterSingleThreadedTask task = new StreamsPersistWriterSingleThreadedTask(writer);
+        StreamsPersistWriterdTask task = new StreamsPersistWriterdTask(writer);
         Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
 
@@ -206,8 +207,9 @@ public class BasicTasksTest {
     @Test
     public void testBranching() {
         int numMessages = 100;
+
         PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
-        StreamsProcessorSingleThreadedTask task = new StreamsProcessorSingleThreadedTask(processor);
+        StreamsProcessorTask task = new StreamsProcessorTask(processor);
         Queue<StreamsDatum> outQueue1 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> outQueue2 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
@@ -250,7 +252,7 @@ public class BasicTasksTest {
     public void testBranchingSerialization() {
         int numMessages = 1;
         PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
-        StreamsProcessorSingleThreadedTask task = new StreamsProcessorSingleThreadedTask(processor);
+        StreamsProcessorTask task = new StreamsProcessorTask(processor);
         Queue<StreamsDatum> outQueue1 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> outQueue2 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);

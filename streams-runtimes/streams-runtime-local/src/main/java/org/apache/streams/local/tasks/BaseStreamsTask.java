@@ -37,7 +37,6 @@ public abstract class BaseStreamsTask implements StreamsTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStreamsTask.class);
 
-
     protected final AtomicBoolean keepRunning = new AtomicBoolean(true);
     private final List<Queue<StreamsDatum>> inQueues = new ArrayList<Queue<StreamsDatum>>();
     private final List<Queue<StreamsDatum>> outQueues = new LinkedList<Queue<StreamsDatum>>();
@@ -72,6 +71,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
     /**
      * Get the next datum to be processed, if a null datum is returned,
      * then there are no more datums to be processed.
+     *
      * @return the next StreamsDatum or null if all input queues are empty.
      */
     protected StreamsDatum pollNextDatum() {
@@ -96,11 +96,12 @@ public abstract class BaseStreamsTask implements StreamsTask {
     /**
      * Check all the inbound queues and see if there is a datum that is available
      * to be processed.
+     *
      * @return whether or not there is another datum available
      */
     public boolean isDatumAvailable() {
-        for(Queue q : this.inQueues)
-            if(q.size() > 0)
+        for (Queue q : this.inQueues)
+            if (q.size() > 0)
                 return true;
         return false;
     }
@@ -152,7 +153,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
         Thread.yield();
         try {
             Thread.sleep(1);
-        } catch(InterruptedException ie) {
+        } catch (InterruptedException ie) {
             // No Operation
         }
     }
