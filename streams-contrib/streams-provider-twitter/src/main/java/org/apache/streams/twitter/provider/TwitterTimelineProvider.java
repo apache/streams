@@ -282,9 +282,13 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
         client = getTwitterClient();
 
-        providerQueue = constructQueue();
+        try {
+            lock.writeLock().lock();
+            providerQueue = constructQueue();
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
-
 
     protected Twitter getTwitterClient()
     {
