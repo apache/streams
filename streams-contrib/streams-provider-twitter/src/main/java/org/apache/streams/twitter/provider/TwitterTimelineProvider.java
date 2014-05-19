@@ -62,7 +62,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     private TwitterStreamConfiguration config;
 
     private Class klass;
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
+    protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public TwitterStreamConfiguration getConfig() {
         return config;
