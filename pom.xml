@@ -35,6 +35,20 @@
 
     <description>Apache Streams Project</description>
 
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>Apache Streams Project</name>
+    </organization>
+    <inceptionYear>2013</inceptionYear>
+
     <repositories>
         <repository>
             <id>apache.snapshots</id>
@@ -49,8 +63,8 @@
             <url>http://repo1.maven.org/maven2</url>
         </repository>
         <repository>
-          <id>clojars.org</id>
-          <url>http://clojars.org/repo</url>
+            <id>clojars.org</id>
+            <url>http://clojars.org/repo</url>
         </repository>
         <repository>
             <id>cloudera</id>
@@ -87,6 +101,7 @@
         <netty.version>3.8.0.Final</netty.version>
         <json-path.version>0.9.1</json-path.version>
         <build-helper.version>1.8</build-helper.version>
+        <license.version>1.7</license.version>
     </properties>
 
     <modules>
@@ -128,6 +143,11 @@
                 <executions>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <inherited>true</inherited>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -145,6 +165,36 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>${build-helper.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>${license.version}</version>
+                    <configuration>
+                        <projectName>${project.name}</projectName>
+                        <inceptionYear>${project.inceptionYear}</inceptionYear>
+                        <organizationName>${project.organization.name}</organizationName>
+                        <licenseName>apache_v2</licenseName>
+                        <failOnMissingHeader>true</failOnMissingHeader>
+                        <dryRun>false</dryRun>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>first</id>
+                            <goals>
+                                <goal>check-file-header</goal>
+                            </goals>
+                            <phase>process-sources</phase>
+                            <inherited>true</inherited>
+                            <configuration>
+                                <includes>
+                                    <include>*.java</include>
+                                    <include>*.xml</include>
+                                    <include>*.properties</include>
+                                </includes>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -305,10 +355,10 @@
                 <scope>provided</scope>
             </dependency>
             <!--<dependency>-->
-                <!--<groupId>storm</groupId>-->
-                <!--<artifactId>storm-netty</artifactId>-->
-                <!--<version>${storm.version}</version>-->
-                <!--<scope>provided</scope>-->
+            <!--<groupId>storm</groupId>-->
+            <!--<artifactId>storm-netty</artifactId>-->
+            <!--<version>${storm.version}</version>-->
+            <!--<scope>provided</scope>-->
             <!--</dependency>-->
             <!-- JsonPath -->
             <dependency>
