@@ -2,12 +2,17 @@ package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
@@ -24,6 +29,10 @@ import twitter4j.json.DataObjectFactory;
 import java.io.Serializable;
 import java.lang.Math;
 import java.math.BigInteger;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +54,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     private TwitterStreamConfiguration config;
 
     private Class klass;
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public TwitterStreamConfiguration getConfig() {
         return config;
@@ -54,11 +64,13 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         this.config = config;
     }
 
-    protected final Queue<StreamsDatum> providerQueue = Queues.synchronizedQueue(new ArrayBlockingQueue<StreamsDatum>(5000));
+    protected volatile Queue<StreamsDatum> providerQueue;
 
     protected int idsCount;
     protected Twitter client;
     protected Iterator<Long> ids;
+
+    ListenableFuture providerTaskComplete;
 
     protected ListeningExecutorService executor;
 
@@ -116,14 +128,12 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
             int keepTrying = 0;
 
             // keep trying to load, give it 5 attempts.
-            //while (keepTrying < 10)
-            while (keepTrying < 1)
+            while (keepTrying < 5)
             {
 
                 try
                 {
                     statuses = client.getUserTimeline(currentId, paging);
-
                     for (Status tStat : statuses) {
                         String json = TwitterObjectFactory.getRawJSON(tStat);
                         ComponentUtils.offerUntilSuccess(new StreamsDatum(json), providerQueue);
@@ -172,6 +182,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         LOGGER.debug("{} readCurrent", STREAMS_ID);
 
         Preconditions.checkArgument(ids.hasNext());
+        StreamsResultSet result;
 
         StreamsResultSet current;
 
@@ -189,12 +200,23 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
         LOGGER.info("Providing {} docs", providerQueue.size());
 
-        StreamsResultSet result =  new StreamsResultSet(providerQueue);
+        try {
+            lock.writeLock().lock();
+            result = new StreamsResultSet(providerQueue);
+            result.setCounter(new DatumStatusCounter());
+            providerQueue = constructQueue();
+        } finally {
+            lock.writeLock().unlock();
+        }
 
         LOGGER.info("Exiting");
 
         return result;
 
+    }
+
+    private Queue<StreamsDatum> constructQueue() {
+        return Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(10000));
     }
 
     public StreamsResultSet readNew(BigInteger sequence) {
@@ -248,7 +270,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         client = getTwitterClient();
     }
 
-    
+
     protected Twitter getTwitterClient()
     {
         String baseUrl = "https://api.twitter.com:443/1.1/";
