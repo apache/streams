@@ -273,6 +273,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         includeEntitiesEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getIncludeEntities()))).or(true);
 
         client = getTwitterClient();
+
+        providerQueue = constructQueue();
     }
 
 
