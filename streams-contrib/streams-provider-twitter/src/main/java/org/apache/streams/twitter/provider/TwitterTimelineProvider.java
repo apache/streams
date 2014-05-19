@@ -136,7 +136,12 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                     statuses = client.getUserTimeline(currentId, paging);
                     for (Status tStat : statuses) {
                         String json = TwitterObjectFactory.getRawJSON(tStat);
-                        ComponentUtils.offerUntilSuccess(new StreamsDatum(json), providerQueue);
+                        try {
+                            lock.readLock().lock();
+                            ComponentUtils.offerUntilSuccess(new StreamsDatum(json), providerQueue);
+                        } finally {
+                            lock.readLock().unlock();
+                        }
                     }
 
                     paging.setPage(paging.getPage() + 1);
