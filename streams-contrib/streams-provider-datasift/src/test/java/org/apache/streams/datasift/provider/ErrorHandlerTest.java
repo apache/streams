@@ -1,14 +1,15 @@
 package org.apache.streams.datasift.provider;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- *
+ * Requires Java version 1.7!
  */
 public class ErrorHandlerTest {
 
-    @Test
+    @Test @Ignore
     public void testErrorHandler() {
         DatasiftStreamProvider mockProvider = Mockito.mock(DatasiftStreamProvider.class);
         String streamHash = "fakeHash1";

@@ -2,6 +2,7 @@ package org.apache.streams.datasift.provider;
 
 import com.datasift.client.core.Stream;
 import com.datasift.client.stream.Interaction;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -11,11 +12,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static org.junit.Assert.assertEquals;
 
 /**
- *
+ * Requires Java version 1.7!
  */
 public class SubscriptionTest {
 
-    @Test
+    @Test @Ignore
     public void testSubscriptionOnMessage() {
         Stream mockStream = Mockito.mock(Stream.class);
         Mockito.when(mockStream.hash()).thenReturn("1");

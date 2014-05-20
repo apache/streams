@@ -43,6 +43,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
+ * Requires Java Version 1.7!
  * {@code DatasiftStreamProvider} is an implementation of the {@link org.apache.streams.core.StreamsProvider} interface.  The provider
  * uses the Datasift java api to make connections. A single provider creates one connection per StreamHash in the configuration.
  */
