@@ -1,105 +1,84 @@
 package org.apache.streams.datasift.provider;
 
-import com.datasift.client.stream.Interaction;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.serializer.DatasiftActivitySerializer;
-import org.apache.streams.datasift.twitter.Twitter;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.twitter.pojo.Tweet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Queue;
-import java.util.Random;
+import java.util.List;
 
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class DatasiftEventProcessor implements Runnable {
+public class DatasiftEventProcessor implements StreamsProcessor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftEventProcessor.class);
 
-    private ObjectMapper mapper = new ObjectMapper();
-
-    private Queue<Interaction> inQueue;
-    private Queue<StreamsDatum> outQueue;
-
-    private Class inClass;
+    private ObjectMapper mapper;
     private Class outClass;
-
-    private DatasiftActivitySerializer datasiftInteractionActivitySerializer = new DatasiftActivitySerializer();
+    private DatasiftActivitySerializer datasiftInteractionActivitySerializer;
+    private DatasiftTypeConverter converter;
 
     public final static String TERMINATE = new String("TERMINATE");
 
-    public DatasiftEventProcessor(Queue<Interaction> inQueue, Queue<StreamsDatum> outQueue, Class inClass, Class outClass) {
-        this.inQueue = inQueue;
-        this.outQueue = outQueue;
-        this.inClass = inClass;
-        this.outClass = outClass;
-    }
-
-    public DatasiftEventProcessor(Queue<Interaction> inQueue, Queue<StreamsDatum> outQueue, Class outClass) {
-        this.inQueue = inQueue;
-        this.outQueue = outQueue;
+    public DatasiftEventProcessor(Class outClass) {
         this.outClass = outClass;
     }
 
     @Override
-    public void run() {
+    public List<StreamsDatum> process(StreamsDatum entry) {
+        List<StreamsDatum> result = Lists.newLinkedList();
+        Object item = entry.getDocument();
+        try {
+            Datasift datasift = mapper.convertValue(item, Datasift.class);
+            result.add(this.converter.convert(datasift));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
-        while(true) {
-            Object item;
-            try {
-                item = inQueue.poll();
-                if(item instanceof String && item.equals(TERMINATE)) {
-                    LOGGER.info("Terminating!");
-                    break;
-                }
-
-                Thread.sleep(new Random().nextInt(100));
-
-                org.apache.streams.datasift.Datasift datasift = mapper.convertValue(item, Datasift.class);
-
-                // if the target is string, just pass-through
-                if( String.class.equals(outClass)) {
-                    outQueue.offer(new StreamsDatum(datasift.toString()));
-
-                }
-                else if( Interaction.class.equals(outClass))
-                {
-                    outQueue.offer(new StreamsDatum(item));
-                }
-                else if( Tweet.class.equals(outClass))
-                {
-                    // convert to desired format
-                    Twitter twitter = datasift.getTwitter();
-
-                    Tweet tweet = mapper.convertValue(twitter, Tweet.class);
-
-                    if( tweet != null ) {
-
-                        outQueue.offer(new StreamsDatum(tweet));
-
-                    }
-                }
-                else if( Activity.class.equals(outClass))
-                {
-                    // convert to desired format
-                    Interaction entry = (Interaction) item;
-                    if( entry != null ) {
-                        Activity out = datasiftInteractionActivitySerializer.deserialize(datasift);
-
-                        if( out != null )
-                            outQueue.offer(new StreamsDatum(out));
-                    }
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    @Override
+    public void prepare(Object configurationObject) {
+        this.mapper = new StreamsJacksonMapper();
+        this.datasiftInteractionActivitySerializer = new DatasiftActivitySerializer();
+        if(this.outClass.equals(Activity.class)) {
+            this.converter = new ActivityConverter();
+        } else if (this.outClass.equals(String.class)) {
+            this.converter = new StringConverter();
+        } else {
+            throw new NotImplementedException("No converter implemented for class : "+this.outClass.getName());
         }
     }
 
+    @Override
+    public void cleanUp() {
+
+    }
+
+    private class ActivityConverter implements DatasiftTypeConverter {
+        @Override
+        public StreamsDatum convert(Datasift datasift) {
+            return new StreamsDatum(datasiftInteractionActivitySerializer.deserialize(datasift), datasift.getInteraction().getId());
+        }
+    }
+
+    private class StringConverter implements DatasiftTypeConverter {
+        @Override
+        public StreamsDatum convert(Datasift datasift) {
+            try {
+                return new StreamsDatum(mapper.writeValueAsString(datasift), datasift.getInteraction().getId());
+            } catch (JsonProcessingException jpe) {
+                throw new RuntimeException(jpe);
+            }
+        }
+    }
 };
