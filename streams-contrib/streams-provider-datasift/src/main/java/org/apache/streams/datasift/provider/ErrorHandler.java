@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by rebanks on 5/19/14.
+ * Listens for exceptions from the datasift streams and resets connections on errors.
  */
 public class ErrorHandler extends ErrorListener {
 

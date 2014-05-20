@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Queue;
 
 /**
- * Created by rebanks on 5/19/14.
+ * Adds incomming {@link com.datasift.client.stream.Interaction} to the queue for the provider.
  */
 public class Subscription extends StreamSubscription {
 
