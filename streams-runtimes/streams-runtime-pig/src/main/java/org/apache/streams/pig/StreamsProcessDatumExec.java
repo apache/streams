@@ -7,10 +7,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.pig.EvalFunc;
 import org.apache.pig.builtin.MonitoredUDF;
-import org.apache.pig.data.BagFactory;
-import org.apache.pig.data.DataBag;
-import org.apache.pig.data.Tuple;
-import org.apache.pig.data.TupleFactory;
+import org.apache.pig.data.*;
 import org.apache.pig.impl.logicalLayer.schema.Schema;
 import org.apache.pig.impl.util.UDFContext;
 import org.apache.streams.core.StreamsDatum;
@@ -39,14 +36,15 @@ public class StreamsProcessDatumExec extends AliasableEvalFunc<DataBag> {
         Preconditions.checkArgument(execArgs.length > 0);
         String classFullName = execArgs[0];
         Preconditions.checkNotNull(classFullName);
-        String[] constructorArgs = new String[execArgs.length-1];
+        String[] prepareArgs = new String[execArgs.length-1];
         ArrayUtils.remove(execArgs, 0);
-        ArrayUtils.addAll(constructorArgs, execArgs);
-        if( constructorArgs.length == 0 )
-            streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(classFullName));
-        else
-            streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(classFullName), constructorArgs);
-        streamsProcessor.prepare(null);
+        ArrayUtils.addAll(prepareArgs, execArgs);
+        streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(classFullName));
+        if( execArgs.length == 1 ) {
+            streamsProcessor.prepare(null);
+        } else if( execArgs.length > 1 ) {
+            streamsProcessor.prepare(prepareArgs);
+        }
     }
 
     @Override
@@ -59,15 +57,27 @@ public class StreamsProcessDatumExec extends AliasableEvalFunc<DataBag> {
 
         Configuration conf = UDFContext.getUDFContext().getJobConf();
 
-        String id = getString(input, "id");
-        String source = getString(input, "source");
+//      I would prefer it work this way, but at the moment it doesn't
+
+//        String id = getString(input, "id");
+//        String source = getString(input, "source");
+//        Long timestamp;
+//        try {
+//            timestamp = getLong(input, "timestamp");
+//        } catch( Exception e ) {
+//            timestamp = RFC3339Utils.parseUTC(getString(input, "timestamp")).getMillis();
+//        }
+//        String object = getString(input, "object");
+
+        String id = (String) input.get(0);
+        String source = (String) input.get(1);
         Long timestamp;
         try {
-            timestamp = getLong(input, "timestamp");
+            timestamp = (Long) input.get(2);
         } catch( Exception e ) {
-            timestamp = RFC3339Utils.parseUTC(getString(input, "timestamp")).getMillis();
+            timestamp = RFC3339Utils.parseUTC((String)input.get(2)).getMillis();
         }
-        String object = getString(input, "object");
+        String object = (String) input.get(3);
 
         StreamsDatum entry = new StreamsDatum(object, id, new DateTime(timestamp));
 
@@ -95,6 +105,51 @@ public class StreamsProcessDatumExec extends AliasableEvalFunc<DataBag> {
 
     @Override
     public Schema getOutputSchema(Schema schema) {
-        return null;
+        // Check that we were passed two fields
+        String error = "Expected: id\tsource\ttimestamp\tobject";
+        if (schema.size() != 4) {
+            throw new RuntimeException(error);
+        }
+
+        try {
+            // Get the types for both columns and check them.  If they are
+            // wrong, figure out what types were passed and give a good error
+            // message.
+            if (schema.getField(0).type != DataType.CHARARRAY &&
+                    schema.getField(0).type != DataType.LONG) {
+                error += "Problem with id: must be CHARARRAY or LONG";
+                error += "\t(";
+                error += DataType.findTypeName(schema.getField(0).type);
+                error += ")\n";
+                throw new RuntimeException(error);
+            }
+            if (schema.getField(1).type != DataType.CHARARRAY) {
+                error += "Problem with source: must be CHARARRAY";
+                error += "\t(";
+                error += DataType.findTypeName(schema.getField(1).type);
+                error += ")\n";
+                throw new RuntimeException(error);
+            }
+            if (schema.getField(2).type != DataType.CHARARRAY &&
+                    schema.getField(2).type != DataType.LONG) {
+                error += "Problem with timestamp: must be CHARARRAY or LONG";
+                error += "\t(";
+                error += DataType.findTypeName(schema.getField(2).type);
+                error += ")\n";
+                throw new RuntimeException(error);
+            }
+            if (schema.getField(3).type != DataType.CHARARRAY) {
+                error += "Problem with object: must be CHARARRAY";
+                error += "\t(";
+                error += DataType.findTypeName(schema.getField(3).type);
+                error += ")\n";
+                throw new RuntimeException(error);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(error);
+        }
+
+        // Always hand back the same schema we are passed
+        return schema;
     }
 }
