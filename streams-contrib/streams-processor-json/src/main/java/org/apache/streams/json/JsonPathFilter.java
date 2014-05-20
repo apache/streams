@@ -1,5 +1,3 @@
-package org.apache.streams.json;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,8 @@ package org.apache.streams.json;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+package org.apache.streams.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
