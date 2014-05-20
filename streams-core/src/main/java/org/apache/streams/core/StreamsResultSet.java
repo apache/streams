@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * TODO: This needs to be turned into an interface
@@ -30,7 +31,7 @@ public class StreamsResultSet implements Iterable<StreamsDatum> {
 
     private Queue<StreamsDatum> queue;
     private DatumStatusCounter counter;
-    private boolean running = false;
+    private final AtomicBoolean running = new AtomicBoolean(false);
 
     /**
      * Construct a new Streams Result set and explicitly set whether
@@ -44,7 +45,7 @@ public class StreamsResultSet implements Iterable<StreamsDatum> {
      */
     public StreamsResultSet(@NotNull Queue<StreamsDatum> queue, boolean running) {
         this.queue = queue;
-        this.running = running;
+        this.running.set(running);
     }
 
     public StreamsResultSet(@NotNull Queue<StreamsDatum> queue) {
@@ -57,7 +58,7 @@ public class StreamsResultSet implements Iterable<StreamsDatum> {
      * Whether or not this is currently running
      */
     public boolean isRunning() {
-        return this.running;
+        return this.running.get();
     }
 
     /**
@@ -66,7 +67,7 @@ public class StreamsResultSet implements Iterable<StreamsDatum> {
      * will not be receiving any more data.
      */
     public void shutDown() {
-        this.running = false;
+        this.running.set(false);
     }
 
     @Override

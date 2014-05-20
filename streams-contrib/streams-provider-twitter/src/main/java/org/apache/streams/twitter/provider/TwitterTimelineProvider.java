@@ -148,24 +148,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         return (statuses != null) && (statuses.size() > 0);
     }
 
-    private void sleep()
-    {
-        Thread.yield();
-        try {
-            // wait one tenth of a millisecond
-            Thread.yield();
-            Thread.sleep(1);
-            Thread.yield();
-        }
-        catch(IllegalArgumentException e) {
-            // passing in static values, this will never happen
-        }
-        catch(InterruptedException e) {
-            // noOp, there must have been an issue sleeping
-        }
-        Thread.yield();
-    }
-
     public StreamsResultSet readCurrent() {
         LOGGER.debug("{} readCurrent", STREAMS_ID);
 

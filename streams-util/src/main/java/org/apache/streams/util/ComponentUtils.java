@@ -10,12 +10,8 @@ import java.util.Queue;
 public class ComponentUtils {
 
     public static void offerUntilSuccess(Object entry, Queue queue) {
-        boolean success;
-        do {
-            success = queue.offer(entry);
+        while(!queue.offer(entry))
             Thread.yield();
-        }
-        while (!success);
     }
 
     public static String pollUntilStringNotEmpty(final Queue queue) {
