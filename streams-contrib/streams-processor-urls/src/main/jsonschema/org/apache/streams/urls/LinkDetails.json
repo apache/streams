@@ -10,6 +10,7 @@
             "enum" : [
                 "SUCCESS",
                 "ERROR",
+                "TIME_OUT",
                 "MALFORMED_URL",
                 "NOT_FOUND",
                 "FORBIDDEN",
@@ -42,18 +43,11 @@
         "domain": {
             "type": "string"
         },
-        "redirected": {
-            "type": "boolean"
-        },
         "redirects": {
             "type": "array",
             "items": {
                 "type": "string"
             }
-        },
-        "redirectCount": {
-            "type": "integer",
-            "default": 0
         },
         "tracked": {
             "type": "boolean"

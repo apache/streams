@@ -94,14 +94,14 @@ public class LinkResolverProcessor implements StreamsProcessor {
         // noOp
     }
 
-
     protected List<String> unwind(List<String> inputLinks) {
         List<String> outputLinks = Lists.newArrayList();
         for (String link : inputLinks) {
             try {
                 LinkResolver unwinder = new LinkResolver(link);
                 unwinder.run();
-                outputLinks.add(unwinder.getLinkDetails().getFinalURL());
+                if(unwinder.getLinkDetails().getLinkStatus() == LinkDetails.LinkStatus.SUCCESS)
+                    outputLinks.add(unwinder.getLinkDetails().getFinalURL());
             } catch (Exception e) {
                 //if unwindable drop
                 LOGGER.debug("Failed to unwind link : {}", link);

@@ -151,20 +151,6 @@ public final class LinkResolverHelperFunctions {
             // This happens if we are attempting to re-use the linkDetails object
             // smashew 2013-05-19
             if(linkDetails.getRedirects().size() > 0) {
-                /*
-                String referrer = null;
-                for(int i = linkDetails.getRedirects().size() - 1; i >= 0; i--) {
-                    String urlToTest = linkDetails.getRedirects().toArray(new String[linkDetails.getRedirects().size()])[i];
-                    if(!urlToTest.equals(url)) {
-                        referrer = urlToTest;
-                        break;
-                    }
-                }
-
-                if(referrer != null)
-                    connection.addRequestProperty("Referrer", referrer);
-                else
-                */
                 connection.addRequestProperty("Referrer", linkDetails.getOriginalURL());
             }
         }

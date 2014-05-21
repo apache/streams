@@ -27,6 +27,14 @@ public class TestLinkUnwinderProcessor {
     }
 
     @Test
+    public void test404Link() {
+        LinkResolver resolver = new LinkResolver("http://www.kneesupmotherbrown.me/2013/05/26/well-its-fair-to-say-may-has-been-a-crappy-month");
+        resolver.run();
+        LinkDetails details = resolver.getLinkDetails();
+        assertTrue("Should be 404", details.getLinkStatus() == LinkDetails.LinkStatus.NOT_FOUND);
+    }
+
+    @Test
     public void testLinkResolverProcessorSerializability() {
         LinkResolverProcessor processor = new LinkResolverProcessor();
         LinkResolverProcessor clone = SerializationUtils.clone(processor);

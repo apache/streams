@@ -19,15 +19,13 @@ package org.apache.streams.urls;
 
 import com.google.common.base.Preconditions;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
+import java.net.*;
 import java.util.*;
 
 public class LinkResolver implements Serializable {
@@ -45,9 +43,6 @@ public class LinkResolver implements Serializable {
      * [Test Cases]         http://greenbytes.de/tech/tc/httpredirects/
      * [t.co behavior]      https://dev.twitter.com/docs/tco-redirection-behavior
      */
-
-
-
     private final static Logger LOGGER = LoggerFactory.getLogger(LinkResolver.class);
 
     private static final int MAX_ALLOWED_REDIRECTS = 30;                // We will only chase the link to it's final destination a max of 30 times.
@@ -106,22 +101,37 @@ public class LinkResolver implements Serializable {
     public void run() {
 
         Preconditions.checkNotNull(linkDetails.getOriginalURL());
-
         linkDetails.setStartTime(DateTime.now());
 
-        // we are going to try three times just in case we catch a slow server or one that needs
-        // to be warmed up. This tends to happen many times with smaller private servers
-        for (int i = 0; (i < 3) && linkDetails.getFinalURL() == null; i++)
-            if (linkDetails.getLinkStatus() != LinkDetails.LinkStatus.SUCCESS)
-                unwindLink(linkDetails.getOriginalURL());
+        try {
+            if(LinkResolverHelperFunctions.isURL(linkDetails.getOriginalURL())) {
+                // we are going to try three times just in case we catch a slow server or one that needs
+                // to be warmed up. This tends to happen many times with smaller private servers
+                for (int i = 0; (i < 3) && linkDetails.getFinalURL() == null; i++)
+                    if (linkDetails.getLinkStatus() != LinkDetails.LinkStatus.SUCCESS) {
+                        this.getLinkDetails().getRedirects().clear();
+                        unwindLink(linkDetails.getOriginalURL());
+                    }
 
-        // because this is a POJO we need to make sure that we set this to false if it was never re-directed
-        if(this.linkDetails.getRedirectCount() == 0 || this.linkDetails.getRedirected() == null)
-            this.linkDetails.setRedirected(false);
+                if (linkDetails.getFinalURL() != null && StringUtils.isNotEmpty(linkDetails.getFinalURL())) {
+                    linkDetails.setFinalURL(cleanURL(linkDetails.getFinalURL()));
+                    linkDetails.setNormalizedURL(normalizeURL(linkDetails.getFinalURL()));
+                    linkDetails.setUrlParts(tokenizeURL(linkDetails.getNormalizedURL()));
+                }
+            }
+            else {
+                // This is a short circuited path. If the link is deemed to not be a valid URL
+                // we set the status of a malformed URL and return.
+                linkDetails.setLinkStatus(LinkDetails.LinkStatus.MALFORMED_URL);
+            }
+        } catch (Throwable e) {
+            // we want everything to be processed, because each datum should get a
+            // response in this case
+            // there was an unknown issue we are going to set to exception.
+            LOGGER.warn("Unexpected Exception: {}", e);
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.EXCEPTION);
+        }
 
-        linkDetails.setFinalURL(cleanURL(linkDetails.getFinalURL()));
-        linkDetails.setNormalizedURL(normalizeURL(linkDetails.getFinalURL()));
-        linkDetails.setUrlParts(tokenizeURL(linkDetails.getNormalizedURL()));
 
         this.updateTookInMillis();
     }
@@ -137,9 +147,9 @@ public class LinkResolver implements Serializable {
 
         // Check to see if they wound up in a redirect loop,
         // IE: 'A' redirects to 'B', then 'B' redirects to 'A'
-        if ((linkDetails.getRedirectCount() != null && linkDetails.getRedirectCount() > 0 &&
-                (linkDetails.getOriginalURL().equals(url) || linkDetails.getRedirects().contains(url)))
-                || (linkDetails.getRedirectCount() != null && linkDetails.getRedirectCount() > MAX_ALLOWED_REDIRECTS)) {
+        if ((linkDetails.getRedirects().size() > 0 && (linkDetails.getOriginalURL().equals(url) || linkDetails.getRedirects().contains(url)))
+                || (linkDetails.getRedirects().size() > MAX_ALLOWED_REDIRECTS))
+        {
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.LOOP);
             return;
         }
@@ -184,8 +194,15 @@ public class LinkResolver implements Serializable {
                             theRawHTML = convertInputStream(inputStream, "UTF-8");
                         }
                     }
+                    catch(SocketTimeoutException e) {
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.TIME_OUT);
+                        LOGGER.warn("Link Timed out: {}");
+                        break;
+                    }
                     catch(IOException e) {
-                        LOGGER.info("Unexpected IO Exception: {}", e);
+                        LOGGER.warn("Unexpected IO Exception: {}", e);
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
+                        break;
                     }
                     finally {
                         try {
@@ -193,7 +210,7 @@ public class LinkResolver implements Serializable {
                                 inputStream.close();
                         }
                         catch(IOException e) {
-                            LOGGER.info("Unexpected IO Exception: {}", e);
+                            LOGGER.warn("Unexpected IO Exception: {}", e);
                         }
                     }
 
@@ -231,11 +248,9 @@ public class LinkResolver implements Serializable {
                     if (!linkDetails.getOriginalURL().toLowerCase().equals(connection.getURL().toString().toLowerCase()))
                         linkDetails.setFinalURL(connection.getURL().toString());
                     if (!headers.containsKey(LinkResolverHelperFunctions.LOCATION_IDENTIFIER)) {
-                        LOGGER.info("Headers: {}", headers);
+                        LOGGER.warn("Redirection Error: {}", headers);
                         linkDetails.setLinkStatus(LinkDetails.LinkStatus.REDIRECT_ERROR);
                     } else {
-                        linkDetails.setRedirected(Boolean.TRUE);
-                        linkDetails.setRedirectCount(linkDetails.getRedirectCount() + 1);
                         reDirectedLink = connection.getHeaderField(LinkResolverHelperFunctions.LOCATION_IDENTIFIER);
                     }
                     break;
@@ -259,20 +274,18 @@ public class LinkResolver implements Serializable {
                     linkDetails.setLinkStatus(LinkDetails.LinkStatus.HTTP_ERROR_STATUS);
                     break;
                 default:
-                    LOGGER.info("Unrecognized HTTP Response Code: {}", linkDetails.getFinalResponseCode());
+                    LOGGER.warn("Unrecognized HTTP Response Code: {}", linkDetails.getFinalResponseCode());
                     linkDetails.setLinkStatus(LinkDetails.LinkStatus.NOT_FOUND);
                     break;
             }
         } catch (MalformedURLException e) {
             // the URL is trash, so, it can't load it.
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.MALFORMED_URL);
-        } catch (IOException ex) {
-            // there was an issue we are going to set to error.
-            linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
-        } catch (Exception ex) {
-            // there was an unknown issue we are going to set to exception.
+        } catch(IOException ioe) {
+            LOGGER.warn("Unexpected IOException: {}", ioe.getMessage());
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.EXCEPTION);
-        } finally {
+        }
+        finally {
             // if the connection is not null, then we need to disconnect to close any underlying resources
             if (connection != null)
                 connection.disconnect();
@@ -285,7 +298,7 @@ public class LinkResolver implements Serializable {
             unwindLink(reDirectedLink);
     }
 
-    private String convertInputStream(final InputStream in, final String encoding) throws IOException {
+    private String convertInputStream(final InputStream in, final String encoding) throws IOException, SocketTimeoutException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final byte[] buf = new byte[2048];
         int rd;
@@ -332,6 +345,9 @@ public class LinkResolver implements Serializable {
      * @return normalizedUrl - The String URL that has no junk or surprises
      */
     public static String normalizeURL(String url) {
+        if(url == null || StringUtils.isEmpty(url))
+            return "";
+
         // Decode URL to remove any %20 type stuff
         String normalizedUrl = url;
         try {
