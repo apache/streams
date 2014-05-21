@@ -62,7 +62,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     private TwitterStreamConfiguration config;
 
     private Class klass;
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
+    protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public TwitterStreamConfiguration getConfig() {
         return config;
@@ -266,6 +266,13 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
         executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
+        try {
+            lock.writeLock().lock();
+            providerQueue = constructQueue();
+        } finally {
+            lock.writeLock().unlock();
+        }
+
         Preconditions.checkNotNull(providerQueue);
         Preconditions.checkNotNull(this.klass);
         Preconditions.checkNotNull(config.getOauth().getConsumerKey());
@@ -281,13 +288,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         includeEntitiesEnabled = Optional.fromNullable(new Boolean(Boolean.parseBoolean(config.getIncludeEntities()))).or(true);
 
         client = getTwitterClient();
-
-        try {
-            lock.writeLock().lock();
-            providerQueue = constructQueue();
-        } finally {
-            lock.writeLock().unlock();
-        }
     }
 
     protected Twitter getTwitterClient()
