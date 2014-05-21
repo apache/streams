@@ -1,4 +1,3 @@
-
 {
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
@@ -85,22 +84,11 @@
                 },
                 "hashtags": {
                     "type": "array",
-                    "items": {
-                        "type": "object",
-                        "javaType": "org.apache.streams.twitter.pojo.Hashtag",
-                        "javaInterfaces": ["java.io.Serializable"],
-                        "properties": {
-                            "text": {
-                                "type": "string"
-                            },
-                            "indices": {
-                                "type": "array",
-                                "items": [{
-                                        "type": "integer"
-                                }]
-                            }
+                    "items": [
+                        {
+                            "type": "string"
                         }
-                    }
+                    ]
                 },
                 "urls": {
                     "type": "array",
