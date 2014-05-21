@@ -32,8 +32,6 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     private static final int START = 0;
     private static final int END = 1;
 
-    private static final int DEFAULT_TIMEOUT_MS = 1000000;
-
     private StreamsProvider provider;
     private AtomicBoolean keepRunning;
     private Type type;
@@ -118,6 +116,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             this.provider.prepare(this.config); //TODO allow for configuration objects
             StreamsResultSet resultSet = null;
             this.isRunning.set(true);
+            long maxZeros = timeout / DEFAULT_SLEEP_TIME_MS;
             switch(this.type) {
                 case PERPETUAL: {
                     provider.startStream();
@@ -131,7 +130,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                             }
                             flushResults(resultSet);
                             // the way this works needs to change...
-                            if( zeros > (timeout))
+                            if(zeros > maxZeros)
                                 this.keepRunning.set(false);
                             Thread.sleep(DEFAULT_SLEEP_TIME_MS);
                         } catch (InterruptedException e) {
