@@ -146,13 +146,27 @@ public final class LinkResolverHelperFunctions {
             for (String k : SPOOF_HTTP_HEADERS.keySet())
                 connection.addRequestProperty(k, SPOOF_HTTP_HEADERS.get(k));
 
-            // the test to seattlemamadoc.com prompted this change.
-            // they auto detect bots by checking the referrer chain and the 'user-agent'
-            // this broke the t.co test. t.co URLs are EXPLICITLY ok with bots
-            // there is a list for URLS that behave this way at the top in BOTS_ARE_OK
-            // smashew 2013-13-2013
-            if(linkDetails.getRedirects().size() > 0)
-                connection.addRequestProperty("Referrer", linkDetails.getRedirects().get(linkDetails.getRedirects().size() - 1));
+            // We need to set the referrer, we also need to ensure that the referrer that
+            // we are setting is not the same as the link we are trying to grab.
+            // This happens if we are attempting to re-use the linkDetails object
+            // smashew 2013-05-19
+            if(linkDetails.getRedirects().size() > 0) {
+                /*
+                String referrer = null;
+                for(int i = linkDetails.getRedirects().size() - 1; i >= 0; i--) {
+                    String urlToTest = linkDetails.getRedirects().toArray(new String[linkDetails.getRedirects().size()])[i];
+                    if(!urlToTest.equals(url)) {
+                        referrer = urlToTest;
+                        break;
+                    }
+                }
+
+                if(referrer != null)
+                    connection.addRequestProperty("Referrer", referrer);
+                else
+                */
+                connection.addRequestProperty("Referrer", linkDetails.getOriginalURL());
+            }
         }
 
         connection.setReadTimeout(DEFAULT_HTTP_TIMEOUT);

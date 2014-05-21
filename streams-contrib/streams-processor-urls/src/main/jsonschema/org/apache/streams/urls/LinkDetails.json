@@ -74,6 +74,9 @@
         },
         "tookInMills": {
             "type": "integer"
+        },
+        "rawHTML": {
+            "type": "string"
         }
     }
 }

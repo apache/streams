@@ -18,13 +18,12 @@
 package org.apache.streams.urls;
 
 import com.google.common.base.Preconditions;
+import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -175,8 +174,36 @@ public class LinkResolver implements Serializable {
                 case 200: // HTTP OK
                     linkDetails.setFinalURL(connection.getURL().toString());
                     linkDetails.setDomain(new URL(linkDetails.getFinalURL()).getHost());
-                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.SUCCESS);
                     linkDetails.setContentType(connection.getContentType());
+
+                    InputStream inputStream = null;
+                    String theRawHTML = null;
+                    try {
+                        inputStream = connection.getInputStream();
+                        if(inputStream != null) {
+                            theRawHTML = convertInputStream(inputStream, "UTF-8");
+                        }
+                    }
+                    catch(IOException e) {
+                        LOGGER.info("Unexpected IO Exception: {}", e);
+                    }
+                    finally {
+                        try {
+                            if(inputStream != null)
+                                inputStream.close();
+                        }
+                        catch(IOException e) {
+                            LOGGER.info("Unexpected IO Exception: {}", e);
+                        }
+                    }
+
+                    if(theRawHTML == null) {
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
+                    }
+                    else {
+                        linkDetails.setRawHTML(theRawHTML);
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.SUCCESS);
+                    }
                     break;
                 case 300: // Multiple choices
                 case 301: // URI has been moved permanently
@@ -256,7 +283,16 @@ public class LinkResolver implements Serializable {
         // is closed successfully.
         if (reDirectedLink != null)
             unwindLink(reDirectedLink);
+    }
 
+    private String convertInputStream(final InputStream in, final String encoding) throws IOException {
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final byte[] buf = new byte[2048];
+        int rd;
+        while ((rd = in.read(buf, 0, 2048)) >= 0) {
+            out.write(buf, 0, rd);
+        }
+        return new String(out.toByteArray(), encoding);
     }
 
     private Map<String, List<String>> createCaseInsensitiveMap(Map<String, List<String>> input) {
