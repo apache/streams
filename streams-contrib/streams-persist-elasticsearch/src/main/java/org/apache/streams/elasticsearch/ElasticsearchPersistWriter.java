@@ -80,7 +80,11 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
     private final List<String> affectedIndexes = new ArrayList<String>();
     private final ScheduledExecutorService backgroundFlushTask = Executors.newSingleThreadScheduledExecutor();
+    //Primary lock for preventing multiple synchronous batches with the same data
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    //Create independent locks to synchronize updates that have nothing to do with actually sending data
+    private final Object countLock = new Object();
+    private final Object requestLock = new Object();
 
     private ObjectMapper mapper = new StreamsJacksonMapper();
     private ElasticsearchClientManager manager;
@@ -605,13 +609,11 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
                 thisOk++;
         }
 
-        try {
-            lock.writeLock().lock();
+        synchronized(countLock) {
             totalAttempted += thisSent;
             totalOk += thisOk;
             totalFailed += thisFailed;
             totalSeconds += (thisMillis / 1000);
-        } finally {
             lock.writeLock().unlock();
         }
 
@@ -638,14 +640,14 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
     //Locking on a separate object than the writer as these objects are intended to be handled separately
     private void addResponseFuture(ListenableActionFuture<BulkResponse> future) {
-        synchronized (this.responses) {
+        synchronized (requestLock) {
             this.responses.add(future);
         }
     }
 
     //Locking on a separate object than the writer as these objects are intended to be handled separately
     private void removeResponseFuture(ListenableActionFuture<BulkResponse> future) {
-        synchronized(this.responses) {
+        synchronized(requestLock) {
             this.responses.remove(future);
         }
     }
