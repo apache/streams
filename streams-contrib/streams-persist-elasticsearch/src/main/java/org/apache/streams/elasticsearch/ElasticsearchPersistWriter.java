@@ -231,15 +231,16 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
             int count = 0;
             // We are going to give it 5 minutes.
-            for(ListenableActionFuture<BulkResponse> future : responses) {
-                if(future.isDone() || future.isCancelled()) {
-                    BulkResponse response = future.get();
-                    LOGGER.warn("Found index request for {} items that was closed without notification", response.getItems().length);
-                    updateTotals(response, 0, 0);
+            while (this.getTotalOutstanding() > 0 && count++ < 20 * 60 * 5) {
+                for(ListenableActionFuture<BulkResponse> future : responses) {
+                    if(future.isDone() || future.isCancelled()) {
+                        BulkResponse response = future.get();
+                        LOGGER.warn("Found index request for {} items that was closed without notification", response.getItems().length);
+                        updateTotals(response, 0, 0);
+                    }
                 }
-            }
-            while (this.getTotalOutstanding() > 0 && count++ < 20 * 60 * 5)
                 Thread.sleep(50);
+            }
 
             if (this.getTotalOutstanding() > 0) {
                 LOGGER.error("We never cleared our buffer");
@@ -635,21 +636,17 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         }
     }
 
+    //Locking on a separate object than the writer as these objects are intended to be handled separately
     private void addResponseFuture(ListenableActionFuture<BulkResponse> future) {
-        try {
-            lock.writeLock().lock();
+        synchronized (this.responses) {
             this.responses.add(future);
-        } finally {
-            lock.writeLock().unlock();
         }
     }
 
+    //Locking on a separate object than the writer as these objects are intended to be handled separately
     private void removeResponseFuture(ListenableActionFuture<BulkResponse> future) {
-        try {
-            lock.writeLock().lock();
+        synchronized(this.responses) {
             this.responses.remove(future);
-        } finally {
-            lock.writeLock().unlock();
         }
     }
 
