@@ -1,9 +1,29 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.apache.streams.pig;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import datafu.pig.util.SimpleEvalFunc;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.pig.EvalFunc;
@@ -20,48 +40,41 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by sblackmon on 3/25/14.
+ * UDF Wrapper at the Document level
+ *
+ * Useful when id,source,timestamp are not changing or you want to use pig
+ * to modify them (rather than doing so within the processor)
  */
 @MonitoredUDF(timeUnit = TimeUnit.SECONDS, duration = 30, intDefault = 10)
-public class StreamsProcessDocumentExec extends EvalFunc<String> {
-
-    TupleFactory mTupleFactory = TupleFactory.getInstance();
-    BagFactory mBagFactory = BagFactory.getInstance();
+public class StreamsProcessDocumentExec extends SimpleEvalFunc<String> {
 
     StreamsProcessor streamsProcessor;
     ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     public StreamsProcessDocumentExec(String... execArgs) throws ClassNotFoundException{
-        System.out.println("A");
         Preconditions.checkNotNull(execArgs);
-        System.out.println("B");
         Preconditions.checkArgument(execArgs.length > 0);
-        System.out.println("C");
-        String processorFullName = execArgs[0];
-        System.out.println("D");
-        Preconditions.checkNotNull(processorFullName);
-        System.out.println("E");
-        streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(processorFullName));
-        System.out.println("F");
-        streamsProcessor.prepare(null);
-        System.out.println("G");
+        String classFullName = execArgs[0];
+        Preconditions.checkNotNull(classFullName);
+        String[] prepareArgs = new String[execArgs.length-1];
+        ArrayUtils.remove(execArgs, 0);
+        ArrayUtils.addAll(prepareArgs, execArgs);
+        streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(classFullName));
+        if( execArgs.length == 1 ) {
+            streamsProcessor.prepare(null);
+        } else if( execArgs.length > 1 ) {
+            streamsProcessor.prepare(prepareArgs);
+        }
     }
 
-    @Override
-    public String exec(Tuple input) throws IOException {
+    public String call(String document) throws IOException {
 
-        System.out.println("H");
         Preconditions.checkNotNull(streamsProcessor);
-        Preconditions.checkNotNull(input);
-        Preconditions.checkArgument(input.size() == 1);
-        System.out.println("I");
-
-        String document = (String) input.get(0);
-
         Preconditions.checkNotNull(document);
 
         System.out.println(document);
@@ -83,14 +96,10 @@ public class StreamsProcessDocumentExec extends EvalFunc<String> {
 
         Preconditions.checkNotNull(resultDoc);
 
-        System.out.println(resultDoc);
-
         if( resultDoc instanceof String )
             return (String) resultDoc;
-        else if( resultDoc instanceof ObjectNode)
-            return mapper.writeValueAsString(resultDoc);
         else
-            return null;
+            return mapper.writeValueAsString(resultDoc);
 
     }
 

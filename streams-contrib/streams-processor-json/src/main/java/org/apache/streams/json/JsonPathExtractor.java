@@ -1,5 +1,24 @@
 package org.apache.streams.json;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -19,18 +38,10 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * Provides a base implementation for extracting json fields and
+ * objects from datums using JsonPath syntax
  */
 public class JsonPathExtractor implements StreamsProcessor {
-
-    public JsonPathExtractor() {
-        System.out.println("creating JsonPathExtractor");
-    }
-
-    public JsonPathExtractor(String pathExpression) {
-        this.pathExpression = pathExpression;
-        System.out.println("creating JsonPathExtractor for " + this.pathExpression);
-    }
 
     private final static String STREAMS_ID = "JsonPathExtractor";
 
@@ -40,6 +51,15 @@ public class JsonPathExtractor implements StreamsProcessor {
 
     private String pathExpression;
     private JsonPath jsonPath;
+
+    public JsonPathExtractor() {
+        LOGGER.info("creating JsonPathExtractor");
+    }
+
+    public JsonPathExtractor(String pathExpression) {
+        this.pathExpression = pathExpression;
+        LOGGER.info("creating JsonPathExtractor for " + this.pathExpression);
+    }
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
@@ -55,7 +75,7 @@ public class JsonPathExtractor implements StreamsProcessor {
             try {
                 json = mapper.writeValueAsString(node);
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                LOGGER.warn(e.getMessage());
             }
         } else if( entry.getDocument() instanceof String ) {
             json = (String) entry.getDocument();
@@ -85,7 +105,9 @@ public class JsonPathExtractor implements StreamsProcessor {
                             StreamsDatum matchDatum = new StreamsDatum(match);
                             result.add(matchDatum);
                         } else if ( item instanceof JSONObject ) {
-                            StreamsDatum matchDatum = new StreamsDatum(item);
+                            JSONObject match = (JSONObject) item;
+                            ObjectNode objectNode = mapper.readValue(mapper.writeValueAsString(match), ObjectNode.class);
+                            StreamsDatum matchDatum = new StreamsDatum(objectNode);
                             result.add(matchDatum);
                         }
                     }
@@ -94,7 +116,6 @@ public class JsonPathExtractor implements StreamsProcessor {
                 }
 
             } catch( Exception e ) {
-                e.printStackTrace();
                 LOGGER.warn(e.getMessage());
             }
 
@@ -114,6 +135,6 @@ public class JsonPathExtractor implements StreamsProcessor {
 
     @Override
     public void cleanUp() {
-
+        LOGGER.info("shutting down JsonPathExtractor for " + this.pathExpression);
     }
 };
