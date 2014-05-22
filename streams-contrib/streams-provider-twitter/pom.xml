@@ -46,11 +46,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-processor-urls</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
             <artifactId>streams-config</artifactId>
         </dependency>
         <dependency>
