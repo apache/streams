@@ -1,9 +1,14 @@
 package org.apache.streams.local.builders;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamBuilder;
+import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.test.processors.PassthroughDatumCounterProcessor;
 import org.apache.streams.core.test.providers.NumericMessageProvider;
 import org.apache.streams.core.test.writer.SystemOutWriter;
+import org.apache.streams.local.tasks.StreamsTask;
+import org.apache.streams.local.test.providers.EmptyResultSetProvider;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Scanner;
 
 import static org.junit.Assert.*;
@@ -156,9 +162,38 @@ public class LocalStreamBuilderTest {
             ++count;
             scanner.nextLine();
         }
-        assertThat(count, greaterThan(numDatums*2)); // using > because number of lines in system.out is non-deterministic
+        assertThat(count, greaterThan(numDatums * 2)); // using > because number of lines in system.out is non-deterministic
 
     }
 
+    @Test
+    public void testDefaultProviderTimeout() {
+        long start = System.currentTimeMillis();
+        StreamBuilder builder = new LocalStreamBuilder();
+        builder.newPerpetualStream("prov1", new EmptyResultSetProvider())
+                .addStreamsProcessor("proc1", new PassthroughDatumCounterProcessor(), 1, "prov1")
+                .addStreamsProcessor("proc2", new PassthroughDatumCounterProcessor(), 1, "proc1")
+                .addStreamsPersistWriter("w1", new SystemOutWriter(), 1, "proc1");
+        builder.start();
+        long end = System.currentTimeMillis();
+        //We care mostly that it doesn't terminate too early.  With thread shutdowns, etc, the actual time is indeterminate.  Just make sure there is an upper bound
+        assertThat((int)(end - start), is(allOf(greaterThanOrEqualTo(StreamsTask.DEFAULT_TIMEOUT_MS), lessThanOrEqualTo(2 * (StreamsTask.DEFAULT_TIMEOUT_MS)))));
+    }
 
+    @Test
+    public void testConfiguredProviderTimeout() {
+        Map<String, Object> config = Maps.newHashMap();
+        int timeout = 10000;
+        config.put(LocalStreamBuilder.TIMEOUT_KEY, timeout);
+        long start = System.currentTimeMillis();
+        StreamBuilder builder = new LocalStreamBuilder(Queues.<StreamsDatum>newLinkedBlockingQueue(), config);
+        builder.newPerpetualStream("prov1", new EmptyResultSetProvider())
+                .addStreamsProcessor("proc1", new PassthroughDatumCounterProcessor(), 1, "prov1")
+                .addStreamsProcessor("proc2", new PassthroughDatumCounterProcessor(), 1, "proc1")
+                .addStreamsPersistWriter("w1", new SystemOutWriter(), 1, "proc1");
+        builder.start();
+        long end = System.currentTimeMillis();
+        //We care mostly that it doesn't terminate too early.  With thread shutdowns, etc, the actual time is indeterminate.  Just make sure there is an upper bound
+        assertThat((int)(end - start), is(allOf(greaterThanOrEqualTo(timeout), lessThanOrEqualTo(4 * timeout))));
+    }
 }
