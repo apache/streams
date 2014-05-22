@@ -116,6 +116,9 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
             int keepTrying = 0;
 
             // keep trying to load, give it 5 attempts.
+            //This value was chosen because it seemed like a reasonable number of times
+            //to retry capturing a timeline given the sorts of errors that could potentially
+            //occur (network timeout/interruption, faulty client, etc.)
             while (keepTrying < 5)
             {
                 try
