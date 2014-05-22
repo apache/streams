@@ -129,6 +129,44 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
         return actor;
     }
 
+    public static void addTwitterExtensions(Activity activity, Tweet tweet) {
+        Map<String, Object> extensions = ensureExtensions(activity);
+
+        List<String> hashtags = new ArrayList<String>();
+        for(Hashtag hashtag : tweet.getEntities().getHashtags()) {
+            hashtags.add(hashtag.getText());
+        }
+        extensions.put("hashtags", hashtags);
+
+        Map<String, Object> likes = new HashMap<String, Object>();
+        likes.put("perspectival", tweet.getFavorited());
+        likes.put("count", tweet.getAdditionalProperties().get("favorite_count"));
+
+        extensions.put("likes", likes);
+
+        Map<String, Object> rebroadcasts = new HashMap<String, Object>();
+        rebroadcasts.put("perspectival", tweet.getRetweeted());
+        rebroadcasts.put("count", tweet.getRetweetCount());
+
+        extensions.put("rebroadcasts", rebroadcasts);
+
+        List<Map<String, Object>> userMentions = new ArrayList<Map<String, Object>>();
+        Entities entities = tweet.getEntities();
+
+        for(UserMentions user : entities.getUserMentions()) {
+            //Map the twitter user object into an actor
+            Map<String, Object> actor = new HashMap<String, Object>();
+            actor.put("id", "id:twitter:" + user.getIdStr());
+            actor.put("displayName", user.getScreenName());
+
+            userMentions.add(actor);
+        }
+
+        extensions.put("user_mentions", userMentions);
+
+        extensions.put("keywords", tweet.getText());
+    }
+
     public static Provider getProvider() {
         Provider provider = new Provider();
         provider.setId("id:providers:twitter");
