@@ -58,6 +58,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     public final static String STREAMS_ID = "TwitterTimelineProvider";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProvider.class);
+    public static final int MAX_NUMBER_WAITING = 10000;
 
     private TwitterStreamConfiguration config;
 
@@ -228,8 +229,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     }
 
-    private Queue<StreamsDatum> constructQueue() {
-        return Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(10000));
+    protected Queue<StreamsDatum> constructQueue() {
+        return Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(MAX_NUMBER_WAITING));
     }
 
     public StreamsResultSet readNew(BigInteger sequence) {
