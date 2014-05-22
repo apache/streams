@@ -79,17 +79,17 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
                 LOGGER.debug("TWEET");
                 Tweet tweet = mapper.readValue(item, Tweet.class);
                 user = tweet.getUser();
-                result.add(new StreamsDatum(user));
+                result.add(new StreamsDatum(user, user.getIdStr()));
             }
             else if ( inClass.equals( Retweet.class )) {
                 LOGGER.debug("RETWEET");
                 Retweet retweet = mapper.readValue(item, Retweet.class);
                 user = retweet.getRetweetedStatus().getUser();
-                result.add(new StreamsDatum(user));
+                result.add(new StreamsDatum(user, user.getIdStr()));
             } else if ( inClass.equals( User.class )) {
                 LOGGER.debug("USER");
                 user = mapper.readValue(item, User.class);
-                result.add(new StreamsDatum(user));
+                result.add(new StreamsDatum(user, user.getIdStr()));
             } else {
                 return Lists.newArrayList();
             }
