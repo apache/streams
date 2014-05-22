@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.StreamsDatum;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +44,7 @@ public class WebHdfsPersistReaderTask implements Runnable {
                         if( !Strings.isNullOrEmpty(line) ) {
                             reader.countersCurrent.incrementAttempt();
                             String[] fields = line.split(Character.toString(reader.DELIMITER));
-                            StreamsDatum entry = new StreamsDatum(fields[3], fields[0]);
+                            StreamsDatum entry = new StreamsDatum(fields[3], fields[0], new DateTime(Long.parseLong(fields[2])));
                             write( entry );
                             reader.countersCurrent.incrementStatus(DatumStatus.SUCCESS);
                         }

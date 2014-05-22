@@ -21,24 +21,11 @@
             "type": "string"
         },
         "contributors": {
+            "ignore_malformed": false,
             "type": "array",
-            "items": {
-                "type": "object",
-                "javaType" : "org.apache.streams.twitter.pojo.Contributor",
-                "javaInterfaces": ["java.io.Serializable"],
-                "properties": {
-                    "id": {
-                        "ignore_malformed": false,
-                        "type": "integer"
-                    },
-                    "id_str": {
-                        "type": "string"
-                    },
-                    "screen_name": {
-                        "type": "string"
-                    }
-                }
-            }
+            "items": [{
+                "type" : "number"
+            }]
         },
         "coordinates": {
             "type": "object",
