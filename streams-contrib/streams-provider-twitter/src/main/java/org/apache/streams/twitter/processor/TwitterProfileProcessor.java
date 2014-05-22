@@ -37,18 +37,18 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
 
         while(true) {
             StreamsDatum item;
-                try {
-                    item = inQueue.poll();
-                    if(item.getDocument() instanceof String && item.equals(TERMINATE)) {
-                        LOGGER.info("Terminating!");
-                        break;
-                    }
+            try {
+                item = inQueue.poll();
+                if(item.getDocument() instanceof String && item.equals(TERMINATE)) {
+                    LOGGER.info("Terminating!");
+                    break;
+                }
 
-                    Thread.sleep(new Random().nextInt(100));
+                Thread.sleep(new Random().nextInt(100));
 
-                    for( StreamsDatum entry : process(item)) {
-                        outQueue.offer(entry);
-                    }
+                for( StreamsDatum entry : process(item)) {
+                    outQueue.offer(entry);
+                }
 
 
             } catch (Exception e) {
@@ -84,15 +84,14 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
             }
             else if ( inClass.equals( Retweet.class )) {
                 LOGGER.debug("RETWEET");
-                user = mapper.readValue(item, User.class);
-                result.add(new StreamsDatum(user, user.getIdStr()));
-            }
-            else if( inClass.equals( User.class)) {
+                Retweet retweet = mapper.readValue(item, Retweet.class);
+                user = retweet.getRetweetedStatus().getUser();
+                result.add(new StreamsDatum(user));
+            } else if ( inClass.equals( User.class )) {
                 LOGGER.debug("USER");
                 user = mapper.readValue(item, User.class);
-                result.add(new StreamsDatum(user, user.getIdStr()));
-            }
-            else {
+                result.add(new StreamsDatum(user));
+            } else {
                 return Lists.newArrayList();
             }
 
