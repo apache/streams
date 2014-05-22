@@ -40,15 +40,17 @@ public class TwitterEventClassifier {
             return null;
         }
 
-        if( objectNode.findValue("retweeted_status") != null )
+        if( objectNode.findValue("retweeted_status") != null && objectNode.get("retweeted_status") != null)
             return Retweet.class;
         else if( objectNode.findValue("delete") != null )
             return Delete.class;
         else if( objectNode.findValue("friends") != null ||
-                 objectNode.findValue("friends_str") != null )
+                objectNode.findValue("friends_str") != null )
             return FriendList.class;
         else if( objectNode.findValue("target_object") != null )
             return UserstreamEvent.class;
+        else if ( objectNode.findValue("location") != null && objectNode.findValue("user") == null)
+            return User.class;
         else
             return Tweet.class;
     }

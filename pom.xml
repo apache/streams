@@ -29,7 +29,7 @@
 
     <groupId>org.apache.streams</groupId>
     <artifactId>streams-project</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.0-W2O-SNAPSHOT</version>
 
     <name>Apache Streams Project</name>
 
