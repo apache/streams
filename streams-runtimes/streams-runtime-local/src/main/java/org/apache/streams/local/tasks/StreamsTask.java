@@ -11,8 +11,16 @@ import java.util.Queue;
  * in local mode.
  */
 public interface StreamsTask extends Runnable{
+    /**
+     * Represents the default time to sleep a task before polling for the next set of work items
+     */
+    static final long DEFAULT_SLEEP_TIME_MS = 5000;
 
-    public static final long DEFAULT_SLEEP_TIME_MS = 5000;
+    /**
+     * Represents the default amount of time to wait for new data to flow through the system before assuming it should
+     * shut down
+     */
+    static final int DEFAULT_TIMEOUT_MS = 100000; //Will result in a default timeout of 1 minute if used
 
     /**
      * Informs the task to stop. Tasks may or may not try to empty its inbound queue before halting.

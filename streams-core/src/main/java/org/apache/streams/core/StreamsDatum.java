@@ -117,6 +117,10 @@ public class StreamsDatum implements Serializable {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if(o instanceof StreamsDatum) {
