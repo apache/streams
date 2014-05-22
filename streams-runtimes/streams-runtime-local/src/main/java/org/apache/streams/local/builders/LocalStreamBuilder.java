@@ -347,7 +347,8 @@ public class LocalStreamBuilder implements StreamBuilder {
     }
 
     protected int getTimeout() {
-        return streamConfig != null && streamConfig.containsKey(TIMEOUT_KEY) ? (Integer)streamConfig.get(TIMEOUT_KEY) : 3000;
+    //Set the timeout of it is configured, otherwise signal downstream components to use their default
+        return streamConfig != null && streamConfig.containsKey(TIMEOUT_KEY) ? (Integer)streamConfig.get(TIMEOUT_KEY) : -1;
     }
 
 }
