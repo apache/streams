@@ -164,18 +164,6 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
 
         extensions.put("user_mentions", userMentions);
 
-        List<LinkDetails> urls = new ArrayList<LinkDetails>();
-        for(Url url : entities.getUrls()) {
-            LinkDetails linkDetails = new LinkDetails();
-
-            linkDetails.setFinalURL(url.getExpandedUrl());
-            linkDetails.setNormalizedURL(url.getDisplayUrl());
-            linkDetails.setOriginalURL(url.getUrl());
-
-            urls.add(linkDetails);
-        }
-        extensions.put("urls", urls);
-
         extensions.put("keywords", tweet.getText());
     }
 
