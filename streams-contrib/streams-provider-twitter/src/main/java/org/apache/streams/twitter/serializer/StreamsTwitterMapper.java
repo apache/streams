@@ -24,6 +24,18 @@ public class StreamsTwitterMapper extends StreamsJacksonMapper {
 
     public static final DateTimeFormatter TWITTER_FORMAT = DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyyy");
 
+    public static final Long getMillis(String dateTime) {
+
+        // this function is for pig which doesn't handle exceptions well
+        try {
+            Long result = TWITTER_FORMAT.parseMillis(dateTime);
+            return result;
+        } catch( Exception e ) {
+            return null;
+        }
+
+    }
+
     private static final StreamsTwitterMapper INSTANCE = new StreamsTwitterMapper();
 
     public static StreamsTwitterMapper getInstance(){
