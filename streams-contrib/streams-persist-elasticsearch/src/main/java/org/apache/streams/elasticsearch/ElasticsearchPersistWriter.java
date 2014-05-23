@@ -17,6 +17,7 @@ import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.Client;
@@ -173,15 +174,22 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     public void write(StreamsDatum streamsDatum) {
 
         String json;
+        String id = null;
+        String ts = null;
         try {
-            String id = streamsDatum.getId();
+            if( streamsDatum.getId() != null ) {
+                id = streamsDatum.getId();
+            }
+            if( streamsDatum.getTimestamp() != null ) {
+                ts = Long.toString(streamsDatum.getTimestamp().getMillis());
+            }
             if (streamsDatum.getDocument() instanceof String)
                 json = streamsDatum.getDocument().toString();
             else {
                 json = mapper.writeValueAsString(streamsDatum.getDocument());
             }
 
-            add(config.getIndex(), config.getType(), id, json);
+            add(config.getIndex(), config.getType(), id, ts, json);
 
         } catch (Exception e) {
             LOGGER.warn("{} {}", e.getMessage());
@@ -348,19 +356,28 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
     }
 
     public void add(String indexName, String type, String json) {
-        add(indexName, type, null, json);
+        add(indexName, type, null, null, json);
     }
 
     public void add(String indexName, String type, String id, String json) {
-        IndexRequest indexRequest;
+        add(indexName, type, id, null, json);
+    }
 
-        // They didn't specify an ID, so we will create one for them.
-        if (id == null)
-            indexRequest = new IndexRequest(indexName, type);
-        else
-            indexRequest = new IndexRequest(indexName, type, id);
+    public void add(String indexName, String type, String id, String ts, String json)
+    {
+        IndexRequestBuilder indexRequestBuilder = new IndexRequestBuilder(manager.getClient());
 
-        indexRequest.source(json);
+        indexRequestBuilder.setIndex(indexName);
+        indexRequestBuilder.setType(type);
+
+        indexRequestBuilder.setSource(json);
+
+        // / They didn't specify an ID, so we will create one for them.
+        if(id != null)
+            indexRequestBuilder.setId(id);
+
+        if(ts != null)
+            indexRequestBuilder.setTimestamp(ts);
 
         // If there is a parentID that is associated with this bulk, then we are
         // going to have to parse the raw JSON and attempt to dereference
@@ -369,13 +386,15 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
             try {
                 // The JSONObject constructor can throw an exception, it is called
                 // out explicitly here so we can catch it.
-                indexRequest = indexRequest.parent(new JSONObject(json).getString(parentID));
-            } catch (JSONException e) {
+                indexRequestBuilder.setParent(new JSONObject(json).getString(parentID));
+            }
+            catch(JSONException e)
+            {
                 LOGGER.warn("Malformed JSON, cannot grab parentID: {}@{}[{}]: {}", id, indexName, type, e.getMessage());
                 totalFailed++;
             }
         }
-        add(indexRequest);
+        add(indexRequestBuilder.request());
     }
 
     public void add(UpdateRequest updateRequest) {
