@@ -33,6 +33,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -45,6 +46,8 @@ import java.util.concurrent.TimeUnit;
 @MonitoredUDF(timeUnit = TimeUnit.SECONDS, duration = 30, intDefault = 10)
 public class StreamsProcessDatumExec extends AliasableEvalFunc<DataBag> {
 
+    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StreamsProcessDatumExec.class);
+
     TupleFactory mTupleFactory = TupleFactory.getInstance();
     BagFactory mBagFactory = BagFactory.getInstance();
 
@@ -55,13 +58,13 @@ public class StreamsProcessDatumExec extends AliasableEvalFunc<DataBag> {
         Preconditions.checkArgument(execArgs.length > 0);
         String classFullName = execArgs[0];
         Preconditions.checkNotNull(classFullName);
-        String[] prepareArgs = new String[execArgs.length-1];
-        ArrayUtils.remove(execArgs, 0);
-        ArrayUtils.addAll(prepareArgs, execArgs);
+        String[] prepareArgs = (String[]) ArrayUtils.remove(execArgs, 0);
         streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(classFullName));
         if( execArgs.length == 1 ) {
+            LOGGER.debug("prepare (null)");
             streamsProcessor.prepare(null);
         } else if( execArgs.length > 1 ) {
+            LOGGER.debug("prepare " + Arrays.toString(prepareArgs));
             streamsProcessor.prepare(prepareArgs);
         }
     }

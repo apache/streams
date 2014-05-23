@@ -29,8 +29,8 @@
     <artifactId>streams-runtime-pig</artifactId>
 
     <properties>
-        <hadoop-client.version>2.0.0-cdh4.5.0.1-SNAPSHOT</hadoop-client.version>
-        <pig.version>0.11.0-cdh4.5.0.1-SNAPSHOT</pig.version>
+        <hadoop-client.version>2.0.0-mr1-cdh4.6.0</hadoop-client.version>
+        <pig.version>0.11.0-cdh4.6.0</pig.version>
     </properties>
 
     <dependencies>

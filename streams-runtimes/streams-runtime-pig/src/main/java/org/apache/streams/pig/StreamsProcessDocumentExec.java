@@ -38,6 +38,7 @@ import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -53,6 +54,8 @@ import java.util.concurrent.TimeUnit;
 @MonitoredUDF(timeUnit = TimeUnit.SECONDS, duration = 30, intDefault = 10)
 public class StreamsProcessDocumentExec extends SimpleEvalFunc<String> {
 
+    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StreamsProcessDocumentExec.class);
+
     StreamsProcessor streamsProcessor;
     ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
@@ -61,13 +64,13 @@ public class StreamsProcessDocumentExec extends SimpleEvalFunc<String> {
         Preconditions.checkArgument(execArgs.length > 0);
         String classFullName = execArgs[0];
         Preconditions.checkNotNull(classFullName);
-        String[] prepareArgs = new String[execArgs.length-1];
-        ArrayUtils.remove(execArgs, 0);
-        ArrayUtils.addAll(prepareArgs, execArgs);
+        String[] prepareArgs = (String[]) ArrayUtils.remove(execArgs, 0);
         streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(classFullName));
         if( execArgs.length == 1 ) {
+            LOGGER.debug("prepare (null)");
             streamsProcessor.prepare(null);
         } else if( execArgs.length > 1 ) {
+            LOGGER.debug("prepare " + Arrays.toString(prepareArgs));
             streamsProcessor.prepare(prepareArgs);
         }
     }
@@ -77,17 +80,17 @@ public class StreamsProcessDocumentExec extends SimpleEvalFunc<String> {
         Preconditions.checkNotNull(streamsProcessor);
         Preconditions.checkNotNull(document);
 
-        System.out.println(document);
+        LOGGER.debug(document);
 
         StreamsDatum entry = new StreamsDatum(document);
 
         Preconditions.checkNotNull(entry);
 
-        System.out.println(entry);
+        LOGGER.debug(entry.toString());
 
         List<StreamsDatum> resultSet = streamsProcessor.process(entry);
 
-        System.out.println(resultSet);
+        LOGGER.debug(resultSet.toString());
 
         Object resultDoc = null;
         for( StreamsDatum resultDatum : resultSet ) {
