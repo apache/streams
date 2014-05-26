@@ -58,15 +58,21 @@ public class SysomosHeartbeatStream implements Runnable {
     @Override
     public void run() {
         QueryResult result;
+        String mostCurrentId = null;
         //Iff we are trying to get to a specific document ID, continue to query after minimum delay
         do {
             LOGGER.debug("Querying API to match last ID of {}", lastID);
             result = executeAPIRequest();
+            //Ensure that we are only assigning lastID to the latest ID, even if there is backfill query.
+            //Since offset is calcuated at the end of the run, if we detect the need to backfill, it will increment to 1
+            if(offsetCount == 1) {
+                mostCurrentId = result.getCurrentId();
+            }
             sleep();
         } while (lastID != null && !result.isMatchedLastId());
         //Set the last ID so that the next time we are executed we will continue to query only so long as we haven't
         //found the specific ID
-        lastID = result.getCurrentId();
+        lastID = mostCurrentId == null ? result.getCurrentId() : mostCurrentId;
 
         if(SysomosProvider.Mode.BACKFILL_AND_TERMINATE.equals(provider.getMode())) {
             provider.signalComplete(heartbeatId);
