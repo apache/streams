@@ -236,7 +236,7 @@ public class SysomosProvider implements StreamsProvider {
             this.mode = (Mode)configMode;
         }
         if(configMap.containsKey(STARTING_DOCS_KEY)) {
-            Object configIds = configMap.get(MODE_KEY);
+            Object configIds = configMap.get(STARTING_DOCS_KEY);
             if(!(configIds instanceof Map)) {
                 throw new IllegalStateException("Invalid configuration.  StartingDocs must be an instance of Map<String,String> but was " + configIds);
             }
