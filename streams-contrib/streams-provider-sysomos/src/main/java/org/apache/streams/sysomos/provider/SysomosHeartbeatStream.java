@@ -38,6 +38,7 @@ public class SysomosHeartbeatStream implements Runnable {
     private final long minLatency;
 
     private String lastID;
+    private int offsetCount = 0;
     private boolean enabled = true;
 
     public SysomosHeartbeatStream(SysomosProvider provider, String heartbeatId) {
@@ -89,7 +90,7 @@ public class SysomosHeartbeatStream implements Runnable {
             if(enabled) {
                 response = this.client.createRequestBuilder()
                         .setHeartBeatId(heartbeatId)
-                        .setOffset(0)
+                        .setOffset(offsetCount * maxApiBatch)
                         .setReturnSetSize(maxApiBatch).execute();
 
                 LOGGER.debug("Received {} results from API query", response.getCount());
@@ -116,6 +117,7 @@ public class SysomosHeartbeatStream implements Runnable {
                 item.getMetadata().put("heartbeat", this.heartbeatId);
                 this.provider.enqueueItem(item);
             }
+            offsetCount = matched ? 0 : offsetCount + 1;
         }
         return new QueryResult(matched, currentId);
     }
