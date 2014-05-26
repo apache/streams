@@ -37,6 +37,7 @@ import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -50,6 +51,8 @@ import java.util.concurrent.TimeUnit;
 @MonitoredUDF(timeUnit = TimeUnit.SECONDS, duration = 10, intDefault = 10)
 public class StreamsSerializerExec extends SimpleEvalFunc<String> {
 
+    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StreamsSerializerExec.class);
+
     ActivitySerializer activitySerializer;
     ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
@@ -58,9 +61,6 @@ public class StreamsSerializerExec extends SimpleEvalFunc<String> {
         Preconditions.checkArgument(execArgs.length > 0);
         String classFullName = execArgs[0];
         Preconditions.checkNotNull(classFullName);
-        String[] constructorArgs = new String[execArgs.length-1];
-        ArrayUtils.remove(execArgs, 0);
-        ArrayUtils.addAll(constructorArgs, execArgs);
         activitySerializer = StreamsComponentFactory.getSerializerInstance(Class.forName(classFullName));
     }
 
@@ -73,7 +73,7 @@ public class StreamsSerializerExec extends SimpleEvalFunc<String> {
         try {
             activity = activitySerializer.deserialize(document);
         } catch( Exception e ) {
-            e.printStackTrace();
+            LOGGER.warn(e.getMessage());
         }
         Preconditions.checkNotNull(activity);
 
