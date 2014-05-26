@@ -159,7 +159,7 @@ public class SysomosProvider implements StreamsProvider {
         if(configurationObject instanceof Map) {
             extractConfigFromMap((Map) configurationObject);
         } else if(configurationObject instanceof String) {
-            documentIds = Splitter.on(",").trimResults().withKeyValueSeparator(":").split((String)configurationObject);
+            documentIds = Splitter.on(";").trimResults().withKeyValueSeparator("=").split((String)configurationObject);
         }
     }
 
