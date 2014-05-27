@@ -1,12 +1,32 @@
+/*
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+*/
 package org.apache.streams.datasift.provider;
 
 import com.datasift.client.DataSiftClient;
 import com.datasift.client.DataSiftConfig;
 import com.datasift.client.core.Stream;
-import com.datasift.client.stream.*;
+import com.datasift.client.stream.DeletedInteraction;
+import com.datasift.client.stream.Interaction;
+import com.datasift.client.stream.StreamEventListener;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
@@ -18,110 +38,129 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
-import java.util.List;
+import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * Requires Java Version 1.7!
+ * {@code DatasiftStreamProvider} is an implementation of the {@link org.apache.streams.core.StreamsProvider} interface.  The provider
+ * uses the Datasift java api to make connections. A single provider creates one connection per StreamHash in the configuration.
  */
 public class DatasiftStreamProvider implements StreamsProvider {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftStreamProvider.class);
 
-    protected DatasiftConfiguration config = null;
+    private DatasiftConfiguration config;
+    private ConcurrentLinkedQueue<Interaction> interactions;
+    private Map<String, DataSiftClient> clients;
+    private StreamEventListener eventListener;
 
-    protected DataSiftClient client;
-
-    private Class klass;
-
-    public DatasiftConfiguration getConfig() {
-        return config;
+    /**
+     * Constructor that searches for available configurations
+     * @param listener {@link com.datasift.client.stream.StreamEventListener} that handles deletion notices received from twitter.
+     */
+    public DatasiftStreamProvider(StreamEventListener listener) {
+        this(listener, null);
     }
 
-    public void setConfig(DatasiftConfiguration config) {
-        this.config = config;
-    }
-
-    protected BlockingQueue inQueue = new LinkedBlockingQueue<Interaction>(10000);
-
-    protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<StreamsDatum>();
-
-    public BlockingQueue<Object> getInQueue() {
-        return inQueue;
-    }
-
-    protected ListeningExecutorService executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(100, 100));
-
-    protected List<String> streamHashes;
-
-    private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
-        return new ThreadPoolExecutor(nThreads, nThreads,
-                5000L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
-    }
-
-    public DatasiftStreamProvider() {
-        Config datasiftConfig = StreamsConfigurator.config.getConfig("datasift");
-        this.config = DatasiftStreamConfigurator.detectConfiguration(datasiftConfig);
-    }
-
-    public DatasiftStreamProvider(DatasiftConfiguration config) {
-        this.config = config;
-    }
-
-    public DatasiftStreamProvider(Class klass) {
-        Config config = StreamsConfigurator.config.getConfig("datasift");
-        this.config = DatasiftStreamConfigurator.detectConfiguration(config);
-        this.klass = klass;
-    }
-
-    public DatasiftStreamProvider(DatasiftConfiguration config, Class klass) {
-        this.config = config;
-        this.klass = klass;
+    /**
+     *
+     * @param listener {@link com.datasift.client.stream.StreamEventListener} that handles deletion notices received from twitter.
+     * @param config  Configuration to use
+     */
+    public DatasiftStreamProvider(StreamEventListener listener, DatasiftConfiguration config) {
+        if(config == null) {
+            Config datasiftConfig = StreamsConfigurator.config.getConfig("datasift");
+            this.config = DatasiftStreamConfigurator.detectConfiguration(datasiftConfig);
+        } else {
+            this.config = config;
+        }
+        this.eventListener = listener;
     }
 
     @Override
     public void startStream() {
 
-        Preconditions.checkNotNull(this.klass);
+        Preconditions.checkNotNull(this.config);
+        Preconditions.checkNotNull(this.config.getStreamHash());
+        Preconditions.checkNotNull(this.config.getStreamHash().get(0));
+        Preconditions.checkNotNull(this.config.getApiKey());
+        Preconditions.checkNotNull(this.config.getUserName());
+        Preconditions.checkNotNull(this.clients);
 
-        Preconditions.checkNotNull(config);
-
-        Preconditions.checkNotNull(config.getStreamHash());
-
-        Preconditions.checkNotNull(config.getStreamHash().get(0));
-
-        for( String hash : config.getStreamHash()) {
-
-            client.liveStream().subscribe(new Subscription(Stream.fromString(hash)));
-
+        for( String hash : this.config.getStreamHash()) {
+            startStreamForHash(hash);
         }
-
-        for( int i = 0; i < ((config.getStreamHash().size() / 5) + 1); i++ )
-            executor.submit(new DatasiftEventProcessor(inQueue, providerQueue, klass));
 
     }
 
+    /**
+     * Creates a connection to datasift and starts collection of data from the resulting string.
+     * @param streamHash
+     */
+    public void startStreamForHash(String streamHash) {
+        shutDownStream(streamHash);
+        DataSiftClient client = getNewClient(this.config.getUserName(), this.config.getApiKey());
+        client.liveStream().onStreamEvent(this.eventListener);
+        client.liveStream().onError(new ErrorHandler(this, streamHash));
+
+        client.liveStream().subscribe(new Subscription(Stream.fromString(streamHash), this.interactions));
+        synchronized (this.clients) {
+            this.clients.put(streamHash, client);
+        }
+    }
+
+    /**
+     * Exposed for testing purposes.
+     * @param userName
+     * @param apiKey
+     * @return
+     */
+    protected DataSiftClient getNewClient(String userName, String apiKey) {
+        return new DataSiftClient(new DataSiftConfig(userName, apiKey));
+    }
+
+
+    /**
+     * If a stream has been opened for the supplied stream hash, that stream will be shutdown.
+     * @param streamHash
+     */
+    public void shutDownStream(String streamHash) {
+        synchronized (clients) {
+            if(!this.clients.containsKey(streamHash))
+                return;
+            DataSiftClient client = this.clients.get(streamHash);
+            LOGGER.debug("Shutting down stream for hash: {}", streamHash);
+            client.shutdown();
+            this.clients.remove(client);
+        }
+    }
+
+    /**
+     * Shuts down all open streams from datasift.
+     */
     public void stop() {
-
-        for( String hash : config.getStreamHash()) {
-
-            client.liveStream().subscribe(new Subscription(Stream.fromString(hash)));
-
+        synchronized (clients) {
+            for(DataSiftClient client : this.clients.values()) {
+                client.shutdown();
+            }
         }
     }
 
-    public Queue<StreamsDatum> getProviderQueue() {
-        return this.providerQueue;
-    }
-
-    @Override
+    // PRIME EXAMPLE OF WHY WE NEED NEW INTERFACES FOR PROVIDERS
+    @Override //This is a hack.  It is only like this because of how perpetual streams work at the moment.  Read list server to debate/vote for new interfaces.
     public StreamsResultSet readCurrent() {
+        Queue<StreamsDatum> datums = Queues.newConcurrentLinkedQueue();
 
-        return (StreamsResultSet) providerQueue;
+            while(!this.interactions.isEmpty()) {
+                Interaction interaction = this.interactions.poll();
+                while(!datums.offer(new StreamsDatum(interaction, interaction.getData().get("interaction").get("id").textValue()))) {
+                    Thread.yield();
+                }
 
+        }
+        return new StreamsResultSet(datums);
     }
 
     @Override
@@ -136,21 +175,8 @@ public class DatasiftStreamProvider implements StreamsProvider {
 
     @Override
     public void prepare(Object configurationObject) {
-
-        Preconditions.checkNotNull(config);
-
-        String apiKey = config.getApiKey();
-        String userName = config.getUserName();
-
-        DataSiftConfig config = new DataSiftConfig(userName, apiKey);
-
-        client = new DataSiftClient(config);
-
-        client.liveStream().onError(new ErrorHandler());
-
-        //handle delete message
-        client.liveStream().onStreamEvent(new DeleteHandler());
-
+        this.interactions = new ConcurrentLinkedQueue<Interaction>();
+        this.clients = Maps.newHashMap();
     }
 
     @Override
@@ -158,43 +184,24 @@ public class DatasiftStreamProvider implements StreamsProvider {
         stop();
     }
 
-    public class Subscription extends StreamSubscription {
-        AtomicLong count = new AtomicLong();
-
-        public Subscription(Stream stream) {
-            super(stream);
-        }
-
-        public void onDataSiftLogMessage(DataSiftMessage di) {
-            //di.isWarning() is also available
-            System.out.println((di.isError() ? "Error" : di.isInfo() ? "Info" : "Warning") + ":\n" + di);
-        }
-
-        public void onMessage(Interaction i) {
-
-            LOGGER.debug("Processing:\n" + i);
-
-            inQueue.offer(i);
-
-            if (count.incrementAndGet() % 1000 == 0) {
-                LOGGER.info("Processed {}:\n " + count.get());
-
-            }
-
-        }
+    public DatasiftConfiguration getConfig() {
+        return config;
     }
 
-    public class DeleteHandler extends StreamEventListener {
+    public void setConfig(DatasiftConfiguration config) {
+        this.config = config;
+    }
+
+
+    /**
+     * THIS CLASS NEEDS TO BE REPLACED/OVERRIDDEN BY ALL USERS. TWITTERS TERMS OF SERVICE SAYS THAT EVERYONE MUST
+     * DELETE TWEETS FROM THEIR DATA STORE IF THEY RECEIVE A DELETE NOTICE.
+     */
+    public static class DeleteHandler extends StreamEventListener {
+
         public void onDelete(DeletedInteraction di) {
             //go off and delete the interaction if you have it stored. This is a strict requirement!
             LOGGER.info("DELETED:\n " + di);
-        }
-    }
-
-    public class ErrorHandler extends ErrorListener {
-        public void exceptionCaught(Throwable t) {
-            LOGGER.warn(t.getMessage());
-            //do something useful...
         }
     }
 

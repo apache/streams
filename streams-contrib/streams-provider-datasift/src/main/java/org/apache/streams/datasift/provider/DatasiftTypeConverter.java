@@ -18,27 +18,20 @@ under the License.
 */
 package org.apache.streams.datasift.provider;
 
-import com.typesafe.config.Config;
-import org.apache.streams.datasift.DatasiftConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.datasift.Datasift;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * Converts a {@link org.apache.streams.datasift.Datasift} object to a StreamsDatum
  */
-public class DatasiftStreamConfigurator {
+public interface DatasiftTypeConverter {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftStreamConfigurator.class);
+    /**
+     * Converts a {@link org.apache.streams.datasift.Datasift} object to a StreamsDatum
+     * @param datasift
+     * @return
+     */
+    public StreamsDatum convert(Datasift datasift);
 
-    public static DatasiftConfiguration detectConfiguration(Config datasift) {
-
-        DatasiftConfiguration datasiftConfiguration = new DatasiftConfiguration();
-
-        datasiftConfiguration.setApiKey(datasift.getString("apiKey"));
-        datasiftConfiguration.setUserName(datasift.getString("userName"));
-        datasiftConfiguration.setStreamHash(datasift.getStringList("hashes"));
-
-        return datasiftConfiguration;
-    }
 
 }
