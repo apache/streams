@@ -51,9 +51,15 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     private static final String PROVIDER_ID = getProvider().getId();
     private static final Logger LOGGER = LoggerFactory.getLogger(FetchAndReplaceTwitterProcessor.class);
 
+    //Default number of attempts before allowing the document through
+    private static final int MAX_ATTEMPTS = 5;
+    //Start the backoff at 4 minutes.  This results in a wait period of 4, 8, 12, 16 & 20 min with an attempt of 5
+    public static final int BACKOFF = 1000 * 60 * 4;
+
     private final TwitterStreamConfiguration config;
     private Twitter client;
     private ObjectMapper mapper;
+    private int retryCount;
 
     public FetchAndReplaceTwitterProcessor() {
         this(TwitterStreamConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("twitter")));
@@ -87,11 +93,18 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     @Override
     public void cleanUp() {
 
-    }  protected void fetchAndReplace(Activity doc, String originalId) {
+    }
+
+    protected void fetchAndReplace(Activity doc, String originalId) {
         try {
             String json = fetch(doc);
             replace(doc, json);
             doc.setId(originalId);
+            retryCount = 0;
+        } catch(TwitterException tw) {
+            if(tw.exceededRateLimitation()) {
+                sleepAndTryAgain(doc, originalId);
+            }
         } catch (Exception e) {
             LOGGER.warn("Error fetching and replacing tweet for activity {}", doc.getId());
         }
@@ -114,28 +127,47 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
         String id = doc.getObject().getId();
         LOGGER.debug("Fetching status from Twitter for {}", id);
         Long tweetId = Long.valueOf(id.replace("id:twitter:tweets:", ""));
-        Status status = client.showStatus(tweetId);
+        Status status = getTwitterClient().showStatus(tweetId);
         return TwitterObjectFactory.getRawJSON(status);
     }
 
 
     protected Twitter getTwitterClient()
     {
-        String baseUrl = "https://api.twitter.com:443/1.1/";
+        if(this.client == null) {
+            String baseUrl = "https://api.twitter.com:443/1.1/";
 
-        ConfigurationBuilder builder = new ConfigurationBuilder()
-                .setOAuthConsumerKey(config.getOauth().getConsumerKey())
-                .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
-                .setOAuthAccessToken(config.getOauth().getAccessToken())
-                .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
-                .setIncludeEntitiesEnabled(true)
-                .setJSONStoreEnabled(true)
-                .setAsyncNumThreads(1)
-                .setRestBaseURL(baseUrl)
-                .setIncludeMyRetweetEnabled(Boolean.TRUE)
-                .setPrettyDebugEnabled(Boolean.TRUE);
+            ConfigurationBuilder builder = new ConfigurationBuilder()
+                    .setOAuthConsumerKey(config.getOauth().getConsumerKey())
+                    .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
+                    .setOAuthAccessToken(config.getOauth().getAccessToken())
+                    .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
+                    .setIncludeEntitiesEnabled(true)
+                    .setJSONStoreEnabled(true)
+                    .setAsyncNumThreads(1)
+                    .setRestBaseURL(baseUrl)
+                    .setIncludeMyRetweetEnabled(Boolean.TRUE)
+                    .setPrettyDebugEnabled(Boolean.TRUE);
 
-        Twitter instance = new TwitterFactory(builder.build()).getInstance();
-        return instance;
+            this.client = new TwitterFactory(builder.build()).getInstance();
+        }
+        return this.client;
+    }
+
+    //Hardcore sleep to allow for catch up
+    private void sleepAndTryAgain(Activity doc, String originalId) {
+        try {
+            //Attempt to fetchAndReplace with a backoff up to the limit then just reset the count and let the process continue
+            if(retryCount < MAX_ATTEMPTS) {
+                retryCount++;
+                LOGGER.debug("Sleeping for {} min due to excessive calls to Twitter API", (retryCount * 4));
+                Thread.sleep(BACKOFF * retryCount);
+                fetchAndReplace(doc, originalId);
+            } else {
+                retryCount = 0;
+            }
+        } catch (InterruptedException e) {
+            LOGGER.warn("Thread sleep interrupted while waiting for twitter backoff");
+        }
     }
 }
