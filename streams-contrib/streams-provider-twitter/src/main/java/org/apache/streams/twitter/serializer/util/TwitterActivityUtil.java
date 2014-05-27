@@ -31,6 +31,7 @@ import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
 import org.apache.streams.twitter.Url;
+import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
@@ -55,12 +56,12 @@ public class TwitterActivityUtil {
     public static void updateActivity(Tweet tweet, Activity activity) throws ActivitySerializerException {
         ObjectMapper mapper = StreamsTwitterMapper.getInstance();
         activity.setActor(buildActor(tweet));
-        activity.setVerb("post");
         activity.setId(formatId(activity.getVerb(),
                 Optional.fromNullable(
                         tweet.getIdStr())
                         .or(Optional.of(tweet.getId().toString()))
                         .orNull()));
+
         if(Strings.isNullOrEmpty(activity.getId()))
             throw new ActivitySerializerException("Unable to determine activity id");
         try {
@@ -71,12 +72,50 @@ public class TwitterActivityUtil {
         activity.setTarget(buildTarget(tweet));
         activity.setProvider(getProvider());
         activity.setTitle("");
-        activity.setContent(tweet.getText());
-        activity.setUrl("http://twitter.com/" + tweet.getIdStr());
+        activity.setUrl(String.format("http://twitter.com/%s/%s", tweet.getUser().getScreenName(),tweet.getIdStr()));
         activity.setLinks(getLinks(tweet));
+
+        if(tweet instanceof Retweet) {
+            updateActivityContent(activity,  ((Retweet) tweet).getRetweetedStatus(), "share");
+        } else {
+            updateActivityContent(activity, tweet, "post");
+        }
 
         addTwitterExtension(activity, mapper.convertValue(tweet, ObjectNode.class));
         addLocationExtension(activity, tweet);
+    }
+
+    /**
+     * Updates the content, and associated fields, with those from the given tweet
+     * @param activity the target of the updates.  Will receive all values from the tweet.
+     * @param tweet the object to use as the source
+     * @param verb the verb for the given activity's type
+     */
+    public static void updateActivityContent(Activity activity, Tweet tweet, String verb) {
+        activity.setVerb(verb);
+        if( tweet != null ) {
+            activity.setObject(buildActivityObject(tweet));
+            activity.setLinks(getLinks(tweet));
+            activity.setContent(tweet.getText());
+        }
+    }
+
+    /**
+     * Creates an {@link org.apache.streams.pojo.json.ActivityObject} for the tweet
+     * @param tweet the object to use as the source
+     * @return a valid ActivityObject
+     */
+    public static ActivityObject buildActivityObject(Tweet tweet) {
+        ActivityObject actObj = new ActivityObject();
+        String id =  Optional.fromNullable(
+                tweet.getIdStr())
+                .or(Optional.of(tweet.getId().toString()))
+                .orNull();
+        if( id != null )
+            actObj.setId(id);
+        actObj.setObjectType("tweet");
+        actObj.setContent(tweet.getText());
+        return actObj;
     }
 
     /**

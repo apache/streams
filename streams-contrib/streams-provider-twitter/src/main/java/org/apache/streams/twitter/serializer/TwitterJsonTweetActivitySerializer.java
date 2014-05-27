@@ -47,7 +47,6 @@ public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<St
         }
 
         Activity activity = new Activity();
-
         updateActivity(tweet, activity);
         return activity;
     }
