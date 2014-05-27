@@ -1,21 +1,3 @@
-/*
-Licensed to the Apache Software Foundation (ASF) under one
-or more contributor license agreements.  See the NOTICE file
-distributed with this work for additional information
-regarding copyright ownership.  The ASF licenses this file
-to you under the Apache License, Version 2.0 (the
-"License"); you may not use this file except in compliance
-with the License.  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing,
-software distributed under the License is distributed on an
-"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied.  See the License for the
-specific language governing permissions and limitations
-under the License.
- */
 package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Optional;
@@ -137,7 +119,10 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
             int keepTrying = 0;
 
             // keep trying to load, give it 5 attempts.
-            while (keepTrying < 1)
+            //This value was chosen because it seemed like a reasonable number of times
+            //to retry capturing a timeline given the sorts of errors that could potentially
+            //occur (network timeout/interruption, faulty client, etc.)
+            while (keepTrying < 5)
             {
 
                 try
