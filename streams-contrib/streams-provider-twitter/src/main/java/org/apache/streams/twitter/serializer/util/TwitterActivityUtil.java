@@ -19,32 +19,155 @@
 
 package org.apache.streams.twitter.serializer.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
+import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
+import org.apache.streams.twitter.Url;
+import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.twitter.pojo.User;
+import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
  * Provides utilities for working with Activity objects within the context of Twitter
  */
 public class TwitterActivityUtil {
 
+    /**
+     * Updates the given Activity object with the values from the Tweet
+     * @param tweet the object to use as the source
+     * @param activity the target of the updates.  Will receive all values from the tweet.
+     * @throws ActivitySerializerException
+     */
+    public static void updateActivity(Tweet tweet, Activity activity) throws ActivitySerializerException {
+        ObjectMapper mapper = StreamsTwitterMapper.getInstance();
+        activity.setActor(buildActor(tweet));
+        activity.setVerb("post");
+        activity.setId(formatId(activity.getVerb(),
+                Optional.fromNullable(
+                        tweet.getIdStr())
+                        .or(Optional.of(tweet.getId().toString()))
+                        .orNull()));
+        if(Strings.isNullOrEmpty(activity.getId()))
+            throw new ActivitySerializerException("Unable to determine activity id");
+        try {
+            activity.setPublished(tweet.getCreatedAt());
+        } catch( Exception e ) {
+            throw new ActivitySerializerException("Unable to determine publishedDate", e);
+        }
+        activity.setTarget(buildTarget(tweet));
+        activity.setProvider(getProvider());
+        activity.setTitle("");
+        activity.setContent(tweet.getText());
+        activity.setUrl("http://twitter.com/" + tweet.getIdStr());
+        activity.setLinks(getLinks(tweet));
 
+        addTwitterExtension(activity, mapper.convertValue(tweet, ObjectNode.class));
+        addLocationExtension(activity, tweet);
+    }
+
+    /**
+     * Builds the activity {@link org.apache.streams.pojo.json.Actor} object from the tweet
+     * @param tweet the object to use as the source
+     * @return a valid Actor populated from the Tweet
+     */
+    public static Actor buildActor(Tweet tweet) {
+        Actor actor = new Actor();
+        User user = tweet.getUser();
+        actor.setId(formatId(
+                Optional.fromNullable(
+                        user.getIdStr())
+                        .or(Optional.of(user.getId().toString()))
+                        .orNull()
+        ));
+        actor.setDisplayName(user.getScreenName());
+        if (user.getUrl()!=null){
+            actor.setUrl(user.getUrl());
+        }
+        return actor;
+    }
+
+    /**
+     * Gets the links from the Twitter event
+     * @param tweet the object to use as the source
+     * @return a list of links corresponding to the expanded URL (no t.co)
+     */
+    public static List<String> getLinks(Tweet tweet) {
+        List<String> links = Lists.newArrayList();
+        if( tweet.getEntities().getUrls() != null ) {
+            for (Url url : tweet.getEntities().getUrls()) {
+                links.add(url.getExpandedUrl());
+            }
+        }
+        else
+            System.out.println("  0 links");
+        return links;
+    }
+
+    /**
+     * Builds the {@link org.apache.streams.twitter.pojo.TargetObject} from the tweet
+     * @param tweet the object to use as the source
+     * @return currently returns null for all activities
+     */
+    public static ActivityObject buildTarget(Tweet tweet) {
+        return null;
+    }
+
+    /**
+     * Adds the location extension and populates with teh twitter data
+     * @param activity the Activity object to update
+     * @param tweet the object to use as the source
+     */
+    public static void addLocationExtension(Activity activity, Tweet tweet) {
+        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> location = new HashMap<String, Object>();
+        location.put("id", formatId(
+                Optional.fromNullable(
+                        tweet.getIdStr())
+                        .or(Optional.of(tweet.getId().toString()))
+                        .orNull()
+        ));
+        location.put("coordinates", tweet.getCoordinates());
+        extensions.put("location", location);
+    }
+
+    /**
+     * Gets the common twitter {@link org.apache.streams.pojo.json.Provider} object
+     * @return a provider object representing Twitter
+     */
     public static Provider getProvider() {
         Provider provider = new Provider();
         provider.setId("id:providers:twitter");
         provider.setDisplayName("Twitter");
         return provider;
     }
-
+    /**
+     * Adds the given Twitter event to the activity as an extension
+     * @param activity the Activity object to update
+     * @param event the Twitter event to add as the extension
+     */
     public static void addTwitterExtension(Activity activity, ObjectNode event) {
         Map<String, Object> extensions = org.apache.streams.data.util.ActivityUtil.ensureExtensions(activity);
         extensions.put("twitter", event);
     }
-
+    /**
+     * Formats the ID to conform with the Apache Streams activity ID convention
+     * @param idparts the parts of the ID to join
+     * @return a valid Activity ID in format "id:twitter:part1:part2:...partN"
+     */
     public static String formatId(String... idparts) {
         return Joiner.on(":").join(Lists.asList("id:twitter", idparts));
     }
