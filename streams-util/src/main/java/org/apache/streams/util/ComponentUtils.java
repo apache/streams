@@ -4,29 +4,38 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Queue;
 
-/**
- * Created by sblackmon on 3/31/14.
- */
 public class ComponentUtils {
 
+    @SuppressWarnings("unchecked")
     public static void offerUntilSuccess(Object entry, Queue queue) {
-        while(!queue.offer(entry))
+        while(!queue.offer(entry)) {
             Thread.yield();
+            safeQuickRest(1);
+        }
+    }
+
+    private static void safeQuickRest() {
+        safeQuickRest(1);
+    }
+
+    private static void safeQuickRest(final int time) {
+        try {
+            Thread.sleep(time);
+        }
+        catch(InterruptedException e) {
+            // No Operation
+        }
     }
 
     public static String pollUntilStringNotEmpty(final Queue queue) {
 
         String result = null;
         do {
-            try {
-                result = (String) queue.remove();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-            Thread.yield();
+            result = (String)queue.poll();
+            if(result == null)
+                safeQuickRest();
         }
-        while (result == null && !StringUtils.isNotEmpty(result));
+        while (result == null || StringUtils.isEmpty(result));
 
         return result;
     }
