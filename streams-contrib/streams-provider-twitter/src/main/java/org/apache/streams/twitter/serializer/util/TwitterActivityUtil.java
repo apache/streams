@@ -26,10 +26,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.streams.exceptions.ActivitySerializerException;
-import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
-import org.apache.streams.pojo.json.Provider;
+import org.apache.streams.pojo.json.*;
 import org.apache.streams.twitter.Url;
 import org.apache.streams.twitter.pojo.*;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
@@ -191,10 +188,10 @@ public class TwitterActivityUtil {
         extensions.put("favorites", user.getFavouritesCount());
         extensions.put("followers", user.getFollowersCount());
 
-        Map<String, Object> image = new HashMap<String, Object>();
-        image.put("url", user.getProfileImageUrlHttps());
+        Image profileImage = new Image();
+        profileImage.setUrl(user.getProfileImageUrlHttps());
+        actor.setImage(profileImage);
 
-        extensions.put("image", image);
         extensions.put("screenName", user.getScreenName());
 
         actor.setAdditionalProperty("extensions", extensions);
