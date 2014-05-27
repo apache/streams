@@ -123,7 +123,8 @@ public class SysomosHeartbeatStream implements Runnable {
                 item.getMetadata().put("heartbeat", this.heartbeatId);
                 this.provider.enqueueItem(item);
             }
-            offsetCount = matched ? 0 : offsetCount + 1;
+            //Reset the offset iff we have found a match or this is the first execution
+            offsetCount = lastID == null || matched ? 0 : offsetCount + 1;
         }
         return new QueryResult(matched, currentId);
     }
