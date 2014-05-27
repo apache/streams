@@ -16,7 +16,8 @@ import org.apache.streams.twitter.pojo.Tweet;
 import java.io.Serializable;
 import java.util.List;
 
-import static org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer.*;
+import static org.apache.streams.twitter.serializer.util.TwitterActivityUtil.*;
+
 
 /**
 * Created with IntelliJ IDEA.
@@ -61,7 +62,7 @@ public class TwitterJsonDeleteActivitySerializer implements ActivitySerializer<S
         activity.setActor(buildActor(delete));
         activity.setVerb("delete");
         activity.setObject(buildActivityObject(delete));
-        activity.setId(TwitterJsonActivitySerializer.formatId(activity.getVerb(), delete.getDelete().getStatus().getIdStr()));
+        activity.setId(formatId(activity.getVerb(), delete.getDelete().getStatus().getIdStr()));
         if(Strings.isNullOrEmpty(activity.getId()))
             throw new ActivitySerializerException("Unable to determine activity id");
         activity.setProvider(getProvider());

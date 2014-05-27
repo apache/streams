@@ -80,19 +80,4 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
     public List<Activity> deserializeAll(List<String> serializedList) {
         throw new NotImplementedException();
     }
-
-    public static Provider getProvider() {
-        Provider provider = new Provider();
-        provider.setId("id:providers:twitter");
-        return provider;
-    }
-
-    public static void addTwitterExtension(Activity activity, ObjectNode event) {
-        Map<String, Object> extensions = org.apache.streams.data.util.ActivityUtil.ensureExtensions(activity);
-        extensions.put("twitter", event);
-    }
-
-    public static String formatId(String... idparts) {
-        return Joiner.on(":").join(Lists.asList("id:twitter", idparts));
-    }
 }

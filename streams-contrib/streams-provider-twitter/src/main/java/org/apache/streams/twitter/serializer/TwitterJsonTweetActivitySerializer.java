@@ -9,7 +9,6 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivitySerializerException;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
@@ -23,8 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer.*;
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
+import static org.apache.streams.twitter.serializer.util.TwitterActivityUtil.*;
 
 /**
 * Created with IntelliJ IDEA.

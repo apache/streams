@@ -5,13 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
-import org.apache.streams.twitter.Url;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
@@ -22,8 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer.*;
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
+import static org.apache.streams.twitter.serializer.util.TwitterActivityUtil.*;
 
 /**
 * Created with IntelliJ IDEA.
@@ -66,7 +64,7 @@ public class TwitterJsonRetweetActivitySerializer implements ActivitySerializer<
         activity.setVerb("share");
         if( retweet.getRetweetedStatus() != null )
             activity.setObject(buildActivityObject(retweet.getRetweetedStatus()));
-        activity.setId(TwitterJsonActivitySerializer.formatId(activity.getVerb(),
+        activity.setId(formatId(activity.getVerb(),
                 Optional.fromNullable(
                         retweet.getIdStr())
                         .or(Optional.of(retweet.getId().toString()))
@@ -81,7 +79,7 @@ public class TwitterJsonRetweetActivitySerializer implements ActivitySerializer<
         }
         //activity.setGenerator(buildGenerator(mapper));
         //activity.setIcon(getIcon(event));
-        activity.setProvider(TwitterJsonActivitySerializer.getProvider());
+        activity.setProvider(getProvider());
         activity.setTitle("");
         try {
             activity.setContent(retweet.getRetweetedStatus().getText());
@@ -131,7 +129,7 @@ public class TwitterJsonRetweetActivitySerializer implements ActivitySerializer<
     public static void addLocationExtension(Activity activity, Retweet retweet) {
         Map<String, Object> extensions = ensureExtensions(activity);
         Map<String, Object> location = new HashMap<String, Object>();
-        location.put("id", TwitterJsonActivitySerializer.formatId(retweet.getIdStr()));
+        location.put("id", formatId(retweet.getIdStr()));
         location.put("coordinates", retweet.getCoordinates());
         extensions.put("location", location);
     }
