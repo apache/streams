@@ -59,14 +59,14 @@ public class DatasiftEventProcessor implements StreamsProcessor {
             Datasift datasift = mapper.convertValue(item, Datasift.class);
             result.add(this.converter.convert(datasift));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Exception converting Datasift Interaction to "+this.outClass.getName()+ " : {}", e);
         }
         return result;
     }
 
     @Override
     public void prepare(Object configurationObject) {
-        this.mapper = new StreamsJacksonMapper();
+        this.mapper = StreamsJacksonMapper.getInstance();
         this.datasiftInteractionActivitySerializer = new DatasiftActivitySerializer();
         if(this.outClass.equals(Activity.class)) {
             this.converter = new ActivityConverter();

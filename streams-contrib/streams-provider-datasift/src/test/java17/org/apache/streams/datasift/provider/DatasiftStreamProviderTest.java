@@ -5,7 +5,6 @@ import com.datasift.client.stream.StreamEventListener;
 import com.datasift.client.stream.StreamingData;
 import com.google.common.collect.Lists;
 import org.apache.streams.datasift.DatasiftConfiguration;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -23,7 +22,7 @@ public class DatasiftStreamProviderTest {
     private static final String HASH2 = "fake2";
     private static final String HASH3 = "fake3";
 
-    @Test @Ignore
+    @Test
     public void startStreamForHash() {
         DatasiftStreamProvider.DeleteHandler handler = new DatasiftStreamProvider.DeleteHandler();
         final List<DataSiftClient> clientList = Lists.newLinkedList();
@@ -36,7 +35,7 @@ public class DatasiftStreamProviderTest {
         provider.startStreamForHash(HASH3);
     }
 
-    @Test @Ignore
+    @Test
     public void testStartStream() {
         DatasiftStreamProvider.DeleteHandler handler = new DatasiftStreamProvider.DeleteHandler();
         final List<DataSiftClient> clientList = Lists.newLinkedList();
@@ -46,7 +45,7 @@ public class DatasiftStreamProviderTest {
         assertEquals(3, clientList.size());
     }
 
-    @Test @Ignore
+    @Test
     public void testShutDownStream() {
         DatasiftStreamProvider.DeleteHandler handler = new DatasiftStreamProvider.DeleteHandler();
         final List<DataSiftClient> clientList = Lists.newLinkedList();
@@ -71,7 +70,7 @@ public class DatasiftStreamProviderTest {
         Mockito.verify(client, times(1)).shutdown();
     }
 
-    @Test @Ignore
+    @Test
     public void testStartAlreadyInprogressStream() {
         DatasiftStreamProvider.DeleteHandler handler = new DatasiftStreamProvider.DeleteHandler();
         final List<DataSiftClient> clientList = Lists.newLinkedList();
