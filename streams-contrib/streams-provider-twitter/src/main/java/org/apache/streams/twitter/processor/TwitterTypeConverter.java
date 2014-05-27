@@ -41,6 +41,8 @@ public class TwitterTypeConverter implements StreamsProcessor {
 
     private TwitterJsonActivitySerializer twitterJsonActivitySerializer;
 
+    private int count = 0;
+
     public final static String TERMINATE = new String("TERMINATE");
 
     public TwitterTypeConverter(Class inClass, Class outClass) {
@@ -61,10 +63,9 @@ public class TwitterTypeConverter implements StreamsProcessor {
         Object result = null;
 
         if( outClass.equals( Activity.class )) {
-                LOGGER.debug("ACTIVITY");
-                result = twitterJsonActivitySerializer.deserialize(
-                        mapper.writeValueAsString(event));
-                return result;
+            LOGGER.debug("ACTIVITY");
+            result = twitterJsonActivitySerializer.deserialize(
+                    mapper.writeValueAsString(event));
         } else if( outClass.equals( Tweet.class )) {
             if ( inClass.equals( Tweet.class )) {
                 LOGGER.debug("TWEET");
@@ -85,9 +86,11 @@ public class TwitterTypeConverter implements StreamsProcessor {
             result = mapper.convertValue(event, ObjectNode.class);
         }
 
-            // no supported conversion were applied
-        if( result != null )
+        // no supported conversion were applied
+        if( result != null ) {
+            count ++;
             return result;
+        }
 
         LOGGER.debug("CONVERT FAILED");
 
