@@ -9,6 +9,7 @@ import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
+import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,7 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterProfileProcessor.class);
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new StreamsTwitterMapper();
 
     private Queue<StreamsDatum> inQueue;
     private Queue<StreamsDatum> outQueue;
@@ -35,18 +36,18 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
 
         while(true) {
             StreamsDatum item;
-                try {
-                    item = inQueue.poll();
-                    if(item.getDocument() instanceof String && item.equals(TERMINATE)) {
-                        LOGGER.info("Terminating!");
-                        break;
-                    }
+            try {
+                item = inQueue.poll();
+                if(item.getDocument() instanceof String && item.equals(TERMINATE)) {
+                    LOGGER.info("Terminating!");
+                    break;
+                }
 
-                    Thread.sleep(new Random().nextInt(100));
+                Thread.sleep(new Random().nextInt(100));
 
-                    for( StreamsDatum entry : process(item)) {
-                        outQueue.offer(entry);
-                    }
+                for( StreamsDatum entry : process(item)) {
+                    outQueue.offer(entry);
+                }
 
 
             } catch (Exception e) {
@@ -78,13 +79,17 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
                 LOGGER.debug("TWEET");
                 Tweet tweet = mapper.readValue(item, Tweet.class);
                 user = tweet.getUser();
-                result.add(new StreamsDatum(user));
+                result.add(new StreamsDatum(user, user.getIdStr()));
             }
             else if ( inClass.equals( Retweet.class )) {
                 LOGGER.debug("RETWEET");
                 Retweet retweet = mapper.readValue(item, Retweet.class);
                 user = retweet.getRetweetedStatus().getUser();
-                result.add(new StreamsDatum(user));
+                result.add(new StreamsDatum(user, user.getIdStr()));
+            } else if ( inClass.equals( User.class )) {
+                LOGGER.debug("USER");
+                user = mapper.readValue(item, User.class);
+                result.add(new StreamsDatum(user, user.getIdStr()));
             } else {
                 return Lists.newArrayList();
             }
