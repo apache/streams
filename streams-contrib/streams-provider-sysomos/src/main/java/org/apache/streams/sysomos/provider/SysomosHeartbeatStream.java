@@ -37,11 +37,18 @@ public class SysomosHeartbeatStream implements Runnable {
     private final long maxApiBatch;
     private final long minLatency;
 
-    private String lastID = null;
+    private String lastID;
+    private int offsetCount = 0;
+    private boolean enabled = true;
 
     public SysomosHeartbeatStream(SysomosProvider provider, String heartbeatId) {
+        this(provider, heartbeatId, null);
+    }
+
+    public SysomosHeartbeatStream(SysomosProvider provider, String heartbeatId, String docId) {
         this.provider = provider;
         this.heartbeatId = heartbeatId;
+        this.lastID = docId;
 
         this.client = provider.getClient();
         this.maxApiBatch = provider.getMaxApiBatch();
@@ -51,15 +58,27 @@ public class SysomosHeartbeatStream implements Runnable {
     @Override
     public void run() {
         QueryResult result;
+        String mostCurrentId = null;
         //Iff we are trying to get to a specific document ID, continue to query after minimum delay
         do {
             LOGGER.debug("Querying API to match last ID of {}", lastID);
             result = executeAPIRequest();
+            //Ensure that we are only assigning lastID to the latest ID, even if there is backfill query.
+            //Since offset is calcuated at the end of the run, if we detect the need to backfill, it will increment to 1
+            if(offsetCount == 1) {
+                mostCurrentId = result.getCurrentId();
+            }
             sleep();
         } while (lastID != null && !result.isMatchedLastId());
         //Set the last ID so that the next time we are executed we will continue to query only so long as we haven't
         //found the specific ID
-        lastID = result.getCurrentId();
+        lastID = mostCurrentId == null ? result.getCurrentId() : mostCurrentId;
+
+        if(SysomosProvider.Mode.BACKFILL_AND_TERMINATE.equals(provider.getMode())) {
+            provider.signalComplete(heartbeatId);
+            enabled = false;
+            LOGGER.info("Completed backfill to {} for heartbeat {}", lastID, heartbeatId);
+        }
         LOGGER.debug("Completed current execution with a final docID of {}", lastID);
     }
 
@@ -74,12 +93,14 @@ public class SysomosHeartbeatStream implements Runnable {
     protected QueryResult executeAPIRequest() {
         BeatApi.BeatResponse response = null;
         try {
-            response = this.client.createRequestBuilder()
-                    .setHeartBeatId(heartbeatId)
-                    .setOffset(0)
-                    .setReturnSetSize(maxApiBatch).execute();
+            if(enabled) {
+                response = this.client.createRequestBuilder()
+                        .setHeartBeatId(heartbeatId)
+                        .setOffset(offsetCount * maxApiBatch)
+                        .setReturnSetSize(maxApiBatch).execute();
 
-            LOGGER.debug("Received {} results from API query", response.getCount());
+                LOGGER.debug("Received {} results from API query", response.getCount());
+            }
         } catch (Exception e) {
             LOGGER.warn("Error querying Sysomos API", e);
         }
@@ -102,6 +123,7 @@ public class SysomosHeartbeatStream implements Runnable {
                 item.getMetadata().put("heartbeat", this.heartbeatId);
                 this.provider.enqueueItem(item);
             }
+            offsetCount = matched ? 0 : offsetCount + 1;
         }
         return new QueryResult(matched, currentId);
     }

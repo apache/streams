@@ -21,14 +21,17 @@ package org.apache.streams.pig.test;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.slf4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to Test Pig processor wrapper
+ * Used to Test Pig processor wrapper when multiple datums are returned
  */
 public class CopyThriceProcessor implements StreamsProcessor {
+
+    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(CopyThriceProcessor.class);
 
     List<StreamsDatum> result;
 
@@ -51,6 +54,6 @@ public class CopyThriceProcessor implements StreamsProcessor {
 
     @Override
     public void cleanUp() {
-        System.out.println("Processor clean up!");
+        LOGGER.info("Processor clean up");
     }
 }
