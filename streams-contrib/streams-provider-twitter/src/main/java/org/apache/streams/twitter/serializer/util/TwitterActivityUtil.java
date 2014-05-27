@@ -75,13 +75,7 @@ public class TwitterActivityUtil {
         activity.setProvider(getProvider());
         activity.setUrl(String.format("http://twitter.com/%s/%s/%s", tweet.getUser().getScreenName(),"/status/",tweet.getIdStr()));
 
-        activity.setTitle("");
-        activity.setContent(tweet.getText());
-        activity.setLinks(getLinks(tweet));
-
         addTwitterExtension(activity, mapper.convertValue(tweet, ObjectNode.class));
-        addLocationExtension(activity, tweet);
-        addTwitterExtensions(activity, tweet);
     }
 
     /**
@@ -138,6 +132,8 @@ public class TwitterActivityUtil {
             activity.setObject(buildActivityObject(tweet));
             activity.setLinks(getLinks(tweet));
             activity.setContent(tweet.getText());
+            addLocationExtension(activity, tweet);
+            addTwitterExtensions(activity, tweet);
         }
     }
 
