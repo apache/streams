@@ -31,6 +31,7 @@ import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
 import org.apache.streams.twitter.Url;
+import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
@@ -62,6 +63,12 @@ public class TwitterActivityUtil {
                         .or(Optional.of(tweet.getId().toString()))
                         .orNull()));
 
+        if(tweet instanceof Retweet) {
+            updateActivityContent(activity,  ((Retweet) tweet).getRetweetedStatus(), "share");
+        } else {
+            updateActivityContent(activity, tweet, "post");
+        }
+
         if(Strings.isNullOrEmpty(activity.getId()))
             throw new ActivitySerializerException("Unable to determine activity id");
         try {
@@ -71,19 +78,53 @@ public class TwitterActivityUtil {
         }
         activity.setTarget(buildTarget(tweet));
         activity.setProvider(getProvider());
-        activity.setTitle("");
         activity.setUrl(String.format("http://twitter.com/%s/%s", tweet.getUser().getScreenName(),tweet.getIdStr()));
-        activity.setLinks(getLinks(tweet));
 
-        if(tweet instanceof Retweet) {
-            updateActivityContent(activity,  ((Retweet) tweet).getRetweetedStatus(), "share");
-        } else {
-            updateActivityContent(activity, tweet, "post");
-        }
 
         addTwitterExtension(activity, mapper.convertValue(tweet, ObjectNode.class));
         addLocationExtension(activity, tweet);
     }
+
+    /**
+     * Updates the activity for a delete event
+     * @param delete the delete event
+     * @param activity the Activity object to update
+     * @throws ActivitySerializerException
+     */
+    public static void updateActivity(Delete delete, Activity activity) throws ActivitySerializerException {
+        activity.setActor(buildActor(delete));
+        activity.setVerb("delete");
+        activity.setObject(buildActivityObject(delete));
+        activity.setId(formatId(activity.getVerb(), delete.getDelete().getStatus().getIdStr()));
+        if(Strings.isNullOrEmpty(activity.getId()))
+            throw new ActivitySerializerException("Unable to determine activity id");
+        activity.setProvider(getProvider());
+        addTwitterExtension(activity, StreamsTwitterMapper.getInstance().convertValue(delete, ObjectNode.class));
+    }
+
+    /**
+     * Builds the actor for a delete event
+     * @param delete the delete event
+     * @return a valid Actor
+     */
+    public static  Actor buildActor(Delete delete) {
+        Actor actor = new Actor();
+        actor.setId(formatId(delete.getDelete().getStatus().getUserIdStr()));
+        return actor;
+    }
+
+    /**
+     * Builds the ActivityObject for the delete event
+     * @param delete the delete event
+     * @return a valid Activity Object
+     */
+    public static ActivityObject buildActivityObject(Delete delete) {
+        ActivityObject actObj = new ActivityObject();
+        actObj.setId(formatId(delete.getDelete().getStatus().getIdStr()));
+        actObj.setObjectType("tweet");
+        return actObj;
+    }
+
 
     /**
      * Updates the content, and associated fields, with those from the given tweet
@@ -93,6 +134,7 @@ public class TwitterActivityUtil {
      */
     public static void updateActivityContent(Activity activity, Tweet tweet, String verb) {
         activity.setVerb(verb);
+        activity.setTitle("");
         if( tweet != null ) {
             activity.setObject(buildActivityObject(tweet));
             activity.setLinks(getLinks(tweet));
