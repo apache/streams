@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.local.tasks;
+package org.apache.streams.local.builder;
 
 import org.apache.streams.core.*;
 import org.slf4j.Logger;
@@ -30,20 +30,20 @@ import java.util.concurrent.TimeUnit;
 /**
  * Streams persist writer
  */
-public class StreamsPersistWriterdTask extends BaseStreamsTask implements DatumStatusCountable {
+public class StreamsPersistWriterTask extends BaseStreamsTask {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPersistWriterdTask.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPersistWriterTask.class);
     private final ThreadPoolExecutor executorService;
 
     protected final StreamsPersistWriter writer;
     protected Map<String, Object> streamConfig;
     protected final DatumStatusCounter statusCounter = new DatumStatusCounter();
 
-    public StreamsPersistWriterdTask(StreamsPersistWriter writer) {
+    public StreamsPersistWriterTask(StreamsPersistWriter writer) {
         this(writer, 1);
     }
 
-    public StreamsPersistWriterdTask(StreamsPersistWriter writer, int numThreads) {
+    public StreamsPersistWriterTask(StreamsPersistWriter writer, int numThreads) {
         this.writer = writer;
         this.executorService = new ThreadPoolExecutor(numThreads,
                 numThreads,
@@ -54,18 +54,21 @@ public class StreamsPersistWriterdTask extends BaseStreamsTask implements DatumS
     }
 
     @Override
-    public DatumStatusCounter getDatumStatusCounter() {
-        return this.statusCounter;
-    }
-
-    @Override
     public void setStreamConfig(Map<String, Object> config) {
         this.streamConfig = config;
     }
 
     @Override
     public boolean isRunning() {
-        return (this.executorService.getActiveCount() > 0) || this.isDatumAvailable();
+        return  executorService.getActiveCount() > 0 ||
+                this.isDatumAvailable();
+    }
+
+    public StatusCounts getCurrentStatus() {
+        return new StatusCounts(getTotalInQueue(),
+                this.executorService.getActiveCount(),
+                this.statusCounter.getSuccess(),
+                this.statusCounter.getFail());
     }
 
     @Override
@@ -111,7 +114,6 @@ public class StreamsPersistWriterdTask extends BaseStreamsTask implements DatumS
     }
 
     protected final void processThisDatum(StreamsDatum datum) {
-        // Lock, yes, I am running
         try {
             this.writer.write(datum);
             statusCounter.incrementStatus(DatumStatus.SUCCESS);

@@ -15,12 +15,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.local.builders;
+package org.apache.streams.local.builder;
 
 import org.apache.streams.core.*;
-import org.apache.streams.local.monitors.MonitorJVMTimerTask;
-import org.apache.streams.local.monitors.StatusCounterMonitorThread;
-import org.apache.streams.local.tasks.*;
 import org.apache.streams.util.SerializationUtil;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -30,7 +27,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 /**
- * {@link org.apache.streams.local.builders.LocalStreamBuilder} implementation to run a data processing stream in a single
+ * {@link LocalStreamBuilder} implementation to run a data processing stream in a single
  * JVM across many threads.  Depending on your data stream, the JVM heap may need to be set to a high value. Default
  * implementation uses unbound {@link java.util.concurrent.ConcurrentLinkedQueue} to connect stream components.
  */
@@ -43,7 +40,8 @@ public class LocalStreamBuilder implements StreamBuilder {
     private final Map<String, StreamComponent> providers;
     private final Map<String, StreamComponent> components;
     private final Map<String, Object> streamConfig;
-    private Map<String, BaseStreamsTask> tasks;
+    private final Map<String, BaseStreamsTask> tasks = new LinkedHashMap<String, BaseStreamsTask>();
+    private final Collection<StreamBuilderEventHandler> eventHandlers = new ArrayList<StreamBuilderEventHandler>();
 
     private Thread shutDownHandler;
 
@@ -74,8 +72,8 @@ public class LocalStreamBuilder implements StreamBuilder {
      */
     public LocalStreamBuilder(Queue<StreamsDatum> queueType, Map<String, Object> streamConfig) {
         this.queue = queueType;
-        this.providers = new HashMap<String, StreamComponent>();
-        this.components = new HashMap<String, StreamComponent>();
+        this.providers = new LinkedHashMap<String, StreamComponent>();
+        this.components = new LinkedHashMap<String, StreamComponent>();
         this.streamConfig = streamConfig;
     }
 
@@ -128,6 +126,15 @@ public class LocalStreamBuilder implements StreamBuilder {
 
     private ExecutorService executor;
 
+    public void addEventHandler(StreamBuilderEventHandler eventHandler) {
+        this.eventHandlers.add(eventHandler);
+    }
+
+    public void removeEventHandler(StreamBuilderEventHandler eventHandler) {
+        if(this.eventHandlers.contains(eventHandler))
+            this.eventHandlers.remove(eventHandler);
+    }
+
     /**
      * Runs the data stream in the this JVM and blocks till completion.
      */
@@ -155,52 +162,77 @@ public class LocalStreamBuilder implements StreamBuilder {
 
         Runtime.getRuntime().addShutdownHook(shutDownHandler);
 
-        this.tasks = createTasks();
+        this.tasks.clear();
+        createTasks();
         this.executor = Executors.newFixedThreadPool(tasks.size());
 
         try {
             LOGGER.info("----------------------------------- Starting LocalStream Builder -----------------------------------");
 
-            for(StreamsTask task : this.tasks.values()) {
+            // Starting all the tasks
+            for(StreamsTask task : this.tasks.values())
                 this.executor.execute(task);
 
-                // Count whatever we are telling ourselves
-                if(task instanceof DatumStatusCountable)
-                    timer.schedule(new StatusCounterMonitorThread((DatumStatusCountable)task), 0, 1000);
-            }
 
-            // track the JVM every 500ms
-            timer.schedule(new MonitorJVMTimerTask(), 0, 500);
+            // if anyone would like to listen in to progress events
+            // let them do that
+            TimerTask updateTask = new TimerTask() {
+                public void run() {
+                    if(eventHandlers.size() > 0) {
+                        final Map<String, StatusCounts> updateMap = new HashMap<String, StatusCounts>();
+                        for(final String k : tasks.keySet())
+                            updateMap.put(k, tasks.get(k).getCurrentStatus());
+                        for (final StreamBuilderEventHandler eventHandler : eventHandlers) {
+                            new Thread(new Runnable() {
+                                public void run() {
+                                    eventHandler.update(updateMap);
+                                }
+                            }).start();
+                        }
+                    }
+                }
+            };
 
-            boolean isRunning = true;
+            timer.schedule(updateTask, 0, 1000);
 
-            while (isRunning) {
-                isRunning = false;
+            // keep going until we are done..
+            // because we are using queues in between each of these items we can
+            // reach edge cases where a datum is trapped between getting recognized
+            // so we require 5 instances (ms) of the system telling us to quit before we
+            // finally exit to prevent any lost items.
+            int foundReasonToQuit = 0;
+
+            while (foundReasonToQuit < 5) {
+                boolean isRunning = false;
 
                 // check to see if it is running, if it is, then set the flag and break.
                 for (BaseStreamsTask task : this.tasks.values()) {
-                    if(task instanceof StreamsProviderTask) {
-                        if(task.isRunning()) {
-                            isRunning = true;
-                            break;
-                        }
-                    }
-                    else {
-                        if(task.isRunning() || task.isDatumAvailable()) {
-                            isRunning = true;
-                            break;
-                        }
+                    if(task.isRunning()) {
+                        isRunning = true;
+                        break;
                     }
                 }
 
                 if (isRunning) {
-                    Thread.yield();
-                    Thread.sleep(1);
+                    foundReasonToQuit = 0;
+                    safeQuickRest(1);
+                }
+                else {
+                    foundReasonToQuit++;
+                    safeQuickRest(1);
                 }
             }
 
             LOGGER.debug("Components are no longer running, we can turn it off");
             shutdown();
+
+            for(final String k : tasks.keySet()) {
+                StatusCounts counts = tasks.get(k).getCurrentStatus();
+                LOGGER.info("Finishing: {} - Queue[{}] Working[{}] Success[{}] Failed[{}] ", k,
+                        counts.getQueue(), counts.getWorking(), counts.getSuccess(), counts.getFailed());
+            }
+
+
 
         } catch (Throwable e) {
             // No Operation
@@ -219,7 +251,15 @@ public class LocalStreamBuilder implements StreamBuilder {
             // Kill the timer
             timer.cancel();
         }
+    }
 
+    private void safeQuickRest(final int millis) {
+        try {
+            Thread.yield();
+            Thread.sleep(millis);
+        } catch(Throwable e) {
+            // No Operation
+        }
     }
 
     private void shutdownExecutor() {
@@ -247,22 +287,18 @@ public class LocalStreamBuilder implements StreamBuilder {
         shutdownExecutor();
     }
 
-    protected Map<String, BaseStreamsTask> createTasks() {
-        Map<String, BaseStreamsTask> toReturn = new LinkedHashMap<String, BaseStreamsTask>();
-
+    protected void createTasks() {
         for (StreamComponent prov : this.providers.values()) {
             BaseStreamsTask task = prov.createConnectedTask(getTimeout());
             task.setStreamConfig(this.streamConfig);
-            toReturn.put(prov.getId(), task);
+            this.tasks.put(prov.getId(), task);
         }
 
         for (StreamComponent comp : this.components.values()) {
             BaseStreamsTask task = comp.createConnectedTask(getTimeout());
             task.setStreamConfig(this.streamConfig);
-            toReturn.put(comp.getId(), task);
+            this.tasks.put(comp.getId(), task);
         }
-
-        return toReturn;
     }
 
     public void stop() {
@@ -275,7 +311,7 @@ public class LocalStreamBuilder implements StreamBuilder {
 
     private void connectToOtherComponents(String[] connectToIds, StreamComponent toBeConnected) {
         for (String id : connectToIds) {
-            StreamComponent upStream = null;
+            StreamComponent upStream;
             if (this.providers.containsKey(id)) {
                 upStream = this.providers.get(id);
             } else if (this.components.containsKey(id)) {

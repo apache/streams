@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.local.tasks;
+package org.apache.streams.local.builder;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.SerializationException;
@@ -42,6 +42,8 @@ public abstract class BaseStreamsTask implements StreamsTask {
     private final List<Queue<StreamsDatum>> outQueues = new LinkedList<Queue<StreamsDatum>>();
 
     private final AtomicInteger queueCycleCounter = new AtomicInteger(0);
+
+    public abstract StatusCounts getCurrentStatus();
 
     @Override
     public final void stopTask() {
@@ -100,10 +102,23 @@ public abstract class BaseStreamsTask implements StreamsTask {
      * @return whether or not there is another datum available
      */
     public boolean isDatumAvailable() {
-        for (Queue q : this.inQueues)
-            if (q.size() > 0)
-                return true;
-        return false;
+        return getTotalInQueue() > 0;
+    }
+
+    /**
+     * The total number of items that are in the queue right now.
+     * @return
+     * The total number of items that are in the queue waiting to be worked right now.
+     */
+    public int getTotalInQueue() {
+        synchronized (this) {
+            int total = 0;
+            for (Queue q : this.inQueues)
+                if (q != null)
+                    total += q.size();
+
+            return total;
+        }
     }
 
     /**
@@ -114,16 +129,8 @@ public abstract class BaseStreamsTask implements StreamsTask {
      */
     protected void addToOutgoingQueue(StreamsDatum datum) {
         if (datum != null) {
-            if (this.outQueues.size() == 1) {
-                ComponentUtils.offerUntilSuccess(datum, outQueues.get(0));
-            } else {
-                try {
-                    for (Queue<StreamsDatum> queue : this.outQueues)
-                        ComponentUtils.offerUntilSuccess(cloneStreamsDatum(datum), queue);
-                } catch (SerializationException e) {
-                    LOGGER.error("Exception while offering StreamsDatum to outgoing queue: {}", e.getMessage());
-                }
-            }
+            for (Queue<StreamsDatum> queue : this.outQueues)
+                ComponentUtils.offerUntilSuccess(cloneStreamsDatum(datum), queue);
         }
     }
 

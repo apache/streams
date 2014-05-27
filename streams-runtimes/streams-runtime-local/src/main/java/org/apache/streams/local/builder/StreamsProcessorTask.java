@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.local.tasks;
+package org.apache.streams.local.builder;
 
 import org.apache.streams.core.*;
 import org.slf4j.Logger;
@@ -26,11 +26,13 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 
 /**
  * Processor task that is multi-threaded
  */
-public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatusCountable {
+public class StreamsProcessorTask extends BaseStreamsTask {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsProcessorTask.class);
 
@@ -72,7 +74,8 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
 
     @Override
     public boolean isRunning() {
-        return (executorService.getActiveCount() > 0) || this.isDatumAvailable();
+        return  executorService.getActiveCount() > 0 ||
+                this.isDatumAvailable();
     }
 
     @Override
@@ -83,7 +86,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
 
             while (this.keepRunning.get() || super.isDatumAvailable()) {
 
-                StreamsDatum datum = null;
+                StreamsDatum datum;
                 while ((datum = super.pollNextDatum()) != null) {
                     final StreamsDatum workingDatum = datum;
                     executorService.execute(new Runnable() {
@@ -100,7 +103,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                     safeQuickRest();
             }
 
-            LOGGER.info("Shutting down threaded processor");
+            LOGGER.info("Shutting down threaded processor {}", this.getInputQueues());
             executorService.shutdown();
             try {
                 executorService.awaitTermination(5, TimeUnit.MINUTES);
@@ -131,8 +134,11 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
         }
     }
 
-    public DatumStatusCounter getDatumStatusCounter() {
-        return this.statusCounter;
-    }
 
+    public StatusCounts getCurrentStatus() {
+        return new StatusCounts(getTotalInQueue(),
+                this.executorService.getActiveCount(),
+                this.statusCounter.getSuccess(),
+                this.statusCounter.getFail());
+    }
 }

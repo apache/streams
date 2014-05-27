@@ -18,6 +18,7 @@
 package org.apache.streams.local.builders;
 
 import org.apache.streams.core.StreamBuilder;
+import org.apache.streams.local.builder.LocalStreamBuilder;
 import org.apache.streams.local.test.processors.PassThroughStaticCounterProcessor;
 import org.apache.streams.local.test.processors.SimpleProcessorCounter;
 import org.apache.streams.local.test.providers.NumericMessageProvider;

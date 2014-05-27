@@ -20,7 +20,7 @@ package org.apache.streams.local.test.providers;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
-import org.apache.streams.local.tasks.WaitUntilAvailableExecutionHandler;
+import org.apache.streams.local.builder.WaitUntilAvailableExecutionHandler;
 import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
 

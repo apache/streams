@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.local.tasks;
+package org.apache.streams.local.builder;
 
 import org.apache.streams.core.*;
 import org.joda.time.DateTime;
@@ -30,14 +30,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  *
  */
-public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusCountable {
+public class StreamsProviderTask extends BaseStreamsTask  {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsProviderTask.class);
-
-    @Override
-    public DatumStatusCounter getDatumStatusCounter() {
-        return this.statusCounter;
-    }
 
     private static enum Type {
         PERPETUAL,
@@ -58,6 +53,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     private DateTime[] dateRange;
     private Map<String, Object> config;
     private AtomicBoolean isRunning;
+    private StreamsResultSet streamsResultSet;
 
     private int timeout;
     private int zeros = 0;
@@ -146,7 +142,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                         else {
                             zeros = 0;
                         }
-                        flushResults(resultSet);
+                        this.streamsResultSet = resultSet;
+                        flushResults();
                         // the way this works needs to change...
                         if (zeros > (timeout))
                             this.keepRunning.set(false);
@@ -165,21 +162,24 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                 default:
                     throw new RuntimeException("Type has not been added to StreamsProviderTask.");
             }
-            if(resultSet != null) {
+            this.streamsResultSet = resultSet;
+
+            if(this.streamsResultSet != null) {
                 /**
                  * We keep running while the provider tells us that we are running or we still have
                  * items in queue to be processed.
                  *
                  * IF, the keep running flag is turned to off, then we exit immediately
                  */
-                while ((resultSet.isRunning() || resultSet.getQueue().size() > 0) && this.keepRunning.get()) {
-                    if(resultSet.getQueue().size() == 0) {
+                while ((this.streamsResultSet.isRunning() ||
+                        this.streamsResultSet.getQueue().size() > 0) && this.keepRunning.get()) {
+                    if(this.streamsResultSet.getQueue().size() == 0) {
                         // The process is still running, but there is nothing on the queue...
                         // we just need to be patient and wait, we yield the execution and
                         // wait for 1ms to see if anything changes.
                         safeQuickRest();
                     } else {
-                        flushResults(resultSet);
+                        flushResults();
                     }
                 }
             }
@@ -199,10 +199,10 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         return this.isRunning.get();
     }
 
-    public void flushResults(StreamsResultSet resultSet) {
+    public void flushResults() {
         try {
             StreamsDatum datum;
-            while ((datum = resultSet.getQueue().poll()) != null) {
+            while ((datum = streamsResultSet.getQueue().poll()) != null) {
                 /**
                  * This is meant to be a hard exit from the system. If we are running
                  * and this flag gets set to false, we are to exit immediately and
@@ -228,4 +228,13 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             statusCounter.incrementStatus(DatumStatus.FAIL);
         }
     }
+
+    public StatusCounts getCurrentStatus() {
+        return new StatusCounts(this.streamsResultSet == null ? 0 : this.streamsResultSet.getQueue().size(),
+                0,
+                this.statusCounter.getSuccess(),
+                this.statusCounter.getFail());
+    }
+
+
 }

@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.local.tasks;
+package org.apache.streams.local.builder;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -37,12 +37,10 @@ public class WaitUntilAvailableExecutionHandler implements RejectedExecutionHand
         Thread.yield();
         try {
             // wait one tenth of a millisecond
-            Thread.sleep(0, (1000000 / 10));
-            Thread.yield();
+            Thread.sleep(1);
         }
         catch(Exception e) {
             // no operation
         }
-        Thread.yield();
     }
 }

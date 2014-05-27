@@ -15,26 +15,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.local.builders;
+package org.apache.streams.local.builder;
 
-/**
- * Exception that indicates a malformed data stream in some way.
- */
-public class InvalidStreamException extends RuntimeException {
+import java.util.Map;
 
-    public InvalidStreamException() {
-        super();
-    }
-
-    public InvalidStreamException(String s) {
-        super(s);
-    }
-
-    public InvalidStreamException(String s, Throwable throwable) {
-        super(s, throwable);
-    }
-
-    public InvalidStreamException(Throwable throwable) {
-        super(throwable);
-    }
+public abstract class StreamBuilderEventHandler {
+    public abstract void update(Map<String,StatusCounts> counts);
 }

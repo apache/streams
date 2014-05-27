@@ -17,7 +17,7 @@
  */
 package org.apache.streams.test.component.tests;
 
-import org.apache.streams.local.builders.LocalStreamBuilder;
+import org.apache.streams.local.builder.LocalStreamBuilder;
 import org.apache.streams.test.component.ExpectedDatumsPersistWriter;
 import org.apache.streams.test.component.FileReaderProvider;
 import org.apache.streams.test.component.StringToDocumentConverter;

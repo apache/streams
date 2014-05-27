@@ -15,38 +15,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.local.tasks;
-
-import org.apache.streams.core.StreamsDatum;
-
-import java.util.Map;
+package org.apache.streams.local.builder;
 
 /**
- * NOT USED.  When joins/partions are implemented, a similar pattern could be followed. Done only as basic proof
- * of concept.
+ * Exception that indicates a malformed data stream in some way.
  */
-public class StreamsMergeTask extends BaseStreamsTask {
+public class InvalidStreamException extends RuntimeException {
 
-    @Override
-    public void setStreamConfig(Map<String, Object> config) {
-        // no Operation
+    public InvalidStreamException() {
+        super();
     }
 
-    @Override
-    public boolean isRunning() {
-        return false;
+    public InvalidStreamException(String s) {
+        super(s);
     }
 
-    @Override
-    public void run() {
-        while(this.keepRunning.get()) {
-            StreamsDatum datum = super.pollNextDatum();
-            if(datum != null) {
-                super.addToOutgoingQueue(datum);
-            }
-            else {
-                safeQuickRest();
-            }
-        }
+    public InvalidStreamException(String s, Throwable throwable) {
+        super(s, throwable);
+    }
+
+    public InvalidStreamException(Throwable throwable) {
+        super(throwable);
     }
 }

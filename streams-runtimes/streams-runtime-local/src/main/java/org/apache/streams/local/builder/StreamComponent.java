@@ -15,10 +15,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.local.builders;
+package org.apache.streams.local.builder;
 
 import org.apache.streams.core.*;
-import org.apache.streams.local.tasks.*;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
@@ -28,7 +27,7 @@ import java.util.*;
  * Stores the implementations of {@link org.apache.streams.core.StreamsOperation}, the StreamsOperations it is connected
  * to and the necessary metadata to construct a data stream.
  */
-public class StreamComponent {
+class StreamComponent {
 
     private static final int START = 1;
     private static final int END = 2;
@@ -163,7 +162,7 @@ public class StreamComponent {
     }
 
     /**
-     * Creates a {@link org.apache.streams.local.tasks.StreamsTask} that is running a clone of this component whose
+     * Creates a {@link StreamsTask} that is running a clone of this component whose
      * inbound and outbound queues are appropriately connected to the parent and child nodes.
      *
      * @return StreamsTask for this component
@@ -188,7 +187,7 @@ public class StreamComponent {
         }
         else if(this.writer != null) {
             // create the task
-            task = new StreamsPersistWriterdTask(this.writer, this.numTasks);
+            task = new StreamsPersistWriterTask(this.writer, this.numTasks);
             task.addInputQueue(this.inQueue);
         }
         else if(this.provider != null) {

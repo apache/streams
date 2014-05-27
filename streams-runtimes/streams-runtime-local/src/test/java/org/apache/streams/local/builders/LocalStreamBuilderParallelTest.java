@@ -19,11 +19,11 @@ package org.apache.streams.local.builders;
 
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.local.builder.LocalStreamBuilder;
 import org.apache.streams.local.test.processors.PassThroughStaticCounterProcessor;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.providers.NumericMessageProviderDelayed;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -148,9 +148,9 @@ public class LocalStreamBuilderParallelTest {
     public void testParallelProcessorsAndWritersSingleWithBigDelays() {
         int numDatums = 1;
         int parallelHint = 20;
+
         StreamBuilder builder = new LocalStreamBuilder();
         NumericMessageProviderDelayed provider = new NumericMessageProviderDelayed(numDatums, 1000);
-
         PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor(1000);
         DatumCounterWriter writer = new DatumCounterWriter(1000);
         builder.newReadCurrentStream("sp1", provider)

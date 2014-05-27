@@ -18,13 +18,13 @@
 package org.apache.streams.local.builders;
 
 import org.apache.streams.core.StreamBuilder;
+import org.apache.streams.local.builder.LocalStreamBuilder;
 import org.apache.streams.local.test.processors.PassThroughStaticCounterExceptionProcessor;
 import org.apache.streams.local.test.processors.PassThroughStaticCounterProcessor;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.providers.NumericMessageThrowExceptionProvider;
 import org.apache.streams.local.test.writer.DatumCounterExceptionWriter;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

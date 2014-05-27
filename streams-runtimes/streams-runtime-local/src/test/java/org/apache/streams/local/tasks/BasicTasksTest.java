@@ -18,6 +18,10 @@
 package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.local.builder.StreamsMergeTask;
+import org.apache.streams.local.builder.StreamsPersistWriterTask;
+import org.apache.streams.local.builder.StreamsProcessorTask;
+import org.apache.streams.local.builder.StreamsProviderTask;
 import org.apache.streams.local.test.processors.PassThroughStaticCounterProcessor;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
@@ -123,7 +127,7 @@ public class BasicTasksTest {
         int numMessages = 100;
 
         DatumCounterWriter writer = new DatumCounterWriter();
-        StreamsPersistWriterdTask task = new StreamsPersistWriterdTask(writer);
+        StreamsPersistWriterTask task = new StreamsPersistWriterTask(writer);
         Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
 
