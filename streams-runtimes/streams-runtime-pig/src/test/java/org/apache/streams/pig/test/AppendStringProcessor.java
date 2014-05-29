@@ -27,27 +27,29 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to Test Pig processor wrapper - datum passthrough
+ * Used to Test Pig processor wrapper with arguments to prepare method
  */
-public class DoNothingProcessor implements StreamsProcessor {
+public class AppendStringProcessor implements StreamsProcessor {
 
-    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(DoNothingProcessor.class);
+    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(AppendStringProcessor.class);
 
-    List<StreamsDatum> result;
+    String append;
 
-    public DoNothingProcessor() {
+    public AppendStringProcessor() {
     }
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
-        this.result = new LinkedList<StreamsDatum>();
-        result.add(entry);
-        return result;
+        List<StreamsDatum> resultSet;
+        resultSet = new LinkedList<StreamsDatum>();
+        String value = (String) entry.getDocument()+ new String(append);
+        resultSet.add(new StreamsDatum(value));
+        return resultSet;
     }
 
     @Override
     public void prepare(Object configurationObject) {
-        LOGGER.info("Processor prepare");
+        append = ((String[]) configurationObject)[0];
     }
 
     @Override

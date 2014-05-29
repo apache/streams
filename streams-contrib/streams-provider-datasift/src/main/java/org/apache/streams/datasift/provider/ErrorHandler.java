@@ -18,27 +18,29 @@ under the License.
 */
 package org.apache.streams.datasift.provider;
 
-import com.typesafe.config.Config;
-import org.apache.streams.datasift.DatasiftConfiguration;
+import com.datasift.client.stream.ErrorListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * Listens for exceptions from the datasift streams and resets connections on errors.
  */
-public class DatasiftStreamConfigurator {
+public class ErrorHandler extends ErrorListener {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftStreamConfigurator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ErrorHandler.class);
 
-    public static DatasiftConfiguration detectConfiguration(Config datasift) {
+    private String streamHash;
+    private DatasiftStreamProvider provider;
 
-        DatasiftConfiguration datasiftConfiguration = new DatasiftConfiguration();
-
-        datasiftConfiguration.setApiKey(datasift.getString("apiKey"));
-        datasiftConfiguration.setUserName(datasift.getString("userName"));
-        datasiftConfiguration.setStreamHash(datasift.getStringList("hashes"));
-
-        return datasiftConfiguration;
+    public ErrorHandler(DatasiftStreamProvider provider, String streamHash) {
+        this.provider = provider;
+        this.streamHash = streamHash;
     }
 
+    @Override
+    public void exceptionCaught(Throwable throwable) {
+        LOGGER.error("DatasiftClient received Exception : {}", throwable);
+        LOGGER.info("Attempting to restart client for stream hash : {}", this.streamHash);
+        this.provider.startStreamForHash(this.streamHash);
+    }
 }

@@ -70,7 +70,6 @@ public class TweetActivitySerDeTest {
                     assertThat(activity.getProvider(), is(not(nullValue())));
 
                     if( detected == Tweet.class ) {
-                        assertThat(activity.getObject(), is(nullValue()));
 
                         assertEquals(activity.getVerb(), "post");
 

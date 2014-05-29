@@ -10,13 +10,12 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
-import org.apache.streams.twitter.pojo.Delete;
-import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.UserstreamEvent;
 
 import java.util.List;
 
-import static org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer.*;
+import static org.apache.streams.twitter.serializer.util.TwitterActivityUtil.*;
+
 
 /**
 * Created with IntelliJ IDEA.
@@ -61,7 +60,7 @@ public class TwitterJsonUserstreameventActivitySerializer implements ActivitySer
         activity.setActor(buildActor(event));
         activity.setVerb(detectVerb(event));
         activity.setObject(buildActivityObject(event));
-        activity.setId(TwitterJsonActivitySerializer.formatId(activity.getVerb()));
+        activity.setId(formatId(activity.getVerb()));
         if(Strings.isNullOrEmpty(activity.getId()))
             throw new ActivitySerializerException("Unable to determine activity id");
         activity.setProvider(getProvider());
