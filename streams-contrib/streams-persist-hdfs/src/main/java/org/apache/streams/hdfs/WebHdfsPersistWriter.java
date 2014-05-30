@@ -110,8 +110,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
                 }
             });
         } catch (Exception e) {
-            LOGGER.error("There was an error connecting to WebHDFS, please check your settings and try again");
-            e.printStackTrace();
+            LOGGER.error("There was an error connecting to WebHDFS, please check your settings and try again",e);
         }
     }
 
@@ -124,14 +123,16 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
                 try {
                     resetFile();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("Unable to reset file. Shutting down and propagating error", e);
+                    this.cleanUp();
+                    throw new RuntimeException(e);
                 }
 
             String line = convertResultToString(streamsDatum);
             try {
                 this.currentWriter.write(line);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.warn("Error writing to HDFS.  Attempting to try a new file", e);
             }
             int bytesInLine = line.getBytes().length;
 
@@ -143,7 +144,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
                 try {
                     flush();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.error("Error flushing to HDFS", e);
                 }
 
             this.fileLineCounter++;
@@ -205,14 +206,14 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
         try {
             metadata = mapper.writeValueAsString(entry.getMetadata());
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LOGGER.warn("Error converting metadata to a string", e);
         }
 
         String documentJson = null;
         try {
             documentJson = mapper.writeValueAsString(entry.getDocument());
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LOGGER.warn("Error converting document to string", e);
         }
 
         if (Strings.isNullOrEmpty(documentJson))
@@ -241,12 +242,12 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
         try {
             flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error flushing on cleanup", e);
         }
         try {
             close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error closing on cleanup", e);
         }
     }
 
