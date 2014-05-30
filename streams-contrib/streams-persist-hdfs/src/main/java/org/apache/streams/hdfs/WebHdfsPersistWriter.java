@@ -110,7 +110,8 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
                 }
             });
         } catch (Exception e) {
-            LOGGER.error("There was an error connecting to WebHDFS, please check your settings and try again",e);
+            LOGGER.error("There was an error connecting to WebHDFS, please check your settings and try again", e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -120,20 +121,10 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
         synchronized (this) {
             // Check to see if we need to reset the file that we are currently working with
             if (this.currentWriter == null || (this.fileLineCounter > this.linesPerFile))
-                try {
-                    resetFile();
-                } catch (Exception e) {
-                    LOGGER.error("Unable to reset file. Shutting down and propagating error", e);
-                    this.cleanUp();
-                    throw new RuntimeException(e);
-                }
+                resetFile();
 
             String line = convertResultToString(streamsDatum);
-            try {
-                this.currentWriter.write(line);
-            } catch (IOException e) {
-                LOGGER.warn("Error writing to HDFS.  Attempting to try a new file", e);
-            }
+            writeInternal(line);
             int bytesInLine = line.getBytes().length;
 
             totalRecordsWritten++;
@@ -144,10 +135,33 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
                 try {
                     flush();
                 } catch (IOException e) {
-                    LOGGER.error("Error flushing to HDFS", e);
+                    LOGGER.warn("Error flushing to HDFS. Creating a new file and continuing execution.  WARNING: There could be data loss.", e);
                 }
 
             this.fileLineCounter++;
+        }
+    }
+
+    private void writeInternal(String line) {
+        try {
+            this.currentWriter.write(line);
+        } catch (IOException e) {
+            LOGGER.warn("Error writing to HDFS.  Attempting to try a new file", e);
+            try{
+                resetFile();
+                this.currentWriter.write(line);
+            } catch (IOException io) {
+                LOGGER.warn("Failed to write even after creating a new file.  Attempting to reconnect", io);
+                connectToWebHDFS();
+                resetFile();
+                try {
+                    this.currentWriter.write(line);
+                } catch (IOException ex) {
+                    LOGGER.error("Failed to write to HDFS after reconnecting client", ex);
+                    throw new RuntimeException(e);
+                }
+            }
+
         }
     }
 
@@ -158,23 +172,24 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
         }
     }
 
-    private synchronized void resetFile() throws Exception {
+    private synchronized void resetFile() {
         // this will keep it thread safe, so we don't create too many files
         if (this.fileLineCounter == 0 && this.currentWriter != null)
             return;
-
-        // if there is a current writer, we must close it first.
-        if (this.currentWriter != null) {
-            flush();
-            close();
-        }
-
-        this.fileLineCounter = 0;
 
         // Create the path for where the file is going to live.
         Path filePath = this.path.suffix("/" + hdfsConfiguration.getWriterFilePrefix() + "-" + new Date().getTime() + ".tsv");
 
         try {
+
+            // if there is a current writer, we must close it first.
+            if (this.currentWriter != null) {
+                flush();
+                close();
+            }
+
+            this.fileLineCounter = 0;
+
             // Check to see if a file of the same name exists, if it does, then we are not going to be able to proceed.
             if (client.exists(filePath))
                 throw new RuntimeException("Unable to create file: " + filePath);
@@ -188,7 +203,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
         } catch (Exception e) {
             LOGGER.error("COULD NOT CreateFile: {}", filePath);
             LOGGER.error(e.getMessage());
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
