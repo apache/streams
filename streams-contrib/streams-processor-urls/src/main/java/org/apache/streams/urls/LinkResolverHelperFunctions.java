@@ -63,7 +63,7 @@ public final class LinkResolverHelperFunctions {
     public static final long RECENT_DOMAINS_BACKOFF = 1000;
     public static final long DEFAULT_STAGGER = RECENT_DOMAINS_BACKOFF / 10;
 
-    public static final int DEFAULT_HTTP_TIMEOUT = 10000;              // We will only wait a max of 10,000 milliseconds (10 seconds) for any HTTP response
+    public static final int DEFAULT_HTTP_TIMEOUT = 30000;              // We will only wait a max of 30,000 milliseconds (30 seconds) for any HTTP response
     public static final String LOCATION_IDENTIFIER = "location";
     public static final String SET_COOKIE_IDENTIFIER = "set-cookie";
 
