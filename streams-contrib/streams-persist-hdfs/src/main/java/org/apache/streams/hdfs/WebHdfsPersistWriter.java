@@ -25,14 +25,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 
-public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Closeable, DatumStatusCountable
-{
+public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Closeable, DatumStatusCountable {
     public final static String STREAMS_ID = "WebHdfsPersistWriter";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(WebHdfsPersistWriter.class);
 
     private final static char DELIMITER = '\t';
-    private final static int  DEFAULT_LINES_PER_FILE = 50000;
+    private final static int DEFAULT_LINES_PER_FILE = 50000;
 
     private FileSystem client;
     private Path path;
@@ -43,10 +42,10 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
     private int fileLineCounter = 0;
     private OutputStreamWriter currentWriter = null;
 
-    private static final int  BYTES_IN_MB = 1024*1024;
-    private static final int  BYTES_BEFORE_FLUSH = 64 * BYTES_IN_MB;
-    private volatile int  totalByteCount = 0;
-    private volatile int  byteCount = 0;
+    private static final int BYTES_IN_MB = 1024 * 1024;
+    private static final int BYTES_BEFORE_FLUSH = 64 * BYTES_IN_MB;
+    private volatile int totalByteCount = 0;
+    private volatile int byteCount = 0;
 
     public boolean terminate = false;
 
@@ -60,21 +59,23 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
         this.hdfsConfiguration = hdfsConfiguration;
     }
 
-    public URI getURI() throws URISyntaxException { return new URI(WebHdfsFileSystem.SCHEME + "://" + hdfsConfiguration.getHost() + ":" + hdfsConfiguration.getPort()); }
-    public boolean isConnected() 		                { return (client != null); }
+    public URI getURI() throws URISyntaxException {
+        return new URI(WebHdfsFileSystem.SCHEME + "://" + hdfsConfiguration.getHost() + ":" + hdfsConfiguration.getPort());
+    }
 
-    public final synchronized FileSystem getFileSystem()
-    {
+    public boolean isConnected() {
+        return (client != null);
+    }
+
+    public final synchronized FileSystem getFileSystem() {
         // Check to see if we are connected.
-        if(!isConnected())
+        if (!isConnected())
             connectToWebHDFS();
         return this.client;
     }
 
-    private synchronized void connectToWebHDFS()
-    {
-        try
-        {
+    private synchronized void connectToWebHDFS() {
+        try {
             LOGGER.info("User : {}", this.hdfsConfiguration.getUser());
             UserGroupInformation ugi = UserGroupInformation.createRemoteUser(this.hdfsConfiguration.getUser());
             ugi.setAuthenticationMethod(UserGroupInformation.AuthenticationMethod.SIMPLE);
@@ -108,81 +109,89 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
                     return null;
                 }
             });
-        }
-        catch (Exception e)
-        {
-            LOGGER.error("There was an error connecting to WebHDFS, please check your settings and try again");
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOGGER.error("There was an error connecting to WebHDFS, please check your settings and try again", e);
+            throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     public void write(StreamsDatum streamsDatum) {
 
-        synchronized (this)
-        {
+        synchronized (this) {
             // Check to see if we need to reset the file that we are currently working with
             if (this.currentWriter == null || (this.fileLineCounter > this.linesPerFile))
-                try {
-                    resetFile();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                resetFile();
 
             String line = convertResultToString(streamsDatum);
-            try {
-                this.currentWriter.write(line);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            writeInternal(line);
             int bytesInLine = line.getBytes().length;
 
             totalRecordsWritten++;
             totalByteCount += bytesInLine;
             byteCount += bytesInLine;
 
-            if(byteCount > BYTES_BEFORE_FLUSH)
+            if (byteCount > BYTES_BEFORE_FLUSH)
                 try {
                     flush();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.warn("Error flushing to HDFS. Creating a new file and continuing execution.  WARNING: There could be data loss.", e);
                 }
 
             this.fileLineCounter++;
         }
     }
 
-    public void flush() throws IOException
-    {
-        if(this.currentWriter != null && byteCount > BYTES_BEFORE_FLUSH)
-        {
+    private void writeInternal(String line) {
+        try {
+            this.currentWriter.write(line);
+        } catch (IOException e) {
+            LOGGER.warn("Error writing to HDFS.  Attempting to try a new file", e);
+            try{
+                resetFile();
+                this.currentWriter.write(line);
+            } catch (IOException io) {
+                LOGGER.warn("Failed to write even after creating a new file.  Attempting to reconnect", io);
+                connectToWebHDFS();
+                resetFile();
+                try {
+                    this.currentWriter.write(line);
+                } catch (IOException ex) {
+                    LOGGER.error("Failed to write to HDFS after reconnecting client. Terminating writer.", ex);
+                    throw new RuntimeException(e);
+                }
+            }
+
+        }
+    }
+
+    public void flush() throws IOException {
+        if (this.currentWriter != null && byteCount > BYTES_BEFORE_FLUSH) {
             this.currentWriter.flush();
             byteCount = 0;
         }
     }
 
-    private synchronized void resetFile() throws Exception
-    {
+    private synchronized void resetFile() {
         // this will keep it thread safe, so we don't create too many files
-        if(this.fileLineCounter == 0 && this.currentWriter != null)
+        if (this.fileLineCounter == 0 && this.currentWriter != null)
             return;
-
-        // if there is a current writer, we must close it first.
-        if (this.currentWriter != null)
-        {
-            flush();
-            close();
-        }
-
-        this.fileLineCounter = 0;
 
         // Create the path for where the file is going to live.
         Path filePath = this.path.suffix("/" + hdfsConfiguration.getWriterFilePrefix() + "-" + new Date().getTime() + ".tsv");
 
-        try
-        {
+        try {
+
+            // if there is a current writer, we must close it first.
+            if (this.currentWriter != null) {
+                flush();
+                close();
+            }
+
+            this.fileLineCounter = 0;
+
             // Check to see if a file of the same name exists, if it does, then we are not going to be able to proceed.
-            if(client.exists(filePath))
+            if (client.exists(filePath))
                 throw new RuntimeException("Unable to create file: " + filePath);
 
             this.currentWriter = new OutputStreamWriter(client.create(filePath));
@@ -191,19 +200,15 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
             writtenFiles.add(filePath);
 
             LOGGER.info("File Created: {}", filePath);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             LOGGER.error("COULD NOT CreateFile: {}", filePath);
             LOGGER.error(e.getMessage());
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
-    public synchronized void close() throws IOException
-    {
-        if(this.currentWriter != null)
-        {
+    public synchronized void close() throws IOException {
+        if (this.currentWriter != null) {
             this.currentWriter.flush();
             this.currentWriter.close();
             this.currentWriter = null;
@@ -211,23 +216,22 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
         }
     }
 
-    private String convertResultToString(StreamsDatum entry)
-    {
+    private String convertResultToString(StreamsDatum entry) {
         String metadata = null;
         try {
             metadata = mapper.writeValueAsString(entry.getMetadata());
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LOGGER.warn("Error converting metadata to a string", e);
         }
 
         String documentJson = null;
         try {
             documentJson = mapper.writeValueAsString(entry.getDocument());
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LOGGER.warn("Error converting document to string", e);
         }
 
-        if(Strings.isNullOrEmpty(documentJson))
+        if (Strings.isNullOrEmpty(documentJson))
             return null;
         else
             return new StringBuilder()
@@ -253,12 +257,12 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
         try {
             flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error flushing on cleanup", e);
         }
         try {
             close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error closing on cleanup", e);
         }
     }
 
