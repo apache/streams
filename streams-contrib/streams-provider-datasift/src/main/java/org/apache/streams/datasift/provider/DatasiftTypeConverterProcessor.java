@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.serializer.DatasiftActivitySerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
@@ -90,7 +91,7 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
                 return toConvert;
             try {
                 if(toConvert instanceof String)
-                    return mapper.readValue((String)toConvert, Activity.class);
+                    return datasiftInteractionActivitySerializer.deserialize((String) toConvert);
                 return mapper.convertValue(toConvert, Activity.class);
             } catch (Exception e) {
                 LOGGER.error("Exception while trying to convert {} to a Activity.", toConvert.getClass());
@@ -105,9 +106,11 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
     private class StringConverter implements DatasiftConverter {
         @Override
         public Object convert(Object toConvert, ObjectMapper mapper) {
-            if(toConvert instanceof String)
-                return toConvert;
             try {
+                if(toConvert instanceof String){
+                    LOGGER.debug(mapper.writeValueAsString(mapper.readValue((String) toConvert, Datasift.class)));
+                    return mapper.writeValueAsString(mapper.readValue((String) toConvert, Datasift.class));
+                }
                 return mapper.writeValueAsString(toConvert);
             } catch (Exception e) {
                 LOGGER.error("Exception while trying to write {} as a String.", toConvert.getClass());

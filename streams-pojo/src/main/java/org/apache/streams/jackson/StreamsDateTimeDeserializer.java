@@ -20,6 +20,6 @@ public class StreamsDateTimeDeserializer extends StdDeserializer<DateTime> imple
 
     @Override
     public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException {
-        return RFC3339Utils.getInstance().parseUTC(jpar.getValueAsString());
+        return RFC3339Utils.getInstance().parseToUTC(jpar.getValueAsString());
     }
 }

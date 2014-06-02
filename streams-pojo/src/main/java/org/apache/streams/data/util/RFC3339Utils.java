@@ -71,6 +71,7 @@ public class RFC3339Utils {
     static {
         DateTimeParser[] parsers = new DateTimeParser[]{
                 DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyyy").withZoneUTC().getParser(),
+                DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss Z").getParser(),
                 DateTimeFormat.forPattern("dd MMMM yyyy HH:mm:ss").withZoneUTC().getParser(),
                 DateTimeFormat.forPattern("yyyyMMdd").withZoneUTC().getParser(),
                 DateTimeFormat.forPattern("dd-MM-yyyy").withZoneUTC().getParser(),
