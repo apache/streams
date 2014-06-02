@@ -17,14 +17,22 @@
  */
 package org.apache.streams.builders.threaded;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.SerializationException;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.jackson.StreamsJacksonModule;
+import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.SerializationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,6 +52,8 @@ public abstract class BaseStreamsTask implements StreamsTask {
     private final AtomicInteger queueCycleCounter = new AtomicInteger(0);
 
     public abstract StatusCounts getCurrentStatus();
+
+    private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
     BaseStreamsTask(String id) {
         this.id = id;
@@ -154,10 +164,31 @@ public abstract class BaseStreamsTask implements StreamsTask {
      * @throws SerializationException (runtime) if the serialization fails
      */
     private StreamsDatum cloneStreamsDatum(StreamsDatum datum) throws SerializationException {
+        // this is difficult to clone due to it's nature. To clone it we will use the "deepCopy" function available.
         if (datum.document instanceof ObjectNode)
             return copyMetaData(datum, new StreamsDatum(((ObjectNode) datum.getDocument()).deepCopy(), datum.getTimestamp(), datum.getSequenceid()));
-        else
-            return (StreamsDatum) org.apache.commons.lang.SerializationUtils.clone(datum);
+        else {
+            try {
+                // Try to serialize the document using standard serialization methods
+                return (StreamsDatum) org.apache.commons.lang.SerializationUtils.clone(datum);
+            }
+            catch(SerializationException ser) {
+                try {
+                    // Use the bruce force method for serialization.
+                    Object object = MAPPER.readValue(MAPPER.writeValueAsString(datum.document), datum.getDocument().getClass());
+                    return copyMetaData(datum, new StreamsDatum(object, datum.timestamp, datum.sequenceid));
+                } catch (JsonMappingException e) {
+                    LOGGER.warn("Unable to clone datum Mapper Error: {} - {}", e.getMessage(), datum);
+                } catch (JsonParseException e) {
+                    LOGGER.warn("Unable to clone datum Parser Error: {} - {}", e.getMessage(), datum);
+                } catch (JsonProcessingException e) {
+                    LOGGER.warn("Unable to clone datum Processing Error: {} - {}", e.getMessage(), datum);
+                } catch (IOException e) {
+                    LOGGER.warn("Unable to clone datum IOException Error: {} - {}", e.getMessage(), datum);
+                }
+                throw new SerializationException("Unable to clone datum");
+            }
+        }
     }
 
     /**

@@ -167,7 +167,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
         this.executor = Executors.newFixedThreadPool(tasks.size());
 
         try {
-            LOGGER.info("----------------------------------- Starting LocalStream Builder -----------------------------------");
+            LOGGER.debug("----------------------------------- Starting LocalStream Builder -----------------------------------");
 
             // Starting all the tasks
             for(StreamsTask task : this.tasks.values())
@@ -228,7 +228,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
             for(final String k : tasks.keySet()) {
                 StatusCounts counts = tasks.get(k).getCurrentStatus();
-                LOGGER.info("Finishing: {} - Queue[{}] Working[{}] Success[{}] Failed[{}] ", k,
+                LOGGER.debug("Finishing: {} - Queue[{}] Working[{}] Success[{}] Failed[{}] ", k,
                         counts.getQueue(), counts.getWorking(), counts.getSuccess(), counts.getFailed());
             }
 
