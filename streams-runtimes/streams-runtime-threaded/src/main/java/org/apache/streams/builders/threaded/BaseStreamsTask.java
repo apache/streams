@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -48,7 +49,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
     private final String id;
     protected final AtomicBoolean keepRunning = new AtomicBoolean(true);
     private final List<Queue<StreamsDatum>> inQueues = new ArrayList<Queue<StreamsDatum>>();
-    private final List<Queue<StreamsDatum>> outQueues = new LinkedList<Queue<StreamsDatum>>();
+    private final List<Queue<StreamsDatum>> outQueues = new ArrayList<Queue<StreamsDatum>>();
     private final AtomicInteger queueCycleCounter = new AtomicInteger(0);
 
     public abstract StatusCounts getCurrentStatus();
@@ -105,12 +106,10 @@ public abstract class BaseStreamsTask implements StreamsTask {
                 if (queueCycleCounter.incrementAndGet() >= this.inQueues.size())
                     queueCycleCounter.set(0);
 
-                if (datum != null)
-                    return datum;
             }
-        } while (isDatumAvailable());
+        } while (datum == null && isDatumAvailable());
 
-        return null;
+        return datum;
     }
 
     /**
@@ -123,20 +122,33 @@ public abstract class BaseStreamsTask implements StreamsTask {
         return getTotalInQueue() > 0;
     }
 
+    public boolean isOutBoundQueueBackedUp() {
+        for(Queue q : this.outQueues) {
+            if(q.isEmpty())
+                return false;
+            else {
+                if(q instanceof BlockingQueue) {
+                    if(((BlockingQueue)q).remainingCapacity() == 0)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
     /**
      * The total number of items that are in the queue right now.
      * @return
      * The total number of items that are in the queue waiting to be worked right now.
      */
     public int getTotalInQueue() {
-        synchronized (this) {
-            int total = 0;
-            for (Queue q : this.inQueues)
-                if (q != null)
-                    total += q.size();
+        int total = 0;
+        for (Queue q : this.inQueues)
+            if (q != null)
+                total += q.size();
 
-            return total;
-        }
+        return total;
     }
 
     /**
@@ -191,17 +203,22 @@ public abstract class BaseStreamsTask implements StreamsTask {
         }
     }
 
+
+    protected void safeQuickRest(int waitTime) {
+        // The queue is empty, we might as well sleep.
+        Thread.yield();
+        try {
+            Thread.sleep(waitTime);
+        } catch (InterruptedException ie) {
+            // No Operation
+        }
+    }
+
     /**
      * A quick rest for 1 ms that yields the execution of the processor.
      */
     protected void safeQuickRest() {
-        // The queue is empty, we might as well sleep.
-        Thread.yield();
-        try {
-            Thread.sleep(1);
-        } catch (InterruptedException ie) {
-            // No Operation
-        }
+        safeQuickRest(2);
     }
 
     private StreamsDatum copyMetaData(StreamsDatum copyFrom, StreamsDatum copyTo) {

@@ -6,12 +6,27 @@ import java.util.Queue;
 
 public class ComponentUtils {
 
-    @SuppressWarnings("unchecked")
-    public static void offerUntilSuccess(Object entry, Queue queue) {
+
+    /**
+     * Offer until success
+     * @param entry
+     * The entry you want to add
+     * @param queue
+     * The queue you want to add
+     * @param waitTime
+     * The wait time you want to have
+     */
+    public static void offerUntilSuccess(Object entry, Queue queue, int waitTime) {
         while(!queue.offer(entry)) {
             Thread.yield();
             safeQuickRest(1);
         }
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public static void offerUntilSuccess(Object entry, Queue queue) {
+        offerUntilSuccess(entry, queue, 2);
     }
 
     private static void safeQuickRest() {

@@ -81,6 +81,8 @@ public class StreamsProcessorTask extends BaseStreamsTask {
                     final StreamsDatum workingDatum = datum;
                     executorService.execute(new Runnable() {
                         public void run() {
+                            while(isOutBoundQueueBackedUp())
+                                safeQuickRest(1);
                             processThisDatum(workingDatum);
                         }
                     });
@@ -90,7 +92,7 @@ public class StreamsProcessorTask extends BaseStreamsTask {
                 // and take a quick rest and wait for people to
                 // catch up
                 if (!isDatumAvailable())
-                    safeQuickRest();
+                    safeQuickRest(1);
             }
 
             LOGGER.debug("Shutting down threaded processor...");

@@ -91,6 +91,10 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
                             processThisDatum(workingDatum);
                         }
                     });
+
+                    if (!isDatumAvailable())
+                        safeQuickRest(1);
+
                 }
             }
 

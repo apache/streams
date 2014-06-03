@@ -215,7 +215,11 @@ public class StreamsProviderTask extends BaseStreamsTask  {
                 if (!this.keepRunning.get())
                     break;
 
+                while(isOutBoundQueueBackedUp())
+                    safeQuickRest(1);
+
                 processNext(datum);
+
             }
         }
         catch(Throwable e) {
