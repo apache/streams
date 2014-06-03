@@ -150,13 +150,13 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
             try{
                 resetFile();
                 this.currentWriter.write(line);
-            } catch (IOException io) {
+            } catch (Exception io) {
                 LOGGER.warn("Failed to write even after creating a new file.  Attempting to reconnect", io);
                 connectToWebHDFS();
                 resetFile();
                 try {
                     this.currentWriter.write(line);
-                } catch (IOException ex) {
+                } catch (Exception ex) {
                     LOGGER.error("Failed to write to HDFS after reconnecting client. Terminating writer.", ex);
                     throw new RuntimeException(e);
                 }
