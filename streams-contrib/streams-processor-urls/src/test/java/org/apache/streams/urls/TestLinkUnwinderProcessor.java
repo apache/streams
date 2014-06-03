@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.jackson.StreamsJacksonModule;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Test;
@@ -83,21 +84,25 @@ public class TestLinkUnwinderProcessor {
     }
 
     public void testActivityUnwinderHelper(List<String> input, List<String> expected) throws Exception{
+
+        // Purge all of the domain wait times (for testing)
         LinkResolverHelperFunctions.purgeAllDomainWaitTimes();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.registerModule(new StreamsJacksonModule());
+
+        // Create a new activity
         Activity activity = new Activity();
         activity.setLinks(input);
         StreamsDatum datum = new StreamsDatum(activity);
         LinkResolverProcessor processor = new LinkResolverProcessor();
         processor.prepare(null);
+
         List<StreamsDatum> result = processor.process(datum);
         assertNotNull(result);
         assertEquals(1, result.size());
         StreamsDatum resultDatum = result.get(0);
         assertNotNull(resultDatum);
         assertTrue(resultDatum.getDocument() instanceof Activity);
+
+
         Activity resultActivity = (Activity) resultDatum.getDocument();
         assertNotNull(resultActivity.getLinks());
         List<String> resultLinks = resultActivity.getLinks();
@@ -107,12 +112,9 @@ public class TestLinkUnwinderProcessor {
 
     public void testStringActivityUnwinderHelper(List<String> input, List<String> expected) throws Exception{
         LinkResolverHelperFunctions.purgeAllDomainWaitTimes();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.registerModule(new StreamsJacksonModule());
         Activity activity = new Activity();
         activity.setLinks(input);
-        String str = mapper.writeValueAsString(activity);
+        String str = StreamsJacksonMapper.getInstance().writeValueAsString(activity);
         StreamsDatum datum = new StreamsDatum(str);
         LinkResolverProcessor processor = new LinkResolverProcessor();
         processor.prepare(null);
@@ -123,7 +125,7 @@ public class TestLinkUnwinderProcessor {
         assertNotNull(resultDatum);
         assertTrue(resultDatum.getDocument() instanceof String);
         String resultActivityString = (String) resultDatum.getDocument();
-        Activity resultActivity = mapper.readValue(resultActivityString, Activity.class);
+        Activity resultActivity = StreamsJacksonMapper.getInstance().readValue(resultActivityString, Activity.class);
         assertNotNull(resultActivity.getLinks());
         List<String> resultLinks = resultActivity.getLinks();
         assertEquals(expected.size(), resultLinks.size());

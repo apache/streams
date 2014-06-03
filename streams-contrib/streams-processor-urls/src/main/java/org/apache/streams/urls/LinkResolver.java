@@ -18,15 +18,16 @@
 package org.apache.streams.urls;
 
 import com.google.common.base.Preconditions;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.misc.BASE64Encoder;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
 
 public class LinkResolver implements Serializable {
 
@@ -128,7 +129,8 @@ public class LinkResolver implements Serializable {
             // we want everything to be processed, because each datum should get a
             // response in this case
             // there was an unknown issue we are going to set to exception.
-            LOGGER.warn("Unexpected Exception: {}", e);
+            LOGGER.warn("Unexpected Exception: {}", e.getMessage());
+            e.printStackTrace();
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.EXCEPTION);
         }
 
@@ -184,14 +186,45 @@ public class LinkResolver implements Serializable {
                 case 200: // HTTP OK
                     linkDetails.setFinalURL(connection.getURL().toString());
                     linkDetails.setDomain(new URL(linkDetails.getFinalURL()).getHost());
-                    linkDetails.setContentType(connection.getContentType());
+                    linkDetails.setContentType(connection.getContentType().contains(";") ? connection.getContentType().split(";")[0] : connection.getContentType());
 
                     InputStream inputStream = null;
-                    String theRawHTML = null;
                     try {
-                        inputStream = connection.getInputStream();
-                        if(inputStream != null) {
-                            theRawHTML = convertInputStream(inputStream, "UTF-8");
+                        if(linkDetails.getContentType() != null) {
+                            inputStream = connection.getInputStream();
+
+                            if(inputStream == null) {
+                                linkDetails.setLinkStatus(LinkDetails.LinkStatus.EMPTY);
+                                linkDetails.setContents(StringUtils.EMPTY);
+                                break;
+                            }
+
+                            if (linkDetails.getContentType().equalsIgnoreCase("text/html")) {
+                                linkDetails.setContentsType(LinkDetails.ContentsType.RAW_HTML);
+                                String rawHTML = convertInputStream(inputStream, connection.getContentEncoding() == null ? "UTF-8" : connection.getContentEncoding().toUpperCase());
+
+                                // we were unable to get the raw information
+                                if(rawHTML == null || rawHTML.equals(StringUtils.EMPTY)) {
+                                    linkDetails.setContents(StringUtils.EMPTY);
+                                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
+                                }
+                                else {
+                                    linkDetails.setContents(rawHTML);
+                                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.SUCCESS);
+                                }
+                            }
+                            else {
+                                linkDetails.setContentsType(LinkDetails.ContentsType.BASE_64);
+                                String base64 = convertInputStreamToBase64(inputStream);
+                                if(base64 == null || base64.equals(StringUtils.EMPTY)) {
+                                    linkDetails.setContents(StringUtils.EMPTY);
+                                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
+                                }
+                                else {
+                                    linkDetails.setContents(base64);
+                                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.SUCCESS);
+                                }
+                            }
                         }
                     }
                     catch(SocketTimeoutException e) {
@@ -212,14 +245,6 @@ public class LinkResolver implements Serializable {
                         catch(IOException e) {
                             LOGGER.warn("Unexpected IO Exception: {}", e);
                         }
-                    }
-
-                    if(theRawHTML == null) {
-                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
-                    }
-                    else {
-                        linkDetails.setRawHTML(theRawHTML);
-                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.SUCCESS);
                     }
                     break;
                 case 300: // Multiple choices
@@ -298,14 +323,44 @@ public class LinkResolver implements Serializable {
             unwindLink(reDirectedLink);
     }
 
-    private String convertInputStream(final InputStream in, final String encoding) throws IOException, SocketTimeoutException {
+    private String convertInputStreamToBase64(final InputStream in) {
+        try {
+            return new BASE64Encoder().encode(getByteArrayOutputStream(in).toByteArray());
+        }
+        catch(Throwable e) {
+
+            return StringUtils.EMPTY;
+        }
+    }
+
+    private String convertInputStream(final InputStream in, String encoding) {
+        try {
+
+            ByteArrayOutputStream baos = encoding.equalsIgnoreCase("gzip") ?
+                    getByteArrayOutputStream(new GZIPInputStream(in)) :
+                    getByteArrayOutputStream(in);
+
+            encoding = encoding.equalsIgnoreCase("gzip") ?
+                    "UTF-8" :
+                    encoding;
+
+            String beforeConvert = new String(baos.toByteArray(), encoding);
+            return new String(beforeConvert.getBytes(), "UTF-8");
+        }
+        catch(Throwable e) {
+            LOGGER.warn("Unable to load URL: {} - Encoding:{} - {}", e.getMessage(), encoding, linkDetails.getFinalURL());
+            return StringUtils.EMPTY;
+        }
+    }
+
+    private ByteArrayOutputStream getByteArrayOutputStream(InputStream in) throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final byte[] buf = new byte[2048];
         int rd;
         while ((rd = in.read(buf, 0, 2048)) >= 0) {
             out.write(buf, 0, rd);
         }
-        return new String(out.toByteArray(), encoding);
+        return out;
     }
 
     private Map<String, List<String>> createCaseInsensitiveMap(Map<String, List<String>> input) {
@@ -326,7 +381,7 @@ public class LinkResolver implements Serializable {
 
         // Iterate through all the known URL parameters of tracking URLs
         for (String pattern : URL_TRACKING_TO_REMOVE)
-            url = url.replaceAll(pattern, "");
+            url = url.replaceAll(pattern, StringUtils.EMPTY);
 
         // If the URL is smaller than when it came in. Then it had tracking information
         if (url.length() < startLength)
@@ -346,7 +401,7 @@ public class LinkResolver implements Serializable {
      */
     public static String normalizeURL(String url) {
         if(url == null || StringUtils.isEmpty(url))
-            return "";
+            return StringUtils.EMPTY;
 
         // Decode URL to remove any %20 type stuff
         String normalizedUrl = url;

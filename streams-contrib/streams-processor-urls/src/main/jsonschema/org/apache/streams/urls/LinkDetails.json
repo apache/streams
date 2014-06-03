@@ -18,21 +18,27 @@
                 "UNAUTHORIZED",
                 "LOOP",
                 "HTTP_ERROR_STATUS",
-                "EXCEPTION"
-            ]
+                "EXCEPTION",
+                "EMPTY",
+                "NONE"
+            ],
+            "default" : "NONE"
         },
         "originalURL": {
-            "type": "string"
+            "type": "string",
+            "default" : ""
         },
         "finalURL": {
-            "type": "string"
+            "type": "string",
+            "default" : ""
         },
         "contentType" : {
             "type" : "string",
             "default" : ""
         },
         "normalizedURL": {
-            "type": "string"
+            "type": "string",
+            "default" : ""
         },
         "urlParts": {
             "type": "array",
@@ -41,7 +47,8 @@
             }
         },
         "domain": {
-            "type": "string"
+            "type": "string",
+            "default" : ""
         },
         "redirects": {
             "type": "array",
@@ -50,14 +57,17 @@
             }
         },
         "tracked": {
-            "type": "boolean"
+            "type": "boolean",
+            "default" : "false"
         },
         "finalResponseCode" : {
-            "type" : "integer"
+            "type" : "integer",
+            "default" : "-1"
         },
         "cookies": {
             "type": "array",
             "uniqueItems": true,
+
             "items": {
                 "type": "string"
             }
@@ -69,7 +79,14 @@
         "tookInMills": {
             "type": "integer"
         },
-        "rawHTML": {
+        "contentsType" : {
+            "type" : "string",
+            "enum" : [
+                "RAW_HTML",
+                "BASE64"
+            ]
+        },
+        "contents": {
             "type": "string"
         }
     }
