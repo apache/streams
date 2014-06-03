@@ -19,8 +19,8 @@ under the License.
 package org.apache.streams.datasift.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.datasift.Datasift;
@@ -74,7 +74,8 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
         } else if (this.outClass.equals(String.class)) {
             this.converter = new StringConverter();
         } else {
-            throw new NotImplementedException("No converter implemented for class : "+this.outClass.getName());
+            LOGGER.warn("Using defaulting datasift converter");
+            this.converter = new DefaultConverter(this.outClass);
         }
     }
 
@@ -108,10 +109,38 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
         public Object convert(Object toConvert, ObjectMapper mapper) {
             try {
                 if(toConvert instanceof String){
-                    LOGGER.debug(mapper.writeValueAsString(mapper.readValue((String) toConvert, Datasift.class)));
+//                    LOGGER.debug(mapper.writeValueAsString(mapper.readValue((String) toConvert, Datasift.class)));
                     return mapper.writeValueAsString(mapper.readValue((String) toConvert, Datasift.class));
+                } else {
+                    if(toConvert.getClass().equals(Activity.class)) { //hack to remove additional properties
+                        ObjectNode node = mapper.convertValue(toConvert, ObjectNode.class);
+                        if(node.has("additionalProperties")) {
+                            ObjectNode additionalProperties = (ObjectNode) node.get("additionalProperties");
+//                            node.put("keywords", additionalProperties.get("keywords"));
+//                            node.put("location", additionalProperties.get("location"));
+//                            node.put("hashtags", additionalProperties.get("hashtags"));
+//                            node.put("datasift", additionalProperties.get("datasift"));
+//                            node.put("user_mentions", additionalProperties.get("user_mentions"));
+                            node.putAll(additionalProperties);
+                            node.remove("additionalProperties");
+                        }
+                        if(node.has("actor")) {
+                            ObjectNode actor = (ObjectNode) node.get("actor");
+                            if(actor.has("additionalProperties")) {
+                                ObjectNode additionalProperties = (ObjectNode) actor.get("additionalProperties");
+//                                actor.put("followers", additionalProperties.get("followers"));
+//                                actor.put("location", additionalProperties.get("location"));
+//                                actor.put("screenName", additionalProperties.get("screenName"));
+//                                actor.put("posts", additionalProperties.get("posts"));
+//                                actor.put("favorites", additionalProperties.get("favorties"));
+                                actor.putAll(additionalProperties);
+                                actor.remove("additionalProperties");
+                            }
+                        }
+                        return mapper.writeValueAsString(node);
+                    } else
+                        return mapper.writeValueAsString(toConvert);
                 }
-                return mapper.writeValueAsString(toConvert);
             } catch (Exception e) {
                 LOGGER.error("Exception while trying to write {} as a String.", toConvert.getClass());
                 LOGGER.error("Exception : {}", e);
@@ -120,5 +149,28 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
         }
 
 
+    }
+
+    private class DefaultConverter implements DatasiftConverter {
+
+        private Class clazz;
+
+        public DefaultConverter(Class clazz) {
+            this.clazz = clazz;
+        }
+
+        @Override
+        public Object convert(Object toConvert, ObjectMapper mapper) {
+            try {
+                if(toConvert instanceof String) {
+                    return mapper.readValue((String) toConvert, this.clazz);
+                } else {
+                    return mapper.convertValue(toConvert, this.clazz);
+                }
+
+            } catch (Exception e) {
+                throw new RuntimeException("Failed converting +"+ toConvert.getClass().getName()+" to "+ this.clazz.getName());
+            }
+        }
     }
 };

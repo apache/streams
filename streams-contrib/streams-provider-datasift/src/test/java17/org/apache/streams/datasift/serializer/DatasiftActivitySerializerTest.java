@@ -1,5 +1,6 @@
 package org.apache.streams.datasift.serializer;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
@@ -26,6 +27,19 @@ public class DatasiftActivitySerializerTest {
         while(scanner.hasNextLine()) {
             line = scanner.nextLine();
             testGeneralConversion(line);
+        }
+    }
+
+    @Test
+    public void testTwitterConversion() throws Exception {
+        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/twitter_datasift_json.txt"));
+        String line = null;
+        while(scanner.hasNextLine()) {
+            line = scanner.nextLine();
+            testGeneralConversion(line);
+            System.out.println("ORIGINAL -> "+line);
+            System.out.println("ACTIVITY -> "+MAPPER.writeValueAsString(SERIALIZER.deserialize(line)));
+            System.out.println("NODE     -> "+MAPPER.convertValue(SERIALIZER.deserialize(line), JsonNode.class));
         }
     }
 

@@ -37,7 +37,7 @@ public class DatasiftSerDeTest {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-        InputStream is = DatasiftSerDeTest.class.getResourceAsStream("/part-r-big.json");
+        InputStream is = DatasiftSerDeTest.class.getResourceAsStream("/part-r-00000.json");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 
