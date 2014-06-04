@@ -38,13 +38,14 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumStatusCountable {
+public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumStatusCountable, Serializable {
 
     public static final String STREAMS_ID = ElasticsearchPersistWriter.class.getCanonicalName();
 

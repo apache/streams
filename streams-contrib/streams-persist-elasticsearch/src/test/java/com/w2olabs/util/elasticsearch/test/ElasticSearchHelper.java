@@ -1,6 +1,7 @@
 package com.w2olabs.util.elasticsearch.test;
 
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
+import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -75,10 +76,24 @@ public class ElasticSearchHelper {
         return ALL_ESCMS.get(key);
     }
 
+    public static ElasticsearchReaderConfiguration createReadConfiguration(String clusterName, List<String> indicies, List<String> types) {
+        ElasticsearchReaderConfiguration config = new ElasticsearchReaderConfiguration();
+        config.setClusterName(clusterName);
+        config.setIndexes(indicies);
+        config.setTypes(types);
+        config.setHosts(new ArrayList<String>() {{
+            add("");
+        }});
+        config.setPort(9300l);
+        return config;
+    }
+
     public static ElasticsearchWriterConfiguration createWriterConfiguration(String clusterName, String index, String type, long batchRecords, long batchBytes) {
         ElasticsearchWriterConfiguration config = new ElasticsearchWriterConfiguration();
         config.setClusterName(clusterName);
-        config.setHosts(new ArrayList<String>() {{ add(""); }});
+        config.setHosts(new ArrayList<String>() {{
+            add("");
+        }});
         config.setPort(9300l);
         config.setIndex(index);
         config.setType(type);

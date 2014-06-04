@@ -299,7 +299,7 @@ public class PersistWriterTest {
         // Create the builder then execute
         ThreadedStreamBuilder builder = new ThreadedStreamBuilder(new LinkedBlockingQueue<StreamsDatum>(75));
 
-        builder.newReadCurrentStream("provider", new NumericMessageProvider(100, count));
+        builder.newReadCurrentStream("provider", new NumericMessageProvider(1000, count));
         builder.addStreamsPersistWriter("es_writer_1", esWriter1, 10, "provider");
         builder.addStreamsPersistWriter("es_writer_2", esWriter2, 5, "provider");
 
@@ -340,7 +340,7 @@ public class PersistWriterTest {
 
         ElasticsearchClientManager escm = ElasticSearchHelper.getElasticSearchClientManager(clusterName);
 
-        ElasticsearchWriterConfiguration config1 = ElasticSearchHelper.createWriterConfiguration(clusterName, index1, type1, 1000, 1500 / 10);
+        ElasticsearchWriterConfiguration config1 = ElasticSearchHelper.createWriterConfiguration(clusterName, index1, type1, 1000, 1500 / 15);
         ElasticsearchPersistWriter esWriter1 = new ElasticsearchPersistWriter(config1, escm);
 
         ElasticsearchWriterConfiguration config2 = ElasticSearchHelper.createWriterConfiguration(clusterName, index1, type2, 1, 1000000000);
@@ -349,7 +349,7 @@ public class PersistWriterTest {
         // Create the builder then execute
         ThreadedStreamBuilder builder = new ThreadedStreamBuilder(new LinkedBlockingQueue<StreamsDatum>(75));
 
-        builder.newReadCurrentStream("provider", new NumericMessageProvider(100, count));
+        builder.newReadCurrentStream("provider", new NumericMessageProvider(1000, count));
         builder.addStreamsPersistWriter("es_writer_1", esWriter1, 10, "provider");
         builder.addStreamsPersistWriter("es_writer_2", esWriter2, 5, "provider");
 
@@ -359,8 +359,8 @@ public class PersistWriterTest {
         assertEquals("Should have 100 items (index & type)", count, ElasticSearchHelper.countRecordsInIndex(escm, index1, type2));
         assertEquals("Should have 100 items (index)", count * 2, ElasticSearchHelper.countRecordsInIndex(escm, index1));
 
-        assertEquals("Writer should report 10 items batchesSent", 10, esWriter1.getBatchesSent());
-        assertEquals("Writer should report 10 items batchesResponded", 10, esWriter1.getBatchesResponded());
+        assertEquals("Writer should report 10 items batchesSent", 15, esWriter1.getBatchesSent());
+        assertEquals("Writer should report 10 items batchesResponded", 15, esWriter1.getBatchesResponded());
 
         assertEquals("Writer should report 100 items ok", count, esWriter1.getTotalOk());
         assertEquals("Writer should report 100 items sent", count, esWriter1.getTotalSent());

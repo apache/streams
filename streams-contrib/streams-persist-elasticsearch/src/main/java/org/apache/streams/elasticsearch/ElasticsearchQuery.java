@@ -28,8 +28,8 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     private static final Integer DEFAULT_BATCH_SIZE = 500;
     private static final String DEFAULT_SCROLL_TIMEOUT = "5m";
 
-    private ElasticsearchClientManager elasticsearchClientManager;
-    private ElasticsearchConfiguration config;
+    private final ElasticsearchClientManager elasticsearchClientManager;
+    private final ElasticsearchConfiguration config;
     private List<String> indexes = Lists.newArrayList();
     private List<String> types = Lists.newArrayList();
     private String[] withfields;
@@ -49,16 +49,14 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     private long totalHits = 0;
     private long totalRead = 0;
 
-    public ElasticsearchQuery() {
-        Config config = StreamsConfigurator.config.getConfig("elasticsearch");
-        this.config = ElasticsearchConfigurator.detectConfiguration(config);
-    }
-
     public ElasticsearchQuery(ElasticsearchReaderConfiguration config) {
+        this(config, new ElasticsearchClientManager(config));
+    }
+    public ElasticsearchQuery(ElasticsearchReaderConfiguration config, ElasticsearchClientManager escm) {
         this.config = config;
-        this.elasticsearchClientManager = new ElasticsearchClientManager(config);
         this.indexes.addAll(config.getIndexes());
         this.types.addAll(config.getTypes());
+        this.elasticsearchClientManager = escm;
     }
 
     public long getHitCount() {

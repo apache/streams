@@ -34,17 +34,21 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
     protected volatile Queue<StreamsDatum> persistQueue;
 
     private ElasticsearchQuery elasticsearchQuery;
-    private ElasticsearchReaderConfiguration config;
+    private final ElasticsearchReaderConfiguration config;
+    private final ElasticsearchClientManager elasticsearchClientManager;
     private int threadPoolSize = 10;
     private ExecutorService executor;
     private ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public ElasticsearchPersistReader() {
+    public ElasticsearchPersistReader(ElasticsearchReaderConfiguration config) {
+        this(config, new ElasticsearchClientManager(config));
     }
 
-    public ElasticsearchPersistReader(ElasticsearchReaderConfiguration config) {
+    public ElasticsearchPersistReader(ElasticsearchReaderConfiguration config, ElasticsearchClientManager escm) {
         this.config = config;
+        this.elasticsearchClientManager = escm;
     }
+
 
     //PersistReader methods
     @Override
@@ -56,7 +60,10 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
 
     @Override
     public void prepare(Object o) {
-        elasticsearchQuery = this.config == null ? new ElasticsearchQuery() : new ElasticsearchQuery(config);
+        if(this.config == null)
+            throw new RuntimeException("Unable to run without configuration");
+
+        elasticsearchQuery = new ElasticsearchQuery(config, this.elasticsearchClientManager);
         elasticsearchQuery.execute(o);
         persistQueue = constructQueue();
     }
