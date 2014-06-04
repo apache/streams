@@ -24,6 +24,8 @@ import com.datasift.client.core.Stream;
 import com.datasift.client.stream.DeletedInteraction;
 import com.datasift.client.stream.Interaction;
 import com.datasift.client.stream.StreamEventListener;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
@@ -33,6 +35,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.datasift.DatasiftConfiguration;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,9 +58,11 @@ public class DatasiftStreamProvider implements StreamsProvider {
     private ConcurrentLinkedQueue<Interaction> interactions;
     private Map<String, DataSiftClient> clients;
     private StreamEventListener eventListener;
+    private ObjectMapper mapper;
 
     /**
      * Constructor that searches for available configurations
+     *
      * @param listener {@link com.datasift.client.stream.StreamEventListener} that handles deletion notices received from twitter.
      */
     public DatasiftStreamProvider(StreamEventListener listener) {
@@ -65,12 +70,11 @@ public class DatasiftStreamProvider implements StreamsProvider {
     }
 
     /**
-     *
      * @param listener {@link com.datasift.client.stream.StreamEventListener} that handles deletion notices received from twitter.
-     * @param config  Configuration to use
+     * @param config   Configuration to use
      */
     public DatasiftStreamProvider(StreamEventListener listener, DatasiftConfiguration config) {
-        if(config == null) {
+        if (config == null) {
             Config datasiftConfig = StreamsConfigurator.config.getConfig("datasift");
             this.config = DatasiftStreamConfigurator.detectConfiguration(datasiftConfig);
         } else {
@@ -89,7 +93,7 @@ public class DatasiftStreamProvider implements StreamsProvider {
         Preconditions.checkNotNull(this.config.getUserName());
         Preconditions.checkNotNull(this.clients);
 
-        for( String hash : this.config.getStreamHash()) {
+        for (String hash : this.config.getStreamHash()) {
             startStreamForHash(hash);
         }
 
@@ -97,6 +101,7 @@ public class DatasiftStreamProvider implements StreamsProvider {
 
     /**
      * Creates a connection to datasift and starts collection of data from the resulting string.
+     *
      * @param streamHash
      */
     public void startStreamForHash(String streamHash) {
@@ -113,6 +118,7 @@ public class DatasiftStreamProvider implements StreamsProvider {
 
     /**
      * Exposed for testing purposes.
+     *
      * @param userName
      * @param apiKey
      * @return
@@ -124,11 +130,12 @@ public class DatasiftStreamProvider implements StreamsProvider {
 
     /**
      * If a stream has been opened for the supplied stream hash, that stream will be shutdown.
+     *
      * @param streamHash
      */
     public void shutDownStream(String streamHash) {
         synchronized (clients) {
-            if(!this.clients.containsKey(streamHash))
+            if (!this.clients.containsKey(streamHash))
                 return;
             DataSiftClient client = this.clients.get(streamHash);
             LOGGER.debug("Shutting down stream for hash: {}", streamHash);
@@ -142,22 +149,31 @@ public class DatasiftStreamProvider implements StreamsProvider {
      */
     public void stop() {
         synchronized (clients) {
-            for(DataSiftClient client : this.clients.values()) {
+            for (DataSiftClient client : this.clients.values()) {
                 client.shutdown();
             }
         }
     }
 
     // PRIME EXAMPLE OF WHY WE NEED NEW INTERFACES FOR PROVIDERS
-    @Override //This is a hack.  It is only like this because of how perpetual streams work at the moment.  Read list server to debate/vote for new interfaces.
+    @Override
+    //This is a hack.  It is only like this because of how perpetual streams work at the moment.  Read list server to debate/vote for new interfaces.
     public StreamsResultSet readCurrent() {
         Queue<StreamsDatum> datums = Queues.newConcurrentLinkedQueue();
-
-            while(!this.interactions.isEmpty()) {
-                Interaction interaction = this.interactions.poll();
-                while(!datums.offer(new StreamsDatum(interaction, interaction.getData().get("interaction").get("id").textValue()))) {
+        StreamsDatum datum = null;
+        Interaction interaction;
+        while (!this.interactions.isEmpty()) {
+            interaction = this.interactions.poll();
+            try {
+                datum = new StreamsDatum(this.mapper.writeValueAsString(this.interactions.poll()), interaction.getData().get("interaction").get("id").textValue());
+            } catch (JsonProcessingException jpe) {
+                LOGGER.error("Exception while converting Interaction to String : {}", jpe);
+            }
+            if (datum != null) {
+                while (!datums.offer(datum)) {
                     Thread.yield();
                 }
+            }
 
         }
         return new StreamsResultSet(datums);
@@ -177,6 +193,7 @@ public class DatasiftStreamProvider implements StreamsProvider {
     public void prepare(Object configurationObject) {
         this.interactions = new ConcurrentLinkedQueue<Interaction>();
         this.clients = Maps.newHashMap();
+        this.mapper = StreamsJacksonMapper.getInstance();
     }
 
     @Override
