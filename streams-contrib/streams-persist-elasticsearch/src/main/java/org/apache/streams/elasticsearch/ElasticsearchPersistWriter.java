@@ -143,17 +143,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             // before they close, check to ensure that
             flushInternal();
 
-            // We are going to give it 5 minutes.
-            int count = 0;
-            if(this.batchesResponded.get() != this.batchesSent.get()) {
-                while (this.batchesResponded.get() != this.batchesSent.get() && count++ < 20 * 60 * 5) {
-                    Thread.sleep(50);
-                }
-
-                if (this.batchesResponded.get() != this.batchesSent.get())
-                    LOGGER.error("We never cleared our buffer: Sent[{}] Outstanding[{}]", this.batchesSent.get(), this.batchesResponded.get());
-            }
-
+            waitToCatchUp(0, 5 * 60 * 1000);
             refreshIndexes();
 
             LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
@@ -208,6 +198,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         if (this.bulkRequest == null || this.currentBatchItems.get() == 0)
             return;
 
+        // wait for one minute to catch up if it needs to
+        waitToCatchUp(5, 1 * 60 * 1000);
+
         // call the flush command.
         flush(this.bulkRequest, this.currentBatchItems.get(), this.currentBatchBytes.get());
 
@@ -217,6 +210,20 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         // reset our bulk request builder
         this.bulkRequest = this.manager.getClient().prepareBulk();
+    }
+
+    private synchronized void waitToCatchUp(int batchThreshold, int timeOutThresholdInMS) {
+        int counter = 0;
+        // If we still have 5 batches outstanding, we need to give it a minute to catch up
+        while(this.getBatchesSent() - this.getBatchesResponded() > batchThreshold && counter < timeOutThresholdInMS) {
+            try {
+                Thread.yield();
+                Thread.sleep(1);
+                timeOutThresholdInMS++;
+            } catch(InterruptedException ie) {
+                // No Operation
+            }
+        }
     }
 
     private void checkForBackOff() {
@@ -320,12 +327,13 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     }
 
     private void checkIndexImplications(String indexName) {
-        // this will be common if we have already verified the index.
-        if (this.affectedIndexes.contains(indexName))
-            return;
-
         // We need this to be safe across all writers that are currently being executed
         synchronized (ElasticsearchPersistWriter.class) {
+
+            // this will be common if we have already verified the index.
+            if (this.affectedIndexes.contains(indexName))
+                return;
+
 
             // create the index if it is missing
             createIndexIfMissing(indexName);

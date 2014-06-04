@@ -9,6 +9,7 @@ import org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.junit.Test;
 
+import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.junit.Assert.*;
@@ -18,7 +19,7 @@ public class PersistWriterTest {
     @Test
     public void testSingleWriterSingleThreadFlushByCount() throws Exception {
 
-        final String clusterName = "testSingleWriterSingleThreadFlushByCount";
+        final String clusterName = UUID.randomUUID().toString();
         final String index = "index1";
         final String type = "type1";
         final int count = 100;
@@ -53,10 +54,47 @@ public class PersistWriterTest {
     }
 
     @Test
+    public void testSingleWriterSingleThreadManyDatumsTinyFlush() throws Exception {
+
+        final String clusterName = UUID.randomUUID().toString();
+        final String index = "index1";
+        final String type = "type1";
+        final int count = 1000;
+
+        ElasticsearchWriterConfiguration config = ElasticSearchHelper.createWriterConfiguration(clusterName, index, type, 1, 1024 * 1024);
+        ElasticsearchClientManager escm = ElasticSearchHelper.getElasticSearchClientManager(clusterName);
+
+        ElasticsearchPersistWriter esWriter = new ElasticsearchPersistWriter(config, escm);
+        StreamsProvider provider = new NumericMessageProvider(1000, count);
+
+        // Create the builder then execute
+        ThreadedStreamBuilder builder = new ThreadedStreamBuilder(new LinkedBlockingQueue<StreamsDatum>(1000));
+
+        builder.newReadCurrentStream("provider", provider);
+        builder.addStreamsPersistWriter("es_writer", esWriter, 1, "provider");
+
+        builder.start();
+
+        assertEquals("Should have 1,000 items (index & type)", count, ElasticSearchHelper.countRecordsInIndex(escm, index, type));
+        assertEquals("Should have 1,000 items (index)", count, ElasticSearchHelper.countRecordsInIndex(escm, index));
+
+        assertEquals("1,000 batchesSent", count, esWriter.getBatchesSent());
+        assertEquals("1,000 batchesResponded", count, esWriter.getBatchesResponded());
+
+        assertEquals("Writer should report 100 items ok", count, esWriter.getTotalOk());
+        assertEquals("Writer should report 100 items sent", count, esWriter.getTotalSent());
+        assertEquals("Writer should report 0 items fail", 0, esWriter.getTotalFailed());
+        assertEquals("Writer should report 0 items outstanding", 0, esWriter.getTotalOutstanding());
+
+        // clean up
+        ElasticSearchHelper.destroyElasticSearchClientManager(escm);
+    }
+
+    @Test
     public void testSingleWriterSingleThreadFlushByBytes() throws Exception {
 
         // This will produce 1,500 bytes worth of information
-        final String clusterName = "testSingleWriterSingleThreadFlushByBytes";
+        final String clusterName = UUID.randomUUID().toString();
         final String index = "index1";
         final String type = "type1";
         final int count = 100;
@@ -93,7 +131,7 @@ public class PersistWriterTest {
     @Test
     public void testSingleWriterMultiThreaded() throws Exception {
 
-        final String clusterName = "testSingleWriter";
+        final String clusterName = UUID.randomUUID().toString();
         final String index = "index1";
         final String type = "type1";
         final int count = 100;
@@ -131,7 +169,7 @@ public class PersistWriterTest {
     @Test
     public void testSingleDatumBeyondMinimums() throws Exception {
 
-        final String clusterName = "testSingleWriter";
+        final String clusterName = UUID.randomUUID().toString();
         final String index = "index1";
         final String type = "type1";
         final int count = 1;
@@ -169,7 +207,7 @@ public class PersistWriterTest {
     @Test
     public void testSingleESCMsDualIndexDualConfigs() throws Exception {
 
-        final String clusterName = "testDualWriter";
+        final String clusterName = UUID.randomUUID().toString();
         final String index1 = "index1";
         final String type1 = "type1";
         final String index2 = "index2";
@@ -226,7 +264,7 @@ public class PersistWriterTest {
     @Test
     public void testDualESCMsSameCluster() throws Exception {
 
-        final String clusterName = "testSingleESCMsSingleIndexDualWriters";
+        final String clusterName = UUID.randomUUID().toString();
         final String index1 = "index1";
         final String type1 = "type1";
         final String index2 = "index2";
@@ -282,7 +320,7 @@ public class PersistWriterTest {
     @Test
     public void testSingleESCMsSingleIndexDualWriters() throws Exception {
 
-        final String clusterName = "testDualESCMsSameCluster";
+        final String clusterName = UUID.randomUUID().toString();
         final String index1 = "index1";
         final String type1 = "type1";
         final int count = 100;
@@ -331,7 +369,7 @@ public class PersistWriterTest {
     @Test
     public void testSingleESCMsSingleIndexTwoTypesDualWriters() throws Exception {
 
-        final String clusterName = "testDualESCMsSameCluster";
+        final String clusterName = UUID.randomUUID().toString();
         final String index1 = "index1";
         final String type1 = "type1";
         final String type2 = "type2";

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,8 +24,6 @@ public class ElasticSearchHelper {
     private ElasticSearchHelper () { /* Static Constructor */ }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchHelper.class);
-
-
 
     private static final Map<String, Client> ALL_ES_SERVERS = new HashMap<String, Client>();
 
@@ -118,5 +117,12 @@ public class ElasticSearchHelper {
     public static void deleteIndex(ElasticsearchClientManager escm, String index) {
         escm.getClient().admin().indices().prepareDelete(index).execute().actionGet();
     }
+
+    public static void createIndexWithMapping(ElasticsearchClientManager escm, String index, String type, String mappingAsJson) {
+        boolean createdMapping = escm.getClient().admin().indices().prepareCreate(index).addMapping(type, mappingAsJson).execute().actionGet().isAcknowledged();
+        assertTrue("Able to create mapping", createdMapping);
+
+    }
+
 
 }

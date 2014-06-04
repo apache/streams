@@ -10,6 +10,7 @@ import org.apache.streams.local.test.writer.DatumCounterWriter;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
@@ -23,7 +24,7 @@ public class PersistReaderTest {
     @Test
     public void testWriteThenRead() throws Exception {
 
-        final String clusterName = "testWriteThenRead";
+        final String clusterName = UUID.randomUUID().toString();
         final String index = "index1";
         final String type = "type1";
         final int count = 10000;
