@@ -18,13 +18,11 @@ under the License.
 */
 package org.apache.streams.datasift.provider;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.serializer.DatasiftActivitySerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
@@ -36,28 +34,30 @@ import java.util.List;
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class DatasiftEventProcessor implements StreamsProcessor {
+public class DatasiftTypeConverterProcessor implements StreamsProcessor {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftEventProcessor.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftTypeConverterProcessor.class);
 
     private ObjectMapper mapper;
     private Class outClass;
     private DatasiftActivitySerializer datasiftInteractionActivitySerializer;
-    private DatasiftTypeConverter converter;
+    private DatasiftConverter converter;
 
     public final static String TERMINATE = new String("TERMINATE");
 
-    public DatasiftEventProcessor(Class outClass) {
+    public DatasiftTypeConverterProcessor(Class outClass) {
         this.outClass = outClass;
     }
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
         List<StreamsDatum> result = Lists.newLinkedList();
-        Object item = entry.getDocument();
+        Object doc;
         try {
-            Datasift datasift = mapper.convertValue(item, Datasift.class);
-            result.add(this.converter.convert(datasift));
+            doc = this.converter.convert(entry.getDocument(), this.mapper);
+            if(doc != null) {
+                result.add(new StreamsDatum(doc, entry.getId()));
+            }
         } catch (Exception e) {
             LOGGER.error("Exception converting Datasift Interaction to "+this.outClass.getName()+ " : {}", e);
         }
@@ -82,21 +82,40 @@ public class DatasiftEventProcessor implements StreamsProcessor {
 
     }
 
-    private class ActivityConverter implements DatasiftTypeConverter {
-        @Override
-        public StreamsDatum convert(Datasift datasift) {
-            return new StreamsDatum(datasiftInteractionActivitySerializer.deserialize(datasift), datasift.getInteraction().getId());
-        }
-    }
+    private class ActivityConverter implements DatasiftConverter {
 
-    private class StringConverter implements DatasiftTypeConverter {
         @Override
-        public StreamsDatum convert(Datasift datasift) {
+        public Object convert(Object toConvert, ObjectMapper mapper) {
+            if(toConvert instanceof Activity)
+                return toConvert;
             try {
-                return new StreamsDatum(mapper.writeValueAsString(datasift), datasift.getInteraction().getId());
-            } catch (JsonProcessingException jpe) {
-                throw new RuntimeException(jpe);
+                if(toConvert instanceof String)
+                    return mapper.readValue((String)toConvert, Activity.class);
+                return mapper.convertValue(toConvert, Activity.class);
+            } catch (Exception e) {
+                LOGGER.error("Exception while trying to convert {} to a Activity.", toConvert.getClass());
+                LOGGER.error("Exception : {}", e);
+                return null;
             }
         }
+
+
+    }
+
+    private class StringConverter implements DatasiftConverter {
+        @Override
+        public Object convert(Object toConvert, ObjectMapper mapper) {
+            if(toConvert instanceof String)
+                return toConvert;
+            try {
+                return mapper.writeValueAsString(toConvert);
+            } catch (Exception e) {
+                LOGGER.error("Exception while trying to write {} as a String.", toConvert.getClass());
+                LOGGER.error("Exception : {}", e);
+                return null;
+            }
+        }
+
+
     }
 };
