@@ -23,6 +23,8 @@ import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.builders.threaded.WaitUntilAvailableExecutionHandler;
 import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.util.Queue;
@@ -30,8 +32,11 @@ import java.util.concurrent.*;
 
 public class NumericMessageProviderDelayed implements StreamsProvider {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(NumericMessageProviderDelayed.class);
+
     private final int numMessages;
     private final int delay;
+    private final int threadCount;
     protected final Queue<StreamsDatum> queue = new ArrayBlockingQueue<StreamsDatum>(500);
 
     public NumericMessageProviderDelayed(int numMessages) {
@@ -39,8 +44,13 @@ public class NumericMessageProviderDelayed implements StreamsProvider {
     }
 
     public NumericMessageProviderDelayed(int numMessages, int delay) {
+        this(numMessages, delay, 3);
+    }
+
+    public NumericMessageProviderDelayed(int numMessages, int delay, int threadCount) {
         this.numMessages = numMessages;
         this.delay = delay;
+        this.threadCount = threadCount;
     }
 
     public void startStream() {
@@ -86,14 +96,12 @@ public class NumericMessageProviderDelayed implements StreamsProvider {
         }
 
         private void collectIdsAndPlaceOnQueue() {
-            final int threadCount = 5;
-            final int maxWaitingCount = threadCount * 3;
 
             ThreadPoolExecutor executorService = new ThreadPoolExecutor(threadCount,
-                    maxWaitingCount,
+                    threadCount,
                     0L,
                     TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<Runnable>(maxWaitingCount),
+                    new LinkedBlockingQueue<Runnable>(threadCount),
                     new WaitUntilAvailableExecutionHandler());
 
             for (int i = 0; i < numMessages; i++) {
