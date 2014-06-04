@@ -22,6 +22,7 @@ import org.apache.streams.builders.threaded.ThreadedStreamBuilder;
 import org.apache.streams.local.test.processors.PassThroughStaticCounterProcessor;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.providers.NumericMessageProviderDelayed;
+import org.apache.streams.local.test.providers.ShapeShifterProvider;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
 import org.junit.Before;
 import org.junit.Test;
@@ -171,6 +172,23 @@ public class ThreadedStreamBuilderTest {
 
         assertEquals("Number in should equal number out", numDatums * 2, writer.getDatumsCounted());
     }
+
+    @Test
+    public void testBasicBranchShapeShifter() {
+        int numDatums = 100;
+        StreamBuilder builder = new ThreadedStreamBuilder();
+        DatumCounterWriter writer = new DatumCounterWriter();
+        builder.newReadCurrentStream("prov1", new ShapeShifterProvider(numDatums, 3))
+                .addStreamsProcessor("proc1", new PassThroughStaticCounterProcessor(), 1, "prov1")
+                .addStreamsProcessor("proc2", new PassThroughStaticCounterProcessor(), 1, "prov1")
+                .addStreamsPersistWriter("w1", writer, 1, "proc1", "proc2");
+
+        builder.start();
+
+        assertEquals("Number in should equal number out", numDatums * 2, writer.getDatumsCounted());
+    }
+
+
 
 
 }
