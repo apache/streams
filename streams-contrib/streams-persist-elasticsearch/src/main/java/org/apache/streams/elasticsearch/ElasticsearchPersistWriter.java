@@ -66,10 +66,14 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
     private BulkRequestBuilder bulkRequest;
 
+    private boolean veryLargeBulk = false;  // by default this setting is set to false
     private long flushThresholdsRecords = DEFAULT_BATCH_SIZE;
     private long flushThresholdBytes = DEFAULT_BULK_FLUSH_THRESHOLD;
+
     private long flushThresholdTime = DEFAULT_MAX_WAIT;
-    private boolean veryLargeBulk = false;  // by default this setting is set to false
+    private long lastFlush = new Date().getTime();
+    private Timer timer = new Timer();
+
 
     private final AtomicInteger batchesSent = new AtomicInteger(0);
     private final AtomicInteger batchesResponded = new AtomicInteger(0);
@@ -110,6 +114,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     public void setFlushThreasholdMaxTime(long val)         { this.flushThresholdTime = val; }
     public void setVeryLargeBulk(boolean veryLargeBulk)     { this.veryLargeBulk = veryLargeBulk; }
 
+    private long getLastFlush()                             { return this.lastFlush; }
 
     public long getTotalOutstanding()                       { return this.totalSent.get() - (this.totalFailed.get() + this.totalOk.get()); }
     public long getTotalSent()                              { return this.totalSent.get(); }
@@ -319,8 +324,16 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             this.currentBatchBytes.addAndGet(request.source().length());
             this.currentBatchItems.incrementAndGet();
 
-            if ((this.currentBatchBytes.get() >= this.flushThresholdBytes) || (this.currentBatchItems.get() >= this.flushThresholdsRecords)) {
-                // Flush the internal writer
+            checkForFlush();
+        }
+    }
+
+    private void checkForFlush() {
+        synchronized (this) {
+            if (this.currentBatchBytes.get() >= this.flushThresholdBytes ||
+                    this.currentBatchItems.get() >= this.flushThresholdsRecords ||
+                    new Date().getTime() - this.lastFlush >= this.flushThresholdTime) {
+                // We should flush
                 flushInternal();
             }
         }
@@ -423,20 +436,33 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 DEFAULT_BATCH_SIZE :
                 (int)(config.getBatchSize().longValue());
 
-        this.flushThresholdTime = config.getMaxTimeBetweenFlushMs() == null ?
-                DEFAULT_MAX_WAIT :
-                config.getMaxTimeBetweenFlushMs();
+        this.flushThresholdTime = config.getMaxTimeBetweenFlushMs() != null && config.getMaxTimeBetweenFlushMs() > 0 ?
+                config.getMaxTimeBetweenFlushMs() :
+                DEFAULT_MAX_WAIT;
 
         this.flushThresholdBytes = config.getBatchBytes() == null ?
                 DEFAULT_BULK_FLUSH_THRESHOLD :
                 config.getBatchBytes();
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                checkForFlush();
+            }
+        }, this.flushThresholdTime, this.flushThresholdTime);
+
     }
 
     private void flush(final BulkRequestBuilder bulkRequest, final Long sent, final Long sizeInBytes) {
         LOGGER.debug("Writing to ElasticSearch: Items[{}] Size[{} mb]", sent, MEGABYTE_FORMAT.format(sizeInBytes / (double) (1024 * 1024)));
 
-        // record the proper statistics, and add it to our totals.
+
+        // record the last time we flushed the index
+        this.lastFlush = new Date().getTime();
+
+        // add the totals
         this.totalSent.addAndGet(sent);
+
+        // add the total number of batches sent
         this.batchesSent.incrementAndGet();
 
         try {

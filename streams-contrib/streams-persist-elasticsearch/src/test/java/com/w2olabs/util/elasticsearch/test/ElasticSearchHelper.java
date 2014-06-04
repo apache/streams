@@ -87,7 +87,12 @@ public class ElasticSearchHelper {
         return config;
     }
 
+
     public static ElasticsearchWriterConfiguration createWriterConfiguration(String clusterName, String index, String type, long batchRecords, long batchBytes) {
+        return createWriterConfiguration(clusterName, index, type, batchRecords, batchBytes, 1000*60*60*24); // default 1 day
+    }
+
+    public static ElasticsearchWriterConfiguration createWriterConfiguration(String clusterName, String index, String type, long batchRecords, long batchBytes, long batchTimeFlush) {
         ElasticsearchWriterConfiguration config = new ElasticsearchWriterConfiguration();
         config.setClusterName(clusterName);
         config.setHosts(new ArrayList<String>() {{
@@ -98,6 +103,7 @@ public class ElasticSearchHelper {
         config.setType(type);
         config.setBatchSize(batchRecords);
         config.setBatchBytes(batchBytes);
+        config.setMaxTimeBetweenFlushMs(batchTimeFlush);
         return config;
     }
 
@@ -114,15 +120,8 @@ public class ElasticSearchHelper {
         return escm.getClient().prepareCount(index).setTypes(type).execute().get().getCount();
     }
 
-    public static void deleteIndex(ElasticsearchClientManager escm, String index) {
-        escm.getClient().admin().indices().prepareDelete(index).execute().actionGet();
-    }
-
     public static void createIndexWithMapping(ElasticsearchClientManager escm, String index, String type, String mappingAsJson) {
-        boolean createdMapping = escm.getClient().admin().indices().prepareCreate(index).addMapping(type, mappingAsJson).execute().actionGet().isAcknowledged();
-        assertTrue("Able to create mapping", createdMapping);
-
+        assertTrue("Able to create mapping", escm.getClient().admin().indices().prepareCreate(index).addMapping(type, mappingAsJson).execute().actionGet().isAcknowledged());
     }
-
 
 }
