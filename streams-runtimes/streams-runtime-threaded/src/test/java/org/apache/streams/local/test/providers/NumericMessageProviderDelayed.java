@@ -100,8 +100,8 @@ public class NumericMessageProviderDelayed implements StreamsProvider {
                 final int toOffer = i;
                 executorService.execute(new Runnable() {
                     public void run() {
-                        safeSleep();
-                        ComponentUtils.offerUntilSuccess(new StreamsDatum(toOffer), queue);
+                        safeSleep(delay);
+                        ComponentUtils.offerUntilSuccess(new StreamsDatum(new NumericMessageObject(toOffer)), queue);
                     }
                 });
             }
@@ -122,11 +122,11 @@ public class NumericMessageProviderDelayed implements StreamsProvider {
     }
 
 
-    public static void safeSleep() {
+    public static void safeSleep(int delay) {
         Thread.yield();
         try {
             // wait one tenth of a millisecond
-            Thread.sleep(0, (1000000 / 10));
+            Thread.sleep(delay);
             Thread.yield();
         } catch (Exception e) {
             // no operation

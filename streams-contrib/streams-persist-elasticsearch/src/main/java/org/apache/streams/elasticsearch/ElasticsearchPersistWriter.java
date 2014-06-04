@@ -1,10 +1,25 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.streams.elasticsearch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -17,297 +32,194 @@ import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.client.Client;
+import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.common.joda.time.DateTime;
 import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.index.query.IdsQueryBuilder;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
-import java.io.Flushable;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushable, Closeable, DatumStatusCountable {
-    public static final String STREAMS_ID = "ElasticsearchPersistWriter";
+public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumStatusCountable {
 
-    public volatile long flushThresholdSizeInBytes = DEFAULT_BULK_FLUSH_THRESHOLD;
+    public static final String STREAMS_ID = ElasticsearchPersistWriter.class.getCanonicalName();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistWriter.class);
     private static final NumberFormat MEGABYTE_FORMAT = new DecimalFormat("#.##");
     private static final NumberFormat NUMBER_FORMAT = new DecimalFormat("###,###,###,###");
     private static final Long DEFAULT_BULK_FLUSH_THRESHOLD = 5l * 1024l * 1024l;
     private static final long WAITING_DOCS_LIMIT = 10000;
-    private static final int BYTES_IN_MB = 1024 * 1024;
-    private static final int BYTES_BEFORE_FLUSH = 5 * BYTES_IN_MB;
     private static final long DEFAULT_MAX_WAIT = 10000;
     private static final int DEFAULT_BATCH_SIZE = 100;
 
-    private final List<String> affectedIndexes = new ArrayList<String>();
-    private final ScheduledExecutorService backgroundFlushTask = Executors.newSingleThreadScheduledExecutor();
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private static final ObjectMapper OBJECT_MAPPER = StreamsJacksonMapper.getInstance();
 
-    private ObjectMapper mapper = new StreamsJacksonMapper();
-    private ElasticsearchClientManager manager;
-    private ElasticsearchWriterConfiguration config;
-    private Client client;
-    private String parentID = null;
+    private final List<String> affectedIndexes = new ArrayList<String>();
+
+    private final ElasticsearchClientManager manager;
+    private final ElasticsearchWriterConfiguration config;
+
     private BulkRequestBuilder bulkRequest;
-    private OutputStreamWriter currentWriter = null;
-    private int batchSize;
-    private long maxTimeBetweenFlushMs;
+
+    private long flushThresholdsRecords = DEFAULT_BATCH_SIZE;
+    private long flushThresholdBytes = DEFAULT_BULK_FLUSH_THRESHOLD;
+    private long flushThresholdTime = DEFAULT_MAX_WAIT;
     private boolean veryLargeBulk = false;  // by default this setting is set to false
 
-    protected Thread task;
+    private final AtomicInteger batchesSent = new AtomicInteger(0);
+    private final AtomicInteger batchesResponded = new AtomicInteger(0);
 
-    protected volatile Queue<StreamsDatum> persistQueue;
+    private final AtomicLong currentBatchItems = new AtomicLong(0);
+    private final AtomicLong currentBatchBytes = new AtomicLong(0);
 
-    private volatile int currentItems = 0;
-    private volatile int totalSent = 0;
-    private volatile int totalSeconds = 0;
-    private volatile int totalAttempted = 0;
-    private volatile int totalOk = 0;
-    private volatile int totalFailed = 0;
-    private volatile int totalBatchCount = 0;
-    private volatile int totalRecordsWritten = 0;
-    private volatile long totalSizeInBytes = 0;
-    private volatile long batchSizeInBytes = 0;
-    private volatile int batchItemsSent = 0;
-    private volatile int totalByteCount = 0;
-    private volatile int byteCount = 0;
-    private volatile AtomicLong lastWrite = new AtomicLong(System.currentTimeMillis());
+    private final AtomicLong totalSent = new AtomicLong(0);
+    private final AtomicLong totalSeconds = new AtomicLong(0);
+    private final AtomicLong totalOk = new AtomicLong(0);
+    private final AtomicLong totalFailed = new AtomicLong(0);
+    private final AtomicLong totalSizeInBytes = new AtomicLong(0);
 
     public ElasticsearchPersistWriter() {
-        Config config = StreamsConfigurator.config.getConfig("elasticsearch");
-        this.config = ElasticsearchConfigurator.detectWriterConfiguration(config);
+        this(ElasticsearchConfigurator.detectWriterConfiguration(StreamsConfigurator.config.getConfig("elasticsearch")));
     }
 
     public ElasticsearchPersistWriter(ElasticsearchWriterConfiguration config) {
+        this(config, new ElasticsearchClientManager(config));
+    }
+
+    public ElasticsearchPersistWriter(ElasticsearchWriterConfiguration config, ElasticsearchClientManager manager) {
         this.config = config;
+        this.manager = manager;
+        this.bulkRequest = this.manager.getClient().prepareBulk();
     }
 
-    public void setBatchSize(int batchSize) {
-        this.batchSize = batchSize;
-    }
+    public long getBatchesSent()                            { return this.batchesSent.get(); }
+    public long getBatchesResponded()                       { return batchesResponded.get(); }
 
-    public void setVeryLargeBulk(boolean veryLargeBulk) {
-        this.veryLargeBulk = veryLargeBulk;
-    }
 
-    public int getTotalOutstanding() {
-        return this.totalSent - (this.totalFailed + this.totalOk);
-    }
+    public long getFlushThresholdsRecords()                 { return this.flushThresholdsRecords; }
+    public long getFlushThresholdBytes()                    { return this.flushThresholdBytes; }
+    public long getFlushThreasholdMaxTime()                 { return this.flushThresholdTime; }
 
-    public long getFlushThresholdSizeInBytes() {
-        return flushThresholdSizeInBytes;
-    }
+    public void setFlushThresholdRecords(long val)          { this.flushThresholdsRecords = val; }
+    public void setFlushThresholdBytes(long val)            { this.flushThresholdBytes = val; }
+    public void setFlushThreasholdMaxTime(long val)         { this.flushThresholdTime = val; }
+    public void setVeryLargeBulk(boolean veryLargeBulk)     { this.veryLargeBulk = veryLargeBulk; }
 
-    public int getTotalSent() {
-        return totalSent;
-    }
 
-    public int getTotalSeconds() {
-        return totalSeconds;
-    }
+    public long getTotalOutstanding()                       { return this.totalSent.get() - (this.totalFailed.get() + this.totalOk.get()); }
+    public long getTotalSent()                              { return this.totalSent.get(); }
+    public long getTotalOk()                                { return this.totalOk.get(); }
+    public long getTotalFailed()                            { return this.totalFailed.get(); }
+    public long getTotalSizeInBytes()                       { return this.totalSizeInBytes.get(); }
+    public long getTotalSeconds()                           { return this.totalSeconds.get(); }
+    public List<String> getAffectedIndexes()                { return this.affectedIndexes; }
 
-    public int getTotalOk() {
-        return totalOk;
-    }
-
-    public int getTotalFailed() {
-        return totalFailed;
-    }
-
-    public int getTotalBatchCount() {
-        return totalBatchCount;
-    }
-
-    public long getTotalSizeInBytes() {
-        return totalSizeInBytes;
-    }
-
-    public long getBatchSizeInBytes() {
-        return batchSizeInBytes;
-    }
-
-    public int getBatchItemsSent() {
-        return batchItemsSent;
-    }
-
-    public List<String> getAffectedIndexes() {
-        return this.affectedIndexes;
-    }
-
-    public void setFlushThresholdSizeInBytes(long sizeInBytes) {
-        this.flushThresholdSizeInBytes = sizeInBytes;
-    }
-
-    public long getMaxTimeBetweenFlushMs() {
-        return maxTimeBetweenFlushMs;
-    }
-
-    public void setMaxTimeBetweenFlushMs(long maxTimeBetweenFlushMs) {
-        this.maxTimeBetweenFlushMs = maxTimeBetweenFlushMs;
-    }
-
-    public boolean isConnected() {
-        return (client != null);
-    }
+    public boolean isConnected()                            { return (this.manager.getClient() != null); }
 
     @Override
     public void write(StreamsDatum streamsDatum) {
+        if(streamsDatum == null || streamsDatum.getDocument() == null)
+            return;
 
-        String json;
+        checkForBackOff();
+
         try {
-            String id = streamsDatum.getId();
-            if (streamsDatum.getDocument() instanceof String)
-                json = streamsDatum.getDocument().toString();
-            else {
-                json = mapper.writeValueAsString(streamsDatum.getDocument());
-            }
-
-            add(config.getIndex(), config.getType(), id, json);
-
-        } catch (Exception e) {
-            LOGGER.warn("{} {}", e.getMessage());
-            e.printStackTrace();
+            add(config.getIndex(), config.getType(), streamsDatum.getId(),
+                    streamsDatum.getTimestamp() == null ? Long.toString(DateTime.now().getMillis()) : Long.toString(streamsDatum.getTimestamp().getMillis()),
+                    (streamsDatum.getDocument() instanceof String) ? streamsDatum.getDocument().toString() : OBJECT_MAPPER.writeValueAsString(streamsDatum.getDocument()));
+        } catch (Throwable e) {
+            LOGGER.warn("Unable to Write Datum to ElasticSearch: {}", e.getMessage());
         }
     }
 
     public void cleanUp() {
-
         try {
-            flush();
-            backgroundFlushTask.shutdownNow();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        close();
-    }
 
-    @Override
-    public void close() {
-        try {
             // before they close, check to ensure that
-            this.flush();
+            flushInternal();
 
-            int count = 0;
             // We are going to give it 5 minutes.
-            while (this.getTotalOutstanding() > 0 && count++ < 20 * 60 * 5)
-                Thread.sleep(50);
-
-            if (this.getTotalOutstanding() > 0) {
-                LOGGER.error("We never cleared our buffer");
-            }
-
-
-            for (String indexName : this.getAffectedIndexes()) {
-                createIndexIfMissing(indexName);
-
-                if (this.veryLargeBulk) {
-                    LOGGER.debug("Resetting our Refresh Interval: {}", indexName);
-                    // They are in 'very large bulk' mode and the process is finished. We now want to turn the
-                    // refreshing back on.
-                    UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(indexName);
-                    updateSettingsRequest.settings(ImmutableSettings.settingsBuilder().put("refresh_interval", "5s"));
-
-                    // submit to ElasticSearch
-                    this.manager.getClient()
-                            .admin()
-                            .indices()
-                            .updateSettings(updateSettingsRequest)
-                            .actionGet();
+            int count = 0;
+            if(this.batchesResponded.get() != this.batchesSent.get()) {
+                while (this.batchesResponded.get() != this.batchesSent.get() && count++ < 20 * 60 * 5) {
+                    Thread.sleep(50);
                 }
 
-                checkIndexImplications(indexName);
-
-                LOGGER.debug("Refreshing ElasticSearch index: {}", indexName);
-                this.manager.getClient()
-                        .admin()
-                        .indices()
-                        .prepareRefresh(indexName)
-                        .execute()
-                        .actionGet();
+                if (this.batchesResponded.get() != this.batchesSent.get())
+                    LOGGER.error("We never cleared our buffer: Sent[{}] Outstanding[{}]", this.batchesSent.get(), this.batchesResponded.get());
             }
 
-            LOGGER.info("Closed: Wrote[{} of {}] Failed[{}]", this.getTotalOk(), this.getTotalSent(), this.getTotalFailed());
+            refreshIndexes();
 
-        } catch (Exception e) {
+            LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
+
+        } catch (Throwable e) {
             // this line of code should be logically unreachable.
             LOGGER.warn("This is unexpected: {}", e.getMessage());
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void flush() throws IOException {
-        flushInternal();
+    private void refreshIndexes() {
+        for (String indexName : this.affectedIndexes) {
+
+            if (this.veryLargeBulk) {
+                LOGGER.debug("Resetting our Refresh Interval: {}", indexName);
+                // They are in 'very large bulk' mode and the process is finished. We now want to turn the
+                // refreshing back on.
+                UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(indexName);
+                updateSettingsRequest.settings(ImmutableSettings.settingsBuilder().put("refresh_interval", "5s"));
+
+                // submit to ElasticSearch
+                this.manager.getClient()
+                        .admin()
+                        .indices()
+                        .updateSettings(updateSettingsRequest)
+                        .actionGet();
+            }
+
+            checkIndexImplications(indexName);
+
+            LOGGER.debug("Refreshing ElasticSearch index: {}", indexName);
+            this.manager.getClient()
+                    .admin()
+                    .indices()
+                    .prepareRefresh(indexName)
+                    .execute()
+                    .actionGet();
+        }
     }
 
     @Override
     public DatumStatusCounter getDatumStatusCounter() {
         DatumStatusCounter counters = new DatumStatusCounter();
-        counters.incrementAttempt(this.batchItemsSent);
-        counters.incrementStatus(DatumStatus.SUCCESS, this.totalOk);
-        counters.incrementStatus(DatumStatus.FAIL, this.totalFailed);
+        counters.incrementStatus(DatumStatus.SUCCESS, (int)this.totalOk.get());
+        counters.incrementStatus(DatumStatus.FAIL, (int)this.totalFailed.get());
         return counters;
     }
 
-    public void start() {
-        backgroundFlushTask.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                LOGGER.debug("Checking to see if data needs to be flushed");
-                long time = System.currentTimeMillis() - lastWrite.get();
-                if (time > maxTimeBetweenFlushMs && batchItemsSent > 0) {
-                    LOGGER.debug("Background Flush task determined {} are waiting to be flushed.  It has been {} since the last write to ES", batchItemsSent, time);
-                    flushInternal();
-                }
-            }
-        }, 0, maxTimeBetweenFlushMs * 2, TimeUnit.MILLISECONDS);
-        manager = new ElasticsearchClientManager(config);
-        client = manager.getClient();
-
-        LOGGER.info(client.toString());
-    }
-
-    public void flushInternal() {
-        lock.writeLock().lock();
+    private synchronized void flushInternal() {
         // we do not have a working bulk request, we can just exit here.
-        if (this.bulkRequest == null || batchItemsSent == 0)
+        if (this.bulkRequest == null || this.currentBatchItems.get() == 0)
             return;
 
         // call the flush command.
-        flush(this.bulkRequest, batchItemsSent, batchSizeInBytes);
-
-        // null the flush request, this will be created in the 'add' function below
-        this.bulkRequest = null;
-
-        // record the proper statistics, and add it to our totals.
-        this.totalSizeInBytes += this.batchSizeInBytes;
-        this.totalSent += batchItemsSent;
+        flush(this.bulkRequest, this.currentBatchItems.get(), this.currentBatchBytes.get());
 
         // reset the current batch statistics
-        this.batchSizeInBytes = 0;
-        this.batchItemsSent = 0;
+        this.currentBatchItems.set(0);
+        this.currentBatchBytes.set(0);
 
+        // reset our bulk request builder
+        this.bulkRequest = this.manager.getClient().prepareBulk();
+    }
+
+    private void checkForBackOff() {
         try {
-            int count = 0;
             if (this.getTotalOutstanding() > WAITING_DOCS_LIMIT) {
                 /****************************************************************************
                  * Author:
@@ -333,6 +245,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
                  ****************************************************************************/
 
                 // wait for the flush to catch up. We are going to cap this at
+                int count = 0;
                 while (this.getTotalOutstanding() > WAITING_DOCS_LIMIT && count++ < 500)
                     Thread.sleep(10);
 
@@ -340,134 +253,120 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
                     LOGGER.warn("Even after back-off there are {} items still in queue.", this.getTotalOutstanding());
             }
         } catch (Exception e) {
-            LOGGER.info("We were broken from our loop: {}", e.getMessage());
-        } finally {
-            lock.writeLock().unlock();
+            LOGGER.warn("We were broken from our loop: {}", e.getMessage());
         }
-
     }
 
-    public void add(String indexName, String type, String json) {
-        add(indexName, type, null, json);
+    public void add(String indexName, String type, String id, String ts, String json) {
+
+        // make sure that these are not null
+        Preconditions.checkNotNull(indexName);
+        Preconditions.checkNotNull(type);
+        Preconditions.checkNotNull(json);
+
+        IndexRequestBuilder indexRequestBuilder = manager.getClient().prepareIndex(indexName, type).setSource(json);
+
+        // / They didn't specify an ID, so we will create one for them.
+        if(id != null)
+            indexRequestBuilder.setId(id);
+
+        if(ts != null)
+            indexRequestBuilder.setTimestamp(ts);
+
+        add(indexRequestBuilder.request());
     }
 
-    public void add(String indexName, String type, String id, String json) {
-        IndexRequest indexRequest;
-
-        // They didn't specify an ID, so we will create one for them.
-        if (id == null)
-            indexRequest = new IndexRequest(indexName, type);
-        else
-            indexRequest = new IndexRequest(indexName, type, id);
-
-        indexRequest.source(json);
-
-        // If there is a parentID that is associated with this bulk, then we are
-        // going to have to parse the raw JSON and attempt to dereference
-        // what the parent document should be
-        if (parentID != null) {
-            try {
-                // The JSONObject constructor can throw an exception, it is called
-                // out explicitly here so we can catch it.
-                indexRequest = indexRequest.parent(new JSONObject(json).getString(parentID));
-            } catch (JSONException e) {
-                LOGGER.warn("Malformed JSON, cannot grab parentID: {}@{}[{}]: {}", id, indexName, type, e.getMessage());
-                totalFailed++;
-            }
-        }
-        add(indexRequest);
-    }
-
-    public void add(UpdateRequest updateRequest) {
-        Preconditions.checkNotNull(updateRequest);
-        lock.writeLock().lock();
+    /**
+     *  This function is trashed... needs to be fixed.
+     *
+    private synchronized void add(UpdateRequest request) {
+        Preconditions.checkNotNull(request);
         checkAndCreateBulkRequest();
-        checkIndexImplications(updateRequest.index());
-        bulkRequest.add(updateRequest);
+
+        checkIndexImplications(request.index());
+
+        bulkRequest.add(request);
         try {
             Optional<Integer> size = Objects.firstNonNull(
-                    Optional.fromNullable(updateRequest.doc().source().length()),
-                    Optional.fromNullable(updateRequest.script().length()));
+                    Optional.fromNullable(request.doc().source().length()),
+                    Optional.fromNullable(request.script().length()));
             trackItemAndBytesWritten(size.get().longValue());
         } catch (NullPointerException x) {
             trackItemAndBytesWritten(1000);
-        } finally {
-            lock.writeLock().unlock();
+        }
+    }
+    */
+
+    protected void add(IndexRequest request) {
+
+        Preconditions.checkNotNull(request);
+        Preconditions.checkNotNull(request.index());
+
+        // If our queue is larger than our flush threshold, then we should flush the queue.
+        synchronized (this) {
+            checkIndexImplications(request.index());
+
+            bulkRequest.add(request);
+
+            this.currentBatchBytes.addAndGet(request.source().length());
+            this.currentBatchItems.incrementAndGet();
+
+            if ((this.currentBatchBytes.get() >= this.flushThresholdBytes) || (this.currentBatchItems.get() >= this.flushThresholdsRecords)) {
+                // Flush the internal writer
+                flushInternal();
+            }
         }
     }
 
-    public void add(IndexRequest indexRequest) {
-        lock.writeLock().lock();
-        checkAndCreateBulkRequest();
-        checkIndexImplications(indexRequest.index());
-        bulkRequest.add(indexRequest);
-        try {
-            trackItemAndBytesWritten(indexRequest.source().length());
-        } catch (NullPointerException x) {
-            LOGGER.warn("NPE adding/sizing indexrequest");
-        } finally {
-            lock.writeLock().unlock();
-        }
-    }
-
-    private void trackItemAndBytesWritten(long sizeInBytes)
-    {
-        currentItems++;
-        batchItemsSent++;
-        batchSizeInBytes += sizeInBytes;
-
-        // If our queue is larger than our flush threashold, then we should flush the queue.
-        if( (batchSizeInBytes > flushThresholdSizeInBytes) ||
-                (currentItems >= batchSize) ) {
-            flushInternal();
-            this.currentItems = 0;
-        }
-    }
-
-    private void checkIndexImplications(String indexName)
-    {
-
-        // check to see if we have seen this index before.
-        if(this.affectedIndexes.contains(indexName))
+    private void checkIndexImplications(String indexName) {
+        // this will be common if we have already verified the index.
+        if (this.affectedIndexes.contains(indexName))
             return;
 
-        // we haven't log this index.
-        this.affectedIndexes.add(indexName);
+        // We need this to be safe across all writers that are currently being executed
+        synchronized (ElasticsearchPersistWriter.class) {
 
-        // Check to see if we are in 'veryLargeBulk' mode
-        // if we aren't, exit early
-        if(!this.veryLargeBulk)
-            return;
+            // create the index if it is missing
+            createIndexIfMissing(indexName);
 
+            // we haven't log this index.
+            this.affectedIndexes.add(indexName);
 
-        // They are in 'very large bulk' mode we want to turn off refreshing the index.
+            // Check to see if we are in 'veryLargeBulk' mode
+            // if we aren't, exit early
+            if (this.veryLargeBulk) {
 
-        // Create a request then add the setting to tell it to stop refreshing the interval
-        UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(indexName);
-        updateSettingsRequest.settings(ImmutableSettings.settingsBuilder().put("refresh_interval", -1));
+                // They are in 'very large bulk' mode we want to turn off refreshing the index.
+                // Create a request then add the setting to tell it to stop refreshing the interval
+                UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(indexName);
+                updateSettingsRequest.settings(ImmutableSettings.settingsBuilder().put("refresh_interval", -1));
 
-        // submit to ElasticSearch
-        this.manager.getClient()
-                .admin()
-                .indices()
-                .updateSettings(updateSettingsRequest)
-                .actionGet();
+                // submit to ElasticSearch
+                this.manager.getClient()
+                        .admin()
+                        .indices()
+                        .updateSettings(updateSettingsRequest)
+                        .actionGet();
+            }
+        }
     }
 
     public void createIndexIfMissing(String indexName) {
+        // Synchronize this on a static class level
         if (!this.manager.getClient()
                 .admin()
                 .indices()
                 .exists(new IndicesExistsRequest(indexName))
                 .actionGet()
-                .isExists()) {
+                .isExists())
+        {
             // It does not exist... So we are going to need to create the index.
             // we are going to assume that the 'templates' that we have loaded into
             // elasticsearch are sufficient to ensure the index is being created properly.
             CreateIndexResponse response = this.manager.getClient().admin().indices().create(new CreateIndexRequest(indexName)).actionGet();
 
             if (response.isAcknowledged()) {
-                LOGGER.info("Index {} did not exist. The index was automatically created from the stored ElasticSearch Templates.", indexName);
+                LOGGER.info("Index Created: {}", indexName);
             } else {
                 LOGGER.error("Index {} did not exist. While attempting to create the index from stored ElasticSearch Templates we were unable to get an acknowledgement.", indexName);
                 LOGGER.error("Error Message: {}", response.toString());
@@ -476,22 +375,8 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
         }
     }
 
-    public void add(String indexName, String type, Map<String, Object> toImport) {
-        for (String id : toImport.keySet())
-            add(indexName, type, id, (String) toImport.get(id));
-    }
-
-    private void checkThenAddBatch(String index, String type, Map<String, String> workingBatch) {
-        Set<String> invalidIDs = checkIds(workingBatch.keySet(), index, type);
-
-        for (String toAddId : workingBatch.keySet())
-            if (!invalidIDs.contains(toAddId))
-                add(index, type, toAddId, workingBatch.get(toAddId));
-
-        LOGGER.info("Adding Batch: {} -> {}", workingBatch.size(), invalidIDs.size());
-    }
-
-
+    /**
+     *
     private Set<String> checkIds(Set<String> input, String index, String type) {
 
         IdsQueryBuilder idsFilterBuilder = new IdsQueryBuilder();
@@ -518,78 +403,77 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Flushab
 
         return toReturn;
     }
+    */
 
-    @Override
     public void prepare(Object configurationObject) {
-        mapper = StreamsJacksonMapper.getInstance();
-        veryLargeBulk = config.getBulk() == null ? Boolean.FALSE : config.getBulk();
-        batchSize = config.getBatchSize() == null ? DEFAULT_BATCH_SIZE : (int)(config.getBatchSize().longValue());
-        maxTimeBetweenFlushMs = config.getMaxTimeBetweenFlushMs() == null ? DEFAULT_MAX_WAIT : config.getMaxTimeBetweenFlushMs().longValue();
-        start();
+        this.veryLargeBulk = config.getBulk() == null ?
+                Boolean.FALSE :
+                config.getBulk();
+
+        this.flushThresholdsRecords = config.getBatchSize() == null ?
+                DEFAULT_BATCH_SIZE :
+                (int)(config.getBatchSize().longValue());
+
+        this.flushThresholdTime = config.getMaxTimeBetweenFlushMs() == null ?
+                DEFAULT_MAX_WAIT :
+                config.getMaxTimeBetweenFlushMs();
+
+        this.flushThresholdBytes = config.getBatchBytes() == null ?
+                DEFAULT_BULK_FLUSH_THRESHOLD :
+                config.getBatchBytes();
     }
-    
-    /**
-     * This method is to ONLY be called by flushInternal otherwise the counts will be off.
-     * @param bulkRequest
-     * @param thisSent
-     * @param thisSizeInBytes
-     */
-    private void flush(final BulkRequestBuilder bulkRequest, final Integer thisSent, final Long thisSizeInBytes) {
-        final Object messenger = new Object();
-        LOGGER.debug("Attempting to write {} items to ES", thisSent);
-        bulkRequest.execute().addListener(new ActionListener<BulkResponse>() {
-            @Override
-            public void onResponse(BulkResponse bulkItemResponses) {
-                lastWrite.set(System.currentTimeMillis());
 
-                if (bulkItemResponses.hasFailures())
-                    LOGGER.warn("Bulk Uploading had totalFailed: " + bulkItemResponses.buildFailureMessage());
+    private void flush(final BulkRequestBuilder bulkRequest, final Long sent, final Long sizeInBytes) {
+        LOGGER.debug("Writing to ElasticSearch: Items[{}] Size[{} mb]", sent, MEGABYTE_FORMAT.format(sizeInBytes / (double) (1024 * 1024)));
 
-                long thisFailed = 0;
-                long thisOk = 0;
-                long thisMillis = bulkItemResponses.getTookInMillis();
+        // record the proper statistics, and add it to our totals.
+        this.totalSent.addAndGet(sent);
+        this.batchesSent.incrementAndGet();
 
-                // keep track of the number of totalFailed and items that we have totalOk.
-                for (BulkItemResponse resp : bulkItemResponses.getItems()) {
-                    if (resp.isFailed())
-                        thisFailed++;
-                    else
-                        thisOk++;
+        try {
+            bulkRequest.execute().addListener(new ActionListener<BulkResponse>() {
+                public void onResponse(BulkResponse bulkItemResponses) {
+                    batchesResponded.incrementAndGet();
+                    updateTotals(bulkItemResponses, sent, sizeInBytes);
                 }
 
-                totalAttempted += thisSent;
-                totalOk += thisOk;
-                totalFailed += thisFailed;
-                totalSeconds += (thisMillis / 1000);
-
-                if (thisSent != (thisOk + thisFailed))
-                    LOGGER.error("We sent more items than this");
-
-                LOGGER.debug("Batch[{}mb {} items with {} failures in {}ms] - Total[{}mb {} items with {} failures in {}seconds] {} outstanding]",
-                        MEGABYTE_FORMAT.format((double) thisSizeInBytes / (double) (1024 * 1024)), NUMBER_FORMAT.format(thisOk), NUMBER_FORMAT.format(thisFailed), NUMBER_FORMAT.format(thisMillis),
-                        MEGABYTE_FORMAT.format((double) totalSizeInBytes / (double) (1024 * 1024)), NUMBER_FORMAT.format(totalOk), NUMBER_FORMAT.format(totalFailed), NUMBER_FORMAT.format(totalSeconds), NUMBER_FORMAT.format(getTotalOutstanding()));
-            }
-
-            @Override
-            public void onFailure(Throwable e) {
-                LOGGER.error("Error bulk loading: {}", e.getMessage());
-                e.printStackTrace();
-            }
-        });
-    }
-
-
-
-    private void checkAndCreateBulkRequest() {
-        // Synchronize to ensure that we don't lose any records
-        lock.writeLock().lock();
-        try {
-            if (bulkRequest == null)
-                bulkRequest = this.manager.getClient().prepareBulk();
-        } finally {
-            lock.writeLock().unlock();
+                public void onFailure(Throwable throwable) {
+                    batchesResponded.incrementAndGet();
+                    throwable.printStackTrace();
+                }
+            });
+        }
+        catch(Throwable e) {
+            LOGGER.error("There was an error sending the batch: {}", e.getMessage());
         }
     }
 
-}
+    private void updateTotals(final BulkResponse bulkItemResponses, final Long sent, final Long sizeInBytes) {
+        long failed = 0;
+        long passed = 0;
+        long millis = bulkItemResponses.getTookInMillis();
 
+        // keep track of the number of totalFailed and items that we have totalOk.
+        for (BulkItemResponse resp : bulkItemResponses.getItems()) {
+            if (resp == null || resp.isFailed())
+                failed++;
+            else
+                passed++;
+        }
+
+        if (failed > 0)
+            LOGGER.warn("Bulk Uploading had {} failures of {}", failed, sent);
+
+        this.totalOk.addAndGet(passed);
+        this.totalFailed.addAndGet(failed);
+        this.totalSeconds.addAndGet(millis / 1000);
+        this.totalSizeInBytes.addAndGet(sizeInBytes);
+
+        if (sent != (passed + failed))
+            LOGGER.error("Count MisMatch: Sent[{}] Passed[{}] Failed[{}]", sent, passed, failed);
+
+        LOGGER.debug("Batch[{}mb {} items with {} failures in {}ms] - Total[{}mb {} items with {} failures in {}seconds] {} outstanding]",
+                MEGABYTE_FORMAT.format(sizeInBytes / (double) (1024 * 1024)), NUMBER_FORMAT.format(passed), NUMBER_FORMAT.format(failed), NUMBER_FORMAT.format(millis),
+                MEGABYTE_FORMAT.format((double) totalSizeInBytes.get() / (double) (1024 * 1024)), NUMBER_FORMAT.format(totalOk), NUMBER_FORMAT.format(totalFailed), NUMBER_FORMAT.format(totalSeconds), NUMBER_FORMAT.format(getTotalOutstanding()));
+    }
+}

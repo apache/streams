@@ -20,6 +20,7 @@
                 "HTTP_ERROR_STATUS",
                 "EXCEPTION",
                 "EMPTY",
+                "TOO_LARGE",
                 "NONE"
             ],
             "default" : "NONE"

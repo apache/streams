@@ -59,6 +59,10 @@ public class ElasticsearchConfigurator {
         if( elasticsearch.hasPath("batchSize"))
             elasticsearchWriterConfiguration.setBatchSize(elasticsearch.getLong("batchSize"));
 
+        if( elasticsearch.hasPath("batchBytes"))
+            elasticsearchWriterConfiguration.setBatchBytes(elasticsearch.getLong("batchBytes"));
+
+
         elasticsearchWriterConfiguration.setIndex(index);
         elasticsearchWriterConfiguration.setType(type);
         elasticsearchWriterConfiguration.setMaxTimeBetweenFlushMs(maxMsBeforeFlush);

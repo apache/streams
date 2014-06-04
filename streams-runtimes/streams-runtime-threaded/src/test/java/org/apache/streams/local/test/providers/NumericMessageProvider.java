@@ -31,10 +31,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class NumericMessageProvider implements StreamsProvider {
 
+    protected int startNumber = 0;
     protected int numMessages;
 
     public NumericMessageProvider() {this.numMessages = 0;}
     public NumericMessageProvider(int numMessages) {
+        this.numMessages = numMessages;
+    }
+
+    public NumericMessageProvider(int startNumber, int numMessages) {
+        this.startNumber = startNumber;
         this.numMessages = numMessages;
     }
 
@@ -67,7 +73,7 @@ public class NumericMessageProvider implements StreamsProvider {
         private ResultSet() {
             super(new ConcurrentLinkedQueue<StreamsDatum>());
             for(int i = 0; i < numMessages; i++)
-                this.getQueue().add(new StreamsDatum(i));
+                this.getQueue().add(new StreamsDatum(new NumericMessageObject(startNumber + i)));
         }
     }
 }

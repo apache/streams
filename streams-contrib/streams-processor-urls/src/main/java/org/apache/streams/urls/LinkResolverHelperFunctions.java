@@ -20,9 +20,12 @@ package org.apache.streams.urls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.*;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
+import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -92,6 +95,51 @@ public final class LinkResolverHelperFunctions {
 
     private static Timer timer;
 
+    static {
+        try {
+            /*
+             *  fix for Exception sun.security.validator.ValidatorException:
+             */
+            System.setProperty("jsse.enableSNIExtension", "false");
+
+            TrustManager[] trustAllCerts = new TrustManager[] {
+                    new X509TrustManager() {
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                        }
+
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                        }
+
+                    }
+            };
+
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            };
+            // Install the all-trusting host verifier
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+            /*
+             * end of the fix
+             */
+        }
+        catch(Throwable e) {
+            LOGGER.warn("Unable to install trust manager: {}", e.getMessage());
+        }
+    }
+
+
     /**
      * Check to see if this string is a URL or not
      * @param possibleURL
@@ -115,11 +163,12 @@ public final class LinkResolverHelperFunctions {
         RECENT_DOMAINS.clear();
     }
 
-    public static HttpURLConnection constructHTTPConnection(LinkDetails linkDetails) throws IOException {
+    public static URLConnection constructHTTPConnection(LinkDetails linkDetails) throws IOException {
         return constructHTTPConnection(linkDetails.getFinalURL(), linkDetails);
     }
 
-    public static HttpURLConnection constructHTTPConnection(String url, LinkDetails linkDetails) throws IOException {
+    public static URLConnection constructHTTPConnection(String url, LinkDetails linkDetails) throws IOException {
+
         // Turn the string into a URL
         URL thisURL = new URL(url);
 
@@ -134,7 +183,7 @@ public final class LinkResolverHelperFunctions {
             // noOp
         }
 
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        URLConnection connection = new URL(url).openConnection();
 
         // now we are going to pretend that we are a browser...
         // This is the way my mac works.
@@ -161,13 +210,18 @@ public final class LinkResolverHelperFunctions {
         // we want to follow this behavior on our own to ensure that we are getting to the
         // proper place. This is especially true with links that are wounded by special
         // link winders
-        connection.setInstanceFollowRedirects(false);
+        if(connection instanceof HttpURLConnection)
+            ((HttpURLConnection)connection).setInstanceFollowRedirects(false);
 
         if (linkDetails.getCookies() != null)
             for (String cookie : linkDetails.getCookies())
                 connection.addRequestProperty("Cookie", cookie.split(";", 1)[0]);
 
         connection.connect();
+
+        // if they want us to have cookies, then we set the cookies.
+        if(connection.getHeaderFields().containsKey("Cookie"))
+            connection.addRequestProperty("Cookie", connection.getHeaderField("Cookie"));
 
         return connection;
     }

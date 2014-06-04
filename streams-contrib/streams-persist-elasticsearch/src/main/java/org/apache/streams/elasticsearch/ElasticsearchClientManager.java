@@ -22,9 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Created by sblackmon on 2/10/14.
- */
 public class ElasticsearchClientManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchClientManager.class);
     private static Map<String, ElasticsearchClient> ALL_CLIENTS = new HashMap<String, ElasticsearchClient>();

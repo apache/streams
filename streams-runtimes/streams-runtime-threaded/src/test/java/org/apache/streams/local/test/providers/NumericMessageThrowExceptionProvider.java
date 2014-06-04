@@ -20,14 +20,10 @@ package org.apache.streams.local.test.providers;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
 import org.joda.time.DateTime;
-import org.omg.SendingContext.RunTime;
 
 import java.math.BigInteger;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
- * Created by rdouglas on 5/16/14.
- */
 public class NumericMessageThrowExceptionProvider extends NumericMessageProvider {
 
     private final int numErrorsToThrow;
@@ -64,7 +60,7 @@ public class NumericMessageThrowExceptionProvider extends NumericMessageProvider
                 if(numErrorsThrown++ < numErrorsToThrow) {
                     throw new RuntimeException();
                 } else {
-                    this.getQueue().add(new StreamsDatum(i));
+                    this.getQueue().add(new StreamsDatum(new NumericMessageObject(i)));
                 }
         }
     }

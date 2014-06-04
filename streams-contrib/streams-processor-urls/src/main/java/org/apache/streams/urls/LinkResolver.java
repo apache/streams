@@ -89,6 +89,10 @@ public class LinkResolver implements Serializable {
         return linkDetails;
     }
 
+    private static final int BYTE_BUFFER_SIZE = 1024 * 50;
+    private static final int MAX_ALLOWABLE_DOWNLOAD = 1024 * 1024 * 10;
+
+
     /**
      * Raw string input of the URL. If the URL is invalid, the response code that is returned will indicate such.
      *
@@ -159,158 +163,131 @@ public class LinkResolver implements Serializable {
         if (!linkDetails.getOriginalURL().equals(url))
             linkDetails.getRedirects().add(url);
 
+        URLConnection urlConnection = null;
         HttpURLConnection connection = null;
 
         // Store where the redirected link will go (if there is one)
         String reDirectedLink = null;
 
         try {
-            connection = LinkResolverHelperFunctions.constructHTTPConnection(url, this.linkDetails);
+            urlConnection = LinkResolverHelperFunctions.constructHTTPConnection(url, this.linkDetails);
 
-            linkDetails.setFinalResponseCode((long) connection.getResponseCode());
+            if(!(urlConnection instanceof HttpURLConnection)) {
+                linkDetails.setFinalResponseCode((long)200);
+                linkDetails.setFinalURL(urlConnection.getURL().toString());
+                linkDetails.setDomain(new URL(linkDetails.getFinalURL()).getHost());
+                linkDetails.setContentType(urlConnection.getContentType().contains(";") ? urlConnection.getContentType().split(";")[0] : urlConnection.getContentType());
+                setContent(urlConnection);
+            }
+            else {
+                connection = (HttpURLConnection)urlConnection;
+                linkDetails.setFinalResponseCode((long) connection.getResponseCode());
 
-            Map<String, List<String>> headers = createCaseInsensitiveMap(connection.getHeaderFields());
-            /******************************************************************
-             * If they want us to set cookies, well, then we will set cookies
-             * Example URL:
-             * http://nyti.ms/1bCpesx
-             *****************************************************************/
-            if (headers.containsKey(LinkResolverHelperFunctions.SET_COOKIE_IDENTIFIER))
-                linkDetails.getCookies().add(headers.get(LinkResolverHelperFunctions.SET_COOKIE_IDENTIFIER).get(0));
+                Map<String, List<String>> headers = createCaseInsensitiveMap(connection.getHeaderFields());
+                /******************************************************************
+                 * If they want us to set cookies, well, then we will set cookies
+                 * Example URL:
+                 * http://nyti.ms/1bCpesx
+                 *****************************************************************/
+                if (headers.containsKey(LinkResolverHelperFunctions.SET_COOKIE_IDENTIFIER)) {
+                    linkDetails.getCookies().add(headers.get(LinkResolverHelperFunctions.SET_COOKIE_IDENTIFIER).get(0));
+                }
 
-            switch (linkDetails.getFinalResponseCode().intValue()) {
-                /**
-                 * W3C HTTP Response Codes:
-                 * http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-                 */
-                case 200: // HTTP OK
-                    linkDetails.setFinalURL(connection.getURL().toString());
-                    linkDetails.setDomain(new URL(linkDetails.getFinalURL()).getHost());
-                    linkDetails.setContentType(connection.getContentType().contains(";") ? connection.getContentType().split(";")[0] : connection.getContentType());
-
-                    InputStream inputStream = null;
-                    try {
-                        if(linkDetails.getContentType() != null) {
-                            inputStream = connection.getInputStream();
-
-                            if(inputStream == null) {
-                                linkDetails.setLinkStatus(LinkDetails.LinkStatus.EMPTY);
-                                linkDetails.setContents(StringUtils.EMPTY);
-                                break;
-                            }
-
-                            if (linkDetails.getContentType().equalsIgnoreCase("text/html")) {
-                                linkDetails.setContentsType(LinkDetails.ContentsType.RAW_HTML);
-                                String rawHTML = convertInputStream(inputStream, connection.getContentEncoding() == null ? "UTF-8" : connection.getContentEncoding().toUpperCase());
-
-                                // we were unable to get the raw information
-                                if(rawHTML == null || rawHTML.equals(StringUtils.EMPTY)) {
-                                    linkDetails.setContents(StringUtils.EMPTY);
-                                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
-                                }
-                                else {
-                                    linkDetails.setContents(rawHTML);
-                                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.SUCCESS);
-                                }
-                            }
-                            else {
-                                linkDetails.setContentsType(LinkDetails.ContentsType.BASE_64);
-                                String base64 = convertInputStreamToBase64(inputStream);
-                                if(base64 == null || base64.equals(StringUtils.EMPTY)) {
-                                    linkDetails.setContents(StringUtils.EMPTY);
-                                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
-                                }
-                                else {
-                                    linkDetails.setContents(base64);
-                                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.SUCCESS);
-                                }
-                            }
-                        }
-                    }
-                    catch(SocketTimeoutException e) {
-                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.TIME_OUT);
-                        LOGGER.warn("Link Timed out: {}");
-                        break;
-                    }
-                    catch(IOException e) {
-                        LOGGER.warn("Unexpected IO Exception: {}", e);
-                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
-                        break;
-                    }
-                    finally {
-                        try {
-                            if(inputStream != null)
-                                inputStream.close();
-                        }
-                        catch(IOException e) {
-                            LOGGER.warn("Unexpected IO Exception: {}", e);
-                        }
-                    }
-                    break;
-                case 300: // Multiple choices
-                case 301: // URI has been moved permanently
-                case 302: // Found
-                case 303: // Primarily for a HTTP Post
-                case 304: // Not Modified
-                case 306: // This status code is unused but in the redirect block.
-                case 307: // Temporary re-direct
-                    /*******************************************************************
-                     * Author:
-                     * Smashew
-                     *
-                     * Date: 2013-11-15
-                     *
-                     * Note:
-                     * It is possible that we have already found our final URL. In
-                     * the event that we have found our final URL, we are going to
-                     * save this URL as long as it isn't the original URL.
-                     * We are still going to ask the browser to re-direct, but in the
-                     * case of yet another redirect, seen with the redbull test
-                     * this can be followed by a 304, a browser, by W3C standards would
-                     * still render the page with it's content, but for us to assert
-                     * a success, we are really hoping for a 304 message.
-                     *******************************************************************/
-                    if (!linkDetails.getOriginalURL().toLowerCase().equals(connection.getURL().toString().toLowerCase()))
+                switch (linkDetails.getFinalResponseCode().intValue()) {
+                    /**
+                     * W3C HTTP Response Codes:
+                     * http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+                     */
+                    case 200: // HTTP OK
                         linkDetails.setFinalURL(connection.getURL().toString());
-                    if (!headers.containsKey(LinkResolverHelperFunctions.LOCATION_IDENTIFIER)) {
-                        LOGGER.warn("Redirection Error: {}", headers);
-                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.REDIRECT_ERROR);
-                    } else {
-                        reDirectedLink = connection.getHeaderField(LinkResolverHelperFunctions.LOCATION_IDENTIFIER);
-                    }
-                    break;
-                case 305: // User must use the specified proxy (deprecated by W3C)
-                    break;
-                case 401: // Unauthorized (nothing we can do here)
-                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.UNAUTHORIZED);
-                    break;
-                case 403: // HTTP Forbidden (Nothing we can do here)
-                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.FORBIDDEN);
-                    break;
-                case 404: // Not Found (Page is not found, nothing we can do with a 404)
-                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.NOT_FOUND);
-                    break;
-                case 500: // Internal Server Error
-                case 501: // Not Implemented
-                case 502: // Bad Gateway
-                case 503: // Service Unavailable
-                case 504: // Gateway Timeout
-                case 505: // Version not supported
-                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.HTTP_ERROR_STATUS);
-                    break;
-                default:
-                    LOGGER.warn("Unrecognized HTTP Response Code: {}", linkDetails.getFinalResponseCode());
-                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.NOT_FOUND);
-                    break;
+                        linkDetails.setDomain(new URL(linkDetails.getFinalURL()).getHost());
+                        linkDetails.setContentType(connection.getContentType().contains(";") ? connection.getContentType().split(";")[0] : connection.getContentType());
+                        setContent(connection);
+                        break;
+                    case 300: // Multiple choices
+                    case 301: // URI has been moved permanently
+                    case 302: // Found
+                    case 303: // Primarily for a HTTP Post
+                    case 304: // Not Modified
+                    case 306: // This status code is unused but in the redirect block.
+                    case 307: // Temporary re-direct
+                        /*******************************************************************
+                         * Author:
+                         * Smashew
+                         *
+                         * Date: 2013-11-15
+                         *
+                         * Note:
+                         * It is possible that we have already found our final URL. In
+                         * the event that we have found our final URL, we are going to
+                         * save this URL as long as it isn't the original URL.
+                         * We are still going to ask the browser to re-direct, but in the
+                         * case of yet another redirect, seen with the redbull test
+                         * this can be followed by a 304, a browser, by W3C standards would
+                         * still render the page with it's content, but for us to assert
+                         * a success, we are really hoping for a 304 message.
+                         *******************************************************************/
+                        if (!linkDetails.getOriginalURL().toLowerCase().equals(connection.getURL().toString().toLowerCase()))
+                            linkDetails.setFinalURL(connection.getURL().toString());
+                        if (!headers.containsKey(LinkResolverHelperFunctions.LOCATION_IDENTIFIER)) {
+                            LOGGER.warn("Redirection Error: {}", headers);
+                            linkDetails.setLinkStatus(LinkDetails.LinkStatus.REDIRECT_ERROR);
+                        } else {
+                            reDirectedLink = connection.getHeaderField(LinkResolverHelperFunctions.LOCATION_IDENTIFIER);
+                        }
+
+                        // This fixes malformed URLs by allowing re-directs to relative paths
+                        if(!LinkResolverHelperFunctions.isURL(reDirectedLink)) {
+                            try {
+                                reDirectedLink = new URL(new URL(url), reDirectedLink).toString();
+                            }
+                            catch(MalformedURLException e) {
+                                LOGGER.info("Unable to concat the URLs together: {} - {}", url, reDirectedLink);
+                                throw e;
+                            }
+                        }
+                        break;
+                    case 305: // User must use the specified proxy (deprecated by W3C)
+                        break;
+                    case 401: // Unauthorized (nothing we can do here)
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.UNAUTHORIZED);
+                        break;
+                    case 403: // HTTP Forbidden (Nothing we can do here)
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.FORBIDDEN);
+                        break;
+                    case 404: // Not Found (Page is not found, nothing we can do with a 404)
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.NOT_FOUND);
+                        break;
+                    case 500: // Internal Server Error
+                    case 501: // Not Implemented
+                    case 502: // Bad Gateway
+                    case 503: // Service Unavailable
+                    case 504: // Gateway Timeout
+                    case 505: // Version not supported
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.HTTP_ERROR_STATUS);
+                        break;
+                    default:
+                        LOGGER.warn("Unrecognized HTTP Response Code: {}", linkDetails.getFinalResponseCode());
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.NOT_FOUND);
+                        break;
+                }
             }
         } catch (MalformedURLException e) {
             // the URL is trash, so, it can't load it.
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.MALFORMED_URL);
-        } catch(IOException ioe) {
-            LOGGER.warn("Unexpected IOException: {}", ioe.getMessage());
-            linkDetails.setLinkStatus(LinkDetails.LinkStatus.EXCEPTION);
-        }
-        finally {
+        } catch (SocketTimeoutException e) {
+            LOGGER.warn("Socket Timeout: {}", url);
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.TIME_OUT);
+            linkDetails.setContents(StringUtils.EMPTY);
+        } catch (IOException e) {
+            LOGGER.warn("Socket Timeout: {} - {}", e, url);
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
+            linkDetails.setContents(StringUtils.EMPTY);
+        } catch(Throwable e) {
+            LOGGER.warn("Unexpected Runtime Exception: {} - {}", e, url);
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
+            linkDetails.setContents(StringUtils.EMPTY);
+        } finally {
             // if the connection is not null, then we need to disconnect to close any underlying resources
             if (connection != null)
                 connection.disconnect();
@@ -323,41 +300,94 @@ public class LinkResolver implements Serializable {
             unwindLink(reDirectedLink);
     }
 
-    private String convertInputStreamToBase64(final InputStream in) {
+    private void setContent(URLConnection connection) {
+        InputStream inputStream = null;
         try {
-            return new BASE64Encoder().encode(getByteArrayOutputStream(in).toByteArray());
-        }
-        catch(Throwable e) {
+            if (linkDetails.getContentType() != null) {
+                inputStream = connection.getInputStream();
 
-            return StringUtils.EMPTY;
+                if (inputStream == null) {
+                    linkDetails.setLinkStatus(LinkDetails.LinkStatus.EMPTY);
+                    linkDetails.setContents(StringUtils.EMPTY);
+                    return;
+                }
+
+                if (linkDetails.getContentType().equalsIgnoreCase("text/html")) {
+                    linkDetails.setContentsType(LinkDetails.ContentsType.RAW_HTML);
+                    String rawHTML = convertInputStream(inputStream, connection.getContentEncoding() == null ? "UTF-8" : connection.getContentEncoding().toUpperCase());
+
+                    // we were unable to get the raw information
+                    if (rawHTML == null || rawHTML.equals(StringUtils.EMPTY)) {
+                        linkDetails.setContents(StringUtils.EMPTY);
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
+                    } else {
+                        linkDetails.setContents(rawHTML);
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.SUCCESS);
+                    }
+                } else {
+                    linkDetails.setContentsType(LinkDetails.ContentsType.BASE_64);
+                    String base64 = convertInputStreamToBase64(inputStream);
+                    if (base64 == null || base64.equals(StringUtils.EMPTY)) {
+                        linkDetails.setContents(StringUtils.EMPTY);
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
+                    } else {
+                        linkDetails.setContents(base64);
+                        linkDetails.setLinkStatus(LinkDetails.LinkStatus.SUCCESS);
+                    }
+                }
+            }
+        } catch (LinkResolverContentTooLargeException e) {
+            LOGGER.warn("Too Large: {}", connection.getURL().toString());
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.TOO_LARGE);
+            linkDetails.setContents(StringUtils.EMPTY);
+        } catch (SocketTimeoutException e) {
+            LOGGER.warn("Socket Timeout: {}", connection.getURL().toString());
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.TIME_OUT);
+            linkDetails.setContents(StringUtils.EMPTY);
+        } catch (IOException e) {
+            LOGGER.warn("Socket Timeout: {} - {}", e, connection.getURL().toString());
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
+            linkDetails.setContents(StringUtils.EMPTY);
+        } catch(Throwable e)  {
+            LOGGER.warn("Unknown Error: {} - {}", e, connection.getURL().toString());
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
+            linkDetails.setContents(StringUtils.EMPTY);
+        } finally {
+            try {
+                if (inputStream != null)
+                    inputStream.close();
+            } catch (IOException e) {
+                LOGGER.warn("Couldn't close the InputStream: {}", e);
+            }
         }
     }
 
-    private String convertInputStream(final InputStream in, String encoding) {
-        try {
-
-            ByteArrayOutputStream baos = encoding.equalsIgnoreCase("gzip") ?
-                    getByteArrayOutputStream(new GZIPInputStream(in)) :
-                    getByteArrayOutputStream(in);
-
-            encoding = encoding.equalsIgnoreCase("gzip") ?
-                    "UTF-8" :
-                    encoding;
-
-            String beforeConvert = new String(baos.toByteArray(), encoding);
-            return new String(beforeConvert.getBytes(), "UTF-8");
-        }
-        catch(Throwable e) {
-            LOGGER.warn("Unable to load URL: {} - Encoding:{} - {}", e.getMessage(), encoding, linkDetails.getFinalURL());
-            return StringUtils.EMPTY;
-        }
+    private String convertInputStreamToBase64(final InputStream in) throws IOException, LinkResolverContentTooLargeException {
+        return new BASE64Encoder().encode(getByteArrayOutputStream(in).toByteArray());
     }
 
-    private ByteArrayOutputStream getByteArrayOutputStream(InputStream in) throws IOException {
+    private String convertInputStream(final InputStream in, String encoding) throws IOException, LinkResolverContentTooLargeException{
+        ByteArrayOutputStream byteArrayOutputStream = encoding.equalsIgnoreCase("gzip") ?
+                getByteArrayOutputStream(new GZIPInputStream(in)) :
+                getByteArrayOutputStream(in);
+
+        encoding = encoding.equalsIgnoreCase("gzip") ?
+                "UTF-8" :
+                encoding;
+
+        String beforeConvert = new String(byteArrayOutputStream.toByteArray(), encoding);
+        return new String(beforeConvert.getBytes(), "UTF-8");
+    }
+
+    private ByteArrayOutputStream getByteArrayOutputStream(InputStream in) throws IOException, LinkResolverContentTooLargeException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        final byte[] buf = new byte[2048];
+        final byte[] buf = new byte[BYTE_BUFFER_SIZE];
+        int totalRead = 0;
         int rd;
-        while ((rd = in.read(buf, 0, 2048)) >= 0) {
+        while ((rd = in.read(buf, 0, BYTE_BUFFER_SIZE)) >= 0) {
+            totalRead += rd;
+            if (totalRead > MAX_ALLOWABLE_DOWNLOAD)
+                throw new LinkResolverContentTooLargeException();
             out.write(buf, 0, rd);
         }
         return out;
