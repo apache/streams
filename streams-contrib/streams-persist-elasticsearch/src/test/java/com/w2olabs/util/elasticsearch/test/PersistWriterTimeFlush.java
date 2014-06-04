@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 public class PersistWriterTimeFlush {
     @Test
-    public void testSingleWriterSingleThreadFlushByCount() throws Exception {
+    public void testSingleWriterSingleThreadFlushByTimer() throws Exception {
 
         final String clusterName = UUID.randomUUID().toString();
         final String index = "index1";
