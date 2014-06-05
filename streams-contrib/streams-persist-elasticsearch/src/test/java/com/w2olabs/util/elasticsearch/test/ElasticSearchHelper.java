@@ -4,6 +4,7 @@ import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.network.NetworkUtils;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
@@ -44,13 +45,16 @@ public class ElasticSearchHelper {
                     .put("index.store.type", "memory")
                     .put("index.store.fs.memory.enabled", "true")
                     .put("gateway.type", "none")
+                    .put("path.data", "./target/elasticsearch-test/data")
+                    .put("path.work", "./target/elasticsearch-test/work")
+                    .put("path.logs", "./target/elasticsearch-test/logs")
                     .put("index.number_of_shards", "1")
                     .put("index.number_of_replicas", "0")
                     .put("cluster.routing.schedule", "50ms")
                     .put("node.local", true)
                     .put("cluster.name", key + Long.toString(new Date().getTime())).build();
 
-            Node node = NodeBuilder.nodeBuilder().settings(settings).node();
+            Node node = NodeBuilder.nodeBuilder().local(true).settings(settings).node();
 
             ALL_ES_SERVERS.put(key, node.client());
         }
