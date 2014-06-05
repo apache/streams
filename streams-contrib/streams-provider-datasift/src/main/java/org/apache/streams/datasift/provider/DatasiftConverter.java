@@ -18,20 +18,20 @@ under the License.
 */
 package org.apache.streams.datasift.provider;
 
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.datasift.Datasift;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Converts a {@link org.apache.streams.datasift.Datasift} object to a StreamsDatum
  */
-public interface DatasiftTypeConverter {
+public interface DatasiftConverter {
 
     /**
-     * Converts a {@link org.apache.streams.datasift.Datasift} object to a StreamsDatum
-     * @param datasift
+     * Converts a datasift related object to the desired resulting object.
+     * @param toConvert
+     * @param mapper
      * @return
      */
-    public StreamsDatum convert(Datasift datasift);
+    public Object convert(Object toConvert, ObjectMapper mapper);
 
 
 }
