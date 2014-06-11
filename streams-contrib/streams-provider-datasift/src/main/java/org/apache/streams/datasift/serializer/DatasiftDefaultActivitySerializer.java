@@ -22,11 +22,7 @@ import java.util.Map;
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
-* Created with IntelliJ IDEA.
-* User: mdelaet
-* Date: 9/30/13
-* Time: 9:24 AM
-* To change this template use File | Settings | File Templates.
+*
 */
 public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Datasift>, Serializable {
 

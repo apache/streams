@@ -15,11 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * Created with IntelliJ IDEA.
- * User: sblackmon
- * Date: 8/20/13
- * Time: 5:57 PM
- * To change this template use File | Settings | File Templates.
+ *
  */
 public class DatasiftSerDeTest {
 

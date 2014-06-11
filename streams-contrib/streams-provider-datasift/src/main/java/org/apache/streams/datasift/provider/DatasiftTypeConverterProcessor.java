@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Created by sblackmon on 12/10/13.
+ *
  */
 public class DatasiftTypeConverterProcessor implements StreamsProcessor {
 

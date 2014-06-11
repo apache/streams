@@ -28,7 +28,7 @@ import org.apache.streams.pojo.json.Activity;
 import java.util.List;
 
 /**
- * Created by rebanks on 5/30/14.
+ *
  */
 public class DatasiftActivitySerializer implements ActivitySerializer<Datasift> {
 
