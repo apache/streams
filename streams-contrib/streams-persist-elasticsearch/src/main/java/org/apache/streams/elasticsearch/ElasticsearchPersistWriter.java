@@ -18,7 +18,11 @@
  */
 package org.apache.streams.elasticsearch;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
@@ -37,7 +41,9 @@ import org.elasticsearch.common.joda.time.DateTime;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.core.JsonParser;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -136,9 +142,28 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         try {
             add(config.getIndex(), config.getType(), streamsDatum.getId(),
                     streamsDatum.getTimestamp() == null ? Long.toString(DateTime.now().getMillis()) : Long.toString(streamsDatum.getTimestamp().getMillis()),
-                    (streamsDatum.getDocument() instanceof String) ? streamsDatum.getDocument().toString() : OBJECT_MAPPER.writeValueAsString(streamsDatum.getDocument()));
+                    convertAndAppendMetadata(streamsDatum));
         } catch (Throwable e) {
             LOGGER.warn("Unable to Write Datum to ElasticSearch: {}", e.getMessage());
+        }
+    }
+
+
+    private String convertAndAppendMetadata(StreamsDatum streamsDatum) throws IOException {
+        Object object = streamsDatum.getDocument();
+
+        String docAsJson = (object instanceof String) ? object.toString() : OBJECT_MAPPER.writeValueAsString(object);
+        if(streamsDatum.getMetadata() == null || streamsDatum.getMetadata().size() == 0)
+            return docAsJson;
+        else {
+            ObjectNode node = (ObjectNode)OBJECT_MAPPER.readTree(docAsJson);
+            try {
+                node.put("_metadata", OBJECT_MAPPER.readTree(OBJECT_MAPPER.writeValueAsBytes(streamsDatum.getMetadata())));
+            }
+            catch(Throwable e) {
+                LOGGER.warn("Unable to write metadata");
+            }
+            return OBJECT_MAPPER.writeValueAsString(node);
         }
     }
 
@@ -277,7 +302,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         Preconditions.checkNotNull(type);
         Preconditions.checkNotNull(json);
 
-        IndexRequestBuilder indexRequestBuilder = manager.getClient().prepareIndex(indexName, type).setSource(json);
+        IndexRequestBuilder indexRequestBuilder = manager.getClient()
+                .prepareIndex(indexName, type)
+                .setSource(json);
 
         // / They didn't specify an ID, so we will create one for them.
         if(id != null)
