@@ -59,6 +59,11 @@ public class NumericMessageProvider implements StreamsProvider {
     }
 
     @Override
+    public boolean isRunning() {
+        return false;
+    }
+
+    @Override
     public void prepare(Object configurationObject) {
 
     }
