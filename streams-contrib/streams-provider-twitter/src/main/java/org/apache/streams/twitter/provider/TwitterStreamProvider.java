@@ -137,6 +137,11 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     }
 
     @Override
+    public boolean isRunning() {
+        return !executor.isShutdown() && !executor.isTerminated();
+    }
+
+    @Override
     public void prepare(Object o) {
 
         executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
