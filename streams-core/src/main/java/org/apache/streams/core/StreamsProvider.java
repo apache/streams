@@ -24,13 +24,41 @@ import java.math.BigInteger;
 import java.util.Queue;
 
 /**
- * Created by sblackmon on 12/13/13.
+ * A StreamsProvider represents the entry point into the Streams pipeline.  Providers are responsible for inserting
+ * data into the pipeline in discrete result sets.
  */
 public interface StreamsProvider extends StreamsOperation {
 
-    public void startStream();
-    public StreamsResultSet readCurrent();
-    public StreamsResultSet readNew(BigInteger sequence);
-    public StreamsResultSet readRange(DateTime start, DateTime end);
+    /**
+     * Start the operation of the stream
+     */
+    void startStream();
 
+    /**
+     * Read the current items available from the provider
+     * @return a non-null {@link org.apache.streams.core.StreamsResultSet}
+     */
+    StreamsResultSet readCurrent();
+
+    /**
+     * TODO: Define how this operates or eliminate
+     * @param sequence
+     * @return
+     */
+    StreamsResultSet readNew(BigInteger sequence);
+
+    /**
+     * TODO: Define how this operates or eliminate
+     * @param start
+     * @param end
+     * @return
+     */
+    StreamsResultSet readRange(DateTime start, DateTime end);
+
+    /**
+     * Flag to indicate whether the provider is producing data
+     * @return true if the processor is actively awaiting or producing data.  False otherwise.
+     */
+    boolean isRunning();
 }
+
