@@ -190,6 +190,11 @@ public class DatasiftStreamProvider implements StreamsProvider {
     }
 
     @Override
+    public boolean isRunning() {
+        return this.clients != null && this.clients.size() > 0;
+    }
+
+    @Override
     public void prepare(Object configurationObject) {
         this.interactions = new ConcurrentLinkedQueue<Interaction>();
         this.clients = Maps.newHashMap();
