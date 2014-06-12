@@ -92,6 +92,11 @@ public class MoreoverProvider implements StreamsProvider {
     }
 
     @Override
+    public boolean isRunning() {
+        return !executor.isShutdown() && !executor.isTerminated();
+    }
+
+    @Override
     public void prepare(Object configurationObject) {
         LOGGER.debug("Prepare");
         executor = Executors.newSingleThreadExecutor();

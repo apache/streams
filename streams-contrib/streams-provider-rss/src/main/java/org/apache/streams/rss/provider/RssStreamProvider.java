@@ -78,8 +78,6 @@ public class RssStreamProvider implements StreamsProvider {
 
     protected List<SyndFeed> feeds;
 
-    protected final AtomicBoolean running = new AtomicBoolean();
-
     private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
         return new ThreadPoolExecutor(nThreads, nThreads,
                 5000L, TimeUnit.MILLISECONDS,
@@ -124,15 +122,12 @@ public class RssStreamProvider implements StreamsProvider {
         for( int i = 0; i < ((config.getFeeds().size() / 5) + 1); i++ )
             executor.submit(new RssEventProcessor(inQueue, providerQueue, klass));
 
-        running.set(true);
-
     }
 
     public void stop() {
         for (int i = 0; i < ((config.getFeeds().size() / 5) + 1); i++) {
             inQueue.add(RssEventProcessor.TERMINATE);
         }
-        running.set(false);
     }
 
     public Queue<StreamsDatum> getProviderQueue() {
@@ -158,7 +153,7 @@ public class RssStreamProvider implements StreamsProvider {
 
     @Override
     public boolean isRunning() {
-        return running.get();
+        return !executor.isTerminated() && !executor.isShutdown();
     }
 
     @Override
