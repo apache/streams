@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TwitterUserInformationProvider implements StreamsProvider, Serializable
 {
@@ -70,6 +71,8 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     protected DateTime start;
     protected DateTime end;
+
+    protected final AtomicBoolean running = new AtomicBoolean();
 
     private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
         return new ThreadPoolExecutor(nThreads, nThreads,
@@ -104,7 +107,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     @Override
     public void startStream() {
-        // no op
+        running.set(true);
     }
 
 
@@ -180,6 +183,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
         LOGGER.info("Providing {} docs", providerQueue.size());
 
         StreamsResultSet result =  new StreamsResultSet(providerQueue);
+        running.set(false);
 
         LOGGER.info("Exiting");
 
@@ -199,6 +203,11 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
         readCurrent();
         StreamsResultSet result = (StreamsResultSet)providerQueue.iterator();
         return result;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running.get();
     }
 
     void shutdownAndAwaitTermination(ExecutorService pool) {
