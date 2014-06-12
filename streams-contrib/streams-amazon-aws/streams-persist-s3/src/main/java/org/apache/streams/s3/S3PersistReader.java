@@ -76,6 +76,11 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
         return null;
     }
 
+    @Override
+    public boolean isRunning() {
+        return !executor.isShutdown() && !executor.isTerminated();
+    }
+
     public DatumStatusCounter getDatumStatusCounter() {
         return countersTotal;
     }
