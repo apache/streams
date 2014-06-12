@@ -104,4 +104,9 @@ public class ConsolePersistReader implements StreamsPersistReader {
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         return readCurrent();
     }
+
+    @Override
+    public boolean isRunning() {
+        return true;  //Will always be running
+    }
 }
