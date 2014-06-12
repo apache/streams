@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class S3PersistReader implements StreamsPersistReader, DatumStatusCountable {
@@ -55,6 +56,7 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
 
     protected DatumStatusCounter countersTotal = new DatumStatusCounter();
     protected DatumStatusCounter countersCurrent = new DatumStatusCounter();
+    private Future<?> task;
 
     public AmazonS3Client getAmazonS3Client() {
         return this.amazonS3Client;
@@ -78,7 +80,7 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
 
     @Override
     public boolean isRunning() {
-        return !executor.isShutdown() && !executor.isTerminated();
+        return !task.isDone() && !task.isCancelled();
     }
 
     public DatumStatusCounter getDatumStatusCounter() {
@@ -160,7 +162,7 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
 
     public void startStream() {
         LOGGER.debug("startStream");
-        executor.submit(new S3PersistReaderTask(this));
+        task = executor.submit(new S3PersistReaderTask(this));
     }
 
     public StreamsResultSet readCurrent() {
