@@ -45,6 +45,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by sblackmon on 12/10/13.
@@ -76,6 +77,8 @@ public class RssStreamProvider implements StreamsProvider {
     protected ListeningExecutorService executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(100, 100));
 
     protected List<SyndFeed> feeds;
+
+    protected final AtomicBoolean running = new AtomicBoolean();
 
     private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
         return new ThreadPoolExecutor(nThreads, nThreads,
@@ -121,12 +124,15 @@ public class RssStreamProvider implements StreamsProvider {
         for( int i = 0; i < ((config.getFeeds().size() / 5) + 1); i++ )
             executor.submit(new RssEventProcessor(inQueue, providerQueue, klass));
 
+        running.set(true);
+
     }
 
     public void stop() {
         for (int i = 0; i < ((config.getFeeds().size() / 5) + 1); i++) {
             inQueue.add(RssEventProcessor.TERMINATE);
         }
+        running.set(false);
     }
 
     public Queue<StreamsDatum> getProviderQueue() {
@@ -148,6 +154,11 @@ public class RssStreamProvider implements StreamsProvider {
     @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         return null;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running.get();
     }
 
     @Override
