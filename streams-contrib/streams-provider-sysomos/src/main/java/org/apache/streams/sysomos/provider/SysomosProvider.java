@@ -154,6 +154,11 @@ public class SysomosProvider implements StreamsProvider {
     }
 
     @Override
+    public boolean isRunning() {
+        return completedHeartbeats.size() < this.getConfig().getHeartbeatIds().size();
+    }
+
+    @Override
     public void prepare(Object configurationObject) {
         this.providerQueue = constructQueue();
         if(configurationObject instanceof Map) {
@@ -187,7 +192,7 @@ public class SysomosProvider implements StreamsProvider {
         try {
             this.lock.writeLock().lock();
             this.completedHeartbeats.add(heartbeatId);
-            if(completedHeartbeats.size() == this.getConfig().getHeartbeatIds().size()) {
+            if(!this.isRunning()) {
                 this.cleanUp();
             }
         } finally {
