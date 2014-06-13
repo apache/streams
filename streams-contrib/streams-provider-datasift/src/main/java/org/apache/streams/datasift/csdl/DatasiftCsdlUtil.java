@@ -3,9 +3,7 @@ package org.apache.streams.datasift.csdl;
 import java.util.List;
 import java.util.ListIterator;
 
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import org.apache.streams.util.TemplateEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,9 +12,7 @@ public class DatasiftCsdlUtil {
 	private static final Logger log = LoggerFactory
 			.getLogger(DatasiftCsdlUtil.class);
 
-	public static String HTTP = "http";
-
-    public static String csdlFromTwitterUserIds(List<String> list) throws Exception {
+	public static String csdlFromTwitterUserIds(List<String> list) throws Exception {
 		
 		StringBuilder csdlBuilder = new StringBuilder();
 
