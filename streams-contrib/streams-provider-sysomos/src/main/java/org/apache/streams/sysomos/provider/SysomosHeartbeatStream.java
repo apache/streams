@@ -21,6 +21,7 @@ package org.apache.streams.sysomos.provider;
 
 import com.sysomos.xml.BeatApi;
 import org.apache.streams.core.StreamsDatum;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +30,8 @@ import org.slf4j.LoggerFactory;
  */
 public class SysomosHeartbeatStream implements Runnable {
 
+    private static enum OperatingMode { DATE, DOC_MATCH}
+
     private final static Logger LOGGER = LoggerFactory.getLogger(SysomosHeartbeatStream.class);
 
     private final SysomosProvider provider;
@@ -36,23 +39,37 @@ public class SysomosHeartbeatStream implements Runnable {
     private final String heartbeatId;
     private final long maxApiBatch;
     private final long minLatency;
+    private final OperatingMode mode;
 
     private String lastID;
+    private DateTime beforeTime;
+    private DateTime afterTime;
     private int offsetCount = 0;
     private boolean enabled = true;
 
     public SysomosHeartbeatStream(SysomosProvider provider, String heartbeatId) {
-        this(provider, heartbeatId, null);
+        this(provider, heartbeatId, OperatingMode.DATE);
     }
 
-    public SysomosHeartbeatStream(SysomosProvider provider, String heartbeatId, String docId) {
+    public SysomosHeartbeatStream(SysomosProvider provider, String heartbeatId, DateTime beforeTime, DateTime afterTime) {
+        this(provider, heartbeatId, OperatingMode.DATE);
+        this.beforeTime = beforeTime;
+        this.afterTime = afterTime;
+    }
+
+    public SysomosHeartbeatStream(SysomosProvider provider, String heartbeatId, String documentId) {
+        this(provider, heartbeatId, OperatingMode.DOC_MATCH);
+        this.lastID = documentId;
+    }
+
+    public SysomosHeartbeatStream(SysomosProvider provider, String heartbeatId, OperatingMode mode) {
         this.provider = provider;
         this.heartbeatId = heartbeatId;
-        this.lastID = docId;
 
         this.client = provider.getClient();
         this.maxApiBatch = provider.getMaxApiBatch();
         this.minLatency = provider.getMinLatency();
+        this.mode = mode;
     }
 
     @Override
@@ -94,10 +111,17 @@ public class SysomosHeartbeatStream implements Runnable {
         BeatApi.BeatResponse response = null;
         try {
             if(enabled) {
-                response = this.client.createRequestBuilder()
+                RequestBuilder requestBuilder = this.client.createRequestBuilder()
                         .setHeartBeatId(heartbeatId)
                         .setOffset(offsetCount * maxApiBatch)
-                        .setReturnSetSize(maxApiBatch).execute();
+                        .setReturnSetSize(maxApiBatch);
+                if(beforeTime != null) {
+                    requestBuilder.setAddedBeforeDate(beforeTime);
+                }
+                if(afterTime != null) {
+                    requestBuilder.setAddedAfterDate(afterTime);
+                }
+                response = requestBuilder.execute();
 
                 LOGGER.debug("Received {} results from API query", response.getCount());
             }
