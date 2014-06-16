@@ -42,7 +42,7 @@ import java.util.Map;
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
- * 
+ *
  */
 public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySerializer {
 

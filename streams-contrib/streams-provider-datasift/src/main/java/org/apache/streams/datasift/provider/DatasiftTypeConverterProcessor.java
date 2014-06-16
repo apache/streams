@@ -21,8 +21,7 @@ package org.apache.streams.datasift.provider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.core.*;
 import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.serializer.DatasiftActivitySerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -35,7 +34,7 @@ import java.util.List;
 /**
  *
  */
-public class DatasiftTypeConverterProcessor implements StreamsProcessor {
+public class DatasiftTypeConverterProcessor implements StreamsProcessor,DatumStatusCountable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftTypeConverterProcessor.class);
 
@@ -43,6 +42,7 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
     private Class outClass;
     private DatasiftActivitySerializer datasiftInteractionActivitySerializer;
     private DatasiftConverter converter;
+    private DatumStatusCounter counter;
 
     public final static String TERMINATE = new String("TERMINATE");
 
@@ -52,6 +52,7 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
+        this.counter.incrementAttempt();
         List<StreamsDatum> result = Lists.newLinkedList();
         Object doc;
         try {
@@ -61,7 +62,9 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
             }
         } catch (Exception e) {
             LOGGER.error("Exception converting Datasift Interaction to "+this.outClass.getName()+ " : {}", e);
+            this.counter.incrementStatus(DatumStatus.FAIL);
         }
+        this.counter.incrementStatus(DatumStatus.SUCCESS);
         return result;
     }
 
@@ -77,11 +80,17 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
             LOGGER.warn("Using defaulting datasift converter");
             this.converter = new DefaultConverter(this.outClass);
         }
+        this.counter = new DatumStatusCounter();
     }
 
     @Override
     public void cleanUp() {
 
+    }
+
+    @Override
+    public DatumStatusCounter getDatumStatusCounter() {
+        return this.counter;
     }
 
     private class ActivityConverter implements DatasiftConverter {
@@ -109,17 +118,12 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
         public Object convert(Object toConvert, ObjectMapper mapper) {
             try {
                 if(toConvert instanceof String){
-//                    LOGGER.debug(mapper.writeValueAsString(mapper.readValue((String) toConvert, Datasift.class)));
                     return mapper.writeValueAsString(mapper.readValue((String) toConvert, Datasift.class));
                 } else {
                     if(toConvert.getClass().equals(Activity.class)) { //hack to remove additional properties
                         ObjectNode node = mapper.convertValue(toConvert, ObjectNode.class);
                         if(node.has("additionalProperties")) {
                             ObjectNode additionalProperties = (ObjectNode) node.get("additionalProperties");
-//                            node.put("keywords", additionalProperties.get("keywords"));
-//                            node.put("location", additionalProperties.get("location"));
-//                            node.put("hashtags", additionalProperties.get("hashtags"));
-//                            node.put("datasift", additionalProperties.get("datasift"));
 //                            node.put("user_mentions", additionalProperties.get("user_mentions"));
                             node.putAll(additionalProperties);
                             node.remove("additionalProperties");
@@ -128,11 +132,6 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
                             ObjectNode actor = (ObjectNode) node.get("actor");
                             if(actor.has("additionalProperties")) {
                                 ObjectNode additionalProperties = (ObjectNode) actor.get("additionalProperties");
-//                                actor.put("followers", additionalProperties.get("followers"));
-//                                actor.put("location", additionalProperties.get("location"));
-//                                actor.put("screenName", additionalProperties.get("screenName"));
-//                                actor.put("posts", additionalProperties.get("posts"));
-//                                actor.put("favorites", additionalProperties.get("favorties"));
                                 actor.putAll(additionalProperties);
                                 actor.remove("additionalProperties");
                             }
