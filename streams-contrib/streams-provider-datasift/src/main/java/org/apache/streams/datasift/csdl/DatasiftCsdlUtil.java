@@ -83,4 +83,32 @@ public class DatasiftCsdlUtil {
 
         return csdlBuilder.toString();
 	}
+
+    public static String csdlFromKeywords(List<String> include, List<String> exclude) throws Exception {
+
+        StringBuilder csdlBuilder = new StringBuilder();
+
+        csdlBuilder.append("interaction.content contains_any \"");
+        ListIterator<String> listIterator = Lists.newArrayList(include).listIterator();
+        while( listIterator.hasNext() ) {
+            csdlBuilder.append(listIterator.next());
+            if (listIterator.hasNext())
+                csdlBuilder.append(",");
+        }
+        csdlBuilder.append("\"\n");
+        csdlBuilder.append(" AND NOT ( \n");
+        csdlBuilder.append("interaction.content \"");
+        listIterator = Lists.newArrayList(exclude).listIterator();
+        while( listIterator.hasNext() ) {
+            csdlBuilder.append(listIterator.next());
+            if (listIterator.hasNext())
+                csdlBuilder.append(",");
+        }
+        csdlBuilder.append("\"\n");
+        csdlBuilder.append(")\n");
+
+        log.debug(csdlBuilder.toString());
+
+        return csdlBuilder.toString();
+    }
 }
