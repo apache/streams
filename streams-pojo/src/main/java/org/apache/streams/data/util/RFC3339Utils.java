@@ -44,6 +44,7 @@ public class RFC3339Utils {
     private static final String SUB_SECOND = "\\.([0-9]*)";
     private static final String UTC = "Z$";
 
+
     private static final Pattern MILLIS = Pattern.compile("^[0-9]*$");
     private static final Pattern UTC_STANDARD = Pattern.compile(BASE + UTC);
     private static final Pattern UTC_SUB_SECOND = Pattern.compile(BASE + SUB_SECOND + UTC);
@@ -159,6 +160,9 @@ public class RFC3339Utils {
      * @return {@link org.joda.time.DateTime} representation of the dateString
      */
     public static DateTime parseToUTC(String dateString) {
+        if(MILLIS.matcher(dateString).find()) {
+            return new DateTime(Long.parseLong(dateString));
+        }
         try {
             return DEFAULT_FORMATTER.parseDateTime(dateString);
         } catch (Exception e) {
