@@ -178,7 +178,10 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
         Map<String, Object> extensions = ensureExtensions(activity);
         Map<String, Object> location = Maps.newHashMap();
         double[] coordiantes = new double[] { twitter.getGeo().getLongitude(), twitter.getGeo().getLatitude() };
-        location.put("coordinates", coordiantes);
+        Map<String, Object> coords = Maps.newHashMap();
+        coords.put("coordinates", coordiantes);
+        coords.put("type", "geo_point");
+        location.put("coordinates", coords);
         extensions.put("location", location);
     }
 
