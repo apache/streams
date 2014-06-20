@@ -155,7 +155,7 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     }
 
     //Hardcore sleep to allow for catch up
-    private void sleepAndTryAgain(Activity doc, String originalId) {
+    protected void sleepAndTryAgain(Activity doc, String originalId) {
         try {
             //Attempt to fetchAndReplace with a backoff up to the limit then just reset the count and let the process continue
             if(retryCount < MAX_ATTEMPTS) {
