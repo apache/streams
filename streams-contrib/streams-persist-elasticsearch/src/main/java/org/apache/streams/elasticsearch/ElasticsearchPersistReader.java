@@ -56,6 +56,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
     private int threadPoolSize = 10;
     private ExecutorService executor;
     private ReadWriteLock lock = new ReentrantReadWriteLock();
+    private Future<?> readerTask;
 
     public ElasticsearchPersistReader() {
     }
@@ -69,7 +70,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
     public void startStream() {
         LOGGER.debug("startStream");
         executor = Executors.newSingleThreadExecutor();
-        executor.submit(new ElasticsearchPersistReaderTask(this, elasticsearchQuery));
+        readerTask = executor.submit(new ElasticsearchPersistReaderTask(this, elasticsearchQuery));
     }
 
     @Override
@@ -115,6 +116,11 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
     @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         return readCurrent();
+    }
+
+    @Override
+    public boolean isRunning() {
+        return !readerTask.isDone() && !readerTask.isCancelled();
     }
 
     @Override

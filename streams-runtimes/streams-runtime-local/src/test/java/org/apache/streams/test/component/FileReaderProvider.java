@@ -72,6 +72,11 @@ public class FileReaderProvider implements StreamsProvider {
     }
 
     @Override
+    public boolean isRunning() {
+        return this.scanner.hasNextLine();
+    }
+
+    @Override
     public void prepare(Object configurationObject) {
         this.scanner = new Scanner(FileReaderProvider.class.getResourceAsStream(this.fileName));
     }

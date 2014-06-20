@@ -45,6 +45,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by sblackmon on 12/10/13.
@@ -148,6 +149,11 @@ public class RssStreamProvider implements StreamsProvider {
     @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         return null;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return !executor.isTerminated() && !executor.isShutdown();
     }
 
     @Override

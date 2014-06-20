@@ -121,6 +121,11 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable {
         return null;
     }
 
+    @Override
+    public boolean isRunning() {
+        return !executor.isShutdown() && !executor.isTerminated();
+    }
+
     private static ConsumerConfig createConsumerConfig(String a_zookeeper, String a_groupId) {
         Properties props = new Properties();
         props.put("zookeeper.connect", a_zookeeper);

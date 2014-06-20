@@ -148,6 +148,11 @@ public class GPlusProvider implements StreamsProvider {
     }
 
     @Override
+    public boolean isRunning() {
+        return !providerTaskComplete.isDone() && !providerTaskComplete.isCancelled();
+    }
+
+    @Override
     public void prepare(Object configurationObject) {
 
         Preconditions.checkNotNull(this.klass);
