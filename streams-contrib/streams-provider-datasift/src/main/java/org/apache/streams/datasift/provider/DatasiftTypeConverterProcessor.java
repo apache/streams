@@ -106,6 +106,7 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor,DatumSta
             } catch (Exception e) {
                 LOGGER.error("Exception while trying to convert {} to a Activity.", toConvert.getClass());
                 LOGGER.error("Exception : {}", e);
+                e.printStackTrace();
                 return null;
             }
         }

@@ -25,8 +25,13 @@ public class DatasiftActivitySerializerTest {
         Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/rand_sample_datasift_json.txt"));
         String line = null;
         while(scanner.hasNextLine()) {
-            line = scanner.nextLine();
-            testGeneralConversion(line);
+            try {
+                line = scanner.nextLine();
+                testGeneralConversion(line);
+            } catch (Exception e) {
+                System.err.println(line);
+                throw e;
+            }
         }
     }
 
