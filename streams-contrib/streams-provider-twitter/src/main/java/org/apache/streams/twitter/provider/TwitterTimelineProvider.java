@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Optional;
@@ -24,6 +42,7 @@ import twitter4j.conf.ConfigurationBuilder;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.Iterator;
@@ -67,6 +86,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     protected DateTime start;
     protected DateTime end;
+
+    protected final AtomicBoolean running = new AtomicBoolean();
 
     Boolean jsonStoreEnabled;
     Boolean includeEntitiesEnabled;
@@ -207,7 +228,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         } finally {
             lock.writeLock().unlock();
         }
-
+        running.set(false);
         LOGGER.info("Exiting");
 
         return result;
@@ -226,6 +247,11 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         LOGGER.debug("{} readRange", STREAMS_ID);
         throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running.get();
     }
 
     void shutdownAndAwaitTermination(ExecutorService pool) {
@@ -251,7 +277,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     public void prepare(Object o) {
 
         executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
-
+        running.set(true);
         try {
             lock.writeLock().lock();
             providerQueue = constructQueue();
