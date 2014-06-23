@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.streams.sysomos.org.apache.streams.sysomos.proessor;
+package org.apache.streams.sysomos.processor;
 
 import com.google.common.collect.Lists;
 import com.sysomos.xml.BeatApi;

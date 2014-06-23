@@ -221,14 +221,18 @@ public class SysomosProvider implements StreamsProvider {
     }
 
     protected SysomosHeartbeatStream createStream(String heartbeatId) {
-        String beforeTime = addedAfter != null && addedAfter.containsKey(heartbeatId) ? addedAfter.get(heartbeatId) : null;
-        String afterTime = addedBefore != null && addedBefore.containsKey(heartbeatId) ? addedBefore.get(heartbeatId) : null;
+        String afterTime = addedAfter != null && addedAfter.containsKey(heartbeatId) ? addedAfter.get(heartbeatId) : null;
+        String beforeTime = addedBefore != null && addedBefore.containsKey(heartbeatId) ? addedBefore.get(heartbeatId) : null;
 
         if(documentIds != null && documentIds.containsKey(heartbeatId)) {
             return new SysomosHeartbeatStream(this, heartbeatId, documentIds.get(heartbeatId));
         }
-        if(afterTime != null || beforeTime != null) {
-            return new SysomosHeartbeatStream(this, heartbeatId, RFC3339Utils.parseToUTC(beforeTime), RFC3339Utils.parseToUTC(afterTime));
+        if(afterTime != null) {
+            if(beforeTime != null) {
+                return new SysomosHeartbeatStream(this, heartbeatId, RFC3339Utils.parseToUTC(beforeTime), RFC3339Utils.parseToUTC(afterTime));
+            } else {
+                return new SysomosHeartbeatStream(this, heartbeatId, null, RFC3339Utils.parseToUTC(afterTime));
+            }
         }
         return new SysomosHeartbeatStream(this, heartbeatId);
     }
