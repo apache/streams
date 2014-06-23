@@ -50,7 +50,7 @@ public class StreamsJacksonMapper extends ObjectMapper {
         super();
         registerModule(new StreamsJacksonModule());
         disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.TRUE);
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
         configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, Boolean.TRUE);
         configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
@@ -58,6 +58,8 @@ public class StreamsJacksonMapper extends ObjectMapper {
         configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, Boolean.TRUE);
         // If a user has an 'object' that does not have an explicit mapping, don't cause the serialization to fail.
         configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, Boolean.FALSE);
+        configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, Boolean.FALSE);
+        configure(SerializationFeature.WRITE_NULL_MAP_VALUES, Boolean.FALSE);
         setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.DEFAULT);
     }
 
