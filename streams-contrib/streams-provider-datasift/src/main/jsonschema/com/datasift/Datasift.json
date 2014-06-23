@@ -99,10 +99,20 @@
                             "type": "integer"
                         },
                         "ids": {
-                            "type": "string"
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
                         },
                         "names": {
-                            "type": "string"
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
                         }
                     }
                 },
@@ -252,7 +262,12 @@
             "dynamic": "true",
             "properties": {
                 "code": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": [
+                            {
+                            "type": "integer"
+                            }
+                        ]
                 },
                 "created_at": {
                     "type": "array",
@@ -398,7 +413,12 @@
                     ]
                 },
                 "retweet_count": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "long"
+                        }
+                    ]
                 },
                 "title": {
                     "type": "array",
@@ -715,7 +735,12 @@
                     ]
                 },
                 "mention_ids": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "integer"
+                        }
+                    ]
                 },
                 "mentions": {
                     "type": "array",
@@ -899,7 +924,13 @@
                             }
                         },
                         "mention_ids": {
-                            "type": "integer"
+                            "type": "array",
+                            "items":[
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+
                         },
                         "mentions": {
                             "type": "array",
@@ -1031,6 +1062,7 @@
                             "type": "string"
                         },
                         "user": {
+                            "javaType": "org.apache.streams.datasift.twitter.User",
                             "dynamic": "true",
                             "properties": {
                                 "created_at": {
