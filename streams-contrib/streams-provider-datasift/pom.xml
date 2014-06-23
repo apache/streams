@@ -46,10 +46,6 @@
             <version>3.0.0-Beta3.4</version>
             <exclusions>
                 <exclusion>
-                    <groupId>com.boundary</groupId>
-                    <artifactId>high-scale-lib</artifactId>
-                </exclusion>
-                <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
                     <groupId>org.slf4j</groupId>
                 </exclusion>
