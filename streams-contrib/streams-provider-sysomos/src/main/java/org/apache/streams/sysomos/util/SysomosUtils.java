@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 public class SysomosUtils {
 
     public static final Pattern CODE_PATTERN = Pattern.compile("code: ([0-9]+)");
-    public static final DateTimeFormatter SYSOMOS_DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'hh:mm:ssZ");
+    public static final DateTimeFormatter SYSOMOS_DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC();
     private final static Logger LOGGER = LoggerFactory.getLogger(SysomosUtils.class);
 
     private SysomosUtils() {}

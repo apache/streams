@@ -165,7 +165,7 @@ public class DatasiftStreamProvider implements StreamsProvider {
         while (!this.interactions.isEmpty()) {
             interaction = this.interactions.poll();
             try {
-                datum = new StreamsDatum(this.mapper.writeValueAsString(this.interactions.poll()), interaction.getData().get("interaction").get("id").textValue());
+                datum = new StreamsDatum(this.mapper.writeValueAsString(interaction.getData()), interaction.getData().get("interaction").get("id").textValue());
             } catch (JsonProcessingException jpe) {
                 LOGGER.error("Exception while converting Interaction to String : {}", jpe);
             }
@@ -187,6 +187,11 @@ public class DatasiftStreamProvider implements StreamsProvider {
     @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         return null;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return this.clients != null && this.clients.size() > 0;
     }
 
     @Override
