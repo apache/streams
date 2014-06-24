@@ -20,10 +20,13 @@ package org.apache.streams.elasticsearch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigRenderOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Converts a {@link com.typesafe.config.Config} element into an instance of ElasticSearchConfiguration
@@ -58,6 +61,17 @@ public class ElasticsearchConfigurator {
 
         elasticsearchReaderConfiguration.setIndexes(indexes);
         elasticsearchReaderConfiguration.setTypes(types);
+
+        if( elasticsearch.hasPath("_search") ) {
+            LOGGER.info("_search supplied by config");
+            Config searchConfig = elasticsearch.getConfig("_search");
+            try {
+                elasticsearchReaderConfiguration.setSearch(mapper.readValue(searchConfig.root().render(ConfigRenderOptions.concise()), Map.class));
+            } catch (IOException e) {
+                e.printStackTrace();
+                LOGGER.warn("Could not parse _search supplied by config");
+            }
+        }
 
         return elasticsearchReaderConfiguration;
     }

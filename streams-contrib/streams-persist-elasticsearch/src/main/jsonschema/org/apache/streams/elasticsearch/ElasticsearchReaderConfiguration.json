@@ -19,6 +19,11 @@
                 "type": "string"
             },
             "description": "Types to read from"
+        },
+        "_search": {
+            "type": "object",
+            "javaType" : "java.util.Map",
+            "description": "Search definition"
         }
     }
 }
