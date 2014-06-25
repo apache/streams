@@ -13,3 +13,4 @@ Example configuration:
             "collection": "startup_log"
         }
     }
+
