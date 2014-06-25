@@ -138,19 +138,19 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
 
             String searchJson;
             if( config.getSearch() != null ) {
-                LOGGER.info("Have config in Reader: " + config.getSearch().toString());
+                LOGGER.debug("Have config in Reader: " + config.getSearch().toString());
 
                 try {
                     searchJson = mapper.writeValueAsString(config.getSearch());
-                    LOGGER.info("Setting source: " + searchJson);
-                    search = search.setSource(searchJson);
+                    LOGGER.debug("Setting source: " + searchJson);
+                    search = search.setExtraSource(searchJson);
 
                 } catch (JsonProcessingException e) {
                     LOGGER.warn("Could not apply _search supplied by config");
                     e.printStackTrace();
                 }
 
-                LOGGER.info("Search Source is now " + search.toString());
+                LOGGER.debug("Search Source is now " + search.toString());
 
             }
 
