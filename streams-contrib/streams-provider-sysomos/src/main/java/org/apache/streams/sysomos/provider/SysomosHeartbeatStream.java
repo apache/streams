@@ -117,6 +117,9 @@ public class SysomosHeartbeatStream implements Runnable {
         } else {
             offsetCount = result.getResponseSize() == 0 ? 0 : offsetCount + 1;
         }
+        if(offsetCount > 0) {
+            sleep();
+        }
     }
 
     protected void sleep() {
