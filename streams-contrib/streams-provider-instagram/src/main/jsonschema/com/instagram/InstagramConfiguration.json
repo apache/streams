@@ -1,0 +1,20 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.instagram.InstagramConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "version": {
+            "type": "string",
+            "description": "The version"
+        },
+        "endpoint": {
+            "type": "string",
+            "description": "The endpoint"
+        },
+        "accessToken": {
+            "type": "string"
+        }
+   }
+}
