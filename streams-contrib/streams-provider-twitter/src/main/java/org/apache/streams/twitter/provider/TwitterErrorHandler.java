@@ -30,7 +30,7 @@ public class TwitterErrorHandler
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterErrorHandler.class);
 
-    protected static final long initial_backoff = 1000;
+    protected static final long initial_backoff = 2*60*1000;
     protected static long backoff = initial_backoff;
 
     public static int handleTwitterError(Twitter twitter, Exception exception)

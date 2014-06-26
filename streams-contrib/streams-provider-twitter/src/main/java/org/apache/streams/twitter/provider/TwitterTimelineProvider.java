@@ -20,7 +20,6 @@ package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Queues;
-import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
@@ -82,10 +81,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     Boolean jsonStoreEnabled;
     Boolean includeEntitiesEnabled;
 
-    private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
-        return new ThreadPoolExecutor(nThreads, nThreads,
-                5000L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
+    private static ExecutorService getExecutor() {
+        return Executors.newSingleThreadExecutor();
     }
 
     public TwitterTimelineProvider(TwitterUserInformationConfiguration config) {
@@ -244,11 +241,10 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         }
     }
 
-
     @Override
     public void prepare(Object o) {
 
-        executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
+        executor = getExecutor();
         running.set(true);
         try {
             lock.writeLock().lock();
@@ -323,8 +319,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                 .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
                 .setOAuthAccessToken(config.getOauth().getAccessToken())
                 .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
-                .setIncludeEntitiesEnabled(includeEntitiesEnabled)
-                .setJSONStoreEnabled(jsonStoreEnabled)
+                .setIncludeEntitiesEnabled(true)
+                .setJSONStoreEnabled(true)
                 .setAsyncNumThreads(3)
                 .setRestBaseURL(baseUrl)
                 .setIncludeMyRetweetEnabled(Boolean.TRUE)
