@@ -88,7 +88,6 @@ public class SysomosHeartbeatStream implements Runnable {
                 mostCurrentId = result.getCurrentId();
             }
             updateOffset(result);
-            sleep();
         } while (offsetCount > 0);
 
         updateState(result, mostCurrentId);
@@ -116,6 +115,9 @@ public class SysomosHeartbeatStream implements Runnable {
             offsetCount = lastID == null || result.isMatchedLastId() ? 0 : offsetCount + 1;
         } else {
             offsetCount = result.getResponseSize() == 0 ? 0 : offsetCount + 1;
+        }
+        if(offsetCount > 0) {
+            sleep();
         }
     }
 
