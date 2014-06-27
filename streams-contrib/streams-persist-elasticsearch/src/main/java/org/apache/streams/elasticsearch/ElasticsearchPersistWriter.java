@@ -157,12 +157,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             return docAsJson;
         else {
             ObjectNode node = (ObjectNode)OBJECT_MAPPER.readTree(docAsJson);
-            try {
-                node.put("_metadata", OBJECT_MAPPER.readTree(OBJECT_MAPPER.writeValueAsBytes(streamsDatum.getMetadata())));
-            }
-            catch(Throwable e) {
-                LOGGER.warn("Unable to write metadata");
-            }
+            node.put("_metadata", OBJECT_MAPPER.readTree(OBJECT_MAPPER.writeValueAsBytes(streamsDatum.getMetadata())));
             return OBJECT_MAPPER.writeValueAsString(node);
         }
     }
@@ -180,8 +175,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         } catch (Throwable e) {
             // this line of code should be logically unreachable.
-            LOGGER.warn("This is unexpected: {}", e.getMessage());
-            e.printStackTrace();
+            LOGGER.warn("This is unexpected: {}", e);
         }
     }
 
@@ -316,27 +310,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         add(indexRequestBuilder.request());
     }
 
-    /**
-     *  This function is trashed... needs to be fixed.
-     *
-    private synchronized void add(UpdateRequest request) {
-        Preconditions.checkNotNull(request);
-        checkAndCreateBulkRequest();
-
-        checkIndexImplications(request.index());
-
-        bulkRequest.add(request);
-        try {
-            Optional<Integer> size = Objects.firstNonNull(
-                    Optional.fromNullable(request.doc().source().length()),
-                    Optional.fromNullable(request.script().length()));
-            trackItemAndBytesWritten(size.get().longValue());
-        } catch (NullPointerException x) {
-            trackItemAndBytesWritten(1000);
-        }
-    }
-    */
-
     protected void add(IndexRequest request) {
 
         Preconditions.checkNotNull(request);
@@ -423,36 +396,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             }
         }
     }
-
-    /**
-     *
-    private Set<String> checkIds(Set<String> input, String index, String type) {
-
-        IdsQueryBuilder idsFilterBuilder = new IdsQueryBuilder();
-
-        for (String s : input)
-            idsFilterBuilder.addIds(s);
-
-        SearchRequestBuilder searchRequestBuilder = this.manager.getClient()
-                .prepareSearch(index)
-                .setTypes(type)
-                .setQuery(idsFilterBuilder)
-                .addField("_id")
-                .setSize(input.size());
-
-        SearchHits hits = searchRequestBuilder.execute()
-                .actionGet()
-                .getHits();
-
-        Set<String> toReturn = new HashSet<String>();
-
-        for (SearchHit hit : hits) {
-            toReturn.add(hit.getId());
-        }
-
-        return toReturn;
-    }
-    */
 
     public void prepare(Object configurationObject) {
         this.veryLargeBulk = config.getBulk() == null ?
