@@ -31,10 +31,12 @@ import org.apache.streams.datasift.twitter.Twitter;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
+import org.apache.streams.twitter.pojo.UserMentions;
 import org.apache.streams.twitter.serializer.util.TwitterActivityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,8 +206,8 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
                 }
             }
         }
-        extensions.put("hashtags", hashTags);
 
+        extensions.put("hashtags", hashTags);
 
         if(retweet != null) {
             Map<String, Object> rebroadcasts = Maps.newHashMap();
@@ -215,18 +217,22 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
         }
 
         if(interaction.getAdditionalProperties() != null) {
-            Object mentionsObject = interaction.getAdditionalProperties().get("mentions");
-            if(mentionsObject != null ) {
-                if(mentionsObject instanceof List) {
-                    List mentions = (List) mentionsObject;
-                    List<Map<String, Object>> userMentions = Lists.newLinkedList();
-                    for(Object mention : mentions) {
-                        Map<String, Object> actor = Maps.newHashMap();
-                        actor.put("displayName", mention);
-                        userMentions.add(actor);
-                    }
-                    extensions.put("user_mentions", userMentions);
+            ArrayList<String> mentions = (ArrayList<String>) interaction.getAdditionalProperties().get("mentions");
+            ArrayList<Long> mentionIds = (ArrayList<Long>) interaction.getAdditionalProperties().get("mention_ids");
+            ArrayList<UserMentions> userMentions = new ArrayList<UserMentions>();
+
+            if(mentions != null && mentionIds != null && (mentionIds.size() == mentions.size()) && !mentions.isEmpty() && !mentionIds.isEmpty()) {
+                for(int x = 0; x < mentions.size(); x ++) {
+                    UserMentions mention = new UserMentions();
+
+                    mention.setIdStr("id:twitter:" + mentionIds.get(x));
+                    mention.setId(mentionIds.get(x));
+                    mention.setName(mentions.get(x));
+                    mention.setScreenName(mentions.get(x));
+
+                    userMentions.add(mention);
                 }
+                extensions.put("user_mentions", userMentions);
             }
         }
         extensions.put("keywords", interaction.getContent());

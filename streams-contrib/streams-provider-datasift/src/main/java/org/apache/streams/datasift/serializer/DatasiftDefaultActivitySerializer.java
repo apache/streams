@@ -22,8 +22,8 @@ import java.util.Map;
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
-*
-*/
+ *
+ */
 public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Datasift>, Serializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatasiftDefaultActivitySerializer.class);
@@ -174,6 +174,9 @@ public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Dat
         ActivityObject actObj = new ActivityObject();
         actObj.setObjectType(interaction.getContenttype());
         actObj.setUrl(interaction.getLink());
+        actObj.setId(interaction.getId());
+        actObj.setContent(interaction.getContent());
+
         return actObj;
     }
 
