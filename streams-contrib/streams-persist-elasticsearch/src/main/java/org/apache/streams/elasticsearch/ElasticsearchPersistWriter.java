@@ -243,7 +243,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             try {
                 Thread.yield();
                 Thread.sleep(1);
-                timeOutThresholdInMS++;
+                counter++;
             } catch(InterruptedException ie) {
                 // No Operation
             }
