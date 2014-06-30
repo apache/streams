@@ -59,9 +59,12 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     private static final NumberFormat MEGABYTE_FORMAT = new DecimalFormat("#.##");
     private static final NumberFormat NUMBER_FORMAT = new DecimalFormat("###,###,###,###");
     private static final Long DEFAULT_BULK_FLUSH_THRESHOLD = 5l * 1024l * 1024l;
-    private static final long WAITING_DOCS_LIMIT = 10000;
-    private static final long DEFAULT_MAX_WAIT = 10000;
     private static final int DEFAULT_BATCH_SIZE = 100;
+    //ES defaults its bulk index queue to 50 items.  We want to be under this on our backoff so set this to 1/2 ES default
+    //at a batch size as configured here.
+    private static final long WAITING_DOCS_LIMIT = DEFAULT_BATCH_SIZE * 25;
+    //A document should have to wait no more than 10s to get flushed
+    private static final long DEFAULT_MAX_WAIT = 10000;
 
     private static final ObjectMapper OBJECT_MAPPER = StreamsJacksonMapper.getInstance();
 
