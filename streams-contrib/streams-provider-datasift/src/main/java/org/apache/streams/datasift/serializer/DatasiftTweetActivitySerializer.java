@@ -231,36 +231,23 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
         ArrayList<Long> mentionIds = (ArrayList<Long>) interaction.getAdditionalProperties().get("mention_ids");
         ArrayList<UserMentions> userMentions = new ArrayList<UserMentions>();
 
-        if(mentions != null && mentionIds != null && (mentionIds.size() == mentions.size()) && !mentions.isEmpty() && !mentionIds.isEmpty()) {
+        if(mentions != null && !mentions.isEmpty()) {
             for(int x = 0; x < mentions.size(); x ++) {
                 UserMentions mention = new UserMentions();
-
-                mention.setIdStr("id:twitter:" + mentionIds.get(x));
-                mention.setId(Long.parseLong(String.valueOf(mentionIds.get(x))));
                 mention.setName(mentions.get(x));
                 mention.setScreenName(mentions.get(x));
 
                 userMentions.add(mention);
             }
-        } else if((mentions != null && !mentions.isEmpty()) || (mentionIds != null && !mentionIds.isEmpty())) {
-            if(mentions != null && !mentions.isEmpty()) {
-                for(int x = 0; x < mentions.size(); x ++) {
-                    UserMentions mention = new UserMentions();
-                    mention.setName(mentions.get(x));
-                    mention.setScreenName(mentions.get(x));
+        }
+        if(mentionIds != null && !mentionIds.isEmpty()) {
+            for(int x = 0; x < mentionIds.size(); x ++) {
+                UserMentions mention = new UserMentions();
 
-                    userMentions.add(mention);
-                }
-            }
-            if(mentionIds != null && !mentionIds.isEmpty()) {
-                for(int x = 0; x < mentionIds.size(); x ++) {
-                    UserMentions mention = new UserMentions();
+                mention.setIdStr("id:twitter:" + mentionIds.get(x));
+                mention.setId(Long.parseLong(String.valueOf(mentionIds.get(x))));
 
-                    mention.setIdStr("id:twitter:" + mentionIds.get(x));
-                    mention.setId(Long.parseLong(String.valueOf(mentionIds.get(x))));
-
-                    userMentions.add(mention);
-                }
+                userMentions.add(mention);
             }
         }
 
