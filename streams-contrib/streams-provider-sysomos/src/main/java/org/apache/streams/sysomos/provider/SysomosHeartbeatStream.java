@@ -49,7 +49,7 @@ public class SysomosHeartbeatStream implements Runnable {
     private boolean enabled = true;
 
     public SysomosHeartbeatStream(SysomosProvider provider, String heartbeatId) {
-        this(provider, heartbeatId, OperatingMode.DATE);
+        this(provider, heartbeatId, null, DateTime.now());
     }
 
     public SysomosHeartbeatStream(SysomosProvider provider, String heartbeatId, DateTime beforeTime, DateTime afterTime) {
