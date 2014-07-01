@@ -24,6 +24,11 @@
             "description": "Item Count before flush",
             "default": 100
         },
+		"batchBytes": {
+			"type": "integer",
+			"description": "Number of bytes before flush",
+			"default": 5242880
+		},
 		"maxTimeBetweenFlushMs": {
 			"type": "integer"
 		}

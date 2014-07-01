@@ -36,7 +36,6 @@ import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.Client;
@@ -44,8 +43,6 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,42 +100,14 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
         this.batchSize = batchSize;
     }
 
-    public void setVeryLargeBulk(boolean veryLargeBulk) {
-        this.veryLargeBulk = veryLargeBulk;
-    }
-
     private final List<String> affectedIndexes = new ArrayList<String>();
-
-    public int getTotalOutstanding() {
-        return this.totalSent - (this.totalFailed + this.totalOk);
-    }
 
     public long getFlushThresholdSizeInBytes() {
         return flushThresholdSizeInBytes;
     }
 
-    public int getTotalSent() {
-        return totalSent;
-    }
-
-    public int getTotalSeconds() {
-        return totalSeconds;
-    }
-
-    public int getTotalOk() {
-        return totalOk;
-    }
-
-    public int getTotalFailed() {
-        return totalFailed;
-    }
-
     public int getTotalBatchCount() {
         return totalBatchCount;
-    }
-
-    public long getTotalSizeInBytes() {
-        return totalSizeInBytes;
     }
 
     public long getBatchSizeInBytes() {
@@ -147,10 +116,6 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
 
     public int getBatchItemsSent() {
         return batchItemsSent;
-    }
-
-    public List<String> getAffectedIndexes() {
-        return this.affectedIndexes;
     }
 
     public void setFlushThresholdSizeInBytes(long sizeInBytes) {
