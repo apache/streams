@@ -20,11 +20,12 @@ package org.apache.streams.twitter.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
+import org.apache.streams.instagram.serializer.util.InstagramDeserializer;
 import org.apache.streams.instagram.serializer.InstagramJsonActivitySerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static org.apache.streams.instagram.serializer.util.InstagramActivityUtil.updateActivity;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -46,16 +48,11 @@ import static org.junit.Assert.assertThat;
 public class InstagramActivitySerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(InstagramActivitySerDeTest.class);
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    private InstagramJsonActivitySerializer instagramJsonActivitySerializer = new InstagramJsonActivitySerializer();
-
-    // remove @Ignore after implementation
-    @Ignore
     @Test
-    public void Tests()
-    {
-        InputStream is = InstagramActivitySerDeTest.class.getResourceAsStream("/test.txt");
+    public void Tests() {
+        InstagramDeserializer instagramDeserializer = new InstagramDeserializer("");
+        InputStream is = InstagramActivitySerDeTest.class.getResourceAsStream("/testMediaFeedObjects.txt");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 
@@ -66,13 +63,13 @@ public class InstagramActivitySerDeTest {
                 {
                     LOGGER.info("raw: {}", line);
 
-                    // convert to MediaFeedData?
-                    Activity activity = instagramJsonActivitySerializer.deserialize(line);
+                    MediaFeedData mediaFeedData = instagramDeserializer.createObjectFromResponse(MediaFeedData.class, line);
 
-                    String activitystring = mapper.writeValueAsString(activity);
+                    Activity activity = new Activity();
 
-                    LOGGER.info("activity: {}", activitystring);
+                    LOGGER.info("activity: {}", activity.toString());
 
+                    updateActivity(mediaFeedData, activity);
                     assertThat(activity, is(not(nullValue())));
 
                     assertThat(activity.getId(), is(not(nullValue())));
@@ -80,7 +77,6 @@ public class InstagramActivitySerDeTest {
                     assertThat(activity.getActor().getId(), is(not(nullValue())));
                     assertThat(activity.getVerb(), is(not(nullValue())));
                     assertThat(activity.getProvider(), is(not(nullValue())));
-
                 }
             }
         } catch( Exception e ) {
