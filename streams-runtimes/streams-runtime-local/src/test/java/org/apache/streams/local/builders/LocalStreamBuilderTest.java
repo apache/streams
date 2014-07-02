@@ -26,6 +26,7 @@ import org.apache.streams.core.test.processors.PassthroughDatumCounterProcessor;
 import org.apache.streams.core.test.providers.NumericMessageProvider;
 import org.apache.streams.core.test.writer.SystemOutWriter;
 import org.apache.streams.local.tasks.StreamsTask;
+import org.apache.streams.local.test.processors.SlowProcessor;
 import org.apache.streams.local.test.providers.EmptyResultSetProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +37,10 @@ import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -185,17 +190,24 @@ public class LocalStreamBuilderTest {
     }
 
     @Test
-    public void testDefaultProviderTimeout() {
-        long start = System.currentTimeMillis();
-        StreamBuilder builder = new LocalStreamBuilder();
-        builder.newPerpetualStream("prov1", new EmptyResultSetProvider())
-                .addStreamsProcessor("proc1", new PassthroughDatumCounterProcessor(), 1, "prov1")
-                .addStreamsProcessor("proc2", new PassthroughDatumCounterProcessor(), 1, "proc1")
+    public void testSlowProcessorBranch() {
+        int numDatums = 30;
+        int timeout = 2000;
+        Map<String, Object> config = Maps.newHashMap();
+        config.put(LocalStreamBuilder.TIMEOUT_KEY, timeout);
+        StreamBuilder builder = new LocalStreamBuilder(config);
+        builder.newReadCurrentStream("prov1", new NumericMessageProvider(numDatums))
+                .addStreamsProcessor("proc1", new SlowProcessor(), 1, "prov1")
                 .addStreamsPersistWriter("w1", new SystemOutWriter(), 1, "proc1");
         builder.start();
-        long end = System.currentTimeMillis();
-        //We care mostly that it doesn't terminate too early.  With thread shutdowns, etc, the actual time is indeterminate.  Just make sure there is an upper bound
-        assertThat((int)(end - start), is(allOf(greaterThanOrEqualTo(StreamsTask.DEFAULT_TIMEOUT_MS), lessThanOrEqualTo(2 * (StreamsTask.DEFAULT_TIMEOUT_MS)))));
+        int count = 0;
+        Scanner scanner = new Scanner(new ByteArrayInputStream(out.toByteArray()));
+        while(scanner.hasNextLine()) {
+            ++count;
+            scanner.nextLine();
+        }
+        assertThat(count, greaterThan(numDatums)); // using > because number of lines in system.out is non-deterministic
+
     }
 
     @Test
@@ -213,5 +225,27 @@ public class LocalStreamBuilderTest {
         long end = System.currentTimeMillis();
         //We care mostly that it doesn't terminate too early.  With thread shutdowns, etc, the actual time is indeterminate.  Just make sure there is an upper bound
         assertThat((int)(end - start), is(allOf(greaterThanOrEqualTo(timeout), lessThanOrEqualTo(4 * timeout))));
+    }
+
+    @Test
+    public void ensureShutdownWithBlockedQueue() throws InterruptedException {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        int before = Thread.activeCount();
+        final StreamBuilder builder = new LocalStreamBuilder(Queues.<StreamsDatum>newLinkedBlockingQueue(1));
+        builder.newPerpetualStream("prov1", new NumericMessageProvider(30))
+                .addStreamsProcessor("proc1", new SlowProcessor(), 1, "prov1")
+                .addStreamsPersistWriter("w1", new SystemOutWriter(), 1, "proc1");
+        service.submit(new Runnable(){
+            @Override
+            public void run() {
+                builder.start();
+            }
+        });
+        //Let streams spin up threads and start to process
+        Thread.sleep(500);
+        builder.stop();
+        service.shutdownNow();
+        service.awaitTermination(1000, TimeUnit.MILLISECONDS);
+        assertThat(Thread.activeCount(), is(equalTo(before)));
     }
 }

@@ -18,6 +18,7 @@
 
 package org.apache.streams.core.test.providers;
 
+import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
@@ -25,7 +26,9 @@ import org.joda.time.DateTime;
 
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Test StreamsProvider that sends out StreamsDatums numbered from 0 to numMessages.
@@ -45,17 +48,17 @@ public class NumericMessageProvider implements StreamsProvider {
 
     @Override
     public StreamsResultSet readCurrent() {
-        return new ResultSet();
+        return new StreamsResultSet(constructQueue());
     }
 
     @Override
     public StreamsResultSet readNew(BigInteger sequence) {
-        return new ResultSet();
+        return new StreamsResultSet(constructQueue());
     }
 
     @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return new ResultSet();
+        return new StreamsResultSet(constructQueue());
     }
 
     @Override
@@ -73,53 +76,13 @@ public class NumericMessageProvider implements StreamsProvider {
 
     }
 
-
-    private class ResultSet extends StreamsResultSet {
-
-        private ResultSet() {
-            super(new ConcurrentLinkedQueue<StreamsDatum>());
+    private Queue<StreamsDatum> constructQueue() {
+        Queue<StreamsDatum> datums = Queues.newArrayBlockingQueue(numMessages);
+        for(int i=0;i<numMessages;i++) {
+            datums.add(new StreamsDatum(i));
         }
-
-//        @Override
-//        public long getStartTime() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public long getEndTime() {
-//            return 0;
-//        }
-//
-//        @Override
-//        public String getSourceId() {
-//            return null;
-//        }
-//
-//        @Override
-//        public BigInteger getMaxSequence() {
-//            return null;
-//        }
-
-        @Override
-        public Iterator<StreamsDatum> iterator() {
-            return new Iterator<StreamsDatum>() {
-                private int i = 0;
-
-                @Override
-                public boolean hasNext() {
-                    return i < numMessages;
-                }
-
-                @Override
-                public StreamsDatum next() {
-                    return new StreamsDatum(i++);
-                }
-
-                @Override
-                public void remove() {
-
-                }
-            };
-        }
+        return datums;
     }
 }
+
+

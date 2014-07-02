@@ -17,52 +17,34 @@
  * under the License.
  */
 
-package org.apache.streams.local.test.providers;
+package org.apache.streams.local.test.processors;
 
-import com.google.common.collect.Queues;
+import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsProvider;
-import org.apache.streams.core.StreamsResultSet;
-import org.joda.time.DateTime;
+import org.apache.streams.core.StreamsProcessor;
 
-import java.math.BigInteger;
+import java.util.List;
 
 /**
- * Provides new, empty instances of result set.
  */
-public class EmptyResultSetProvider implements StreamsProvider {
+public class SlowProcessor  implements StreamsProcessor {
     @Override
-    public void startStream() {
-        //NOP
-    }
-
-    @Override
-    public StreamsResultSet readCurrent() {
-        return new StreamsResultSet(Queues.<StreamsDatum>newLinkedBlockingQueue());
-    }
-
-    @Override
-    public StreamsResultSet readNew(BigInteger sequence) {
-        return new StreamsResultSet(Queues.<StreamsDatum>newLinkedBlockingQueue());
-    }
-
-    @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return new StreamsResultSet(Queues.<StreamsDatum>newLinkedBlockingQueue());
-    }
-
-    @Override
-    public boolean isRunning() {
-        return true;
+    public List<StreamsDatum> process(StreamsDatum entry) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return Lists.newArrayList(entry);
     }
 
     @Override
     public void prepare(Object configurationObject) {
-        //NOP
+
     }
 
     @Override
     public void cleanUp() {
-        //NOP
+
     }
 }
