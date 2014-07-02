@@ -174,7 +174,7 @@ public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Dat
         ActivityObject actObj = new ActivityObject();
         actObj.setObjectType(interaction.getContenttype());
         actObj.setUrl(interaction.getLink());
-        actObj.setId(interaction.getId());
+        actObj.setId(formatId("post",interaction.getId()));
         actObj.setContent(interaction.getContent());
 
         return actObj;
