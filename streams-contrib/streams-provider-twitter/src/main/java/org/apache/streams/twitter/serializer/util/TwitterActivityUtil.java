@@ -79,6 +79,17 @@ public class TwitterActivityUtil {
     }
 
     /**
+     * Updates the given Activity object with the values from the User
+     * @param user the object to use as the source
+     * @param activity the target of the updates.  Will receive all values from the tweet.
+     * @throws ActivitySerializerException
+     */
+    public static void updateActivity(User user, Activity activity) throws ActivitySerializerException {
+        activity.setActor(buildActor(user));
+        activity.setId(null);
+    }
+
+    /**
      * Updates the activity for a delete event
      * @param delete the delete event
      * @param activity the Activity object to update
@@ -163,6 +174,17 @@ public class TwitterActivityUtil {
     public static Actor buildActor(Tweet tweet) {
         Actor actor = new Actor();
         User user = tweet.getUser();
+
+        return buildActor(user);
+    }
+
+    /**
+     * Builds the activity {@link org.apache.streams.pojo.json.Actor} object from the User
+     * @param user the object to use as the source
+     * @return a valid Actor populated from the Tweet
+     */
+    public static Actor buildActor(User user) {
+        Actor actor = new Actor();
         actor.setId(formatId(
                 Optional.fromNullable(
                         user.getIdStr())

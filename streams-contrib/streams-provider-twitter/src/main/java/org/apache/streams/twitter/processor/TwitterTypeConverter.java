@@ -176,7 +176,7 @@ public class TwitterTypeConverter implements StreamsProcessor {
                 node = (ObjectNode)mapper.valueToTree(item);
 
                 // since data is coming from outside provider, we don't know what type the events are
-                Class inClass = TwitterEventClassifier.detectClass((String)item);
+                Class inClass = TwitterEventClassifier.detectClass(mapper.writeValueAsString(item));
 
                 Object out = convert(node, inClass, outClass);
 
