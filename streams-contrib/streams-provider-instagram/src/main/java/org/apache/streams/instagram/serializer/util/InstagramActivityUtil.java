@@ -53,7 +53,9 @@ public class InstagramActivityUtil {
      */
     public static void updateActivity(MediaFeedData item, Activity activity) throws ActivitySerializerException {
         activity.setActor(buildActor(item));
-        activity.setPublished(new DateTime(Long.parseLong(item.getCreatedTime()) * 1000));
+
+        if(item.getCreatedTime() != null)
+            activity.setPublished(new DateTime(Long.parseLong(item.getCreatedTime()) * 1000));
 
         activity.setId(formatId(activity.getVerb(),
             Optional.fromNullable(
@@ -78,16 +80,20 @@ public class InstagramActivityUtil {
     public static  Actor buildActor(MediaFeedData item) {
         Actor actor = new Actor();
 
-        Image image = new Image();
-        image.setUrl(item.getUser().getProfilePictureUrl());
+        try {
+            Image image = new Image();
+            image.setUrl(item.getUser().getProfilePictureUrl());
 
-        Map<String, Object> extensions = new HashMap<String, Object>();
-        extensions.put("screenName", item.getUser().getUserName());
+            Map<String, Object> extensions = new HashMap<String, Object>();
+            extensions.put("screenName", item.getUser().getUserName());
 
-        actor.setId(formatId(String.valueOf(item.getUser().getId())));
-        actor.setImage(image);
-        actor.setAdditionalProperty("extensions", extensions);
-        actor.setAdditionalProperty("handle", item.getUser().getUserName());
+            actor.setId(formatId(String.valueOf(item.getUser().getId())));
+            actor.setImage(image);
+            actor.setAdditionalProperty("extensions", extensions);
+            actor.setAdditionalProperty("handle", item.getUser().getUserName());
+        } catch (Exception e) {
+            LOGGER.error("Exception trying to build actor object: {}", e.getMessage());
+        }
 
         return actor;
     }
@@ -244,9 +250,11 @@ public class InstagramActivityUtil {
 
         addLocationExtension(activity, item);
 
-        Map<String, Object> likes = new HashMap<String, Object>();
-        likes.put("count", item.getLikes().getCount());
-        extensions.put("likes", likes);
+        if(item.getLikes() != null) {
+            Map<String, Object> likes = new HashMap<String, Object>();
+            likes.put("count", item.getLikes().getCount());
+            extensions.put("likes", likes);
+        }
 
         extensions.put("hashtags", item.getTags());
 
