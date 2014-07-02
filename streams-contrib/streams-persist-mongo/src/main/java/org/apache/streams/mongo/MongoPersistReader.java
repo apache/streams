@@ -242,4 +242,29 @@ public class MongoPersistReader implements StreamsPersistReader {
     private Queue<StreamsDatum> constructQueue() {
         return Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(10000));
     }
+
+    public class MongoPersistReaderTask implements Runnable {
+
+        private MongoPersistReader reader;
+
+        public MongoPersistReaderTask(MongoPersistReader reader) {
+            this.reader = reader;
+        }
+
+        @Override
+        public void run() {
+
+            try {
+                while(reader.cursor.hasNext()) {
+                    DBObject dbObject = reader.cursor.next();
+                    StreamsDatum datum = reader.prepareDatum(dbObject);
+                    reader.write(datum);
+                }
+            } finally {
+                reader.cursor.close();
+            }
+
+        }
+
+    }
 }
