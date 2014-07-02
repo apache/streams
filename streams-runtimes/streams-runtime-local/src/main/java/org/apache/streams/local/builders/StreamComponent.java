@@ -222,7 +222,7 @@ public class StreamComponent {
             else
                 task = new StreamsProviderTask(prov, this.dateRange[0], this.dateRange[1]);
             //Adjust the timeout if necessary
-            if(timeout > 0) {
+            if(timeout != 0) {
                 ((StreamsProviderTask)task).setTimeout(timeout);
             }
             for(Queue<StreamsDatum> q : this.outBound.values()) {
