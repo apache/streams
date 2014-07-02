@@ -14,7 +14,3 @@ Example configuration:
         }
     }
 
-For examples, see:
-
-- [sysomos-mongo](http://github.com/w2ogroup/streams-examples/tree/master/sysomos-mongo)
-- [mongo-elasticsearch-index](https://github.com/w2ogroup/streams-examples/tree/master/mongo-elasticsearch-index)
