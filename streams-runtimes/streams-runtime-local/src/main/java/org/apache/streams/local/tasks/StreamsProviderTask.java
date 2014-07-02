@@ -129,7 +129,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             this.provider.prepare(this.config); //TODO allow for configuration objects
             StreamsResultSet resultSet = null;
             //Negative values mean we want to run forever
-            long maxZeros = timeout < 0 ? -1 : (timeout / DEFAULT_SLEEP_TIME_MS);
+            long maxZeros = timeout < 0 ? Long.MAX_VALUE : (timeout / DEFAULT_SLEEP_TIME_MS);
             switch(this.type) {
                 case PERPETUAL: {
                     provider.startStream();
