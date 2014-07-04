@@ -1,0 +1,15 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.facebook.FacebookUserstreamConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "extends": {"$ref":"FacebookConfiguration.json"},
+    "properties": {
+        "pollIntervalMillis": {
+            "type": "integer",
+            "default" : "60000",
+            "description": "Polling interval in ms"
+        }
+    }
+}
