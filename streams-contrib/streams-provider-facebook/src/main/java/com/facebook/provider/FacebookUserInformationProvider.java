@@ -64,8 +64,7 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
 
     public void setConfig(FacebookUserInformationConfiguration config)   { this.facebookUserInformationConfiguration = config; }
 
-    protected Iterator<Long[]> idsBatches;
-    protected Iterator<String[]> screenNameBatches;
+    protected Iterator<String[]> idsBatches;
 
     protected ExecutorService executor;
 
@@ -121,32 +120,9 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
         running.set(true);
     }
 
-    private void loadBatch(String[] ids) {
-        Facebook client = getFacebookClient();
-        int keepTrying = 0;
-
-        // keep trying to load, give it 5 attempts.
-        //while (keepTrying < 10)
-        while (keepTrying < 1)
-        {
-            try {
-                for( User user : client.getUsers(ids)) {
-                    String json = DataObjectFactory.getRawJSON(user);
-
-                    providerQueue.offer(new StreamsDatum(json));
-//
-                };
-            } catch (FacebookException e) {
-                e.printStackTrace();
-                return;
-            }
-
-        }
-    }
-
     public StreamsResultSet readCurrent() {
 
-//        Preconditions.checkArgument(idsBatches.hasNext() || screenNameBatches.hasNext());
+        Preconditions.checkArgument(idsBatches.hasNext());
 
         LOGGER.info("readCurrent");
 
@@ -154,48 +130,34 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
 
         try {
             User me = client.users().getMe();
-            ResponseList<Friend> friendResponseList = client.friends().getFriends(me.getId());
-            Paging<Friend> friendPaging;
-            do {
-
-                for( Friend friend : friendResponseList ) {
-
-                    String json;
-                    try {
-                        json = mapper.writeValueAsString(friend);
-                        providerQueue.add(
-                                new StreamsDatum(json)
-                        );
-                    } catch (JsonProcessingException e) {
-//                        e.printStackTrace();
-                    }
-                }
-                friendPaging = friendResponseList.getPaging();
-                friendResponseList = client.fetchNext(friendPaging);
-            } while( friendPaging != null &&
-                    friendResponseList != null );
-
-//                    // Getting Next page
-//                for( Post post : feed ) {
-//                    String json;
-//                    try {
-//                        json = mapper.writeValueAsString(post);
-//                        providerQueue.add(
-//                                new StreamsDatum(json)
-//                        );
-//                    } catch (JsonProcessingException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-
-//                paging = feed.getPaging();
-//                feed = client.fetchPrevious(paging);
-//            } while( paging != null &&
-//                    feed != null );
-
-
+            String json = mapper.writeValueAsString(me);
+            providerQueue.add(
+                new StreamsDatum(json, DateTime.now())
+            );
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         } catch (FacebookException e) {
             e.printStackTrace();
+        }
+
+        while( idsBatches.hasNext() ) {
+            try {
+                List<User> userList = client.users().getUsers(idsBatches.next());
+                for (User user : userList) {
+
+                    try {
+                        String json = mapper.writeValueAsString(user);
+                        providerQueue.add(
+                            new StreamsDatum(json, DateTime.now())
+                        );
+                    } catch (JsonProcessingException e) {
+                        //                        e.printStackTrace();
+                    }
+                }
+
+            } catch (FacebookException e) {
+                e.printStackTrace();
+            }
         }
 
         LOGGER.info("Finished.  Cleaning up...");
@@ -260,52 +222,28 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
         Preconditions.checkNotNull(facebookUserInformationConfiguration.getOauth().getUserAccessToken());
         Preconditions.checkNotNull(facebookUserInformationConfiguration.getInfo());
 
-        List<String> screenNames = new ArrayList<String>();
-        List<String[]> screenNameBatches = new ArrayList<String[]>();
-
-        List<Long> ids = new ArrayList<Long>();
-        List<Long[]> idsBatches = new ArrayList<Long[]>();
+        List<String> ids = new ArrayList<String>();
+        List<String[]> idsBatches = new ArrayList<String[]>();
 
         for(String s : facebookUserInformationConfiguration.getInfo()) {
             if(s != null)
             {
-                String potentialScreenName = s.replaceAll("@", "").trim().toLowerCase();
-
-                // See if it is a long, if it is, add it to the user iD list, if it is not, add it to the
-                // screen name list
-                try {
-                    ids.add(Long.parseLong(potentialScreenName));
-                } catch (Exception e) {
-                    screenNames.add(potentialScreenName);
-                }
-
-                // Twitter allows for batches up to 100 per request, but you cannot mix types
+                ids.add(s);
 
                 if(ids.size() >= 100) {
                     // add the batch
-                    idsBatches.add(ids.toArray(new Long[ids.size()]));
+                    idsBatches.add(ids.toArray(new String[ids.size()]));
                     // reset the Ids
-                    ids = new ArrayList<Long>();
+                    ids = new ArrayList<String>();
                 }
 
-                if(screenNames.size() >= 100) {
-                    // add the batch
-                    screenNameBatches.add(screenNames.toArray(new String[ids.size()]));
-                    // reset the Ids
-                    screenNames = new ArrayList<String>();
-                }
             }
         }
 
-
         if(ids.size() > 0)
-            idsBatches.add(ids.toArray(new Long[ids.size()]));
-
-        if(screenNames.size() > 0)
-            screenNameBatches.add(screenNames.toArray(new String[ids.size()]));
+            idsBatches.add(ids.toArray(new String[ids.size()]));
 
         this.idsBatches = idsBatches.iterator();
-        this.screenNameBatches = screenNameBatches.iterator();
     }
 
     protected Facebook getFacebookClient()
