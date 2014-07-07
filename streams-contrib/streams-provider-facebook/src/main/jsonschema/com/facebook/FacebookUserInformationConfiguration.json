@@ -13,6 +13,11 @@
             "items": {
                 "type": "string"
             }
+        },
+        "pollIntervalMillis": {
+            "type": "integer",
+            "default" : "60000",
+            "description": "Polling interval in ms"
         }
      }
 }
