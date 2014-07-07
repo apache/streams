@@ -24,10 +24,8 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.*;
-import org.jinstagram.entity.common.ImageData;
-import org.jinstagram.entity.common.Images;
-import org.jinstagram.entity.common.VideoData;
-import org.jinstagram.entity.common.Videos;
+import org.jinstagram.entity.comments.CommentData;
+import org.jinstagram.entity.common.*;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -53,6 +51,7 @@ public class InstagramActivityUtil {
      */
     public static void updateActivity(MediaFeedData item, Activity activity) throws ActivitySerializerException {
         activity.setActor(buildActor(item));
+        activity.setVerb("post");
 
         if(item.getCreatedTime() != null)
             activity.setPublished(new DateTime(Long.parseLong(item.getCreatedTime()) * 1000));
@@ -108,6 +107,21 @@ public class InstagramActivityUtil {
 
         actObj.setObjectType(item.getType());
         actObj.setAttachments(buildActivityObjectAttachments(item));
+
+        Image standardResolution = new Image();
+        if(item.getType() == "image" && item.getImages() != null) {
+            ImageData standardResolutionData = item.getImages().getStandardResolution();
+            standardResolution.setHeight((double)standardResolutionData.getImageHeight());
+            standardResolution.setWidth((double)standardResolutionData.getImageWidth());
+            standardResolution.setUrl(standardResolutionData.getImageUrl());
+        } else if(item.getType() == "video" && item.getVideos() != null) {
+            VideoData standardResolutionData = item.getVideos().getStandardResolution();
+            standardResolution.setHeight((double)standardResolutionData.getHeight());
+            standardResolution.setWidth((double)standardResolutionData.getWidth());
+            standardResolution.setUrl(standardResolutionData.getUrl());
+        }
+
+        actObj.setImage(standardResolution);
 
         return actObj;
     }
@@ -212,11 +226,10 @@ public class InstagramActivityUtil {
         if(item.getLocation() != null) {
             Map<String, Object> coordinates = new HashMap<String, Object>();
             coordinates.put("type", "Point");
-            coordinates.put("coordinates", "[" + item.getLocation().getLatitude() + "," + item.getLocation().getLongitude() + "]");
+            coordinates.put("coordinates", "[" + item.getLocation().getLongitude() + "," + item.getLocation().getLatitude() + "]");
 
             extensions.put("coordinates", coordinates);
         }
-
     }
 
     /**
@@ -258,19 +271,15 @@ public class InstagramActivityUtil {
 
         extensions.put("hashtags", item.getTags());
 
-        Image standardResolution = new Image();
-        if(item.getType() == "image" && item.getImages() != null) {
-            ImageData standardResolutionData = item.getImages().getStandardResolution();
-            standardResolution.setHeight((double)standardResolutionData.getImageHeight());
-            standardResolution.setWidth((double)standardResolutionData.getImageWidth());
-            standardResolution.setUrl(standardResolutionData.getImageUrl());
-        } else if(item.getType() == "video" && item.getVideos() != null) {
-            VideoData standardResolutionData = item.getVideos().getStandardResolution();
-            standardResolution.setHeight((double)standardResolutionData.getHeight());
-            standardResolution.setWidth((double)standardResolutionData.getWidth());
-            standardResolution.setUrl(standardResolutionData.getUrl());
+        Comments comments = item.getComments();
+        String commentsConcat = "";
+        for(CommentData commentData : comments.getComments()) {
+            commentsConcat += " " + commentData.getText();
+        }
+        if(item.getCaption() != null) {
+            commentsConcat += " " + item.getCaption().getText();
         }
 
-        extensions.put("image", standardResolution);
+        extensions.put("keywords", commentsConcat);
     }
 }
