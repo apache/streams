@@ -146,8 +146,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
                     search = search.setExtraSource(searchJson);
 
                 } catch (JsonProcessingException e) {
-                    LOGGER.warn("Could not apply _search supplied by config");
-                    e.printStackTrace();
+                    LOGGER.warn("Could not apply _search supplied by config", e.getMessage());
                 }
 
                 LOGGER.debug("Search Source is now " + search.toString());
@@ -239,7 +238,6 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
                 totalRead += 1;
             }
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.error("Unexpected scrolling error: {}", e.getMessage());
             scrollPositionInScroll = -1;
             next = null;
