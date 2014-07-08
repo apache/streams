@@ -34,7 +34,7 @@ import java.util.List;
 /**
  *
  */
-public class DatasiftTypeConverterProcessor implements StreamsProcessor,DatumStatusCountable {
+public class DatasiftTypeConverterProcessor implements StreamsProcessor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftTypeConverterProcessor.class);
 
@@ -42,7 +42,6 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor,DatumSta
     private Class outClass;
     private DatasiftActivitySerializer datasiftInteractionActivitySerializer;
     private DatasiftConverter converter;
-    private DatumStatusCounter counter;
 
     public final static String TERMINATE = new String("TERMINATE");
 
@@ -52,7 +51,6 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor,DatumSta
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
-        this.counter.incrementAttempt();
         List<StreamsDatum> result = Lists.newLinkedList();
         Object doc;
         try {
@@ -62,9 +60,7 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor,DatumSta
             }
         } catch (Exception e) {
             LOGGER.error("Exception converting Datasift Interaction to "+this.outClass.getName()+ " : {}", e);
-            this.counter.incrementStatus(DatumStatus.FAIL);
         }
-        this.counter.incrementStatus(DatumStatus.SUCCESS);
         return result;
     }
 
@@ -80,17 +76,11 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor,DatumSta
             LOGGER.warn("Using defaulting datasift converter");
             this.converter = new DefaultConverter(this.outClass);
         }
-        this.counter = new DatumStatusCounter();
     }
 
     @Override
     public void cleanUp() {
 
-    }
-
-    @Override
-    public DatumStatusCounter getDatumStatusCounter() {
-        return this.counter;
     }
 
     private class ActivityConverter implements DatasiftConverter {
