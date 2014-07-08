@@ -70,13 +70,53 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
         activity.setTitle(event.getInteraction().getTitle());
         activity.setContent(event.getInteraction().getContent());
         activity.setUrl(event.getInteraction().getLink());
-        activity.setLinks(getLinks(event));
+        if(retweet)
+            activity.setLinks(getLinks(twitter.getRetweet()));
+        else
+            activity.setLinks(getLinks(twitter));
         addDatasiftExtension(activity, event);
         if( twitter.getGeo() != null) {
             addLocationExtension(activity, twitter);
         }
         addTwitterExtensions(activity, twitter, event.getInteraction());
         return activity;
+    }
+
+    /**
+     * Get the links from this tweet as a list
+     * @param twitter
+     * @return the links from the tweet
+     */
+    public List<String> getLinks(Twitter twitter) {
+        return getLinks(twitter.getLinks());
+    }
+
+    /**
+     * Get the links from this tweet as a list
+     * @param retweet
+     * @return the links from the tweet
+     */
+    public List<String> getLinks(Retweet retweet) {
+        return getLinks(retweet.getLinks());
+    }
+
+    /**
+     * Converts the list of objects to a list of strings
+     * @param links
+     * @return
+     */
+    private List<String> getLinks(List<Object> links) {
+        if(links == null)
+            return Lists.newArrayList();
+        List<String> result = Lists.newLinkedList();
+        for(Object obj : links) {
+            if(obj instanceof String) {
+                result.add((String) obj);
+            } else {
+                LOGGER.warn("Links is not instance of String : {}", obj.getClass().getName());
+            }
+        }
+        return result;
     }
 
     public Actor buildActor(Datasift event, Twitter twitter) {
