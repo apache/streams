@@ -27,7 +27,7 @@ import twitter4j.*;
 import java.util.List;
 
 /**
- * Created by sblackmon on 12/10/13.
+ *  Retrieve recent posts for a single user id.
  */
 public class TwitterTimelineProviderTask implements Runnable {
 

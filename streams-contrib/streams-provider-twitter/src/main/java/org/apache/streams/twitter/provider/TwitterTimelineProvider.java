@@ -43,6 +43,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ *  Retrieve recent posts from a list of user ids or names.
+ */
 public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     public final static String STREAMS_ID = "TwitterTimelineProvider";
