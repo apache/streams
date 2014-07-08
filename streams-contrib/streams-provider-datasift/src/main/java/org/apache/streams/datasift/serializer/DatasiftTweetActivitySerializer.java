@@ -129,51 +129,6 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
         return actor;
     }
 
-    //Need to make retweet user and tweet user the same object.
-//    public Actor retweetBuildActor(Actor actor, org.apache.streams.datasift.twitter.User user) {
-//
-//        actor.setDisplayName(user.getName());
-//        actor.setId(formatId(Optional.fromNullable(
-//                user.getIdStr())
-//                .or(Optional.of(user.getId().toString()))
-//                .orNull()));
-//        actor.setSummary(user.getDescription());
-//        try {
-//            actor.setPublished(RFC3339Utils.parseToUTC(user.getCreatedAt()));
-//        } catch (Exception e) {
-//            LOGGER.warn("Exception trying to parse date : {}", e);
-//        }
-//
-//        if(user.getUrl() != null) {
-//            actor.setUrl(user.getUrl());
-//        }
-//
-//        Map<String, Object> extensions = new HashMap<String,Object>();
-//        extensions.put("location", user.getLocation());
-//        extensions.put("posts", user.getStatusesCount());
-//        extensions.put("followers", user.getFollowersCount());
-//        extensions.put("screenName", user.getScreenName());
-//        if(user.getAdditionalProperties() != null) {
-//            extensions.put("favorites", user.getAdditionalProperties().get("favourites_count"));
-//        }
-//
-//        Image profileImage = new Image();
-//        String profileUrl = null;
-//        if(actor.getImage() == null && user.getAdditionalProperties() != null) {
-//            Object url = user.getAdditionalProperties().get("profile_image_url_https");
-//            if(url instanceof String)
-//                profileUrl = (String) url;
-//        }
-//        if(actor.getImage() == null && profileUrl == null) {
-//            profileUrl = user.getProfileImageUrl();
-//        }
-//        profileImage.setUrl(profileUrl);
-//        actor.setImage(profileImage);
-//
-//        actor.setAdditionalProperty("extensions", extensions);
-//        return actor;
-//    }
-
     public void addLocationExtension(Activity activity, Twitter twitter) {
         Map<String, Object> extensions = ensureExtensions(activity);
         Map<String, Object> location = Maps.newHashMap();
