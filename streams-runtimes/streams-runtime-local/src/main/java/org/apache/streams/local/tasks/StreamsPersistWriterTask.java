@@ -90,7 +90,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
         try {
             this.writer.prepare(this.streamConfig);
             StreamsDatum datum = this.inQueue.poll();
-            while(this.keepRunning.get()) {
+            while(this.keepRunning.get() || datum != null) {
                 if(datum != null) {
                     try {
                         this.writer.write(datum);
