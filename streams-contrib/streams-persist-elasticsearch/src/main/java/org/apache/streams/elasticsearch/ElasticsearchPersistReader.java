@@ -118,9 +118,10 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
         return readCurrent();
     }
 
+    //If we still have data in the queue, we are still running
     @Override
     public boolean isRunning() {
-        return !readerTask.isDone() && !readerTask.isCancelled();
+        return persistQueue.size() > 0 || (!readerTask.isDone() && !readerTask.isCancelled());
     }
 
     @Override
