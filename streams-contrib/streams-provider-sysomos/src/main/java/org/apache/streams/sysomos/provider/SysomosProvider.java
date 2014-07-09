@@ -159,7 +159,7 @@ public class SysomosProvider implements StreamsProvider {
 
     @Override
     public boolean isRunning() {
-        return completedHeartbeats.size() < this.getConfig().getHeartbeatIds().size();
+        return completedHeartbeats.size() < this.getConfig().getHeartbeatIds().size() && !(stream.isTerminated() || stream.isShutdown());
     }
 
     @Override
