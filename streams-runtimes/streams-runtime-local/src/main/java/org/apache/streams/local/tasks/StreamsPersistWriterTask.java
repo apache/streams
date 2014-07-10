@@ -123,7 +123,6 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     @Override
     public void stopTask() {
         this.keepRunning.set(false);
-        this.writer.cleanUp();
     }
 
 

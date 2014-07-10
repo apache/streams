@@ -110,7 +110,6 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     public void stopTask() {
         LOGGER.debug("Stopping Provider Task for {}", this.provider.getClass().getSimpleName());
         this.keepRunning.set(false);
-        this.provider.cleanUp();
     }
 
     @Override
