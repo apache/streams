@@ -31,12 +31,10 @@ import org.apache.streams.datasift.twitter.Twitter;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
-import org.apache.streams.twitter.pojo.UserMentions;
 import org.apache.streams.twitter.serializer.util.TwitterActivityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +70,10 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
         activity.setTitle(event.getInteraction().getTitle());
         activity.setContent(event.getInteraction().getContent());
         activity.setUrl(event.getInteraction().getLink());
-        activity.setLinks(getLinks(event));
+        if(retweet)
+            activity.setLinks(getLinks(twitter.getRetweet()));
+        else
+            activity.setLinks(getLinks(twitter));
         addDatasiftExtension(activity, event);
         if( twitter.getGeo() != null) {
             addLocationExtension(activity, twitter);
@@ -82,31 +83,94 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
     }
 
     /**
-     * Returns the actor created from this particular event and Twitter object
-     *
-     * @param event
+     * Get the links from this tweet as a list
      * @param twitter
-     * @return
+     * @return the links from the tweet
      */
-    public Actor buildActor(Datasift event, Twitter twitter) {
-        User user = twitter.getUser();
-        Actor actor = super.buildActor(event.getInteraction());
-
-        if (user == null) {
-            return userBuildActor(actor, twitter.getRetweet().getUser());
-        } else {
-            return userBuildActor(actor, user);
-        }
+    public List<String> getLinks(Twitter twitter) {
+        return getLinks(twitter.getLinks());
     }
 
     /**
-     * Build an actor object given a User
-     *
-     * @param actor
-     * @param user
+     * Get the links from this tweet as a list
+     * @param retweet
+     * @return the links from the tweet
+     */
+    public List<String> getLinks(Retweet retweet) {
+        return getLinks(retweet.getLinks());
+    }
+
+    /**
+     * Converts the list of objects to a list of strings
+     * @param links
      * @return
      */
-    private Actor userBuildActor(Actor actor, User user) {
+    private List<String> getLinks(List<Object> links) {
+        if(links == null)
+            return Lists.newArrayList();
+        List<String> result = Lists.newLinkedList();
+        for(Object obj : links) {
+            if(obj instanceof String) {
+                result.add((String) obj);
+            } else {
+                LOGGER.warn("Links is not instance of String : {}", obj.getClass().getName());
+            }
+        }
+        return result;
+    }
+
+    public Actor buildActor(Datasift event, Twitter twitter) {
+        User user = twitter.getUser();
+        Actor actor = super.buildActor(event.getInteraction());
+        if(user == null) {
+            return retweetBuildActor(actor, twitter.getRetweet().getUser());
+        }
+
+        actor.setDisplayName(user.getName());
+        actor.setId(formatId(Optional.fromNullable(
+                user.getIdStr())
+                .or(Optional.of(user.getId().toString()))
+                .orNull()));
+        actor.setSummary(user.getDescription());
+        try {
+            actor.setPublished(RFC3339Utils.parseToUTC(user.getCreatedAt()));
+        } catch (Exception e) {
+            LOGGER.warn("Exception trying to parse date : {}", e);
+        }
+
+        if(user.getUrl() != null) {
+            actor.setUrl(user.getUrl());
+        }
+
+        Map<String, Object> extensions = new HashMap<String,Object>();
+        extensions.put("location", user.getLocation());
+        extensions.put("posts", user.getStatusesCount());
+        extensions.put("followers", user.getFollowersCount());
+        extensions.put("screenName", user.getScreenName());
+        if(user.getAdditionalProperties() != null) {
+            extensions.put("favorites", user.getAdditionalProperties().get("favourites_count"));
+        }
+
+        Image profileImage = new Image();
+        String profileUrl = null;
+        profileUrl = event.getInteraction().getAuthor().getAvatar();
+        if(profileUrl == null && user.getAdditionalProperties() != null) {
+            Object url = user.getAdditionalProperties().get("profile_image_url_https");
+            if(url instanceof String)
+                profileUrl = (String) url;
+        }
+        if(profileUrl == null) {
+            profileUrl = user.getProfileImageUrl();
+        }
+        profileImage.setUrl(profileUrl);
+        actor.setImage(profileImage);
+
+        actor.setAdditionalProperty("extensions", extensions);
+        return actor;
+    }
+
+    //Need to make retweet user and tweet user the same object.
+    public Actor retweetBuildActor(Actor actor, org.apache.streams.datasift.twitter.User user) {
 
         actor.setDisplayName(user.getName());
         actor.setId(formatId(Optional.fromNullable(
@@ -143,40 +207,24 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
         if(actor.getImage() == null && profileUrl == null) {
             profileUrl = user.getProfileImageUrl();
         }
-
-        if(profileUrl != null) {
-            profileImage.setUrl(profileUrl);
-            actor.setImage(profileImage);
-        }
+        profileImage.setUrl(profileUrl);
+        actor.setImage(profileImage);
 
         actor.setAdditionalProperty("extensions", extensions);
         return actor;
     }
 
-    /**
-     * Adds location attributes from the given Twitter object
-     *
-     * @param activity
-     * @param twitter
-     */
     public void addLocationExtension(Activity activity, Twitter twitter) {
         Map<String, Object> extensions = ensureExtensions(activity);
         Map<String, Object> location = Maps.newHashMap();
         double[] coordiantes = new double[] { twitter.getGeo().getLongitude(), twitter.getGeo().getLatitude() };
         Map<String, Object> coords = Maps.newHashMap();
         coords.put("coordinates", coordiantes);
-        coords.put("type", "Point");
+        coords.put("type", "geo_point");
         location.put("coordinates", coords);
         extensions.put("location", location);
     }
 
-    /**
-     * Creates and adds Twitter Extensions from given interaction
-     *
-     * @param activity
-     * @param twitter
-     * @param interaction
-     */
     public void addTwitterExtensions(Activity activity, Twitter twitter, Interaction interaction) {
         Retweet retweet = twitter.getRetweet();
         Map<String, Object> extensions = ensureExtensions(activity);
@@ -196,8 +244,8 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
                 }
             }
         }
-
         extensions.put("hashtags", hashTags);
+
 
         if(retweet != null) {
             Map<String, Object> rebroadcasts = Maps.newHashMap();
@@ -207,50 +255,20 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
         }
 
         if(interaction.getAdditionalProperties() != null) {
-            ArrayList<UserMentions> userMentions = createUserMentions(interaction);
-
-            if(userMentions.size() > 0)
-                extensions.put("user_mentions", userMentions);
+            Object mentionsObject = interaction.getAdditionalProperties().get("mentions");
+            if(mentionsObject != null ) {
+                if(mentionsObject instanceof List) {
+                    List mentions = (List) mentionsObject;
+                    List<Map<String, Object>> userMentions = Lists.newLinkedList();
+                    for(Object mention : mentions) {
+                        Map<String, Object> actor = Maps.newHashMap();
+                        actor.put("displayName", mention);
+                        userMentions.add(actor);
+                    }
+                    extensions.put("user_mentions", userMentions);
+                }
+            }
         }
-
         extensions.put("keywords", interaction.getContent());
-    }
-
-    /**
-     * Returns an ArrayList of all UserMentions in this interaction
-     * Note: The ID list and the handle lists do not necessarily correspond 1:1 for this provider
-     * If those lists are the same size, then they will be merged into individual UserMention
-     * objects. However, if they are not the same size, a new UserMention object will be created
-     * for each entry in both lists.
-     *
-     * @param interaction
-     * @return
-     */
-    private ArrayList<UserMentions> createUserMentions(Interaction interaction) {
-        ArrayList<String> mentions = (ArrayList<String>) interaction.getAdditionalProperties().get("mentions");
-        ArrayList<Long> mentionIds = (ArrayList<Long>) interaction.getAdditionalProperties().get("mention_ids");
-        ArrayList<UserMentions> userMentions = new ArrayList<UserMentions>();
-
-        if(mentions != null && !mentions.isEmpty()) {
-            for(int x = 0; x < mentions.size(); x ++) {
-                UserMentions mention = new UserMentions();
-                mention.setName(mentions.get(x));
-                mention.setScreenName(mentions.get(x));
-
-                userMentions.add(mention);
-            }
-        }
-        if(mentionIds != null && !mentionIds.isEmpty()) {
-            for(int x = 0; x < mentionIds.size(); x ++) {
-                UserMentions mention = new UserMentions();
-
-                mention.setIdStr("id:twitter:" + mentionIds.get(x));
-                mention.setId(Long.parseLong(String.valueOf(mentionIds.get(x))));
-
-                userMentions.add(mention);
-            }
-        }
-
-        return userMentions;
     }
 }

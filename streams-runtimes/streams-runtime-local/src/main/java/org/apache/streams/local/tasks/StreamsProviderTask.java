@@ -35,7 +35,6 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsProviderTask.class);
 
-    @Override
     public DatumStatusCounter getDatumStatusCounter() {
         return this.statusCounter;
     }
@@ -51,12 +50,13 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     private static final int END = 1;
 
     private StreamsProvider provider;
-    private AtomicBoolean keepRunning;
+    private final AtomicBoolean keepRunning = new AtomicBoolean(true);
+    private final AtomicBoolean flushing = new AtomicBoolean(false);
+    private final AtomicBoolean started = new AtomicBoolean(false);
     private Type type;
     private BigInteger sequence;
     private DateTime[] dateRange;
     private Map<String, Object> config;
-    private AtomicBoolean isRunning;
 
     private int timeout;
     private int zeros = 0;
@@ -72,8 +72,6 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             this.type = Type.PERPETUAL;
         else
             this.type = Type.READ_CURRENT;
-        this.keepRunning = new AtomicBoolean(true);
-        this.isRunning = new AtomicBoolean(true);
         this.timeout = DEFAULT_TIMEOUT_MS;
     }
 
@@ -86,8 +84,6 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         this.provider = provider;
         this.type = Type.READ_NEW;
         this.sequence = sequence;
-        this.keepRunning = new AtomicBoolean(true);
-        this.isRunning = new AtomicBoolean(true);
         this.timeout = DEFAULT_TIMEOUT_MS;
     }
 
@@ -103,8 +99,6 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         this.dateRange = new DateTime[2];
         this.dateRange[START] = start;
         this.dateRange[END] = end;
-        this.keepRunning = new AtomicBoolean(true);
-        this.isRunning = new AtomicBoolean(true);
         this.timeout = DEFAULT_TIMEOUT_MS;
     }
 
@@ -114,6 +108,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
 
     @Override
     public void stopTask() {
+        LOGGER.debug("Stopping Provider Task for {}", this.provider.getClass().getSimpleName());
         this.keepRunning.set(false);
     }
 
@@ -133,12 +128,13 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         try {
             this.provider.prepare(this.config); //TODO allow for configuration objects
             StreamsResultSet resultSet = null;
-            this.isRunning.set(true);
-            long maxZeros = timeout / DEFAULT_SLEEP_TIME_MS;
+            //Negative values mean we want to run forever
+            long maxZeros = timeout < 0 ? Long.MAX_VALUE : (timeout / DEFAULT_SLEEP_TIME_MS);
             switch(this.type) {
                 case PERPETUAL: {
                     provider.startStream();
-                    while(this.keepRunning.get()) {
+                    this.started.set(true);
+                    while(this.isRunning()) {
                         try {
                             resultSet = provider.readCurrent();
                             if( resultSet.size() == 0 )
@@ -152,37 +148,51 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                                 this.keepRunning.set(false);
                             Thread.sleep(DEFAULT_SLEEP_TIME_MS);
                         } catch (InterruptedException e) {
+                            LOGGER.warn("Thread interrupted");
                             this.keepRunning.set(false);
                         }
                     }
                 }
                     break;
-                case READ_CURRENT: resultSet = this.provider.readCurrent();
+                case READ_CURRENT:
+                    resultSet = this.provider.readCurrent();
+                    this.started.set(true);
                     break;
-                case READ_NEW: resultSet = this.provider.readNew(this.sequence);
+                case READ_NEW:
+                    resultSet = this.provider.readNew(this.sequence);
+                    this.started.set(true);
                     break;
-                case READ_RANGE: resultSet = this.provider.readRange(this.dateRange[START], this.dateRange[END]);
+                case READ_RANGE:
+                    resultSet = this.provider.readRange(this.dateRange[START], this.dateRange[END]);
+                    this.started.set(true);
                     break;
                 default: throw new RuntimeException("Type has not been added to StreamsProviderTask.");
             }
             flushResults(resultSet);
 
         } catch( Exception e ) {
-            e.printStackTrace();
-        } finally
-        {
+            LOGGER.error("Error in processing provider stream", e);
+        } finally {
+            LOGGER.debug("Complete Provider Task execution for {}", this.provider.getClass().getSimpleName());
+            this.keepRunning.set(false);
             this.provider.cleanUp();
-            this.isRunning.set(false);
         }
     }
 
     @Override
     public boolean isRunning() {
-        return this.isRunning.get();
+        //We want to make sure that we never return false if it is flushing, regardless of the state of the provider
+        //or whether we have been told to shut down.  If someone really wants us to shut down, they will interrupt the
+        //thread and force us to shutdown.  We also want to make sure we have had the opportunity to run before the
+        //runtime kills us.
+        return !this.started.get() || this.flushing.get() || (this.provider.isRunning() && this.keepRunning.get());
     }
 
     public void flushResults(StreamsResultSet resultSet) {
-        for(StreamsDatum datum : resultSet) {
+        Queue<StreamsDatum> queue = resultSet.getQueue();
+        this.flushing.set(true);
+        while(!queue.isEmpty()) {
+            StreamsDatum datum = queue.poll();
             if(!this.keepRunning.get()) {
                 break;
             }
@@ -198,10 +208,12 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                 try {
                     Thread.sleep(DEFAULT_SLEEP_TIME_MS);
                 } catch (InterruptedException e) {
+                    LOGGER.warn("Thread interrupted");
                     this.keepRunning.set(false);
                 }
             }
         }
+        this.flushing.set(false);
     }
 
 }

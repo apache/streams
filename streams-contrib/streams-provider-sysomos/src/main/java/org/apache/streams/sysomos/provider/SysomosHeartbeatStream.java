@@ -49,7 +49,7 @@ public class SysomosHeartbeatStream implements Runnable {
     private boolean enabled = true;
 
     public SysomosHeartbeatStream(SysomosProvider provider, String heartbeatId) {
-        this(provider, heartbeatId, OperatingMode.DATE);
+        this(provider, heartbeatId, null, DateTime.now());
     }
 
     public SysomosHeartbeatStream(SysomosProvider provider, String heartbeatId, DateTime beforeTime, DateTime afterTime) {
@@ -75,6 +75,16 @@ public class SysomosHeartbeatStream implements Runnable {
 
     @Override
     public void run() {
+        try {
+            executeRun();
+        } catch (Exception e) {
+            LOGGER.error("Error executing heartbeat stream", e);
+        } finally {
+            shutdown();
+        }
+    }
+
+    protected void executeRun() {
         QueryResult result;
         String mostCurrentId = null;
         lastRunTime = DateTime.now();
