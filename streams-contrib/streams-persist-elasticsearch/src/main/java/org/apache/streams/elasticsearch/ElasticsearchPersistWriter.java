@@ -175,6 +175,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             refreshIndexes();
 
             LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
+            manager.stop();
 
         } catch (Throwable e) {
             // this line of code should be logically unreachable.
@@ -248,7 +249,8 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 Thread.sleep(1);
                 counter++;
             } catch(InterruptedException ie) {
-                // No Operation
+                LOGGER.warn("Catchup was interrupted.  Data may be lost");
+                return;
             }
         }
     }

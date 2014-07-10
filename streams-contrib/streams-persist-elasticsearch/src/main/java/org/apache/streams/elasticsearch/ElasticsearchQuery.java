@@ -247,6 +247,10 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     public void remove() {
     }
 
+    public void cleanUp() {
+        this.elasticsearchClientManager.stop();
+    }
+
     protected boolean isCompleted() {
         return totalRead >= this.limit && hasRecords();
     }
