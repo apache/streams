@@ -63,6 +63,7 @@ public class StreamsProcessorTask extends BaseStreamsTask {
     @Override
     public void stopTask() {
         this.keepRunning.set(false);
+        this.processor.cleanUp();
     }
 
     @Override
