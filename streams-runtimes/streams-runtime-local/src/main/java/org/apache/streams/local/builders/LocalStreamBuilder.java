@@ -97,7 +97,7 @@ public class LocalStreamBuilder implements StreamBuilder {
             @Override
             public void run() {
                 LOGGER.debug("Shutdown hook received.  Beginning shutdown");
-                self.stop();
+                self.stopInternal(true);
             }
         };
     }
@@ -337,12 +337,18 @@ public class LocalStreamBuilder implements StreamBuilder {
      */
     @Override
     public void stop() {
+        stopInternal(false);
+    }
+
+    protected void stopInternal(boolean systemExiting) {
         try {
             shutdown(tasks);
         } catch (Exception e) {
             forceShutdown(tasks);
         } finally {
-            detachShutdownHandler();
+            if(!systemExiting) {
+                detachShutdownHandler();
+            }
         }
     }
 
