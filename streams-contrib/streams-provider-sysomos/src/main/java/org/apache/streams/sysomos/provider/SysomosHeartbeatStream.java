@@ -75,6 +75,16 @@ public class SysomosHeartbeatStream implements Runnable {
 
     @Override
     public void run() {
+        try {
+            executeRun();
+        } catch (Exception e) {
+            LOGGER.error("Error executing heartbeat stream", e);
+        } finally {
+            shutdown();
+        }
+    }
+
+    protected void executeRun() {
         QueryResult result;
         String mostCurrentId = null;
         lastRunTime = DateTime.now();

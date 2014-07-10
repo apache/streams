@@ -157,9 +157,11 @@ public class SysomosProvider implements StreamsProvider {
         throw new NotImplementedException("readRange not currently implemented");
     }
 
+    //If the provider queue still has data, we are still running.  If not, we are running if we have not been signaled
+    //by all completed heartbeats so long as the thread pool is alive
     @Override
     public boolean isRunning() {
-        return completedHeartbeats.size() < this.getConfig().getHeartbeatIds().size();
+        return providerQueue.size() > 0 || (completedHeartbeats.size() < this.getConfig().getHeartbeatIds().size() && !(stream.isTerminated() || stream.isShutdown()));
     }
 
     @Override
