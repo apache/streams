@@ -13,6 +13,11 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
+ * Executes on all of the Instagram requests to collect the media feed data.
+ *
+ * If errors/exceptions occur when trying to gather data for a particular user, that user is skipped and the collector
+ * move on to the next user.  If a rate limit exception occurs it employs an exponential back off strategy for up to
+ * 5 attempts.
  *
  */
 public class InstagramRecentMediaCollector implements Runnable {
@@ -34,10 +39,19 @@ public class InstagramRecentMediaCollector implements Runnable {
         this.isCompleted = false;
     }
 
+    /**
+     * Set instagram client
+     * @param instagramClient
+     */
     protected void setInstagramClient(Instagram instagramClient) {
         this.instagramClient = instagramClient;
     }
 
+    /**
+     * Gets the user ids from the {@link org.apache.streams.instagram.InstagramUserInformationConfiguration} and
+     * converts them to {@link java.lang.Long}
+     * @return
+     */
     protected Set<Long> getUserIds() {
         Set<Long> userIds = Sets.newHashSet();
         for(String id : config.getUserIds()) {
@@ -50,6 +64,14 @@ public class InstagramRecentMediaCollector implements Runnable {
         return userIds;
     }
 
+    /**
+     * Determins the course of action to take when Instagram returns an exception to a request.  If it is a rate limit
+     * exception, it implements an exponentional back off strategy.  If it is anyother exception, it is logged and
+     * rethrown.
+     * @param instaExec exception to handle
+     * @param attempt number of attempts that have occured to pull this users information
+     * @throws InstagramException
+     */
     protected void handleInstagramException(InstagramException instaExec, int attempt) throws InstagramException {
         LOGGER.debug("RemainingApiLimitStatus: {}", instaExec.getRemainingLimitStatus());
         if(instaExec.getRemainingLimitStatus() == 0) { //rate limit exception
@@ -66,6 +88,10 @@ public class InstagramRecentMediaCollector implements Runnable {
         }
     }
 
+    /**
+     * Gets the MediaFeedData for this particular user and adds it to the share queued.
+     * @param userId
+     */
     private void getUserMedia(Long userId) {
         MediaFeed feed = null;
         int attempts = 0;
@@ -97,7 +123,7 @@ public class InstagramRecentMediaCollector implements Runnable {
             LOGGER.error("User id, {}, returned a NULL media feed from instagram.", userId);
         } else {
             for(MediaFeedData data : userFeed.getData()) {
-                synchronized (this.dataQueue) {
+                synchronized (this.dataQueue) { //unnecessary
                     while(!this.dataQueue.offer(data)) {
                         Thread.yield();
                     }
@@ -106,6 +132,10 @@ public class InstagramRecentMediaCollector implements Runnable {
         }
     }
 
+    /**
+     *
+     * @return true when the collector has queued all of available media feed data for the provided users.
+     */
     public boolean isCompleted() {
         return this.isCompleted;
     }

@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by rebanks on 7/9/14.
+ * Instagram {@link org.apache.streams.core.StreamsProvider} that provides the recent media data for a group of users
  */
 public class InstagramRecentMediaProvider implements StreamsProvider {
 
@@ -44,6 +44,10 @@ public class InstagramRecentMediaProvider implements StreamsProvider {
         this.executorService.submit(this.dataCollector);
     }
 
+    /**
+     * EXPOSED FOR TESTING
+     * @return
+     */
     protected InstagramRecentMediaCollector getInstagramRecentMediaCollector() {
         return new InstagramRecentMediaCollector(this.mediaFeedQueue, this.config);
     }
