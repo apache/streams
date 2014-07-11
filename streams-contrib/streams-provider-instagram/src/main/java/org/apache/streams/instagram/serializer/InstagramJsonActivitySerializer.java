@@ -18,13 +18,20 @@
 
 package org.apache.streams.instagram.serializer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+import org.jinstagram.entity.users.feed.MediaFeedData;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+
+import static org.apache.streams.instagram.serializer.util.InstagramActivityUtil.updateActivity;
 
 public class InstagramJsonActivitySerializer implements ActivitySerializer<String>, Serializable
 {
@@ -46,9 +53,20 @@ public class InstagramJsonActivitySerializer implements ActivitySerializer<Strin
     @Override
     public Activity deserialize(String serialized) throws ActivitySerializerException {
 
-        Activity activity = null;
+        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+        MediaFeedData mediaFeedData = null;
 
-        // implement
+        try {
+            mediaFeedData = mapper.readValue(serialized, MediaFeedData.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Activity activity = new Activity();
+
+        updateActivity(mediaFeedData, activity);
 
         return activity;
     }
