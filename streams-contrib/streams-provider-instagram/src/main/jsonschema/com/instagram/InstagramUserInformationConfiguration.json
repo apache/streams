@@ -6,7 +6,7 @@
     "extends": {"$ref":"InstagramConfiguration.json"},
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
-        "info": {
+        "userIds": {
             "type": "array",
             "description": "A list of user IDs, indicating the users whose posts should be delivered on the stream",
             "items": {

@@ -5,16 +5,17 @@
     "javaType" : "org.apache.streams.instagram.InstagramConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
-        "version": {
+        "clientId": {
             "type": "string",
-            "description": "The version"
+            "description": "Your Instagram Client Id"
         },
-        "endpoint": {
+        "clientSecret": {
             "type": "string",
-            "description": "The endpoint"
+            "description": "Your Instagram Client secret"
         },
-        "accessToken": {
-            "type": "string"
+        "callbackUrl": {
+            "type": "string",
+            "description": "Your Instagream callback url"
         }
    }
 }

@@ -25,9 +25,6 @@ import com.typesafe.config.ConfigRenderOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.io.IOException;
 
 /**
@@ -41,8 +38,8 @@ public class InstagramConfigurator {
 
     public static InstagramConfiguration detectInstagramConfiguration(Config config) {
 
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
+//        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+//        Validator validator = factory.getValidator();
 
         InstagramConfiguration instagramConfiguration = null;
         try {
@@ -52,15 +49,15 @@ public class InstagramConfigurator {
         }
         Preconditions.checkNotNull(instagramConfiguration);
 
-        Preconditions.checkState(validator.validate(instagramConfiguration).size() == 0);
+//        Preconditions.checkState(validator.validate(instagramConfiguration).size() == 0);
 
         return instagramConfiguration;
     }
 
     public static InstagramUserInformationConfiguration detectInstagramUserInformationConfiguration(Config config) {
 
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
+//        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+//        Validator validator = factory.getValidator();
 
         InstagramUserInformationConfiguration instagramConfiguration = null;
         try {
@@ -70,7 +67,7 @@ public class InstagramConfigurator {
         }
         Preconditions.checkNotNull(instagramConfiguration);
 
-        Preconditions.checkState(validator.validate(instagramConfiguration).size() == 0);
+//        Preconditions.checkState(validator.validate(instagramConfiguration).size() == 0);
 
         return instagramConfiguration;
     }
