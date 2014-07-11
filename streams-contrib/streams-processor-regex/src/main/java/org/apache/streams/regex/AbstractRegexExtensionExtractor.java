@@ -25,6 +25,8 @@ import com.google.common.collect.Sets;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -42,6 +44,9 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
     private final String extensionKey;
     private final String defaultPattern;
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractRegexExtensionExtractor.class);
+
+
     private String pattern;
 
     protected AbstractRegexExtensionExtractor(String patternConfigKey, String extensionKey, String defaultPattern) {
@@ -56,31 +61,43 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
-        if(!(entry.getDocument() instanceof Activity)) {
-            return Lists.newArrayList();
+        try {
+            if (!(entry.getDocument() instanceof Activity)) {
+                return Lists.newArrayList();
+            }
+            if (Strings.isNullOrEmpty(pattern)) {
+                prepare(null);
+            }
+            Activity activity = (Activity) entry.getDocument();
+            Map<String, List<Integer>> matches = RegexUtils.extractMatches(pattern, activity.getContent());
+            Collection<T> entities = ensureTargetObject(activity);
+            for (String key : matches.keySet()) {
+                entities.add(prepareObject(key));
+            }
+            return Lists.newArrayList(entry);
+        } catch (Throwable e) {
+            LOGGER.error("Throwable process {}", e);
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        if(Strings.isNullOrEmpty(pattern)) {
-            prepare(null);
-        }
-        Activity activity = (Activity)entry.getDocument();
-        Map<String, List<Integer>> matches = RegexUtils.extractMatches(pattern, activity.getContent());
-        Collection<T> entities = ensureTargetObject(activity);
-        for(String key : matches.keySet()) {
-            entities.add(prepareObject(key));
-        }
-        return Lists.newArrayList(entry);
     }
 
     @Override
     public void prepare(Object configurationObject) {
-        if(configurationObject instanceof Map) {
-            if(((Map)configurationObject).containsKey(patternConfigKey)) {
-                pattern = (String)((Map)configurationObject).get(patternConfigKey);
+        try {
+            if (configurationObject instanceof Map) {
+                if (((Map) configurationObject).containsKey(patternConfigKey)) {
+                    pattern = (String) ((Map) configurationObject).get(patternConfigKey);
+                }
+            } else if (configurationObject instanceof String) {
+                pattern = (String) configurationObject;
+            } else {
+                pattern = defaultPattern;
             }
-        } else if(configurationObject instanceof String) {
-            pattern = (String)configurationObject;
-        } else {
-            pattern = defaultPattern;
+        } catch (Throwable e) {
+            LOGGER.error("Throwable prepare {}", e);
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
