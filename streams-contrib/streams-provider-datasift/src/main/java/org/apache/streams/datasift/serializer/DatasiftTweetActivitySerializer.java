@@ -35,6 +35,7 @@ import org.apache.streams.twitter.serializer.util.TwitterActivityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -210,20 +211,48 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
         }
 
         if(interaction.getAdditionalProperties() != null) {
-            Object mentionsObject = interaction.getAdditionalProperties().get("mentions");
-            if(mentionsObject != null ) {
-                if(mentionsObject instanceof List) {
-                    List mentions = (List) mentionsObject;
-                    List<Map<String, Object>> userMentions = Lists.newLinkedList();
-                    for(Object mention : mentions) {
-                        Map<String, Object> actor = Maps.newHashMap();
-                        actor.put("displayName", mention);
-                        userMentions.add(actor);
-                    }
-                    extensions.put("user_mentions", userMentions);
-                }
+            ArrayList<Map<String,Object>> userMentions = createUserMentions(interaction);
+
+            if(userMentions.size() > 0)
+                extensions.put("user_mentions", userMentions);
+        }
+
+        extensions.put("keywords", interaction.getContent());
+    }
+
+    /**
+     * Returns an ArrayList of all UserMentions in this interaction
+     * Note: The ID list and the handle lists do not necessarily correspond 1:1 for this provider
+     * If those lists are the same size, then they will be merged into individual UserMention
+     * objects. However, if they are not the same size, a new UserMention object will be created
+     * for each entry in both lists.
+     *
+     * @param interaction
+     * @return
+     */
+    private ArrayList<Map<String,Object>> createUserMentions(Interaction interaction) {
+        ArrayList<String> mentions = (ArrayList<String>) interaction.getAdditionalProperties().get("mentions");
+        ArrayList<Long> mentionIds = (ArrayList<Long>) interaction.getAdditionalProperties().get("mention_ids");
+        ArrayList<Map<String,Object>> userMentions = new ArrayList<Map<String,Object>>();
+
+        if(mentions != null && !mentions.isEmpty()) {
+            for(int x = 0; x < mentions.size(); x ++) {
+                Map<String, Object> actor = new HashMap<String, Object>();
+                actor.put("displayName", mentions.get(x));
+                actor.put("handle", mentions.get(x));
+
+                userMentions.add(actor);
             }
         }
-        extensions.put("keywords", interaction.getContent());
+        if(mentionIds != null && !mentionIds.isEmpty()) {
+            for(int x = 0; x < mentionIds.size(); x ++) {
+                Map<String, Object> actor = new HashMap<String, Object>();
+                actor.put("id", "id:twitter:" + mentionIds.get(x));
+
+                userMentions.add(actor);
+            }
+        }
+
+        return userMentions;
     }
 }
