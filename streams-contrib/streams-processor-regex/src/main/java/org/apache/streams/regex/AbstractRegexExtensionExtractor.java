@@ -61,25 +61,19 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
-        try {
-            if (!(entry.getDocument() instanceof Activity)) {
-                return Lists.newArrayList();
-            }
-            if (Strings.isNullOrEmpty(pattern)) {
-                prepare(null);
-            }
-            Activity activity = (Activity) entry.getDocument();
-            Map<String, List<Integer>> matches = RegexUtils.extractMatches(pattern, activity.getContent());
-            Collection<T> entities = ensureTargetObject(activity);
-            for (String key : matches.keySet()) {
-                entities.add(prepareObject(key));
-            }
-            return Lists.newArrayList(entry);
-        } catch (Throwable e) {
-            LOGGER.error("Throwable process {}", e);
-            e.printStackTrace();
-            throw new RuntimeException(e);
+        if (!(entry.getDocument() instanceof Activity)) {
+            return Lists.newArrayList();
         }
+        if (Strings.isNullOrEmpty(pattern)) {
+            prepare(null);
+        }
+        Activity activity = (Activity) entry.getDocument();
+        Map<String, List<Integer>> matches = RegexUtils.extractMatches(pattern, activity.getContent());
+        Collection<T> entities = ensureTargetObject(activity);
+        for (String key : matches.keySet()) {
+            entities.add(prepareObject(key));
+        }
+        return Lists.newArrayList(entry);
     }
 
     @Override
