@@ -175,7 +175,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             refreshIndexes();
 
             LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
-            manager.stop();
             timer.cancel();
 
         } catch (Throwable e) {

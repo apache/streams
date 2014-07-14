@@ -248,7 +248,6 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     }
 
     public void cleanUp() {
-        this.elasticsearchClientManager.stop();
     }
 
     protected boolean isCompleted() {
