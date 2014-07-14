@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * 
  */
 public class InstagramConfigurator {
 
@@ -38,9 +38,6 @@ public class InstagramConfigurator {
 
     public static InstagramConfiguration detectInstagramConfiguration(Config config) {
 
-//        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-//        Validator validator = factory.getValidator();
-
         InstagramConfiguration instagramConfiguration = null;
         try {
             instagramConfiguration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), InstagramConfiguration.class);
@@ -49,15 +46,10 @@ public class InstagramConfigurator {
         }
         Preconditions.checkNotNull(instagramConfiguration);
 
-//        Preconditions.checkState(validator.validate(instagramConfiguration).size() == 0);
-
         return instagramConfiguration;
     }
 
     public static InstagramUserInformationConfiguration detectInstagramUserInformationConfiguration(Config config) {
-
-//        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-//        Validator validator = factory.getValidator();
 
         InstagramUserInformationConfiguration instagramConfiguration = null;
         try {
@@ -66,8 +58,6 @@ public class InstagramConfigurator {
             e.printStackTrace();
         }
         Preconditions.checkNotNull(instagramConfiguration);
-
-//        Preconditions.checkState(validator.validate(instagramConfiguration).size() == 0);
 
         return instagramConfiguration;
     }
