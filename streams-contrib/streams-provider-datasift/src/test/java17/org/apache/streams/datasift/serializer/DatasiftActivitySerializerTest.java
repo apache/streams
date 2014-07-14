@@ -12,9 +12,6 @@ import java.util.Scanner;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by rebanks on 5/29/14.
- */
 public class DatasiftActivitySerializerTest {
 
     private static final DatasiftActivitySerializer SERIALIZER = new DatasiftActivitySerializer();
@@ -56,17 +53,12 @@ public class DatasiftActivitySerializerTest {
      */
     private void testGeneralConversion(String json) throws Exception {
         Activity activity = SERIALIZER.deserialize(json);
-        assertNotNull(json, activity);
         assertNotNull(json, activity.getId());
         assertTrue(json, activity.getId().contains("datasift"));
-//        assertNotNull(json, activity.getContent());  //Some facebook do not have content
         assertNotNull(json, activity.getPublished());
         assertNotNull(json, activity.getUrl());
         Actor actor = activity.getActor();
         assertNotNull(json, actor);
-        //Not all interactions have authors
-//        assertNotNull(json, actor.getId());
-//        assertNotNull(json+"\n"+MAPPER.writeValueAsString(activity)+"\n", actor.getDisplayName());
     }
 
 
