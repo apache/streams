@@ -63,7 +63,7 @@ public class InstagramRecentMediaProviderTest {
                 return collectorStub;
             }
         };
-
+        provider.prepare(null);
         provider.startStream();
 
         latch.await();
@@ -141,6 +141,7 @@ public class InstagramRecentMediaProviderTest {
                 };
             }
         };
+        provider.prepare(null);
         provider.startStream();
         while(provider.isRunning()) {
             try {

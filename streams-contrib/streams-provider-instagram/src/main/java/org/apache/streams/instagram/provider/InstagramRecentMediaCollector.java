@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Executes on all of the Instagram requests to collect the media feed data.
@@ -43,14 +44,14 @@ public class InstagramRecentMediaCollector implements Runnable {
     protected Queue dataQueue; //exposed for testing
     private InstagramUserInformationConfiguration config;
     private Instagram instagramClient;
-    private volatile boolean isCompleted;
+    private AtomicBoolean isCompleted;
 
 
     public InstagramRecentMediaCollector(Queue<MediaFeedData> queue, InstagramUserInformationConfiguration config) {
         this.dataQueue = queue;
         this.config = config;
         this.instagramClient = new Instagram(this.config.getClientId());
-        this.isCompleted = false;
+        this.isCompleted = new AtomicBoolean(false);
     }
 
     /**
@@ -151,7 +152,7 @@ public class InstagramRecentMediaCollector implements Runnable {
      * @return true when the collector has queued all of available media feed data for the provided users.
      */
     public boolean isCompleted() {
-        return this.isCompleted;
+        return this.isCompleted.get();
     }
 
     @Override
@@ -159,6 +160,6 @@ public class InstagramRecentMediaCollector implements Runnable {
         for(Long userId : getUserIds()) {
             getUserMedia(userId);
         }
-        this.isCompleted = true;
+        this.isCompleted.set(true);
     }
 }

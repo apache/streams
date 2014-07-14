@@ -29,6 +29,7 @@ import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Instagram {@link org.apache.streams.core.StreamsProvider} that provides the recent media data for a group of users
@@ -39,7 +40,7 @@ public class InstagramRecentMediaProvider implements StreamsProvider {
     private InstagramRecentMediaCollector dataCollector;
     protected Queue<MediaFeedData> mediaFeedQueue; //exposed for testing
     private ExecutorService executorService;
-    private volatile boolean isCompleted;
+    private AtomicBoolean isCompleted;
 
     public InstagramRecentMediaProvider() {
         this(InstagramConfigurator.detectInstagramUserInformationConfiguration(StreamsConfigurator.config.getConfig("instagram")));
@@ -48,7 +49,6 @@ public class InstagramRecentMediaProvider implements StreamsProvider {
     public InstagramRecentMediaProvider(InstagramUserInformationConfiguration config) {
         this.config = config;
         this.mediaFeedQueue = Queues.newConcurrentLinkedQueue();
-        this.isCompleted = false;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class InstagramRecentMediaProvider implements StreamsProvider {
                 batch.add(new StreamsDatum(data, data.getId()));
             }
         }
-        this.isCompleted = batch.size() == 0 && this.mediaFeedQueue.isEmpty() && this.dataCollector.isCompleted();
+        this.isCompleted.set(batch.size() == 0 && this.mediaFeedQueue.isEmpty() && this.dataCollector.isCompleted());
         return new StreamsResultSet(batch);
     }
 
@@ -93,12 +93,12 @@ public class InstagramRecentMediaProvider implements StreamsProvider {
 
     @Override
     public boolean isRunning() {
-        return !this.isCompleted;
+        return !this.isCompleted.get();
     }
 
     @Override
     public void prepare(Object configurationObject) {
-
+        this.isCompleted = new AtomicBoolean(false);
     }
 
     @Override
