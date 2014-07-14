@@ -79,7 +79,6 @@ public class SysomosHeartbeatStream implements Runnable {
             executeRun();
         } catch (Exception e) {
             LOGGER.error("Error executing heartbeat stream", e);
-        } finally {
             shutdown();
         }
     }
