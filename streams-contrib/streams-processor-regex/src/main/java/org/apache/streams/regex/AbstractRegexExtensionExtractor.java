@@ -78,20 +78,14 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
 
     @Override
     public void prepare(Object configurationObject) {
-        try {
-            if (configurationObject instanceof Map) {
-                if (((Map) configurationObject).containsKey(patternConfigKey)) {
-                    pattern = (String) ((Map) configurationObject).get(patternConfigKey);
-                }
-            } else if (configurationObject instanceof String) {
-                pattern = (String) configurationObject;
-            } else {
-                pattern = defaultPattern;
+        if (configurationObject instanceof Map) {
+            if (((Map) configurationObject).containsKey(patternConfigKey)) {
+                pattern = (String) ((Map) configurationObject).get(patternConfigKey);
             }
-        } catch (Throwable e) {
-            LOGGER.error("Throwable prepare {}", e);
-            e.printStackTrace();
-            throw new RuntimeException(e);
+        } else if (configurationObject instanceof String) {
+            pattern = (String) configurationObject;
+        } else {
+            pattern = defaultPattern;
         }
     }
 
