@@ -55,7 +55,7 @@ public class DatasiftStreamProvider implements StreamsProvider {
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftStreamProvider.class);
 
     private DatasiftConfiguration config;
-    private ConcurrentLinkedQueue<Interaction> interactions;
+    private ConcurrentLinkedQueue<Interaction> interactions = new ConcurrentLinkedQueue<Interaction>();
     private Map<String, DataSiftClient> clients;
     private StreamEventListener eventListener;
     private ObjectMapper mapper;
@@ -67,6 +67,11 @@ public class DatasiftStreamProvider implements StreamsProvider {
      */
     public DatasiftStreamProvider(StreamEventListener listener) {
         this(listener, null);
+    }
+
+    // to set up a webhook we need to be able to return a reference to this queue
+    public Queue<Interaction> getInteractions() {
+        return interactions;
     }
 
     /**
@@ -184,7 +189,6 @@ public class DatasiftStreamProvider implements StreamsProvider {
         return null;
     }
 
-    @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         return null;
     }
