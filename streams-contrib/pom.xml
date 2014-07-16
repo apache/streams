@@ -47,6 +47,7 @@
 		<module>streams-amazon-aws</module>
         <!--<module>streams-processor-lucene</module>-->
         <!--<module>streams-processor-tika</module>-->
+        <module>streams-provider-instagram</module>
         <module>streams-processor-json</module>
         <module>streams-processor-urls</module>
         <module>streams-provider-gnip</module>
@@ -58,6 +59,7 @@
         <module>streams-provider-sysomos</module>
         <module>streams-provider-rss</module>
         <module>streams-processor-regex</module>
+        <module>streams-provider-instagram</module>
     </modules>
 
     <dependencyManagement>
