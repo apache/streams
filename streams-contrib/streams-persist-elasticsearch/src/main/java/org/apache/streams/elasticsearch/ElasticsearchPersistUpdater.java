@@ -128,14 +128,14 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
 
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    private ElasticsearchConfiguration config;
+    private ElasticsearchWriterConfiguration config;
 
     public ElasticsearchPersistUpdater() {
         Config config = StreamsConfigurator.config.getConfig("elasticsearch");
-        this.config = ElasticsearchConfigurator.detectConfiguration(config);
+        this.config = ElasticsearchConfigurator.detectWriterConfiguration(config);
     }
 
-    public ElasticsearchPersistUpdater(ElasticsearchConfiguration config) {
+    public ElasticsearchPersistUpdater(ElasticsearchWriterConfiguration config) {
         this.config = config;
     }
 

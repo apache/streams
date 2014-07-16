@@ -16,8 +16,9 @@
  * under the License.
  */
 
-package org.apache.streams.elasticsearch;
+package org.apache.streams.elasticsearch.processor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -27,15 +28,18 @@ import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.data.util.ActivityUtil;
+import org.apache.streams.elasticsearch.ElasticsearchClientManager;
+import org.apache.streams.elasticsearch.ElasticsearchConfiguration;
+import org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.percolate.PercolateRequestBuilder;
 import org.elasticsearch.action.percolate.PercolateResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -56,9 +60,11 @@ import java.util.*;
  * [t.co behavior]      https://dev.twitter.com/docs/tco-redirection-behavior
  */
 
-public class PercolateProcessor implements StreamsProcessor {
+public class PercolateTagProcessor implements StreamsProcessor {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(PercolateProcessor.class);
+    public static final String STREAMS_ID = "PercolateTagProcessor";
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(PercolateTagProcessor.class);
 
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
@@ -71,7 +77,8 @@ public class PercolateProcessor implements StreamsProcessor {
     private ElasticsearchClientManager manager;
     private BulkRequestBuilder bulkBuilder;
 
-    public PercolateProcessor(ElasticsearchConfiguration config) {
+    public PercolateTagProcessor(ElasticsearchWriterConfiguration config) {
+        this.config = config;
         manager = new ElasticsearchClientManager(config);
     }
 
@@ -113,16 +120,42 @@ public class PercolateProcessor implements StreamsProcessor {
             }
         } else {
             node = (ObjectNode) entry.getDocument();
-            json = node.asText();
+            try {
+                json = mapper.writeValueAsString(node);
+            } catch (JsonProcessingException e) {
+                LOGGER.warn("Invalid datum: ", node);
+                return null;
+            }
         }
 
-        PercolateResponse response = manager.getClient().preparePercolate().setSource(json).execute().actionGet();
+        StringBuilder percolateRequestJson = new StringBuilder();
+        percolateRequestJson.append("{ \"doc\": ");
+        percolateRequestJson.append(json);
+        //percolateRequestJson.append("{ \"content\" : \"crazy good shit\" }");
+        percolateRequestJson.append("}");
+
+        PercolateRequestBuilder request;
+        PercolateResponse response;
+
+        try {
+            LOGGER.trace("Percolate request json: {}", percolateRequestJson.toString());
+            request = manager.getClient().preparePercolate().setIndices(config.getIndex()).setDocumentType(config.getType()).setSource(percolateRequestJson.toString());
+            LOGGER.trace("Percolate request: {}", mapper.writeValueAsString(request.request()));
+            response = request.execute().actionGet();
+            LOGGER.trace("Percolate response: {} matches", response.getMatches().length);
+        } catch (Exception e) {
+            LOGGER.warn("Percolate exception: {}", e.getMessage());
+            return null;
+        }
 
         ArrayNode tagArray = JsonNodeFactory.instance.arrayNode();
 
-        for (PercolateResponse.Match match : response.getMatches()) {
-            tagArray.add(match.getId().string());
+        Iterator<PercolateResponse.Match> matchIterator = response.iterator();
+        while(matchIterator.hasNext()) {
+            tagArray.add(matchIterator.next().getId().string());
         }
+
+        LOGGER.trace("Percolate matches: {}", tagArray);
 
         Activity activity = mapper.convertValue(node, Activity.class);
 
@@ -131,6 +164,8 @@ public class PercolateProcessor implements StreamsProcessor {
         extensions.put(TAGS_EXTENSION, tagArray);
 
         activity.setAdditionalProperty(ActivityUtil.EXTENSION_PROPERTY, extensions);
+
+        entry.setDocument(activity);
 
         result.add(entry);
 
@@ -145,27 +180,29 @@ public class PercolateProcessor implements StreamsProcessor {
         Preconditions.checkNotNull(manager.getClient());
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(config.getTags());
-        Preconditions.checkArgument(config.getTags().size() > 0);
+        Preconditions.checkArgument(config.getTags().getAdditionalProperties().size() > 0);
 
         // consider using mapping to figure out what fields are included in _all
         //manager.getClient().admin().indices().prepareGetMappings(config.getIndex()).get().getMappings().get(config.getType()).;
 
-        deleteOldQueries(config.getIndex());
-        for (Tag tag : config.getTags()) {
-            PercolateQueryBuilder queryBuilder = new PercolateQueryBuilder(tag.getId());
-            queryBuilder.addQuery(tag.getQuery(), FilterLevel.MUST, "_all");
+        //deleteOldQueries(config.getIndex());
+        bulkBuilder = manager.getClient().prepareBulk();
+        for (String tag : config.getTags().getAdditionalProperties().keySet()) {
+            String query = (String)config.getTags().getAdditionalProperties().get(tag);
+            PercolateQueryBuilder queryBuilder = new PercolateQueryBuilder(tag, query);
             addPercolateRule(queryBuilder, config.getIndex());
         }
         if (writePercolateRules() == true)
-            LOGGER.info("wrote " + bulkBuilder.numberOfActions() + " tags to _percolator");
+            LOGGER.info("wrote " + bulkBuilder.numberOfActions() + " tags to " + config.getIndex() + " _percolator");
         else
-            LOGGER.error("FAILED writing " + bulkBuilder.numberOfActions() + " tags to _percolator");
+            LOGGER.error("FAILED writing " + bulkBuilder.numberOfActions() + " tags to " + config.getIndex() + " _percolator");
 
 
     }
 
     @Override
     public void cleanUp() {
+        deleteOldQueries(config.getIndex());
         manager.getClient().close();
     }
 
@@ -174,7 +211,8 @@ public class PercolateProcessor implements StreamsProcessor {
     }
 
     public void addPercolateRule(PercolateQueryBuilder builder, String index) {
-        this.bulkBuilder.add(manager.getClient().prepareIndex("_percolator", index, builder.getId()).setSource(builder.getSource()));
+        this.bulkBuilder.add(manager.getClient().prepareIndex(index, ".percolator", builder.getId())
+                .setSource(builder.getSource()));
     }
 
     /**
@@ -213,7 +251,7 @@ public class PercolateProcessor implements StreamsProcessor {
 
     public Set<String> getActivePercolateTags(String index) {
         Set<String> tags = new HashSet<String>();
-        SearchRequestBuilder searchBuilder = manager.getClient().prepareSearch("_percolator").setTypes(index).setSize(1000);
+        SearchRequestBuilder searchBuilder = manager.getClient().prepareSearch("*").setIndices(index).setTypes(".percolator").setSize(1000);
         SearchResponse response = searchBuilder.setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
         SearchHits hits = response.getHits();
         for(SearchHit hit : hits.getHits()) {
@@ -236,44 +274,65 @@ public class PercolateProcessor implements StreamsProcessor {
         LOGGER.info("Deleting {} tags.", tags.size());
         BulkRequestBuilder bulk = manager.getClient().prepareBulk();
         for(String tag : tags) {
-            bulk.add(manager.getClient().prepareDelete("_percolator", index, tag));
+            bulk.add(manager.getClient().prepareDelete().setType(".percolator").setIndex(index).setId(tag));
         }
         BulkResponse response =bulk.execute().actionGet();
         return !response.hasFailures();
     }
 
+//    public static class PercolateQueryBuilder {
+//
+//        private BoolQueryBuilder queryBuilder;
+//        private String id;
+//
+//        public PercolateQueryBuilder(String id) {
+//            this.id = id;
+//            this.queryBuilder = QueryBuilders.boolQuery();
+//        }
+//
+//        public void setMinumumNumberShouldMatch(int shouldMatch) {
+//            this.queryBuilder.minimumNumberShouldMatch(shouldMatch);
+//        }
+//
+//
+//        public void addQuery(String query, FilterLevel level, String... fields) {
+//            QueryStringQueryBuilder builder = QueryBuilders.queryString(query);
+//            if(fields != null && fields.length > 0) {
+//                for(String field : fields) {
+//                    builder.field(field);
+//                }
+//            }
+//            switch (level) {
+//                case MUST:
+//                    this.queryBuilder.must(builder);
+//                    break;
+//                case SHOULD:
+//                    this.queryBuilder.should(builder);
+//                    break;
+//                case MUST_NOT:
+//                    this.queryBuilder.mustNot(builder);
+//            }
+//        }
+//
+//        public String getId() {
+//            return this.id;
+//        }
+//
+//        public String getSource() {
+//            return "{ \n\"query\" : "+this.queryBuilder.toString()+"\n}";
+//        }
+//
+//
+//    }
+
     public static class PercolateQueryBuilder {
 
-        private BoolQueryBuilder queryBuilder;
+        private QueryStringQueryBuilder queryBuilder;
         private String id;
 
-        public PercolateQueryBuilder(String id) {
+        public PercolateQueryBuilder(String id, String query) {
             this.id = id;
-            this.queryBuilder = QueryBuilders.boolQuery();
-        }
-
-        public void setMinumumNumberShouldMatch(int shouldMatch) {
-            this.queryBuilder.minimumNumberShouldMatch(shouldMatch);
-        }
-
-
-        public void addQuery(String query, FilterLevel level, String... fields) {
-            QueryStringQueryBuilder builder = QueryBuilders.queryString(query);
-            if(fields != null && fields.length > 0) {
-                for(String field : fields) {
-                    builder.field(field);
-                }
-            }
-            switch (level) {
-                case MUST:
-                    this.queryBuilder.must(builder);
-                    break;
-                case SHOULD:
-                    this.queryBuilder.should(builder);
-                    break;
-                case MUST_NOT:
-                    this.queryBuilder.mustNot(builder);
-            }
+            this.queryBuilder = QueryBuilders.queryString(query);
         }
 
         public String getId() {
@@ -284,8 +343,8 @@ public class PercolateProcessor implements StreamsProcessor {
             return "{ \n\"query\" : "+this.queryBuilder.toString()+"\n}";
         }
 
-
     }
+
 
     public enum FilterLevel {
         MUST, SHOULD, MUST_NOT

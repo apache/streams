@@ -32,23 +32,13 @@
 		"maxTimeBetweenFlushMs": {
 			"type": "integer"
 		},
+        "script": {
+            "type": "string",
+            "description": "Script to execute during index"
+        },
         "tags": {
-            "type": "array",
-            "description": "Tags to apply",
-            "items": {
-                "type": "object",
-                "description": "Tag to apply",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "description": "Tag identifier"
-                    },
-                    "query": {
-                        "type": "string",
-                        "description": "Tag query"
-                    }
-                }
-            }
+            "type": "object",
+            "description": "Tags to apply during index"
         }
     }
 }
