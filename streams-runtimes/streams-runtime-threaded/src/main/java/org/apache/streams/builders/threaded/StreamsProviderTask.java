@@ -167,16 +167,15 @@ public class StreamsProviderTask extends BaseStreamsTask  {
             }
             this.streamsResultSet = resultSet;
 
-            if(this.streamsResultSet != null) {
+            if(this.streamsResultSet != null && this.streamsResultSet.getQueue() != null) {
                 /**
                  * We keep running while the provider tells us that we are running or we still have
                  * items in queue to be processed.
                  *
                  * IF, the keep running flag is turned to off, then we exit immediately
                  */
-                while ((this.streamsResultSet.isRunning() ||
-                        this.streamsResultSet.getQueue().size() > 0) && this.keepRunning.get()) {
-                    if(this.streamsResultSet.getQueue().size() == 0) {
+                while ((this.streamsResultSet.isRunning() || !this.streamsResultSet.getQueue().isEmpty()) && this.keepRunning.get()) {
+                    if(streamsResultSet.getQueue().isEmpty()) {
                         // The process is still running, but there is nothing on the queue...
                         // we just need to be patient and wait, we yield the execution and
                         // wait for 1ms to see if anything changes.
@@ -205,7 +204,7 @@ public class StreamsProviderTask extends BaseStreamsTask  {
     public void flushResults() {
         try {
             StreamsDatum datum;
-            while ((datum = streamsResultSet.getQueue().poll()) != null) {
+            while (!streamsResultSet.getQueue().isEmpty() && (datum = streamsResultSet.getQueue().poll()) != null) {
                 /**
                  * This is meant to be a hard exit from the system. If we are running
                  * and this flag gets set to false, we are to exit immediately and

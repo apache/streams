@@ -21,16 +21,10 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * Created by rebanks on 2/27/14.
- */
 public class ExpectedDatumsPersistWriter implements StreamsPersistWriter{
 
     private StreamsDatumConverter converter;

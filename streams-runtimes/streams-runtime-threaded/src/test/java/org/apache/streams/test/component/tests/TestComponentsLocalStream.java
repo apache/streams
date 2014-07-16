@@ -30,9 +30,9 @@ public class TestComponentsLocalStream {
 
     @Test
     public void testLocalStreamWithComponent() {
-        ThreadedStreamBuilder builder = new ThreadedStreamBuilder();
-        builder.newReadCurrentStream("provider", new FileReaderProvider("/TestFile.txt", new StringToDocumentConverter()));
-        builder.addStreamsPersistWriter("writer", new ExpectedDatumsPersistWriter(new StringToDocumentConverter(), "/TestFile.txt"), 1, "provider")
-        .start();
+        new ThreadedStreamBuilder()
+            .newReadCurrentStream("provider", new FileReaderProvider("/TestFile.txt", new StringToDocumentConverter()))
+            .addStreamsPersistWriter("writer", new ExpectedDatumsPersistWriter(new StringToDocumentConverter(), "/TestFile.txt"), 1, "provider")
+            .start();
     }
 }

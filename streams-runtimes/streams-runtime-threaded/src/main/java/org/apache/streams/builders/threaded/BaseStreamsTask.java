@@ -96,11 +96,12 @@ public abstract class BaseStreamsTask implements StreamsTask {
      * @return the next StreamsDatum or null if all input queues are empty.
      */
     protected StreamsDatum pollNextDatum() {
-        StreamsDatum datum;
+        StreamsDatum datum = null;
         do {
             synchronized (queueCycleCounter) {
 
-                datum = this.inQueues.get(queueCycleCounter.get()).poll();
+                if(!this.inQueues.get(queueCycleCounter.get()).isEmpty())
+                    datum = this.inQueues.get(queueCycleCounter.get()).poll();
 
                 // increment our queue counter
                 if (queueCycleCounter.incrementAndGet() >= this.inQueues.size())
