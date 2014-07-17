@@ -78,35 +78,35 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     }
 
     @Override
-    public StreamBuilder newPerpetualStream(String id, StreamsProvider provider) {
+    public ThreadedStreamBuilder newPerpetualStream(String id, StreamsProvider provider) {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, true));
         return this;
     }
 
     @Override
-    public StreamBuilder newReadCurrentStream(String id, StreamsProvider provider) {
+    public ThreadedStreamBuilder newReadCurrentStream(String id, StreamsProvider provider) {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, false));
         return this;
     }
 
     @Override
-    public StreamBuilder newReadNewStream(String id, StreamsProvider provider, BigInteger sequence) {
+    public ThreadedStreamBuilder newReadNewStream(String id, StreamsProvider provider, BigInteger sequence) {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, sequence));
         return this;
     }
 
     @Override
-    public StreamBuilder newReadRangeStream(String id, StreamsProvider provider, DateTime start, DateTime end) {
+    public ThreadedStreamBuilder newReadRangeStream(String id, StreamsProvider provider, DateTime start, DateTime end) {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, start, end));
         return this;
     }
 
     @Override
-    public StreamBuilder addStreamsProcessor(String id, StreamsProcessor processor, int numTasks, String... inBoundIds) {
+    public ThreadedStreamBuilder addStreamsProcessor(String id, StreamsProcessor processor, int numTasks, String... inBoundIds) {
         validateId(id);
         StreamComponent comp = new StreamComponent(id, processor, cloneQueue(), numTasks);
         this.components.put(id, comp);
@@ -115,7 +115,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     }
 
     @Override
-    public StreamBuilder addStreamsPersistWriter(String id, StreamsPersistWriter writer, int numTasks, String... inBoundIds) {
+    public ThreadedStreamBuilder addStreamsPersistWriter(String id, StreamsPersistWriter writer, int numTasks, String... inBoundIds) {
         validateId(id);
         StreamComponent comp = new StreamComponent(id, writer, cloneQueue(), numTasks);
         this.components.put(id, comp);
@@ -126,13 +126,15 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
     private ExecutorService executor;
 
-    public void addEventHandler(StreamBuilderEventHandler eventHandler) {
+    public ThreadedStreamBuilder addEventHandler(StreamBuilderEventHandler eventHandler) {
         this.eventHandlers.add(eventHandler);
+        return this;
     }
 
-    public void removeEventHandler(StreamBuilderEventHandler eventHandler) {
+    public ThreadedStreamBuilder removeEventHandler(StreamBuilderEventHandler eventHandler) {
         if(this.eventHandlers.contains(eventHandler))
             this.eventHandlers.remove(eventHandler);
+        return this;
     }
 
     /**
