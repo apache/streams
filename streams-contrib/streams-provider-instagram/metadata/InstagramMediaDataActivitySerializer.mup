@@ -1,0 +1,894 @@
+{
+  "title": "InstagramMediaDataActivitySerializer",
+  "id": 1,
+  "formatVersion": 2,
+  "ideas": {
+    "1": {
+      "title": "activity",
+      "id": 2,
+      "ideas": {
+        "1": {
+          "title": "published",
+          "id": 25
+        },
+        "2": {
+          "title": "id:instagram:post:<id>",
+          "id": 26
+        },
+        "3": {
+          "title": "provider",
+          "id": 27,
+          "ideas": {
+            "1": {
+              "title": "id",
+              "id": 28,
+              "ideas": {
+                "1": {
+                  "title": "id:providers:instagram",
+                  "id": 31
+                }
+              }
+            },
+            "2": {
+              "title": "displayName",
+              "id": 29,
+              "ideas": {
+                "1": {
+                  "title": "Instagram",
+                  "id": 30
+                }
+              }
+            }
+          }
+        },
+        "6": {
+          "title": "url",
+          "id": 40
+        },
+        "7": {
+          "title": "object",
+          "id": 46,
+          "ideas": {
+            "1": {
+              "title": "objectType",
+              "id": 38,
+              "attr": {
+                "style": {}
+              }
+            },
+            "2": {
+              "title": "attachments",
+              "id": 51,
+              "ideas": {
+                "1": {
+                  "title": "object",
+                  "id": 52,
+                  "ideas": {
+                    "1": {
+                      "title": "objectType",
+                      "id": 53,
+                      "ideas": {
+                        "1": {
+                          "title": "\"image\"",
+                          "id": 81
+                        }
+                      }
+                    },
+                    "2": {
+                      "title": "image",
+                      "id": 54,
+                      "ideas": {
+                        "1": {
+                          "title": "url",
+                          "id": 55
+                        },
+                        "2": {
+                          "title": "height",
+                          "id": 56
+                        },
+                        "3": {
+                          "title": "width",
+                          "id": 57
+                        }
+                      }
+                    }
+                  }
+                },
+                "2": {
+                  "title": "object",
+                  "ideas": {
+                    "1": {
+                      "title": "objectType",
+                      "ideas": {
+                        "1": {
+                          "title": "\"image\"",
+                          "id": 101
+                        }
+                      },
+                      "id": 100
+                    },
+                    "2": {
+                      "title": "image",
+                      "ideas": {
+                        "1": {
+                          "title": "url",
+                          "id": 103
+                        },
+                        "2": {
+                          "title": "height",
+                          "id": 104
+                        },
+                        "3": {
+                          "title": "width",
+                          "id": 105
+                        }
+                      },
+                      "id": 102
+                    }
+                  },
+                  "id": 99,
+                  "attr": {
+                    "style": {}
+                  }
+                },
+                "3": {
+                  "title": "object",
+                  "ideas": {
+                    "1": {
+                      "title": "objectType",
+                      "ideas": {
+                        "1": {
+                          "title": "\"video\"",
+                          "id": 108
+                        }
+                      },
+                      "id": 107
+                    },
+                    "2": {
+                      "title": "image",
+                      "ideas": {
+                        "1": {
+                          "title": "url",
+                          "id": 110
+                        },
+                        "2": {
+                          "title": "height",
+                          "id": 111
+                        },
+                        "3": {
+                          "title": "width",
+                          "id": 112
+                        }
+                      },
+                      "id": 109
+                    }
+                  },
+                  "id": 106,
+                  "attr": {
+                    "style": {}
+                  }
+                }
+              }
+            },
+            "3": {
+              "title": "image\n\nIF objectType == video\nimage = data.videos.standard_resolution\nELSE \nimage = data.images.standard_resolution",
+              "id": 62,
+              "attr": {
+                "position": [
+                  74.5,
+                  74,
+                  1
+                ],
+                "style": {}
+              },
+              "ideas": {
+                "1": {
+                  "title": "url",
+                  "id": 64
+                },
+                "2": {
+                  "title": "height",
+                  "id": 65
+                },
+                "3": {
+                  "title": "width",
+                  "id": 66
+                }
+              }
+            },
+            "4": {
+              "title": "content",
+              "id": 113
+            }
+          }
+        },
+        "8": {
+          "title": "extensions",
+          "id": 75,
+          "ideas": {
+            "1": {
+              "title": "instagram",
+              "id": 91,
+              "attr": {
+                "style": {}
+              }
+            },
+            "2": {
+              "title": "location",
+              "id": 77,
+              "ideas": {
+                "1": {
+                  "title": "coordinates",
+                  "id": 78,
+                  "ideas": {
+                    "1": {
+                      "title": "type",
+                      "id": 79,
+                      "ideas": {
+                        "1": {
+                          "title": "\"Point\"",
+                          "id": 80
+                        }
+                      }
+                    },
+                    "0.5": {
+                      "title": "coordinates\n\n[longitude,latitude]",
+                      "id": 82,
+                      "attr": {
+                        "style": {}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "12": {
+              "title": "hashtags",
+              "id": 76,
+              "attr": {
+                "position": [
+                  93.5,
+                  125.5,
+                  1
+                ],
+                "style": {}
+              }
+            },
+            "13": {
+              "title": "user_mentions",
+              "id": 92,
+              "ideas": {
+                "1": {
+                  "title": "id",
+                  "id": 93
+                },
+                "2": {
+                  "title": "handle",
+                  "id": 94
+                }
+              }
+            },
+            "9.5": {
+              "title": "rebroadcasts",
+              "id": 88,
+              "attr": {
+                "style": {}
+              }
+            },
+            "10.75": {
+              "title": "likes",
+              "id": 87,
+              "attr": {
+                "style": {}
+              },
+              "ideas": {
+                "1": {
+                  "title": "count",
+                  "id": 90
+                }
+              }
+            }
+          },
+          "attr": {}
+        },
+        "9": {
+          "title": "content",
+          "id": 114
+        },
+        "0.5": {
+          "title": "actor",
+          "id": 32,
+          "ideas": {
+            "1": {
+              "title": "id:instagram:<id>",
+              "id": 35
+            },
+            "2": {
+              "title": "image",
+              "id": 49,
+              "ideas": {
+                "1": {
+                  "title": "url",
+                  "id": 50
+                }
+              }
+            },
+            "0.5": {
+              "title": "handle",
+              "id": 36,
+              "attr": {
+                "position": [
+                  63.5,
+                  -66,
+                  1
+                ],
+                "style": {}
+              }
+            },
+            "0.25": {
+              "title": "extensions",
+              "id": 47,
+              "ideas": {
+                "1": {
+                  "title": "screenName",
+                  "id": 48,
+                  "attr": {
+                    "style": {}
+                  }
+                }
+              },
+              "attr": {
+                "position": [
+                  60.5,
+                  -126.5,
+                  2
+                ],
+                "style": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "-1": {
+      "title": "data",
+      "id": 4,
+      "ideas": {
+        "1": {
+          "title": "comments",
+          "id": 5,
+          "ideas": {
+            "1": {
+              "title": "data",
+              "id": 44
+            }
+          }
+        },
+        "3": {
+          "title": "caption",
+          "id": 7,
+          "ideas": {}
+        },
+        "4": {
+          "title": "links",
+          "id": 9
+        },
+        "5": {
+          "title": "link",
+          "id": 10
+        },
+        "6": {
+          "title": "user",
+          "id": 11,
+          "ideas": {
+            "1": {
+              "title": "username",
+              "id": 33
+            },
+            "2": {
+              "title": "profile_picture",
+              "id": 34
+            },
+            "3": {
+              "title": "id",
+              "id": 37
+            }
+          }
+        },
+        "9": {
+          "title": "type",
+          "id": 21
+        },
+        "12": {
+          "title": "videos",
+          "id": 41,
+          "ideas": {
+            "1": {
+              "title": "low_resolution",
+              "id": 42,
+              "ideas": {
+                "1": {
+                  "title": "url",
+                  "id": 67
+                },
+                "2": {
+                  "title": "height",
+                  "id": 68
+                },
+                "3": {
+                  "title": "width",
+                  "id": 69
+                }
+              }
+            },
+            "2": {
+              "title": "standard_resolution",
+              "id": 43,
+              "ideas": {
+                "1": {
+                  "title": "height",
+                  "id": 70
+                },
+                "2": {
+                  "title": "width",
+                  "id": 71
+                },
+                "3": {
+                  "title": "url",
+                  "id": 72
+                }
+              }
+            }
+          }
+        },
+        "13": {
+          "title": "tags",
+          "id": 45,
+          "ideas": {}
+        },
+        "14": {
+          "title": "users_in_photo",
+          "id": 95,
+          "ideas": {
+            "1": {
+              "title": "id",
+              "id": 96,
+              "ideas": {}
+            },
+            "2": {
+              "title": "profile_picture",
+              "id": 98
+            },
+            "3": {
+              "title": "username",
+              "id": 97,
+              "attr": {
+                "style": {}
+              }
+            }
+          }
+        },
+        "11.5": {
+          "title": "images",
+          "id": 14,
+          "ideas": {
+            "1": {
+              "title": "low_resolution",
+              "id": 15,
+              "ideas": {
+                "1": {
+                  "title": "url",
+                  "id": 18
+                },
+                "2": {
+                  "title": "height",
+                  "id": 58
+                },
+                "3": {
+                  "title": "width",
+                  "id": 59
+                }
+              }
+            },
+            "2": {
+              "title": "thumbnail",
+              "id": 16,
+              "ideas": {
+                "1": {
+                  "title": "url",
+                  "id": 19
+                },
+                "2": {
+                  "title": "height",
+                  "id": 60
+                },
+                "3": {
+                  "title": "width",
+                  "id": 61
+                }
+              }
+            },
+            "3": {
+              "title": "standard_resolution",
+              "id": 17,
+              "ideas": {
+                "1": {
+                  "title": "url",
+                  "id": 20
+                },
+                "2": {
+                  "title": "height",
+                  "id": 73
+                },
+                "3": {
+                  "title": "width",
+                  "id": 74
+                }
+              }
+            }
+          }
+        },
+        "6.5": {
+          "title": "id",
+          "id": 23
+        },
+        "6.25": {
+          "title": "created_time",
+          "id": 12
+        },
+        "12.5": {
+          "title": "likes",
+          "id": 6,
+          "ideas": {
+            "1": {
+              "title": "count",
+              "id": 89
+            }
+          },
+          "attr": {
+            "style": {}
+          }
+        },
+        "12.25": {
+          "title": "location",
+          "id": 24,
+          "ideas": {
+            "1": {
+              "title": "latitude",
+              "id": 83
+            },
+            "2": {
+              "title": "longitude",
+              "id": 84
+            }
+          },
+          "attr": {
+            "style": {}
+          }
+        }
+      }
+    }
+  },
+  "links": [
+    {
+      "ideaIdFrom": 23,
+      "ideaIdTo": 26,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 33,
+      "ideaIdTo": 36,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 37,
+      "ideaIdTo": 35,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 12,
+      "ideaIdTo": 25,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 21,
+      "ideaIdTo": 38,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 33,
+      "ideaIdTo": 48,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 50,
+      "ideaIdTo": 34,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 83,
+      "ideaIdTo": 82,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 84,
+      "ideaIdTo": 82,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 45,
+      "ideaIdTo": 76,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 89,
+      "ideaIdTo": 90,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 91,
+      "ideaIdTo": 4,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 40,
+      "ideaIdTo": 10,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 97,
+      "ideaIdTo": 94,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 96,
+      "ideaIdTo": 93,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 64,
+      "ideaIdTo": 20,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 65,
+      "ideaIdTo": 73,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 66,
+      "ideaIdTo": 74,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 66,
+      "ideaIdTo": 71,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 65,
+      "ideaIdTo": 70,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 64,
+      "ideaIdTo": 72,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 55,
+      "ideaIdTo": 19,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 56,
+      "ideaIdTo": 60,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 61,
+      "ideaIdTo": 57,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 103,
+      "ideaIdTo": 18,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 104,
+      "ideaIdTo": 58,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 59,
+      "ideaIdTo": 105,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 110,
+      "ideaIdTo": 67,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 111,
+      "ideaIdTo": 68,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 112,
+      "ideaIdTo": 69,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 7,
+      "ideaIdTo": 114,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 113,
+      "ideaIdTo": 7,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    }
+  ]
+}
