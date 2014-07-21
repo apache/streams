@@ -18,8 +18,9 @@
 
 package org.apache.streams.local.tasks;
 
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.core.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +31,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  *
  */
-public class StreamsProcessorTask extends BaseStreamsTask {
+public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatusCountable {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsProcessorTask.class);
 
 
     private StreamsProcessor processor;
@@ -39,6 +42,13 @@ public class StreamsProcessorTask extends BaseStreamsTask {
     private Map<String, Object> streamConfig;
     private Queue<StreamsDatum> inQueue;
     private AtomicBoolean isRunning;
+
+    private DatumStatusCounter statusCounter = new DatumStatusCounter();
+
+    @Override
+    public DatumStatusCounter getDatumStatusCounter() {
+        return this.statusCounter;
+    }
 
     /**
      * Default constructor, uses default sleep time of 500ms when inbound queue is empty
@@ -87,11 +97,20 @@ public class StreamsProcessorTask extends BaseStreamsTask {
             StreamsDatum datum = this.inQueue.poll();
             while(this.keepRunning.get()) {
                 if(datum != null) {
-                    List<StreamsDatum> output = this.processor.process(datum);
-                    if(output != null) {
-                        for(StreamsDatum outDatum : output) {
-                            super.addToOutgoingQueue(outDatum);
+                    try {
+                        List<StreamsDatum> output = this.processor.process(datum);
+
+                        if(output != null) {
+                            for(StreamsDatum outDatum : output) {
+                                super.addToOutgoingQueue(outDatum);
+                                statusCounter.incrementStatus(DatumStatus.SUCCESS);
+                            }
                         }
+                    } catch (Throwable e) {
+                        LOGGER.error("Throwable Streams Processor {}", e);
+                        e.printStackTrace();
+                        statusCounter.incrementStatus(DatumStatus.FAIL);
+                        throw new RuntimeException(e);
                     }
                 }
                 else {
