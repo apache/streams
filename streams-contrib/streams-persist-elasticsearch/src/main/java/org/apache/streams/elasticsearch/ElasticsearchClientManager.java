@@ -80,7 +80,7 @@ public class ElasticsearchClientManager {
     }
 
     public boolean isOnOrAfterVersion(Version version) {
-        return ALL_CLIENTS.get(this.elasticsearchConfiguration.toString()).getVersion().onOrAfter(version);
+        return ALL_CLIENTS.get(this.elasticsearchConfiguration.getClusterName()).getVersion().onOrAfter(version);
     }
 
     public void start() throws Exception {
@@ -110,12 +110,12 @@ public class ElasticsearchClientManager {
     public synchronized void stop() {
         // Terminate the elasticsearch cluster
         // Check to see if we have a client.
-        if (ALL_CLIENTS.containsKey(this.elasticsearchConfiguration.toString())) {
+        if (ALL_CLIENTS.containsKey(this.elasticsearchConfiguration.getClusterName())) {
             // Close the client
-            ALL_CLIENTS.get(this.elasticsearchConfiguration.toString()).getClient().close();
+            ALL_CLIENTS.get(this.elasticsearchConfiguration.getClusterName()).getClient().close();
 
             // Remove it so that it isn't in memory any more.
-            ALL_CLIENTS.remove(this.elasticsearchConfiguration.toString());
+            ALL_CLIENTS.remove(this.elasticsearchConfiguration.getClusterName());
         }
     }
 

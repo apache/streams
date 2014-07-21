@@ -174,8 +174,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             LOGGER.error("Error in processing provider stream", e);
         } finally {
             LOGGER.debug("Complete Provider Task execution for {}", this.provider.getClass().getSimpleName());
-            this.keepRunning.set(false);
             this.provider.cleanUp();
+            this.keepRunning.set(false);
         }
     }
 
