@@ -279,7 +279,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                 // screen name list
                 try {
                     ids.add(Long.parseLong(potentialScreenName));
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                     screenNames.add(potentialScreenName);
                 }
 

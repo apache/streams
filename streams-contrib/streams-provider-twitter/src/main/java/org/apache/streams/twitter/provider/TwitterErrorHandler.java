@@ -43,7 +43,9 @@ public class TwitterErrorHandler
                 LOGGER.warn("Rate Limit Exceeded");
                 try {
                     Thread.sleep(retry);
-                } catch (InterruptedException e1) {}
+                } catch (InterruptedException e1) {
+                    Thread.currentThread().interrupt();
+                }
                 return 1;
             }
             else if(e.isCausedByNetworkIssue())
@@ -52,7 +54,9 @@ public class TwitterErrorHandler
                 LOGGER.info("{} - {}", e.getExceptionCode(), e.getLocalizedMessage());
                 try {
                     Thread.sleep(retry);
-                } catch (InterruptedException e1) {}
+                } catch (InterruptedException e1) {
+                    Thread.currentThread().interrupt();
+                }
                 return 1;
             }
             else if(e.isErrorMessageAvailable())
