@@ -142,10 +142,17 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
             for( String id : configuration.getInfo()) {
                 executor.submit(new FacebookFeedPollingTask(this, id));
             }
+            running.set(true);
         } else {
-            executor.submit(new FacebookFeedPollingTask(this));
+            try {
+                String id = client.getMe().getId();
+                executor.submit(new FacebookFeedPollingTask(this, id));
+                running.set(true);
+            } catch (FacebookException e) {
+                LOGGER.error(e.getMessage());
+                running.set(false);
+            }
         }
-        running.set(true);
     }
 
     public StreamsResultSet readCurrent() {
@@ -279,14 +286,12 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
             while (provider.isRunning()) {
                 ResponseList<Post> postResponseList;
                 try {
-                    if( id != null )
-                        postResponseList = client.getFeed(id);
-                    else
-                        postResponseList = client.getHome();
+                    postResponseList = client.getFeed(id);
 
                     Set<Post> update = Sets.newHashSet(postResponseList);
                     Set<Post> repeats = Sets.intersection(priorPollResult, Sets.newHashSet(update));
                     Set<Post> entrySet = Sets.difference(update, repeats);
+                    LOGGER.debug(this.id + " response: " + update.size() + " previous: " + repeats.size() + " new: " + entrySet.size());
                     for (Post item : entrySet) {
                         String json = DataObjectFactory.getRawJSON(item);
                         org.apache.streams.facebook.Post post = mapper.readValue(json, org.apache.streams.facebook.Post.class);
@@ -299,9 +304,14 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
                         }
                     }
                     priorPollResult = update;
-                    Thread.sleep(configuration.getPollIntervalMillis());
                 } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+                    try {
+                        Thread.sleep(configuration.getPollIntervalMillis());
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
             }
         }
