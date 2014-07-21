@@ -105,8 +105,8 @@ public class StreamsProcessorTask extends BaseStreamsTask {
             }
 
         } finally {
-            this.processor.cleanUp();
             this.isRunning.set(false);
+            this.processor.cleanUp();
         }
     }
 

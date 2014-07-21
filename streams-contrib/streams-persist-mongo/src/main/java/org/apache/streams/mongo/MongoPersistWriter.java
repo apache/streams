@@ -130,13 +130,30 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
         try {
             flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error flushing", e);
         }
         try {
             close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error closing", e);
         }
+        try {
+            backgroundFlushTask.shutdown();
+            // Wait a while for existing tasks to terminate
+            if (!backgroundFlushTask.awaitTermination(15, TimeUnit.SECONDS)) {
+                backgroundFlushTask.shutdownNow(); // Cancel currently executing tasks
+                // Wait a while for tasks to respond to being cancelled
+                if (!backgroundFlushTask.awaitTermination(15, TimeUnit.SECONDS)) {
+                    LOGGER.error("Stream did not terminate");
+                }
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            backgroundFlushTask.shutdownNow();
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
+        }
+
     }
 
     @Override

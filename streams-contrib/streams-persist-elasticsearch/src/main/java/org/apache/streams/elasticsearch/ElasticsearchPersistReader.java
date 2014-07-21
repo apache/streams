@@ -128,6 +128,9 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
     public void cleanUp() {
         this.shutdownAndAwaitTermination(executor);
         LOGGER.info("PersistReader done");
+        if(elasticsearchQuery != null) {
+            elasticsearchQuery.cleanUp();
+        }
     }
 
     //The locking may appear to be counter intuitive but we really don't care if multiple threads offer to the queue
