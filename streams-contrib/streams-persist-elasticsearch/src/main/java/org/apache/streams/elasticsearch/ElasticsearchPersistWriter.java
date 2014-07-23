@@ -140,7 +140,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         checkForBackOff();
 
         try {
-            add(config.getIndex(), config.getType(), streamsDatum.getId(),
+            add(config.getIndex(), config.getType(), streamsDatum.getId() == null ? null : (streamsDatum.getId().equalsIgnoreCase("null") ? null : streamsDatum.getId()),
                     streamsDatum.getTimestamp() == null ? Long.toString(DateTime.now().getMillis()) : Long.toString(streamsDatum.getTimestamp().getMillis()),
                     convertAndAppendMetadata(streamsDatum));
         } catch (Throwable e) {
