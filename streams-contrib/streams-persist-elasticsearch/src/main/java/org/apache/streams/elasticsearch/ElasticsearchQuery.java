@@ -1,16 +1,38 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.apache.streams.elasticsearch;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import com.google.common.base.Objects;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -29,7 +51,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     private static final String DEFAULT_SCROLL_TIMEOUT = "5m";
 
     private ElasticsearchClientManager elasticsearchClientManager;
-    private ElasticsearchConfiguration config;
+    private ElasticsearchReaderConfiguration config;
     private List<String> indexes = Lists.newArrayList();
     private List<String> types = Lists.newArrayList();
     private String[] withfields;
@@ -49,9 +71,11 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     private long totalHits = 0;
     private long totalRead = 0;
 
+    private StreamsJacksonMapper mapper = StreamsJacksonMapper.getInstance();
+
     public ElasticsearchQuery() {
         Config config = StreamsConfigurator.config.getConfig("elasticsearch");
-        this.config = ElasticsearchConfigurator.detectConfiguration(config);
+        this.config = ElasticsearchConfigurator.detectReaderConfiguration(config);
     }
 
     public ElasticsearchQuery(ElasticsearchReaderConfiguration config) {
@@ -105,14 +129,33 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
 
         // If we haven't already set up the search, then set up the search.
         if (search == null) {
+
             search = elasticsearchClientManager.getClient()
                     .prepareSearch(indexes.toArray(new String[0]))
                     .setSearchType(SearchType.SCAN)
                     .setSize(Objects.firstNonNull(batchSize, DEFAULT_BATCH_SIZE).intValue())
                     .setScroll(Objects.firstNonNull(scrollTimeout, DEFAULT_SCROLL_TIMEOUT));
 
+            String searchJson;
+            if( config.getSearch() != null ) {
+                LOGGER.debug("Have config in Reader: " + config.getSearch().toString());
+
+                try {
+                    searchJson = mapper.writeValueAsString(config.getSearch());
+                    LOGGER.debug("Setting source: " + searchJson);
+                    search = search.setExtraSource(searchJson);
+
+                } catch (JsonProcessingException e) {
+                    LOGGER.warn("Could not apply _search supplied by config", e.getMessage());
+                }
+
+                LOGGER.debug("Search Source is now " + search.toString());
+
+            }
+
+
             if (this.queryBuilder != null)
-                search.setQuery(this.queryBuilder);
+                search = search.setQuery(this.queryBuilder);
 
             // If the types are null, then don't specify a type
             if (this.types != null && this.types.size() > 0)
@@ -132,7 +175,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
 
             if (clauses > 0) {
                 //    search.setPostFilter(allFilters);
-                search.setPostFilter(allFilters);
+                search = search.setPostFilter(allFilters);
             }
 
             // TODO: Replace when all clusters are upgraded past 0.90.4 so we can implement a RANDOM scroll.
@@ -195,7 +238,6 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
                 totalRead += 1;
             }
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.error("Unexpected scrolling error: {}", e.getMessage());
             scrollPositionInScroll = -1;
             next = null;
@@ -203,6 +245,9 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     }
 
     public void remove() {
+    }
+
+    public void cleanUp() {
     }
 
     protected boolean isCompleted() {

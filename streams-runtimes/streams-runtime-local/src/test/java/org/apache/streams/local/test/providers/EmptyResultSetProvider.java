@@ -52,6 +52,11 @@ public class EmptyResultSetProvider implements StreamsProvider {
     }
 
     @Override
+    public boolean isRunning() {
+        return true;
+    }
+
+    @Override
     public void prepare(Object configurationObject) {
         //NOP
     }

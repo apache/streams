@@ -21,6 +21,8 @@ package org.apache.streams.regex;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ import java.util.regex.Pattern;
 public class RegexUtils {
 
     private static final Map<String, Pattern> patternCache = Maps.newConcurrentMap();
+    private final static Logger LOGGER = LoggerFactory.getLogger(RegexUtils.class);
 
     private RegexUtils() {}
 
@@ -58,22 +61,32 @@ public class RegexUtils {
     }
 
     protected static Map<String, List<Integer>> getMatches(String pattern, String content, int capture) {
-        Matcher m = getPattern(pattern).matcher(content);
-        Map<String, List<Integer>> matches = Maps.newHashMap();
-        while(m.find()) {
-            String group = capture > 0 ? m.group(capture) : m.group();
-            if(group != null && !group.equals("")) {
-                List<Integer> indices;
-                if(matches.containsKey(group)) {
-                    indices = matches.get(group);
-                } else {
-                    indices = Lists.newArrayList();
-                    matches.put(group, indices);
-                }
-                indices.add(m.start());
+        try {
+            Map<String, List<Integer>> matches = Maps.newHashMap();
+            if(content == null) {
+                return matches;
             }
+
+            Matcher m = getPattern(pattern).matcher(content);
+            while (m.find()) {
+                String group = capture > 0 ? m.group(capture) : m.group();
+                if (group != null && !group.equals("")) {
+                    List<Integer> indices;
+                    if (matches.containsKey(group)) {
+                        indices = matches.get(group);
+                    } else {
+                        indices = Lists.newArrayList();
+                        matches.put(group, indices);
+                    }
+                    indices.add(m.start());
+                }
+            }
+            return matches;
+        } catch (Throwable e) {
+            LOGGER.error("Throwable process {}", e);
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return matches;
     }
 
     private static Pattern getPattern(String pattern) {
@@ -86,6 +99,4 @@ public class RegexUtils {
         }
         return p;
     }
-
-
 }

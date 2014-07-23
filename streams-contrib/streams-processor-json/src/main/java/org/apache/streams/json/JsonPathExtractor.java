@@ -1,5 +1,3 @@
-package org.apache.streams.json;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -7,7 +5,6 @@ package org.apache.streams.json;
  * regarding copyright ownership.  The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,6 +15,8 @@ package org.apache.streams.json;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+package org.apache.streams.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,37 +87,46 @@ public class JsonPathExtractor implements StreamsProcessor {
 
                 if (readResult instanceof String) {
                     String match = (String) readResult;
+                    LOGGER.info("Matched String: " + match);
                     StreamsDatum matchDatum = new StreamsDatum(match);
                     result.add(matchDatum);
                 } else if (readResult instanceof JSONObject) {
                     JSONObject match = (JSONObject) readResult;
+                    LOGGER.info("Matched Object: " + match);
                     ObjectNode objectNode = mapper.readValue(mapper.writeValueAsString(match), ObjectNode.class);
                     StreamsDatum matchDatum = new StreamsDatum(objectNode);
                     result.add(matchDatum);
                 } else if (readResult instanceof JSONArray) {
+                    LOGGER.info("Matched Array:");
                     JSONArray array = (JSONArray) readResult;
                     Iterator iterator = array.iterator();
                     while (iterator.hasNext()) {
                         Object item = iterator.next();
                         if( item instanceof String ) {
+                            LOGGER.info("String Item:" + item);
                             String match = (String) item;
                             StreamsDatum matchDatum = new StreamsDatum(match);
                             result.add(matchDatum);
                         } else if ( item instanceof JSONObject ) {
+                            LOGGER.info("Object Item:" + item);
                             JSONObject match = (JSONObject) item;
                             ObjectNode objectNode = mapper.readValue(mapper.writeValueAsString(match), ObjectNode.class);
                             StreamsDatum matchDatum = new StreamsDatum(objectNode);
                             result.add(matchDatum);
+                        } else {
+                            LOGGER.info("Other Item:" + item.toString());
                         }
                     }
                 } else {
-
+                    LOGGER.info("Other Match:" + readResult.toString());
                 }
 
             } catch( Exception e ) {
                 LOGGER.warn(e.getMessage());
             }
 
+        } else {
+            LOGGER.warn("result empty");
         }
 
         return result;
@@ -129,6 +137,8 @@ public class JsonPathExtractor implements StreamsProcessor {
     public void prepare(Object configurationObject) {
         if( configurationObject instanceof String )
             jsonPath = JsonPath.compile((String)(configurationObject));
+        else if( configurationObject instanceof String[] )
+            jsonPath = JsonPath.compile(((String[])(configurationObject))[0]);
 
         mapper.registerModule(new JsonOrgModule());
     }

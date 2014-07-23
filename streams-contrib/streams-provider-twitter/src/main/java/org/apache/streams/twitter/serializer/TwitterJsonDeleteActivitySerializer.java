@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.apache.streams.twitter.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,7 +34,8 @@ import org.apache.streams.twitter.pojo.Tweet;
 import java.io.Serializable;
 import java.util.List;
 
-import static org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer.*;
+import static org.apache.streams.twitter.serializer.util.TwitterActivityUtil.*;
+
 
 /**
 * Created with IntelliJ IDEA.
@@ -58,28 +77,8 @@ public class TwitterJsonDeleteActivitySerializer implements ActivitySerializer<S
         }
 
         Activity activity = new Activity();
-        activity.setActor(buildActor(delete));
-        activity.setVerb("delete");
-        activity.setObject(buildActivityObject(delete));
-        activity.setId(TwitterJsonActivitySerializer.formatId(activity.getVerb(), delete.getDelete().getStatus().getIdStr()));
-        if(Strings.isNullOrEmpty(activity.getId()))
-            throw new ActivitySerializerException("Unable to determine activity id");
-        activity.setProvider(getProvider());
-        addTwitterExtension(activity, event);
+        updateActivity(delete, activity);
         return activity;
-    }
-
-    public Actor buildActor(Delete delete) {
-        Actor actor = new Actor();
-        actor.setId(formatId(delete.getDelete().getStatus().getUserIdStr()));
-        return actor;
-    }
-
-    public ActivityObject buildActivityObject(Delete delete) {
-        ActivityObject actObj = new ActivityObject();
-        actObj.setId(formatId(delete.getDelete().getStatus().getIdStr()));
-        actObj.setObjectType("tweet");
-        return actObj;
     }
 
     public ActivityObject buildTarget(Tweet tweet) {

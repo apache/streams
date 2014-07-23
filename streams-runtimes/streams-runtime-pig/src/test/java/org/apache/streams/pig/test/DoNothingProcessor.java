@@ -21,14 +21,17 @@ package org.apache.streams.pig.test;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.slf4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to Test Pig processor wrapper
+ * Used to Test Pig processor wrapper - datum passthrough
  */
 public class DoNothingProcessor implements StreamsProcessor {
+
+    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(DoNothingProcessor.class);
 
     List<StreamsDatum> result;
 
@@ -44,11 +47,11 @@ public class DoNothingProcessor implements StreamsProcessor {
 
     @Override
     public void prepare(Object configurationObject) {
-
+        LOGGER.info("Processor prepare");
     }
 
     @Override
     public void cleanUp() {
-        System.out.println("Processor clean up!");
+        LOGGER.info("Processor clean up");
     }
 }
