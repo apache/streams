@@ -189,7 +189,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
                 try {
                     // Use the bruce force method for serialization.
                     Object object = MAPPER.readValue(MAPPER.writeValueAsString(datum.document), datum.getDocument().getClass());
-                    return copyMetaData(datum, new StreamsDatum(object, datum.timestamp, datum.sequenceid));
+                    return copyMetaData(datum, new StreamsDatum(object, datum.getId(), datum.timestamp, datum.sequenceid));
                 } catch (JsonMappingException e) {
                     LOGGER.warn("Unable to clone datum Mapper Error: {} - {}", e.getMessage(), datum);
                 } catch (JsonParseException e) {

@@ -16,7 +16,6 @@ public class ThreadedStreamBuilderDatumTest {
 
     @Test
     public void testDatums() {
-
         List<StreamsDatum> providerDatums = new ArrayList<StreamsDatum>();
         providerDatums.add(new StreamsDatum(1, "1"));
         providerDatums.add(new StreamsDatum(2, "2"));
@@ -33,6 +32,27 @@ public class ThreadedStreamBuilderDatumTest {
         assertEquals("Datum 1 document is correct", 1, writer.getDatums().get(0).getDocument());
         assertEquals("Datum 1 document is correct", 2, writer.getDatums().get(1).getDocument());
         assertEquals("Datum 1 document is correct", 3, writer.getDatums().get(2).getDocument());
+
+        assertEquals("Datum 1 id is correct", "1", writer.getDatums().get(0).getId());
+        assertEquals("Datum 1 id is correct", "2", writer.getDatums().get(1).getId());
+        assertEquals("Datum 1 id is correct", "3", writer.getDatums().get(2).getId());
+
+    }
+
+    @Test
+    public void testDatumsWithSerialization() {
+        List<StreamsDatum> providerDatums = new ArrayList<StreamsDatum>();
+        providerDatums.add(new StreamsDatum(new Object(), "1"));
+        providerDatums.add(new StreamsDatum(new Object(), "2"));
+        providerDatums.add(new StreamsDatum(new Object(), "3"));
+        PreDefinedProvider provider = new PreDefinedProvider(providerDatums);
+
+        DatumCollectorWriter writer = new DatumCollectorWriter();
+
+        new ThreadedStreamBuilder(new ArrayBlockingQueue<StreamsDatum>(10))
+                .newReadCurrentStream("provider", provider)
+                .addStreamsPersistWriter("writer", writer, 1, "provider")
+                .start();
 
         assertEquals("Datum 1 id is correct", "1", writer.getDatums().get(0).getId());
         assertEquals("Datum 1 id is correct", "2", writer.getDatums().get(1).getId());
