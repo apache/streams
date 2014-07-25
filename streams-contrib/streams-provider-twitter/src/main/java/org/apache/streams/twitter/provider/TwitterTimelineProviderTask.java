@@ -70,12 +70,8 @@ public class TwitterTimelineProviderTask implements Runnable {
                     {
                         String json = TwitterObjectFactory.getRawJSON(tStat);
 
-                        try {
-                            provider.lock.readLock().lock();
-                            ComponentUtils.offerUntilSuccess(new StreamsDatum(json), provider.providerQueue);
-                        } finally {
-                            provider.lock.readLock().unlock();
-                        }
+                        provider.addDatum(new StreamsDatum(json));
+
                     }
 
                     paging.setPage(paging.getPage() + 1);
