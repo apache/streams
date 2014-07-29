@@ -44,11 +44,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class TwitterEventProcessor implements StreamsProcessor, Runnable {
+public class TwitterEventProcessor implements StreamsProcessor, Callable<List<StreamsDatum>> {
 
     private final static String STREAMS_ID = "TwitterEventProcessor";
 
@@ -56,55 +57,38 @@ public class TwitterEventProcessor implements StreamsProcessor, Runnable {
 
     private ObjectMapper mapper = new StreamsTwitterMapper();
 
-    private BlockingQueue<String> inQueue;
-    private Queue<StreamsDatum> outQueue;
-
     private Class inClass;
     private Class outClass;
+    private String item;
 
     private TwitterJsonActivitySerializer twitterJsonActivitySerializer;
 
-    public final static String TERMINATE = new String("TERMINATE");
-
-    public TwitterEventProcessor(BlockingQueue<String> inQueue, Queue<StreamsDatum> outQueue, Class inClass, Class outClass) {
-        this.inQueue = inQueue;
-        this.outQueue = outQueue;
+    public TwitterEventProcessor(Class inClass, Class outClass, String item) {
         this.inClass = inClass;
         this.outClass = outClass;
+        this.item = item;
     }
 
-    public TwitterEventProcessor(BlockingQueue<String> inQueue, Queue<StreamsDatum> outQueue, Class outClass) {
-        this.inQueue = inQueue;
-        this.outQueue = outQueue;
-        this.outClass = outClass;
+    public TwitterEventProcessor(Class inClass, Class outClass) {
+        this(inClass, outClass, null);
     }
 
-    public void run() {
+    public TwitterEventProcessor( Class outClass) {
+        this(null, outClass, null);
+    }
 
-        while(true) {
-            String item;
-            try {
+    public TwitterEventProcessor( Class outClass, String item) {
+        this(null, outClass, item);
+    }
 
-                item = ComponentUtils.pollUntilStringNotEmpty(inQueue);
-
-                if(item instanceof String && item.equals(TERMINATE)) {
-                    LOGGER.info("Terminating!");
-                    break;
-                }
-
-                ObjectNode objectNode = (ObjectNode) mapper.readTree(item);
-
-                StreamsDatum rawDatum = new StreamsDatum(objectNode);
-
-                for (StreamsDatum entry : process(rawDatum)) {
-                    ComponentUtils.offerUntilSuccess(entry, outQueue);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-
-            }
+    @Override
+    public List<StreamsDatum> call() throws Exception {
+        if(item != null) {
+            ObjectNode objectNode = (ObjectNode) mapper.readTree(item);
+            StreamsDatum rawDatum = new StreamsDatum(objectNode);
+            return process(rawDatum);
         }
+        return Lists.newArrayList();
     }
 
     public Object convert(ObjectNode event, Class inClass, Class outClass) throws ActivitySerializerException, JsonProcessingException {
