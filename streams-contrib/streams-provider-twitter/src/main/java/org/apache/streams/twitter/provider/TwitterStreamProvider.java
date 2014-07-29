@@ -151,17 +151,17 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
             hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
 
-            Optional<List<String>> track = Optional.fromNullable(config.getTrack());
-            Optional<List<Long>> follow = Optional.fromNullable(config.getFollow());
+            boolean track = config.getTrack() != null && !config.getTrack().isEmpty();
+            boolean follow = config.getFollow() != null && !config.getFollow().isEmpty();
 
-            if( track.isPresent() || follow.isPresent() ) {
+            if( track || follow ) {
                 LOGGER.debug("***\tPRESENT\t***");
                 StatusesFilterEndpoint statusesFilterEndpoint = new StatusesFilterEndpoint();
-                if( track.isPresent() ) {
-                    statusesFilterEndpoint.trackTerms(track.get());
+                if( track ) {
+                    statusesFilterEndpoint.trackTerms(config.getTrack());
                 }
-                else {
-                    statusesFilterEndpoint.followings(follow.get());
+                if( follow ) {
+                    statusesFilterEndpoint.followings(config.getFollow());
                 }
                 this.endpoint = statusesFilterEndpoint;
             } else {
