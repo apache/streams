@@ -18,20 +18,21 @@
 
 package org.apache.streams.twitter.provider;
 
-import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
-import com.twitter.hbc.core.processor.HosebirdMessageProcessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
-import org.apache.streams.twitter.processor.TwitterEventProcessor;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -64,10 +65,32 @@ public class TwitterStreamProcessor extends StringDelimitedProcessor {
             Thread.sleep(10);
         } while(msg == null);
 
-        return provider.addDatum(service.submit(new TwitterEventProcessor(String.class, msg)));
+        //Deserializing to an ObjectNode can take time.  Parallelize the task to improve throughput
+        return provider.addDatum(service.submit(new StreamDeserializer(msg)));
     }
 
     public void cleanUp() {
         ComponentUtils.shutdownExecutor(service, 1, 30);
+    }
+
+    protected static class StreamDeserializer implements Callable<List<StreamsDatum>> {
+
+        protected static final ObjectMapper mapper = StreamsTwitterMapper.getInstance();
+
+        protected String item;
+
+        public StreamDeserializer(String item) {
+            this.item = item;
+        }
+
+        @Override
+        public List<StreamsDatum> call() throws Exception {
+            if(item != null) {
+                ObjectNode objectNode = (ObjectNode) mapper.readTree(item);
+                StreamsDatum rawDatum = new StreamsDatum(objectNode);
+                return Lists.newArrayList(rawDatum);
+            }
+            return Lists.newArrayList();
+        }
     }
 }

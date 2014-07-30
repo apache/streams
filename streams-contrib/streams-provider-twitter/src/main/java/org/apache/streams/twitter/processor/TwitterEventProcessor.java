@@ -49,7 +49,7 @@ import java.util.concurrent.Callable;
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class TwitterEventProcessor implements StreamsProcessor, Callable<List<StreamsDatum>> {
+public class TwitterEventProcessor implements StreamsProcessor {
 
     private final static String STREAMS_ID = "TwitterEventProcessor";
 
@@ -59,36 +59,16 @@ public class TwitterEventProcessor implements StreamsProcessor, Callable<List<St
 
     private Class inClass;
     private Class outClass;
-    private String item;
 
     private TwitterJsonActivitySerializer twitterJsonActivitySerializer;
 
-    public TwitterEventProcessor(Class inClass, Class outClass, String item) {
+    public TwitterEventProcessor(Class inClass, Class outClass) {
         this.inClass = inClass;
         this.outClass = outClass;
-        this.item = item;
-    }
-
-    public TwitterEventProcessor(Class inClass, Class outClass) {
-        this(inClass, outClass, null);
     }
 
     public TwitterEventProcessor( Class outClass) {
-        this(null, outClass, null);
-    }
-
-    public TwitterEventProcessor( Class outClass, String item) {
-        this(null, outClass, item);
-    }
-
-    @Override
-    public List<StreamsDatum> call() throws Exception {
-        if(item != null) {
-            ObjectNode objectNode = (ObjectNode) mapper.readTree(item);
-            StreamsDatum rawDatum = new StreamsDatum(objectNode);
-            return process(rawDatum);
-        }
-        return Lists.newArrayList();
+        this(null, outClass);
     }
 
     public Object convert(ObjectNode event, Class inClass, Class outClass) throws ActivitySerializerException, JsonProcessingException {

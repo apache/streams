@@ -47,6 +47,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by sblackmon on 12/10/13.
@@ -75,6 +77,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     protected BasicClient client;
     protected AtomicBoolean running = new AtomicBoolean(false);
     protected TwitterStreamProcessor processor = new TwitterStreamProcessor(this);
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private DatumStatusCounter countersCurrent = new DatumStatusCounter();
     private DatumStatusCounter countersTotal = new DatumStatusCounter();
 
@@ -104,7 +107,8 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
         StreamsResultSet current;
 
-        synchronized( TwitterStreamProvider.class ) {
+        try {
+            lock.writeLock().lock();
             Queue<StreamsDatum> drain = Queues.newLinkedBlockingDeque();
             drainTo(drain);
             current = new StreamsResultSet(drain);
@@ -112,6 +116,8 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
             current.getCounter().add(countersCurrent);
             countersTotal.add(countersCurrent);
             countersCurrent = new DatumStatusCounter();
+        } finally {
+            lock.writeLock().unlock();
         }
 
         return current;
@@ -232,8 +238,16 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     }
 
     protected boolean addDatum(Future<List<StreamsDatum>> future) {
-        ComponentUtils.offerUntilSuccess(future, providerQueue);
-        return true;
+        try {
+            lock.readLock().lock();
+            ComponentUtils.offerUntilSuccess(future, providerQueue);
+            return true;
+        } catch (Exception e) {
+            LOGGER.warn("Unable to enqueue item from Twitter stream");
+            return false;
+        }finally {
+            lock.readLock().unlock();
+        }
     }
 
     protected void drainTo(Queue<StreamsDatum> drain) {
