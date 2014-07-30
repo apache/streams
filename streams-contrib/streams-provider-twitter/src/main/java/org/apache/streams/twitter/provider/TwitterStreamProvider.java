@@ -229,7 +229,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     public void cleanUp() {
         this.client.stop();
         this.processor.cleanUp();
-        this.running.set(true);
+        this.running.set(false);
     }
 
     @Override

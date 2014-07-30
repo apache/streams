@@ -62,7 +62,9 @@ public class TwitterStreamProcessor extends StringDelimitedProcessor {
         String msg = null;
         do {
             msg = this.processNextMessage();
-            Thread.sleep(10);
+            if(msg == null) {
+                Thread.sleep(10);
+            }
         } while(msg == null);
 
         //Deserializing to an ObjectNode can take time.  Parallelize the task to improve throughput
