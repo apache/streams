@@ -35,7 +35,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.datasift.DatasiftConfiguration;
-import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,7 +202,7 @@ public class DatasiftStreamProvider implements StreamsProvider {
     public void prepare(Object configurationObject) {
         this.interactions = new ConcurrentLinkedQueue<Interaction>();
         this.clients = Maps.newHashMap();
-        this.mapper = StreamsJacksonMapper.getInstance();
+        this.mapper = StreamsDatasiftMapper.getInstance();
     }
 
     @Override
