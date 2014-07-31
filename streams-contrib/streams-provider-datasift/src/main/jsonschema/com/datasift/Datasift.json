@@ -206,6 +206,25 @@
                 "link": {
                     "type": "string"
                 },
+                "mention_ids": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "integer"
+                        }
+                    ]
+                },
+                "mentions": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "source": {
+                    "type": "string"
+                },
                 "schema": {
                     "dynamic": "true",
                     "properties": {
@@ -253,6 +272,9 @@
                 },
                 "tag": {
                     "type": "string"
+                },
+                "tag_extended": {
+                    "type": "string"
                 }
             }
         },
@@ -264,10 +286,10 @@
                 "code": {
                     "type": "array",
                     "items": [
-                            {
+                        {
                             "type": "integer"
-                            }
-                        ]
+                        }
+                    ]
                 },
                 "created_at": {
                     "type": "array",
@@ -575,6 +597,14 @@
             "properties": {
                 "created_at": {
                     "type": "string"
+                },
+                "display_urls": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
                 },
                 "domains": {
                     "type": "array",
