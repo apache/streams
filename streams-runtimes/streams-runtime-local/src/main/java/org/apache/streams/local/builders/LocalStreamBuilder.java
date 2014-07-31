@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.apache.streams.local.builders;
 
 import org.apache.log4j.spi.LoggerFactory;
@@ -37,6 +55,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     private int monitorTasks;
     private LocalStreamProcessMonitorThread monitorThread;
     private Map<String, List<StreamsTask>> tasks;
+    private Thread shutdownHook;
 
     /**
      *
@@ -73,6 +92,14 @@ public class LocalStreamBuilder implements StreamBuilder {
         this.streamConfig = streamConfig;
         this.totalTasks = 0;
         this.monitorTasks = 0;
+        final LocalStreamBuilder self = this;
+        this.shutdownHook = new Thread() {
+            @Override
+            public void run() {
+                LOGGER.debug("Shutdown hook received.  Beginning shutdown");
+                self.stopInternal(true);
+            }
+        };
     }
 
     @Override
@@ -168,24 +195,23 @@ public class LocalStreamBuilder implements StreamBuilder {
                     Thread.sleep(3000);
                 }
             }
-            LOGGER.debug("Components are no longer running or timed out due to completion");
-            shutdown(tasks);
+            LOGGER.debug("Components are no longer running or timed out");
         } catch (InterruptedException e){
-            forceShutdown(tasks);
+            LOGGER.warn("Runtime interrupted.  Beginning shutdown");
+        } finally{
+            stop();
         }
 
     }
 
     private void attachShutdownHandler() {
-        final LocalStreamBuilder self = this;
         LOGGER.debug("Attaching shutdown handler");
-        Runtime.getRuntime().addShutdownHook(new Thread(){
-            @Override
-            public void run() {
-                LOGGER.debug("Shutdown hook received.  Beginning shutdown");
-                self.stop();
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
+
+    private void detachShutdownHandler() {
+        LOGGER.debug("Detaching shutdown handler");
+        Runtime.getRuntime().removeShutdownHook(shutdownHook);
     }
 
     protected void forceShutdown(Map<String, List<StreamsTask>> streamsTasks) {
@@ -214,7 +240,7 @@ public class LocalStreamBuilder implements StreamBuilder {
 
     protected void shutdown(Map<String, List<StreamsTask>> streamsTasks) throws InterruptedException {
         LOGGER.info("Attempting to shutdown tasks");
-        monitorThread.shutdown();
+        this.monitorThread.shutdown();
         this.executor.shutdown();
         //complete stream shut down gracfully
         for(StreamComponent prov : this.providers.values()) {
@@ -311,10 +337,18 @@ public class LocalStreamBuilder implements StreamBuilder {
      */
     @Override
     public void stop() {
+        stopInternal(false);
+    }
+
+    protected void stopInternal(boolean systemExiting) {
         try {
             shutdown(tasks);
         } catch (Exception e) {
             forceShutdown(tasks);
+        } finally {
+            if(!systemExiting) {
+                detachShutdownHandler();
+            }
         }
     }
 
@@ -347,7 +381,8 @@ public class LocalStreamBuilder implements StreamBuilder {
     }
 
     protected int getTimeout() {
-        return streamConfig != null && streamConfig.containsKey(TIMEOUT_KEY) ? (Integer)streamConfig.get(TIMEOUT_KEY) : 3000;
+    //Set the timeout of it is configured, otherwise signal downstream components to use their default
+        return streamConfig != null && streamConfig.containsKey(TIMEOUT_KEY) ? (Integer)streamConfig.get(TIMEOUT_KEY) : -1;
     }
 
 }

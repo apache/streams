@@ -1,9 +1,33 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.apache.streams.local.builders;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamBuilder;
+import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.test.processors.PassthroughDatumCounterProcessor;
 import org.apache.streams.core.test.providers.NumericMessageProvider;
 import org.apache.streams.core.test.writer.SystemOutWriter;
+import org.apache.streams.local.tasks.StreamsTask;
+import org.apache.streams.local.test.processors.SlowProcessor;
+import org.apache.streams.local.test.providers.EmptyResultSetProvider;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,7 +35,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -156,9 +185,67 @@ public class LocalStreamBuilderTest {
             ++count;
             scanner.nextLine();
         }
-        assertThat(count, greaterThan(numDatums*2)); // using > because number of lines in system.out is non-deterministic
+        assertThat(count, greaterThan(numDatums * 2)); // using > because number of lines in system.out is non-deterministic
 
     }
 
+    @Test
+    public void testSlowProcessorBranch() {
+        int numDatums = 30;
+        int timeout = 2000;
+        Map<String, Object> config = Maps.newHashMap();
+        config.put(LocalStreamBuilder.TIMEOUT_KEY, timeout);
+        StreamBuilder builder = new LocalStreamBuilder(config);
+        builder.newReadCurrentStream("prov1", new NumericMessageProvider(numDatums))
+                .addStreamsProcessor("proc1", new SlowProcessor(), 1, "prov1")
+                .addStreamsPersistWriter("w1", new SystemOutWriter(), 1, "proc1");
+        builder.start();
+        int count = 0;
+        Scanner scanner = new Scanner(new ByteArrayInputStream(out.toByteArray()));
+        while(scanner.hasNextLine()) {
+            ++count;
+            scanner.nextLine();
+        }
+        assertThat(count, greaterThan(numDatums)); // using > because number of lines in system.out is non-deterministic
 
+    }
+
+    @Test
+    public void testConfiguredProviderTimeout() {
+        Map<String, Object> config = Maps.newHashMap();
+        int timeout = 10000;
+        config.put(LocalStreamBuilder.TIMEOUT_KEY, timeout);
+        long start = System.currentTimeMillis();
+        StreamBuilder builder = new LocalStreamBuilder(Queues.<StreamsDatum>newLinkedBlockingQueue(), config);
+        builder.newPerpetualStream("prov1", new EmptyResultSetProvider())
+                .addStreamsProcessor("proc1", new PassthroughDatumCounterProcessor(), 1, "prov1")
+                .addStreamsProcessor("proc2", new PassthroughDatumCounterProcessor(), 1, "proc1")
+                .addStreamsPersistWriter("w1", new SystemOutWriter(), 1, "proc1");
+        builder.start();
+        long end = System.currentTimeMillis();
+        //We care mostly that it doesn't terminate too early.  With thread shutdowns, etc, the actual time is indeterminate.  Just make sure there is an upper bound
+        assertThat((int)(end - start), is(allOf(greaterThanOrEqualTo(timeout), lessThanOrEqualTo(4 * timeout))));
+    }
+
+    @Test
+    public void ensureShutdownWithBlockedQueue() throws InterruptedException {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        int before = Thread.activeCount();
+        final StreamBuilder builder = new LocalStreamBuilder(Queues.<StreamsDatum>newLinkedBlockingQueue(1));
+        builder.newPerpetualStream("prov1", new NumericMessageProvider(30))
+                .addStreamsProcessor("proc1", new SlowProcessor(), 1, "prov1")
+                .addStreamsPersistWriter("w1", new SystemOutWriter(), 1, "proc1");
+        service.submit(new Runnable(){
+            @Override
+            public void run() {
+                builder.start();
+            }
+        });
+        //Let streams spin up threads and start to process
+        Thread.sleep(500);
+        builder.stop();
+        service.shutdownNow();
+        service.awaitTermination(1000, TimeUnit.MILLISECONDS);
+        assertThat(Thread.activeCount(), is(equalTo(before)));
+    }
 }

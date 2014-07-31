@@ -1,43 +1,33 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.apache.streams.twitter.serializer;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.AnnotationIntrospector;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivitySerializerException;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.jackson.StreamsJacksonModule;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.Provider;
-import org.apache.streams.twitter.pojo.Delete;
-import org.apache.streams.twitter.pojo.Retweet;
-import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.twitter.pojo.*;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
 
-/**
- * Created by sblackmon on 3/26/14.
- */
 public class TwitterJsonActivitySerializer implements ActivitySerializer<String>, Serializable
 {
 
@@ -48,6 +38,7 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
     TwitterJsonTweetActivitySerializer tweetActivitySerializer = new TwitterJsonTweetActivitySerializer();
     TwitterJsonRetweetActivitySerializer retweetActivitySerializer = new TwitterJsonRetweetActivitySerializer();
     TwitterJsonDeleteActivitySerializer deleteActivitySerializer = new TwitterJsonDeleteActivitySerializer();
+    TwitterJsonUserActivitySerializer userActivitySerializer = new TwitterJsonUserActivitySerializer();
 
     @Override
     public String serializationFormat() {
@@ -71,6 +62,8 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
             activity = retweetActivitySerializer.deserialize(serialized);
         else if( documentSubType == Delete.class )
             activity = deleteActivitySerializer.deserialize(serialized);
+        else if( documentSubType == User.class )
+            activity = userActivitySerializer.deserialize(serialized);
         else throw new ActivitySerializerException("unrecognized type");
 
         return activity;
@@ -79,20 +72,5 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
     @Override
     public List<Activity> deserializeAll(List<String> serializedList) {
         throw new NotImplementedException();
-    }
-
-    public static Provider getProvider() {
-        Provider provider = new Provider();
-        provider.setId("id:providers:twitter");
-        return provider;
-    }
-
-    public static void addTwitterExtension(Activity activity, ObjectNode event) {
-        Map<String, Object> extensions = org.apache.streams.data.util.ActivityUtil.ensureExtensions(activity);
-        extensions.put("twitter", event);
-    }
-
-    public static String formatId(String... idparts) {
-        return Joiner.on(":").join(Lists.asList("id:twitter", idparts));
     }
 }

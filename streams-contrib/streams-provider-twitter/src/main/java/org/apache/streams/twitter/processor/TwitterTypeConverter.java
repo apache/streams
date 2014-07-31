@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.apache.streams.twitter.processor;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -41,6 +59,8 @@ public class TwitterTypeConverter implements StreamsProcessor {
 
     private TwitterJsonActivitySerializer twitterJsonActivitySerializer;
 
+    private int count = 0;
+
     public final static String TERMINATE = new String("TERMINATE");
 
     public TwitterTypeConverter(Class inClass, Class outClass) {
@@ -61,10 +81,9 @@ public class TwitterTypeConverter implements StreamsProcessor {
         Object result = null;
 
         if( outClass.equals( Activity.class )) {
-                LOGGER.debug("ACTIVITY");
-                result = twitterJsonActivitySerializer.deserialize(
-                        mapper.writeValueAsString(event));
-                return result;
+            LOGGER.debug("ACTIVITY");
+            result = twitterJsonActivitySerializer.deserialize(
+                    mapper.writeValueAsString(event));
         } else if( outClass.equals( Tweet.class )) {
             if ( inClass.equals( Tweet.class )) {
                 LOGGER.debug("TWEET");
@@ -85,9 +104,11 @@ public class TwitterTypeConverter implements StreamsProcessor {
             result = mapper.convertValue(event, ObjectNode.class);
         }
 
-            // no supported conversion were applied
-        if( result != null )
+        // no supported conversion were applied
+        if( result != null ) {
+            count ++;
             return result;
+        }
 
         LOGGER.debug("CONVERT FAILED");
 
@@ -155,7 +176,7 @@ public class TwitterTypeConverter implements StreamsProcessor {
                 node = (ObjectNode)mapper.valueToTree(item);
 
                 // since data is coming from outside provider, we don't know what type the events are
-                Class inClass = TwitterEventClassifier.detectClass((String)item);
+                Class inClass = TwitterEventClassifier.detectClass(mapper.writeValueAsString(item));
 
                 Object out = convert(node, inClass, outClass);
 

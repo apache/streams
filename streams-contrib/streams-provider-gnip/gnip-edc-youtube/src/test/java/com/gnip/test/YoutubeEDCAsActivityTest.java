@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package test.java.com.gnip.test;
+package com.gnip.test;
 
 //import org.codehaus.jackson.map.ObjectMapper;
 

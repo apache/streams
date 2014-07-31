@@ -3,6 +3,7 @@
     "$schema": "http://json-schema.org/draft-03/schema",
     "id": "#",
     "javaType" : "org.apache.streams.datasift.DatasiftConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "apiKey": {
             "type": "string"
