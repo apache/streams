@@ -21,10 +21,11 @@ package org.apache.streams.datasift.provider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import org.apache.streams.core.*;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.serializer.DatasiftActivitySerializer;
-import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,7 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
 
     @Override
     public void prepare(Object configurationObject) {
-        this.mapper = StreamsJacksonMapper.getInstance();
+        this.mapper = StreamsDatasiftMapper.getInstance();
         this.datasiftInteractionActivitySerializer = new DatasiftActivitySerializer();
         if(this.outClass.equals(Activity.class)) {
             this.converter = new ActivityConverter();

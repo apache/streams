@@ -1,15 +1,13 @@
 package org.apache.streams.datasift.serializer;
 
-import com.fasterxml.jackson.databind.AnnotationIntrospector;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.datasift.Datasift;
-import org.apache.streams.datasift.interaction.*;
-import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.datasift.interaction.Interaction;
+import org.apache.streams.datasift.interaction.Links;
+import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.pojo.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,7 @@ public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Dat
 
     public static final String DATE_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
 
-    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    ObjectMapper mapper = StreamsDatasiftMapper.getInstance();
 
     @Override
     public String serializationFormat() {
@@ -46,7 +44,7 @@ public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Dat
         try {
             return deserialize(this.mapper.readValue(datasiftJson, Datasift.class));
         } catch (Exception e) {
-            LOGGER.error("Excpetion while trying convert,\n {},\n to a Datasift object.", datasiftJson);
+            LOGGER.error("Exception while trying convert,\n {},\n to a Datasift object.", datasiftJson);
             LOGGER.error("Exception : {}", e);
             throw new RuntimeException(e);
         }
@@ -54,13 +52,6 @@ public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Dat
 
     @Override
     public Activity deserialize(Datasift serialized) {
-
-        AnnotationIntrospector introspector = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
-        mapper.setAnnotationIntrospector(introspector);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
-        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
-        mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
-        mapper.configure(DeserializationFeature.WRAP_EXCEPTIONS, Boolean.TRUE);
 
         try {
 
@@ -141,7 +132,7 @@ public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Dat
         Actor actor = new Actor();
         org.apache.streams.datasift.interaction.Author author = interaction.getAuthor();
         if(author == null) {
-            LOGGER.warn("Interactiond does not contain author information.");
+            LOGGER.warn("Interaction does not contain author information.");
             return actor;
         }
         String userName = author.getUsername();
