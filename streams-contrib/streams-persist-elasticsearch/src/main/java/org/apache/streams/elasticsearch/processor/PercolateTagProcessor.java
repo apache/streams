@@ -33,9 +33,14 @@ import org.apache.streams.elasticsearch.ElasticsearchConfiguration;
 import org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.percolate.PercolateRequestBuilder;
 import org.elasticsearch.action.percolate.PercolateResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -66,7 +71,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(PercolateTagProcessor.class);
 
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private ObjectMapper mapper;
 
     protected Queue<StreamsDatum> inQueue;
     protected Queue<StreamsDatum> outQueue;
@@ -79,7 +84,6 @@ public class PercolateTagProcessor implements StreamsProcessor {
 
     public PercolateTagProcessor(ElasticsearchWriterConfiguration config) {
         this.config = config;
-        manager = new ElasticsearchClientManager(config);
     }
 
     public ElasticsearchClientManager getManager() {
@@ -159,11 +163,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
 
         Activity activity = mapper.convertValue(node, Activity.class);
 
-        Map<String, Object> extensions = ActivityUtil.ensureExtensions(activity);
-
-        extensions.put(TAGS_EXTENSION, tagArray);
-
-        activity.setAdditionalProperty(ActivityUtil.EXTENSION_PROPERTY, extensions);
+        appendMatches(tagArray, activity);
 
         entry.setDocument(activity);
 
@@ -173,11 +173,17 @@ public class PercolateTagProcessor implements StreamsProcessor {
 
     }
 
+    protected void appendMatches(ArrayNode tagArray, Activity activity) {
+        Map<String, Object> extensions = ActivityUtil.ensureExtensions(activity);
+
+        extensions.put(TAGS_EXTENSION, tagArray);
+
+        activity.setAdditionalProperty(ActivityUtil.EXTENSION_PROPERTY, extensions);
+    }
+
     @Override
     public void prepare(Object o) {
 
-        Preconditions.checkNotNull(manager);
-        Preconditions.checkNotNull(manager.getClient());
         Preconditions.checkNotNull(config);
         Preconditions.checkNotNull(config.getTags());
         Preconditions.checkArgument(config.getTags().getAdditionalProperties().size() > 0);
@@ -185,8 +191,11 @@ public class PercolateTagProcessor implements StreamsProcessor {
         // consider using mapping to figure out what fields are included in _all
         //manager.getClient().admin().indices().prepareGetMappings(config.getIndex()).get().getMappings().get(config.getType()).;
 
-        //deleteOldQueries(config.getIndex());
+        mapper = StreamsJacksonMapper.getInstance();
+        manager = new ElasticsearchClientManager(config);
         bulkBuilder = manager.getClient().prepareBulk();
+        createIndexIfMissing(config.getIndex());
+        deleteOldQueries(config.getIndex());
         for (String tag : config.getTags().getAdditionalProperties().keySet()) {
             String query = (String)config.getTags().getAdditionalProperties().get(tag);
             PercolateQueryBuilder queryBuilder = new PercolateQueryBuilder(tag, query);
@@ -208,6 +217,28 @@ public class PercolateTagProcessor implements StreamsProcessor {
 
     public int numOfPercolateRules() {
         return this.bulkBuilder.numberOfActions();
+    }
+
+    public void createIndexIfMissing(String indexName) {
+        if (!this.manager.getClient()
+                .admin()
+                .indices()
+                .exists(new IndicesExistsRequest(indexName))
+                .actionGet()
+                .isExists()) {
+            // It does not exist... So we are going to need to create the index.
+            // we are going to assume that the 'templates' that we have loaded into
+            // elasticsearch are sufficient to ensure the index is being created properly.
+            CreateIndexResponse response = this.manager.getClient().admin().indices().create(new CreateIndexRequest(indexName)).actionGet();
+
+            if (response.isAcknowledged()) {
+                LOGGER.info("Index {} did not exist. The index was automatically created from the stored ElasticSearch Templates.", indexName);
+            } else {
+                LOGGER.error("Index {} did not exist. While attempting to create the index from stored ElasticSearch Templates we were unable to get an acknowledgement.", indexName);
+                LOGGER.error("Error Message: {}", response.toString());
+                throw new RuntimeException("Unable to create index " + indexName);
+            }
+        }
     }
 
     public void addPercolateRule(PercolateQueryBuilder builder, String index) {
