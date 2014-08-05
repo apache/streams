@@ -1,0 +1,21 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.instagram.InstagramConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "clientId": {
+            "type": "string",
+            "description": "Your Instagram Client Id"
+        },
+        "clientSecret": {
+            "type": "string",
+            "description": "Your Instagram Client secret"
+        },
+        "callbackUrl": {
+            "type": "string",
+            "description": "Your Instagream callback url"
+        }
+   }
+}

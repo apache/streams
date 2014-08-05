@@ -79,7 +79,6 @@ public class SysomosHeartbeatStream implements Runnable {
             executeRun();
         } catch (Exception e) {
             LOGGER.error("Error executing heartbeat stream", e);
-        } finally {
             shutdown();
         }
     }
@@ -87,11 +86,13 @@ public class SysomosHeartbeatStream implements Runnable {
     protected void executeRun() {
         QueryResult result;
         String mostCurrentId = null;
+        int totalDocCount = 0;
         lastRunTime = DateTime.now();
         //Iff we are trying to get to a specific document ID, continue to query after minimum delay
         do {
             LOGGER.debug("Querying API to match last ID of {} or time range of {} - {}", lastID, afterTime, beforeTime);
             result = queryAPI();
+            totalDocCount += result.getResponseSize();
             //Ensure that we are only assigning lastID to the latest ID, even if there is backfill query.
             //Since offset is calcuated at the end of the run, if we detect the need to backfill, it will increment to 1
             if(offsetCount == 1) {
@@ -100,17 +101,18 @@ public class SysomosHeartbeatStream implements Runnable {
             updateOffset(result);
         } while (offsetCount > 0);
 
-        updateState(result, mostCurrentId);
+        updateState(result, mostCurrentId, totalDocCount);
         LOGGER.debug("Completed current execution with a final docID of {} or time of {}", lastID, afterTime);
     }
 
-    protected void updateState(QueryResult result, String mostCurrentId) {
+    protected void updateState(QueryResult result, String mostCurrentId, int totalDocCount) {
         if(OperatingMode.DOC_MATCH.equals(mode)) {
             //Set the last ID so that the next time we are executed we will continue to query only so long as we haven't
             //found the specific ID
             lastID = mostCurrentId == null ? result.getCurrentId() : mostCurrentId;
         } else {
-            afterTime = lastRunTime;
+            //If we didn't see any docs, there might be a lag on the Sysomos side.  Retry.
+            afterTime = totalDocCount == 0 ? afterTime : lastRunTime;
         }
 
         if(SysomosProvider.Mode.BACKFILL_AND_TERMINATE.equals(provider.getMode())) {
