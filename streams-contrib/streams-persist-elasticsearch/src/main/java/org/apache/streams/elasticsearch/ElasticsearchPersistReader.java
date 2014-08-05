@@ -194,15 +194,19 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
                 ObjectNode jsonObject = null;
                 try {
                     jsonObject = mapper.readValue(hit.getSourceAsString(), ObjectNode.class);
+                    item = new StreamsDatum(jsonObject, hit.getId());
+                    item.getMetadata().put("id", hit.getId());
+                    item.getMetadata().put("index", hit.getIndex());
+                    item.getMetadata().put("type", hit.getType());
+                    if( hit.fields().containsKey("_timestamp")) {
+                        DateTime timestamp = new DateTime(((Long) hit.field("_timestamp").getValue()).longValue());
+                        item.setTimestamp(timestamp);
+                    }
+                    reader.write(item);
                 } catch (IOException e) {
-                    e.printStackTrace();
-                    break;
+                    LOGGER.warn("Unable to process json source: ", hit.getSourceAsString());
                 }
-                item = new StreamsDatum(jsonObject, hit.getId());
-                item.getMetadata().put("id", hit.getId());
-                item.getMetadata().put("index", hit.getIndex());
-                item.getMetadata().put("type", hit.getType());
-                reader.write(item);
+
             }
             try {
                 Thread.sleep(new Random().nextInt(100));
