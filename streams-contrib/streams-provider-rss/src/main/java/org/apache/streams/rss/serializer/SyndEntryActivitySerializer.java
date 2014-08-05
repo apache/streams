@@ -179,7 +179,7 @@ public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNod
             uri = entry.get("uri").textValue();
 
         if (uri != null) {
-            if((uri.contains("http") || uri.contains("www")) || (link == null || !(link.contains("http") || link.contains("www")))) {
+            if((uri.startsWith("http") || uri.startsWith("www")) || (link == null || !(link.startsWith("http") || link.startsWith("www")))) {
                 resourceLocation = uri;
             } else {
                 resourceLocation = link;
