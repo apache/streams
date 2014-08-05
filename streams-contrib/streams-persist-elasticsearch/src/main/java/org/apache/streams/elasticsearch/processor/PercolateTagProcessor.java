@@ -122,7 +122,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
                 e.printStackTrace();
                 return null;
             }
-        } else {
+        } else if (entry.getDocument() instanceof ObjectNode) {
             node = (ObjectNode) entry.getDocument();
             try {
                 json = mapper.writeValueAsString(node);
@@ -130,6 +130,9 @@ public class PercolateTagProcessor implements StreamsProcessor {
                 LOGGER.warn("Invalid datum: ", node);
                 return null;
             }
+        } else {
+            LOGGER.warn("Incompatible document type: ", entry.getDocument().getClass());
+            return null;
         }
 
         StringBuilder percolateRequestJson = new StringBuilder();
