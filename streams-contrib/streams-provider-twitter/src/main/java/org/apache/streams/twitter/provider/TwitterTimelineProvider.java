@@ -230,10 +230,27 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
         Preconditions.checkNotNull(config.getInfo());
 
-        ImmutableList<String> screenNames = ImmutableList.copyOf(screenNamesOnly(config.getInfo()));
-        List<Long> ids = numericIdsOnly(config.getInfo());
+        consolidateToIDs();
+    }
+
+    /**
+     * Using the "info" list that is contained in the configuration, ensure that all
+     * account identifiers are converted to IDs (Longs) instead of screenNames (Strings)
+     */
+    private void consolidateToIDs() {
+        List<String> screenNames = Lists.newArrayList();
+        ids = Lists.newArrayList();
+
+        for(Object account : config.getInfo()) {
+            if(account instanceof String) {
+                screenNames.add((String)account);
+            } else if (account instanceof Long) {
+                ids.add(Long.parseLong(Objects.toString(account, null)));
+            }
+        }
 
         // Twitter allows for batches up to 100 per request, but you cannot mix types
+        screenNameBatches = new ArrayList<String[]>();
         while(screenNames.size() >= 100) {
             screenNameBatches.add(screenNames.subList(0, 100).toArray(new String[0]));
             screenNames = screenNames.subList(100, screenNames.size());
@@ -248,7 +265,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
             Collection<Long> batchIds = retrieveIds(screenNameBatchIterator.next());
             ids.addAll(batchIds);
         }
-
     }
 
     protected Twitter getTwitterClient()
@@ -273,42 +289,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     @Override
     public void cleanUp() {
         shutdownAndAwaitTermination(executor);
-    }
-
-    protected List<Long> numericIdsOnly(List<String> allIds) {
-        List<Long> result = Lists.newArrayList();
-        for(String id : allIds) {
-            if(id != null)
-            {
-                // See if it is a long, if it is, add it to the user iD list, if it is not, add it to the
-                // screen name list
-                try {
-                    result.add(Long.parseLong(id));
-                } catch (NumberFormatException e) {}
-
-            }
-        }
-        return result;
-    }
-
-    protected List<String> screenNamesOnly(List<String> allIds) {
-        List<String> result = Lists.newArrayList();
-        for(String id : allIds) {
-            if(id != null)
-            {
-                String potentialScreenName = id.replaceAll("@", "").trim().toLowerCase();
-
-                // See if it is a long, if it is, add it to the user iD list, if it is not, add it to the
-                // screen name list
-                try {
-                    Long.parseLong(id);
-                } catch (NumberFormatException e) {
-                    result.add(potentialScreenName);
-                }
-
-            }
-        }
-        return result;
     }
 
     protected void addDatum(StreamsDatum datum) {

@@ -48,8 +48,6 @@ public class TwitterTimelineProviderTask implements Runnable {
 
         Paging paging = new Paging(1, 200);
         List<Status> statuses = null;
-        boolean KeepGoing = true;
-        boolean hadFailure = false;
 
         do
         {
@@ -64,6 +62,8 @@ public class TwitterTimelineProviderTask implements Runnable {
 
                 try
                 {
+                    this.client = provider.getTwitterClient();
+
                     statuses = client.getUserTimeline(id, paging);
 
                     for (Status tStat : statuses)
