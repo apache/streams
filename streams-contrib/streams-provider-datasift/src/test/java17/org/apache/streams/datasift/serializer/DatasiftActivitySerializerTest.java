@@ -62,7 +62,6 @@ public class DatasiftActivitySerializerTest {
         }
     }
 
-
     /**
      * Test that the minimum number of things that an activity has
      * @param json
@@ -70,9 +69,10 @@ public class DatasiftActivitySerializerTest {
     private void testGeneralConversion(String json) throws Exception {
         Activity activity = SERIALIZER.deserialize(json);
         assertNotNull(json, activity.getId());
-        assertTrue(json, activity.getId().contains("datasift"));
         assertNotNull(json, activity.getPublished());
+        assertNotNull(json, activity.getProvider());
         assertNotNull(json, activity.getUrl());
+        assertNotNull(json, activity.getVerb());
         Actor actor = activity.getActor();
         assertNotNull(json, actor);
 

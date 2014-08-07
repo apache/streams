@@ -32,8 +32,9 @@ import java.util.List;
  */
 public class DatasiftActivitySerializer implements ActivitySerializer<Datasift> {
 
-    private static final DatasiftTweetActivitySerializer TWITTER_SERIALIZER = new DatasiftTweetActivitySerializer();
     private static final DatasiftDefaultActivitySerializer DEFAULT_SERIALIZER = new DatasiftDefaultActivitySerializer();
+    private static final DatasiftTweetActivitySerializer TWITTER_SERIALIZER = new DatasiftTweetActivitySerializer();
+    private static final DatasiftInstagramActivitySerializer INSTAGRAM_SERIALIZER = new DatasiftInstagramActivitySerializer();
     private static final ObjectMapper MAPPER = StreamsDatasiftMapper.getInstance();
 
     @Override
@@ -50,6 +51,8 @@ public class DatasiftActivitySerializer implements ActivitySerializer<Datasift> 
     public Activity deserialize(Datasift serialized) throws ActivitySerializerException {
         if(serialized.getTwitter() != null) {
             return TWITTER_SERIALIZER.deserialize(serialized);
+        } else if(serialized.getInstagram() != null) {
+            return INSTAGRAM_SERIALIZER.deserialize(serialized);
         } else {
             return DEFAULT_SERIALIZER.deserialize(serialized);
         }

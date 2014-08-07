@@ -150,6 +150,77 @@
                 }
             }
         },
+        "instagram": {
+            "javaType": "org.apache.streams.datasift.instagram.Instagram",
+            "type": "object",
+            "properties": {
+                "from": {
+                    "javaType": "org.apache.streams.datasift.instagram.From",
+                    "type": "object",
+                    "properties": {
+                        "full_name": {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "id": {
+                            "type": "string"
+                        },
+                        "profile_picture": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "media": {
+                    "javaType": "org.apache.streams.datasift.instagram.Media",
+                    "type": "object",
+                    "properties": {
+                        "caption": {
+                            "type": "string"
+                        },
+                        "created_time": {
+                            "type": "number"
+                        },
+                        "filter": {
+                            "type": "string"
+                        },
+                        "id": {
+                            "type": "string"
+                        },
+                        "image": {
+                            "type": "string"
+                        },
+                        "link": {
+                            "type": "string"
+                        },
+                        "tags": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "type": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        },
+                        "video": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "interaction": {
             "javaType": "org.apache.streams.datasift.interaction.Interaction",
             "type": "object",
@@ -206,23 +277,10 @@
                 "link": {
                     "type": "string"
                 },
-                "mention_ids": {
-                    "type": "array",
-                    "items": [
-                        {
-                            "type": "integer"
-                        }
-                    ]
+                "received_at": {
+                    "type": "long"
                 },
-                "mentions": {
-                    "type": "array",
-                    "items": [
-                        {
-                            "type": "string"
-                        }
-                    ]
-                },
-                "source": {
+                "subtype": {
                     "type": "string"
                 },
                 "schema": {
@@ -234,6 +292,9 @@
                     }
                 },
                 "source": {
+                    "type": "string"
+                },
+                "subtype": {
                     "type": "string"
                 },
                 "tags": {
@@ -955,12 +1016,11 @@
                         },
                         "mention_ids": {
                             "type": "array",
-                            "items":[
+                            "items": [
                                 {
                                     "type": "integer"
                                 }
                             ]
-
                         },
                         "mentions": {
                             "type": "array",

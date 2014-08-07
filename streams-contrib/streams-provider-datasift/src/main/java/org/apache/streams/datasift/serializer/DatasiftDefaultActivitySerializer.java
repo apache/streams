@@ -109,7 +109,7 @@ public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Dat
 
         Activity activity = new Activity();
         activity.setActor(buildActor(event.getInteraction()));
-        activity.setVerb("post");
+        activity.setVerb(selectVerb(event));
         activity.setObject(buildActivityObject(event.getInteraction()));
         activity.setId(formatId(activity.getVerb(), event.getInteraction().getId()));
         activity.setTarget(buildTarget(event.getInteraction()));
@@ -126,6 +126,10 @@ public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Dat
             addLocationExtension(activity, event.getInteraction());
         }
         return activity;
+    }
+
+    private String selectVerb(Datasift event) {
+        return "post";
     }
 
     public Actor buildActor(Interaction interaction) {
@@ -202,4 +206,9 @@ public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Dat
         extensions.put("location", location);
     }
 
+    public static String firstStringIfNotNull(List<Object> list) {
+        if( list != null && list.size() > 0) {
+            return (String) list.get(0);
+        } else return null;
+    }
 }
