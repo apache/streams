@@ -49,6 +49,18 @@ public class DatasiftActivitySerializerTest {
         }
     }
 
+    @Test
+    public void testInstagramConversion() throws Exception {
+        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/instagram_datasift_json.txt"));
+        String line = null;
+        while(scanner.hasNextLine()) {
+            line = scanner.nextLine();
+            testGeneralConversion(line);
+            System.out.println("ORIGINAL -> "+line);
+            System.out.println("ACTIVITY -> "+MAPPER.writeValueAsString(SERIALIZER.deserialize(line)));
+            System.out.println("NODE     -> "+MAPPER.convertValue(SERIALIZER.deserialize(line), JsonNode.class));
+        }
+    }
 
 
     /**
