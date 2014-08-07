@@ -20,6 +20,7 @@ package org.apache.streams.datasift.provider;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.datasift.processor.DatasiftTypeConverterProcessor;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Test;
 

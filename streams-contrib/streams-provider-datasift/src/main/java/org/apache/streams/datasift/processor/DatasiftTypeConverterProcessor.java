@@ -16,7 +16,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 */
-package org.apache.streams.datasift.provider;
+package org.apache.streams.datasift.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.datasift.Datasift;
+import org.apache.streams.datasift.provider.DatasiftConverter;
 import org.apache.streams.datasift.serializer.DatasiftActivitySerializer;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.pojo.json.Activity;
