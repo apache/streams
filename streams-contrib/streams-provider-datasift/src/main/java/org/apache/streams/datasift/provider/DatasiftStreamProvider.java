@@ -128,7 +128,7 @@ public class DatasiftStreamProvider implements StreamsProvider {
      * @param apiKey
      * @return
      */
-    protected DataSiftClient getNewClient(String userName, String apiKey) {
+    protected static DataSiftClient getNewClient(String userName, String apiKey) {
         return new DataSiftClient(new DataSiftConfig(userName, apiKey));
     }
 

@@ -34,8 +34,14 @@ public class DatasiftStreamConfigurator {
 
     public static DatasiftConfiguration detectConfiguration(Config datasift) {
 
-        DatasiftConfiguration datasiftConfiguration;
-        datasiftConfiguration = StreamsJacksonMapper.getInstance().convertValue(datasift.root().render(ConfigRenderOptions.concise()), DatasiftConfiguration.class);
+        DatasiftConfiguration datasiftConfiguration = null;
+
+        try {
+            datasiftConfiguration = mapper.readValue(datasift.root().render(ConfigRenderOptions.concise()), DatasiftConfiguration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not parse datasiftConfiguration");
+        }
         return datasiftConfiguration;
     }
 
