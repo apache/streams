@@ -54,7 +54,8 @@ public class DatasiftManagedSourceSetup implements Runnable {
     }
 
     public void setup() {
-        client = DatasiftStreamProvider.getNewClient(config.getUserName(), config.getApiKey());
+
+        client = new DatasiftStreamProvider(null, config).getNewClient(config.getUserName(), config.getApiKey());
     }
 
     public void current() {
