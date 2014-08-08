@@ -9,13 +9,50 @@
             "type": "string",
             "description": "Your Instagram Client Id"
         },
-        "clientSecret": {
-            "type": "string",
-            "description": "Your Instagram Client secret"
-        },
-        "callbackUrl": {
-            "type": "string",
-            "description": "Your Instagream callback url"
+        "usersInfo": {
+            "type": "object",
+            "properties": {
+                "userIds": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "object",
+                        "$ref": "#/definitions/userInfo"
+                    },
+                    "description": "List of user ids to gather data for. Type of data gathered depends on provider"
+                },
+                "defaultAfterDate": {
+                    "type": "string",
+                    "format": "datetime",
+                    "description": "If the api allows to gather data by date range, this date will be used as the start of the range for the request for all users that don't have date ranges specified. If this is null it will pull from the earliest possible time"
+                },
+                "defaultBeforeDate": {
+                    "type": "string",
+                    "format": "datetime",
+                    "description": "If the api allows to gather data by date range, this date will be used as the end of the range for the request for all users that don't have date ranges specified. If this is null it will pull till current time."
+                }
+            }
         }
-   }
+   },
+    "definitions": {
+        "userInfo": {
+            "type": "object",
+            "properties": {
+                "userId": {
+                    "type": "string",
+                    "description": "instagram user id"
+                },
+                "afterDate": {
+                    "type": "string",
+                    "format": "datetime",
+                    "description": "If the api allows to gather data by date range, this date will be used as the start of the range for the request for this user. If this is null it will use the defaultBeforeDate."
+                },
+                "beforeDate": {
+                    "type": "string",
+                    "format": "datetime",
+                    "description": "If the api allows to gather data by date range, this date will be used as the end of the range for the request for this user.. If this is null it will use the defaultAfterDate."
+                }
+            }
+        }
+    }
 }
