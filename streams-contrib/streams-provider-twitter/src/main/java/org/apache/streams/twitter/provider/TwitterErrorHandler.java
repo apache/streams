@@ -24,14 +24,14 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 /**
- * Created by steveblackmon on 2/8/14.
+ *  Handle expected and unexpected exceptions.
  */
 public class TwitterErrorHandler
 {
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterErrorHandler.class);
 
-    protected static final long initial_backoff = 1000;
-    protected static long backoff = initial_backoff;
+    // selected because 3 * 5 + n >= 15 for positive n
+    protected static final long retry = 3*60*1000;
 
     public static int handleTwitterError(Twitter twitter, Exception exception)
     {
@@ -42,8 +42,10 @@ public class TwitterErrorHandler
             {
                 LOGGER.warn("Rate Limit Exceeded");
                 try {
-                    Thread.sleep(backoff *= 2);
-                } catch (InterruptedException e1) {}
+                    Thread.sleep(retry);
+                } catch (InterruptedException e1) {
+                    Thread.currentThread().interrupt();
+                }
                 return 1;
             }
             else if(e.isCausedByNetworkIssue())
@@ -51,8 +53,10 @@ public class TwitterErrorHandler
                 LOGGER.info("Twitter Network Issues Detected. Backing off...");
                 LOGGER.info("{} - {}", e.getExceptionCode(), e.getLocalizedMessage());
                 try {
-                    Thread.sleep(backoff *= 2);
-                } catch (InterruptedException e1) {}
+                    Thread.sleep(retry);
+                } catch (InterruptedException e1) {
+                    Thread.currentThread().interrupt();
+                }
                 return 1;
             }
             else if(e.isErrorMessageAvailable())
