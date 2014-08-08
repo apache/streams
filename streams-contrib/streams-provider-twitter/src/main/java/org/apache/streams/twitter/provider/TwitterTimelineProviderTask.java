@@ -18,30 +18,28 @@
 
 package org.apache.streams.twitter.provider;
 
-import org.joda.time.DateTime;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import twitter4j.Paging;
-import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.json.DataObjectFactory;
+import twitter4j.*;
 
 import java.util.List;
 
 /**
- * Created by sblackmon on 12/10/13.
+ *  Retrieve recent posts for a single user id.
  */
 public class TwitterTimelineProviderTask implements Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProviderTask.class);
 
     private TwitterTimelineProvider provider;
-    private Twitter twitter;
+    private Twitter client;
     private Long id;
 
     public TwitterTimelineProviderTask(TwitterTimelineProvider provider, Twitter twitter, Long id) {
         this.provider = provider;
-        this.twitter = twitter;
+        this.client = twitter;
         this.id = id;
     }
 
@@ -50,55 +48,47 @@ public class TwitterTimelineProviderTask implements Runnable {
 
         Paging paging = new Paging(1, 200);
         List<Status> statuses = null;
-        boolean KeepGoing = true;
-        boolean hadFailure = false;
 
         do
         {
             int keepTrying = 0;
 
             // keep trying to load, give it 5 attempts.
-            //while (keepTrying < 10)
-            while (keepTrying < 1)
+            //This value was chosen because it seemed like a reasonable number of times
+            //to retry capturing a timeline given the sorts of errors that could potentially
+            //occur (network timeout/interruption, faulty client, etc.)
+            while (keepTrying < 5)
             {
 
                 try
                 {
-                    statuses = twitter.getUserTimeline(id, paging);
+                    this.client = provider.getTwitterClient();
+
+                    statuses = client.getUserTimeline(id, paging);
 
                     for (Status tStat : statuses)
                     {
-                        if( provider.start != null &&
-                            provider.start.isAfter(new DateTime(tStat.getCreatedAt())))
-                        {
-                            // they hit the last date we wanted to collect
-                            // we can now exit early
-                            KeepGoing = false;
-                        }
-                        // emit the record
-                        String json = DataObjectFactory.getRawJSON(tStat);
+                        String json = TwitterObjectFactory.getRawJSON(tStat);
 
-                        //provider.offer(json);
+                        provider.addDatum(new StreamsDatum(json));
 
                     }
-
 
                     paging.setPage(paging.getPage() + 1);
 
                     keepTrying = 10;
                 }
-                catch(Exception e)
-                {
-                    hadFailure = true;
-                    keepTrying += TwitterErrorHandler.handleTwitterError(twitter, e);
+                catch(TwitterException twitterException) {
+                    keepTrying += TwitterErrorHandler.handleTwitterError(client, twitterException);
+                }
+                catch(Exception e) {
+                    keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
                 }
             }
         }
-        while ((statuses != null) && (statuses.size() > 0) && KeepGoing);
+        while (provider.shouldContinuePulling(statuses));
 
-        LOGGER.info("Provider Finished.  Cleaning up...");
-
-        LOGGER.info("Provider Exiting");
+        LOGGER.info(id + " Thread Finished");
 
     }
 
