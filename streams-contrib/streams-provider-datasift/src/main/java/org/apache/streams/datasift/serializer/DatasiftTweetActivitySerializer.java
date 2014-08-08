@@ -22,8 +22,8 @@ package org.apache.streams.datasift.serializer;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.streams.data.util.RFC3339Utils;
 import org.apache.streams.datasift.Datasift;
+import org.apache.streams.datasift.interaction.Author;
 import org.apache.streams.datasift.interaction.Interaction;
 import org.apache.streams.datasift.twitter.DatasiftTwitterUser;
 import org.apache.streams.datasift.twitter.Retweet;
@@ -134,7 +134,7 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
                 .orNull()));
         actor.setSummary(user.getDescription());
         try {
-            actor.setPublished(RFC3339Utils.parseToUTC(user.getCreatedAt()));
+            actor.setPublished(user.getCreatedAt());
         } catch (Exception e) {
             LOGGER.warn("Exception trying to parse date : {}", e);
         }
@@ -149,14 +149,16 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
         extensions.put("followers", user.getFollowersCount());
         extensions.put("screenName", user.getScreenName());
         if(user.getAdditionalProperties() != null) {
-            extensions.put("favorites", user.getAdditionalProperties().get("favourites_count"));
+            extensions.put("favorites", user.getFavouritesCount());
         }
 
         Image profileImage = new Image();
         String profileUrl = null;
-        profileUrl = event.getInteraction().getAuthor().getAvatar();
-        if(profileUrl == null && user.getAdditionalProperties() != null) {
-            Object url = user.getAdditionalProperties().get("profile_image_url_https");
+        Author author = event.getInteraction().getAuthor();
+        if( author != null )
+            profileUrl = author.getAvatar();
+        if(profileUrl == null && user.getProfileImageUrlHttps() != null) {
+            Object url = user.getProfileImageUrlHttps();
             if(url instanceof String)
                 profileUrl = (String) url;
         }
