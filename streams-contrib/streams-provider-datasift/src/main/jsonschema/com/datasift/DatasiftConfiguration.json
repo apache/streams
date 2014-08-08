@@ -2,8 +2,10 @@
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
     "id": "#",
-    "javaType" : "org.apache.streams.datasift.DatasiftConfiguration",
-    "javaInterfaces": ["java.io.Serializable"],
+    "javaType": "org.apache.streams.datasift.DatasiftConfiguration",
+    "javaInterfaces": [
+        "java.io.Serializable"
+    ],
     "properties": {
         "apiKey": {
             "type": "string"
@@ -13,9 +15,116 @@
         },
         "streamHash": {
             "type": "array",
-            "minItems": 1,
+            "minItems": 0,
             "items": {
                 "type": "string"
+            }
+        },
+        "streamCsdl": {
+            "type": "array",
+            "minItems": 0,
+            "items": {
+                "type": "string"
+            }
+        },
+        "managedSources": {
+            "type": "array",
+            "minItems": 0,
+            "items": {
+                "javaType": "org.apache.streams.datasift.managed.ManagedSource",
+                "type": "object",
+                "properties": {
+                    "auth": {
+                        "type": "array",
+                        "items": {
+                            "javaType": "org.apache.streams.datasift.managed.ManagedSourceAuth",
+                            "type": "object",
+                            "properties": {
+                                "identity_id": {
+                                    "type": "string"
+                                },
+                                "parameters": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "created_at": {
+                        "type": "number"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "parameters": {
+                        "javaType": "org.apache.streams.datasift.managed.ManagedSourceParameters",
+                        "type": "object",
+                        "properties": {
+                            "comments": {
+                                "type": "boolean"
+                            },
+                            "likes": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "resources": {
+                        "type": "array",
+                        "items": [
+                            {
+                                "javaType": "org.apache.streams.datasift.managed.ManagedSourceResource",
+                                "type": "object",
+                                "properties": {
+                                    "parameters": {
+                                        "type": "object",
+                                        "properties": {
+                                            "distance": {
+                                                "type": "string"
+                                            },
+                                            "exact_match": {
+                                                "type": "string"
+                                            },
+                                            "foursq": {
+                                                "type": "string"
+                                            },
+                                            "lat": {
+                                                "type": "string"
+                                            },
+                                            "lng": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "usermeta": {
+                                                "type": "string"
+                                            },
+                                            "value": {
+                                                "type": "number"
+                                            }
+                                        }
+                                    },
+                                    "resource_id": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "source_type": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    }
+                }
             }
         }
     }
