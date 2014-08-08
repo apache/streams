@@ -24,9 +24,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import java.io.*;
-import java.util.List;
+import java.util.*;
 
 /**
  * JSON utilities
@@ -35,10 +41,10 @@ public class JsonUtil {
 
     private JsonUtil() {}
 
-    public static JsonNode jsonToJsonNode(String json) {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonFactory factory = mapper.getFactory();
+    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private static JsonFactory factory = mapper.getFactory();
 
+    public static JsonNode jsonToJsonNode(String json) {
         JsonNode node;
         try {
             JsonParser jp = factory.createJsonParser(json);
@@ -50,7 +56,6 @@ public class JsonUtil {
     }
 
     public static String jsonNodeToJson(JsonNode node) {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(node);
         } catch (JsonProcessingException e) {
@@ -59,7 +64,6 @@ public class JsonUtil {
     }
 
     public static <T> T jsonToObject(String json, Class<T> clazz) {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(json, clazz);
         } catch (IOException e) {
@@ -68,22 +72,18 @@ public class JsonUtil {
     }
 
     public static <T> T jsonNodeToObject(JsonNode node, Class<T> clazz) {
-        ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(node, clazz);
     }
 
     public static <T> JsonNode objectToJsonNode(T obj) {
-        ObjectMapper mapper = new ObjectMapper();
         return mapper.valueToTree(obj);
     }
 
     public static <T> List<T> jsoNodeToList(JsonNode node, Class<T> clazz) {
-        ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(node, new TypeReference<List<T>>() {});
     }
 
     public static <T> String objectToJson(T object) {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(object);
         } catch (IOException e) {
@@ -96,7 +96,6 @@ public class JsonUtil {
     }
 
     public static JsonNode getFromFile(String filePath) {
-        ObjectMapper mapper = new ObjectMapper();
         JsonFactory factory = mapper.getFactory(); // since 2.1 use mapper.getFactory() instead
 
         JsonNode node = null;
@@ -123,4 +122,43 @@ public class JsonUtil {
 
         return stream;
     }
+
+    /**
+     * Creates an empty array if missing
+     * @param node object to create the array within
+     * @param field location to create the array
+     * @return the Map representing the extensions property
+     */
+    public static ArrayNode ensureArray(ObjectNode node, String field) {
+        String[] path = Lists.newArrayList(Splitter.on('.').split(field)).toArray(new String[0]);
+        ObjectNode current = node;
+        ArrayNode result = null;
+        for( int i = 0; i < path.length; i++) {
+            current = ensureObject((ObjectNode) node.get(path[i]), path[i]);
+        }
+        if (current.get(field) == null)
+            current.put(field, mapper.createArrayNode());
+        result = (ArrayNode) node.get(field);
+        return result;
+    }
+
+    /**
+     * Creates an empty array if missing
+     * @param node objectnode to create the object within
+     * @param field location to create the object
+     * @return the Map representing the extensions property
+     */
+    public static ObjectNode ensureObject(ObjectNode node, String field) {
+        String[] path = Lists.newArrayList(Splitter.on('.').split(field)).toArray(new String[0]);
+        ObjectNode current = node;
+        ObjectNode result = null;
+        for( int i = 0; i < path.length; i++) {
+            if (node.get(field) == null)
+                node.put(field, mapper.createObjectNode());
+            current = (ObjectNode) node.get(field);
+        }
+        result = ensureObject((ObjectNode) node.get(path[path.length]), Joiner.on('.').join(Arrays.copyOfRange(path, 1, path.length)));
+        return result;
+    }
+
 }
