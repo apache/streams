@@ -5,12 +5,15 @@ import com.datasift.client.FutureData;
 import com.datasift.client.managedsource.ManagedSource;
 import com.datasift.client.managedsource.ManagedSourceList;
 import com.datasift.client.managedsource.sources.DataSource;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.streams.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.datasift.DatasiftConfiguration;
+import org.apache.streams.datasift.managed.StreamsManagedSource;
+import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +31,11 @@ public class DatasiftManagedSourceSetup implements Runnable {
 
     private static DatasiftConfiguration config = DatasiftStreamConfigurator.detectConfiguration(StreamsConfigurator.config);
 
+    private static final ObjectMapper MAPPER = StreamsDatasiftMapper.getInstance();
+
     DataSiftClient client;
     Map<String, ManagedSource> currentManagedSourceMap = Maps.newHashMap();
-    List<ManagedSource> updatedManagedSourceList;
+    List<StreamsManagedSource> updatedManagedSourceList;
 
     public static void main(String[] args) {
         DatasiftManagedSourceSetup job = new DatasiftManagedSourceSetup();
@@ -46,9 +51,15 @@ public class DatasiftManagedSourceSetup implements Runnable {
 
         updatedManagedSourceList = config.getManagedSources();
 
-        for( ManagedSource source : updatedManagedSourceList ) {
+        for( StreamsManagedSource source : updatedManagedSourceList ) {
             ManagedSource current = currentManagedSourceMap.get( source.getId() );
-            ManagedSource updated = client.managedSource().update(current.getName(), (DataSource) source, current).sync();
+            LOGGER.info( "CURRENT: " + current );
+            // merge 'em
+            ManagedSource working = MAPPER.convertValue(source, ManagedSource.class);
+            LOGGER.info( "WORKING: " + working );
+            ManagedSource updated = client.managedSource().update(current.getName(), (DataSource) working, current).sync();
+            LOGGER.info( "UPDATED: " + updated );
+
         }
 
     }
