@@ -1,15 +1,11 @@
 package org.apache.streams.datasift.provider;
 
 import com.datasift.client.DataSiftClient;
-import com.datasift.client.FutureData;
 import com.datasift.client.managedsource.ManagedSource;
 import com.datasift.client.managedsource.ManagedSourceList;
 import com.datasift.client.managedsource.sources.DataSource;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.streams.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.datasift.DatasiftConfiguration;
 import org.apache.streams.datasift.managed.StreamsManagedSource;
@@ -20,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by sblackmon on 8/8/14.

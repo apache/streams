@@ -69,7 +69,7 @@
         <joda-time.version>2.2</joda-time.version>
         <rave.version>0.22</rave.version>
         <datastax.version>1.0.3</datastax.version>
-        <jsonschema2pojo.version>0.4.1</jsonschema2pojo.version>
+        <jsonschema2pojo.version>0.4.5</jsonschema2pojo.version>
         <jaxb2.version>0.8.3</jaxb2.version>
         <jaxb2-basics.version>0.6.5</jaxb2-basics.version>
         <jaxbutil.version>1.2.6</jaxbutil.version>

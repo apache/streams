@@ -127,12 +127,9 @@
                 <configuration>
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
-                    <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/datasift/Datasift.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/datasift/DatasiftConfiguration.json</sourcePath>
-                    </sourcePaths>
+                    <sourceDirectory>src/main/jsonschema</sourceDirectory>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
-                    <targetPackage>com.datasift</targetPackage>
+                    <targetPackage>org.apache.streams.datasift</targetPackage>
                     <useLongIntegers>true</useLongIntegers>
                     <useJodaDates>true</useJodaDates>
                 </configuration>

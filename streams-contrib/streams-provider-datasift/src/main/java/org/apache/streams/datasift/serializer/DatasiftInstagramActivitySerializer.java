@@ -21,22 +21,16 @@ package org.apache.streams.datasift.serializer;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import org.apache.streams.data.util.RFC3339Utils;
 import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.instagram.From;
 import org.apache.streams.datasift.instagram.Instagram;
-import org.apache.streams.datasift.interaction.Interaction;
 import org.apache.streams.instagram.serializer.util.InstagramActivityUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
