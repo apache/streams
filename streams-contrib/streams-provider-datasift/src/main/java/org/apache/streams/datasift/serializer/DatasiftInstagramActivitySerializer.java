@@ -56,15 +56,9 @@ public class DatasiftInstagramActivitySerializer extends DatasiftDefaultActivity
         Instagram instagram = event.getInstagram();
 
         activity.setActor(buildActor(event, instagram));
-        activity.setObject(buildActivityObject(event.getInteraction()));
         activity.setId(formatId(activity.getVerb(), event.getInteraction().getId()));
-        activity.setTarget(buildTarget(event.getInteraction()));
-        activity.setPublished(event.getInteraction().getCreatedAt());
-        activity.setGenerator(buildGenerator(event.getInteraction()));
-        activity.setIcon(getIcon(event.getInteraction()));
         activity.setProvider(InstagramActivityUtil.getProvider());
-        activity.setTitle(event.getInteraction().getTitle());
-        activity.setUrl(event.getInteraction().getLink());
+        activity.setLinks(getLinks(event.getInstagram()));
 
         activity.setVerb(selectVerb(event));
         addInstagramExtensions(activity, instagram);
@@ -77,8 +71,10 @@ public class DatasiftInstagramActivitySerializer extends DatasiftDefaultActivity
      */
     private List<String> getLinks(Instagram instagram) {
         List<String> result = Lists.newLinkedList();
-        result.add(instagram.getMedia().getImage());
-        result.add(instagram.getMedia().getVideo());
+        if( instagram.getMedia() != null ) {
+            result.add(instagram.getMedia().getImage());
+            result.add(instagram.getMedia().getVideo());
+        }
         return result;
     }
 
@@ -106,8 +102,12 @@ public class DatasiftInstagramActivitySerializer extends DatasiftDefaultActivity
         if(instagram.getMedia() != null) {
             hashTags = instagram.getMedia().getTags();
             extensions.put("hashtags", hashTags);
-            extensions.put("keywords", instagram.getMedia().getCaption());
+            extensions.put("keywords", activity.getContent());
+        } else {
+            extensions.put("keywords", activity.getContent());
+
         }
+
     }
 
     private String selectVerb(Datasift event) {
@@ -118,7 +118,7 @@ public class DatasiftInstagramActivitySerializer extends DatasiftDefaultActivity
     }
 
     public static String formatId(String... idparts) {
-        return Joiner.on(":").join(Lists.asList("id:twitter", idparts));
+        return Joiner.on(":").join(Lists.asList("id:instagram", idparts));
     }
 
 }
