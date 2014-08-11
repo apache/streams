@@ -105,7 +105,7 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <forceRegenerate>true</forceRegenerate>
                     <removeOldOutput>false</removeOldOutput>
-                    <generatePackage>com.facebook.api</generatePackage>
+                    <generatePackage>org.apache.streams.facebook.api</generatePackage>
                     <plugins>
                         <plugin>
                             <groupId>org.jvnet.jaxb2_commons</groupId>

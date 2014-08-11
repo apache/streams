@@ -8,7 +8,7 @@
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/longrange/comments/1l7fgd/need_advice_selecting_between_two_rifles/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22Remington%22&amp;limit=100&amp;after=t3_135v09"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22Remington%22&amp;limit=100&amp;after=t3_135v09"/>
 			<title>Reddit - Keyword - Search (Recent) - "Remington"</title>
 			<updated>2013-08-28T19-54-43Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"Remington"
@@ -56,7 +56,7 @@
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/KerbalSpaceProgram/comments/1l8rv5/tip_choosing_a_jet_engine_based_on_velocity/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22Max%20Factor%22&amp;limit=100&amp;after=t3_19h0y5"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22Max%20Factor%22&amp;limit=100&amp;after=t3_19h0y5"/>
 			<title>Reddit - Keyword - Search (Recent) - "Max Factor"</title>
 			<updated>2013-08-28T19-54-00Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"Max Factor"
@@ -165,7 +165,7 @@
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/electronic_cigarette/comments/1l7v1p/first_mech_ordered_what_am_i_missing/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22Panasonic%22&amp;limit=100&amp;after=t3_168ejl"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22Panasonic%22&amp;limit=100&amp;after=t3_168ejl"/>
 			<title>Reddit - Keyword - Search (Recent) - "Panasonic"</title>
 			<updated>2013-08-28T19-47-07Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"Panasonic"
@@ -227,7 +227,7 @@
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/videography/comments/1l9kpj/advice_dslr_vs_camcorders_for_wedding_videography/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22Panasonic%22&amp;limit=100&amp;after=t3_168ejl"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22Panasonic%22&amp;limit=100&amp;after=t3_168ejl"/>
 			<title>Reddit - Keyword - Search (Recent) - "Panasonic"</title>
 			<updated>2013-08-28T19-47-07Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"Panasonic"
@@ -287,7 +287,7 @@
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/RandomActsofMakeup/comments/1l7xtm/contest_im_hungry_go_make_me_something/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22L%27oreal%22%20%22loreal%22&amp;limit=100&amp;after=t3_sa7ex"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22L%27oreal%22%20%22loreal%22&amp;limit=100&amp;after=t3_sa7ex"/>
 			<title>Reddit - Keyword - Search (Recent) - "L'oreal" "loreal"</title>
 			<updated>2013-08-28T19-46-28Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"L'oreal" "loreal"
@@ -367,7 +367,7 @@
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/headphones/comments/1l8bju/recommendations_for_a_recreational_gaming_pc/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22Max%20Factor%22&amp;limit=100&amp;after=t3_156seg"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22Max%20Factor%22&amp;limit=100&amp;after=t3_156seg"/>
 			<title>Reddit - Keyword - Search (Recent) - "Max Factor"</title>
 			<updated>2013-08-28T19-39-36Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"Max Factor"
@@ -410,7 +410,7 @@
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/SanDiegoClassifieds/comments/1l7vbs/anyone_need_a_large_hepa_filter_ive_got_a_two/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22lysol%22&amp;limit=100"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22lysol%22&amp;limit=100"/>
 			<title>Reddit - Keyword - Search (Recent) - "lysol"</title>
 			<updated>2013-08-28T19-35-40Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"lysol"
@@ -458,7 +458,7 @@ it&amp;amp;#39;s used and will have to be hit with lysol but at this price... it
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Fapucational/comments/1l9ek9/by_1890_many_variations_of_soap_were_offered_with/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22colgate%22&amp;limit=100&amp;after=t3_1cfq0r"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22colgate%22&amp;limit=100&amp;after=t3_1cfq0r"/>
 			<title>Reddit - Keyword - Search (Recent) - "colgate"</title>
 			<updated>2013-08-28T19-34-16Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"colgate"
@@ -501,7 +501,7 @@ it&amp;amp;#39;s used and will have to be hit with lysol but at this price... it
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/MakeupAddiction/comments/1l9u33/been_sick_for_days_but_gifts_from_loreal_perked/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22L%27oreal%22%20%22loreal%22&amp;limit=100&amp;after=t3_1a5xa8"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22L%27oreal%22%20%22loreal%22&amp;limit=100&amp;after=t3_1a5xa8"/>
 			<title>Reddit - Keyword - Search (Recent) - "L'oreal" "loreal"</title>
 			<updated>2013-08-28T19-32-14Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"L'oreal" "loreal"
@@ -544,7 +544,7 @@ it&amp;amp;#39;s used and will have to be hit with lysol but at this price... it
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/amazonsdeal/comments/1l9g7d/amazon_lysol_disinfecting_wipes_upto_35_off_plus/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22lysol%22&amp;limit=100&amp;after=t3_10zvhy"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22lysol%22&amp;limit=100&amp;after=t3_10zvhy"/>
 			<title>Reddit - Keyword - Search (Recent) - "lysol"</title>
 			<updated>2013-08-28T19-28-30Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"lysol"
@@ -587,7 +587,7 @@ it&amp;amp;#39;s used and will have to be hit with lysol but at this price... it
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Shotguns/comments/1l7ym9/remington_1100_stock/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22Remington%22&amp;limit=100&amp;after=t3_1fk3mo"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22Remington%22&amp;limit=100&amp;after=t3_1fk3mo"/>
 			<title>Reddit - Keyword - Search (Recent) - "Remington"</title>
 			<updated>2013-08-28T19-25-58Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"Remington"
@@ -631,7 +631,7 @@ it&amp;amp;#39;s used and will have to be hit with lysol but at this price... it
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/SkincareAddiction/comments/1la0ec/need_help_finding_a_new_skincare_routine/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22Aveeno%22&amp;limit=100"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22Aveeno%22&amp;limit=100"/>
 			<title>Reddit - Keyword - Search (Recent) - "Aveeno"</title>
 			<updated>2013-08-28T19-24-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"Aveeno"
@@ -689,7 +689,7 @@ it&amp;amp;#39;s used and will have to be hit with lysol but at this price... it
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Shave_Bazaar/comments/1l85hv/fs_den_clearance_fatboy_rocket_simpson/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22schick%22&amp;limit=100&amp;after=t3_13oj1g"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22schick%22&amp;limit=100&amp;after=t3_13oj1g"/>
 			<title>Reddit - Keyword - Search (Recent) - "schick"</title>
 			<updated>2013-08-28T19-22-35Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"schick"
@@ -897,7 +897,7 @@ it&amp;amp;#39;s used and will have to be hit with lysol but at this price... it
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/MakeupAddiction/comments/1l7tb6/need_help_any_opinions_about_loreal_cosmetics/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%28%22L%27oreal%22%20%22loreal%22%20%29&amp;limit=100&amp;after=t3_107krl"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%28%22L%27oreal%22%20%22loreal%22%20%29&amp;limit=100&amp;after=t3_107krl"/>
 			<title>Reddit - Keyword - Search (Recent) - ("L'oreal" "loreal" )</title>
 			<updated>2013-08-28T18-40-15Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">("L'oreal" "loreal" )
@@ -945,7 +945,7 @@ it&amp;amp;#39;s used and will have to be hit with lysol but at this price... it
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/EarthPorn/comments/1l7btz/cutthroat_pass_pacific_crest_trail_wa_2560x1920/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%28%22crest%22%20%29%20-%20%28%22pacific%20crest%22%20%29&amp;limit=100&amp;after=t3_10m52h"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%28%22crest%22%20%29%20-%20%28%22pacific%20crest%22%20%29&amp;limit=100&amp;after=t3_10m52h"/>
 			<title>Reddit - Keyword - Search (Recent) - ("crest" ) - ("pacific crest" )</title>
 			<updated>2013-08-28T18-03-31Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">("crest" ) - ("pacific crest" )
@@ -988,7 +988,7 @@ it&amp;amp;#39;s used and will have to be hit with lysol but at this price... it
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/MLPLounge/comments/1l842y/colgate_beadsprite_courtesy_of_opti/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%28%22colgate%22%20%29&amp;limit=100&amp;after=t3_j7xv0"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%28%22colgate%22%20%29&amp;limit=100&amp;after=t3_j7xv0"/>
 			<title>Reddit - Keyword - Search (Recent) - ("colgate" )</title>
 			<updated>2013-08-28T18-03-27Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">("colgate" )
@@ -1030,7 +1030,7 @@ it&amp;amp;#39;s used and will have to be hit with lysol but at this price... it
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/EQNext/comments/1l8qmr/raids_without_loot/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%28%22Max%20Factor%22%20%29&amp;limit=100&amp;after=t3_zkcy0"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%28%22Max%20Factor%22%20%29&amp;limit=100&amp;after=t3_zkcy0"/>
 			<title>Reddit - Keyword - Search (Recent) - ("Max Factor" )</title>
 			<updated>2013-08-28T18-01-30Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">("Max Factor" )
@@ -1090,7 +1090,7 @@ it&amp;amp;#39;s used and will have to be hit with lysol but at this price... it
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/realasians/comments/1brddb/i_guess_ill_go_outside_after_this_sunshine_ftw_d/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1133,7 +1133,7 @@ it&amp;amp;#39;s used and will have to be hit with lysol but at this price... it
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/trees/comments/i5fxh/chronic_cheesecake_recipe/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1202,7 +1202,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/todayilearned/comments/y8nml/til_that_the_average_lemon_has_2_oz_of_lemon/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1245,7 +1245,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/wicked_edge/comments/1ax1ok/anyone_ever_try_lathering_up_a_soap_not/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1289,7 +1289,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/FoodPorn/comments/1c8oyd/potato_and_yam_fries_with_parsley_and_lemon_zest/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1332,7 +1332,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/starcraft/comments/1k9npy/2013_wcg_korea_national_final_parting_vs_rain/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1375,7 +1375,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/seduction/comments/1gx92i/billys_guide_to_demonstrating_high_value/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1476,7 +1476,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/tonightsdinner/comments/1drjw4/ribeye_artichoke_gratinata_linguine_with_garlic/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1519,7 +1519,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/realasians/comments/1bk1u0/not_a_cookie_cutter_cutting_cookies_3/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1562,7 +1562,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/MLPLounge/comments/13gakl/he_is_quite_possibly_the_most_boring_man_in_the/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1615,7 +1615,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Paleo/comments/18r1gq/fantastic_noegg_quick_simple_onthego_paleo/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1668,7 +1668,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/FoodPorn/comments/1hyj0o/smoked_salmon_on_buttered_sour_dough_bread_topped/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1711,7 +1711,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/bourbon/comments/qndjo/the_best_bourbon_for_an_old_fashioned/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1761,7 +1761,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/exmormon/comments/crybg/best_quote_ever/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1808,7 +1808,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/WTF/comments/70cjh/3000_of_audiophile_stupidity_cryogenically/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1850,7 +1850,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/AskCulinary/comments/13ikau/aromatic_bitters_in_apple_pie/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1895,7 +1895,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/NoFap/comments/1dxl50/life_is_great/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1938,7 +1938,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/depression/comments/z9z8v/kanye_jest/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -1992,7 +1992,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/food/comments/xv05f/margarita_cupcakes_brushed_with_tequila_topped/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2035,7 +2035,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/AdviceAnimals/comments/14ngif/happened_to_my_brother_i_tried_to_warn_him/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2078,7 +2078,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/hookah/comments/16dl6a/blueberry_muffin_mandarin_zest_lemon_mint_and_a/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2121,7 +2121,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/cocktails/comments/14viax/dark_as_night_homemade_bitters_with_black_tea/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2164,7 +2164,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/cocktails/comments/19uyp9/dehydrating_citrus_zest_for_cocktail_presentation/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2207,7 +2207,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/fffffffuuuuuuuuuuuu/comments/z16we/lemon_zest_glade_rage/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2250,7 +2250,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/canada/comments/g8yqj/canadians_dont_share_harpers_zest_for_fighter/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2292,7 +2292,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Homebrewing/comments/17sfsk/adding_orange_zest_to_a_beer_do_i_need_to_worry/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2336,7 +2336,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/AskReddit/comments/x4qnn/what_is_your_favorite_weird_food_combination/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2379,7 +2379,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/relationships/comments/1c7elk/i_26m_love_my_girlfriend_f23_but_for_our/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2436,7 +2436,7 @@ Place cream cheese and sour cream in a large bowl. Mix for 30 seconds. Add whole
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/buildapc/comments/191wco/guide_level_beginner_to_enthusiasts_ravioli_from/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2583,7 +2583,7 @@ And I think many of you know Siracha sauce. Adds hot and spicy to your food, wor
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Homebrewing/comments/18kezw/as_one_of_my_favorite_styles_i_finally_made_my/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2626,7 +2626,7 @@ And I think many of you know Siracha sauce. Adds hot and spicy to your food, wor
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/FoodPorn/comments/1d7nxv/lime_cheesecake_with_mango_ginger_sauce_and/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2669,7 +2669,7 @@ And I think many of you know Siracha sauce. Adds hot and spicy to your food, wor
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/starcraft/comments/1eoxnb/spl_round_5_week_3_team_8_vs_kt_rolster_results/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2807,7 +2807,7 @@ And I think many of you know Siracha sauce. Adds hot and spicy to your food, wor
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/starcraft/comments/1bwrfl/kt_rolster_vs_stx_soul_proleague_round_4_week_1/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2924,7 +2924,7 @@ And I think many of you know Siracha sauce. Adds hot and spicy to your food, wor
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Paleo/comments/18yd5u/paleo_orange_chicken/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -2988,7 +2988,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/52weeksofcooking/comments/12nldg/week_44_cinnamon_cinnamon_roll_taco_shell_filled/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3031,7 +3031,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/shittyfoodporn/comments/1d4w1x/spur_of_the_moment_from_scratch_vanilla_cake_with/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3074,7 +3074,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/shittyadvice/comments/kavxc/how_do_i_regain_my_creativity_and_zest_for_life/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3115,7 +3115,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/keto/comments/o6vei/here_it_is_the_unofficial_tell_me_what_to_eat/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3266,7 +3266,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/RedditLaqueristas/comments/lc3wt/zombie_zest/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3309,7 +3309,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/loseit/comments/rgk2p/i_took_a_big_step_last_night/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3354,7 +3354,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Homebrewing/comments/vpv38/planning_a_saison_when_should_i_add/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3438,7 +3438,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/britishproblems/comments/1l7ahd/i_tried_a_carling_zest_and_quite_enjoyed_it/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3481,7 +3481,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Breadit/comments/147um0/cinnamontoasted_walnutcranberryorange_zest/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3524,7 +3524,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/starcraft/comments/1f4x65/spl_round_5_week_4_kt_vs_skt1_results/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3585,7 +3585,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/LifeProTips/comments/1g9j75/lpt_handy_uses_for_citrus_peels/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3629,7 +3629,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/cocktails/comments/ojkcy/cocktail_of_the_week_week_3_the_old_fashioned/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3691,7 +3691,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/starcraft/comments/1i6s1j/hello_sc2_you_guys_seem_cool_greetings_from/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3765,7 +3765,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Cooking/comments/142bo4/what_to_do_with_citrus_rindzest/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3808,7 +3808,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/depression/comments/1l3ws8/i_have_0_motivation_for_anything_no_interests_no/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3852,7 +3852,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/recipes/comments/obg42/what_are_you_having_for_dinner/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3908,7 +3908,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/recipes/comments/13rock/ive_been_experimenting_with_margarita_recipes/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -3972,7 +3972,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/realasians/comments/1bftaw/reaaaally_bored_this_morning/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4015,7 +4015,7 @@ zest from 1 orange
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/IAmA/comments/i3d2a/iama_22yearold_who_without_fail_every_year_on_the/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4090,7 +4090,7 @@ June 19, 1994: I was freeing the jail in Capture the Flag when I was blindsided 
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/AskCulinary/comments/zzjbj/lemon_zest_for_mousse/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4133,7 +4133,7 @@ June 19, 1994: I was freeing the jail in Capture the Flag when I was blindsided 
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/keto/comments/16zqc4/coconut_lime_ice_cream/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4187,7 +4187,7 @@ June 19, 1994: I was freeing the jail in Capture the Flag when I was blindsided 
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/FoodPorn/comments/y4bxn/blueberry_and_jam_muffin_with_a_lemonzest_and/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4230,7 +4230,7 @@ June 19, 1994: I was freeing the jail in Capture the Flag when I was blindsided 
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/eatsandwiches/comments/qgdic/capicola_and_muenster_on_cracked_wheat_sourdough/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4273,7 +4273,7 @@ June 19, 1994: I was freeing the jail in Capture the Flag when I was blindsided 
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/EatCheapAndHealthy/comments/15unrx/make_your_own_cheap_healthy_syrups_for_your_soda/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4327,7 +4327,7 @@ We choose organic lemons and limes for this and use filtered poland spring water
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/legs/comments/1abhtv/zest_of_sleep/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4370,7 +4370,7 @@ We choose organic lemons and limes for this and use filtered poland spring water
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/recipes/comments/1f8eao/devil_sauce_aka_ambrosia_aka_the_last_sauce_you/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4481,7 +4481,7 @@ We choose organic lemons and limes for this and use filtered poland spring water
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/recipes/comments/16i6uq/guacamole_what_are_your_secrets/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4550,7 +4550,7 @@ a little bit of sriracha
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/FoodPorn/comments/166zer/venison_tenderloin_with_turnip_puree_and_fried/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4593,7 +4593,7 @@ a little bit of sriracha
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/recipes/comments/1aj9vs/coconut_bread_via_smittenkitchen_gonna_have_to/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4635,7 +4635,7 @@ a little bit of sriracha
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Cooking/comments/1cop9n/lime_cordial/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4726,7 +4726,7 @@ a little bit of sriracha
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/AskReddit/comments/hrp83/what_should_i_do_with_10_pounds_of_lemons/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4779,7 +4779,7 @@ a little bit of sriracha
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Cooking/comments/1fz7cy/my_girlfriend_and_i_are_cooking_together_on/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4824,7 +4824,7 @@ a little bit of sriracha
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/FoodPorn/comments/19dyai/cinnamon_oat_nutella_ice_cream_cola_cake_lime/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4867,7 +4867,7 @@ a little bit of sriracha
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/self/comments/130bnc/on_this_day_94_years_ago_the_first_world_war_came/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -4942,7 +4942,7 @@ Pro patria mori.&amp;lt;/p&amp;gt;
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/starcraft/comments/1eooiv/spl_round_5_week_3_samsung_khan_vs_egliquid/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5065,7 +5065,7 @@ Pro patria mori.&amp;lt;/p&amp;gt;
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/FoodPorn/comments/12abmw/i_made_sealife_shaped_french_madeleines_with/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5108,7 +5108,7 @@ Pro patria mori.&amp;lt;/p&amp;gt;
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/trees/comments/o1nw3/if_i_put_orange_zest/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5152,7 +5152,7 @@ Pro patria mori.&amp;lt;/p&amp;gt;
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Frugal/comments/egw4n/small_tip_use_your_orange_peels/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5199,7 +5199,7 @@ Pro patria mori.&amp;lt;/p&amp;gt;
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/proper/comments/gicdc/i_say_this_is_the_distinguished_condiment_to_add/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5241,7 +5241,7 @@ Pro patria mori.&amp;lt;/p&amp;gt;
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/buildapc/comments/xzxf9/what_are_coolnifty_maybe_pointless_things_i_could/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5288,7 +5288,7 @@ Pro patria mori.&amp;lt;/p&amp;gt;
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/starcraft/comments/1bqe7o/in_13_hours_proleague_returns_with_kt_flash_vs/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5352,7 +5352,7 @@ Pro patria mori.&amp;lt;/p&amp;gt;
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/AskReddit/comments/a3a1z/how_do_i_regain_my_reading_habit/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5397,7 +5397,7 @@ Has anyone experienced this and managed to regain their zest for reading? &amp;l
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/AskReddit/comments/koqsp/if_you_could_be_best_friends_with_any_celebrity/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5440,7 +5440,7 @@ Has anyone experienced this and managed to regain their zest for reading? &amp;l
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/starcraft/comments/1dq1vm/spl_round_5_week_1_egliquid_vs_stx_soul_results/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5543,7 +5543,7 @@ Has anyone experienced this and managed to regain their zest for reading? &amp;l
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/starcraft/comments/1ds66p/spl_r5_w1_kt_rolster_41_samsung_khan/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5591,7 +5591,7 @@ Zest &amp;amp;lt; &amp;lt;strong&amp;gt;RorO&amp;lt;/strong&amp;gt;&amp;lt;br/&a
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/Homebrewing/comments/bwksb/hefeweizen_with_lemon_zest_thoughts_on_honey_in/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5639,7 +5639,7 @@ Zest &amp;amp;lt; &amp;lt;strong&amp;gt;RorO&amp;lt;/strong&amp;gt;&amp;lt;br/&a
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/tacos/comments/opy7e/a_peace_offering_from_banana_may_your_sauce_never/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5682,7 +5682,7 @@ Zest &amp;amp;lt; &amp;lt;strong&amp;gt;RorO&amp;lt;/strong&amp;gt;&amp;lt;br/&a
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/LV426/comments/1dmx9w/that_orange_sure_did_look_familiari_present_to/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""
@@ -5725,7 +5725,7 @@ Zest &amp;amp;lt; &amp;lt;strong&amp;gt;RorO&amp;lt;/strong&amp;gt;&amp;lt;br/&a
 		<category term="ArticlePosted" label="Article Posted"/>
 		<link rel="alternate" type="text/html" href="http://www.reddit.com/r/atheism/comments/1088dt/a_classy_new_way_to_respond_to_stupid_fundie/"/>
 		<source>
-			<link rel="self" type="application/json" href="http://com.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
+			<link rel="self" type="application/json" href="http://org.apache.streams.facebook.api.reddit.com/search.json?q=%22zest%22%20%20%22%22%20%20--%22%22&amp;limit=100&amp;after=t3_1brddb"/>
 			<title>Reddit - Keyword - Search (Recent) - "zest"  ""  --""</title>
 			<updated>2013-08-28T17-54-04Z</updated>
 			<gnip:rule xmlns:gnip="http://www.gnip.com/schemas/2010">"zest"  ""  --""

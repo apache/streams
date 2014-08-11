@@ -11,6 +11,17 @@
     <artifactId>streams-provider-facebook</artifactId>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-config</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-pojo</artifactId>
@@ -40,6 +51,12 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.facebook4j</groupId>
+            <artifactId>facebook4j-core</artifactId>
+            <version>2.1.0</version>
         </dependency>
 
     </dependencies>
@@ -84,7 +101,10 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/facebook/graph/Post.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/facebook/FacebookConfiguration.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/facebook/FacebookUserInformationConfiguration.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/facebook/FacebookUserstreamConfiguration.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/facebook/graph/Post.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>com.facebook</targetPackage>
