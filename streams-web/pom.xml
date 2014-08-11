@@ -32,7 +32,7 @@
   <properties>
     <spring.version>3.0.5.RELEASE</spring.version>
     <junit.version>4.11</junit.version>
-    <jdk.version>1.6</jdk.version>
+    <jdk.version>1.7</jdk.version>
   </properties>
 
   <dependencies>
