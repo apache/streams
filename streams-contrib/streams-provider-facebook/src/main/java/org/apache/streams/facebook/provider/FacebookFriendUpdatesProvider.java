@@ -16,12 +16,11 @@
  * under the License.
  */
 
-package com.facebook.provider;
+package org.apache.streams.facebook.provider;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
@@ -29,11 +28,14 @@ import facebook4j.*;
 import facebook4j.conf.ConfigurationBuilder;
 import facebook4j.json.DataObjectFactory;
 import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.facebook.FacebookUserInformationConfiguration;
+import org.apache.streams.facebook.FacebookUserstreamConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,27 +44,33 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class FacebookUserInformationProvider implements StreamsProvider, Serializable
+public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializable
 {
 
-    public static final String STREAMS_ID = "FacebookUserInformationProvider";
-    private static final Logger LOGGER = LoggerFactory.getLogger(FacebookUserInformationProvider.class);
+    public static final String STREAMS_ID = "FacebookFriendPostsProvider";
+    private static final Logger LOGGER = LoggerFactory.getLogger(FacebookFriendUpdatesProvider.class);
 
     private static final ObjectMapper mapper = new StreamsJacksonMapper();
 
     private static final String ALL_PERMISSIONS = "ads_management,ads_read,create_event,create_note,email,export_stream,friends_about_me,friends_actions.books,friends_actions.music,friends_actions.news,friends_actions.video,friends_activities,friends_birthday,friends_education_history,friends_events,friends_games_activity,friends_groups,friends_hometown,friends_interests,friends_likes,friends_location,friends_notes,friends_online_presence,friends_photo_video_tags,friends_photos,friends_questions,friends_relationship_details,friends_relationships,friends_religion_politics,friends_status,friends_subscriptions,friends_videos,friends_website,friends_work_history,manage_friendlists,manage_notifications,manage_pages,photo_upload,publish_actions,publish_stream,read_friendlists,read_insights,read_mailbox,read_page_mailboxes,read_requests,read_stream,rsvp_event,share_item,sms,status_update,user_about_me,user_actions.books,user_actions.music,user_actions.news,user_actions.video,user_activities,user_birthday,user_education_history,user_events,user_friends,user_games_activity,user_groups,user_hometown,user_interests,user_likes,user_location,user_notes,user_online_presence,user_photo_video_tags,user_photos,user_questions,user_relationship_details,user_relationships,user_religion_politics,user_status,user_subscriptions,user_videos,user_website,user_work_history,video_upload,xmpp_login";
-    private FacebookUserInformationConfiguration facebookUserInformationConfiguration;
+    private FacebookUserstreamConfiguration configuration;
 
     private Class klass;
+    protected final ReadWriteLock lock = new ReentrantReadWriteLock();
+
     protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
 
-    public FacebookUserInformationConfiguration getConfig()              { return facebookUserInformationConfiguration; }
+    public FacebookUserstreamConfiguration getConfig()              { return configuration; }
 
-    public void setConfig(FacebookUserInformationConfiguration config)   { this.facebookUserInformationConfiguration = config; }
+    public void setConfig(FacebookUserstreamConfiguration config)   { this.configuration = config; }
 
     protected Iterator<String[]> idsBatches;
 
@@ -73,32 +81,35 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
 
     protected final AtomicBoolean running = new AtomicBoolean();
 
+    private DatumStatusCounter countersCurrent = new DatumStatusCounter();
+    private DatumStatusCounter countersTotal = new DatumStatusCounter();
+
     private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
         return new ThreadPoolExecutor(nThreads, nThreads,
                 5000L, TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
-    public FacebookUserInformationProvider() {
+    public FacebookFriendUpdatesProvider() {
         Config config = StreamsConfigurator.config.getConfig("facebook");
-        FacebookUserInformationConfiguration facebookUserInformationConfiguration;
+        FacebookUserInformationConfiguration configuration;
         try {
-            facebookUserInformationConfiguration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
+            configuration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
         } catch (IOException e) {
             e.printStackTrace();
             return;
         }
     }
 
-    public FacebookUserInformationProvider(FacebookUserInformationConfiguration config) {
-        this.facebookUserInformationConfiguration = config;
+    public FacebookFriendUpdatesProvider(FacebookUserstreamConfiguration config) {
+        this.configuration = config;
     }
 
-    public FacebookUserInformationProvider(Class klass) {
+    public FacebookFriendUpdatesProvider(Class klass) {
         Config config = StreamsConfigurator.config.getConfig("facebook");
-        FacebookUserInformationConfiguration facebookUserInformationConfiguration;
+        FacebookUserInformationConfiguration configuration;
         try {
-            facebookUserInformationConfiguration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
+            configuration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -106,8 +117,8 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
         this.klass = klass;
     }
 
-    public FacebookUserInformationProvider(FacebookUserInformationConfiguration config, Class klass) {
-        this.facebookUserInformationConfiguration = config;
+    public FacebookFriendUpdatesProvider(FacebookUserstreamConfiguration config, Class klass) {
+        this.configuration = config;
         this.klass = klass;
     }
 
@@ -126,67 +137,7 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
 
         LOGGER.info("readCurrent");
 
-        Facebook client = getFacebookClient();
-
-        try {
-            User me = client.users().getMe();
-            String json = mapper.writeValueAsString(me);
-            providerQueue.add(
-                new StreamsDatum(json, DateTime.now())
-            );
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        } catch (FacebookException e) {
-            e.printStackTrace();
-        }
-
-        if( idsBatches.hasNext()) {
-            while (idsBatches.hasNext()) {
-                try {
-                    List<User> userList = client.users().getUsers(idsBatches.next());
-                    for (User user : userList) {
-
-                        try {
-                            String json = mapper.writeValueAsString(user);
-                            providerQueue.add(
-                                    new StreamsDatum(json, DateTime.now())
-                            );
-                        } catch (JsonProcessingException e) {
-                            //                        e.printStackTrace();
-                        }
-                    }
-
-                } catch (FacebookException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            try {
-                ResponseList<Friend> friendResponseList = client.friends().getFriends();
-                Paging<Friend> friendPaging;
-                do {
-
-                    for( Friend friend : friendResponseList ) {
-
-                        String json;
-                        try {
-                            json = mapper.writeValueAsString(friend);
-                            providerQueue.add(
-                                    new StreamsDatum(json)
-                            );
-                        } catch (JsonProcessingException e) {
-//                        e.printStackTrace();
-                        }
-                    }
-                    friendPaging = friendResponseList.getPaging();
-                    friendResponseList = client.fetchNext(friendPaging);
-                } while( friendPaging != null &&
-                        friendResponseList != null );
-            } catch (FacebookException e) {
-                e.printStackTrace();
-            }
-
-        }
+        // return stuff
 
         LOGGER.info("Finished.  Cleaning up...");
 
@@ -245,42 +196,39 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
 
         Preconditions.checkNotNull(providerQueue);
         Preconditions.checkNotNull(this.klass);
-        Preconditions.checkNotNull(facebookUserInformationConfiguration.getOauth().getAppId());
-        Preconditions.checkNotNull(facebookUserInformationConfiguration.getOauth().getAppSecret());
-        Preconditions.checkNotNull(facebookUserInformationConfiguration.getOauth().getUserAccessToken());
-        Preconditions.checkNotNull(facebookUserInformationConfiguration.getInfo());
+        Preconditions.checkNotNull(configuration.getOauth().getAppId());
+        Preconditions.checkNotNull(configuration.getOauth().getAppSecret());
+        Preconditions.checkNotNull(configuration.getOauth().getUserAccessToken());
 
-        List<String> ids = new ArrayList<String>();
-        List<String[]> idsBatches = new ArrayList<String[]>();
+        Facebook client = getFacebookClient();
 
-        for(String s : facebookUserInformationConfiguration.getInfo()) {
-            if(s != null)
-            {
-                ids.add(s);
+        try {
+            ResponseList<Friend> friendResponseList = client.friends().getFriends();
+            Paging<Friend> friendPaging;
+            do {
 
-                if(ids.size() >= 100) {
-                    // add the batch
-                    idsBatches.add(ids.toArray(new String[ids.size()]));
-                    // reset the Ids
-                    ids = new ArrayList<String>();
+                for( Friend friend : friendResponseList ) {
+
+                    //client.rawAPI().callPostAPI();
+                    // add a subscription
                 }
-
-            }
+                friendPaging = friendResponseList.getPaging();
+                friendResponseList = client.fetchNext(friendPaging);
+            } while( friendPaging != null &&
+                    friendResponseList != null );
+        } catch (FacebookException e) {
+            e.printStackTrace();
         }
 
-        if(ids.size() > 0)
-            idsBatches.add(ids.toArray(new String[ids.size()]));
-
-        this.idsBatches = idsBatches.iterator();
     }
 
     protected Facebook getFacebookClient()
     {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
-            .setOAuthAppId(facebookUserInformationConfiguration.getOauth().getAppId())
-            .setOAuthAppSecret(facebookUserInformationConfiguration.getOauth().getAppSecret())
-            .setOAuthAccessToken(facebookUserInformationConfiguration.getOauth().getUserAccessToken())
+            .setOAuthAppId(configuration.getOauth().getAppId())
+            .setOAuthAppSecret(configuration.getOauth().getAppSecret())
+            .setOAuthAccessToken(configuration.getOauth().getUserAccessToken())
             .setOAuthPermissions(ALL_PERMISSIONS)
             .setJSONStoreEnabled(true)
             .setClientVersion("v1.0");
@@ -294,5 +242,45 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
     @Override
     public void cleanUp() {
         shutdownAndAwaitTermination(executor);
+    }
+
+    private class FacebookFeedPollingTask implements Runnable {
+
+        FacebookUserstreamProvider provider;
+        Facebook client;
+
+        private Set<Post> priorPollResult = Sets.newHashSet();
+
+        public FacebookFeedPollingTask(FacebookUserstreamProvider facebookUserstreamProvider) {
+            provider = facebookUserstreamProvider;
+        }
+
+        @Override
+        public void run() {
+            client = provider.getFacebookClient();
+            while (provider.isRunning()) {
+                try {
+                    ResponseList<Post> postResponseList = client.getHome();
+                    Set<Post> update = Sets.newHashSet(postResponseList);
+                    Set<Post> repeats = Sets.intersection(priorPollResult, Sets.newHashSet(update));
+                    Set<Post> entrySet = Sets.difference(update, repeats);
+                    for (Post item : entrySet) {
+                        String json = DataObjectFactory.getRawJSON(item);
+                        org.apache.streams.facebook.Post post = mapper.readValue(json, org.apache.streams.facebook.Post.class);
+                        try {
+                            lock.readLock().lock();
+                            ComponentUtils.offerUntilSuccess(new StreamsDatum(post), providerQueue);
+                            countersCurrent.incrementAttempt();
+                        } finally {
+                            lock.readLock().unlock();
+                        }
+                    }
+                    priorPollResult = update;
+                    Thread.sleep(configuration.getPollIntervalMillis());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

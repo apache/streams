@@ -101,10 +101,10 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/facebook/FacebookConfiguration.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/facebook/FacebookUserInformationConfiguration.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/facebook/FacebookUserstreamConfiguration.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/facebook/graph/Post.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/facebook/FacebookConfiguration.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/facebook/FacebookUserInformationConfiguration.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/facebook/FacebookUserstreamConfiguration.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/facebook/graph/Post.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>com.facebook</targetPackage>

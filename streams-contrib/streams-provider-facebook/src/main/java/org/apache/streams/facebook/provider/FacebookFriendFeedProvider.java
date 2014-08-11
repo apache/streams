@@ -16,12 +16,11 @@
  * under the License.
  */
 
-package com.facebook.provider;
+package org.apache.streams.facebook.provider;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
@@ -45,17 +44,18 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializable
+public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
 {
 
-    public static final String STREAMS_ID = "FacebookFriendPostsProvider";
-    private static final Logger LOGGER = LoggerFactory.getLogger(FacebookFriendUpdatesProvider.class);
+    public static final String STREAMS_ID = "FacebookFriendFeedProvider";
+    private static final Logger LOGGER = LoggerFactory.getLogger(FacebookFriendFeedProvider.class);
 
     private static final ObjectMapper mapper = new StreamsJacksonMapper();
 
@@ -89,7 +89,7 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
                 new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
-    public FacebookFriendUpdatesProvider() {
+    public FacebookFriendFeedProvider() {
         Config config = StreamsConfigurator.config.getConfig("facebook");
         FacebookUserInformationConfiguration configuration;
         try {
@@ -100,11 +100,11 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
         }
     }
 
-    public FacebookFriendUpdatesProvider(FacebookUserstreamConfiguration config) {
+    public FacebookFriendFeedProvider(FacebookUserstreamConfiguration config) {
         this.configuration = config;
     }
 
-    public FacebookFriendUpdatesProvider(Class klass) {
+    public FacebookFriendFeedProvider(Class klass) {
         Config config = StreamsConfigurator.config.getConfig("facebook");
         FacebookUserInformationConfiguration configuration;
         try {
@@ -116,7 +116,7 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
         this.klass = klass;
     }
 
-    public FacebookFriendUpdatesProvider(FacebookUserstreamConfiguration config, Class klass) {
+    public FacebookFriendFeedProvider(FacebookUserstreamConfiguration config, Class klass) {
         this.configuration = config;
         this.klass = klass;
     }
@@ -127,27 +127,24 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
 
     @Override
     public void startStream() {
+        shutdownAndAwaitTermination(executor);
         running.set(true);
     }
 
     public StreamsResultSet readCurrent() {
 
-        Preconditions.checkArgument(idsBatches.hasNext());
+        StreamsResultSet current;
 
-        LOGGER.info("readCurrent");
+        synchronized (FacebookUserstreamProvider.class) {
+            current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(providerQueue));
+            current.setCounter(new DatumStatusCounter());
+            current.getCounter().add(countersCurrent);
+            countersTotal.add(countersCurrent);
+            countersCurrent = new DatumStatusCounter();
+            providerQueue.clear();
+        }
 
-        // return stuff
-
-        LOGGER.info("Finished.  Cleaning up...");
-
-        LOGGER.info("Providing {} docs", providerQueue.size());
-
-        StreamsResultSet result =  new StreamsResultSet(providerQueue);
-        running.set(false);
-
-        LOGGER.info("Exiting");
-
-        return result;
+        return current;
 
     }
 
@@ -208,8 +205,7 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
 
                 for( Friend friend : friendResponseList ) {
 
-                    //client.rawAPI().callPostAPI();
-                    // add a subscription
+                    executor.submit(new FacebookFriendFeedTask(this, friend.getId()));
                 }
                 friendPaging = friendResponseList.getPaging();
                 friendResponseList = client.fetchNext(friendPaging);
@@ -243,43 +239,44 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
         shutdownAndAwaitTermination(executor);
     }
 
-    private class FacebookFeedPollingTask implements Runnable {
+    private class FacebookFriendFeedTask implements Runnable {
 
-        FacebookUserstreamProvider provider;
+        FacebookFriendFeedProvider provider;
         Facebook client;
+        String id;
 
-        private Set<Post> priorPollResult = Sets.newHashSet();
-
-        public FacebookFeedPollingTask(FacebookUserstreamProvider facebookUserstreamProvider) {
-            provider = facebookUserstreamProvider;
+        public FacebookFriendFeedTask(FacebookFriendFeedProvider provider, String id) {
+            this.provider = provider;
+            this.id = id;
         }
 
         @Override
         public void run() {
             client = provider.getFacebookClient();
-            while (provider.isRunning()) {
                 try {
-                    ResponseList<Post> postResponseList = client.getHome();
-                    Set<Post> update = Sets.newHashSet(postResponseList);
-                    Set<Post> repeats = Sets.intersection(priorPollResult, Sets.newHashSet(update));
-                    Set<Post> entrySet = Sets.difference(update, repeats);
-                    for (Post item : entrySet) {
-                        String json = DataObjectFactory.getRawJSON(item);
-                        org.apache.streams.facebook.Post post = mapper.readValue(json, org.apache.streams.facebook.Post.class);
-                        try {
-                            lock.readLock().lock();
-                            ComponentUtils.offerUntilSuccess(new StreamsDatum(post), providerQueue);
-                            countersCurrent.incrementAttempt();
-                        } finally {
-                            lock.readLock().unlock();
+                    ResponseList<Post> postResponseList = client.getFeed(id);
+                    Paging<Post> postPaging;
+                    do {
+
+                        for (Post item : postResponseList) {
+                            String json = DataObjectFactory.getRawJSON(item);
+                            org.apache.streams.facebook.Post post = mapper.readValue(json, org.apache.streams.facebook.Post.class);
+                            try {
+                                lock.readLock().lock();
+                                ComponentUtils.offerUntilSuccess(new StreamsDatum(post), providerQueue);
+                                countersCurrent.incrementAttempt();
+                            } finally {
+                                lock.readLock().unlock();
+                            }
                         }
-                    }
-                    priorPollResult = update;
-                    Thread.sleep(configuration.getPollIntervalMillis());
+                        postPaging = postResponseList.getPaging();
+                        postResponseList = client.fetchNext(postPaging);
+                    } while( postPaging != null &&
+                            postResponseList != null );
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
         }
     }
 }

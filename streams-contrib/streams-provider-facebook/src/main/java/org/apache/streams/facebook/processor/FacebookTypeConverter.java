@@ -16,9 +16,8 @@
  * under the License.
  */
 
-package com.facebook.processor;
+package org.apache.streams.facebook.processor;
 
-import com.facebook.api.FacebookPostActivitySerializer;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,6 +28,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.facebook.Post;
+import org.apache.streams.facebook.api.FacebookPostActivitySerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
