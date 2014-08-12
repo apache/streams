@@ -115,20 +115,7 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
                 } else {
                     if(toConvert.getClass().equals(Activity.class)) { //hack to remove additional properties
                         ObjectNode node = mapper.convertValue(toConvert, ObjectNode.class);
-                        if(node.has("additionalProperties")) {
-                            ObjectNode additionalProperties = (ObjectNode) node.get("additionalProperties");
-//                            node.put("user_mentions", additionalProperties.get("user_mentions"));
-                            node.putAll(additionalProperties);
-                            node.remove("additionalProperties");
-                        }
-                        if(node.has("actor")) {
-                            ObjectNode actor = (ObjectNode) node.get("actor");
-                            if(actor.has("additionalProperties")) {
-                                ObjectNode additionalProperties = (ObjectNode) actor.get("additionalProperties");
-                                actor.putAll(additionalProperties);
-                                actor.remove("additionalProperties");
-                            }
-                        }
+                        CleanAdditionalPropertiesProcessor.cleanAdditionalProperties(node);
                         return mapper.writeValueAsString(node);
                     } else
                         return mapper.writeValueAsString(toConvert);
@@ -139,8 +126,6 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
                 return null;
             }
         }
-
-
     }
 
     private class DefaultConverter implements DatasiftConverter {

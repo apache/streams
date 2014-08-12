@@ -48,7 +48,7 @@ public class CleanAdditionalPropertiesProcessor implements StreamsProcessor {
 
     }
 
-    public void cleanAdditionalProperties(ObjectNode node) {
+    public static void cleanAdditionalProperties(ObjectNode node) {
         if( node.get("additionalProperties") != null ) {
             ObjectNode additionalProperties = (ObjectNode) node.get("additionalProperties");
             cleanAdditionalProperties(additionalProperties);
