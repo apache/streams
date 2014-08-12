@@ -14,17 +14,19 @@ specific language governing permissions and limitations
 under the License. */
 package org.apache.streams.instagram.provider;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Queues;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
-import org.apache.streams.instagram.InstagramConfigurator;
-import org.apache.streams.instagram.InstagramUserInformationConfiguration;
+import org.apache.streams.instagram.*;
+import org.apache.streams.util.SerializationUtil;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,17 +38,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class InstagramRecentMediaProvider implements StreamsProvider {
 
-    private InstagramUserInformationConfiguration config;
+    private InstagramConfiguration config;
     private InstagramRecentMediaCollector dataCollector;
     protected Queue<MediaFeedData> mediaFeedQueue; //exposed for testing
     private ExecutorService executorService;
     private AtomicBoolean isCompleted;
 
     public InstagramRecentMediaProvider() {
-        this(InstagramConfigurator.detectInstagramUserInformationConfiguration(StreamsConfigurator.config.getConfig("instagram")));
+        this(InstagramConfigurator.detectInstagramConfiguration(StreamsConfigurator.config.getConfig("instagram")));
     }
 
-    public InstagramRecentMediaProvider(InstagramUserInformationConfiguration config) {
+    public InstagramRecentMediaProvider(InstagramConfiguration config) {
         this.config = config;
         this.mediaFeedQueue = Queues.newConcurrentLinkedQueue();
     }
@@ -62,6 +64,7 @@ public class InstagramRecentMediaProvider implements StreamsProvider {
      * EXPOSED FOR TESTING
      * @return
      */
+    @VisibleForTesting
     protected InstagramRecentMediaCollector getInstagramRecentMediaCollector() {
         return new InstagramRecentMediaCollector(this.mediaFeedQueue, this.config);
     }
@@ -112,4 +115,26 @@ public class InstagramRecentMediaProvider implements StreamsProvider {
             this.executorService = null;
         }
     }
+
+    /**
+     * Add default start and stop points if necessary.
+     */
+    private void updateUserInfoList() {
+        UsersInfo usersInfo = this.config.getUsersInfo();
+        if(usersInfo.getDefaultAfterDate() == null && usersInfo.getDefaultBeforeDate() == null) {
+            return;
+        }
+        DateTime defaultAfterDate = usersInfo.getDefaultAfterDate();
+        DateTime defaultBeforeDate = usersInfo.getDefaultBeforeDate();
+        for(UserId user : usersInfo.getUserIds()) {
+            if(defaultAfterDate != null && user.getAfterDate() == null) {
+                user.setAfterDate(defaultAfterDate);
+            }
+            if(defaultBeforeDate != null && user.getBeforeDate() == null) {
+                user.setBeforeDate(defaultBeforeDate);
+            }
+        }
+    }
+
+
 }

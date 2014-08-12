@@ -14,16 +14,25 @@ specific language governing permissions and limitations
 under the License. */
 package org.apache.streams.instagram.provider;
 
+import com.carrotsearch.randomizedtesting.RandomizedTest;
+import com.carrotsearch.randomizedtesting.annotations.Repeat;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+import org.apache.streams.instagram.InstagramConfiguration;
 import org.apache.streams.instagram.InstagramUserInformationConfiguration;
+import org.apache.streams.instagram.UserId;
+import org.apache.streams.instagram.UsersInfo;
+import org.apache.streams.util.ConcurentYieldTillSuccessQueue;
 import org.jinstagram.Instagram;
 import org.jinstagram.entity.common.Pagination;
 import org.jinstagram.entity.users.feed.MediaFeed;
 import org.jinstagram.entity.users.feed.MediaFeedData;
+import org.jinstagram.exceptions.InstagramBadRequestException;
 import org.jinstagram.exceptions.InstagramException;
+import org.jinstagram.exceptions.InstagramRateLimitException;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -34,91 +43,63 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link org.apache.streams.instagram.provider.InstagramRecentMediaCollector}
  */
-public class InstagramRecentMediaCollectorTest {
+public class InstagramRecentMediaCollectorTest extends RandomizedTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstagramRecentMediaCollectorTest.class);
 
     private int expectedDataCount = 0;
-    private long randomSeed = System.currentTimeMillis();
-    private Random rand = new Random(randomSeed);
-    private Map<Pagination, MediaFeed> pageMap = Maps.newHashMap();
 
     @Test
     public void testHandleInstagramException1() throws InstagramException {
-        InstagramException ie = mock(InstagramException.class);
+        InstagramException ie = mock(InstagramRateLimitException.class);
         when(ie.getRemainingLimitStatus()).thenReturn(1);
         final String message = "Test Message";
         when(ie.getMessage()).thenReturn(message);
-        InstagramRecentMediaCollector collector = new InstagramRecentMediaCollector(new ConcurrentLinkedQueue<MediaFeedData>(), new InstagramUserInformationConfiguration());
+        InstagramRecentMediaCollector collector = new InstagramRecentMediaCollector(new ConcurentYieldTillSuccessQueue<MediaFeedData>(), new InstagramConfiguration());
         try {
-            collector.handleInstagramException(ie, 1);
-            fail("Expected RuntimeException to be thrown");
-        } catch (InstagramException rte) {
-//            assertTrue(rte.getMessage().contains("Mock for InstagramException"));
-            assertEquals(message, rte.getMessage());
+            long startTime = System.currentTimeMillis();
+            collector.handleException(ie);
+            long endTime = System.currentTimeMillis();
+            assertTrue(2000 <= endTime - startTime);
+            startTime = System.currentTimeMillis();
+            collector.handleException(ie);
+            endTime = System.currentTimeMillis();
+            assertTrue(4000 <= endTime - startTime);
+        } catch (Exception e) {
+            fail("Should not have thrown an exception.");
         }
     }
 
-    @Test
-    public void testHandleInstagramException2() throws InstagramException{
-        InstagramException ie = mock(InstagramException.class);
-        when(ie.getRemainingLimitStatus()).thenReturn(0);
-        InstagramRecentMediaCollector collector = new InstagramRecentMediaCollector(new ConcurrentLinkedQueue<MediaFeedData>(), new InstagramUserInformationConfiguration());
-        long startTime = System.currentTimeMillis();
-        collector.handleInstagramException(ie, 1);
-        long endTime = System.currentTimeMillis();
-        LOGGER.debug("Slept for {} ms", startTime - endTime);
-        assertTrue(endTime - startTime >= 4000); //allow for 1 sec of error
-        startTime = System.currentTimeMillis();
-        collector.handleInstagramException(ie, 2);
-        endTime = System.currentTimeMillis();
-        LOGGER.debug("Slept for {} ms", startTime - endTime);
-        assertTrue(endTime - startTime >= 24000); //allow for 1 sec of error
-    }
 
     @Test
-    public void testGetUserIds() {
-        InstagramUserInformationConfiguration config = new InstagramUserInformationConfiguration();
-        List<String> userIds = Lists.newLinkedList();
-        userIds.add("1");
-        userIds.add("2");
-        userIds.add("3");
-        userIds.add("4");
-        userIds.add("abcdefg");
-        config.setUserIds(userIds);
-        InstagramRecentMediaCollector collector = new InstagramRecentMediaCollector(new ConcurrentLinkedQueue<MediaFeedData>(), config);
-
-        Set<Long> expected = Sets.newHashSet();
-        expected.add(1L);
-        expected.add(2L);
-        expected.add(3L);
-        expected.add(4L);
-
-        assertEquals(expected, collector.getUserIds());
-    }
-
-    @Test
+    @Repeat(iterations = 3)
     public void testRun() {
-        Queue<MediaFeedData> data = Queues.newConcurrentLinkedQueue();
-        InstagramUserInformationConfiguration config = new InstagramUserInformationConfiguration();
-        List<String> userIds = Lists.newLinkedList();
-        userIds.add("1");
-        userIds.add("2");
-        userIds.add("3");
-        userIds.add("4");
-        config.setUserIds(userIds);
-        InstagramRecentMediaCollector collector = new InstagramRecentMediaCollector(data, config);
-        collector.setInstagramClient(createMockInstagramClient());
+        this.expectedDataCount = 0;
+        Queue<MediaFeedData> data = new ConcurentYieldTillSuccessQueue<MediaFeedData>();
+        InstagramConfiguration config = new InstagramConfiguration();
+        UsersInfo usersInfo = new UsersInfo();
+        config.setUsersInfo(usersInfo);
+        Set<UserId> users = creatUsers(randomIntBetween(0, 100));
+        usersInfo.setUserIds(users);
+
+        final Instagram mockInstagram = createMockInstagramClient();
+        InstagramRecentMediaCollector collector = new InstagramRecentMediaCollector(data, config) {
+            @Override
+            protected Instagram getNextInstagramClient() {
+                return mockInstagram;
+            }
+        };
+        assertFalse(collector.isCompleted());
         collector.run();
-        LOGGER.debug("Random seed == {}", randomSeed);
-        assertEquals("Random Seed == " + randomSeed, this.expectedDataCount, data.size());
+        assertTrue(collector.isCompleted());
+        assertEquals(this.expectedDataCount, data.size());
     }
 
     private Instagram createMockInstagramClient() {
@@ -127,12 +108,19 @@ public class InstagramRecentMediaCollectorTest {
             final InstagramException mockException = mock(InstagramException.class);
             when(mockException.getRemainingLimitStatus()).thenReturn(-1);
             when(mockException.getMessage()).thenReturn("MockInstagramException message");
-            when(instagramClient.getRecentMediaFeed(any(Long.class))).thenAnswer(new Answer<MediaFeed>() {
+            when(instagramClient.getRecentMediaFeed(anyLong(), anyInt(), anyString(), anyString(), any(Date.class), any(Date.class))).thenAnswer(new Answer<MediaFeed>() {
                 @Override
                 public MediaFeed answer(InvocationOnMock invocationOnMock) throws Throwable {
-                    long param = (Long) invocationOnMock.getArguments()[0];
-                    if (param == 2L) {
-                        throw mockException;
+                    if (randomInt(20) == 0) { //5% throw exceptions
+                        int type = randomInt(4);
+                        if (type == 0)
+                            throw mock(InstagramRateLimitException.class);
+                        else if (type == 1)
+                            throw mock(InstagramBadRequestException.class);
+                        else if (type == 2)
+                            throw mock(InstagramException.class);
+                        else
+                            throw new Exception();
                     } else {
                         return createRandomMockMediaFeed();
                     }
@@ -150,11 +138,27 @@ public class InstagramRecentMediaCollectorTest {
         return instagramClient;
     }
 
+    private Set<UserId> creatUsers(int numUsers) {
+        Set<UserId> users = Sets.newHashSet();
+        for(int i=0; i < numUsers; ++i) {
+            UserId user = new UserId();
+            user.setUserId(Integer.toString(randomInt()));
+            if(randomInt(2) == 0) {
+                user.setAfterDate(DateTime.now().minusSeconds(randomIntBetween(0, 1000)));
+            }
+            if(randomInt(2) == 0) {
+                user.setBeforeDate(DateTime.now());
+            }
+            users.add(user);
+        }
+        return users;
+    }
+
     private MediaFeed createRandomMockMediaFeed() throws InstagramException {
         MediaFeed feed = mock(MediaFeed.class);
-        when(feed.getData()).thenReturn(createData(this.rand.nextInt(100)));
+        when(feed.getData()).thenReturn(createData(randomInt(100)));
         Pagination pagination = mock(Pagination.class);
-        if(this.rand.nextInt(2) == 0) {
+        if(randomInt(2) == 0) {
             when(pagination.hasNextPage()).thenReturn(true);
         } else {
             when(pagination.hasNextPage()).thenReturn(false);
