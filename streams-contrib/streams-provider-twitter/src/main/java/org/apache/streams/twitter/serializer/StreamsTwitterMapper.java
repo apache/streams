@@ -27,6 +27,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.apache.streams.data.util.RFC3339Utils;
+import org.apache.streams.jackson.StreamsDateTimeDeserializer;
+import org.apache.streams.jackson.StreamsDateTimeSerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.jackson.StreamsJacksonModule;
 import org.joda.time.DateTime;
@@ -68,7 +71,14 @@ public class StreamsTwitterMapper extends StreamsJacksonMapper {
                 addDeserializer(DateTime.class, new StdDeserializer<DateTime>(DateTime.class) {
                     @Override
                     public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException, JsonProcessingException {
-                        return TWITTER_FORMAT.parseDateTime(jpar.getValueAsString());
+                        DateTime result = null;
+                        try {
+                            result = TWITTER_FORMAT.parseDateTime(jpar.getValueAsString());
+                        } catch( Exception e ) { }
+                        try {
+                            result = RFC3339Utils.getInstance().parseToUTC(jpar.getValueAsString());
+                        } catch( Exception e ) { }
+                        return result;
                     }
                 });
             }

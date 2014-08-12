@@ -20,10 +20,13 @@ package org.apache.streams.elasticsearch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigRenderOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Converts a {@link com.typesafe.config.Config} element into an instance of ElasticSearchConfiguration
@@ -59,29 +62,30 @@ public class ElasticsearchConfigurator {
         elasticsearchReaderConfiguration.setIndexes(indexes);
         elasticsearchReaderConfiguration.setTypes(types);
 
+        if( elasticsearch.hasPath("_search") ) {
+            LOGGER.info("_search supplied by config");
+            Config searchConfig = elasticsearch.getConfig("_search");
+            try {
+                elasticsearchReaderConfiguration.setSearch(mapper.readValue(searchConfig.root().render(ConfigRenderOptions.concise()), Map.class));
+            } catch (IOException e) {
+                e.printStackTrace();
+                LOGGER.warn("Could not parse _search supplied by config");
+            }
+        }
+
         return elasticsearchReaderConfiguration;
     }
 
     public static ElasticsearchWriterConfiguration detectWriterConfiguration(Config elasticsearch) {
 
-        ElasticsearchConfiguration elasticsearchConfiguration = detectConfiguration(elasticsearch);
-        ElasticsearchWriterConfiguration elasticsearchWriterConfiguration = mapper.convertValue(elasticsearchConfiguration, ElasticsearchWriterConfiguration.class);
+        ElasticsearchWriterConfiguration elasticsearchWriterConfiguration = null;
 
-        String index = elasticsearch.getString("index");
-        String type = elasticsearch.getString("type");
-        Long maxMsBeforeFlush = elasticsearch.hasPath("MaxTimeBetweenFlushMs") ? elasticsearch.getLong("MaxTimeBetweenFlushMs") : null;
-
-        if( elasticsearch.hasPath("bulk"))
-            elasticsearchWriterConfiguration.setBulk(elasticsearch.getBoolean("bulk"));
-
-        if( elasticsearch.hasPath("batchSize"))
-            elasticsearchWriterConfiguration.setBatchSize(elasticsearch.getLong("batchSize"));
-
-        elasticsearchWriterConfiguration.setIndex(index);
-        elasticsearchWriterConfiguration.setType(type);
-        elasticsearchWriterConfiguration.setMaxTimeBetweenFlushMs(maxMsBeforeFlush);
-
-
+        try {
+            elasticsearchWriterConfiguration = mapper.readValue(elasticsearch.root().render(ConfigRenderOptions.concise()), ElasticsearchWriterConfiguration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not parse elasticsearchwriterconfiguration");
+        }
         return elasticsearchWriterConfiguration;
     }
 

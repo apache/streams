@@ -63,6 +63,7 @@ public class GMailProvider implements StreamsProvider, DatumStatusCountable {
     protected BlockingQueue inQueue = new LinkedBlockingQueue<String>(10000);
 
     protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+    protected Future task;
 
     public BlockingQueue<Object> getInQueue() {
         return inQueue;
@@ -105,7 +106,7 @@ public class GMailProvider implements StreamsProvider, DatumStatusCountable {
     @Override
     public void startStream() {
 
-        executor.submit(new GMailImapProviderTask(this));
+        task = executor.submit(new GMailImapProviderTask(this));
 
     }
 
@@ -134,6 +135,11 @@ public class GMailProvider implements StreamsProvider, DatumStatusCountable {
     @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         return null;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return !task.isDone() && !task.isCancelled();
     }
 
     @Override

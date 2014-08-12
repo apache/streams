@@ -40,6 +40,7 @@ import java.security.PrivilegedExceptionAction;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -67,6 +68,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
 
     protected DatumStatusCounter countersTotal = new DatumStatusCounter();
     protected DatumStatusCounter countersCurrent = new DatumStatusCounter();
+    private Future<?> task;
 
     public WebHdfsPersistReader(HdfsReaderConfiguration hdfsConfiguration) {
         this.hdfsConfiguration = hdfsConfiguration;
@@ -165,7 +167,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
     @Override
     public void startStream() {
         LOGGER.debug("startStream");
-        executor.submit(new WebHdfsPersistReaderTask(this));
+        task = executor.submit(new WebHdfsPersistReaderTask(this));
     }
 
     @Override
@@ -193,6 +195,11 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
     @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         return null;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return !task.isDone() && !task.isCancelled();
     }
 
     @Override

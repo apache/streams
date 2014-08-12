@@ -99,10 +99,20 @@
                             "type": "integer"
                         },
                         "ids": {
-                            "type": "string"
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
                         },
                         "names": {
-                            "type": "string"
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
                         }
                     }
                 },
@@ -196,6 +206,25 @@
                 "link": {
                     "type": "string"
                 },
+                "mention_ids": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "integer"
+                        }
+                    ]
+                },
+                "mentions": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "source": {
+                    "type": "string"
+                },
                 "schema": {
                     "dynamic": "true",
                     "properties": {
@@ -243,6 +272,9 @@
                 },
                 "tag": {
                     "type": "string"
+                },
+                "tag_extended": {
+                    "type": "string"
                 }
             }
         },
@@ -252,7 +284,12 @@
             "dynamic": "true",
             "properties": {
                 "code": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "integer"
+                        }
+                    ]
                 },
                 "created_at": {
                     "type": "array",
@@ -398,7 +435,12 @@
                     ]
                 },
                 "retweet_count": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "long"
+                        }
+                    ]
                 },
                 "title": {
                     "type": "array",
@@ -555,6 +597,14 @@
             "properties": {
                 "created_at": {
                     "type": "string"
+                },
+                "display_urls": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
                 },
                 "domains": {
                     "type": "array",
@@ -715,7 +765,12 @@
                     ]
                 },
                 "mention_ids": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": [
+                        {
+                            "type": "string"
+                        }
+                    ]
                 },
                 "mentions": {
                     "type": "array",
@@ -899,7 +954,13 @@
                             }
                         },
                         "mention_ids": {
-                            "type": "integer"
+                            "type": "array",
+                            "items":[
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+
                         },
                         "mentions": {
                             "type": "array",
@@ -916,62 +977,8 @@
                             "type": "string"
                         },
                         "user": {
-                            "javaType": "org.apache.streams.datasift.twitter.User",
-                            "type": "object",
-                            "dynamic": "true",
-                            "properties": {
-                                "created_at": {
-                                    "type": "string"
-                                },
-                                "description": {
-                                    "type": "string"
-                                },
-                                "followers_count": {
-                                    "type": "integer"
-                                },
-                                "friends_count": {
-                                    "type": "integer"
-                                },
-                                "geo_enabled": {
-                                    "type": "boolean"
-                                },
-                                "id": {
-                                    "type": "integer"
-                                },
-                                "id_str": {
-                                    "type": "string"
-                                },
-                                "lang": {
-                                    "type": "string"
-                                },
-                                "listed_count": {
-                                    "type": "integer"
-                                },
-                                "location": {
-                                    "type": "string"
-                                },
-                                "name": {
-                                    "type": "string"
-                                },
-                                "profile_image_url": {
-                                    "type": "string"
-                                },
-                                "screen_name": {
-                                    "type": "string"
-                                },
-                                "statuses_count": {
-                                    "type": "integer"
-                                },
-                                "time_zone": {
-                                    "type": "string"
-                                },
-                                "url": {
-                                    "type": "string"
-                                },
-                                "utc_offset": {
-                                    "type": "integer"
-                                }
-                            }
+                            "type": "DatasiftTwitterUser",
+                            "$ref": "./DatasiftTwitterUser.json"
                         }
                     }
                 },
@@ -1031,63 +1038,8 @@
                             "type": "string"
                         },
                         "user": {
-                            "dynamic": "true",
-                            "properties": {
-                                "created_at": {
-                                    "type": "string"
-                                },
-                                "description": {
-                                    "type": "string"
-                                },
-                                "followers_count": {
-                                    "type": "integer"
-                                },
-                                "friends_count": {
-                                    "type": "integer"
-                                },
-                                "geo_enabled": {
-                                    "type": "boolean"
-                                },
-                                "id": {
-                                    "type": "integer"
-                                },
-                                "id_str": {
-                                    "type": "string"
-                                },
-                                "lang": {
-                                    "type": "string"
-                                },
-                                "listed_count": {
-                                    "type": "integer"
-                                },
-                                "location": {
-                                    "type": "string"
-                                },
-                                "name": {
-                                    "type": "string"
-                                },
-                                "profile_image_url": {
-                                    "type": "string"
-                                },
-                                "screen_name": {
-                                    "type": "string"
-                                },
-                                "statuses_count": {
-                                    "type": "integer"
-                                },
-                                "time_zone": {
-                                    "type": "string"
-                                },
-                                "url": {
-                                    "type": "string"
-                                },
-                                "utc_offset": {
-                                    "type": "integer"
-                                },
-                                "verified": {
-                                    "type": "boolean"
-                                }
-                            }
+                            "type": "DatasiftTwitterUser",
+                            "$ref": "./DatasiftTwitterUser.json"
                         }
                     }
                 },
@@ -1098,65 +1050,8 @@
                     "type": "string"
                 },
                 "user": {
-                    "javaType": "org.apache.streams.datasift.interaction.User",
-                    "type": "object",
-                    "dynamic": "true",
-                    "properties": {
-                        "created_at": {
-                            "type": "string"
-                        },
-                        "description": {
-                            "type": "string"
-                        },
-                        "followers_count": {
-                            "type": "integer"
-                        },
-                        "friends_count": {
-                            "type": "integer"
-                        },
-                        "geo_enabled": {
-                            "type": "boolean"
-                        },
-                        "id": {
-                            "type": "integer"
-                        },
-                        "id_str": {
-                            "type": "string"
-                        },
-                        "lang": {
-                            "type": "string"
-                        },
-                        "listed_count": {
-                            "type": "integer"
-                        },
-                        "location": {
-                            "type": "string"
-                        },
-                        "name": {
-                            "type": "string"
-                        },
-                        "profile_image_url": {
-                            "type": "string"
-                        },
-                        "screen_name": {
-                            "type": "string"
-                        },
-                        "statuses_count": {
-                            "type": "integer"
-                        },
-                        "time_zone": {
-                            "type": "string"
-                        },
-                        "url": {
-                            "type": "string"
-                        },
-                        "utc_offset": {
-                            "type": "integer"
-                        },
-                        "verified": {
-                            "type": "boolean"
-                        }
-                    }
+                    "type": "DatasiftTwitterUser",
+                    "$ref": "./DatasiftTwitterUser.json"
                 }
             }
         },

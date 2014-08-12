@@ -20,15 +20,13 @@ package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Constants;
 import com.twitter.hbc.core.Hosts;
 import com.twitter.hbc.core.HttpHosts;
 import com.twitter.hbc.core.endpoint.*;
-import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.BasicClient;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.BasicAuth;
@@ -38,7 +36,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
 import org.apache.streams.twitter.TwitterStreamConfiguration;
-import org.apache.streams.twitter.processor.TwitterEventProcessor;
+import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +46,9 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by sblackmon on 12/10/13.
@@ -57,6 +58,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     public final static String STREAMS_ID = "TwitterStreamProvider";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterStreamProvider.class);
+    public static final int MAX_BATCH = 1000;
 
     private TwitterStreamConfiguration config;
 
@@ -68,17 +70,14 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
         this.config = config;
     }
 
-    protected BlockingQueue<String> hosebirdQueue;
-
-    protected volatile Queue<StreamsDatum> providerQueue;
+    protected volatile Queue<Future<List<StreamsDatum>>> providerQueue;
 
     protected Hosts hosebirdHosts;
     protected Authentication auth;
     protected StreamingEndpoint endpoint;
     protected BasicClient client;
-
-    protected ListeningExecutorService executor;
-
+    protected AtomicBoolean running = new AtomicBoolean(false);
+    protected TwitterStreamProcessor processor = new TwitterStreamProcessor(this);
     private DatumStatusCounter countersCurrent = new DatumStatusCounter();
     private DatumStatusCounter countersTotal = new DatumStatusCounter();
 
@@ -99,27 +98,22 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
     @Override
     public void startStream() {
-
-        for (int i = 0; i < 5; i++) {
-            executor.submit(new TwitterEventProcessor(hosebirdQueue, providerQueue, String.class));
-        }
-
-        new Thread(new TwitterStreamProviderTask(this)).start();
-
+        client.connect();
+        running.set(true);
     }
 
     @Override
     public synchronized StreamsResultSet readCurrent() {
 
         StreamsResultSet current;
-
-        synchronized( TwitterStreamProvider.class ) {
-            current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(providerQueue));
+        synchronized(this) {
+            Queue<StreamsDatum> drain = Queues.newLinkedBlockingDeque();
+            drainTo(drain);
+            current = new StreamsResultSet(drain);
             current.setCounter(new DatumStatusCounter());
             current.getCounter().add(countersCurrent);
             countersTotal.add(countersCurrent);
             countersCurrent = new DatumStatusCounter();
-            providerQueue.clear();
         }
 
         return current;
@@ -131,15 +125,17 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     }
 
     @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end)
-    {
+    public StreamsResultSet readRange(DateTime start, DateTime end)  {
         throw new NotImplementedException();
     }
 
     @Override
-    public void prepare(Object o) {
+    public boolean isRunning() {
+        return this.running.get() && !client.isDone();
+    }
 
-        executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
+    @Override
+    public void prepare(Object o) {
 
         Preconditions.checkNotNull(config.getEndpoint());
 
@@ -157,17 +153,17 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
             hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
 
-            Optional<List<String>> track = Optional.fromNullable(config.getTrack());
-            Optional<List<Long>> follow = Optional.fromNullable(config.getFollow());
+            boolean track = config.getTrack() != null && !config.getTrack().isEmpty();
+            boolean follow = config.getFollow() != null && !config.getFollow().isEmpty();
 
-            if( track.isPresent() || follow.isPresent() ) {
+            if( track || follow ) {
                 LOGGER.debug("***\tPRESENT\t***");
                 StatusesFilterEndpoint statusesFilterEndpoint = new StatusesFilterEndpoint();
-                if( track.isPresent() ) {
-                    statusesFilterEndpoint.trackTerms(track.get());
+                if( track ) {
+                    statusesFilterEndpoint.trackTerms(config.getTrack());
                 }
-                else {
-                    statusesFilterEndpoint.followings(follow.get());
+                if( follow ) {
+                    statusesFilterEndpoint.followings(config.getFollow());
                 }
                 this.endpoint = statusesFilterEndpoint;
             } else {
@@ -212,8 +208,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
         LOGGER.debug("host={}\tendpoint={}\taut={}", new Object[] {hosebirdHosts,endpoint,auth});
 
-        hosebirdQueue = new LinkedBlockingQueue<String>(1000);
-        providerQueue = new LinkedBlockingQueue<StreamsDatum>(1000);
+        providerQueue = new LinkedBlockingQueue<Future<List<StreamsDatum>>>(MAX_BATCH);
 
         client = new ClientBuilder()
             .name("apache/streams/streams-contrib/streams-provider-twitter")
@@ -221,20 +216,56 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
             .endpoint(endpoint)
             .authentication(auth)
             .connectionTimeout(1200000)
-            .processor(new StringDelimitedProcessor(hosebirdQueue))
+            .processor(processor)
             .build();
 
     }
 
     @Override
     public void cleanUp() {
-        for (int i = 0; i < 5; i++) {
-            hosebirdQueue.add(TwitterEventProcessor.TERMINATE);
-        }
+        this.client.stop();
+        this.processor.cleanUp();
+        this.running.set(false);
     }
 
     @Override
     public DatumStatusCounter getDatumStatusCounter() {
         return countersTotal;
+    }
+
+    protected boolean addDatum(Future<List<StreamsDatum>> future) {
+        try {
+            ComponentUtils.offerUntilSuccess(future, providerQueue);
+            countersCurrent.incrementStatus(DatumStatus.SUCCESS);
+            return true;
+        } catch (Exception e) {
+            countersCurrent.incrementStatus(DatumStatus.FAIL);
+            LOGGER.warn("Unable to enqueue item from Twitter stream");
+            return false;
+        }
+    }
+
+    protected void drainTo(Queue<StreamsDatum> drain) {
+        int count = 0;
+        while(!providerQueue.isEmpty() && count <= MAX_BATCH) {
+            for(StreamsDatum datum : pollForDatum()) {
+                ComponentUtils.offerUntilSuccess(datum, drain);
+                count++;
+            }
+        }
+    }
+
+    protected List<StreamsDatum> pollForDatum()  {
+        try {
+            return providerQueue.poll().get();
+        } catch (InterruptedException e) {
+            LOGGER.warn("Interrupted while waiting for future.  Initiate shutdown.");
+            this.cleanUp();
+            Thread.currentThread().interrupt();
+            return Lists.newArrayList();
+        } catch (ExecutionException e) {
+            LOGGER.warn("Error getting tweet from future");
+            return Lists.newArrayList();
+        }
     }
 }

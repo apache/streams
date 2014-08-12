@@ -56,6 +56,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
     private int threadPoolSize = 10;
     private ExecutorService executor;
     private ReadWriteLock lock = new ReentrantReadWriteLock();
+    private Future<?> readerTask;
 
     public ElasticsearchPersistReader() {
     }
@@ -69,7 +70,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
     public void startStream() {
         LOGGER.debug("startStream");
         executor = Executors.newSingleThreadExecutor();
-        executor.submit(new ElasticsearchPersistReaderTask(this, elasticsearchQuery));
+        readerTask = executor.submit(new ElasticsearchPersistReaderTask(this, elasticsearchQuery));
     }
 
     @Override
@@ -117,10 +118,19 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
         return readCurrent();
     }
 
+    //If we still have data in the queue, we are still running
+    @Override
+    public boolean isRunning() {
+        return persistQueue.size() > 0 || (!readerTask.isDone() && !readerTask.isCancelled());
+    }
+
     @Override
     public void cleanUp() {
         this.shutdownAndAwaitTermination(executor);
         LOGGER.info("PersistReader done");
+        if(elasticsearchQuery != null) {
+            elasticsearchQuery.cleanUp();
+        }
     }
 
     //The locking may appear to be counter intuitive but we really don't care if multiple threads offer to the queue
@@ -184,15 +194,19 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
                 ObjectNode jsonObject = null;
                 try {
                     jsonObject = mapper.readValue(hit.getSourceAsString(), ObjectNode.class);
+                    item = new StreamsDatum(jsonObject, hit.getId());
+                    item.getMetadata().put("id", hit.getId());
+                    item.getMetadata().put("index", hit.getIndex());
+                    item.getMetadata().put("type", hit.getType());
+                    if( hit.fields().containsKey("_timestamp")) {
+                        DateTime timestamp = new DateTime(((Long) hit.field("_timestamp").getValue()).longValue());
+                        item.setTimestamp(timestamp);
+                    }
+                    reader.write(item);
                 } catch (IOException e) {
-                    e.printStackTrace();
-                    break;
+                    LOGGER.warn("Unable to process json source: ", hit.getSourceAsString());
                 }
-                item = new StreamsDatum(jsonObject, hit.getId());
-                item.getMetadata().put("id", hit.getId());
-                item.getMetadata().put("index", hit.getIndex());
-                item.getMetadata().put("type", hit.getType());
-                reader.write(item);
+
             }
             try {
                 Thread.sleep(new Random().nextInt(100));

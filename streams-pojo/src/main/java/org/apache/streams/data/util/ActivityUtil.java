@@ -18,6 +18,8 @@
 
 package org.apache.streams.data.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 
 import java.util.HashMap;
@@ -27,6 +29,7 @@ import java.util.Map;
  * Utility class for managing activities
  */
 public class ActivityUtil {
+
     private ActivityUtil() {}
 
     /**
@@ -57,6 +60,8 @@ public class ActivityUtil {
      * Specific JSON-geo coordinates (long,lat)
      */
     public static final String LOCATION_EXTENSION_COORDINATES = "coordinates";
+
+    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     /**
      * Creates a standard extension property

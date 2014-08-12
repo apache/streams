@@ -55,6 +55,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     private int monitorTasks;
     private LocalStreamProcessMonitorThread monitorThread;
     private Map<String, List<StreamsTask>> tasks;
+    private Thread shutdownHook;
 
     /**
      *
@@ -91,6 +92,14 @@ public class LocalStreamBuilder implements StreamBuilder {
         this.streamConfig = streamConfig;
         this.totalTasks = 0;
         this.monitorTasks = 0;
+        final LocalStreamBuilder self = this;
+        this.shutdownHook = new Thread() {
+            @Override
+            public void run() {
+                LOGGER.debug("Shutdown hook received.  Beginning shutdown");
+                self.stopInternal(true);
+            }
+        };
     }
 
     @Override
@@ -186,24 +195,23 @@ public class LocalStreamBuilder implements StreamBuilder {
                     Thread.sleep(3000);
                 }
             }
-            LOGGER.debug("Components are no longer running or timed out due to completion");
-            shutdown(tasks);
+            LOGGER.debug("Components are no longer running or timed out");
         } catch (InterruptedException e){
-            forceShutdown(tasks);
+            LOGGER.warn("Runtime interrupted.  Beginning shutdown");
+        } finally{
+            stop();
         }
 
     }
 
     private void attachShutdownHandler() {
-        final LocalStreamBuilder self = this;
         LOGGER.debug("Attaching shutdown handler");
-        Runtime.getRuntime().addShutdownHook(new Thread(){
-            @Override
-            public void run() {
-                LOGGER.debug("Shutdown hook received.  Beginning shutdown");
-                self.stop();
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
+
+    private void detachShutdownHandler() {
+        LOGGER.debug("Detaching shutdown handler");
+        Runtime.getRuntime().removeShutdownHook(shutdownHook);
     }
 
     protected void forceShutdown(Map<String, List<StreamsTask>> streamsTasks) {
@@ -232,7 +240,7 @@ public class LocalStreamBuilder implements StreamBuilder {
 
     protected void shutdown(Map<String, List<StreamsTask>> streamsTasks) throws InterruptedException {
         LOGGER.info("Attempting to shutdown tasks");
-        monitorThread.shutdown();
+        this.monitorThread.shutdown();
         this.executor.shutdown();
         //complete stream shut down gracfully
         for(StreamComponent prov : this.providers.values()) {
@@ -329,10 +337,18 @@ public class LocalStreamBuilder implements StreamBuilder {
      */
     @Override
     public void stop() {
+        stopInternal(false);
+    }
+
+    protected void stopInternal(boolean systemExiting) {
         try {
             shutdown(tasks);
         } catch (Exception e) {
             forceShutdown(tasks);
+        } finally {
+            if(!systemExiting) {
+                detachShutdownHandler();
+            }
         }
     }
 

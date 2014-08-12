@@ -60,7 +60,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.6</java.version>
+        <java.version>1.7</java.version>
         <org.osgi.service.http.port>8080</org.osgi.service.http.port>
         <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
         <jackson.version>2.3.2</jackson.version>
@@ -80,7 +80,7 @@
         <commons-lang3.version>3.1</commons-lang3.version>
         <typesafe.config.version>1.2.0</typesafe.config.version>
         <orgjson.version>20140107</orgjson.version>
-        <guava.version>16.0.1</guava.version>
+        <guava.version>17.0</guava.version>
         <scala.version>2.8.0</scala.version>
         <clojure.version>1.4.0</clojure.version>
         <zookeeper.version>3.4.5</zookeeper.version>

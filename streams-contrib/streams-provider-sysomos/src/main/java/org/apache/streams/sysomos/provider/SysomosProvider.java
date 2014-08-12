@@ -27,6 +27,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,10 +52,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class SysomosProvider implements StreamsProvider {
 
+
     public static enum Mode { CONTINUOUS, BACKFILL_AND_TERMINATE }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SysomosProvider.class);
 
+    public static final String ENDING_TIME_KEY = "addedBefore";
+    public static final String STARTING_TIME_KEY = "addedAfter";
     public static final String STREAMS_ID = "SysomosProvider";
     public static final String MODE_KEY = "mode";
     public static final String STARTING_DOCS_KEY = "startingDocs";
@@ -75,6 +79,8 @@ public class SysomosProvider implements StreamsProvider {
     private SysomosConfiguration config;
     private ScheduledExecutorService stream;
     private Map<String, String> documentIds;
+    private Map<String, String> addedBefore;
+    private Map<String, String> addedAfter;
     private Mode mode = Mode.CONTINUOUS;
     private boolean started = false;
 
@@ -118,9 +124,7 @@ public class SysomosProvider implements StreamsProvider {
             LOGGER.trace("Producer not started.  Initializing");
             stream = Executors.newScheduledThreadPool(getConfig().getHeartbeatIds().size() + 1);
             for (String heartbeatId : getConfig().getHeartbeatIds()) {
-                Runnable task = documentIds != null && documentIds.containsKey(heartbeatId) ?
-                        new SysomosHeartbeatStream(this, heartbeatId, documentIds.get(heartbeatId)) :
-                        new SysomosHeartbeatStream(this, heartbeatId);
+                Runnable task = createStream(heartbeatId);
                 stream.scheduleWithFixedDelay(task, 0, this.scheduledLatency, TimeUnit.MILLISECONDS);
                 LOGGER.info("Started producer task for heartbeat {}", heartbeatId);
             }
@@ -151,6 +155,13 @@ public class SysomosProvider implements StreamsProvider {
     @Override
     public StreamsResultSet readRange(DateTime dateTime, DateTime dateTime2) {
         throw new NotImplementedException("readRange not currently implemented");
+    }
+
+    //If the provider queue still has data, we are still running.  If not, we are running if we have not been signaled
+    //by all completed heartbeats so long as the thread pool is alive
+    @Override
+    public boolean isRunning() {
+        return providerQueue.size() > 0 || (completedHeartbeats.size() < this.getConfig().getHeartbeatIds().size() && !(stream.isTerminated() || stream.isShutdown()));
     }
 
     @Override
@@ -187,7 +198,7 @@ public class SysomosProvider implements StreamsProvider {
         try {
             this.lock.writeLock().lock();
             this.completedHeartbeats.add(heartbeatId);
-            if(completedHeartbeats.size() == this.getConfig().getHeartbeatIds().size()) {
+            if(!this.isRunning()) {
                 this.cleanUp();
             }
         } finally {
@@ -211,10 +222,27 @@ public class SysomosProvider implements StreamsProvider {
         while (!success);
     }
 
+    protected SysomosHeartbeatStream createStream(String heartbeatId) {
+        String afterTime = addedAfter != null && addedAfter.containsKey(heartbeatId) ? addedAfter.get(heartbeatId) : null;
+        String beforeTime = addedBefore != null && addedBefore.containsKey(heartbeatId) ? addedBefore.get(heartbeatId) : null;
+
+        if(documentIds != null && documentIds.containsKey(heartbeatId)) {
+            return new SysomosHeartbeatStream(this, heartbeatId, documentIds.get(heartbeatId));
+        }
+        if(afterTime != null) {
+            if(beforeTime != null) {
+                return new SysomosHeartbeatStream(this, heartbeatId, RFC3339Utils.parseToUTC(beforeTime), RFC3339Utils.parseToUTC(afterTime));
+            } else {
+                return new SysomosHeartbeatStream(this, heartbeatId, null, RFC3339Utils.parseToUTC(afterTime));
+            }
+        }
+        return new SysomosHeartbeatStream(this, heartbeatId);
+    }
+
     /**
      * Wait for the queue size to be below threshold before allowing execution to continue on this thread
      */
-    private void pauseForSpace() {
+    protected void pauseForSpace() {
         while(this.providerQueue.size() >= maxQueued) {
             LOGGER.trace("Sleeping the current thread due to a full queue");
             try {
@@ -241,6 +269,20 @@ public class SysomosProvider implements StreamsProvider {
                 throw new IllegalStateException("Invalid configuration.  StartingDocs must be an instance of Map<String,String> but was " + configIds);
             }
             this.documentIds = (Map)configIds;
+        }
+        if(configMap.containsKey(STARTING_TIME_KEY)) {
+            Object configIds = configMap.get(STARTING_TIME_KEY);
+            if(!(configIds instanceof Map)) {
+                throw new IllegalStateException("Invalid configuration.  Added after key must be an instance of Map<String,String> but was " + configIds);
+            }
+            this.addedAfter = (Map)configIds;
+        }
+        if(configMap.containsKey(ENDING_TIME_KEY)) {
+            Object configIds = configMap.get(ENDING_TIME_KEY);
+            if(!(configIds instanceof Map)) {
+                throw new IllegalStateException("Invalid configuration.  Added before key must be an instance of Map<String,String> but was " + configIds);
+            }
+            this.addedBefore = (Map)configIds;
         }
     }
 
