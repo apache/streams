@@ -6,7 +6,7 @@ import com.google.common.collect.Lists;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.interaction.Interaction;
-import org.apache.streams.datasift.interaction.Links;
+import org.apache.streams.datasift.links.Links;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.pojo.json.*;
 import org.slf4j.Logger;
