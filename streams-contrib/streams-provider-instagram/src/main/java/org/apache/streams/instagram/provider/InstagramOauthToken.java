@@ -1,28 +1,29 @@
 package org.apache.streams.instagram.provider;
 
-import org.apache.streams.util.oauth.tokens.OauthToken;
+
+import org.jinstagram.auth.model.Token;
 
 /**
- *
+ * Extends JInstagram Token. Only difference is it overrides the equal method and determines equality based on the
+ * token string.
  */
-public class InstagramOauthToken extends OauthToken{
+public class InstagramOauthToken extends Token {
 
-    private String clientId;
 
-    public InstagramOauthToken(String clientId) {
-        this.clientId = clientId;
+    public InstagramOauthToken(String token) {
+        this(token, null);
     }
 
-    public String getClientId() {
-        return clientId;
+    public InstagramOauthToken(String token, String secret) {
+        super(token, secret);
     }
 
     @Override
-    protected boolean internalEquals(Object o) {
+    public boolean equals(Object o) {
         if(!(o instanceof InstagramOauthToken)) {
             return false;
         }
         InstagramOauthToken that = (InstagramOauthToken) o;
-        return this.clientId.equals(that.clientId);
+        return this.getToken().equals(that.getToken());
     }
 }

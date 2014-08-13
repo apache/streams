@@ -3,7 +3,7 @@ package org.apache.streams.util.oauth.tokens;
 /**
  *
  */
-public abstract class OauthToken {
+public abstract class AbstractOauthToken {
 
     /**
      * Must create equals method for all OauthTokens.

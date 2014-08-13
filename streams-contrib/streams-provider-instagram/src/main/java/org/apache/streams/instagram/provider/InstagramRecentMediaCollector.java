@@ -16,6 +16,7 @@ package org.apache.streams.instagram.provider;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.streams.instagram.InstagramConfiguration;
+import org.apache.streams.instagram.User;
 import org.apache.streams.instagram.UserId;
 import org.apache.streams.util.api.requests.backoff.BackOffException;
 import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
@@ -52,6 +53,7 @@ public class InstagramRecentMediaCollector implements Runnable {
     private SimpleTokenManager<InstagramOauthToken> tokenManger;
     private int consecutiveErrorCount;
     private BackOffStrategy backOffStrategy;
+    private Instagram instagram;
 
 
     public InstagramRecentMediaCollector(Queue<MediaFeedData> queue, InstagramConfiguration config) {
@@ -59,17 +61,27 @@ public class InstagramRecentMediaCollector implements Runnable {
         this.config = config;
         this.isCompleted = new AtomicBoolean(false);
         this.tokenManger = new BasicTokenManger<InstagramOauthToken>();
-        for (String clientId : this.config.getClientIds()) {
-            this.tokenManger.addTokenToPool(new InstagramOauthToken(clientId));
+        for (String tokens : this.config.getUsersInfo().getAuthorizedTokens()) {
+            this.tokenManger.addTokenToPool(new InstagramOauthToken(tokens));
         }
         this.consecutiveErrorCount = 0;
         this.backOffStrategy = new ExponentialBackOffStrategy(2);
+        this.instagram = new Instagram(this.config.getClientId());
     }
 
 
+    /**
+     * If there are authorized tokens available, it sets a new token for the client and returns
+     * the client.  If there are no available tokens, it simply returns the client that was
+     * initialized in the constructor with client id.
+     * @return
+     */
     @VisibleForTesting
     protected Instagram getNextInstagramClient() {
-        return new Instagram(this.tokenManger.getNextAvailableToken().getClientId());
+        if(this.tokenManger.numAvailableTokens() > 0) {
+            this.instagram.setAccessToken(this.tokenManger.getNextAvailableToken());
+        }
+        return this.instagram;
     }
 
     private void queueData(MediaFeed userFeed, String userId) {
@@ -92,7 +104,7 @@ public class InstagramRecentMediaCollector implements Runnable {
     @Override
     public void run() {
         try {
-            for (UserId user : this.config.getUsersInfo().getUserIds()) {
+            for (User user : this.config.getUsersInfo().getUsers()) {
                 collectMediaFeed(user);
             }
         } catch (Exception e) {
@@ -108,7 +120,7 @@ public class InstagramRecentMediaCollector implements Runnable {
      * @throws Exception
      */
     @VisibleForTesting
-    protected void collectMediaFeed(UserId user) throws Exception {
+    protected void collectMediaFeed(User user) throws Exception {
         Pagination pagination = null;
         do {
             int attempts = 0;
@@ -128,9 +140,16 @@ public class InstagramRecentMediaCollector implements Runnable {
                         feed = getNextInstagramClient().getRecentMediaNextPage(pagination);
                     }
                 } catch (Exception e) {
-                    handleException(e);
-                    if(e instanceof InstagramBadRequestException) {
+                    if(e instanceof InstagramRateLimitException) {
+                        LOGGER.warn("Received rate limit exception from Instagram, backing off. : {}", e);
+                        this.backOffStrategy.backOff();
+                    } else if(e instanceof InstagramBadRequestException) {
+                        LOGGER.error("Received Bad Requests exception form Instagram: {}", e);
                         attempts = MAX_ATTEMPTS; //don't repeat bad requests.
+                        ++this.consecutiveErrorCount;
+                    } else {
+                        LOGGER.error("Received Expection while attempting to poll Instagram: {}", e);
+                        ++this.consecutiveErrorCount;
                     }
                     if(this.consecutiveErrorCount > Math.max(this.tokenManger.numAvailableTokens(), MAX_ATTEMPTS*2)) {
                         throw new Exception("InstagramCollector failed to successfully connect to instagram on "+this.consecutiveErrorCount+" attempts.");
@@ -156,16 +175,7 @@ public class InstagramRecentMediaCollector implements Runnable {
      * @throws BackOffException
      */
     protected void handleException(Exception e) throws BackOffException {
-        if(e instanceof InstagramRateLimitException) {
-            LOGGER.warn("Received rate limit exception from Instagram, backing off. : {}", e);
-            this.backOffStrategy.backOff();
-        } else if(e instanceof InstagramBadRequestException) {
-            LOGGER.error("Received Bad Requests exception form Instagram: {}", e);
-            ++this.consecutiveErrorCount;
-        } else {
-            LOGGER.error("Received Expection while attempting to poll Instagram: {}", e);
-            ++this.consecutiveErrorCount;
-        }
+
     }
 
 }

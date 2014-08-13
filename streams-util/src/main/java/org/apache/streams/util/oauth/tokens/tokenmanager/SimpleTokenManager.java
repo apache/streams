@@ -1,13 +1,13 @@
 package org.apache.streams.util.oauth.tokens.tokenmanager;
 
-import org.apache.streams.util.oauth.tokens.OauthToken;
+import org.apache.streams.util.oauth.tokens.AbstractOauthToken;
 
 import java.util.Collection;
 
 /**
  * Manges access to oauth tokens.  Allows a caller to add tokens to the token pool and receive an available token.
  */
-public interface SimpleTokenManager<T extends OauthToken> {
+public interface SimpleTokenManager<T> {
 
 
     /**

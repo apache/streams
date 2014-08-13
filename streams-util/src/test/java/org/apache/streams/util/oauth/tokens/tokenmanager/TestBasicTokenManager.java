@@ -1,7 +1,7 @@
 package org.apache.streams.util.oauth.tokens.tokenmanager;
 
 
-import org.apache.streams.util.oauth.tokens.OauthToken;
+import org.apache.streams.util.oauth.tokens.AbstractOauthToken;
 import org.apache.streams.util.oauth.tokens.tokenmanager.impl.BasicTokenManger;
 import org.junit.Test;
 
@@ -22,7 +22,7 @@ public class TestBasicTokenManager {
     /**
      * Simple token for testing purposes
      */
-    private class TestToken extends OauthToken {
+    private class TestToken extends AbstractOauthToken {
 
         private String s;
 

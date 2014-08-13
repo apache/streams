@@ -5,23 +5,27 @@
     "javaType" : "org.apache.streams.instagram.InstagramConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
-        "clientIds": {
-            "type": "array",
-            "uniqueItems": true,
-            "items": {
-                "type": "string"
-            },
-            "description": "Your Instagram Client Ids"
+        "clientId": {
+            "type": "string",
+            "description": "Your Instagram Client Id"
         },
         "usersInfo": {
             "type": "object",
             "properties": {
-                "userIds": {
+                "authorizedTokens": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Instagram tokens for authorized users of your client/app"
+                },
+                "users": {
                     "type": "array",
                     "uniqueItems": true,
                     "items": {
                         "type": "object",
-                        "$ref": "#/definitions/userInfo"
+                        "$ref": "#/definitions/user"
                     },
                     "description": "List of user ids to gather data for. Type of data gathered depends on provider"
                 },
@@ -39,7 +43,7 @@
         }
    },
     "definitions": {
-        "userInfo": {
+        "user": {
             "type": "object",
             "properties": {
                 "userId": {

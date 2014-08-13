@@ -1,6 +1,6 @@
 package org.apache.streams.util.oauth.tokens.tokenmanager.impl;
 
-import org.apache.streams.util.oauth.tokens.OauthToken;
+import org.apache.streams.util.oauth.tokens.AbstractOauthToken;
 import org.apache.streams.util.oauth.tokens.tokenmanager.SimpleTokenManager;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.Collection;
  *
  * The manager class is thread safe.
  */
-public class BasicTokenManger<T extends OauthToken> implements SimpleTokenManager<T>{
+public class BasicTokenManger<T> implements SimpleTokenManager<T>{
 
     private ArrayList<T> availableTokens;
     private int nextToken;
