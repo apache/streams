@@ -16,45 +16,34 @@
  * under the License.
  */
 
-package com.facebook.api;
+package org.apache.streams.facebook.api;
 
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.facebook.Post;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.*;
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.streams.data.util.ActivityUtil.*;
-import static org.apache.streams.data.util.JsonUtil.jsonToJsonNode;
 
 /**
  * Serializes activity posts
  *   sblackmon: This class needs a rewrite
  */
-public class FacebookPostActivitySerializer implements ActivitySerializer<String> {
+public class FacebookPostActivitySerializer implements ActivitySerializer<org.apache.streams.facebook.Post> {
 
     public static final DateTimeFormatter FACEBOOK_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
     public static final DateTimeFormatter ACTIVITY_FORMAT = ISODateTimeFormat.basicDateTime();
@@ -63,25 +52,7 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
 
     public static ObjectMapper mapper;
     static {
-        mapper = new ObjectMapper();
-        mapper.registerModule(new JodaModule());
-        mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.registerModule(new SimpleModule() {
-            {
-                addSerializer(DateTime.class, new StdSerializer<DateTime>(DateTime.class) {
-                    @Override
-                    public void serialize(DateTime value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonGenerationException {
-                        jgen.writeString(ACTIVITY_FORMAT.print(value));
-                    }
-                });
-                addDeserializer(DateTime.class, new StdDeserializer<DateTime>(DateTime.class) {
-                    @Override
-                    public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException, JsonProcessingException {
-                        return FACEBOOK_FORMAT.parseDateTime(jpar.getValueAsString());
-                    }
-                });
-            }
-        });
+        mapper = StreamsJacksonMapper.getInstance();
     }
 
     @Override
@@ -90,26 +61,26 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
     }
 
     @Override
-    public String serialize(Activity deserialized) {
-        throw new UnsupportedOperationException();
+    public Post serialize(Activity deserialized) throws ActivitySerializerException {
+        throw new NotImplementedException("Not currently supported by this deserializer");
     }
 
     @Override
-    public Activity deserialize(String serialized) throws ActivitySerializerException {
-        //Deserialize the JSON string into a Jackson JsonNode
-        JsonNode node = jsonToJsonNode(serialized);
-        Map.Entry<String, JsonNode> field = getObjectType(node);
+    public Activity deserialize(Post post) throws ActivitySerializerException {
         Activity activity = new Activity();
+        activity.setPublished(post.getCreatedTime());
+        activity.setUpdated(post.getUpdatedTime());
+        addActor(activity, mapper.convertValue(post.getFrom(), ObjectNode.class));
         setProvider(activity);
-        setObjectType(field, activity);
-        parseObject(activity, field.getValue());
+        setObjectType(post.getType(), activity);
+        parseObject(activity, mapper.convertValue(post, ObjectNode.class));
         fixObjectId(activity);
         fixContentFromSummary(activity);
         return activity;
     }
 
     @Override
-    public java.util.List<Activity> deserializeAll(List<String> serializedList) {
+    public List<Activity> deserializeAll(List<Post> serializedList) {
         throw new NotImplementedException("Not currently supported by this deserializer");
     }
 
@@ -129,10 +100,10 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
         }
     }
 
-    private void setObjectType(Map.Entry<String, JsonNode> field, Activity activity) {
+    private void setObjectType(String type, Activity activity) {
         ActivityObject object = new ActivityObject();
         activity.setObject(object);
-        object.setObjectType(field.getKey());
+        object.setObjectType(type);
     }
 
     private void setProvider(Activity activity) {
@@ -142,12 +113,12 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
         activity.setProvider(provider);
     }
 
-    private Map.Entry<String, JsonNode> getObjectType(JsonNode node) {
+    private String getObjectType(JsonNode node) {
         Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
         ensureMoreFields(fields);
         Map.Entry<String, JsonNode> field = fields.next();
-        ensureNoMoreFields(fields);
-        return field;
+        //ensureNoMoreFields(fields);
+        return node.asText();
     }
 
     private void parseObject(Activity activity, JsonNode jsonNode) throws ActivitySerializerException {
@@ -160,9 +131,7 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
     }
 
     private void mapField(Activity activity, String name, JsonNode value) throws ActivitySerializerException {
-        if ("created_time".equals(name)) {
-            activity.setPublished(parseDate(value));
-        } else if("application".equals(name)) {
+        if("application".equals(name)) {
             addGenerator(activity, value);
         } else if ("caption".equals(name)) {
             addSummary(activity, value);
@@ -198,16 +167,6 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
             addObjectLink(activity, value);
         } else if ("story".equals(name)) {
             addTitle(activity, value);
-        }  else if ("updated_time".equals(name)) {
-            addObjectUpdated(activity, value);
-        }
-    }
-
-    private void addObjectUpdated(Activity activity, JsonNode value) {
-        try {
-            activity.getObject().setUpdated(parseDate(value));
-        } catch( ActivitySerializerException e ) {
-            // losing this field is ok
         }
     }
 
@@ -324,11 +283,4 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<String
         }
     }
 
-    private static DateTime parseDate(JsonNode value) throws ActivitySerializerException {
-        try {
-            return FACEBOOK_FORMAT.parseDateTime(value.asText());
-        } catch (Exception e) {
-            throw new ActivitySerializerException("Unable to parse date " + value.asText());
-        }
-    }
 }

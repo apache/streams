@@ -168,7 +168,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                     break;
                 default: throw new RuntimeException("Type has not been added to StreamsProviderTask.");
             }
-            flushResults(resultSet);
+            if( resultSet != null )
+                flushResults(resultSet);
 
         } catch( Exception e ) {
             LOGGER.error("Error in processing provider stream", e);

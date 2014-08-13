@@ -78,28 +78,14 @@ public class ElasticsearchConfigurator {
 
     public static ElasticsearchWriterConfiguration detectWriterConfiguration(Config elasticsearch) {
 
-        ElasticsearchConfiguration elasticsearchConfiguration = detectConfiguration(elasticsearch);
-        ElasticsearchWriterConfiguration elasticsearchWriterConfiguration = mapper.convertValue(elasticsearchConfiguration, ElasticsearchWriterConfiguration.class);
+        ElasticsearchWriterConfiguration elasticsearchWriterConfiguration = null;
 
-        String index = elasticsearch.getString("index");
-        String type = elasticsearch.getString("type");
-        Long maxMsBeforeFlush = elasticsearch.hasPath("MaxTimeBetweenFlushMs") ? elasticsearch.getLong("MaxTimeBetweenFlushMs") : null;
-
-        if( elasticsearch.hasPath("bulk"))
-            elasticsearchWriterConfiguration.setBulk(elasticsearch.getBoolean("bulk"));
-
-        if( elasticsearch.hasPath("batchSize"))
-            elasticsearchWriterConfiguration.setBatchSize(elasticsearch.getLong("batchSize"));
-
-        if( elasticsearch.hasPath("batchBytes"))
-            elasticsearchWriterConfiguration.setBatchBytes(elasticsearch.getLong("batchBytes"));
-
-
-        elasticsearchWriterConfiguration.setIndex(index);
-        elasticsearchWriterConfiguration.setType(type);
-        elasticsearchWriterConfiguration.setMaxTimeBetweenFlushMs(maxMsBeforeFlush);
-
-
+        try {
+            elasticsearchWriterConfiguration = mapper.readValue(elasticsearch.root().render(ConfigRenderOptions.concise()), ElasticsearchWriterConfiguration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not parse elasticsearchwriterconfiguration");
+        }
         return elasticsearchWriterConfiguration;
     }
 

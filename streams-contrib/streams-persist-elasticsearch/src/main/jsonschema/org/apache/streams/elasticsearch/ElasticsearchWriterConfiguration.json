@@ -24,13 +24,22 @@
             "description": "Item Count before flush",
             "default": 100
         },
-		"batchBytes": {
-			"type": "integer",
-			"description": "Number of bytes before flush",
-			"default": 5242880
-		},
-		"maxTimeBetweenFlushMs": {
-			"type": "integer"
-		}
+        "batchBytes": {
+            "type": "integer",
+            "description": "Number of bytes before flush",
+            "default": 5242880
+        },
+        "maxTimeBetweenFlushMs": {
+            "type": "integer"
+        },
+        "script": {
+            "type": "string",
+            "description": "Script to execute during index"
+        },
+        "tags": {
+            "type": "object",
+            "javaInterfaces": ["java.io.Serializable"],
+            "description": "Tags to apply during index"
+        }
     }
 }

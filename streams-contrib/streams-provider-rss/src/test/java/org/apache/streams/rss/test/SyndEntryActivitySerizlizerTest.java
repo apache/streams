@@ -31,10 +31,13 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class SyndEntryActivitySerizlizerTest {
 
@@ -57,7 +60,7 @@ public class SyndEntryActivitySerizlizerTest {
             activities.add(serializer.deserialize(node));
         }
 
-        assertEquals(10, activities.size());
+        assertEquals(11, activities.size());
 
         for(int x = 0; x < activities.size(); x ++) {
             ObjectNode n = objects.get(x);
@@ -66,9 +69,10 @@ public class SyndEntryActivitySerizlizerTest {
             testActor(n.get("author").asText(), a.getActor());
             testAuthor(n.get("author").asText(), a.getObject().getAuthor());
             testProvider("id:providers:rss", "RSS", a.getProvider());
+            testProviderUrl(a.getProvider());
             testVerb("post", a.getVerb());
             testPublished(n.get("publishedDate").asText(), a.getPublished());
-            testUrl(n.get("uri").asText(), a);
+            testUrl(n.get("uri").asText(), n.get("link").asText(), a);
         }
     }
 
@@ -95,8 +99,21 @@ public class SyndEntryActivitySerizlizerTest {
         assertEquals(expectedDisplay, provider.getDisplayName());
     }
 
-    public void testUrl(String expected, Activity activity) {
-        assertEquals(expected, activity.getUrl());
-        assertEquals(expected, activity.getObject().getUrl());
+    public void testProviderUrl(Provider provider) {
+        URL url = null;
+
+        try {
+            url = new URL(provider.getUrl());
+            url.toURI();
+        } catch(Exception e) {
+            System.out.println("Threw an exception while trying to validate URL: " + provider.getUrl());
+        }
+
+        assertNotNull(url);
+    }
+
+    public void testUrl(String expectedURI, String expectedLink, Activity activity) {
+        assertTrue((expectedURI == activity.getUrl() || expectedLink == activity.getUrl()));
+        assertTrue((expectedURI == activity.getObject().getUrl() || expectedLink == activity.getObject().getUrl()));
     }
 }
