@@ -2,7 +2,7 @@
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
     "id": "#",
-    "javaType": "com.facebook.Post",
+    "javaType": "org.apache.streams.facebook.Post",
     "properties": {
         "id": {
             "type": "string"
@@ -69,7 +69,7 @@
             "type": "string"
         },
         "caption": {
-            "type": "boolean"
+            "type": "string"
         },
         "description": {
             "type": "string"
@@ -109,7 +109,8 @@
                         "type": "string"
                     },
                     "created_time": {
-                        "type": "string"
+                        "type": "string",
+                        "format" : "date-time"
                     }
                 }
             }
@@ -163,10 +164,12 @@
             }
         },
         "created_time": {
-            "type": "string"
+            "type": "string",
+            "format" : "date-time"
         },
         "updated_time": {
-            "type": "string"
+            "type": "string",
+            "format" : "date-time"
         },
         "include_hidden": {
             "type": "boolean"
@@ -185,6 +188,14 @@
                     "text": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "privacy": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string"
                 }
             }
         }

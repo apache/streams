@@ -4,10 +4,14 @@
     "javaType": "org.apache.streams.datasift.twitter.DatasiftTwitterUser",
     "properties": {
         "created_at": {
-            "type": "string"
+            "type": "string",
+            "format": "date-time"
         },
         "description": {
             "type": "string"
+        },
+        "favourites_count": {
+            "type": "integer"
         },
         "followers_count": {
             "type": "integer"
@@ -37,6 +41,9 @@
             "type": "string"
         },
         "profile_image_url": {
+            "type": "string"
+        },
+        "profile_image_url_https": {
             "type": "string"
         },
         "screen_name": {

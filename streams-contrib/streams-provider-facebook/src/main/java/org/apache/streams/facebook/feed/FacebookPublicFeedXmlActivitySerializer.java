@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package com.facebook.feed;
+package org.apache.streams.facebook.feed;
 
 /**
  * Created with IntelliJ IDEA.

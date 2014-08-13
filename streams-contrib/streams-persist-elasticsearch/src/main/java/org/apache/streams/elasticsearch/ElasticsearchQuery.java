@@ -117,14 +117,6 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
         this.filterBuilder = filterBuilder;
     }
 
-    public void setWithfields(String[] withfields) {
-        this.withfields = withfields;
-    }
-
-    public void setWithoutfields(String[] withoutfields) {
-        this.withoutfields = withoutfields;
-    }
-
     public void execute(Object o) {
 
         // If we haven't already set up the search, then set up the search.
@@ -133,8 +125,12 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
             search = elasticsearchClientManager.getClient()
                     .prepareSearch(indexes.toArray(new String[0]))
                     .setSearchType(SearchType.SCAN)
+                    .setExplain(true)
+                    .addField("*")
+                    .setFetchSource(true)
                     .setSize(Objects.firstNonNull(batchSize, DEFAULT_BATCH_SIZE).intValue())
-                    .setScroll(Objects.firstNonNull(scrollTimeout, DEFAULT_SCROLL_TIMEOUT));
+                    .setScroll(Objects.firstNonNull(scrollTimeout, DEFAULT_SCROLL_TIMEOUT))
+                    .addField("_timestamp");
 
             String searchJson;
             if( config.getSearch() != null ) {
@@ -160,23 +156,6 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
             // If the types are null, then don't specify a type
             if (this.types != null && this.types.size() > 0)
                 search = search.setTypes(types.toArray(new String[0]));
-
-            Integer clauses = 0;
-            if (this.withfields != null || this.withoutfields != null) {
-                if (this.withfields != null)
-                    clauses += this.withfields.length;
-                if (this.withoutfields != null)
-                    clauses += this.withoutfields.length;
-            }
-
-            List<FilterBuilder> filterList = buildFilterList();
-
-            FilterBuilder allFilters = andFilters(filterList);
-
-            if (clauses > 0) {
-                //    search.setPostFilter(allFilters);
-                search = search.setPostFilter(allFilters);
-            }
 
             // TODO: Replace when all clusters are upgraded past 0.90.4 so we can implement a RANDOM scroll.
             if (this.random)
@@ -258,68 +237,4 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
         return scrollPositionInScroll != -1 && (!(this.totalRead > this.limit));
     }
 
-    // copied from elasticsearch
-    // if we need this again we should factor it out into a utility
-    private FilterBuilder andFilters(List<FilterBuilder> filters) {
-        if (filters == null || filters.size() == 0)
-            return null;
-
-        FilterBuilder toReturn = filters.get(0);
-
-        for (int i = 1; i < filters.size(); i++)
-            toReturn = FilterBuilders.andFilter(toReturn, filters.get(i));
-
-        return toReturn;
-    }
-
-    private FilterBuilder orFilters(List<FilterBuilder> filters) {
-        if (filters == null || filters.size() == 0)
-            return null;
-
-        FilterBuilder toReturn = filters.get(0);
-
-        for (int i = 1; i < filters.size(); i++)
-            toReturn = FilterBuilders.orFilter(toReturn, filters.get(i));
-
-        return toReturn;
-    }
-
-    private List<FilterBuilder> buildFilterList() {
-
-        // If any withfields are specified, require that field be present
-        //    There must a value set also for the document to be processed
-        // If any withoutfields are specified, require that field not be present
-        //    Document will be picked up even if present, if they do not have at least one value
-        // this is annoying as it majorly impacts runtime
-        // might be able to change behavior using null_field
-
-        ArrayList<FilterBuilder> filterList = Lists.newArrayList();
-
-        // If any withfields are specified, require that field be present
-        //    There must a value set also for the document to be processed
-        if (this.withfields != null && this.withfields.length > 0) {
-            ArrayList<FilterBuilder> withFilterList = Lists.newArrayList();
-            for (String withfield : this.withfields) {
-                FilterBuilder withFilter = FilterBuilders.existsFilter(withfield);
-                withFilterList.add(withFilter);
-            }
-            //filterList.add(FilterBuilders.orFilter(orFilters(withFilterList)));
-            filterList.add(withFilterList.get(0));
-        }
-        // If any withoutfields are specified, require that field not be present
-        //    Document will be picked up even if present, if they do not have at least one value
-        // this is annoying as it majorly impacts runtime
-        // might be able to change behavior using null_field
-        if (this.withoutfields != null && this.withoutfields.length > 0) {
-            ArrayList<FilterBuilder> withoutFilterList = Lists.newArrayList();
-            for (String withoutfield : this.withoutfields) {
-                FilterBuilder withoutFilter = FilterBuilders.missingFilter(withoutfield).existence(true).nullValue(false);
-                withoutFilterList.add(withoutFilter);
-            }
-            //filterList.add(FilterBuilders.orFilter(orFilters(withoutFilterList)));
-            filterList.add(withoutFilterList.get(0));
-        }
-
-        return filterList;
-    }
 }

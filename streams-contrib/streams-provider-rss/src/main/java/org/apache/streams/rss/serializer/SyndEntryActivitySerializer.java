@@ -178,12 +178,20 @@ public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNod
         if (entry.get("uri") != null)
             uri = entry.get("uri").textValue();
 
-        if (uri != null) {
-            if((uri.contains("http") || uri.contains("www")) || (link == null || !(link.contains("http") || link.contains("www")))) {
-                resourceLocation = uri;
-            } else {
-                resourceLocation = link;
-            }
+        /**
+         * Order of precedence for resourceLocation selection
+         *
+         * 1. Valid URI
+         * 2. Valid Link
+         * 3. Non-null URI
+         * 4. Non-null Link
+         */
+        if(isValidResource(uri))
+            resourceLocation = uri;
+        else if(isValidResource(link))
+            resourceLocation = link;
+        else if(uri != null || link != null) {
+            resourceLocation = (uri != null) ? uri : link;
         }
 
         provider.setId("id:providers:rss");
@@ -191,6 +199,17 @@ public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNod
         provider.setDisplayName("RSS");
 
         return provider;
+    }
+
+    /**
+     * Tests whether or not the passed in resource is a valid URI
+     * @param resource
+     * @return boolean of whether or not the resource is valid
+     */
+    private boolean isValidResource(String resource) {
+        if(resource != null && resource.startsWith("http") || resource.startsWith("www"))
+            return true;
+        return false;
     }
 
     /**

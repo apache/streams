@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.elasticsearch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
@@ -66,14 +68,14 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     //A document should have to wait no more than 10s to get flushed
     private static final long DEFAULT_MAX_WAIT = 10000;
 
-    private static final ObjectMapper OBJECT_MAPPER = StreamsJacksonMapper.getInstance();
+    protected static final ObjectMapper OBJECT_MAPPER = StreamsJacksonMapper.getInstance();
 
-    private final List<String> affectedIndexes = new ArrayList<String>();
+    protected final List<String> affectedIndexes = new ArrayList<String>();
 
-    private final ElasticsearchClientManager manager;
-    private final ElasticsearchWriterConfiguration config;
+    protected final ElasticsearchClientManager manager;
+    protected final ElasticsearchWriterConfiguration config;
 
-    private BulkRequestBuilder bulkRequest;
+    protected BulkRequestBuilder bulkRequest;
 
     private boolean veryLargeBulk = false;  // by default this setting is set to false
     private long flushThresholdsRecords = DEFAULT_BATCH_SIZE;
@@ -87,8 +89,8 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     private final AtomicInteger batchesSent = new AtomicInteger(0);
     private final AtomicInteger batchesResponded = new AtomicInteger(0);
 
-    private final AtomicLong currentBatchItems = new AtomicLong(0);
-    private final AtomicLong currentBatchBytes = new AtomicLong(0);
+    protected final AtomicLong currentBatchItems = new AtomicLong(0);
+    protected final AtomicLong currentBatchBytes = new AtomicLong(0);
 
     private final AtomicLong totalSent = new AtomicLong(0);
     private final AtomicLong totalSeconds = new AtomicLong(0);
@@ -142,8 +144,16 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         checkForBackOff();
 
+        String index = Optional.fromNullable(
+                (String) streamsDatum.getMetadata().get("index"))
+                .or(config.getIndex());
+        String type = Optional.fromNullable(
+                (String) streamsDatum.getMetadata().get("type"))
+                .or(config.getType());
+        String id = (String) streamsDatum.getMetadata().get("id");
+
         try {
-            add(config.getIndex(), config.getType(), streamsDatum.getId(),
+            add(index, type, id,
                     streamsDatum.getTimestamp() == null ? Long.toString(DateTime.now().getMillis()) : Long.toString(streamsDatum.getTimestamp().getMillis()),
                     convertAndAppendMetadata(streamsDatum));
         } catch (Throwable e) {
@@ -333,7 +343,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         }
     }
 
-    private void checkForFlush() {
+    protected void checkForFlush() {
         synchronized (this) {
             if (this.currentBatchBytes.get() >= this.flushThresholdBytes ||
                     this.currentBatchItems.get() >= this.flushThresholdsRecords ||
@@ -344,7 +354,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         }
     }
 
-    private void checkIndexImplications(String indexName) {
+    protected void checkIndexImplications(String indexName) {
         // We need this to be safe across all writers that are currently being executed
         synchronized (ElasticsearchPersistWriter.class) {
 

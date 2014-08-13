@@ -19,7 +19,9 @@ under the License.
 package org.apache.streams.datasift.provider;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigRenderOptions;
 import org.apache.streams.datasift.DatasiftConfiguration;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +34,8 @@ public class DatasiftStreamConfigurator {
 
     public static DatasiftConfiguration detectConfiguration(Config datasift) {
 
-        DatasiftConfiguration datasiftConfiguration = new DatasiftConfiguration();
-
-        datasiftConfiguration.setApiKey(datasift.getString("apiKey"));
-        datasiftConfiguration.setUserName(datasift.getString("userName"));
-        datasiftConfiguration.setStreamHash(datasift.getStringList("hashes"));
-
+        DatasiftConfiguration datasiftConfiguration;
+        datasiftConfiguration = StreamsJacksonMapper.getInstance().convertValue(datasift.root().render(ConfigRenderOptions.concise()), DatasiftConfiguration.class);
         return datasiftConfiguration;
     }
 
