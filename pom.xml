@@ -87,7 +87,7 @@
         <netty.version>3.8.0.Final</netty.version>
         <json-path.version>0.9.1</json-path.version>
         <build-helper.version>1.8</build-helper.version>
-        <facebook4j.version>2.1.1-W2O-SNAPSHOT</facebook4j.version>
+        <facebook4j.version>2.1.0</facebook4j.version>
     </properties>
 
     <modules>
