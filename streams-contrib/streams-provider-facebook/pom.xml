@@ -5,7 +5,7 @@
     <parent>
         <artifactId>streams-contrib</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1.0-W2O-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>streams-provider-facebook</artifactId>
@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.facebook4j</groupId>
             <artifactId>facebook4j-core</artifactId>
-            <version>2.1.0</version>
+            <version>${facebook4.version}</version>
         </dependency>
 
     </dependencies>
@@ -105,6 +105,7 @@
                         <sourcePath>src/main/jsonschema/org/apache/streams/facebook/FacebookUserInformationConfiguration.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/facebook/FacebookUserstreamConfiguration.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/facebook/graph/Post.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/facebook/Page.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>com.facebook</targetPackage>
