@@ -11,6 +11,7 @@
         },
         "usersInfo": {
             "type": "object",
+            "javaInterfaces" : ["java.io.Serializable"],
             "properties": {
                 "authorizedTokens": {
                     "type": "array",
@@ -45,6 +46,7 @@
     "definitions": {
         "user": {
             "type": "object",
+            "javaInterfaces" : ["java.io.Serializable"],
             "properties": {
                 "userId": {
                     "type": "string",

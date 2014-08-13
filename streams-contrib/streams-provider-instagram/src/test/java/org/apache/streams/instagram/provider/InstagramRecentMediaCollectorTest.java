@@ -22,9 +22,8 @@ import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import org.apache.streams.instagram.InstagramConfiguration;
 import org.apache.streams.instagram.InstagramUserInformationConfiguration;
-import org.apache.streams.instagram.UserId;
+import org.apache.streams.instagram.User;
 import org.apache.streams.instagram.UsersInfo;
-import org.apache.streams.util.ConcurentYieldTillSuccessQueue;
 import org.jinstagram.Instagram;
 import org.jinstagram.entity.common.Pagination;
 import org.jinstagram.entity.users.feed.MediaFeed;
@@ -56,38 +55,19 @@ public class InstagramRecentMediaCollectorTest extends RandomizedTest {
 
     private int expectedDataCount = 0;
 
-    @Test
-    public void testHandleInstagramException1() throws InstagramException {
-        InstagramException ie = mock(InstagramRateLimitException.class);
-        when(ie.getRemainingLimitStatus()).thenReturn(1);
-        final String message = "Test Message";
-        when(ie.getMessage()).thenReturn(message);
-        InstagramRecentMediaCollector collector = new InstagramRecentMediaCollector(new ConcurentYieldTillSuccessQueue<MediaFeedData>(), new InstagramConfiguration());
-        try {
-            long startTime = System.currentTimeMillis();
-            collector.handleException(ie);
-            long endTime = System.currentTimeMillis();
-            assertTrue(2000 <= endTime - startTime);
-            startTime = System.currentTimeMillis();
-            collector.handleException(ie);
-            endTime = System.currentTimeMillis();
-            assertTrue(4000 <= endTime - startTime);
-        } catch (Exception e) {
-            fail("Should not have thrown an exception.");
-        }
-    }
+
 
 
     @Test
     @Repeat(iterations = 3)
     public void testRun() {
         this.expectedDataCount = 0;
-        Queue<MediaFeedData> data = new ConcurentYieldTillSuccessQueue<MediaFeedData>();
+        Queue<MediaFeedData> data = Queues.newConcurrentLinkedQueue();
         InstagramConfiguration config = new InstagramConfiguration();
         UsersInfo usersInfo = new UsersInfo();
         config.setUsersInfo(usersInfo);
-        Set<UserId> users = creatUsers(randomIntBetween(0, 100));
-        usersInfo.setUserIds(users);
+        Set<User> users = creatUsers(randomIntBetween(0, 100));
+        usersInfo.setUsers(users);
 
         final Instagram mockInstagram = createMockInstagramClient();
         InstagramRecentMediaCollector collector = new InstagramRecentMediaCollector(data, config) {
@@ -138,10 +118,10 @@ public class InstagramRecentMediaCollectorTest extends RandomizedTest {
         return instagramClient;
     }
 
-    private Set<UserId> creatUsers(int numUsers) {
-        Set<UserId> users = Sets.newHashSet();
+    private Set<User> creatUsers(int numUsers) {
+        Set<User> users = Sets.newHashSet();
         for(int i=0; i < numUsers; ++i) {
-            UserId user = new UserId();
+            User user = new User();
             user.setUserId(Integer.toString(randomInt()));
             if(randomInt(2) == 0) {
                 user.setAfterDate(DateTime.now().minusSeconds(randomIntBetween(0, 1000)));

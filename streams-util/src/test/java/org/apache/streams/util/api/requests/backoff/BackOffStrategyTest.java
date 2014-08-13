@@ -11,7 +11,7 @@ import static org.junit.Assert.fail;
 public class BackOffStrategyTest {
 
 
-    private class TestBackOff extends BackOffStrategy {
+    private class TestBackOff extends AbstractBackOffStrategy {
 
         public TestBackOff(long sleep, int maxAttempts) {
             super(sleep, maxAttempts);
@@ -25,7 +25,7 @@ public class BackOffStrategyTest {
 
     @Test
     public void testUnlimitedBackOff() {
-        BackOffStrategy backOff = new TestBackOff(1, -1);
+        AbstractBackOffStrategy backOff = new TestBackOff(1, -1);
         try {
             for(int i=0; i < 100; ++i) {
                 backOff.backOff();
@@ -37,7 +37,7 @@ public class BackOffStrategyTest {
 
     @Test
     public void testLimitedUseBackOff()  {
-        BackOffStrategy backOff = new TestBackOff(1, 2);
+        AbstractBackOffStrategy backOff = new TestBackOff(1, 2);
         try {
             backOff.backOff();
         } catch (BackOffException boe) {
@@ -58,7 +58,7 @@ public class BackOffStrategyTest {
 
     @Test
     public void testBackOffSleep() throws BackOffException {
-        BackOffStrategy backOff = new TestBackOff(2000, 1);
+        AbstractBackOffStrategy backOff = new TestBackOff(2000, 1);
         long startTime = System.currentTimeMillis();
         backOff.backOff();
         long endTime = System.currentTimeMillis();

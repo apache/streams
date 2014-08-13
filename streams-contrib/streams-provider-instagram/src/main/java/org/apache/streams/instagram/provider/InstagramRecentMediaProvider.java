@@ -22,6 +22,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.instagram.*;
+import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.SerializationUtil;
 import org.jinstagram.auth.model.Token;
 import org.jinstagram.entity.users.feed.MediaFeedData;
@@ -78,11 +79,9 @@ public class InstagramRecentMediaProvider implements StreamsProvider {
     public StreamsResultSet readCurrent() {
         Queue<StreamsDatum> batch = Queues.newConcurrentLinkedQueue();
         MediaFeedData data = null;
-        synchronized (this.mediaFeedQueue) {
-            while(!this.mediaFeedQueue.isEmpty()) {
-                data = this.mediaFeedQueue.poll();
-                batch.add(new StreamsDatum(data, data.getId()));
-            }
+        while(!this.mediaFeedQueue.isEmpty()) {
+            data = ComponentUtils.pollWhileNotEmpty(this.mediaFeedQueue);
+            batch.add(new StreamsDatum(data, data.getId()));
         }
         this.isCompleted.set(batch.size() == 0 && this.mediaFeedQueue.isEmpty() && this.dataCollector.isCompleted());
         return new StreamsResultSet(batch);

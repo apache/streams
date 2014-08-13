@@ -14,7 +14,7 @@ public class ConstantTimeBackOffStrategyTest extends RandomizedTest{
 
     @Test
     public void constantTimeBackOffStategy() {
-        BackOffStrategy backOff = new ConstantTimeBackOffStrategy(1);
+        AbstractBackOffStrategy backOff = new ConstantTimeBackOffStrategy(1);
         assertEquals(1, backOff.calculateBackOffTime(1,1));
         assertEquals(1, backOff.calculateBackOffTime(2,1));
         assertEquals(1, backOff.calculateBackOffTime(3,1));

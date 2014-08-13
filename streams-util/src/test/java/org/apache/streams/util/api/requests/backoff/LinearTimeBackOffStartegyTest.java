@@ -12,7 +12,7 @@ public class LinearTimeBackOffStartegyTest {
 
     @Test
     public void linearTimeBackOffStrategyTest() {
-        BackOffStrategy backOff = new LinearTimeBackOffStrategy(1);
+        AbstractBackOffStrategy backOff = new LinearTimeBackOffStrategy(1);
         assertEquals(1000, backOff.calculateBackOffTime(1,1));
         assertEquals(2000, backOff.calculateBackOffTime(2,1));
         assertEquals(3000, backOff.calculateBackOffTime(3,1));

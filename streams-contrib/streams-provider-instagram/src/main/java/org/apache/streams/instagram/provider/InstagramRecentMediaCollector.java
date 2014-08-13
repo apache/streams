@@ -17,8 +17,7 @@ package org.apache.streams.instagram.provider;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.streams.instagram.InstagramConfiguration;
 import org.apache.streams.instagram.User;
-import org.apache.streams.instagram.UserId;
-import org.apache.streams.util.api.requests.backoff.BackOffException;
+import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
 import org.apache.streams.util.api.requests.backoff.impl.ExponentialBackOffStrategy;
 import org.apache.streams.util.oauth.tokens.tokenmanager.SimpleTokenManager;
@@ -86,10 +85,10 @@ public class InstagramRecentMediaCollector implements Runnable {
 
     private void queueData(MediaFeed userFeed, String userId) {
         if (userFeed == null) {
-            LOGGER.error("User id, {}, returned a NULL media feed from instagram.", userId);
+            LOGGER.warn("User id, {}, returned a NULL media feed from instagram.", userId);
         } else {
             for (MediaFeedData data : userFeed.getData()) {
-                this.dataQueue.offer(data);
+                ComponentUtils.offerUntilSuccess(data, this.dataQueue);
             }
         }
     }
@@ -168,14 +167,5 @@ public class InstagramRecentMediaCollector implements Runnable {
         } while (pagination != null && pagination.hasNextPage());
     }
 
-    /**
-     * Handles different types of {@link java.lang.Exception} caught while trying to pull Instagram data.
-     * BackOffs/Sleeps when it encounters a rate limit expection..
-     * @param e
-     * @throws BackOffException
-     */
-    protected void handleException(Exception e) throws BackOffException {
-
-    }
 
 }
