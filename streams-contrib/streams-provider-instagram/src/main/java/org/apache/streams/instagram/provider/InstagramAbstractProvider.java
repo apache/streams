@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Instagram {@link org.apache.streams.core.StreamsProvider} that provides the recent media data for a group of users
  */
-public abstract class InstagramAbstractProvider<T> implements StreamsProvider {
+public abstract class InstagramAbstractProvider implements StreamsProvider {
 
     protected InstagramConfiguration config;
     private InstagramDataCollector dataCollector;

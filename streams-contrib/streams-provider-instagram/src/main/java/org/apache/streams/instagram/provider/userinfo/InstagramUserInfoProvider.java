@@ -14,69 +14,25 @@ specific language governing permissions and limitations
 under the License. */
 package org.apache.streams.instagram.provider.userinfo;
 
-import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.StreamsProvider;
-import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.instagram.InstagramConfiguration;
-import org.apache.streams.instagram.InstagramConfigurator;
-import org.apache.streams.util.SerializationUtil;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.math.BigInteger;
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.apache.streams.instagram.provider.InstagramAbstractProvider;
+import org.apache.streams.instagram.provider.InstagramDataCollector;
 
 /**
  *
  */
-public class InstagramUserInfoProvider implements StreamsProvider {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoProvider.class);
-
-    private InstagramConfiguration config;
-    private AtomicBoolean isComplete;
+public class InstagramUserInfoProvider extends InstagramAbstractProvider {
 
     public InstagramUserInfoProvider() {
-        this.config = InstagramConfigurator.detectInstagramConfiguration(StreamsConfigurator.config.getConfig("instagram"));
+        super();
     }
 
     public InstagramUserInfoProvider(InstagramConfiguration config) {
-        this.config = SerializationUtil.cloneBySerialization(config);
+        super(config);
     }
 
     @Override
-    public void startStream() {
-
-    }
-
-    @Override
-    public StreamsResultSet readCurrent() {
-        return null;
-    }
-
-    @Override
-    public StreamsResultSet readNew(BigInteger sequence) {
-        return null;
-    }
-
-    @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return null;
-    }
-
-    @Override
-    public boolean isRunning() {
-        return this.isComplete.get();
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-        this.isComplete = new AtomicBoolean(false);
-    }
-
-    @Override
-    public void cleanUp() {
-
+    protected InstagramDataCollector getInstagramDataCollector() {
+        return new InstagramUserInfoCollector(super.dataQueue, super.config);
     }
 }
