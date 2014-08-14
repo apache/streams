@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Instagram {@link org.apache.streams.core.StreamsProvider} that provides the recent media data for a group of users
+ * Instagram {@link org.apache.streams.core.StreamsProvider} that provides Instagram data for a group of users
  */
 public abstract class InstagramAbstractProvider implements StreamsProvider {
 
@@ -104,11 +104,8 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
 
     @Override
     public void cleanUp() {
-        this.executorService.shutdown();
         try {
-            this.executorService.awaitTermination(5, TimeUnit.SECONDS);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
+            ComponentUtils.shutdownExecutor(this.executorService, 5, 5);
         } finally {
             this.executorService = null;
         }

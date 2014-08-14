@@ -30,7 +30,8 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- *
+ * InstagramDataCollector that pulls UserInfoData from Instagram
+ * @see org.apache.streams.instagram.provider.InstagramDataCollector
  */
 public class InstagramUserInfoCollector extends InstagramDataCollector<UserInfoData>{
 

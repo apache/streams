@@ -37,7 +37,7 @@ import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Executes on all of the Instagram requests to collect the media feed data.
+ * Executes on all of the Instagram requests to collect the Instagram data.
  * <p/>
  * If errors/exceptions occur when trying to gather data for a particular user, that user is skipped and the collector
  * move on to the next user.  If a rate limit exception occurs it employs an exponential back off strategy.
@@ -106,7 +106,7 @@ public abstract class InstagramDataCollector<T> implements Runnable {
     }
 
     /**
-     * @return true when the collector has queued all of the available media feed data for the provided users.
+     * @return true when the collector has queued all of the available Instagram data for the provided users.
      */
     public boolean isCompleted() {
         return this.isCompleted.get();

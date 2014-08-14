@@ -19,7 +19,8 @@ import org.apache.streams.instagram.provider.InstagramAbstractProvider;
 import org.apache.streams.instagram.provider.InstagramDataCollector;
 
 /**
- *
+ * Instagram provider that pulls UserInfoData from Instagram
+ * @see org.apache.streams.instagram.provider.InstagramAbstractProvider
  */
 public class InstagramUserInfoProvider extends InstagramAbstractProvider {
 
