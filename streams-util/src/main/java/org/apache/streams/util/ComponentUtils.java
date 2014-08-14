@@ -94,6 +94,7 @@ public class ComponentUtils {
         stream.shutdown();
         try {
             if (!stream.awaitTermination(initialWait, TimeUnit.SECONDS)) {
+                stream.shutdownNow();
                 if (!stream.awaitTermination(secondaryWait, TimeUnit.SECONDS)) {
                     LOGGER.error("Executor Service did not terminate");
                 }
