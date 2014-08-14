@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class InstagramAbstractProvider<T> implements StreamsProvider {
 
-    private InstagramConfiguration config;
+    protected InstagramConfiguration config;
     private InstagramDataCollector dataCollector;
     protected Queue<StreamsDatum> dataQueue; //exposed for testing
     private ExecutorService executorService;
@@ -54,7 +54,7 @@ public abstract class InstagramAbstractProvider<T> implements StreamsProvider {
     }
 
     public InstagramAbstractProvider(InstagramConfiguration config) {
-        this.config = (InstagramConfiguration) SerializationUtil.cloneBySerialization(config);
+        this.config = SerializationUtil.cloneBySerialization(config);
     }
 
     @Override

@@ -82,6 +82,19 @@ public abstract class InstagramDataCollector<T> implements Runnable {
         return this.instagram;
     }
 
+    /**
+     * Return the number of available tokens for this data collector
+     * @return numbeer of available tokens
+     */
+    protected int numAvailableTokens() {
+        return this.tokenManger.numAvailableTokens();
+    }
+
+    /**
+     * Queues the Instagram data to be output by the provider.
+     * @param userData data to queue
+     * @param userId user id who the data came from
+     */
     protected void queueData(Collection<T> userData, String userId) {
         if (userData == null) {
             LOGGER.warn("User id, {}, returned a NULL data from instagram.", userId);
@@ -101,12 +114,13 @@ public abstract class InstagramDataCollector<T> implements Runnable {
 
     @Override
     public void run() {
-        try {
-            for (User user : this.config.getUsersInfo().getUsers()) {
+        for (User user : this.config.getUsersInfo().getUsers()) {
+            try {
                 collectInstagramDataForUser(user);
+            } catch (Exception e) {
+                LOGGER.error("Exception thrown while polling for user, {}, skipping user.", user.getUserId());
+                LOGGER.error("Exception thrown while polling for user : ", e);
             }
-        } catch (Exception e) {
-            LOGGER.error("Shutting down InstagramCollector. Exception occured: {}", e.getMessage());
         }
         this.isCompleted.set(true);
     }
@@ -116,7 +130,7 @@ public abstract class InstagramDataCollector<T> implements Runnable {
      * @param user
      * @throws Exception
      */
-    protected abstract void collectInstagramDataForUser(User user);
+    protected abstract void collectInstagramDataForUser(User user) throws Exception;
 
     /**
      * Takes an Instagram Object and sets it as the document of a streams datum and sets the id of the streams datum.

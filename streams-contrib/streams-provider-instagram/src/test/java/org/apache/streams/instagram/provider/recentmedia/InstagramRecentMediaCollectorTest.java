@@ -19,6 +19,7 @@ import com.carrotsearch.randomizedtesting.annotations.Repeat;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.instagram.InstagramConfiguration;
 import org.apache.streams.instagram.User;
 import org.apache.streams.instagram.UsersInfo;
@@ -58,7 +59,7 @@ public class InstagramRecentMediaCollectorTest extends RandomizedTest {
     @Repeat(iterations = 3)
     public void testRun() {
         this.expectedDataCount = 0;
-        Queue<MediaFeedData> data = Queues.newConcurrentLinkedQueue();
+        Queue<StreamsDatum> data = Queues.newConcurrentLinkedQueue();
         InstagramConfiguration config = new InstagramConfiguration();
         UsersInfo usersInfo = new UsersInfo();
         config.setUsersInfo(usersInfo);
