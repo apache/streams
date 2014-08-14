@@ -45,7 +45,9 @@ public class FacebookStreamConfigurator {
             facebookOAuthConfiguration.setAppId(oauth.getString("appId"));
 
             facebookUserInformationConfiguration.setOauth(facebookOAuthConfiguration);
-        } catch( ConfigException ce ) {}
+        } catch( ConfigException ce ) {
+            LOGGER.error("Exception while extracting Facebook oauth token: {}", ce.getMessage());
+        }
 
         return facebookUserInformationConfiguration;
     }
