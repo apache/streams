@@ -15,6 +15,7 @@ under the License. */
 package org.apache.streams.instagram.provider;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.instagram.InstagramConfiguration;
 import org.apache.streams.instagram.User;
 import org.apache.streams.util.ComponentUtils;
@@ -31,6 +32,7 @@ import org.jinstagram.exceptions.InstagramRateLimitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -40,22 +42,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * If errors/exceptions occur when trying to gather data for a particular user, that user is skipped and the collector
  * move on to the next user.  If a rate limit exception occurs it employs an exponential back off strategy.
  */
-public class InstagramRecentMediaCollector implements Runnable {
+public abstract class InstagramDataCollector<T> implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstagramRecentMediaCollector.class);
-    protected static final int MAX_ATTEMPTS = 5;
-    protected static final int SLEEP_SECS = 5; //5 seconds
+    private static final Logger LOGGER = LoggerFactory.getLogger(InstagramDataCollector.class);
 
-    protected Queue<MediaFeedData> dataQueue; //exposed for testing
+    protected Queue<StreamsDatum> dataQueue; //exposed for testing
     private InstagramConfiguration config;
     private AtomicBoolean isCompleted;
     private SimpleTokenManager<InstagramOauthToken> tokenManger;
-    private int consecutiveErrorCount;
-    private BackOffStrategy backOffStrategy;
+    protected int consecutiveErrorCount;
+    protected BackOffStrategy backOffStrategy;
     private Instagram instagram;
 
 
-    public InstagramRecentMediaCollector(Queue<MediaFeedData> queue, InstagramConfiguration config) {
+    public InstagramDataCollector(Queue<StreamsDatum> queue, InstagramConfiguration config) {
         this.dataQueue = queue;
         this.config = config;
         this.isCompleted = new AtomicBoolean(false);
@@ -75,7 +75,6 @@ public class InstagramRecentMediaCollector implements Runnable {
      * initialized in the constructor with client id.
      * @return
      */
-    @VisibleForTesting
     protected Instagram getNextInstagramClient() {
         if(this.tokenManger.numAvailableTokens() > 0) {
             this.instagram.setAccessToken(this.tokenManger.getNextAvailableToken());
@@ -83,12 +82,12 @@ public class InstagramRecentMediaCollector implements Runnable {
         return this.instagram;
     }
 
-    private void queueData(MediaFeed userFeed, String userId) {
-        if (userFeed == null) {
-            LOGGER.warn("User id, {}, returned a NULL media feed from instagram.", userId);
+    protected void queueData(Collection<T> userData, String userId) {
+        if (userData == null) {
+            LOGGER.warn("User id, {}, returned a NULL data from instagram.", userId);
         } else {
-            for (MediaFeedData data : userFeed.getData()) {
-                ComponentUtils.offerUntilSuccess(data, this.dataQueue);
+            for (T data : userData) {
+                ComponentUtils.offerUntilSuccess(convertToStreamsDatum(data), this.dataQueue);
             }
         }
     }
@@ -104,7 +103,7 @@ public class InstagramRecentMediaCollector implements Runnable {
     public void run() {
         try {
             for (User user : this.config.getUsersInfo().getUsers()) {
-                collectMediaFeed(user);
+                collectInstagramDataForUser(user);
             }
         } catch (Exception e) {
             LOGGER.error("Shutting down InstagramCollector. Exception occured: {}", e.getMessage());
@@ -113,59 +112,18 @@ public class InstagramRecentMediaCollector implements Runnable {
     }
 
     /**
-     * Pull Recement Media for a user and queues the resulting data. Will try a single call 5 times before failing and
-     * moving on to the next call or returning.
+     * Pull instagram data for a user and queues the resulting data.
      * @param user
      * @throws Exception
      */
-    @VisibleForTesting
-    protected void collectMediaFeed(User user) throws Exception {
-        Pagination pagination = null;
-        do {
-            int attempts = 0;
-            boolean succesfullDataPull = false;
-            while (!succesfullDataPull && attempts < MAX_ATTEMPTS) {
-                ++attempts;
-                MediaFeed feed = null;
-                try {
-                    if (pagination == null) {
-                        feed = getNextInstagramClient().getRecentMediaFeed(Long.valueOf(user.getUserId()),
-                                0,
-                                null,
-                                null,
-                                user.getBeforeDate() == null ? null : user.getBeforeDate().toDate(),
-                                user.getAfterDate() == null ? null : user.getAfterDate().toDate());
-                    } else {
-                        feed = getNextInstagramClient().getRecentMediaNextPage(pagination);
-                    }
-                } catch (Exception e) {
-                    if(e instanceof InstagramRateLimitException) {
-                        LOGGER.warn("Received rate limit exception from Instagram, backing off. : {}", e);
-                        this.backOffStrategy.backOff();
-                    } else if(e instanceof InstagramBadRequestException) {
-                        LOGGER.error("Received Bad Requests exception form Instagram: {}", e);
-                        attempts = MAX_ATTEMPTS; //don't repeat bad requests.
-                        ++this.consecutiveErrorCount;
-                    } else {
-                        LOGGER.error("Received Expection while attempting to poll Instagram: {}", e);
-                        ++this.consecutiveErrorCount;
-                    }
-                    if(this.consecutiveErrorCount > Math.max(this.tokenManger.numAvailableTokens(), MAX_ATTEMPTS*2)) {
-                        throw new Exception("InstagramCollector failed to successfully connect to instagram on "+this.consecutiveErrorCount+" attempts.");
-                    }
-                }
-                if(succesfullDataPull = feed != null) {
-                    this.consecutiveErrorCount = 0;
-                    this.backOffStrategy.reset();
-                    pagination = feed.getPagination();
-                    queueData(feed, user.getUserId());
-                }
-            }
-            if(!succesfullDataPull) {
-                LOGGER.error("Failed to get data from instagram for user id, {}, skipping user.", user.getUserId());
-            }
-        } while (pagination != null && pagination.hasNextPage());
-    }
+    protected abstract void collectInstagramDataForUser(User user);
+
+    /**
+     * Takes an Instagram Object and sets it as the document of a streams datum and sets the id of the streams datum.
+     * @param item
+     * @return
+     */
+    protected abstract StreamsDatum convertToStreamsDatum(T item);
 
 
 }

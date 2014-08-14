@@ -12,15 +12,12 @@ software distributed under the License is distributed on an
 KIND, either express or implied. See the License for the
 specific language governing permissions and limitations
 under the License. */
-package org.apache.streams.instagram.provider;
+package org.apache.streams.instagram.provider.recentmedia;
 
-import com.google.common.collect.Sets;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.instagram.InstagramConfiguration;
-import org.apache.streams.instagram.InstagramUserInformationConfiguration;
 import org.apache.streams.instagram.User;
 import org.apache.streams.instagram.UsersInfo;
-import org.jinstagram.InstagramConfig;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.junit.Test;
 import org.slf4j.Logger;

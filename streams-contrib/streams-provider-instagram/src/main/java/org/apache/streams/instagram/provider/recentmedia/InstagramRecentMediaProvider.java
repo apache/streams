@@ -12,7 +12,7 @@ software distributed under the License is distributed on an
 KIND, either express or implied. See the License for the
 specific language governing permissions and limitations
 under the License. */
-package org.apache.streams.instagram.provider;
+package org.apache.streams.instagram.provider.recentmedia;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Queues;
@@ -22,9 +22,9 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.instagram.*;
+import org.apache.streams.instagram.provider.recentmedia.InstagramRecentMediaCollector;
 import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.SerializationUtil;
-import org.jinstagram.auth.model.Token;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.joda.time.DateTime;
 
