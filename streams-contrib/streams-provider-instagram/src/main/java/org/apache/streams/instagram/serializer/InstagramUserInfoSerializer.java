@@ -11,6 +11,8 @@ import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
 import org.jinstagram.entity.users.basicinfo.UserInfoData;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -46,7 +48,7 @@ public class InstagramUserInfoSerializer implements ActivitySerializer<UserInfoD
         provider.setId(PROVIDER_ID);
         provider.setDisplayName(DISPLAY_NAME);
         activity.setProvider(provider);
-
+        activity.setPublished(DateTime.now().withZone(DateTimeZone.UTC));
         Actor actor = new Actor();
         Image image = new Image();
         image.setUrl(serialized.getProfile_picture());
