@@ -42,7 +42,7 @@ public class FacebookActivityActorSerDeTest {
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Test
-    public void Tests()
+    public void Tests() throws Exception
     {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
@@ -53,20 +53,13 @@ public class FacebookActivityActorSerDeTest {
         is = new BoundedInputStream(is, 10000);
         String json;
 
-        try {
-            json = joiner.join(IOUtils.readLines(is));
-            LOGGER.debug(json);
+        json = joiner.join(IOUtils.readLines(is));
+        LOGGER.debug(json);
 
-            Page page = mapper.readValue(json, Page.class);
+        Page page = mapper.readValue(json, Page.class);
 
-            Activity activity = serializer.deserialize(page);
+        Activity activity = serializer.deserialize(page);
 
-            LOGGER.debug(mapper.writeValueAsString(activity));
-
-        } catch( Exception e ) {
-            System.out.println(e);
-            e.printStackTrace();
-            Assert.fail();
-        }
+        LOGGER.debug(mapper.writeValueAsString(activity));
     }
 }

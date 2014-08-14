@@ -27,8 +27,12 @@ import java.io.IOException;
 import org.apache.streams.facebook.Page;
 import org.apache.streams.facebook.Post;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FacebookEventClassifier {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(FacebookEventClassifier.class);
 
     public static Class detectClass( String json ) {
 
@@ -39,7 +43,7 @@ public class FacebookEventClassifier {
         try {
             objectNode = (ObjectNode) StreamsJacksonMapper.getInstance().readTree(json);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Exception while trying to detect class: {}", e.getMessage());
             return null;
         }
 

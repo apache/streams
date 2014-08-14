@@ -23,6 +23,8 @@ import org.apache.streams.facebook.Post;
 import org.apache.streams.facebook.provider.FacebookEventClassifier;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class FacebookEventClassifierTest {
     private String empty = "";
     private String def = "{}";
@@ -38,18 +40,18 @@ public class FacebookEventClassifierTest {
     @Test
     public void defaultDetectTest() {
         Class inClass = FacebookEventClassifier.detectClass(post);
-        assert(inClass.equals(Post.class));
+        assertEquals(inClass, Post.class);
     }
 
     @Test
     public void postDetectTest() {
         Class inClass = FacebookEventClassifier.detectClass(post);
-        assert(inClass.equals(Post.class));
+        assertEquals(inClass, Post.class);
     }
 
     @Test
     public void pageDetectTest() {
         Class inClass = FacebookEventClassifier.detectClass(page);
-        assert(inClass.equals(Page.class));
+        assertEquals(inClass, Page.class);
     }
 }
