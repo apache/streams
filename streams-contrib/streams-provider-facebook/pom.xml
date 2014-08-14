@@ -63,6 +63,7 @@
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
+
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <resources>
             <resource>
@@ -105,6 +106,7 @@
                         <sourcePath>src/main/jsonschema/org/apache/streams/facebook/FacebookUserInformationConfiguration.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/facebook/FacebookUserstreamConfiguration.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/facebook/graph/Post.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/facebook/Page.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>com.facebook</targetPackage>
