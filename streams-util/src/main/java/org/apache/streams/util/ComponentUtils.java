@@ -32,8 +32,15 @@ import java.util.concurrent.TimeUnit;
 public class ComponentUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ComponentUtils.class);
 
+    /**
+     * Certain types of queues will fail to {@link java.util.Queue#offer(Object)} an item due to many factors
+     * depending on the type of queue. <code>offerUntilSuccess</code> will not return until the item has been
+     * successfully queued onto the desired queue
+     * @param entry item to queue
+     * @param queue queue to add the entry to
+     * @param <T>
+     */
     public static <T> void offerUntilSuccess(T entry, Queue<T> queue) {
-
         boolean success;
         do {
             success = queue.offer(entry);
@@ -41,6 +48,24 @@ public class ComponentUtils {
         }
         while( !success );
     }
+
+    /**
+     * Certain types of queues will return null when calling {@link java.util.Queue#poll()} due to many factors depending
+     * on the type of queue.  <code>pollWhileNotEmpty</code> will poll the queue until an item from the queue is returned
+     * or the queue is empty.  If the queue is empty it will return NULL.
+     * @param queue
+     * @param <T>
+     * @return
+     */
+    public static <T> T pollWhileNotEmpty(Queue<T> queue) {
+        T item = queue.poll();
+        while(!queue.isEmpty() && item == null) {
+            Thread.yield();
+            item = queue.poll();
+        }
+        return item;
+    }
+
 
     public static String pollUntilStringNotEmpty(Queue queue) {
 
@@ -58,21 +83,24 @@ public class ComponentUtils {
         return result;
     }
 
+    /**
+     * Attempts to safely {@link java.util.concurrent.ExecutorService#shutdown()} and {@link java.util.concurrent.ExecutorService#awaitTermination(long, java.util.concurrent.TimeUnit)}
+     * of an {@link java.util.concurrent.ExecutorService}.
+     * @param stream service to be shutdown
+     * @param initialWait time in seconds to wait for currently running threads to finish execution
+     * @param secondaryWait time in seconds to wait for running threads that did not terminate in the first wait to acknowledge their forced termination
+     */
     public static void shutdownExecutor(ExecutorService stream, int initialWait, int secondaryWait) {
-        stream.shutdown(); // Disable new tasks from being submitted
+        stream.shutdown();
         try {
-            // Wait a while for existing tasks to terminate
             if (!stream.awaitTermination(initialWait, TimeUnit.SECONDS)) {
-                stream.shutdownNow(); // Cancel currently executing tasks
-                // Wait a while for tasks to respond to being cancelled
+                stream.shutdownNow();
                 if (!stream.awaitTermination(secondaryWait, TimeUnit.SECONDS)) {
                     LOGGER.error("Executor Service did not terminate");
                 }
             }
         } catch (InterruptedException ie) {
-            // (Re-)Cancel if current thread also interrupted
             stream.shutdownNow();
-            // Preserve interrupt status
             Thread.currentThread().interrupt();
         }
     }
