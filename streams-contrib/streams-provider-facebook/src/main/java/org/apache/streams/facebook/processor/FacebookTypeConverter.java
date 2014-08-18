@@ -24,11 +24,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
+import org.apache.streams.facebook.Page;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.facebook.Post;
+import org.apache.streams.facebook.api.FacebookPageActivitySerializer;
 import org.apache.streams.facebook.api.FacebookPostActivitySerializer;
+import org.apache.streams.facebook.provider.FacebookEventClassifier;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
@@ -38,12 +41,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Queue;
 
-/**
- * Created by sblackmon on 12/10/13.
- */
 public class FacebookTypeConverter implements StreamsProcessor {
 
-    public final static String STREAMS_ID = "TwitterTypeConverter";
+    public final static String STREAMS_ID = "FacebookTypeConverter";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FacebookTypeConverter.class);
 
@@ -56,6 +56,7 @@ public class FacebookTypeConverter implements StreamsProcessor {
     private Class outClass;
 
     private FacebookPostActivitySerializer facebookPostActivitySerializer;
+    private FacebookPageActivitySerializer facebookPageActivitySerializer;
 
     private int count = 0;
 
@@ -80,10 +81,19 @@ public class FacebookTypeConverter implements StreamsProcessor {
 
         if( outClass.equals( Activity.class )) {
             LOGGER.debug("ACTIVITY");
-            result = facebookPostActivitySerializer.deserialize(mapper.convertValue(event, Post.class));
+            if(inClass.equals(Post.class)) {
+                LOGGER.debug("POST");
+                result = facebookPostActivitySerializer.deserialize(mapper.convertValue(event, Post.class));
+            } else if(inClass.equals(Page.class)) {
+                LOGGER.debug("PAGE");
+                result = facebookPageActivitySerializer.deserialize(mapper.convertValue(event, Page.class));
+            }
         } else if( outClass.equals( Post.class )) {
             LOGGER.debug("POST");
             result = mapper.convertValue(event, Post.class);
+        } else if( outClass.equals(Page.class)) {
+            LOGGER.debug("PAGE");
+            result = mapper.convertValue(event, Page.class);
         } else if( outClass.equals( ObjectNode.class )) {
             LOGGER.debug("OBJECTNODE");
             result = mapper.convertValue(event, ObjectNode.class);
@@ -98,7 +108,6 @@ public class FacebookTypeConverter implements StreamsProcessor {
         LOGGER.debug("CONVERT FAILED");
 
         return null;
-
     }
 
     public boolean validate(Object document, Class klass) {
@@ -130,7 +139,6 @@ public class FacebookTypeConverter implements StreamsProcessor {
         StreamsDatum result = null;
 
         try {
-
             Object item = entry.getDocument();
             ObjectNode node;
 
@@ -148,28 +156,26 @@ public class FacebookTypeConverter implements StreamsProcessor {
 
                     // since data is coming from outside provider, we don't know what type the events are
                     // for now we'll assume post
+                    Class inClass = FacebookEventClassifier.detectClass((String) item);
 
-                    Object out = convert(node, Post.class, outClass);
+                    Object out = convert(node, inClass, outClass);
 
                     if( out != null && validate(out, outClass))
                         result = new StreamsDatum(out);
                 }
 
-            } else if( item instanceof ObjectNode || item instanceof Post) {
+            } else if( item instanceof ObjectNode) {
 
                 // first check for valid json
                 node = (ObjectNode)mapper.valueToTree(item);
 
-                // since data is coming from outside provider, we don't know what type the events are
-                // for now we'll assume post
+                Class inClass = FacebookEventClassifier.detectClass(mapper.writeValueAsString(item));
 
-                Object out = convert(node, Post.class, outClass);
+                Object out = convert(node, inClass, outClass);
 
                 if( out != null && validate(out, outClass))
                     result = new StreamsDatum(out);
-
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -183,12 +189,11 @@ public class FacebookTypeConverter implements StreamsProcessor {
     @Override
     public void prepare(Object o) {
         mapper = new StreamsJacksonMapper();
+
+        facebookPageActivitySerializer = new FacebookPageActivitySerializer();
         facebookPostActivitySerializer = new FacebookPostActivitySerializer();
     }
 
     @Override
-    public void cleanUp() {
-
-    }
-
+    public void cleanUp() {}
 }
