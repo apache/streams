@@ -43,6 +43,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class InstagramAbstractProvider implements StreamsProvider {
 
+    private static final int MAX_BATCH_SIZE = 2000;
+
     protected InstagramConfiguration config;
     private InstagramDataCollector dataCollector;
     protected Queue<StreamsDatum> dataQueue; //exposed for testing
@@ -74,8 +76,10 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
     @Override
     public StreamsResultSet readCurrent() {
         Queue<StreamsDatum> batch = Queues.newConcurrentLinkedQueue();
-        while(!this.dataQueue.isEmpty()) {
+        int count = 0;
+        while(!this.dataQueue.isEmpty() && count < MAX_BATCH_SIZE) {
             ComponentUtils.offerUntilSuccess(ComponentUtils.pollWhileNotEmpty(this.dataQueue), batch);
+            ++count;
         }
         this.isCompleted.set(batch.size() == 0 && this.dataQueue.isEmpty() && this.dataCollector.isCompleted());
         return new StreamsResultSet(batch);
