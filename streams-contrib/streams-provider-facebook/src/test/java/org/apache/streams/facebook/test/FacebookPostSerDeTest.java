@@ -45,7 +45,6 @@ public class FacebookPostSerDeTest {
     private final static Logger LOGGER = LoggerFactory.getLogger(FacebookPostSerDeTest.class);
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    @Ignore
     @Test
     public void Tests()
     {

@@ -18,26 +18,24 @@
 
 package org.apache.streams.facebook.test;
 
-import org.apache.streams.facebook.api.FacebookPostActivitySerializer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
-import org.apache.streams.facebook.Post;
+import org.apache.streams.facebook.Page;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 
-public class FacebookActivitySerDeTest {
+public class FacebookPageSerDeTest {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FacebookActivitySerDeTest.class);
-    private FacebookPostActivitySerializer serializer = new FacebookPostActivitySerializer();
+    private final static Logger LOGGER = LoggerFactory.getLogger(FacebookPostSerDeTest.class);
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Test
@@ -47,7 +45,7 @@ public class FacebookActivitySerDeTest {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-        InputStream is = FacebookActivitySerDeTest.class.getResourceAsStream("/testpost.json");
+        InputStream is = FacebookPostSerDeTest.class.getResourceAsStream("/testpage.json");
         Joiner joiner = Joiner.on(" ").skipNulls();
         is = new BoundedInputStream(is, 10000);
         String json;
@@ -56,11 +54,17 @@ public class FacebookActivitySerDeTest {
             json = joiner.join(IOUtils.readLines(is));
             LOGGER.debug(json);
 
-            Post post = mapper.readValue(json, Post.class);
+            Page ser = mapper.readValue(json, Page.class);
 
-            Activity activity = serializer.deserialize(post);
+            String de = mapper.writeValueAsString(ser);
 
-            LOGGER.debug(mapper.writeValueAsString(activity));
+            LOGGER.debug(de);
+
+            Page serde = mapper.readValue(de, Page.class);
+
+            Assert.assertEquals(ser, serde);
+
+            LOGGER.debug(mapper.writeValueAsString(serde));
 
         } catch( Exception e ) {
             System.out.println(e);

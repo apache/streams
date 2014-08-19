@@ -14,13 +14,19 @@ specific language governing permissions and limitations
 under the License. */
 package org.apache.streams.instagram.provider;
 
+import com.google.common.collect.Sets;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.instagram.InstagramConfiguration;
 import org.apache.streams.instagram.InstagramUserInformationConfiguration;
+import org.apache.streams.instagram.User;
+import org.apache.streams.instagram.UsersInfo;
+import org.jinstagram.InstagramConfig;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -41,7 +47,7 @@ public class InstagramRecentMediaProviderTest {
     @Test
     public void testStartStream() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final InstagramRecentMediaCollector collectorStub = new InstagramRecentMediaCollector(new ConcurrentLinkedQueue<MediaFeedData>(), new InstagramUserInformationConfiguration()) {
+        final InstagramRecentMediaCollector collectorStub = new InstagramRecentMediaCollector(new ConcurrentLinkedQueue<MediaFeedData>(), createNonNullConfiguration()) {
 
             private volatile boolean isFinished = false;
 
@@ -87,10 +93,10 @@ public class InstagramRecentMediaProviderTest {
         final CyclicBarrier test = new CyclicBarrier(2);
         final CyclicBarrier produce = new CyclicBarrier(2);
         final AtomicInteger batchCount = new AtomicInteger(0);
-        InstagramRecentMediaProvider provider = new InstagramRecentMediaProvider(new InstagramUserInformationConfiguration()) {
+        InstagramRecentMediaProvider provider = new InstagramRecentMediaProvider(createNonNullConfiguration()) {
             @Override
             protected InstagramRecentMediaCollector getInstagramRecentMediaCollector() {
-                return new InstagramRecentMediaCollector(super.mediaFeedQueue, new InstagramUserInformationConfiguration()) {
+                return new InstagramRecentMediaCollector(super.mediaFeedQueue, createNonNullConfiguration()) {
 
                     private volatile boolean isFinished = false;
 
@@ -155,6 +161,15 @@ public class InstagramRecentMediaProviderTest {
             }
 
         }
+    }
+
+    private InstagramConfiguration createNonNullConfiguration() {
+        InstagramConfiguration configuration = new InstagramConfiguration();
+        UsersInfo info = new UsersInfo();
+        configuration.setUsersInfo(info);
+        info.setUsers(new HashSet<User>());
+        info.setAuthorizedTokens(new HashSet<String>());
+        return configuration;
     }
 
 }
