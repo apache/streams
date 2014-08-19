@@ -152,6 +152,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 .or(config.getType());
         String id = (String) streamsDatum.getMetadata().get("id");
 
+        if(id == null)
+            id = streamsDatum.getId();
+
         try {
             add(index, type, id,
                     streamsDatum.getTimestamp() == null ? Long.toString(DateTime.now().getMillis()) : Long.toString(streamsDatum.getTimestamp().getMillis()),
