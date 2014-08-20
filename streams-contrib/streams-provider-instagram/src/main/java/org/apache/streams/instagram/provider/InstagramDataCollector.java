@@ -117,6 +117,8 @@ public abstract class InstagramDataCollector<T> implements Runnable {
         for (User user : this.config.getUsersInfo().getUsers()) {
             try {
                 collectInstagramDataForUser(user);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
             } catch (Exception e) {
                 LOGGER.error("Exception thrown while polling for user, {}, skipping user.", user.getUserId());
                 LOGGER.error("Exception thrown while polling for user : ", e);
