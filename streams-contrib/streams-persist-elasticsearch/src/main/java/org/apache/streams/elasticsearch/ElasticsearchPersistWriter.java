@@ -146,14 +146,18 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         String index = Optional.fromNullable(
                 (String) streamsDatum.getMetadata().get("index"))
-                .or(config.getIndex());
+                .or("");
         String type = Optional.fromNullable(
                 (String) streamsDatum.getMetadata().get("type"))
                 .or(config.getType());
-        String id = (String) streamsDatum.getMetadata().get("id");
+        String id = Optional.fromNullable(
+                (String) streamsDatum.getMetadata().get("id"))
+                .or(streamsDatum.getId());
 
-        if(id == null)
-            id = streamsDatum.getId();
+        if(config.getForceUseConfig()) {
+            index = config.getIndex();
+            type = config.getType();
+        }
 
         try {
             add(index, type, id,
