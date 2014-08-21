@@ -150,10 +150,10 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 (String) streamsDatum.getMetadata().get("id"))
                 .or(streamsDatum.getId());
 
-        if(index == null || config.getForceUseConfig()) {
+        if(index == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
             index = config.getIndex();
         }
-        if(type == null || config.getForceUseConfig()) {
+        if(type == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
             type = config.getType();
         }
 
