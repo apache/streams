@@ -1,4 +1,4 @@
-package org.apache.streams.datasift.processor;
+package org.apache.streams.jackson;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * HACK PROCESSOR.  Changes need to be made in apache streams to fix this issue long term.
+ * This processor walks an input objectnode and corrects any artifacts
+ * that may have occured from improper serialization of jsonschema2pojo beans.
+ *
+ * The logic is also available for inclusion in other module via static import.
  */
 public class CleanAdditionalPropertiesProcessor implements StreamsProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CleanAdditionalPropertiesProcessor.class);
-
-    private static final String ADDITIONAL_PROPERTIES = "additionalProperties";
-    private static final String EXTENSIONS = "extensions";
 
     private ObjectMapper mapper;
 

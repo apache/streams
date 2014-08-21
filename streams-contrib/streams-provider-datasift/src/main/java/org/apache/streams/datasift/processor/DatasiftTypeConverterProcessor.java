@@ -28,6 +28,7 @@ import org.apache.streams.datasift.provider.DatasiftConverter;
 import org.apache.streams.datasift.serializer.DatasiftActivitySerializer;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.jackson.CleanAdditionalPropertiesProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
