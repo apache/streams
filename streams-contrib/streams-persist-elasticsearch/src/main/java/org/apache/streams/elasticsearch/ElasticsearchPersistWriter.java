@@ -144,18 +144,16 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         checkForBackOff();
 
-        String index = Optional.fromNullable(
-                (String) streamsDatum.getMetadata().get("index"))
-                .or("");
-        String type = Optional.fromNullable(
-                (String) streamsDatum.getMetadata().get("type"))
-                .or(config.getType());
+        String index = (String) streamsDatum.getMetadata().get("index");
+        String type = (String) streamsDatum.getMetadata().get("type");
         String id = Optional.fromNullable(
                 (String) streamsDatum.getMetadata().get("id"))
                 .or(streamsDatum.getId());
 
-        if(config.getForceUseConfig()) {
+        if(index == null || config.getForceUseConfig()) {
             index = config.getIndex();
+        }
+        if(type == null || config.getForceUseConfig()) {
             type = config.getType();
         }
 
