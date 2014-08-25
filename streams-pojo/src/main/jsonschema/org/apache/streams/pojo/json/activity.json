@@ -8,8 +8,7 @@
   "properties": {
     "id" :{
       "type" : "string",
-      "description" : "Uniquely identifies each activity within the service",
-      "default" :"{url}"
+      "description" : "Uniquely identifies each activity within the service"
     },
     "actor" : {
       "type": "object",
