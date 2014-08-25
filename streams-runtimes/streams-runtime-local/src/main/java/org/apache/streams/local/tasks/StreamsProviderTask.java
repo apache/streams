@@ -19,6 +19,7 @@
 package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.*;
+import org.apache.streams.core.util.DatumUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -203,6 +204,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                     statusCounter.incrementStatus(DatumStatus.SUCCESS);
                 } catch( Exception e ) {
                     statusCounter.incrementStatus(DatumStatus.FAIL);
+                    DatumUtils.addErrorToMetadata(datum, e, this.provider.getClass());
                 }
             }
             else {
