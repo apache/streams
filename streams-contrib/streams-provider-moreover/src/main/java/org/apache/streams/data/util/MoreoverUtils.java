@@ -60,7 +60,7 @@ public class MoreoverUtils {
     }
 
     private static void fixActivityId(Activity activity) {
-        if (activity.getId().matches("\\{[a-z]*\\}")) {
+        if (activity.getId() != null && activity.getId().matches("\\{[a-z]*\\}")) {
             activity.setId(null);
         }
     }
