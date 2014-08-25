@@ -12,15 +12,16 @@ software distributed under the License is distributed on an
 KIND, either express or implied. See the License for the
 specific language governing permissions and limitations
 under the License. */
-package org.apache.streams.instagram.provider.recentmedia;
+package org.apache.streams.instagram.provider;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.Repeat;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
-import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.instagram.InstagramConfiguration;
+import org.apache.streams.instagram.InstagramUserInformationConfiguration;
 import org.apache.streams.instagram.User;
 import org.apache.streams.instagram.UsersInfo;
 import org.jinstagram.Instagram;
@@ -38,13 +39,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link org.apache.streams.instagram.provider.recentmedia.InstagramRecentMediaCollector}
+ * Tests for {@link org.apache.streams.instagram.provider.InstagramRecentMediaCollector}
  */
 public class InstagramRecentMediaCollectorTest extends RandomizedTest {
 
@@ -59,7 +62,7 @@ public class InstagramRecentMediaCollectorTest extends RandomizedTest {
     @Repeat(iterations = 3)
     public void testRun() {
         this.expectedDataCount = 0;
-        Queue<StreamsDatum> data = Queues.newConcurrentLinkedQueue();
+        Queue<MediaFeedData> data = Queues.newConcurrentLinkedQueue();
         InstagramConfiguration config = new InstagramConfiguration();
         UsersInfo usersInfo = new UsersInfo();
         config.setUsersInfo(usersInfo);

@@ -21,10 +21,8 @@ package org.apache.streams.instagram.processor;
 import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.instagram.serializer.InstagramUserInfoSerializer;
 import org.apache.streams.instagram.serializer.util.InstagramActivityUtil;
 import org.apache.streams.pojo.json.Activity;
-import org.jinstagram.entity.users.basicinfo.UserInfoData;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +40,6 @@ public class InstagramTypeConverter implements StreamsProcessor {
     private Queue<StreamsDatum> outQueue;
 
     private InstagramActivityUtil instagramActivityUtil;
-    private InstagramUserInfoSerializer userInfoSerializer;
 
     private int count = 0;
 
@@ -68,21 +65,18 @@ public class InstagramTypeConverter implements StreamsProcessor {
             Object item = entry.getDocument();
 
             LOGGER.debug("{} processing {}", STREAMS_ID, item.getClass());
-            Activity activity = null;
+
             if(item instanceof MediaFeedData) {
                 //We don't need to use the mapper, since we have a process to convert between
                 //MediaFeedData objects and Activity objects already
-                activity = new Activity();
+                Activity activity = new Activity();
 
                 instagramActivityUtil.updateActivity((MediaFeedData)item, activity);
 
-
-            } else if(item instanceof UserInfoData) {
-                activity = this.userInfoSerializer.deserialize((UserInfoData) item );
-            }
-            if(activity != null && activity.getId() != null) {
-                result = new StreamsDatum(activity);
-                count++;
+                if(activity.getId() != null) {
+                    result = new StreamsDatum(activity);
+                    count++;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,7 +92,6 @@ public class InstagramTypeConverter implements StreamsProcessor {
     @Override
     public void prepare(Object o) {
         instagramActivityUtil = new InstagramActivityUtil();
-        this.userInfoSerializer = new InstagramUserInfoSerializer();
     }
 
     @Override

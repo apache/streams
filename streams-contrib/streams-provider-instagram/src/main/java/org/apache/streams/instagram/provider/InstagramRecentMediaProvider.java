@@ -14,18 +14,18 @@ specific language governing permissions and limitations
 under the License. */
 package org.apache.streams.instagram.provider;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
-import org.apache.streams.instagram.InstagramConfiguration;
-import org.apache.streams.instagram.InstagramConfigurator;
-import org.apache.streams.instagram.User;
-import org.apache.streams.instagram.UsersInfo;
+import org.apache.streams.instagram.*;
 import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.SerializationUtil;
+import org.jinstagram.auth.model.Token;
+import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
@@ -39,49 +39,51 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Instagram {@link org.apache.streams.core.StreamsProvider} that provides Instagram data for a group of users
+ * Instagram {@link org.apache.streams.core.StreamsProvider} that provides the recent media data for a group of users
  */
-public abstract class InstagramAbstractProvider implements StreamsProvider {
+public class InstagramRecentMediaProvider implements StreamsProvider {
 
-    private static final int MAX_BATCH_SIZE = 2000;
-
-    protected InstagramConfiguration config;
-    private InstagramDataCollector dataCollector;
-    protected Queue<StreamsDatum> dataQueue; //exposed for testing
+    private InstagramConfiguration config;
+    private InstagramRecentMediaCollector dataCollector;
+    protected Queue<MediaFeedData> mediaFeedQueue; //exposed for testing
     private ExecutorService executorService;
     private AtomicBoolean isCompleted;
 
-    public InstagramAbstractProvider() {
+    public InstagramRecentMediaProvider() {
         this.config = InstagramConfigurator.detectInstagramConfiguration(StreamsConfigurator.config.getConfig("instagram"));
     }
 
-    public InstagramAbstractProvider(InstagramConfiguration config) {
-        this.config = SerializationUtil.cloneBySerialization(config);
+    public InstagramRecentMediaProvider(InstagramConfiguration config) {
+        this.config = (InstagramConfiguration) SerializationUtil.cloneBySerialization(config);
     }
 
     @Override
     public void startStream() {
-        this.dataCollector = getInstagramDataCollector();
+        this.dataCollector = getInstagramRecentMediaCollector();
         this.executorService = Executors.newSingleThreadExecutor();
         this.executorService.submit(this.dataCollector);
     }
 
     /**
-     * Return the data collector to use to connect to instagram.
+     * EXPOSED FOR TESTING
      * @return
      */
-    protected abstract InstagramDataCollector getInstagramDataCollector();
+    @VisibleForTesting
+    protected InstagramRecentMediaCollector getInstagramRecentMediaCollector() {
+        this.updateUserInfoList();
+        return new InstagramRecentMediaCollector(this.mediaFeedQueue, this.config);
+    }
 
 
     @Override
     public StreamsResultSet readCurrent() {
         Queue<StreamsDatum> batch = Queues.newConcurrentLinkedQueue();
-        int count = 0;
-        while(!this.dataQueue.isEmpty() && count < MAX_BATCH_SIZE) {
-            ComponentUtils.offerUntilSuccess(ComponentUtils.pollWhileNotEmpty(this.dataQueue), batch);
-            ++count;
+        MediaFeedData data = null;
+        while(!this.mediaFeedQueue.isEmpty()) {
+            data = ComponentUtils.pollWhileNotEmpty(this.mediaFeedQueue);
+            batch.add(new StreamsDatum(data, data.getId()));
         }
-        this.isCompleted.set(batch.size() == 0 && this.dataQueue.isEmpty() && this.dataCollector.isCompleted());
+        this.isCompleted.set(batch.size() == 0 && this.mediaFeedQueue.isEmpty() && this.dataCollector.isCompleted());
         return new StreamsResultSet(batch);
     }
 
@@ -102,14 +104,17 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
 
     @Override
     public void prepare(Object configurationObject) {
-        this.dataQueue = Queues.newConcurrentLinkedQueue();
+        this.mediaFeedQueue = Queues.newConcurrentLinkedQueue();
         this.isCompleted = new AtomicBoolean(false);
     }
 
     @Override
     public void cleanUp() {
+        this.executorService.shutdown();
         try {
-            ComponentUtils.shutdownExecutor(this.executorService, 5, 5);
+            this.executorService.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
         } finally {
             this.executorService = null;
         }

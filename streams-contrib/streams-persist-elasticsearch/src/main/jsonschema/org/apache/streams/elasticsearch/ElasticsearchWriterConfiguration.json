@@ -40,10 +40,6 @@
             "type": "object",
             "javaInterfaces": ["java.io.Serializable"],
             "description": "Tags to apply during index"
-        },
-         "forceUseConfig": {
-             "type": "boolean",
-             "description": "Whether or not we force the values that are set in the configuration"
-         }
+        }
     }
 }

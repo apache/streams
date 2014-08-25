@@ -62,7 +62,7 @@ public class SerializationUtil {
     }
 
 
-    public static <T> T cloneBySerialization(T obj) {
-        return (T) deserialize(serialize(obj));
+    public static Object cloneBySerialization(Object obj) {
+        return deserialize(serialize(obj));
     }
 }
