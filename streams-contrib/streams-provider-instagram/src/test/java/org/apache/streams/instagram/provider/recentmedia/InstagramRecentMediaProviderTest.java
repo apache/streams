@@ -12,15 +12,14 @@ software distributed under the License is distributed on an
 KIND, either express or implied. See the License for the
 specific language governing permissions and limitations
 under the License. */
-package org.apache.streams.instagram.provider;
+package org.apache.streams.instagram.provider.recentmedia;
 
-import com.google.common.collect.Sets;
+import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.instagram.InstagramConfiguration;
-import org.apache.streams.instagram.InstagramUserInformationConfiguration;
 import org.apache.streams.instagram.User;
 import org.apache.streams.instagram.UsersInfo;
-import org.jinstagram.InstagramConfig;
+import org.apache.streams.instagram.provider.InstagramDataCollector;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -47,7 +46,7 @@ public class InstagramRecentMediaProviderTest {
     @Test
     public void testStartStream() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final InstagramRecentMediaCollector collectorStub = new InstagramRecentMediaCollector(new ConcurrentLinkedQueue<MediaFeedData>(), createNonNullConfiguration()) {
+        final InstagramRecentMediaCollector collectorStub = new InstagramRecentMediaCollector(new ConcurrentLinkedQueue<StreamsDatum>(), createNonNullConfiguration()) {
 
             private volatile boolean isFinished = false;
 
@@ -65,7 +64,7 @@ public class InstagramRecentMediaProviderTest {
 
         InstagramRecentMediaProvider provider = new InstagramRecentMediaProvider(null) {
             @Override
-            protected InstagramRecentMediaCollector getInstagramRecentMediaCollector() {
+            protected InstagramDataCollector getInstagramDataCollector() {
                 return collectorStub;
             }
         };
@@ -93,10 +92,10 @@ public class InstagramRecentMediaProviderTest {
         final CyclicBarrier test = new CyclicBarrier(2);
         final CyclicBarrier produce = new CyclicBarrier(2);
         final AtomicInteger batchCount = new AtomicInteger(0);
-        InstagramRecentMediaProvider provider = new InstagramRecentMediaProvider(createNonNullConfiguration()) {
+        final InstagramRecentMediaProvider provider = new InstagramRecentMediaProvider(createNonNullConfiguration()) {
             @Override
-            protected InstagramRecentMediaCollector getInstagramRecentMediaCollector() {
-                return new InstagramRecentMediaCollector(super.mediaFeedQueue, createNonNullConfiguration()) {
+            protected InstagramDataCollector getInstagramDataCollector() {
+                return new InstagramRecentMediaCollector(this.dataQueue, createNonNullConfiguration()) {
 
                     private volatile boolean isFinished = false;
 
@@ -117,7 +116,7 @@ public class InstagramRecentMediaProviderTest {
                         while(randInt != 0) {
                             int batchSize = rand.nextInt(200);
                             for(int i=0; i < batchSize; ++i) {
-                                while(!super.dataQueue.add(mock(MediaFeedData.class))) {
+                                while(!super.dataQueue.add(new StreamsDatum(null))) {
                                     Thread.yield();
                                 }
                             }
