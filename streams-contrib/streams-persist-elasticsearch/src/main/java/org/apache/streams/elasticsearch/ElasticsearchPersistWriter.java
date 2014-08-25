@@ -146,9 +146,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         String index = (String) streamsDatum.getMetadata().get("index");
         String type = (String) streamsDatum.getMetadata().get("type");
-        String id = Optional.fromNullable(
-                (String) streamsDatum.getMetadata().get("id"))
-                .or(streamsDatum.getId());
+        String id = setId(streamsDatum);
 
         if(index == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
             index = config.getIndex();
@@ -166,6 +164,17 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         }
     }
 
+    private String setId(StreamsDatum streamsDatum) {
+        String id = Optional.fromNullable(
+                (String) streamsDatum.getMetadata().get("id"))
+                .orNull();
+
+        if(id == null)
+            id = Optional.fromNullable(streamsDatum.getId())
+                    .orNull();
+
+        return id;
+    }
 
     private String convertAndAppendMetadata(StreamsDatum streamsDatum) throws IOException {
         Object object = streamsDatum.getDocument();
