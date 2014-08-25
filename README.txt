@@ -42,7 +42,7 @@ To build from source code:
     there is no need to check it out manually and build it locally yourself,
     unless changes are needed on general and global level.
     
-    If so needed, the Rave Master project can be checked out from:
+    If so needed, the Streams Master project can be checked out from:
       http://svn.apache.org/repos/asf/incubator/streams/streams-master-pom/trunk streams-master-pom
 
     After check out, cd into streams-master-pom and invoke maven to install it using:
