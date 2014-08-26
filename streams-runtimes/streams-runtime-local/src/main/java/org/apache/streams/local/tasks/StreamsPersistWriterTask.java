@@ -19,6 +19,7 @@
 package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.*;
+import org.apache.streams.core.util.DatumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,6 +100,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                         LOGGER.error("Error writing to persist writer {}", this.writer.getClass().getSimpleName(), e);
                         this.keepRunning.set(false);
                         statusCounter.incrementStatus(DatumStatus.FAIL);
+                        DatumUtils.addErrorToMetadata(datum, e, this.writer.getClass());
                     }
                 }
                 else {

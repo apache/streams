@@ -42,7 +42,7 @@ public class SysomosBeatActivityConverter {
     public Activity convert(BeatApi.BeatResponse.Beat beat) {
         Activity converted = new Activity();
         converted.setId(beat.getDocid());
-        converted.setVerb("posted");
+        converted.setVerb("post");
         converted.setContent(beat.getContent());
         converted.setTitle(beat.getTitle());
         converted.setPublished(new DateTime(beat.getTime()));
@@ -74,7 +74,8 @@ public class SysomosBeatActivityConverter {
             object.setObjectType("tweet");
             object.setId(getObjectId(lowerMediaType, "tweet", beat.getTweetid()));
         } else if ("FACEBOOK".equals(mediaType)) {
-            actor.setId(getPersonId(lowerMediaType, mappedTags.get("FBID").getValue()));
+            String fbid = mappedTags.containsKey("FBID") ? mappedTags.get("FBID").getValue() : "";
+            actor.setId(getPersonId(lowerMediaType, fbid));
             actor.setDisplayName(beat.getTitle());
             actor.setUrl(beat.getHost());
             object.setObjectType("post");
@@ -128,7 +129,7 @@ public class SysomosBeatActivityConverter {
         Map<String, BeatApi.BeatResponse.Beat.Tag> tags = Maps.newHashMap();
         for(BeatApi.BeatResponse.Beat.Tag tag : beat.getTag()) {
             if(tag.getSystemType() != null) {
-                tags.put(tag.getSystemType(), tag);
+                tags.put(tag.getSystemType().trim(), tag);
             }
         }
         return tags;

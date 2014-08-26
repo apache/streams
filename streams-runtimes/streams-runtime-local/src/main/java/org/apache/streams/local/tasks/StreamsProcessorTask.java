@@ -18,7 +18,9 @@
 
 package org.apache.streams.local.tasks;
 
+import com.google.common.collect.Maps;
 import org.apache.streams.core.*;
+import org.apache.streams.core.util.DatumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,9 +110,9 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                         }
                     } catch (Throwable e) {
                         LOGGER.error("Throwable Streams Processor {}", e);
-                        e.printStackTrace();
                         statusCounter.incrementStatus(DatumStatus.FAIL);
-                        throw new RuntimeException(e);
+                        //Add the error to the metadata, but keep processing
+                        DatumUtils.addErrorToMetadata(datum, e, this.processor.getClass());
                     }
                 }
                 else {
