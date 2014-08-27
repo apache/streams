@@ -114,7 +114,7 @@ public class FacebookPageFeedDataCollector extends FacebookDataCollector {
             } catch (FacebookException fe) {
                 LOGGER.error("Facebook returned an exception : {}", fe);
                 LOGGER.error("Facebook returned an exception while trying to get feed for page, {} : {}", pageId, fe.getMessage());
-                // Rate limit exceptions with facebook4j unclear http://facebook4j.org/oldjavadocs/1.1.12-2.0.0/2.0.0/index.html?facebook4j/internal/http/HttpResponseCode.html
+                //TODO Rate limit exceptions with facebook4j unclear http://facebook4j.org/oldjavadocs/1.1.12-2.0.0/2.0.0/index.html?facebook4j/internal/http/HttpResponseCode.html
                 // back off at all exceptions until figured out.
                 super.backOff.backOff();
             }
