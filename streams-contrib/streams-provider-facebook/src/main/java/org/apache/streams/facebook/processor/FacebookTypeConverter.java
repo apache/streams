@@ -175,6 +175,11 @@ public class FacebookTypeConverter implements StreamsProcessor {
 
                 if( out != null && validate(out, outClass))
                     result = new StreamsDatum(out);
+            } else if(item instanceof Post) {
+                Object out = convert(mapper.convertValue(item, ObjectNode.class), inClass, outClass);
+
+                if( out != null && validate(out, outClass))
+                    result = new StreamsDatum(out);
             }
         } catch (Exception e) {
             e.printStackTrace();
