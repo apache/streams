@@ -181,8 +181,11 @@ public class FacebookTypeConverter implements StreamsProcessor {
                 if( out != null && validate(out, outClass))
                     result = new StreamsDatum(out);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }  catch (Exception e) {
+            LOGGER.error("Exception switching types : {}", e);
+            if(e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
 
         if( result != null )
