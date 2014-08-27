@@ -19,9 +19,12 @@
 package org.apache.streams.facebook.api;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivitySerializerException;
@@ -67,6 +70,7 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<org.ap
 
     @Override
     public Activity deserialize(Post post) throws ActivitySerializerException {
+
         Activity activity = new Activity();
         activity.setPublished(post.getCreatedTime());
         activity.setUpdated(post.getUpdatedTime());
@@ -76,6 +80,16 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<org.ap
         parseObject(activity, mapper.convertValue(post, ObjectNode.class));
         fixObjectId(activity);
         fixContentFromSummary(activity);
+        activity.setVerb("post");
+        List<String> links = Lists.newLinkedList();
+        links.add(post.getLink());
+        activity.setLinks(links);
+        ensureExtensions(activity).put("facebook", post);
+        if(post.getLikes() != null) {
+            Map<String, Object> likes = Maps.newHashMap();
+            likes.put("count", post.getLikes().size());
+            ensureExtensions(activity).put("likes", likes);
+        }
         return activity;
     }
 
@@ -108,7 +122,7 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<org.ap
 
     private void setProvider(Activity activity) {
         Provider provider = new Provider();
-        provider.setId(getProviderId(PROVIDER_NAME));
+        provider.setId("id:provider:"+PROVIDER_NAME);
         provider.setDisplayName(PROVIDER_NAME);
         activity.setProvider(provider);
     }
@@ -180,7 +194,9 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<org.ap
 
     private void addLikeExtension(Activity activity, JsonNode value) {
         Map<String, Object> extensions = ensureExtensions(activity);
-        extensions.put(LIKES_EXTENSION, value.asInt());
+        Map<String, Object> likes = Maps.newHashMap();
+        likes.put("count", value.asLong());
+        extensions.put(LIKES_EXTENSION, likes);
     }
 
     private void addLocationExtension(Activity activity, JsonNode value) {
@@ -213,7 +229,7 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<org.ap
     }
 
     private void addId(Activity activity, JsonNode value) {
-        activity.setId(getActivityId(PROVIDER_NAME, value.asText()));
+        activity.setId("id:"+PROVIDER_NAME+":"+value.asText());
     }
 
     private void addObjectLink(Activity activity, JsonNode value) {
@@ -223,7 +239,10 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<org.ap
     private void addRebroadcastExtension(Activity activity, JsonNode value) {
         Map<String, Object> extensions = ensureExtensions(activity);
         if(value.has("count")) {
-            extensions.put(REBROADCAST_EXTENSION, value.get("count").asInt());
+            Map<String, Object> rebroadCast = Maps.newHashMap();
+            rebroadCast.put("count", value.get("count").asLong());
+            rebroadCast.put("perspectival", true);
+            extensions.put(REBROADCAST_EXTENSION, rebroadCast);
         }
     }
 
@@ -245,7 +264,7 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<org.ap
             actor.setDisplayName(value.get("name").asText());
         }
         if(value.has("id")) {
-            actor.setId(getPersonId(PROVIDER_NAME, value.get("id").asText()));
+            actor.setId("id:"+PROVIDER_NAME+":"+value.get("id").asText());
         }
         activity.setActor(actor);
     }

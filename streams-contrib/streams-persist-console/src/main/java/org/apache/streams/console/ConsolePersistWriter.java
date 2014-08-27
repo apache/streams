@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,7 @@ public class ConsolePersistWriter implements StreamsPersistWriter {
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     public ConsolePersistWriter() {
         this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
@@ -60,7 +61,7 @@ public class ConsolePersistWriter implements StreamsPersistWriter {
 
             String text = mapper.writeValueAsString(entry);
 
-            System.out.println(text);
+            System.out.println("\n"+text+"\n");
 //            LOGGER.info(text);
 
         } catch (JsonProcessingException e) {
