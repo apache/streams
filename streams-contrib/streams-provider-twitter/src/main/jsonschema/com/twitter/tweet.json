@@ -97,11 +97,22 @@
                 },
                 "hashtags": {
                     "type": "array",
-                    "items": [
-                        {
-                            "type": "string"
+                    "items": {
+                        "type": "object",
+                        "javaType": "org.apache.streams.twitter.pojo.Hashtag",
+                        "javaInterfaces": ["java.io.Serializable"],
+                        "properties": {
+                            "text": {
+                                "type": "string"
+                            },
+                            "indices": {
+                                "type": "array",
+                                "items": [{
+                                    "type": "integer"
+                                }]
+                            }
                         }
-                    ]
+                    }
                 },
                 "urls": {
                     "type": "array",
@@ -150,6 +161,10 @@
         },
         "favorited": {
             "type": "boolean"
+        },
+        "favorite_count": {
+            "ignore_malformed": false,
+            "type": "integer"
         },
         "possibly_sensitive": {
             "type": "boolean"
