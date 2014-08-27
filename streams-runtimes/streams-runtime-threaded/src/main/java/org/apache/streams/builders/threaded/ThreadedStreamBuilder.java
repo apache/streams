@@ -123,7 +123,6 @@ public class ThreadedStreamBuilder implements StreamBuilder {
         return this;
     }
 
-
     private ExecutorService executor;
 
     public ThreadedStreamBuilder addEventHandler(StreamBuilderEventHandler eventHandler) {
@@ -135,6 +134,14 @@ public class ThreadedStreamBuilder implements StreamBuilder {
         if(this.eventHandlers.contains(eventHandler))
             this.eventHandlers.remove(eventHandler);
         return this;
+    }
+
+    public final Map<String, StatusCounts> getUpdateCounts() {
+        final Map<String, StatusCounts> updateMap = new HashMap<String, StatusCounts>();
+
+        for (final String k : tasks.keySet())
+            updateMap.put(k, tasks.get(k).getCurrentStatus());
+        return updateMap;
     }
 
     /**
@@ -180,16 +187,19 @@ public class ThreadedStreamBuilder implements StreamBuilder {
             // let them do that
             TimerTask updateTask = new TimerTask() {
                 public void run() {
-                    if(eventHandlers.size() > 0) {
-                        final Map<String, StatusCounts> updateMap = new HashMap<String, StatusCounts>();
-                        for(final String k : tasks.keySet())
-                            updateMap.put(k, tasks.get(k).getCurrentStatus());
+                    if (eventHandlers.size() > 0) {
+                        final Map<String, StatusCounts> updateMap = getUpdateCounts();
+
                         for (final StreamBuilderEventHandler eventHandler : eventHandlers) {
-                            new Thread(new Runnable() {
+                            try {
+                                new Thread(new Runnable() {
                                 public void run() {
                                     eventHandler.update(updateMap);
-                                }
-                            }).start();
+                                }}).start();
+                            }
+                            catch(Throwable e) {
+                                /* No Operation */
+                            }
                         }
                     }
                 }

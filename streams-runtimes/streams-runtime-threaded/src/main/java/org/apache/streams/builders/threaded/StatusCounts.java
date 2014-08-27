@@ -17,7 +17,12 @@
  */
 package org.apache.streams.builders.threaded;
 
-public class StatusCounts {
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+
+import java.io.Serializable;
+
+public class StatusCounts implements Serializable {
 
     private long queue;
     private long working;
@@ -35,4 +40,13 @@ public class StatusCounts {
         this.success = success;
         this.failed = failed;
     }
+
+    public String toString() {
+        try {
+            return StreamsJacksonMapper.getInstance().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return this.queue + " " + this.working + " " + this.success + " " + this.failed;
+        }
+    }
+
 }

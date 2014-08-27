@@ -20,6 +20,7 @@ package org.apache.streams.core;
 
 import javax.validation.constraints.NotNull;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -27,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * TODO: This needs to be turned into an interface
  */
-public class StreamsResultSet implements Iterable<StreamsDatum> {
+public class StreamsResultSet implements Iterable<StreamsDatum>, Serializable {
 
     private Queue<StreamsDatum> queue;
     private DatumStatusCounter counter;

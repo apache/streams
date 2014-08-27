@@ -17,6 +17,7 @@
 */
 package org.apache.streams.data.util;
 
+import org.apache.streams.util.DateUtil;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -24,6 +25,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
 
+import java.text.ParseException;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -139,6 +141,16 @@ public class RFC3339Utils {
         if(local.matches()) {
             return parseUTC(getSubSecondFormat(local.group(1), "Z"), toParse);
         }
+
+        // absolute fall-back
+        try {
+            DateTime toReturn = DateUtil.determineDateTime(toParse);
+            return toReturn;
+        }
+        catch(ParseException pa) {
+            /* no operation */
+        }
+
         throw new IllegalArgumentException(String.format("Failed to parse date %s. Ensure format is RFC3339 Compliant", toParse));
     }
 
