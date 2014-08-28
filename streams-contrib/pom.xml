@@ -48,6 +48,7 @@
         <!--<module>streams-processor-lucene</module>-->
         <!--<module>streams-processor-tika</module>-->
         <module>streams-provider-instagram</module>
+        <module>streams-processor-jackson</module>
         <module>streams-processor-json</module>
         <module>streams-processor-urls</module>
         <module>streams-provider-gnip</module>

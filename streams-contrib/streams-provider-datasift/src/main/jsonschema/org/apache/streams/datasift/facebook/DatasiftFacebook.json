@@ -1,0 +1,120 @@
+{
+    "type" : "object",
+    "$schema" : "http://json-schema.org/draft-03/schema",
+    "javaType" : "org.apache.streams.datasift.facebook.Facebook",
+    "properties" :
+    {
+        "application" :
+        {
+            "type" : "string"
+        },
+        "author" :
+        {
+            "javaType" : "org.apache.streams.datasift.facebook.Author",
+            "type" : "object",
+            "dynamic" : "true",
+            "properties" :
+            {
+                "avatar" :
+                {
+                    "type" : "string"
+                },
+                "id" :
+                {
+                    "type" : "string"
+                },
+                "link" :
+                {
+                    "type" : "string"
+                },
+                "name" :
+                {
+                    "type" : "string"
+                }
+            }
+        },
+        "created_at" :
+        {
+            "type" : "string",
+            "format" : "date-time"
+        },
+        "id" :
+        {
+            "type" : "string"
+        },
+        "likes" :
+        {
+            "javaType" : "org.apache.streams.datasift.facebook.Likes",
+            "type" : "object",
+            "dynamic" : "true",
+            "properties" :
+            {
+                "count" :
+                {
+                    "type" : "integer"
+                },
+                "ids" :
+                {
+                    "type" : "array",
+                    "items" :
+                        [
+                            {
+                                "type" : "string"
+                            }
+                        ]
+                },
+                "names" :
+                {
+                    "type" : "array",
+                    "items" :
+                        [
+                            {
+                                "type" : "string"
+                            }
+                        ]
+                }
+            }
+        },
+        "message" :
+        {
+            "type" : "string"
+        },
+        "source" :
+        {
+            "type" : "string"
+        },
+        "to" :
+        {
+            "javaType" : "org.apache.streams.datasift.facebook.To",
+            "type" : "object",
+            "dynamic" : "true",
+            "properties" :
+            {
+                "ids" :
+                {
+                    "type" : "array",
+                    "items" :
+                        [
+                            {
+                                "type" : "string"
+                            }
+                        ]
+                },
+                "names" :
+                {
+                    "type" : "array",
+                    "items" :
+                        [
+                            {
+                                "type" : "string"
+                            }
+                        ]
+                }
+            }
+        },
+        "type" :
+        {
+            "type" : "string"
+        }
+    }
+}

@@ -10,9 +10,8 @@ import org.junit.Test;
 
 import java.util.Scanner;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class DatasiftActivitySerializerTest {
 
@@ -49,7 +48,18 @@ public class DatasiftActivitySerializerTest {
         }
     }
 
-
+    @Test
+    public void testInstagramConversion() throws Exception {
+        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/instagram_datasift_json.txt"));
+        String line = null;
+        while(scanner.hasNextLine()) {
+            line = scanner.nextLine();
+            testGeneralConversion(line);
+            System.out.println("ORIGINAL -> "+line);
+            System.out.println("ACTIVITY -> "+MAPPER.writeValueAsString(SERIALIZER.deserialize(line)));
+            System.out.println("NODE     -> "+MAPPER.convertValue(SERIALIZER.deserialize(line), JsonNode.class));
+        }
+    }
 
     /**
      * Test that the minimum number of things that an activity has
@@ -58,9 +68,10 @@ public class DatasiftActivitySerializerTest {
     private void testGeneralConversion(String json) throws Exception {
         Activity activity = SERIALIZER.deserialize(json);
         assertNotNull(json, activity.getId());
-        assertTrue(json, activity.getId().contains("datasift"));
         assertNotNull(json, activity.getPublished());
+        assertNotNull(json, activity.getProvider());
         assertNotNull(json, activity.getUrl());
+        assertNotNull(json, activity.getVerb());
         Actor actor = activity.getActor();
         assertNotNull(json, actor);
 
