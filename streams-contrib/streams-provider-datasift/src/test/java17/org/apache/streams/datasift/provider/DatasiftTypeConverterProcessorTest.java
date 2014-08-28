@@ -20,14 +20,13 @@ package org.apache.streams.datasift.provider;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.datasift.processor.DatasiftTypeConverterProcessor;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Test;
 
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  *

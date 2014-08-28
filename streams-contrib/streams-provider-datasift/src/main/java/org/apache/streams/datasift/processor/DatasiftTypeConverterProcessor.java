@@ -16,7 +16,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 */
-package org.apache.streams.datasift.provider;
+package org.apache.streams.datasift.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -24,9 +24,11 @@ import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.datasift.Datasift;
+import org.apache.streams.datasift.provider.DatasiftConverter;
 import org.apache.streams.datasift.serializer.DatasiftActivitySerializer;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.jackson.CleanAdditionalPropertiesProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,20 +116,7 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
                 } else {
                     if(toConvert.getClass().equals(Activity.class)) { //hack to remove additional properties
                         ObjectNode node = mapper.convertValue(toConvert, ObjectNode.class);
-                        if(node.has("additionalProperties")) {
-                            ObjectNode additionalProperties = (ObjectNode) node.get("additionalProperties");
-//                            node.put("user_mentions", additionalProperties.get("user_mentions"));
-                            node.putAll(additionalProperties);
-                            node.remove("additionalProperties");
-                        }
-                        if(node.has("actor")) {
-                            ObjectNode actor = (ObjectNode) node.get("actor");
-                            if(actor.has("additionalProperties")) {
-                                ObjectNode additionalProperties = (ObjectNode) actor.get("additionalProperties");
-                                actor.putAll(additionalProperties);
-                                actor.remove("additionalProperties");
-                            }
-                        }
+                        CleanAdditionalPropertiesProcessor.cleanAdditionalProperties(node);
                         return mapper.writeValueAsString(node);
                     } else
                         return mapper.writeValueAsString(toConvert);
@@ -138,8 +127,6 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
                 return null;
             }
         }
-
-
     }
 
     private class DefaultConverter implements DatasiftConverter {
