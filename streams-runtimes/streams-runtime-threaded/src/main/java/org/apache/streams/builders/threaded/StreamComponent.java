@@ -168,27 +168,27 @@ class StreamComponent {
      * @return StreamsTask for this component
      * @param timeout The timeout to use in milliseconds for any tasks that support configurable timeout
      */
-    public BaseStreamsTask createConnectedTask(int timeout) {
+    public BaseStreamsTask createConnectedTask(Map<String, BaseStreamsTask> ctx, int timeout, ThreadingController threadingController) {
 
         BaseStreamsTask task;
 
         if(this.processor != null) {
             // create the task
-            task = new StreamsProcessorTask(this.id, this.processor, this.numTasks);
+            task = new StreamsProcessorTask(this.id, ctx, this.processor, threadingController);
 
             // Processor has an input queue
-            task.addInputQueue(this.inQueue);
+            task.addInputQueue(this.id, this.inQueue);
 
             // Processor also has any number of output queues
-            for(Queue<StreamsDatum> q : this.outBound.values()) {
-                task.addOutputQueue(q);
+            for(StreamComponent c : this.outBound.keySet()) {
+                task.addOutputQueue(c.getId(), this.outBound.get(c));
             }
 
         }
         else if(this.writer != null) {
             // create the task
-            task = new StreamsPersistWriterTask(this.id, this.writer, this.numTasks);
-            task.addInputQueue(this.inQueue);
+            task = new StreamsPersistWriterTask(this.id, ctx, this.writer, threadingController);
+            task.addInputQueue(this.id, this.inQueue);
         }
         else if(this.provider != null) {
             StreamsProvider prov;
@@ -199,17 +199,17 @@ class StreamComponent {
                 prov = this.provider;
             }
             if(this.dateRange == null && this.sequence == null)
-                task = new StreamsProviderTask(this.id, prov, this.perpetual);
+                task = new StreamsProviderTask(this.id, ctx, prov, this.perpetual);
             else if(this.sequence != null)
-                task = new StreamsProviderTask(this.id, prov, this.sequence);
+                task = new StreamsProviderTask(this.id, ctx, prov, this.sequence);
             else
-                task = new StreamsProviderTask(this.id, prov, this.dateRange[0], this.dateRange[1]);
+                task = new StreamsProviderTask(this.id, ctx, prov, this.dateRange[0], this.dateRange[1]);
             //Adjust the timeout if necessary
             if(timeout > 0) {
                 ((StreamsProviderTask)task).setTimeout(timeout);
             }
-            for(Queue<StreamsDatum> q : this.outBound.values()) {
-                task.addOutputQueue(q);
+            for(StreamComponent c : this.outBound.keySet()) {
+                task.addOutputQueue(c.getId(), this.outBound.get(c));
             }
         }
         else {

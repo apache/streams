@@ -17,15 +17,16 @@
  */
 package org.apache.streams.builders.threaded;
 
-import org.apache.streams.core.*;
+import org.apache.streams.core.DatumStatus;
+import org.apache.streams.core.DatumStatusCounter;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsPersistWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Streams persist writer
@@ -33,21 +34,18 @@ import java.util.concurrent.TimeUnit;
 public class StreamsPersistWriterTask extends BaseStreamsTask {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPersistWriterTask.class);
-    private final ThreadPoolExecutor executorService;
 
     protected final StreamsPersistWriter writer;
     protected Map<String, Object> streamConfig;
     protected final DatumStatusCounter statusCounter = new DatumStatusCounter();
+    private final ThreadingController threadingController;
+    private final AtomicInteger workingCounter = new AtomicInteger(0);
 
-    public StreamsPersistWriterTask(String id, StreamsPersistWriter writer, int numThreads) {
-        super(id);
+
+    public StreamsPersistWriterTask(String id, Map<String, BaseStreamsTask> ctx, StreamsPersistWriter writer, ThreadingController threadingController) {
+        super(id, ctx);
         this.writer = writer;
-        this.executorService = new ThreadPoolExecutor(numThreads,
-                numThreads,
-                0L,
-                TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(numThreads, false),
-                new WaitUntilAvailableExecutionHandler());
+        this.threadingController = threadingController;
     }
 
     @Override
@@ -57,57 +55,38 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
 
     @Override
     public boolean isRunning() {
-        return  executorService.getActiveCount() > 0 ||
+        return  workingCounter.get() > 0 ||
                 this.isDatumAvailable();
     }
 
     public StatusCounts getCurrentStatus() {
         return new StatusCounts(getTotalInQueue(),
-                this.executorService.getActiveCount(),
+                this.workingCounter.get(),
                 this.statusCounter.getSuccess(),
                 this.statusCounter.getFail());
     }
 
     @Override
     public void run() {
-
         try {
-
             this.writer.prepare(this.streamConfig);
 
             while (this.keepRunning.get() || super.isDatumAvailable()) {
 
-                // we don't have anything to do, let's yield
-                // and take a quick rest and wait for people to
-                // catch up
-                if (!isDatumAvailable())
-                    safeQuickRest();
+                waitForIncoming();
 
                 StreamsDatum datum;
                 while ((datum = pollNextDatum()) != null) {
                     final StreamsDatum workingDatum = datum;
-                    executorService.execute(new Runnable() {
+                    this.threadingController.execute(new Runnable() {
                         public void run() {
                             processThisDatum(workingDatum);
                         }
                     });
 
-                    if (!isDatumAvailable())
-                        safeQuickRest(1);
-
+                    waitForIncoming();
                 }
             }
-
-            LOGGER.debug("Shutting down threaded writer");
-            executorService.shutdown();
-            try {
-                executorService.awaitTermination(5, TimeUnit.MINUTES);
-                // after 5 minutes, these are the poor souls we left in the executor pool.
-                statusCounter.incrementStatus(DatumStatus.FAIL, executorService.getPoolSize());
-            } catch (InterruptedException ie) {
-                LOGGER.warn("There was an issue waiting for the termination of the threaded processor");
-            }
-
         } finally {
             // clean everything up
             this.writer.cleanUp();
@@ -115,17 +94,24 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
     }
 
     protected final void processThisDatum(StreamsDatum datum) {
-        try {
+        try
+        {
+            this.workingCounter.incrementAndGet();
             this.writer.write(datum);
             statusCounter.incrementStatus(DatumStatus.SUCCESS);
-        } catch (Throwable e) {
+        }
+        catch (Throwable e) {
             LOGGER.error("{} - Error[{}] writing to persist writer {}", this.getId(), e.getMessage(), this.writer.toString());
             statusCounter.incrementStatus(DatumStatus.FAIL);
+        }
+        finally {
+            this.workingCounter.decrementAndGet();
+            this.threadingController.getItemPoppedCondition().signal();
         }
     }
 
     @Override
-    public void addOutputQueue(Queue<StreamsDatum> outputQueue) {
+    public void addOutputQueue(String id, Queue<StreamsDatum> outputQueue) {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support method - setOutputQueue()");
     }
 

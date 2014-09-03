@@ -17,15 +17,18 @@
  */
 package org.apache.streams.builders.threaded;
 
-import org.apache.streams.core.*;
+import org.apache.streams.core.DatumStatus;
+import org.apache.streams.core.DatumStatusCounter;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.Queue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Processor task that is multi-threaded
@@ -37,22 +40,21 @@ public class StreamsProcessorTask extends BaseStreamsTask {
     protected final StreamsProcessor processor;
     protected Map<String, Object> streamConfig;
     protected final DatumStatusCounter statusCounter = new DatumStatusCounter();
-    private final ThreadPoolExecutor executorService;
+
+    private final SimpleCondition simpleCondition = new SimpleCondition();
+    private final ThreadingController threadingController;
+
+    private final AtomicInteger workingCounter = new AtomicInteger(0);
 
     /**
      * Default constructor, uses default sleep time of 500ms when inbound queue is empty
      *
      * @param processor process to run in task
      */
-    public StreamsProcessorTask(String id, StreamsProcessor processor, int numThreads) {
-        super(id);
+    public StreamsProcessorTask(String id, Map<String, BaseStreamsTask> ctx, StreamsProcessor processor, ThreadingController threadingController) {
+        super(id, ctx);
         this.processor = processor;
-        this.executorService = new ThreadPoolExecutor(numThreads,
-                numThreads,
-                0L,
-                TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(numThreads, false),
-                new WaitUntilAvailableExecutionHandler());
+        this.threadingController = threadingController;
     }
 
     @Override
@@ -64,8 +66,7 @@ public class StreamsProcessorTask extends BaseStreamsTask {
 
     @Override
     public boolean isRunning() {
-        return  executorService.getActiveCount() > 0 ||
-                this.isDatumAvailable();
+        return this.workingCounter.get() > 0 || this.isDatumAvailable();
     }
 
     @Override
@@ -79,10 +80,19 @@ public class StreamsProcessorTask extends BaseStreamsTask {
                 StreamsDatum datum;
                 while ((datum = super.pollNextDatum()) != null) {
                     final StreamsDatum workingDatum = datum;
-                    executorService.execute(new Runnable() {
+
+                    Queue q = null;
+                    while((q = getHaltingOutboundQueue()) != null) {
+                        try {
+                            CONDITIONS.get(q).await();
+                        }
+                        catch(InterruptedException ioe) {
+                            /* no op */
+                        }
+                    }
+
+                    this.threadingController.execute(new Runnable() {
                         public void run() {
-                            while(isOutBoundQueueBackedUp())
-                                safeQuickRest(1);
                             processThisDatum(workingDatum);
                         }
                     });
@@ -91,20 +101,18 @@ public class StreamsProcessorTask extends BaseStreamsTask {
                 // we don't have anything to do, let's yield
                 // and take a quick rest and wait for people to
                 // catch up
-                if (!isDatumAvailable())
-                    safeQuickRest(1);
+                if (wasTapped()) {
+                    try {
+                        this.simpleCondition.await(10, TimeUnit.MILLISECONDS);
+                    }
+                    catch(InterruptedException ioe) {
+                            /* no op */
+                    }
+                }
+                else {
+                    safeQuickRest(5);
+                }
             }
-
-            LOGGER.debug("Shutting down threaded processor...");
-            executorService.shutdown();
-            try {
-                executorService.awaitTermination(5, TimeUnit.MINUTES);
-                // after 5 minutes, these are the poor souls we left in the executor pool.
-                statusCounter.incrementStatus(DatumStatus.FAIL, executorService.getPoolSize());
-            } catch (InterruptedException ie) {
-                LOGGER.warn("There was an issue waiting for the termination of the threaded processor");
-            }
-
         } finally {
             // clean everything up
             this.processor.cleanUp();
@@ -113,6 +121,7 @@ public class StreamsProcessorTask extends BaseStreamsTask {
 
     protected final void processThisDatum(StreamsDatum datum) {
         try {
+            workingCounter.incrementAndGet();
             // get the outputs from the queue and pass them down the row
             List<StreamsDatum> output = this.processor.process(datum);
             if (output != null)
@@ -124,12 +133,17 @@ public class StreamsProcessorTask extends BaseStreamsTask {
             LOGGER.warn("{} - There was an error({}) processing datum: {}", this.getId(), e.getMessage(), datum);
             this.statusCounter.incrementStatus(DatumStatus.FAIL);
         }
+        finally {
+            workingCounter.decrementAndGet();
+            this.threadingController.getItemPoppedCondition().signal();
+            for(StreamsTask t : downStreamTasks)
+                t.knock();
+        }
     }
-
 
     public StatusCounts getCurrentStatus() {
         return new StatusCounts(getTotalInQueue(),
-                this.executorService.getActiveCount(),
+                this.workingCounter.get(),
                 this.statusCounter.getSuccess(),
                 this.statusCounter.getFail());
     }

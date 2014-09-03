@@ -30,21 +30,35 @@ import java.util.Queue;
 public interface StreamsTask extends Runnable {
 
     /**
+     * Let another task know you'll be there to let him know when he has something to do. Just
+     * a tap.
+     */
+    public void tap();
+
+    public void knock();
+
+    /**
      * Informs the task to stop. Tasks may or may not try to empty its inbound queue before halting.
      */
     public void stopTask();
 
     /**
      * Add an input {@link java.util.Queue} for this task.
+     * @param id
+     * the id of the connected queue
      * @param inputQueue
+     * the queue
      */
-    public void addInputQueue(Queue<StreamsDatum> inputQueue);
+    public void addInputQueue(String id, Queue<StreamsDatum> inputQueue);
 
     /**
      * Add an output {@link java.util.Queue} for this task.
+     * @param id
+     * the id of the connected queue
      * @param outputQueue
+     * the queue
      */
-    public void addOutputQueue(Queue<StreamsDatum> outputQueue);
+    public void addOutputQueue(String id, Queue<StreamsDatum> outputQueue);
 
     /**
      * Set the configuration object that will shared and passed to all instances of StreamsTask.
@@ -70,4 +84,5 @@ public interface StreamsTask extends Runnable {
      */
     public List<Queue<StreamsDatum>> getOutputQueues();
 
+    public void initialize();
 }

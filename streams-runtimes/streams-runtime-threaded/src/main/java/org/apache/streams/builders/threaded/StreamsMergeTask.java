@@ -29,11 +29,11 @@ public class StreamsMergeTask extends BaseStreamsTask {
 
 
     public StreamsMergeTask() {
-        super(null);
+        super(null, null);
     }
 
-    public StreamsMergeTask(String id) {
-        super(id);
+    public StreamsMergeTask(String id, Map<String, BaseStreamsTask> ctx) {
+        super(id, ctx);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class StreamsMergeTask extends BaseStreamsTask {
                 super.addToOutgoingQueue(datum);
             }
             else {
-                safeQuickRest();
+                safeQuickRest(5);
             }
         }
     }

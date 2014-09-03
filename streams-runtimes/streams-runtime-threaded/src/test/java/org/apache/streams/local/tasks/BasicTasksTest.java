@@ -17,16 +17,14 @@
  */
 package org.apache.streams.local.tasks;
 
+import org.apache.streams.builders.threaded.*;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.builders.threaded.StreamsMergeTask;
-import org.apache.streams.builders.threaded.StreamsPersistWriterTask;
-import org.apache.streams.builders.threaded.StreamsProcessorTask;
-import org.apache.streams.builders.threaded.StreamsProviderTask;
 import org.apache.streams.local.test.processors.PassThroughStaticCounterProcessor;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -45,13 +43,13 @@ public class BasicTasksTest {
         int numMessages = 100;
 
         NumericMessageProvider provider = new NumericMessageProvider(numMessages);
-        StreamsProviderTask task = new StreamsProviderTask("id", provider, false);
+        StreamsProviderTask task = new StreamsProviderTask("id", new HashMap<String, BaseStreamsTask>(), provider, false);
         Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
-        task.addOutputQueue(outQueue);
+        task.addOutputQueue("out", outQueue);
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
         Exception exp = null;
         try {
-            task.addInputQueue(inQueue);
+            task.addInputQueue("in", inQueue);
         } catch (UnsupportedOperationException uoe) {
             exp = uoe;
         }
@@ -88,11 +86,11 @@ public class BasicTasksTest {
 
         PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
 
-        StreamsProcessorTask task = new StreamsProcessorTask("id", processor, 1);
+        StreamsProcessorTask task = new StreamsProcessorTask("id", new HashMap<String, BaseStreamsTask>(), processor, new ThreadingController(1));
         Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
-        task.addOutputQueue(outQueue);
-        task.addInputQueue(inQueue);
+        task.addOutputQueue("out", outQueue);
+        task.addInputQueue("in", inQueue);
         assertEquals(numMessages, task.getInputQueues().get(0).size());
         ExecutorService service = Executors.newFixedThreadPool(1);
         service.submit(task);
@@ -127,18 +125,18 @@ public class BasicTasksTest {
         int numMessages = 100;
 
         DatumCounterWriter writer = new DatumCounterWriter();
-        StreamsPersistWriterTask task = new StreamsPersistWriterTask("id", writer, 1);
+        StreamsPersistWriterTask task = new StreamsPersistWriterTask("id", new HashMap<String, BaseStreamsTask>(), writer, new ThreadingController(1));
         Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
 
         Exception exp = null;
         try {
-            task.addOutputQueue(outQueue);
+            task.addOutputQueue("out", outQueue);
         } catch (UnsupportedOperationException uoe) {
             exp = uoe;
         }
         assertNotNull(exp);
-        task.addInputQueue(inQueue);
+        task.addInputQueue("in", inQueue);
         assertEquals(numMessages, task.getInputQueues().get(0).size());
         ExecutorService service = Executors.newFixedThreadPool(1);
         service.submit(task);
@@ -169,57 +167,17 @@ public class BasicTasksTest {
     }
 
     @Test
-    public void testMergeTask() {
-
-        int numMessages = 100;
-        int incoming = 5;
-        StreamsMergeTask task = new StreamsMergeTask();
-        Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
-        task.addOutputQueue(outQueue);
-        for (int i = 0; i < incoming; ++i) {
-            task.addInputQueue(createInputQueue(numMessages));
-        }
-        ExecutorService service = Executors.newFixedThreadPool(1);
-        service.submit(task);
-        int attempts = 0;
-        while (outQueue.size() != incoming * numMessages) {
-            try {
-                Thread.sleep(10);
-            }
-            catch(Exception e) {
-                // No Operation
-            }
-            Thread.yield();
-            ++attempts;
-            if (attempts == 10) {
-                assertEquals("Processor task failed to output " + (numMessages * incoming) + " in a timely fashion.", (numMessages * incoming), outQueue.size());
-            }
-        }
-        task.stopTask();
-        service.shutdown();
-        try {
-            if (!service.awaitTermination(5, TimeUnit.SECONDS)) {
-                service.shutdownNow();
-                fail("Service did not terminate.");
-            }
-            assertTrue("Task should have completed running in aloted time.", service.isTerminated());
-        } catch (InterruptedException e) {
-            fail("Test Interupted.");
-        }
-    }
-
-    @Test
     public void testBranching() {
         int numMessages = 100;
 
         PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
-        StreamsProcessorTask task = new StreamsProcessorTask("id", processor, 1);
+        StreamsProcessorTask task = new StreamsProcessorTask("id", new HashMap<String, BaseStreamsTask>(), processor, new ThreadingController(1));
         Queue<StreamsDatum> outQueue1 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> outQueue2 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
-        task.addOutputQueue(outQueue1);
-        task.addOutputQueue(outQueue2);
-        task.addInputQueue(inQueue);
+        task.addOutputQueue("o1", outQueue1);
+        task.addOutputQueue("o2", outQueue2);
+        task.addInputQueue("in", inQueue);
         assertEquals(numMessages, task.getInputQueues().get(0).size());
         ExecutorService service = Executors.newFixedThreadPool(1);
         service.submit(task);
@@ -256,13 +214,13 @@ public class BasicTasksTest {
     public void testBranchingSerialization() {
         int numMessages = 1;
         PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor();
-        StreamsProcessorTask task = new StreamsProcessorTask("id", processor, 1);
+        StreamsProcessorTask task = new StreamsProcessorTask("id", new HashMap<String, BaseStreamsTask>(), processor, new ThreadingController(1));
         Queue<StreamsDatum> outQueue1 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> outQueue2 = new ConcurrentLinkedQueue<StreamsDatum>();
         Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
-        task.addOutputQueue(outQueue1);
-        task.addOutputQueue(outQueue2);
-        task.addInputQueue(inQueue);
+        task.addOutputQueue("o1", outQueue1);
+        task.addOutputQueue("o2", outQueue2);
+        task.addInputQueue("in", inQueue);
         ExecutorService service = Executors.newFixedThreadPool(1);
         service.submit(task);
         int attempts = 0;

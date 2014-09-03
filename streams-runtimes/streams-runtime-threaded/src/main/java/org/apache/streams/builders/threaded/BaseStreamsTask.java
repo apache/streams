@@ -20,13 +20,10 @@ package org.apache.streams.builders.threaded;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.SerializationException;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.jackson.StreamsJacksonModule;
-import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.SerializationUtil;
 import org.slf4j.Logger;
@@ -36,8 +33,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
 
 /**
  *
@@ -46,22 +45,52 @@ public abstract class BaseStreamsTask implements StreamsTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStreamsTask.class);
 
+    private Condition condition = null;
     private final String id;
+    private final Map<String, BaseStreamsTask> ctx;
     protected final AtomicBoolean keepRunning = new AtomicBoolean(true);
+
+    protected static final Map<Queue, Condition> CONDITIONS = new HashMap<Queue, Condition>();
+
     private final List<Queue<StreamsDatum>> inQueues = new ArrayList<Queue<StreamsDatum>>();
     private final List<Queue<StreamsDatum>> outQueues = new ArrayList<Queue<StreamsDatum>>();
-    private final AtomicInteger queueCycleCounter = new AtomicInteger(0);
+
+    private final Set<String> downStreamIds = new HashSet<String>();
+    protected final Set<StreamsTask> downStreamTasks = new HashSet<StreamsTask>();
 
     public abstract StatusCounts getCurrentStatus();
 
-    private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
-
-    BaseStreamsTask(String id) {
+    BaseStreamsTask(String id, Map<String, BaseStreamsTask> ctx) {
         this.id = id;
+        this.ctx = ctx;
+    }
+
+    public void initialize() {
+        for(String id : this.downStreamIds) {
+            if(!this.ctx.containsKey(id)) {
+                LOGGER.warn("Cannot find connected iD: {}", id);
+            }
+            else {
+                this.downStreamTasks.add(this.ctx.get(id));
+                this.ctx.get(id).tap();
+            }
+        }
     }
 
     public String getId() {
         return this.id;
+    }
+
+    public void tap() {
+        this.condition = new SimpleCondition();
+    }
+
+    public void knock() {
+        this.condition.signal();
+    }
+
+    public boolean wasTapped() {
+        return this.condition != null;
     }
 
     @Override
@@ -70,13 +99,18 @@ public abstract class BaseStreamsTask implements StreamsTask {
     }
 
     @Override
-    public void addInputQueue(Queue<StreamsDatum> inputQueue) {
+    public void addInputQueue(String id, Queue<StreamsDatum> inputQueue) {
         this.inQueues.add(inputQueue);
+        if(!CONDITIONS.containsKey(inputQueue))
+            CONDITIONS.put(inputQueue, new SimpleCondition());
     }
 
     @Override
-    public void addOutputQueue(Queue<StreamsDatum> outputQueue) {
+    public void addOutputQueue(String id, Queue<StreamsDatum> outputQueue) {
         this.outQueues.add(outputQueue);
+        if(!CONDITIONS.containsKey(outputQueue))
+            CONDITIONS.put(outputQueue, new SimpleCondition());
+        this.downStreamIds.add(id);
     }
 
     @Override
@@ -98,16 +132,14 @@ public abstract class BaseStreamsTask implements StreamsTask {
     protected StreamsDatum pollNextDatum() {
         StreamsDatum datum = null;
         do {
-            synchronized (queueCycleCounter) {
+            // Randomize the processing so it evenly distributes and to not prefer one queue over another
+            int rand = (int)(Math.random() % this.inQueues.size());
 
-                if(!this.inQueues.get(queueCycleCounter.get()).isEmpty())
-                    datum = this.inQueues.get(queueCycleCounter.get()).poll();
-
-                // increment our queue counter
-                if (queueCycleCounter.incrementAndGet() >= this.inQueues.size())
-                    queueCycleCounter.set(0);
-
+            synchronized (this.inQueues.get(rand)) {
+                if (!this.inQueues.get(rand).isEmpty())
+                    datum = this.inQueues.get(rand).poll();
             }
+
         } while (datum == null && isDatumAvailable());
 
         return datum;
@@ -123,27 +155,26 @@ public abstract class BaseStreamsTask implements StreamsTask {
         return getTotalInQueue() > 0;
     }
 
-    public boolean isOutBoundQueueBackedUp() {
-        for(Queue q : this.outQueues) {
+    protected Queue<StreamsDatum> getHaltingOutboundQueue() {
+        for(Queue<StreamsDatum> q : this.outQueues) {
             if(q.isEmpty())
-                return false;
+                return null;
             else {
                 if(q instanceof BlockingQueue) {
                     if(((BlockingQueue)q).remainingCapacity() == 0)
-                        return true;
+                        return q;
                 }
             }
         }
-        return false;
+        return null;
     }
-
 
     /**
      * The total number of items that are in the queue right now.
      * @return
      * The total number of items that are in the queue waiting to be worked right now.
      */
-    public int getTotalInQueue() {
+    public synchronized int getTotalInQueue() {
         int total = 0;
         for (Queue q : this.inQueues)
             if (q != null)
@@ -158,10 +189,38 @@ public abstract class BaseStreamsTask implements StreamsTask {
      *
      * @param datum The datum you wish to add to an outgoing queue
      */
-    protected void addToOutgoingQueue(StreamsDatum datum) {
+    protected void addToOutgoingQueue(final StreamsDatum datum) {
         if (datum != null) {
-            for (Queue<StreamsDatum> queue : this.outQueues)
-                ComponentUtils.offerUntilSuccess(cloneStreamsDatum(datum), queue);
+
+            final SimpleCondition condition = new SimpleCondition();
+
+            final AtomicInteger atomicInteger = new AtomicInteger(0);
+
+            final List<Queue<StreamsDatum>> outList = new ArrayList<Queue<StreamsDatum>>();
+
+            for(Queue<StreamsDatum> q : this.outQueues)
+                outList.add(q);
+
+            Collections.shuffle(outList);
+
+            for (final Queue<StreamsDatum> queue : outList) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ComponentUtils.offerUntilSuccess(cloneStreamsDatum(datum), queue);
+                        CONDITIONS.get(queue).signal();
+                        condition.signal();
+                    }
+                }).start();
+            }
+
+            try {
+                if(outQueues.size() > 0)
+                    condition.await();
+            }
+            catch(InterruptedException ioe) {
+                /* no Operation */
+            }
         }
     }
 
@@ -188,8 +247,8 @@ public abstract class BaseStreamsTask implements StreamsTask {
             catch(SerializationException ser) {
                 try {
                     // Use the bruce force method for serialization.
-                    String value = MAPPER.writeValueAsString(datum.document);
-                    Object object = MAPPER.readValue(value, datum.getDocument().getClass());
+                    String value = StreamsJacksonMapper.getInstance().writeValueAsString(datum.document);
+                    Object object = StreamsJacksonMapper.getInstance().readValue(value, datum.getDocument().getClass());
                     return copyMetaData(datum, new StreamsDatum(object, datum.getId(), datum.timestamp, datum.sequenceid));
                 } catch (JsonMappingException e) {
                     LOGGER.warn("Unable to clone datum Mapper Error: {} - {}", e.getMessage(), datum);
@@ -205,8 +264,28 @@ public abstract class BaseStreamsTask implements StreamsTask {
         }
     }
 
+    protected void waitForIncoming() {
+        // we don't have anything to do, let's yield
+        // and take a quick rest and wait for people to
+        // catch up
+        if (!isDatumAvailable()) {
+            if (wasTapped()) {
+                try {
+                    this.condition.await(10, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException ioe) {
+                    /* no op */
+                }
+            } else {
+                safeQuickRest(5);
+            }
+        }
+    }
 
     protected void safeQuickRest(int waitTime) {
+
+        int priority = Thread.currentThread().getPriority();
+
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         // The queue is empty, we might as well sleep.
         Thread.yield();
         try {
@@ -214,13 +293,8 @@ public abstract class BaseStreamsTask implements StreamsTask {
         } catch (InterruptedException ie) {
             // No Operation
         }
-    }
 
-    /**
-     * A quick rest for 1 ms that yields the execution of the processor.
-     */
-    protected void safeQuickRest() {
-        safeQuickRest(2);
+        Thread.currentThread().setPriority(priority);
     }
 
     private StreamsDatum copyMetaData(StreamsDatum copyFrom, StreamsDatum copyTo) {

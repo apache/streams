@@ -8,9 +8,9 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ThreadedStreamBuilderDatumTest {
 
@@ -24,18 +24,18 @@ public class ThreadedStreamBuilderDatumTest {
 
         DatumCollectorWriter writer = new DatumCollectorWriter();
 
-        new ThreadedStreamBuilder(new ArrayBlockingQueue<StreamsDatum>(10))
+        new ThreadedStreamBuilder(new LinkedBlockingQueue<StreamsDatum>(1))
                 .newReadCurrentStream("provider", provider)
                 .addStreamsPersistWriter("writer", writer, 1, "provider")
                 .start();
 
         assertEquals("Datum 1 document is correct", 1, writer.getDatums().get(0).getDocument());
-        assertEquals("Datum 1 document is correct", 2, writer.getDatums().get(1).getDocument());
-        assertEquals("Datum 1 document is correct", 3, writer.getDatums().get(2).getDocument());
+        assertEquals("Datum 2 document is correct", 2, writer.getDatums().get(1).getDocument());
+        assertEquals("Datum 3 document is correct", 3, writer.getDatums().get(2).getDocument());
 
         assertEquals("Datum 1 id is correct", "1", writer.getDatums().get(0).getId());
-        assertEquals("Datum 1 id is correct", "2", writer.getDatums().get(1).getId());
-        assertEquals("Datum 1 id is correct", "3", writer.getDatums().get(2).getId());
+        assertEquals("Datum 2 id is correct", "2", writer.getDatums().get(1).getId());
+        assertEquals("Datum 3 id is correct", "3", writer.getDatums().get(2).getId());
 
     }
 
@@ -49,14 +49,14 @@ public class ThreadedStreamBuilderDatumTest {
 
         DatumCollectorWriter writer = new DatumCollectorWriter();
 
-        new ThreadedStreamBuilder(new ArrayBlockingQueue<StreamsDatum>(10))
+        new ThreadedStreamBuilder(new LinkedBlockingQueue<StreamsDatum>(10))
                 .newReadCurrentStream("provider", provider)
                 .addStreamsPersistWriter("writer", writer, 1, "provider")
                 .start();
 
         assertEquals("Datum 1 id is correct", "1", writer.getDatums().get(0).getId());
-        assertEquals("Datum 1 id is correct", "2", writer.getDatums().get(1).getId());
-        assertEquals("Datum 1 id is correct", "3", writer.getDatums().get(2).getId());
+        assertEquals("Datum 2 id is correct", "2", writer.getDatums().get(1).getId());
+        assertEquals("Datum 3 id is correct", "3", writer.getDatums().get(2).getId());
 
     }
 

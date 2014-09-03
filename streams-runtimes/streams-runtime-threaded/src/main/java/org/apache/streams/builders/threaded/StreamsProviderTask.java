@@ -64,8 +64,8 @@ public class StreamsProviderTask extends BaseStreamsTask  {
      *
      * @param provider
      */
-    public StreamsProviderTask(String id, StreamsProvider provider, boolean perpetual) {
-        super(id);
+    public StreamsProviderTask(String id, Map<String, BaseStreamsTask> ctx, StreamsProvider provider, boolean perpetual) {
+        super(id, ctx);
         this.provider = provider;
         if (perpetual)
             this.type = Type.PERPETUAL;
@@ -82,8 +82,8 @@ public class StreamsProviderTask extends BaseStreamsTask  {
      * @param provider
      * @param sequence
      */
-    public StreamsProviderTask(String id, StreamsProvider provider, BigInteger sequence) {
-        super(id);
+    public StreamsProviderTask(String id, Map<String, BaseStreamsTask> ctx, StreamsProvider provider, BigInteger sequence) {
+        super(id, ctx);
         this.provider = provider;
         this.type = Type.READ_NEW;
         this.sequence = sequence;
@@ -99,8 +99,8 @@ public class StreamsProviderTask extends BaseStreamsTask  {
      * @param start
      * @param end
      */
-    public StreamsProviderTask(String id, StreamsProvider provider, DateTime start, DateTime end) {
-        super(id);
+    public StreamsProviderTask(String id, Map<String, BaseStreamsTask> ctx, StreamsProvider provider, DateTime start, DateTime end) {
+        super(id, ctx);
         this.provider = provider;
         this.type = Type.READ_RANGE;
         this.dateRange = new DateTime[2];
@@ -116,7 +116,7 @@ public class StreamsProviderTask extends BaseStreamsTask  {
     }
 
     @Override
-    public void addInputQueue(Queue<StreamsDatum> inputQueue) {
+    public void addInputQueue(String id, Queue<StreamsDatum> inputQueue) {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support method - setInputQueue()");
     }
 
@@ -150,7 +150,7 @@ public class StreamsProviderTask extends BaseStreamsTask  {
                         // the way this works needs to change...
                         if (zeros > (timeout))
                             this.keepRunning.set(false);
-                        safeQuickRest();
+                        safeQuickRest(10);
                     }
                     break;
                 case READ_CURRENT:
@@ -179,7 +179,7 @@ public class StreamsProviderTask extends BaseStreamsTask  {
                         // The process is still running, but there is nothing on the queue...
                         // we just need to be patient and wait, we yield the execution and
                         // wait for 1ms to see if anything changes.
-                        safeQuickRest();
+                        safeQuickRest(10);
                     } else {
                         flushResults();
                     }
@@ -214,8 +214,9 @@ public class StreamsProviderTask extends BaseStreamsTask  {
                 if (!this.keepRunning.get())
                     break;
 
-                while(isOutBoundQueueBackedUp())
-                    safeQuickRest(1);
+                Queue q = null;
+                while((q = getHaltingOutboundQueue()) != null)
+                    CONDITIONS.get(q).await();
 
                 processNext(datum);
 
@@ -232,6 +233,9 @@ public class StreamsProviderTask extends BaseStreamsTask  {
             statusCounter.incrementStatus(DatumStatus.SUCCESS);
         } catch (Throwable e) {
             statusCounter.incrementStatus(DatumStatus.FAIL);
+        } finally {
+            for(StreamsTask t : downStreamTasks)
+                t.knock();
         }
     }
 

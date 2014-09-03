@@ -19,28 +19,70 @@ package org.apache.streams.builders.threaded;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
 
 /**
  * A rejection handler that just pauses execution and let's
  * the item wait until a free spot opens up for it to go into
  */
 public class WaitUntilAvailableExecutionHandler implements RejectedExecutionHandler {
-    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+
+    private final AtomicInteger waitCount = new AtomicInteger(0);
+
+    private final Condition condition;
+
+    public boolean isWaiting() { return this.waitCount.get() > 0; }
+
+    public WaitUntilAvailableExecutionHandler() {
+        condition = null;
+    }
+
+    WaitUntilAvailableExecutionHandler(Condition condition) {
+        this.condition = condition;
+    }
+
+    public synchronized void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
         // Wait until the pool is free for another item
-        while(executor.getMaximumPoolSize() == executor.getQueue().size()) {
-            safeSleep();
-        }
+
+        if(executor.getMaximumPoolSize() == executor.getQueue().size()) {
+
+            if (this.condition == null) {
+                int currentPriority = Thread.currentThread().getPriority();
+                Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+
+                this.waitCount.incrementAndGet();
+
+                int sleepTime = 1;
+
+                while (executor.getMaximumPoolSize() == executor.getQueue().size()) {
+                    safeSleep(sleepTime);
+                    sleepTime = sleepTime * 2;
+                }
+
+                Thread.currentThread().setPriority(currentPriority);
+
+                this.waitCount.decrementAndGet();
+            } else {
+                try {
+                    while (executor.getMaximumPoolSize() == executor.getQueue().size())
+                        this.condition.await();
+                } catch (InterruptedException ioe) {
+                    /* no op */
+                }
+            }
+    }
         executor.submit(r);
     }
 
-    public static void safeSleep() {
-        Thread.yield();
+    public static void safeSleep(int time) {
         try {
             // wait one tenth of a millisecond
-            Thread.sleep(1);
+            Thread.yield();
+            Thread.sleep(time);
         }
         catch(Exception e) {
-            // no operation
+            /* no op */
         }
     }
 }

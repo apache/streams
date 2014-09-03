@@ -24,7 +24,10 @@ import org.slf4j.Logger;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * {@link ThreadedStreamBuilder} implementation to run a data processing stream in a single
@@ -43,38 +46,45 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     private final Map<String, BaseStreamsTask> tasks = new LinkedHashMap<String, BaseStreamsTask>();
     private final Collection<StreamBuilderEventHandler> eventHandlers = new ArrayList<StreamBuilderEventHandler>();
 
+    private final ThreadingController threadingController;
+
+    private static final Integer PROCESSOR_CORES = Runtime.getRuntime().availableProcessors();
+
     private Thread shutDownHandler;
 
     /**
      *
      */
     public ThreadedStreamBuilder() {
-        this(new ArrayBlockingQueue<StreamsDatum>(50), null);
+        this(new ArrayBlockingQueue<StreamsDatum>(50), null, PROCESSOR_CORES);
+    }
+
+    /**
+     * @param queue
+     */
+    public ThreadedStreamBuilder(Queue<StreamsDatum> queue) {
+        this(queue, null, PROCESSOR_CORES);
+    }
+
+    public ThreadedStreamBuilder(Queue<StreamsDatum> queue, int numThreads) {
+        this(queue, null, PROCESSOR_CORES);
     }
 
     /**
      * @param streamConfig
      */
     public ThreadedStreamBuilder(Map<String, Object> streamConfig) {
-        this(new ArrayBlockingQueue<StreamsDatum>(50), streamConfig);
+        this(new ArrayBlockingQueue<StreamsDatum>(50), streamConfig, PROCESSOR_CORES);
     }
 
-    /**
-     * @param queueType
-     */
-    public ThreadedStreamBuilder(Queue<StreamsDatum> queueType) {
-        this(queueType, null);
-    }
+    public ThreadedStreamBuilder(Queue<StreamsDatum> queue, Map<String, Object> streamConfig, int numThreads) {
 
-    /**
-     * @param queueType
-     * @param streamConfig
-     */
-    public ThreadedStreamBuilder(Queue<StreamsDatum> queueType, Map<String, Object> streamConfig) {
-        this.queue = queueType;
+        this.queue = queue;
         this.providers = new LinkedHashMap<String, StreamComponent>();
         this.components = new LinkedHashMap<String, StreamComponent>();
         this.streamConfig = streamConfig;
+
+        this.threadingController = new ThreadingController(numThreads);
     }
 
     @Override
@@ -205,7 +215,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
                 }
             };
 
-            timer.schedule(updateTask, 0, 1000);
+            timer.schedule(updateTask, 0, 1500);
 
             // keep going until we are done..
             // because we are using queues in between each of these items we can
@@ -301,16 +311,19 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
     protected void createTasks() {
         for (StreamComponent prov : this.providers.values()) {
-            BaseStreamsTask task = prov.createConnectedTask(getTimeout());
+            BaseStreamsTask task = prov.createConnectedTask(this.tasks, getTimeout(), this.threadingController);
             task.setStreamConfig(this.streamConfig);
             this.tasks.put(prov.getId(), task);
         }
 
         for (StreamComponent comp : this.components.values()) {
-            BaseStreamsTask task = comp.createConnectedTask(getTimeout());
+            BaseStreamsTask task = comp.createConnectedTask(this.tasks, getTimeout(), this.threadingController);
             task.setStreamConfig(this.streamConfig);
             this.tasks.put(comp.getId(), task);
         }
+
+        for(StreamsTask t : this.tasks.values())
+            t.initialize();
     }
 
     public void stop() {
