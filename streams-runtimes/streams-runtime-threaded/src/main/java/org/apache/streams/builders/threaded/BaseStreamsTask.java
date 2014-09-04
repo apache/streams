@@ -38,11 +38,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
-/**
- *
- */
 public abstract class BaseStreamsTask implements StreamsTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStreamsTask.class);
@@ -59,12 +55,16 @@ public abstract class BaseStreamsTask implements StreamsTask {
     protected final Set<StreamsTask> downStreamTasks = new HashSet<StreamsTask>();
     protected final ThreadingController threadingController;
 
+    protected final Integer allowedQueueSize;
+
     public abstract StatusCounts getCurrentStatus();
 
     BaseStreamsTask(String id, BlockingQueue<StreamsDatum> inQueue, Map<String, BaseStreamsTask> ctx, ThreadingController threadingController) {
         this.id = id;
         this.ctx = ctx;
-        this.inQueue = inQueue;
+        this.allowedQueueSize = inQueue == null ? 0 : inQueue.remainingCapacity();
+        this.inQueue = new ArrayBlockingQueue<StreamsDatum>(this.allowedQueueSize + 500);
+
         this.threadingController = threadingController;
     }
 
@@ -158,7 +158,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
         for (StreamsTask t : this.downStreamTasks) {
             synchronized (t.getPop()) {
                 int waitCount = 0;
-                while (t.getInQueue().remainingCapacity() < locks.get(t.getInQueue()).get()) {
+                while ( (t.getInQueue().remainingCapacity() - 500) < locks.get(t.getInQueue()).get()) {
                     try {
                         Thread.yield();
                         t.getPop().await(1, TimeUnit.MILLISECONDS);

@@ -175,7 +175,7 @@ class StreamComponent {
         BaseStreamsTask task;
 
         BlockingQueue<StreamsDatum> q = this.inQueue == null ? new ArrayBlockingQueue<StreamsDatum>(100) :
-                (this.inQueue instanceof ArrayBlockingQueue ? (ArrayBlockingQueue<StreamsDatum>)this.inQueue : new ArrayBlockingQueue<StreamsDatum>(this.inQueue.size() == 0 ? 100 : this.inQueue.size()));
+                (this.inQueue instanceof ArrayBlockingQueue ? (ArrayBlockingQueue<StreamsDatum>)this.inQueue : new ArrayBlockingQueue<StreamsDatum>(50));
         if(this.processor != null) {
             // create the task
 
