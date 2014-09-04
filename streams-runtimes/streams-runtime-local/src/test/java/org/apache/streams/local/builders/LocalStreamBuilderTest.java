@@ -18,18 +18,16 @@
 
 package org.apache.streams.local.builders;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Queues;
-import org.apache.streams.core.StreamBuilder;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.test.processors.PassthroughDatumCounterProcessor;
-import org.apache.streams.core.test.providers.NumericMessageProvider;
-import org.apache.streams.core.test.writer.SystemOutWriter;
-import org.apache.streams.local.tasks.StreamsTask;
-import org.apache.streams.local.test.processors.SlowProcessor;
-import org.apache.streams.local.test.providers.EmptyResultSetProvider;
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,11 +37,20 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import org.apache.streams.core.StreamBuilder;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.local.test.processors.PassthroughDatumCounterProcessor;
+import org.apache.streams.local.test.processors.SlowProcessor;
+import org.apache.streams.local.test.providers.EmptyResultSetProvider;
+import org.apache.streams.local.test.providers.NumericMessageProvider;
+import org.apache.streams.local.test.writer.SystemOutWriter;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
 
 /**
  * Basic Tests for the LocalStreamBuilder.

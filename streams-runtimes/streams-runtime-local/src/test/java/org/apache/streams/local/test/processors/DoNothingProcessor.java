@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.core.test.processors;
+package org.apache.streams.local.test.processors;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
