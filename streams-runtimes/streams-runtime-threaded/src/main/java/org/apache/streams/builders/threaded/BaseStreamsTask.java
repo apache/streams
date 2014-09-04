@@ -46,23 +46,15 @@ public abstract class BaseStreamsTask implements StreamsTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStreamsTask.class);
 
     private final Condition conditionIncoming = new SimpleCondition();
-    //private final Condition conditionOutgoing = new SimpleCondition();
     private final String id;
     private final Map<String, BaseStreamsTask> ctx;
-    protected final AtomicBoolean keepRunning = new AtomicBoolean(true);
-
-    protected static final Map<Queue, Condition> CONDITIONS = new HashMap<Queue, Condition>();
-
+    private final AtomicBoolean keepRunning = new AtomicBoolean(true);
     private final ArrayBlockingQueue<StreamsDatum> inQueue = new ArrayBlockingQueue<StreamsDatum>(50);
-
     private final Set<String> downStreamIds = new HashSet<String>();
-    protected final Set<StreamsTask> downStreamTasks = new HashSet<StreamsTask>();
-
     private final AtomicInteger workingCounter = new AtomicInteger(0);
 
-
+    protected final Set<StreamsTask> downStreamTasks = new HashSet<StreamsTask>();
     protected final ThreadingController threadingController;
-
 
     public abstract StatusCounts getCurrentStatus();
 
@@ -81,6 +73,10 @@ public abstract class BaseStreamsTask implements StreamsTask {
                 this.downStreamTasks.add(this.ctx.get(id));
             }
         }
+    }
+
+    public boolean shouldKeepRunning() {
+        return this.keepRunning.get();
     }
 
     public String getId() {
@@ -243,11 +239,13 @@ public abstract class BaseStreamsTask implements StreamsTask {
         // and take a quick rest and wait for people to
         // catch up
         synchronized (this.conditionIncoming) {
-            if (!isDatumAvailable()) {
-                try {
-                    this.conditionIncoming.await();
-                } catch (InterruptedException ioe) {
-                    /* no op */
+            if(shouldKeepRunning()) {
+                if (!isDatumAvailable()) {
+                    try {
+                        this.conditionIncoming.await();
+                    } catch (InterruptedException ioe) {
+                        /* no op */
+                    }
                 }
             }
         }

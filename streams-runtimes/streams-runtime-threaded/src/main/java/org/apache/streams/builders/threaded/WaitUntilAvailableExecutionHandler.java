@@ -19,6 +19,7 @@ package org.apache.streams.builders.threaded;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 
@@ -28,58 +29,35 @@ import java.util.concurrent.locks.Condition;
  */
 public class WaitUntilAvailableExecutionHandler implements RejectedExecutionHandler {
 
-    private final AtomicInteger waitCount = new AtomicInteger(0);
 
-    private final Condition condition;
+    private final Condition condition = new SimpleCondition();
+    private final AtomicInteger waitCount = new AtomicInteger(0);
 
     public boolean isWaiting() { return this.waitCount.get() > 0; }
 
     public WaitUntilAvailableExecutionHandler() {
-        condition = null;
-    }
 
-    WaitUntilAvailableExecutionHandler(Condition condition) {
-        this.condition = condition;
     }
 
     public synchronized void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
         // Wait until the pool is free for another item
 
-        if(executor.getMaximumPoolSize() == executor.getQueue().size()) {
+        if (executor.getMaximumPoolSize() == executor.getQueue().size()) {
+            this.waitCount.incrementAndGet();
 
-            if (this.condition == null) {
-                int currentPriority = Thread.currentThread().getPriority();
-                Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+            while (executor.getMaximumPoolSize() == executor.getQueue().size())
+                safeSleep();
 
-                this.waitCount.incrementAndGet();
-
-                int sleepTime = 1;
-
-                while (executor.getMaximumPoolSize() == executor.getQueue().size()) {
-                    safeSleep(sleepTime);
-                    sleepTime = sleepTime * 2;
-                }
-
-                Thread.currentThread().setPriority(currentPriority);
-
-                this.waitCount.decrementAndGet();
-            } else {
-                try {
-                    while (executor.getMaximumPoolSize() == executor.getQueue().size())
-                        this.condition.await();
-                } catch (InterruptedException ioe) {
-                    /* no op */
-                }
-            }
+            this.waitCount.decrementAndGet();
         }
         executor.submit(r);
     }
 
-    public static void safeSleep(int time) {
+    public void safeSleep() {
         try {
             // wait one tenth of a millisecond
             Thread.yield();
-            Thread.sleep(time);
+            Thread.sleep(5);
         }
         catch(Exception e) {
             /* no op */

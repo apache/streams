@@ -218,7 +218,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
             timer.schedule(updateTask, 0, 1500);
 
             while(this.threadingController.isWorking())
-                this.threadingController.getConditionWorking().await();
+                this.threadingController.getConditionWorking().await(500, TimeUnit.MILLISECONDS);
 
             for(final String k : tasks.keySet()) {
                 final StatusCounts counts = tasks.get(k).getCurrentStatus();

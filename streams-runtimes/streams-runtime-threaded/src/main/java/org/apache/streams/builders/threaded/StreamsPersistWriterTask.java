@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public class StreamsPersistWriterTask extends BaseStreamsTask {
 
@@ -65,39 +64,42 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
         try {
             this.writer.prepare(this.streamConfig);
 
-            while (this.keepRunning.get() || super.isDatumAvailable()) {
+            while (shouldKeepRunning() || super.isDatumAvailable()) {
 
-                if(this.keepRunning.get())
-                    waitForIncoming();
+                waitForIncoming();
 
-                final StreamsDatum datum = pollNextDatum();
+                if(isDatumAvailable()) {
+                    final StreamsDatum datum = pollNextDatum();
 
-                    reportWorking();
+                    if (datum != null) {
+
+                        reportWorking();
+
+                        Runnable command = new Runnable() {
+                            @Override
+                            public void run() {
+                                writer.write(datum);
+                            }
+                        };
 
 
-                Runnable command = new Runnable() {
-                    @Override
-                    public void run() {
-                        writer.write(datum);
+                        FutureCallback callback = new FutureCallback() {
+                            @Override
+                            public void onSuccess(Object o) {
+                                reportCompleted();
+                                statusCounter.incrementStatus(DatumStatus.SUCCESS);
+                            }
+
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                reportCompleted();
+                                statusCounter.incrementStatus(DatumStatus.FAIL);
+                            }
+                        };
+
+                        this.threadingController.execute(command, callback);
                     }
-                };
-
-
-                FutureCallback callback = new FutureCallback() {
-                    @Override
-                    public void onSuccess(Object o) {
-                        statusCounter.incrementStatus(DatumStatus.SUCCESS);
-                        reportCompleted();
-                    }
-
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        statusCounter.incrementStatus(DatumStatus.FAIL);
-                        reportCompleted();
-                    }
-                };
-
-                this.threadingController.execute(command, callback);
+                }
             }
         } finally {
             // clean everything up

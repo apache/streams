@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Processor task that is multi-threaded
@@ -69,43 +68,43 @@ public class StreamsProcessorTask extends BaseStreamsTask {
         try {
             this.processor.prepare(this.streamConfig);
 
-            while (this.keepRunning.get() || super.isDatumAvailable()) {
+            while (shouldKeepRunning() || super.isDatumAvailable()) {
 
-                if(this.keepRunning.get())
-                    waitForIncoming();
+                waitForIncoming();
 
-                final StreamsDatum datum = super.pollNextDatum();
-                if(datum != null) {
+                if(super.isDatumAvailable()) {
+                    final StreamsDatum datum = super.pollNextDatum();
+                    if (datum != null) {
 
-                    waitForOutBoundQueueToBeFree();
-                    reportWorking();
+                        waitForOutBoundQueueToBeFree();
+                        reportWorking();
 
-                    Callable<List<StreamsDatum>> command = new Callable<List<StreamsDatum>>() {
-                        @Override
-                        public List<StreamsDatum> call() throws Exception {
-                            return processor.process(datum);
-                        }
-                    };
+                        Callable<List<StreamsDatum>> command = new Callable<List<StreamsDatum>>() {
+                            @Override
+                            public List<StreamsDatum> call() throws Exception {
+                                return processor.process(datum);
+                            }
+                        };
 
-                    FutureCallback<List<StreamsDatum>> callback = new FutureCallback<List<StreamsDatum>>() {
-                        @Override
-                        public void onSuccess(List<StreamsDatum> ds) {
-                            reportCompleted();
-                            statusCounter.incrementStatus(DatumStatus.SUCCESS);
+                        FutureCallback<List<StreamsDatum>> callback = new FutureCallback<List<StreamsDatum>>() {
+                            @Override
+                            public void onSuccess(List<StreamsDatum> ds) {
+                                reportCompleted();
+                                statusCounter.incrementStatus(DatumStatus.SUCCESS);
+                                if (ds != null)
+                                    for (StreamsDatum d : ds)
+                                        addToOutgoingQueue(d);
+                            }
 
-                            if (ds != null)
-                                for (StreamsDatum d : ds)
-                                    addToOutgoingQueue(d);
-                        }
+                            @Override
+                            public void onFailure(Throwable throwable) {
+                                reportCompleted();
+                                statusCounter.incrementStatus(DatumStatus.FAIL);
+                            }
+                        };
 
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            reportCompleted();
-                            statusCounter.incrementStatus(DatumStatus.FAIL);
-                        }
-                    };
-
-                    this.threadingController.execute(command, callback);
+                        this.threadingController.execute(command, callback);
+                    }
                 }
             }
         } finally {

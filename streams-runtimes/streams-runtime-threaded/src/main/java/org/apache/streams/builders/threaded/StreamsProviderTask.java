@@ -76,7 +76,6 @@ public class StreamsProviderTask extends BaseStreamsTask  {
         this.keepRunning = new AtomicBoolean(true);
         this.isRunning = new AtomicBoolean(true);
         this.timeout = DEFAULT_TIMEOUT_MS;
-        this.threadingController.flagWorking(this);
     }
 
     public void setTimeout(int timeout) {
@@ -91,6 +90,12 @@ public class StreamsProviderTask extends BaseStreamsTask  {
     @Override
     public void setStreamConfig(Map<String, Object> config) {
         this.config = config;
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        this.threadingController.flagWorking(this);
     }
 
     @Override

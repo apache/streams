@@ -48,7 +48,7 @@ public class StreamsMergeTask extends BaseStreamsTask {
 
     @Override
     public void run() {
-        while(this.keepRunning.get()) {
+        while(shouldKeepRunning()) {
             StreamsDatum datum = super.pollNextDatum();
             if(datum != null) {
                 super.addToOutgoingQueue(datum);
