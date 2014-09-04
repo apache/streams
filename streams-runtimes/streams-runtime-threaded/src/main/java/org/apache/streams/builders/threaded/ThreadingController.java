@@ -59,6 +59,9 @@ public class ThreadingController {
     public boolean isWorking() {
         synchronized (this.workingFlags) {
 
+        if(getWorkingCount() > 0) {
+            return true;
+        }
             if (getWorkingCount() > 0) {
                 return true;
             }
