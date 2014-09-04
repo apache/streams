@@ -34,7 +34,6 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
@@ -44,20 +43,17 @@ public abstract class BaseStreamsTask implements StreamsTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStreamsTask.class);
 
     private final Condition conditionIncoming = new SimpleCondition();
-    protected final Condition pop = new SimpleCondition();
     private final String id;
     private final Map<String, BaseStreamsTask> ctx;
     private final AtomicBoolean keepRunning = new AtomicBoolean(true);
-    protected final BlockingQueue<StreamsDatum> inQueue;
     private final Set<String> downStreamIds = new HashSet<String>();
     private final AtomicInteger workingCounter = new AtomicInteger(0);
 
     protected final Set<StreamsTask> downStreamTasks = new HashSet<StreamsTask>();
     protected final ThreadingController threadingController;
-
+    protected final BlockingQueue<StreamsDatum> inQueue;
+    protected final Condition pop = new SimpleCondition();
     protected final Integer allowedQueueSize;
-
-    public abstract StatusCounts getCurrentStatus();
 
     BaseStreamsTask(String id, BlockingQueue<StreamsDatum> inQueue, Map<String, BaseStreamsTask> ctx, ThreadingController threadingController) {
         this.id = id;
@@ -69,14 +65,10 @@ public abstract class BaseStreamsTask implements StreamsTask {
     }
 
     public void initialize() {
-        for(String id : this.downStreamIds) {
-            if(!this.ctx.containsKey(id)) {
-                LOGGER.warn("Cannot find connected iD: {}", id);
-            }
-            else {
-                this.downStreamTasks.add(this.ctx.get(id));
-            }
-        }
+        this.threadingController.register(this);
+
+        for(String id : this.downStreamIds)
+            this.downStreamTasks.add(this.ctx.get(id));
     }
 
     public boolean shouldKeepRunning() {
@@ -127,50 +119,37 @@ public abstract class BaseStreamsTask implements StreamsTask {
      * @return the next StreamsDatum or null if all input queues are empty.
      */
     protected StreamsDatum pollNextDatum() {
-        StreamsDatum datum = null;
-        do {
+        while (this.inQueue.size() > 0) {
+            reportWorking();
             // Randomize the processing so it evenly distributes and to not prefer one queue over another
-            datum = this.inQueue.poll();
-            if(datum != null)
-                reportWorking();
-        } while (datum == null && this.inQueue.size() > 0);
-
-        return datum;
-    }
-
-    private static Map<Queue, AtomicInteger> ALL_LOCKS = new HashMap<Queue, AtomicInteger>();
-
-    protected Collection<AtomicInteger> waitForOutBoundQueueToBeFree() {
-
-        Map<Queue, AtomicInteger> locks = new HashMap<Queue, AtomicInteger>();
-
-        for (StreamsTask t : this.downStreamTasks) {
-            if (!ALL_LOCKS.containsKey(t.getInQueue())) {
-                ALL_LOCKS.put(t.getInQueue(), new AtomicInteger(0));
-            }
-
-            locks.put(t.getInQueue(), ALL_LOCKS.get(t.getInQueue()));
+            final StreamsDatum datum = this.inQueue.poll();
+            if (datum != null)
+                return datum;
         }
 
-        for (AtomicInteger lock : locks.values())
-            lock.incrementAndGet();
+        return null;
+    }
+
+    protected Collection<ThreadingController.LockCounter> waitForOutBoundQueueToBeFree() {
+
+        Map<String, ThreadingController.LockCounter> locks = new HashMap<String, ThreadingController.LockCounter>();
+
+        for (StreamsTask t : this.downStreamTasks)
+            locks.put(t.getId(), this.threadingController.getQueueLockCounts().get(t));
+
+        for (ThreadingController.LockCounter lock : locks.values())
+            lock.getLock().incrementAndGet();
 
         for (StreamsTask t : this.downStreamTasks) {
-            synchronized (t.getPop()) {
-                int waitCount = 0;
-                while ( (t.getInQueue().remainingCapacity() - 500) < locks.get(t.getInQueue()).get()) {
-                    try {
-                        Thread.yield();
-                        t.getPop().await(1, TimeUnit.MILLISECONDS);
-                        waitCount++;
-                        if(waitCount > 50) {
-                            releaseLocks(locks.values());
-                            return null;
-                        }
 
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+            final ThreadingController.LockCounter lock = locks.get(t.getId());
+
+            while ((t.getInQueue().remainingCapacity() - 500) < lock.getLock().get()) {
+                try {
+                    Thread.yield();
+                    lock.getPopped().await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -194,31 +173,36 @@ public abstract class BaseStreamsTask implements StreamsTask {
     }
 
     public String toString() {
-        return this.getClass().getName() + "[" + this.getId() + "]: " + this.getCurrentStatus().toString();
+        return this.getClass().getName() + "[" + this.getId() + "]: Atomic[" + this.threadingController.getQueueLockCounts().get(this).getLock().get() + "]" + this.getCurrentStatus().toString();
     }
 
     protected void reportWorking() {
-        synchronized (this) {
-            this.pop.signal();
-            this.threadingController.flagWorking(this);
-            workingCounter.incrementAndGet();
-        }
+        workingCounter.incrementAndGet();
+        this.threadingController.flagWorking(this);
+        this.pop.signal();
     }
 
-    protected void reportCompleted(Collection<AtomicInteger> locks) {
-        synchronized (this) {
-            releaseLocks(locks);
-            this.workingCounter.decrementAndGet();
-            if (this.workingCounter.get() == 0)
-                this.threadingController.flagNotWorking(this);
-            this.threadingController.getItemPoppedCondition().signal();
-        }
+    protected void reportCompleted() {
+        reportCompleted(null);
     }
 
-    protected void releaseLocks(Collection<AtomicInteger> locks) {
+    protected void reportCompleted(Collection<ThreadingController.LockCounter> locks) {
         if(locks != null)
-            for(AtomicInteger lock : locks) {
-                lock.decrementAndGet();
+            releaseLocks(locks);
+
+        this.workingCounter.decrementAndGet();
+        this.threadingController.getItemPoppedCondition().signal();
+
+        if (this.workingCounter.get() == 0) {
+            this.threadingController.flagNotWorking(this);
+        }
+    }
+
+    protected void releaseLocks(Collection<ThreadingController.LockCounter> locks) {
+        if (locks != null)
+            for (ThreadingController.LockCounter lock : locks) {
+                lock.getLock().decrementAndGet();
+                lock.getPopped().signal();
             }
     }
 
@@ -266,14 +250,12 @@ public abstract class BaseStreamsTask implements StreamsTask {
         // we don't have anything to do, let's yield
         // and take a quick rest and wait for people to
         // catch up
-        synchronized (this.conditionIncoming) {
-            if(shouldKeepRunning()) {
-                if (this.inQueue.size() == 0) {
-                    try {
-                        this.conditionIncoming.await();
-                    } catch (InterruptedException ioe) {
-                        /* no op */
-                    }
+        if(shouldKeepRunning()) {
+            if (this.inQueue.size() == 0) {
+                try {
+                    this.conditionIncoming.await();
+                } catch (InterruptedException ioe) {
+                    /* no op */
                 }
             }
         }

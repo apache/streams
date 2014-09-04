@@ -33,6 +33,10 @@ public interface StreamsTask extends Runnable {
 
     public void knock();
 
+    public StatusCounts getCurrentStatus();
+
+    public String getId();
+
     public Condition getPop();
 
     /**

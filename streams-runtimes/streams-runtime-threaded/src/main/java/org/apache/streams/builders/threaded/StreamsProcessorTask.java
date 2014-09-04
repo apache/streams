@@ -77,7 +77,7 @@ public class StreamsProcessorTask extends BaseStreamsTask {
                 waitForIncoming();
 
                 if(this.inQueue.size() > 0) {
-                    final Collection<AtomicInteger> locks = waitForOutBoundQueueToBeFree();
+                    final Collection<ThreadingController.LockCounter> locks = waitForOutBoundQueueToBeFree();
                     if(locks != null) {
                         final StreamsDatum datum = super.pollNextDatum();
 
@@ -94,14 +94,15 @@ public class StreamsProcessorTask extends BaseStreamsTask {
                                 if (ds != null)
                                     for (StreamsDatum d : ds)
                                         addToOutgoingQueue(d);
-                                reportCompleted(locks);
+
                                 statusCounter.incrementStatus(DatumStatus.SUCCESS);
+                                reportCompleted(locks);
                             }
 
                             @Override
                             public void onFailure(Throwable throwable) {
-                                reportCompleted(locks);
                                 statusCounter.incrementStatus(DatumStatus.FAIL);
+                                reportCompleted(locks);
                             }
                         };
 

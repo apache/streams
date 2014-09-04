@@ -158,7 +158,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
      * Runs the data stream in the this JVM and blocks till completion.
      */
     @Override
-    public synchronized void start() {
+    public void start() {
 
         final Timer timer = new Timer(true);
 
@@ -186,26 +186,29 @@ public class ThreadedStreamBuilder implements StreamBuilder {
         this.executor = Executors.newFixedThreadPool(tasks.size());
 
         try {
-            LOGGER.debug("----------------------------------- Starting LocalStream Builder -----------------------------------");
-
-            // Starting all the tasks
-            for(StreamsTask task : this.tasks.values())
-                this.executor.execute(task);
-
-
             // if anyone would like to listen in to progress events
             // let them do that
             TimerTask updateTask = new TimerTask() {
                 public void run() {
-                    if (eventHandlers.size() > 0) {
-                        final Map<String, StatusCounts> updateMap = getUpdateCounts();
 
+                    final Map<String, StatusCounts> updateMap = getUpdateCounts();
+
+                    /*
+                    for(final String k : updateMap.keySet()) {
+                        final StatusCounts counts = updateMap.get(k);
+                        LOGGER.debug("Finishing: {} - Queue[{}] Working[{}] Success[{}] Failed[{}] ", k,
+                                counts.getQueue(), counts.getWorking(), counts.getSuccess(), counts.getFailed());
+                    }
+                    */
+
+                    if (eventHandlers.size() > 0) {
                         for (final StreamBuilderEventHandler eventHandler : eventHandlers) {
                             try {
-                                new Thread(new Runnable() {
-                                public void run() {
+                                try {
                                     eventHandler.update(updateMap);
-                                }}).start();
+                                } catch(Throwable e) {
+                                    /* */
+                                }
                             }
                             catch(Throwable e) {
                                 /* No Operation */
@@ -217,8 +220,21 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
             timer.schedule(updateTask, 0, 1500);
 
+            LOGGER.debug("----------------------------------- Starting LocalStream Builder -----------------------------------");
+
+            // Starting all the tasks
+            for(StreamsTask task : this.tasks.values())
+                this.executor.execute(task);
+
+            LOGGER.debug("----------------------------------- Waiting for everything to be completed -----------------------------------");
+
+            // Wait for everything to be completed.
             while(this.threadingController.isWorking())
-                this.threadingController.getConditionWorking().await(10, TimeUnit.MILLISECONDS);
+                this.threadingController.getConditionWorking().await();
+
+            LOGGER.debug("----------------------------------- Everything is completed -----------------------------------");
+
+
 
             for(final String k : tasks.keySet()) {
                 final StatusCounts counts = tasks.get(k).getCurrentStatus();

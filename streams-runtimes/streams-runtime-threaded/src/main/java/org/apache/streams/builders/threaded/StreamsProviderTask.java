@@ -200,11 +200,7 @@ public class StreamsProviderTask extends BaseStreamsTask  {
     }
 
     private void processNext(StreamsDatum datum) {
-        Collection<AtomicInteger> locks = null;
-        while((locks = waitForOutBoundQueueToBeFree()) == null) {
-            Thread.yield();
-        }
-
+        Collection<ThreadingController.LockCounter> locks = waitForOutBoundQueueToBeFree();
         try {
             super.addToOutgoingQueue(datum);
             statusCounter.incrementStatus(DatumStatus.SUCCESS);
@@ -216,7 +212,8 @@ public class StreamsProviderTask extends BaseStreamsTask  {
     }
 
     public StatusCounts getCurrentStatus() {
-        return new StatusCounts(this.streamsResultSet == null ? 0 : this.streamsResultSet.getQueue().size(),
+        return new StatusCounts(this.streamsResultSet == null ? 0 :
+                this.streamsResultSet.getQueue() == null ? 0 : this.streamsResultSet.getQueue().size(),
                 0,
                 this.statusCounter.getSuccess(),
                 this.statusCounter.getFail());
