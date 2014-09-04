@@ -33,6 +33,8 @@ public interface StreamsTask extends Runnable {
 
     public void knock();
 
+    public Condition getPop();
+
     /**
      * Informs the task to stop. Tasks may or may not try to empty its inbound queue before halting.
      */

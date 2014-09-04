@@ -218,7 +218,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
             timer.schedule(updateTask, 0, 1500);
 
             while(this.threadingController.isWorking())
-                this.threadingController.getConditionWorking().await(500, TimeUnit.MILLISECONDS);
+                this.threadingController.getConditionWorking().await(10, TimeUnit.MILLISECONDS);
 
             for(final String k : tasks.keySet()) {
                 final StatusCounts counts = tasks.get(k).getCurrentStatus();
@@ -244,15 +244,6 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
             // Kill the timer
             timer.cancel();
-        }
-    }
-
-    private void safeQuickRest(final int millis) {
-        try {
-            Thread.yield();
-            Thread.sleep(millis);
-        } catch(Throwable e) {
-            // No Operation
         }
     }
 

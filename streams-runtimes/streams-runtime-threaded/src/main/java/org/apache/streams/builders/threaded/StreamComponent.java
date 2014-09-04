@@ -22,6 +22,8 @@ import org.joda.time.DateTime;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Stores the implementations of {@link org.apache.streams.core.StreamsOperation}, the StreamsOperations it is connected
@@ -172,9 +174,12 @@ class StreamComponent {
 
         BaseStreamsTask task;
 
+        BlockingQueue<StreamsDatum> q = this.inQueue == null ? new ArrayBlockingQueue<StreamsDatum>(100) :
+                (this.inQueue instanceof ArrayBlockingQueue ? (ArrayBlockingQueue<StreamsDatum>)this.inQueue : new ArrayBlockingQueue<StreamsDatum>(this.inQueue.size() == 0 ? 100 : this.inQueue.size()));
         if(this.processor != null) {
             // create the task
-            task = new StreamsProcessorTask(this.id, ctx, this.processor, threadingController);
+
+            task = new StreamsProcessorTask(this.id, q, ctx, this.processor, threadingController);
 
             // Processor has an input queue
             task.addInputQueue(this.id);
@@ -187,7 +192,7 @@ class StreamComponent {
         }
         else if(this.writer != null) {
             // create the task
-            task = new StreamsPersistWriterTask(this.id, ctx, this.writer, threadingController);
+            task = new StreamsPersistWriterTask(this.id, q, ctx, this.writer, threadingController);
             task.addInputQueue(this.id);
         }
         else if(this.provider != null) {

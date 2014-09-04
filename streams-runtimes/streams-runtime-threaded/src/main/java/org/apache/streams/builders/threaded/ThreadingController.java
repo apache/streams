@@ -37,12 +37,12 @@ public class ThreadingController {
                 new ArrayBlockingQueue<Runnable>(this.numThreads));
 
         this.queueShuffler = new ThreadPoolExecutor(
-                this.numThreads * 2,
-                this.numThreads * 2,
+                1,
+                this.numThreads,
                 0L,
                 TimeUnit.SECONDS,
-                new ArrayBlockingQueue<Runnable>(this.numThreads * 10),
-                new WaitUntilAvailableExecutionHandler());
+                new ArrayBlockingQueue<Runnable>(this.numThreads),
+                new ThreadPoolExecutor.CallerRunsPolicy());
 
 
         this.listeningExecutorService = MoreExecutors.listeningDecorator(this.threadPoolExecutor);
@@ -57,16 +57,18 @@ public class ThreadingController {
     }
 
     public boolean isWorking() {
+        synchronized (this.workingFlags) {
 
-        if(getWorkingCount() > 0) {
-            return true;
-        }
-
-        for(Boolean flagWorking : this.workingFlags.values())
-            if (flagWorking)
+            if (getWorkingCount() > 0) {
                 return true;
+            }
 
-        return false;
+            for (Boolean flagWorking : this.workingFlags.values())
+                if (flagWorking)
+                    return true;
+
+            return false;
+        }
     }
 
     public void shutDown() {
@@ -94,14 +96,18 @@ public class ThreadingController {
     }
 
     public void flagWorking(StreamsTask task) {
-        this.workingFlags.put(task, true);
+        synchronized (this.workingFlags) {
+            this.workingFlags.put(task, true);
+        }
     }
 
     public void flagNotWorking(StreamsTask task) {
-        this.workingFlags.put(task, false);
+        synchronized (this.workingFlags) {
+            this.workingFlags.put(task, false);
 
-        if(!this.isWorking())
-            this.conditionWorking.signalAll();
+            if (!this.isWorking())
+                this.conditionWorking.signalAll();
+        }
     }
 
     public int getWorkingCount() {
@@ -109,13 +115,17 @@ public class ThreadingController {
     }
 
     public synchronized void execute(Runnable command, FutureCallback responseHandler) {
-        waitForQueue();
-        Futures.addCallback(this.listeningExecutorService.submit(command), responseHandler, this.queueShuffler);
+        synchronized (this) {
+            waitForQueue();
+            Futures.addCallback(this.listeningExecutorService.submit(command), responseHandler, this.queueShuffler);
+        }
     }
 
     public synchronized void execute(Callable<List<StreamsDatum>> command, FutureCallback<List<StreamsDatum>> responseHandler) {
-        waitForQueue();
-        Futures.addCallback(this.listeningExecutorService.submit(command), responseHandler, this.queueShuffler);
+        synchronized (this) {
+            waitForQueue();
+            Futures.addCallback(this.listeningExecutorService.submit(command), responseHandler, this.queueShuffler);
+        }
     }
 
     protected synchronized void waitForQueue() {

@@ -21,13 +21,14 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Unlike the other implementation, this doesn't record anything statically
  */
 public class SimpleProcessorCounter implements StreamsProcessor {
 
-    private int count = 0;
+    private AtomicInteger count = new AtomicInteger(0);
     private int delay;
 
     public SimpleProcessorCounter() {
@@ -44,12 +45,12 @@ public class SimpleProcessorCounter implements StreamsProcessor {
      * The number of messages this instance saw
      */
     public int getMessageCount() {
-        return this.count;
+        return this.count.get();
     }
 
     public List<StreamsDatum> process(StreamsDatum entry) {
         sleepSafely();
-        this.count++;
+        this.count.incrementAndGet();
         List<StreamsDatum> result = new LinkedList<StreamsDatum>();
         result.add(entry);
         return result;

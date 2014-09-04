@@ -29,11 +29,11 @@ public class StreamsMergeTask extends BaseStreamsTask {
 
 
     public StreamsMergeTask() {
-        super(null, null, null);
+        super(null, null, null, null);
     }
 
     public StreamsMergeTask(String id, Map<String, BaseStreamsTask> ctx) {
-        super(id, ctx, null);
+        super(id, null, ctx, null);
     }
 
     @Override

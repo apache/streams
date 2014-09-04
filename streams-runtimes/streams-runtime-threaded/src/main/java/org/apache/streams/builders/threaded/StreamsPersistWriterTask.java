@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
 public class StreamsPersistWriterTask extends BaseStreamsTask {
 
@@ -36,8 +37,8 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
     protected final DatumStatusCounter statusCounter = new DatumStatusCounter();
 
 
-    public StreamsPersistWriterTask(String id, Map<String, BaseStreamsTask> ctx, StreamsPersistWriter writer, ThreadingController threadingController) {
-        super(id, ctx, threadingController);
+    public StreamsPersistWriterTask(String id, BlockingQueue<StreamsDatum> inQueue, Map<String, BaseStreamsTask> ctx, StreamsPersistWriter writer, ThreadingController threadingController) {
+        super(id, inQueue, ctx, threadingController);
         this.writer = writer;
     }
 
@@ -48,12 +49,11 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
 
     @Override
     public boolean isRunning() {
-        return  getWorkingCount() > 0 ||
-                this.isDatumAvailable();
+        return  getWorkingCount() > 0 || this.inQueue.size() > 0;
     }
 
     public StatusCounts getCurrentStatus() {
-        return new StatusCounts(getTotalInQueue(),
+        return new StatusCounts(this.inQueue.size(),
                 this.getWorkingCount(),
                 this.statusCounter.getSuccess(),
                 this.statusCounter.getFail());
@@ -64,41 +64,35 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
         try {
             this.writer.prepare(this.streamConfig);
 
-            while (shouldKeepRunning() || super.isDatumAvailable()) {
+            while (shouldKeepRunning() || this.inQueue.size() > 0) {
 
                 waitForIncoming();
 
-                if(isDatumAvailable()) {
+                if(this.inQueue.size() > 0) {
                     final StreamsDatum datum = pollNextDatum();
 
-                    if (datum != null) {
+                    Runnable command = new Runnable() {
+                        @Override
+                        public void run() {
+                            writer.write(datum);
+                        }
+                    };
 
-                        reportWorking();
+                    FutureCallback callback = new FutureCallback() {
+                        @Override
+                        public void onSuccess(Object o) {
+                            reportCompleted(null);
+                            statusCounter.incrementStatus(DatumStatus.SUCCESS);
+                        }
 
-                        Runnable command = new Runnable() {
-                            @Override
-                            public void run() {
-                                writer.write(datum);
-                            }
-                        };
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            reportCompleted(null);
+                            statusCounter.incrementStatus(DatumStatus.FAIL);
+                        }
+                    };
 
-
-                        FutureCallback callback = new FutureCallback() {
-                            @Override
-                            public void onSuccess(Object o) {
-                                reportCompleted();
-                                statusCounter.incrementStatus(DatumStatus.SUCCESS);
-                            }
-
-                            @Override
-                            public void onFailure(Throwable throwable) {
-                                reportCompleted();
-                                statusCounter.incrementStatus(DatumStatus.FAIL);
-                            }
-                        };
-
-                        this.threadingController.execute(command, callback);
-                    }
+                    this.threadingController.execute(command, callback);
                 }
             }
         } finally {

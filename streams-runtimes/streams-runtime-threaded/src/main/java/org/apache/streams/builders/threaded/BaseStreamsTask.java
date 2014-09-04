@@ -34,9 +34,11 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
@@ -46,10 +48,11 @@ public abstract class BaseStreamsTask implements StreamsTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStreamsTask.class);
 
     private final Condition conditionIncoming = new SimpleCondition();
+    protected final Condition pop = new SimpleCondition();
     private final String id;
     private final Map<String, BaseStreamsTask> ctx;
     private final AtomicBoolean keepRunning = new AtomicBoolean(true);
-    private final ArrayBlockingQueue<StreamsDatum> inQueue = new ArrayBlockingQueue<StreamsDatum>(50);
+    protected final BlockingQueue<StreamsDatum> inQueue;
     private final Set<String> downStreamIds = new HashSet<String>();
     private final AtomicInteger workingCounter = new AtomicInteger(0);
 
@@ -58,9 +61,10 @@ public abstract class BaseStreamsTask implements StreamsTask {
 
     public abstract StatusCounts getCurrentStatus();
 
-    BaseStreamsTask(String id, Map<String, BaseStreamsTask> ctx, ThreadingController threadingController) {
+    BaseStreamsTask(String id, BlockingQueue<StreamsDatum> inQueue, Map<String, BaseStreamsTask> ctx, ThreadingController threadingController) {
         this.id = id;
         this.ctx = ctx;
+        this.inQueue = inQueue;
         this.threadingController = threadingController;
     }
 
@@ -81,6 +85,10 @@ public abstract class BaseStreamsTask implements StreamsTask {
 
     public String getId() {
         return this.id;
+    }
+
+    public Condition getPop() {
+        return this.pop;
     }
 
     public void knock() {
@@ -123,36 +131,51 @@ public abstract class BaseStreamsTask implements StreamsTask {
         do {
             // Randomize the processing so it evenly distributes and to not prefer one queue over another
             datum = this.inQueue.poll();
-        } while (datum == null && isDatumAvailable());
+            if(datum != null)
+                reportWorking();
+        } while (datum == null && this.inQueue.size() > 0);
 
         return datum;
     }
 
-    /**
-     * Check all the inbound queues and see if there is a datum that is available
-     * to be processed.
-     *
-     * @return whether or not there is another datum available
-     */
-    public boolean isDatumAvailable() {
-        return getTotalInQueue() > 0;
-    }
+    private static Map<Queue, AtomicInteger> ALL_LOCKS = new HashMap<Queue, AtomicInteger>();
 
-    /**
-     * The total number of items that are in the queue right now.
-     * @return
-     * The total number of items that are in the queue waiting to be worked right now.
-     */
-    public synchronized int getTotalInQueue() {
-        return this.inQueue.size();
-    }
+    protected Collection<AtomicInteger> waitForOutBoundQueueToBeFree() {
 
-    protected void waitForOutBoundQueueToBeFree() {
+        Map<Queue, AtomicInteger> locks = new HashMap<Queue, AtomicInteger>();
+
         for (StreamsTask t : this.downStreamTasks) {
-            while(t.getInQueue().remainingCapacity() == 0) {
-                Thread.yield();
+            if (!ALL_LOCKS.containsKey(t.getInQueue())) {
+                ALL_LOCKS.put(t.getInQueue(), new AtomicInteger(0));
+            }
+
+            locks.put(t.getInQueue(), ALL_LOCKS.get(t.getInQueue()));
+        }
+
+        for (AtomicInteger lock : locks.values())
+            lock.incrementAndGet();
+
+        for (StreamsTask t : this.downStreamTasks) {
+            synchronized (t.getPop()) {
+                int waitCount = 0;
+                while (t.getInQueue().remainingCapacity() < locks.get(t.getInQueue()).get()) {
+                    try {
+                        Thread.yield();
+                        t.getPop().await(1, TimeUnit.MILLISECONDS);
+                        waitCount++;
+                        if(waitCount > 50) {
+                            releaseLocks(locks.values());
+                            return null;
+                        }
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
+
+        return locks.values();
     }
 
     /**
@@ -174,19 +197,29 @@ public abstract class BaseStreamsTask implements StreamsTask {
         return this.getClass().getName() + "[" + this.getId() + "]: " + this.getCurrentStatus().toString();
     }
 
-
     protected void reportWorking() {
-        this.threadingController.flagWorking(this);
-        workingCounter.incrementAndGet();
+        synchronized (this) {
+            this.pop.signal();
+            this.threadingController.flagWorking(this);
+            workingCounter.incrementAndGet();
+        }
     }
 
-    protected void reportCompleted() {
+    protected void reportCompleted(Collection<AtomicInteger> locks) {
         synchronized (this) {
+            releaseLocks(locks);
             this.workingCounter.decrementAndGet();
             if (this.workingCounter.get() == 0)
                 this.threadingController.flagNotWorking(this);
             this.threadingController.getItemPoppedCondition().signal();
         }
+    }
+
+    protected void releaseLocks(Collection<AtomicInteger> locks) {
+        if(locks != null)
+            for(AtomicInteger lock : locks) {
+                lock.decrementAndGet();
+            }
     }
 
     /**
@@ -229,18 +262,13 @@ public abstract class BaseStreamsTask implements StreamsTask {
         }
     }
 
-    protected void notifyAllDownStreamMembers() {
-        for(StreamsTask t : downStreamTasks)
-            t.knock();
-    }
-
     protected void waitForIncoming() {
         // we don't have anything to do, let's yield
         // and take a quick rest and wait for people to
         // catch up
         synchronized (this.conditionIncoming) {
             if(shouldKeepRunning()) {
-                if (!isDatumAvailable()) {
+                if (this.inQueue.size() == 0) {
                     try {
                         this.conditionIncoming.await();
                     } catch (InterruptedException ioe) {

@@ -25,9 +25,13 @@ import org.apache.streams.core.StreamsProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Processor task that is multi-threaded
@@ -45,8 +49,8 @@ public class StreamsProcessorTask extends BaseStreamsTask {
      *
      * @param processor process to run in task
      */
-    public StreamsProcessorTask(String id, Map<String, BaseStreamsTask> ctx, StreamsProcessor processor, ThreadingController threadingController) {
-        super(id, ctx, threadingController);
+    public StreamsProcessorTask(String id, BlockingQueue<StreamsDatum> inQueue, Map<String, BaseStreamsTask> ctx, StreamsProcessor processor, ThreadingController threadingController) {
+        super(id, inQueue, ctx, threadingController);
         this.processor = processor;
     }
 
@@ -59,7 +63,7 @@ public class StreamsProcessorTask extends BaseStreamsTask {
 
     @Override
     public boolean isRunning() {
-        return getWorkingCount() > 0 || this.isDatumAvailable();
+        return getWorkingCount() > 0 || this.inQueue.size() > 0;
     }
 
     @Override
@@ -68,16 +72,14 @@ public class StreamsProcessorTask extends BaseStreamsTask {
         try {
             this.processor.prepare(this.streamConfig);
 
-            while (shouldKeepRunning() || super.isDatumAvailable()) {
+            while (shouldKeepRunning() || this.inQueue.size() > 0) {
 
                 waitForIncoming();
 
-                if(super.isDatumAvailable()) {
-                    final StreamsDatum datum = super.pollNextDatum();
-                    if (datum != null) {
-
-                        waitForOutBoundQueueToBeFree();
-                        reportWorking();
+                if(this.inQueue.size() > 0) {
+                    final Collection<AtomicInteger> locks = waitForOutBoundQueueToBeFree();
+                    if(locks != null) {
+                        final StreamsDatum datum = super.pollNextDatum();
 
                         Callable<List<StreamsDatum>> command = new Callable<List<StreamsDatum>>() {
                             @Override
@@ -89,16 +91,16 @@ public class StreamsProcessorTask extends BaseStreamsTask {
                         FutureCallback<List<StreamsDatum>> callback = new FutureCallback<List<StreamsDatum>>() {
                             @Override
                             public void onSuccess(List<StreamsDatum> ds) {
-                                reportCompleted();
-                                statusCounter.incrementStatus(DatumStatus.SUCCESS);
                                 if (ds != null)
                                     for (StreamsDatum d : ds)
                                         addToOutgoingQueue(d);
+                                reportCompleted(locks);
+                                statusCounter.incrementStatus(DatumStatus.SUCCESS);
                             }
 
                             @Override
                             public void onFailure(Throwable throwable) {
-                                reportCompleted();
+                                reportCompleted(locks);
                                 statusCounter.incrementStatus(DatumStatus.FAIL);
                             }
                         };
@@ -106,6 +108,7 @@ public class StreamsProcessorTask extends BaseStreamsTask {
                         this.threadingController.execute(command, callback);
                     }
                 }
+                // loop back around.
             }
         } finally {
             // clean everything up
@@ -114,7 +117,7 @@ public class StreamsProcessorTask extends BaseStreamsTask {
     }
 
     public StatusCounts getCurrentStatus() {
-        return new StatusCounts(getTotalInQueue(),
+        return new StatusCounts(this.inQueue.size(),
                 getWorkingCount(),
                 this.statusCounter.getSuccess(),
                 this.statusCounter.getFail());

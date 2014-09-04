@@ -23,9 +23,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
@@ -66,7 +69,7 @@ public class StreamsProviderTask extends BaseStreamsTask  {
      * @param provider
      */
     public StreamsProviderTask(ThreadingController threadingController, String id, Map<String, BaseStreamsTask> ctx, StreamsProvider provider, boolean perpetual) {
-        super(id, ctx, threadingController);
+        super(id, null, ctx, threadingController);
         this.threadingController = threadingController;
         this.provider = provider;
         if (perpetual)
@@ -152,7 +155,7 @@ public class StreamsProviderTask extends BaseStreamsTask  {
                         // The process is still running, but there is nothing on the queue...
                         // we just need to be patient and wait, we yield the execution and
                         // wait for 1ms to see if anything changes.
-                        safeQuickRest(10);
+                        safeQuickRest(5);
                     } else {
                         flushResults();
                     }
@@ -197,13 +200,18 @@ public class StreamsProviderTask extends BaseStreamsTask  {
     }
 
     private void processNext(StreamsDatum datum) {
+        Collection<AtomicInteger> locks = null;
+        while((locks = waitForOutBoundQueueToBeFree()) == null) {
+            Thread.yield();
+        }
+
         try {
-            waitForOutBoundQueueToBeFree();
             super.addToOutgoingQueue(datum);
             statusCounter.incrementStatus(DatumStatus.SUCCESS);
         } catch (Throwable e) {
             statusCounter.incrementStatus(DatumStatus.FAIL);
-            notifyAllDownStreamMembers();
+        } finally {
+            releaseLocks(locks);
         }
     }
 
