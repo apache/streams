@@ -17,6 +17,7 @@
  */
 package org.apache.streams.builders.threaded;
 
+import com.google.common.util.concurrent.FutureCallback;
 import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
@@ -25,12 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ExecutionException;
 
-/**
- * Streams persist writer
- */
 public class StreamsPersistWriterTask extends BaseStreamsTask {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPersistWriterTask.class);
@@ -38,14 +35,11 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
     protected final StreamsPersistWriter writer;
     protected Map<String, Object> streamConfig;
     protected final DatumStatusCounter statusCounter = new DatumStatusCounter();
-    private final ThreadingController threadingController;
-    private final AtomicInteger workingCounter = new AtomicInteger(0);
 
 
     public StreamsPersistWriterTask(String id, Map<String, BaseStreamsTask> ctx, StreamsPersistWriter writer, ThreadingController threadingController) {
-        super(id, ctx);
+        super(id, ctx, threadingController);
         this.writer = writer;
-        this.threadingController = threadingController;
     }
 
     @Override
@@ -55,13 +49,13 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
 
     @Override
     public boolean isRunning() {
-        return  workingCounter.get() > 0 ||
+        return  getWorkingCount() > 0 ||
                 this.isDatumAvailable();
     }
 
     public StatusCounts getCurrentStatus() {
         return new StatusCounts(getTotalInQueue(),
-                this.workingCounter.get(),
+                this.getWorkingCount(),
                 this.statusCounter.getSuccess(),
                 this.statusCounter.getFail());
     }
@@ -73,19 +67,37 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
 
             while (this.keepRunning.get() || super.isDatumAvailable()) {
 
-                waitForIncoming();
-
-                StreamsDatum datum;
-                while ((datum = pollNextDatum()) != null) {
-                    final StreamsDatum workingDatum = datum;
-                    this.threadingController.execute(new Runnable() {
-                        public void run() {
-                            processThisDatum(workingDatum);
-                        }
-                    });
-
+                if(this.keepRunning.get())
                     waitForIncoming();
-                }
+
+                final StreamsDatum datum = pollNextDatum();
+
+                    reportWorking();
+
+
+                Runnable command = new Runnable() {
+                    @Override
+                    public void run() {
+                        writer.write(datum);
+                    }
+                };
+
+
+                FutureCallback callback = new FutureCallback() {
+                    @Override
+                    public void onSuccess(Object o) {
+                        statusCounter.incrementStatus(DatumStatus.SUCCESS);
+                        reportCompleted();
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        statusCounter.incrementStatus(DatumStatus.FAIL);
+                        reportCompleted();
+                    }
+                };
+
+                this.threadingController.execute(command, callback);
             }
         } finally {
             // clean everything up
@@ -93,25 +105,8 @@ public class StreamsPersistWriterTask extends BaseStreamsTask {
         }
     }
 
-    protected final void processThisDatum(StreamsDatum datum) {
-        try
-        {
-            this.workingCounter.incrementAndGet();
-            this.writer.write(datum);
-            statusCounter.incrementStatus(DatumStatus.SUCCESS);
-        }
-        catch (Throwable e) {
-            LOGGER.error("{} - Error[{}] writing to persist writer {}", this.getId(), e.getMessage(), this.writer.toString());
-            statusCounter.incrementStatus(DatumStatus.FAIL);
-        }
-        finally {
-            this.workingCounter.decrementAndGet();
-            this.threadingController.getItemPoppedCondition().signal();
-        }
-    }
-
     @Override
-    public void addOutputQueue(String id, Queue<StreamsDatum> outputQueue) {
+    public void addOutputQueue(String id) {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support method - setOutputQueue()");
     }
 

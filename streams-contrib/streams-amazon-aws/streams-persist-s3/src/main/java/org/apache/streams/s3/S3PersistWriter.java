@@ -55,12 +55,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
     private final AtomicInteger totalRecordsWritten = new AtomicInteger();
     private AtomicInteger fileLineCounter = new AtomicInteger();
 
-    private Map<String, String> objectMetaData = new HashMap<String, String>() {{
-        put("line[0]", "id");
-        put("line[1]", "timeStamp");
-        put("line[2]", "metaData");
-        put("line[3]", "document");
-    }};
+    private Map<String, String> objectMetaData = new HashMap<String, String>() {{ }};
 
     private OutputStreamWriter currentWriter = null;
 

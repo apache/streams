@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.util.Map;
-import java.util.Queue;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -58,14 +58,16 @@ public class StreamsProviderTask extends BaseStreamsTask  {
     private int timeout;
     private int zeros = 0;
     private DatumStatusCounter statusCounter = new DatumStatusCounter();
+    private final ThreadingController threadingController;
 
     /**
      * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readCurrent()}
      *
      * @param provider
      */
-    public StreamsProviderTask(String id, Map<String, BaseStreamsTask> ctx, StreamsProvider provider, boolean perpetual) {
-        super(id, ctx);
+    public StreamsProviderTask(ThreadingController threadingController, String id, Map<String, BaseStreamsTask> ctx, StreamsProvider provider, boolean perpetual) {
+        super(id, ctx, threadingController);
+        this.threadingController = threadingController;
         this.provider = provider;
         if (perpetual)
             this.type = Type.PERPETUAL;
@@ -74,41 +76,7 @@ public class StreamsProviderTask extends BaseStreamsTask  {
         this.keepRunning = new AtomicBoolean(true);
         this.isRunning = new AtomicBoolean(true);
         this.timeout = DEFAULT_TIMEOUT_MS;
-    }
-
-    /**
-     * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readNew(BigInteger)}
-     *
-     * @param provider
-     * @param sequence
-     */
-    public StreamsProviderTask(String id, Map<String, BaseStreamsTask> ctx, StreamsProvider provider, BigInteger sequence) {
-        super(id, ctx);
-        this.provider = provider;
-        this.type = Type.READ_NEW;
-        this.sequence = sequence;
-        this.keepRunning = new AtomicBoolean(true);
-        this.isRunning = new AtomicBoolean(true);
-        this.timeout = DEFAULT_TIMEOUT_MS;
-    }
-
-    /**
-     * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readRange(DateTime,DateTime)}
-     *
-     * @param provider
-     * @param start
-     * @param end
-     */
-    public StreamsProviderTask(String id, Map<String, BaseStreamsTask> ctx, StreamsProvider provider, DateTime start, DateTime end) {
-        super(id, ctx);
-        this.provider = provider;
-        this.type = Type.READ_RANGE;
-        this.dateRange = new DateTime[2];
-        this.dateRange[START] = start;
-        this.dateRange[END] = end;
-        this.keepRunning = new AtomicBoolean(true);
-        this.isRunning = new AtomicBoolean(true);
-        this.timeout = DEFAULT_TIMEOUT_MS;
+        this.threadingController.flagWorking(this);
     }
 
     public void setTimeout(int timeout) {
@@ -116,7 +84,7 @@ public class StreamsProviderTask extends BaseStreamsTask  {
     }
 
     @Override
-    public void addInputQueue(String id, Queue<StreamsDatum> inputQueue) {
+    public BlockingDeque<StreamsDatum> getInQueue() {
         throw new UnsupportedOperationException(this.getClass().getName() + " does not support method - setInputQueue()");
     }
 
@@ -125,9 +93,9 @@ public class StreamsProviderTask extends BaseStreamsTask  {
         this.config = config;
     }
 
-
     @Override
     public void run() {
+
         // lock, yes, I am running
         this.isRunning.set(true);
 
@@ -192,6 +160,7 @@ public class StreamsProviderTask extends BaseStreamsTask  {
             this.isRunning.set(false);
         } finally {
             this.provider.cleanUp();
+            this.threadingController.flagNotWorking(this);
             this.isRunning.set(false);
         }
     }
@@ -214,12 +183,7 @@ public class StreamsProviderTask extends BaseStreamsTask  {
                 if (!this.keepRunning.get())
                     break;
 
-                Queue q = null;
-                while((q = getHaltingOutboundQueue()) != null)
-                    CONDITIONS.get(q).await();
-
                 processNext(datum);
-
             }
         }
         catch(Throwable e) {
@@ -229,13 +193,12 @@ public class StreamsProviderTask extends BaseStreamsTask  {
 
     private void processNext(StreamsDatum datum) {
         try {
+            waitForOutBoundQueueToBeFree();
             super.addToOutgoingQueue(datum);
             statusCounter.incrementStatus(DatumStatus.SUCCESS);
         } catch (Throwable e) {
             statusCounter.incrementStatus(DatumStatus.FAIL);
-        } finally {
-            for(StreamsTask t : downStreamTasks)
-                t.knock();
+            notifyAllDownStreamMembers();
         }
     }
 
@@ -246,5 +209,15 @@ public class StreamsProviderTask extends BaseStreamsTask  {
                 this.statusCounter.getFail());
     }
 
+    protected void safeQuickRest(int waitTime) {
+
+        // The queue is empty, we might as well sleep.
+        Thread.yield();
+        try {
+            Thread.sleep(waitTime);
+        } catch (InterruptedException ie) {
+            // No Operation
+        }
+    }
 
 }

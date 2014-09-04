@@ -32,8 +32,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
@@ -45,24 +45,31 @@ public abstract class BaseStreamsTask implements StreamsTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStreamsTask.class);
 
-    private Condition condition = null;
+    private final Condition conditionIncoming = new SimpleCondition();
+    //private final Condition conditionOutgoing = new SimpleCondition();
     private final String id;
     private final Map<String, BaseStreamsTask> ctx;
     protected final AtomicBoolean keepRunning = new AtomicBoolean(true);
 
     protected static final Map<Queue, Condition> CONDITIONS = new HashMap<Queue, Condition>();
 
-    private final List<Queue<StreamsDatum>> inQueues = new ArrayList<Queue<StreamsDatum>>();
-    private final List<Queue<StreamsDatum>> outQueues = new ArrayList<Queue<StreamsDatum>>();
+    private final ArrayBlockingQueue<StreamsDatum> inQueue = new ArrayBlockingQueue<StreamsDatum>(50);
 
     private final Set<String> downStreamIds = new HashSet<String>();
     protected final Set<StreamsTask> downStreamTasks = new HashSet<StreamsTask>();
 
+    private final AtomicInteger workingCounter = new AtomicInteger(0);
+
+
+    protected final ThreadingController threadingController;
+
+
     public abstract StatusCounts getCurrentStatus();
 
-    BaseStreamsTask(String id, Map<String, BaseStreamsTask> ctx) {
+    BaseStreamsTask(String id, Map<String, BaseStreamsTask> ctx, ThreadingController threadingController) {
         this.id = id;
         this.ctx = ctx;
+        this.threadingController = threadingController;
     }
 
     public void initialize() {
@@ -72,7 +79,6 @@ public abstract class BaseStreamsTask implements StreamsTask {
             }
             else {
                 this.downStreamTasks.add(this.ctx.get(id));
-                this.ctx.get(id).tap();
             }
         }
     }
@@ -81,46 +87,33 @@ public abstract class BaseStreamsTask implements StreamsTask {
         return this.id;
     }
 
-    public void tap() {
-        this.condition = new SimpleCondition();
-    }
-
     public void knock() {
-        this.condition.signal();
+        this.conditionIncoming.signal();
     }
 
-    public boolean wasTapped() {
-        return this.condition != null;
+    public int getWorkingCount() {
+        return this.workingCounter.get();
     }
 
     @Override
     public final void stopTask() {
         this.keepRunning.set(false);
+        this.conditionIncoming.signal();
     }
 
     @Override
-    public void addInputQueue(String id, Queue<StreamsDatum> inputQueue) {
-        this.inQueues.add(inputQueue);
-        if(!CONDITIONS.containsKey(inputQueue))
-            CONDITIONS.put(inputQueue, new SimpleCondition());
+    public void addInputQueue(String id) {
+
     }
 
     @Override
-    public void addOutputQueue(String id, Queue<StreamsDatum> outputQueue) {
-        this.outQueues.add(outputQueue);
-        if(!CONDITIONS.containsKey(outputQueue))
-            CONDITIONS.put(outputQueue, new SimpleCondition());
+    public void addOutputQueue(String id) {
         this.downStreamIds.add(id);
     }
 
     @Override
-    public final List<Queue<StreamsDatum>> getInputQueues() {
-        return this.inQueues;
-    }
-
-    @Override
-    public final List<Queue<StreamsDatum>> getOutputQueues() {
-        return this.outQueues;
+    public BlockingQueue<StreamsDatum> getInQueue() {
+        return this.inQueue;
     }
 
     /**
@@ -133,13 +126,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
         StreamsDatum datum = null;
         do {
             // Randomize the processing so it evenly distributes and to not prefer one queue over another
-            int rand = (int)(Math.random() % this.inQueues.size());
-
-            synchronized (this.inQueues.get(rand)) {
-                if (!this.inQueues.get(rand).isEmpty())
-                    datum = this.inQueues.get(rand).poll();
-            }
-
+            datum = this.inQueue.poll();
         } while (datum == null && isDatumAvailable());
 
         return datum;
@@ -155,32 +142,21 @@ public abstract class BaseStreamsTask implements StreamsTask {
         return getTotalInQueue() > 0;
     }
 
-    protected Queue<StreamsDatum> getHaltingOutboundQueue() {
-        for(Queue<StreamsDatum> q : this.outQueues) {
-            if(q.isEmpty())
-                return null;
-            else {
-                if(q instanceof BlockingQueue) {
-                    if(((BlockingQueue)q).remainingCapacity() == 0)
-                        return q;
-                }
-            }
-        }
-        return null;
-    }
-
     /**
      * The total number of items that are in the queue right now.
      * @return
      * The total number of items that are in the queue waiting to be worked right now.
      */
     public synchronized int getTotalInQueue() {
-        int total = 0;
-        for (Queue q : this.inQueues)
-            if (q != null)
-                total += q.size();
+        return this.inQueue.size();
+    }
 
-        return total;
+    protected void waitForOutBoundQueueToBeFree() {
+        for (StreamsTask t : this.downStreamTasks) {
+            while(t.getInQueue().remainingCapacity() == 0) {
+                Thread.yield();
+            }
+        }
     }
 
     /**
@@ -191,36 +167,29 @@ public abstract class BaseStreamsTask implements StreamsTask {
      */
     protected void addToOutgoingQueue(final StreamsDatum datum) {
         if (datum != null) {
-
-            final SimpleCondition condition = new SimpleCondition();
-
-            final AtomicInteger atomicInteger = new AtomicInteger(0);
-
-            final List<Queue<StreamsDatum>> outList = new ArrayList<Queue<StreamsDatum>>();
-
-            for(Queue<StreamsDatum> q : this.outQueues)
-                outList.add(q);
-
-            Collections.shuffle(outList);
-
-            for (final Queue<StreamsDatum> queue : outList) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ComponentUtils.offerUntilSuccess(cloneStreamsDatum(datum), queue);
-                        CONDITIONS.get(queue).signal();
-                        condition.signal();
-                    }
-                }).start();
+            for (StreamsTask t : this.downStreamTasks) {
+                ComponentUtils.offerUntilSuccess(cloneStreamsDatum(datum), t.getInQueue());
+                t.knock();
             }
+        }
+    }
 
-            try {
-                if(outQueues.size() > 0)
-                    condition.await();
-            }
-            catch(InterruptedException ioe) {
-                /* no Operation */
-            }
+    public String toString() {
+        return this.getClass().getName() + "[" + this.getId() + "]: " + this.getCurrentStatus().toString();
+    }
+
+
+    protected void reportWorking() {
+        this.threadingController.flagWorking(this);
+        workingCounter.incrementAndGet();
+    }
+
+    protected void reportCompleted() {
+        synchronized (this) {
+            this.workingCounter.decrementAndGet();
+            if (this.workingCounter.get() == 0)
+                this.threadingController.flagNotWorking(this);
+            this.threadingController.getItemPoppedCondition().signal();
         }
     }
 
@@ -264,37 +233,24 @@ public abstract class BaseStreamsTask implements StreamsTask {
         }
     }
 
+    protected void notifyAllDownStreamMembers() {
+        for(StreamsTask t : downStreamTasks)
+            t.knock();
+    }
+
     protected void waitForIncoming() {
         // we don't have anything to do, let's yield
         // and take a quick rest and wait for people to
         // catch up
-        if (!isDatumAvailable()) {
-            if (wasTapped()) {
+        synchronized (this.conditionIncoming) {
+            if (!isDatumAvailable()) {
                 try {
-                    this.condition.await(10, TimeUnit.MILLISECONDS);
+                    this.conditionIncoming.await();
                 } catch (InterruptedException ioe) {
                     /* no op */
                 }
-            } else {
-                safeQuickRest(5);
             }
         }
-    }
-
-    protected void safeQuickRest(int waitTime) {
-
-        int priority = Thread.currentThread().getPriority();
-
-        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-        // The queue is empty, we might as well sleep.
-        Thread.yield();
-        try {
-            Thread.sleep(waitTime);
-        } catch (InterruptedException ie) {
-            // No Operation
-        }
-
-        Thread.currentThread().setPriority(priority);
     }
 
     private StreamsDatum copyMetaData(StreamsDatum copyFrom, StreamsDatum copyTo) {

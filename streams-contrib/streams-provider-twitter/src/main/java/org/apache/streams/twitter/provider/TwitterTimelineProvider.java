@@ -2,8 +2,6 @@ package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Queues;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
@@ -19,10 +17,8 @@ import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.json.DataObjectFactory;
 
 import java.io.Serializable;
-import java.lang.Math;
 import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.List;
@@ -33,9 +29,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by sblackmon on 12/10/13.
- */
 public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     public final static String STREAMS_ID = "TwitterTimelineProvider";
@@ -119,6 +112,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                 Twitter client = null;
                 try {
                     client = getTwitterClient();
+
+                    LOGGER.debug("Using Twitter Client: {}", client.getOAuthAccessToken());
 
                     statuses = client.getUserTimeline(currentId, paging);
 

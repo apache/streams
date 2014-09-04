@@ -51,8 +51,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     private TwitterUserInformationConfiguration twitterUserInformationConfiguration;
 
-    private Class klass;
-    protected volatile Queue<StreamsDatum> providerQueue = new ArrayBlockingQueue<StreamsDatum>(50);
+    private final Queue<StreamsDatum> providerQueue = new ArrayBlockingQueue<StreamsDatum>(1000);
 
     public TwitterUserInformationConfiguration getConfig()              { return twitterUserInformationConfiguration; }
 
@@ -80,17 +79,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     public TwitterUserInformationProvider(TwitterUserInformationConfiguration config) {
         this.twitterUserInformationConfiguration = config;
-    }
-
-    public TwitterUserInformationProvider(Class klass) {
-        Config config = StreamsConfigurator.config.getConfig("twitter");
-        this.twitterUserInformationConfiguration = TwitterStreamConfigurator.detectTwitterUserInformationConfiguration(config);
-        this.klass = klass;
-    }
-
-    public TwitterUserInformationProvider(TwitterUserInformationConfiguration config, Class klass) {
-        this.twitterUserInformationConfiguration = config;
-        this.klass = klass;
     }
 
     public Queue<StreamsDatum> getProviderQueue() {
@@ -221,7 +209,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
         executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
         Preconditions.checkNotNull(providerQueue);
-        Preconditions.checkNotNull(this.klass);
         Preconditions.checkNotNull(twitterUserInformationConfiguration.getOauth().getConsumerKey());
         Preconditions.checkNotNull(twitterUserInformationConfiguration.getOauth().getConsumerSecret());
         Preconditions.checkNotNull(twitterUserInformationConfiguration.getOauth().getAccessToken());

@@ -22,18 +22,14 @@ import org.apache.streams.core.StreamsDatum;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.locks.Condition;
 
 /**
  * Interface for all task that will be used to execute instances of {@link org.apache.streams.core.StreamsOperation}
  * in local mode.
  */
 public interface StreamsTask extends Runnable {
-
-    /**
-     * Let another task know you'll be there to let him know when he has something to do. Just
-     * a tap.
-     */
-    public void tap();
 
     public void knock();
 
@@ -46,19 +42,16 @@ public interface StreamsTask extends Runnable {
      * Add an input {@link java.util.Queue} for this task.
      * @param id
      * the id of the connected queue
-     * @param inputQueue
-     * the queue
      */
-    public void addInputQueue(String id, Queue<StreamsDatum> inputQueue);
+    public void addInputQueue(String id);
 
     /**
      * Add an output {@link java.util.Queue} for this task.
      * @param id
      * the id of the connected queue
-     * @param outputQueue
      * the queue
      */
-    public void addOutputQueue(String id, Queue<StreamsDatum> outputQueue);
+    public void addOutputQueue(String id);
 
     /**
      * Set the configuration object that will shared and passed to all instances of StreamsTask.
@@ -72,17 +65,13 @@ public interface StreamsTask extends Runnable {
      */
     public boolean isRunning();
 
+    //public Condition getConditionIsFree();
+
     /**
      * Returns the input queues that have been set for this task.
      * @return list of input queues
      */
-    public List<Queue<StreamsDatum>> getInputQueues();
-
-    /**
-     * Returns the output queues that have been set for this task
-     * @return list of output queues
-     */
-    public List<Queue<StreamsDatum>> getOutputQueues();
+    public BlockingQueue<StreamsDatum> getInQueue();
 
     public void initialize();
 }

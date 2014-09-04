@@ -17,6 +17,7 @@
  */
 package org.apache.streams.builders.threaded;
 
+import com.google.common.util.concurrent.FutureCallback;
 import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
@@ -26,9 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Processor task that is multi-threaded
@@ -41,20 +41,14 @@ public class StreamsProcessorTask extends BaseStreamsTask {
     protected Map<String, Object> streamConfig;
     protected final DatumStatusCounter statusCounter = new DatumStatusCounter();
 
-    private final SimpleCondition simpleCondition = new SimpleCondition();
-    private final ThreadingController threadingController;
-
-    private final AtomicInteger workingCounter = new AtomicInteger(0);
-
     /**
      * Default constructor, uses default sleep time of 500ms when inbound queue is empty
      *
      * @param processor process to run in task
      */
     public StreamsProcessorTask(String id, Map<String, BaseStreamsTask> ctx, StreamsProcessor processor, ThreadingController threadingController) {
-        super(id, ctx);
+        super(id, ctx, threadingController);
         this.processor = processor;
-        this.threadingController = threadingController;
     }
 
     @Override
@@ -66,7 +60,7 @@ public class StreamsProcessorTask extends BaseStreamsTask {
 
     @Override
     public boolean isRunning() {
-        return this.workingCounter.get() > 0 || this.isDatumAvailable();
+        return getWorkingCount() > 0 || this.isDatumAvailable();
     }
 
     @Override
@@ -77,40 +71,41 @@ public class StreamsProcessorTask extends BaseStreamsTask {
 
             while (this.keepRunning.get() || super.isDatumAvailable()) {
 
-                StreamsDatum datum;
-                while ((datum = super.pollNextDatum()) != null) {
-                    final StreamsDatum workingDatum = datum;
+                if(this.keepRunning.get())
+                    waitForIncoming();
 
-                    Queue q = null;
-                    while((q = getHaltingOutboundQueue()) != null) {
-                        try {
-                            CONDITIONS.get(q).await();
-                        }
-                        catch(InterruptedException ioe) {
-                            /* no op */
-                        }
-                    }
+                final StreamsDatum datum = super.pollNextDatum();
+                if(datum != null) {
 
-                    this.threadingController.execute(new Runnable() {
-                        public void run() {
-                            processThisDatum(workingDatum);
-                        }
-                    });
-                }
+                    waitForOutBoundQueueToBeFree();
+                    reportWorking();
 
-                // we don't have anything to do, let's yield
-                // and take a quick rest and wait for people to
-                // catch up
-                if (wasTapped()) {
-                    try {
-                        this.simpleCondition.await(10, TimeUnit.MILLISECONDS);
-                    }
-                    catch(InterruptedException ioe) {
-                            /* no op */
-                    }
-                }
-                else {
-                    safeQuickRest(5);
+                    Callable<List<StreamsDatum>> command = new Callable<List<StreamsDatum>>() {
+                        @Override
+                        public List<StreamsDatum> call() throws Exception {
+                            return processor.process(datum);
+                        }
+                    };
+
+                    FutureCallback<List<StreamsDatum>> callback = new FutureCallback<List<StreamsDatum>>() {
+                        @Override
+                        public void onSuccess(List<StreamsDatum> ds) {
+                            reportCompleted();
+                            statusCounter.incrementStatus(DatumStatus.SUCCESS);
+
+                            if (ds != null)
+                                for (StreamsDatum d : ds)
+                                    addToOutgoingQueue(d);
+                        }
+
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            reportCompleted();
+                            statusCounter.incrementStatus(DatumStatus.FAIL);
+                        }
+                    };
+
+                    this.threadingController.execute(command, callback);
                 }
             }
         } finally {
@@ -119,31 +114,9 @@ public class StreamsProcessorTask extends BaseStreamsTask {
         }
     }
 
-    protected final void processThisDatum(StreamsDatum datum) {
-        try {
-            workingCounter.incrementAndGet();
-            // get the outputs from the queue and pass them down the row
-            List<StreamsDatum> output = this.processor.process(datum);
-            if (output != null)
-                for (StreamsDatum outDatum : output)
-                    super.addToOutgoingQueue(outDatum);
-
-            this.statusCounter.incrementStatus(DatumStatus.SUCCESS);
-        } catch (Throwable e) {
-            LOGGER.warn("{} - There was an error({}) processing datum: {}", this.getId(), e.getMessage(), datum);
-            this.statusCounter.incrementStatus(DatumStatus.FAIL);
-        }
-        finally {
-            workingCounter.decrementAndGet();
-            this.threadingController.getItemPoppedCondition().signal();
-            for(StreamsTask t : downStreamTasks)
-                t.knock();
-        }
-    }
-
     public StatusCounts getCurrentStatus() {
         return new StatusCounts(getTotalInQueue(),
-                this.workingCounter.get(),
+                getWorkingCount(),
                 this.statusCounter.getSuccess(),
                 this.statusCounter.getFail());
     }

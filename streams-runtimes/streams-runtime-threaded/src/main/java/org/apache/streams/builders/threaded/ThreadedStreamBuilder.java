@@ -67,7 +67,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     }
 
     public ThreadedStreamBuilder(Queue<StreamsDatum> queue, int numThreads) {
-        this(queue, null, PROCESSOR_CORES);
+        this(queue, null, numThreads);
     }
 
     /**
@@ -217,44 +217,16 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
             timer.schedule(updateTask, 0, 1500);
 
-            // keep going until we are done..
-            // because we are using queues in between each of these items we can
-            // reach edge cases where a datum is trapped between getting recognized
-            // so we require 5 instances (ms) of the system telling us to quit before we
-            // finally exit to prevent any lost items.
-            int foundReasonToQuit = 0;
-
-            while (foundReasonToQuit < 5) {
-                boolean isRunning = false;
-
-                // check to see if it is running, if it is, then set the flag and break.
-                for (BaseStreamsTask task : this.tasks.values()) {
-                    if(task.isRunning()) {
-                        isRunning = true;
-                        break;
-                    }
-                }
-
-                if (isRunning) {
-                    foundReasonToQuit = 0;
-                    safeQuickRest(1);
-                }
-                else {
-                    foundReasonToQuit++;
-                    safeQuickRest(1);
-                }
-            }
-
-            LOGGER.debug("Components are no longer running, we can turn it off");
-            shutdown();
+            while(this.threadingController.isWorking())
+                this.threadingController.getConditionWorking().await();
 
             for(final String k : tasks.keySet()) {
-                StatusCounts counts = tasks.get(k).getCurrentStatus();
-                LOGGER.debug("Finishing: {} - Queue[{}] Working[{}] Success[{}] Failed[{}] ", k,
+                final StatusCounts counts = tasks.get(k).getCurrentStatus();
+                LOGGER.info("Finishing: {} - Queue[{}] Working[{}] Success[{}] Failed[{}] ", k,
                         counts.getQueue(), counts.getWorking(), counts.getSuccess(), counts.getFailed());
             }
 
-
+            shutdown();
 
         } catch (Throwable e) {
             // No Operation
@@ -287,6 +259,8 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     private void shutdownExecutor() {
         // make sure that
         try {
+            this.threadingController.shutDown();
+
             if (!this.executor.isShutdown()) {
                 // tell the executor to shutdown.
                 this.executor.shutdown();

@@ -493,7 +493,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         this.batchesSent.incrementAndGet();
 
         try {
-            bulkRequest.execute().addListener(new ActionListener<BulkResponse>() {
+            bulkRequest.execute(new ActionListener<BulkResponse>() {
                 public void onResponse(BulkResponse bulkItemResponses) {
                     batchesResponded.incrementAndGet();
                     updateTotals(bulkItemResponses, sent, sizeInBytes);

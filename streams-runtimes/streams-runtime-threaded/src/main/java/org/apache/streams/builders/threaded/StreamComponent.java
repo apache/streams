@@ -177,18 +177,18 @@ class StreamComponent {
             task = new StreamsProcessorTask(this.id, ctx, this.processor, threadingController);
 
             // Processor has an input queue
-            task.addInputQueue(this.id, this.inQueue);
+            task.addInputQueue(this.id);
 
             // Processor also has any number of output queues
             for(StreamComponent c : this.outBound.keySet()) {
-                task.addOutputQueue(c.getId(), this.outBound.get(c));
+                task.addOutputQueue(c.getId());
             }
 
         }
         else if(this.writer != null) {
             // create the task
             task = new StreamsPersistWriterTask(this.id, ctx, this.writer, threadingController);
-            task.addInputQueue(this.id, this.inQueue);
+            task.addInputQueue(this.id);
         }
         else if(this.provider != null) {
             StreamsProvider prov;
@@ -199,17 +199,16 @@ class StreamComponent {
                 prov = this.provider;
             }
             if(this.dateRange == null && this.sequence == null)
-                task = new StreamsProviderTask(this.id, ctx, prov, this.perpetual);
-            else if(this.sequence != null)
-                task = new StreamsProviderTask(this.id, ctx, prov, this.sequence);
+                task = new StreamsProviderTask(threadingController, this.id, ctx, prov, this.perpetual);
             else
-                task = new StreamsProviderTask(this.id, ctx, prov, this.dateRange[0], this.dateRange[1]);
+                throw new UnsupportedOperationException("This isn't supported");
+
             //Adjust the timeout if necessary
             if(timeout > 0) {
                 ((StreamsProviderTask)task).setTimeout(timeout);
             }
             for(StreamComponent c : this.outBound.keySet()) {
-                task.addOutputQueue(c.getId(), this.outBound.get(c));
+                task.addOutputQueue(c.getId());
             }
         }
         else {

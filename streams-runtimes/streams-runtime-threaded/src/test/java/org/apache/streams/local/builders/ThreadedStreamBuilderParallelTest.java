@@ -53,6 +53,30 @@ public class ThreadedStreamBuilderParallelTest {
         assertEquals("All should have seen the data", writer.getDatumsCounted(), numDatums);
     }
 
+
+    @Test
+    public void testParallelProcessorSingleThread() {
+        int numDatums = 20;
+        StreamBuilder builder = new ThreadedStreamBuilder(new ArrayBlockingQueue<StreamsDatum>(1), 1);
+        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor();
+        PassThroughStaticCounterProcessor proc2 = new PassThroughStaticCounterProcessor();
+        PassThroughStaticCounterProcessor proc3 = new PassThroughStaticCounterProcessor();
+        DatumCounterWriter writer = new DatumCounterWriter();
+        builder.newReadCurrentStream("sp1", new NumericMessageProvider(numDatums))
+                .addStreamsProcessor("proc1", proc1, 1, "sp1")
+                .addStreamsProcessor("proc2", proc2, 1, "sp1")
+                .addStreamsProcessor("proc3", proc3, 1, "sp1")
+                .addStreamsPersistWriter("writer1", writer, 1, "proc3");
+
+        builder.start();
+
+        assertEquals("number of items in should equal number of items out", writer.getDatumsCounted(), numDatums);
+        assertEquals("Correct number of processors created", proc1.getMessageCount(), numDatums);
+        assertEquals("Correct number of processors created", proc2.getMessageCount(), numDatums);
+        assertEquals("Correct number of processors created", proc3.getMessageCount(), numDatums);
+        assertEquals("All should have seen the data", writer.getDatumsCounted(), numDatums);
+    }
+
     @Test
     public void testParallelProcessorsManyDatums() {
         int numDatums = 2000;
