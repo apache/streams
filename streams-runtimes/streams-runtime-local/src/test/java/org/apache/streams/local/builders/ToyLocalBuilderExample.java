@@ -20,9 +20,9 @@ package org.apache.streams.local.builders;
 
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.test.processors.DoNothingProcessor;
-import org.apache.streams.core.test.providers.NumericMessageProvider;
-import org.apache.streams.core.test.writer.DoNothingWriter;
+import org.apache.streams.local.test.processors.DoNothingProcessor;
+import org.apache.streams.local.test.providers.NumericMessageProvider;
+import org.apache.streams.local.test.writer.DoNothingWriter;
 
 import java.util.concurrent.LinkedBlockingQueue;
 

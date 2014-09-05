@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.core.test.writer;
+package org.apache.streams.local.test.writer;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
