@@ -25,6 +25,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.S3ClientOptions;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Queues;
 import org.apache.streams.core.*;
@@ -116,7 +117,7 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
         final ListObjectsRequest request = new ListObjectsRequest()
                 .withBucketName(this.s3ReaderConfiguration.getBucket())
                 .withPrefix(s3ReaderConfiguration.getReaderPath())
-                .withMaxKeys(50);
+                .withMaxKeys(500);
 
 
         ObjectListing listing = this.amazonS3Client.listObjects(request);
@@ -128,12 +129,22 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
          * if you cannot list files that are in this path, then you are most likely dealing with
          * a simple file.
          */
-        if(listing.getCommonPrefixes().size() > 0) {
+        boolean hasCommonPrefixes = listing.getCommonPrefixes().size() > 0 ? true : false;
+        boolean hasObjectSummaries = listing.getObjectSummaries().size() > 0 ? true : false;
+
+        if(hasCommonPrefixes || hasObjectSummaries) {
             // Handle the 'directory' use case
             do
             {
-                for (String file : listing.getCommonPrefixes())
-                    this.files.add(file);
+                if(hasCommonPrefixes) {
+                    for (String file : listing.getCommonPrefixes()) {
+                        this.files.add(file);
+                    }
+                } else {
+                    for(final S3ObjectSummary objectSummary : listing.getObjectSummaries()) {
+                        this.files.add(objectSummary.getKey());
+                    }
+                }
 
                 // get the next batch.
                 listing = this.amazonS3Client.listNextBatchOfObjects(listing);
