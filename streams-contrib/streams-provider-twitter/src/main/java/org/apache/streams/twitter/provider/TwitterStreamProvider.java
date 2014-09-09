@@ -89,7 +89,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
     public TwitterStreamProvider() {
         Config config = StreamsConfigurator.config.getConfig("twitter");
-        this.config = TwitterStreamConfigurator.detectConfiguration(config);
+        this.config = TwitterConfigurator.detectConfiguration(config);
     }
 
     public TwitterStreamProvider(TwitterStreamConfiguration config) {
