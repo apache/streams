@@ -48,7 +48,7 @@ public class TwitterConfigurator {
         }
     }
 
-    public static TwitterStreamConfiguration detectConfiguration(Config config) {
+    public static TwitterStreamConfiguration detectTwitterStreamConfiguration(Config config) {
 
         try {
             return mapper.readValue(config.root().render(ConfigRenderOptions.concise()), TwitterStreamConfiguration.class);
