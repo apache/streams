@@ -241,11 +241,11 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         List<String> screenNames = Lists.newArrayList();
         ids = Lists.newArrayList();
 
-        for(Object account : config.getInfo()) {
-            if(account instanceof String) {
-                screenNames.add((String)account);
-            } else if (account instanceof Long) {
+        for(String account : config.getInfo()) {
+            if(new Long(account) != null) {
                 ids.add(Long.parseLong(Objects.toString(account, null)));
+            } else {
+                screenNames.add(account);
             }
         }
 
