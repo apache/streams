@@ -82,7 +82,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     public TwitterUserInformationProvider() {
         Config config = StreamsConfigurator.config.getConfig("twitter");
-        this.twitterUserInformationConfiguration = TwitterStreamConfigurator.detectTwitterUserInformationConfiguration(config);
+        this.twitterUserInformationConfiguration = TwitterConfigurator.detectTwitterUserInformationConfiguration(config);
 
     }
 
@@ -92,7 +92,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     public TwitterUserInformationProvider(Class klass) {
         Config config = StreamsConfigurator.config.getConfig("twitter");
-        this.twitterUserInformationConfiguration = TwitterStreamConfigurator.detectTwitterUserInformationConfiguration(config);
+        this.twitterUserInformationConfiguration = TwitterConfigurator.detectTwitterUserInformationConfiguration(config);
         this.klass = klass;
     }
 
