@@ -25,7 +25,7 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
+import java.util.Map;
 
 public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter implements StreamsPersistWriter {
 
@@ -42,33 +42,37 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
     @Override
     public void write(StreamsDatum streamsDatum) {
 
-        Preconditions.checkNotNull(streamsDatum);
-        Preconditions.checkNotNull(streamsDatum.getDocument());
-        Preconditions.checkNotNull(streamsDatum.getMetadata());
-        Preconditions.checkNotNull(streamsDatum.getMetadata().get("id"));
-
-        LOGGER.debug("Update Metadata: {}", streamsDatum.getMetadata());
+        if(streamsDatum == null || streamsDatum.getDocument() == null)
+            return;
 
         LOGGER.debug("Update Document: {}", streamsDatum.getDocument());
 
-        String index;
-        String type;
-        String id;
+        Map<String, Object> metadata = streamsDatum.getMetadata();
+
+        LOGGER.debug("Update Metadata: {}", metadata);
+
+        String index = null;
+        String type = null;
+        String id = streamsDatum.getId();
+
+        if( metadata != null && metadata.containsKey("index"))
+            index = (String) streamsDatum.getMetadata().get("index");
+        if( metadata != null && metadata.containsKey("type"))
+            type = (String) streamsDatum.getMetadata().get("type");
+        if( id == null && metadata != null && metadata.containsKey("id"))
+            id = (String) streamsDatum.getMetadata().get("id");
+
+        if(index == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
+            index = config.getIndex();
+        }
+        if(type == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
+            type = config.getType();
+        }
+
         String json;
         try {
 
             json = OBJECT_MAPPER.writeValueAsString(streamsDatum.getDocument());
-
-            index = (String) streamsDatum.getMetadata().get("index");
-            type = (String) streamsDatum.getMetadata().get("type");
-            id = setId(streamsDatum);
-
-            if(index == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
-                index = config.getIndex();
-            }
-            if(type == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
-                type = config.getType();
-            }
 
             LOGGER.debug("Attempt Update: ({},{},{}) {}", index, type, id, json);
 

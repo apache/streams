@@ -18,15 +18,14 @@
 
 package org.apache.streams.elasticsearch;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 public class ElasticsearchPersistDeleter extends ElasticsearchPersistWriter implements StreamsPersistWriter {
 
@@ -43,25 +42,38 @@ public class ElasticsearchPersistDeleter extends ElasticsearchPersistWriter impl
     @Override
     public void write(StreamsDatum streamsDatum) {
 
-        Preconditions.checkNotNull(streamsDatum);
-        Preconditions.checkNotNull(streamsDatum.getDocument());
-        Preconditions.checkNotNull(streamsDatum.getMetadata());
-        Preconditions.checkNotNull(streamsDatum.getMetadata().get("id"));
+        if(streamsDatum == null || streamsDatum.getDocument() == null)
+            return;
 
-        String index;
-        String type;
-        String id;
+        LOGGER.debug("Update Document: {}", streamsDatum.getDocument());
 
-        index = Optional.fromNullable(
-                (String) streamsDatum.getMetadata().get("index"))
-                .or(config.getIndex());
-        type = Optional.fromNullable(
-                (String) streamsDatum.getMetadata().get("type"))
-                .or(config.getType());
-        id = (String) streamsDatum.getMetadata().get("id");
+        Map<String, Object> metadata = streamsDatum.getMetadata();
 
-        delete(index, type, id);
+        LOGGER.debug("Update Metadata: {}", metadata);
 
+        String index = null;
+        String type = null;
+        String id = streamsDatum.getId();
+
+        if( metadata != null && metadata.containsKey("index"))
+            index = (String) streamsDatum.getMetadata().get("index");
+        if( metadata != null && metadata.containsKey("type"))
+            type = (String) streamsDatum.getMetadata().get("type");
+        if( id == null && metadata != null && metadata.containsKey("id"))
+            id = (String) streamsDatum.getMetadata().get("id");
+
+        if(index == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
+            index = config.getIndex();
+        }
+        if(type == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
+            type = config.getType();
+        }
+
+        try {
+            delete(index, type, id);
+        } catch (Throwable e) {
+            LOGGER.warn("Unable to Delete Datum from ElasticSearch: {}", e.getMessage());
+        }
     }
 
     public void delete(String index, String type, String id) {
