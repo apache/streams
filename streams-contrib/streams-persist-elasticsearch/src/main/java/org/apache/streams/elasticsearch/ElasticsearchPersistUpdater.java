@@ -78,10 +78,8 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
 
             update(index, type, id, json);
 
-        } catch (Exception e) {
-            LOGGER.warn("Exception: {} ", e.getMessage());
-        } catch (Error e) {
-            LOGGER.warn("Error: {} ", e.getMessage());
+        } catch (Throwable e) {
+            LOGGER.warn("Unable to Update Document in ElasticSearch: {}", e.getMessage());
         }
     }
 

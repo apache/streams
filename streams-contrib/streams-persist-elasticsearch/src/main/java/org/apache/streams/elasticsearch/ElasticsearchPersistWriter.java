@@ -139,7 +139,11 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         checkForBackOff();
 
+        LOGGER.debug("Write Document: {}", streamsDatum.getDocument());
+
         Map<String, Object> metadata = streamsDatum.getMetadata();
+
+        LOGGER.debug("Write Metadata: {}", metadata);
 
         String index = null;
         String type = null;

@@ -45,11 +45,11 @@ public class ElasticsearchPersistDeleter extends ElasticsearchPersistWriter impl
         if(streamsDatum == null || streamsDatum.getDocument() == null)
             return;
 
-        LOGGER.debug("Update Document: {}", streamsDatum.getDocument());
+        LOGGER.debug("Delete Document: {}", streamsDatum.getDocument());
 
         Map<String, Object> metadata = streamsDatum.getMetadata();
 
-        LOGGER.debug("Update Metadata: {}", metadata);
+        LOGGER.debug("Delete Metadata: {}", metadata);
 
         String index = null;
         String type = null;
@@ -72,7 +72,7 @@ public class ElasticsearchPersistDeleter extends ElasticsearchPersistWriter impl
         try {
             delete(index, type, id);
         } catch (Throwable e) {
-            LOGGER.warn("Unable to Delete Datum from ElasticSearch: {}", e.getMessage());
+            LOGGER.warn("Unable to Delete Document from ElasticSearch: {}", e.getMessage());
         }
     }
 
