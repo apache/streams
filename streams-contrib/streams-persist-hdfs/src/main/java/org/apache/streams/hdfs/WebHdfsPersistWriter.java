@@ -78,7 +78,14 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
     }
 
     public URI getURI() throws URISyntaxException {
-        return new URI(WebHdfsFileSystem.SCHEME + "://" + hdfsConfiguration.getHost() + ":" + hdfsConfiguration.getPort());
+        StringBuilder uriBuilder = new StringBuilder();
+        uriBuilder.append(hdfsConfiguration.getScheme());
+        uriBuilder.append("://");
+        if( !Strings.isNullOrEmpty(hdfsConfiguration.getHost()))
+            uriBuilder.append(hdfsConfiguration.getHost() + ":" + hdfsConfiguration.getPort());
+        else
+            uriBuilder.append("/");
+        return new URI(uriBuilder.toString());
     }
 
     public boolean isConnected() {
