@@ -1,0 +1,47 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.components.http.HttpProcessorConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "protocol": {
+            "type": "string",
+            "description": "Protocol",
+            "default": "http"
+        },
+        "hostname": {
+            "type": "string",
+            "description": "Hostname",
+            "required" : true
+        },
+        "port": {
+            "type": "integer",
+            "description": "Port",
+            "default": 80
+        },
+        "resourceUri": {
+            "type": "string",
+            "description": "Resource URI",
+            "required" : true
+        },
+        "content-type": {
+            "type": "string",
+            "description": "Resource URI",
+            "required" : true,
+            "default": "application/json"
+        },
+        "entity": {
+            "type": "string",
+            "description": "Entity to extend",
+            "enum": [ "activity", "actor", "object", "target" ],
+            "required" : true,
+            "default": "activity"
+        },
+        "extension": {
+            "type": "string",
+            "description": "Extension identifier",
+            "required" : true
+        }
+    }
+}
