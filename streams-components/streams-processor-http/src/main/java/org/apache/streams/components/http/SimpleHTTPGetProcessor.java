@@ -19,6 +19,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.data.util.ActivityUtil;
@@ -34,6 +35,7 @@ import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -59,6 +61,11 @@ public abstract class SimpleHTTPGetProcessor implements StreamsProcessor {
 //    //private PeoplePatternConfiguration peoplePatternConfiguration = null;
 //    //private String authHeader;
 //
+    public SimpleHTTPGetProcessor() {
+        LOGGER.info("creating SimpleHTTPGetProcessor");
+        this.configuration = HttpConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("http"));
+    }
+
     public SimpleHTTPGetProcessor(HttpProcessorConfiguration processorConfiguration) {
         LOGGER.info("creating SimpleHTTPGetProcessor");
         LOGGER.info(processorConfiguration.toString());
@@ -137,9 +144,7 @@ public abstract class SimpleHTTPGetProcessor implements StreamsProcessor {
             return result;
         }
 
-        HttpGet httpget = new HttpGet(uri);
-        httpget.addHeader("content-type", this.configuration.getContentType());
-        //httpget.addHeader("Authorization", String.format("Basic %s", authHeader));
+        HttpGet httpget = prepareHttpGet(uri);
 
         CloseableHttpResponse response = null;
 
@@ -184,6 +189,12 @@ public abstract class SimpleHTTPGetProcessor implements StreamsProcessor {
 
     }
 
+    public HttpGet prepareHttpGet(URI uri) {
+        HttpGet httpget = new HttpGet(uri);
+        httpget.addHeader("content-type", this.configuration.getContentType());
+        return httpget;
+    }
+
     @Override
     public void prepare(Object configurationObject) {
 
@@ -198,12 +209,6 @@ public abstract class SimpleHTTPGetProcessor implements StreamsProcessor {
             .setPath(this.configuration.getResourceUri());
 
         httpclient = HttpClients.createDefault();
-        //  StringBuilder stringBuilder = new StringBuilder();
-//        stringBuilder.append(peoplePatternConfiguration.getUsername());
-//        stringBuilder.append(":");
-//        stringBuilder.append(peoplePatternConfiguration.getPassword());
-//        String string = stringBuilder.toString();
-//        authHeader = Base64.encodeBase64String(string.getBytes());
     }
 
     @Override
