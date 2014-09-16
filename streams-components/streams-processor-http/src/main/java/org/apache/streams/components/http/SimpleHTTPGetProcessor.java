@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public abstract class SimpleHTTPGetProcessor implements StreamsProcessor {
+public class SimpleHTTPGetProcessor implements StreamsProcessor {
 
     private final static String STREAMS_ID = "SimpleHTTPGetProcessor";
 
@@ -152,7 +152,7 @@ public abstract class SimpleHTTPGetProcessor implements StreamsProcessor {
         try {
             response = httpclient.execute(httpget);
             HttpEntity entity = response.getEntity();
-            // TODO: handle rate-limiting
+            // TODO: handle retry
             if (response.getStatusLine().getStatusCode() == 200 && entity != null) {
                 entityString = EntityUtils.toString(entity);
             }
@@ -181,7 +181,7 @@ public abstract class SimpleHTTPGetProcessor implements StreamsProcessor {
 
         ExtensionUtil.addExtension(extensionEntity, this.configuration.getExtension(), extensionFragment);
 
-        entry.setDocument(extensionEntity);
+        entry.setDocument(rootDocument);
 
         result.add(entry);
 
