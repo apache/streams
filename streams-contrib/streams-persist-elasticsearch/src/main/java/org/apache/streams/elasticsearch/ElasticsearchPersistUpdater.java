@@ -51,23 +51,9 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
 
         LOGGER.debug("Update Metadata: {}", metadata);
 
-        String index = null;
-        String type = null;
-        String id = streamsDatum.getId();
-
-        if( metadata != null && metadata.containsKey("index"))
-            index = (String) streamsDatum.getMetadata().get("index");
-        if( metadata != null && metadata.containsKey("type"))
-            type = (String) streamsDatum.getMetadata().get("type");
-        if( id == null && metadata != null && metadata.containsKey("id"))
-            id = (String) streamsDatum.getMetadata().get("id");
-
-        if(index == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
-            index = config.getIndex();
-        }
-        if(type == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
-            type = config.getType();
-        }
+        String index = getIndex(metadata, config);
+        String type = getType(metadata, config);
+        String id = getId(streamsDatum);
 
         String json;
         try {

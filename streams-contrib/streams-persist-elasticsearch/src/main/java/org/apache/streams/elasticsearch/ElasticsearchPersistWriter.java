@@ -145,23 +145,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         LOGGER.debug("Write Metadata: {}", metadata);
 
-        String index = null;
-        String type = null;
-        String id = streamsDatum.getId();
-
-        if( metadata != null && metadata.containsKey("index"))
-            index = (String) streamsDatum.getMetadata().get("index");
-        if( metadata != null && metadata.containsKey("type"))
-            type = (String) streamsDatum.getMetadata().get("type");
-        if( id == null && metadata != null && metadata.containsKey("id"))
-            id = (String) streamsDatum.getMetadata().get("id");
-
-        if(index == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
-            index = config.getIndex();
-        }
-        if(type == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
-            type = config.getType();
-        }
+        String index = getIndex(metadata, config);
+        String type = getType(metadata, config);
+        String id = getId(streamsDatum);
 
         try {
             add(index, type, id,
@@ -506,4 +492,46 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 MEGABYTE_FORMAT.format(sizeInBytes / (double) (1024 * 1024)), NUMBER_FORMAT.format(passed), NUMBER_FORMAT.format(failed), NUMBER_FORMAT.format(millis),
                 MEGABYTE_FORMAT.format((double) totalSizeInBytes.get() / (double) (1024 * 1024)), NUMBER_FORMAT.format(totalOk), NUMBER_FORMAT.format(totalFailed), NUMBER_FORMAT.format(totalSeconds), NUMBER_FORMAT.format(getTotalOutstanding()));
     }
+
+    protected String getIndex(Map<String, Object> metadata, ElasticsearchWriterConfiguration config) {
+
+        String index = null;
+
+        if( metadata != null && metadata.containsKey("index"))
+            index = (String) metadata.get("index");
+
+        if(index == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
+            index = config.getIndex();
+        }
+
+        return index;
+    }
+
+    protected String getType(Map<String, Object> metadata, ElasticsearchWriterConfiguration config) {
+
+        String type = null;
+
+        if( metadata != null && metadata.containsKey("type"))
+            type = (String) metadata.get("type");
+
+        if(type == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
+            type = config.getType();
+        }
+
+
+        return type;
+    }
+
+    protected String getId(StreamsDatum datum) {
+
+        String id = datum.getId();
+
+        Map<String, Object> metadata = datum.getMetadata();
+
+        if( id == null && metadata != null && metadata.containsKey("id"))
+            id = (String) datum.getMetadata().get("id");
+
+        return id;
+    }
+
 }
