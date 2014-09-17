@@ -33,9 +33,9 @@ public class TwitterTimelineProviderTask implements Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProviderTask.class);
 
-    private TwitterTimelineProvider provider;
-    private Twitter client;
-    private Long id;
+    protected TwitterTimelineProvider provider;
+    protected Twitter client;
+    protected Long id;
 
     public TwitterTimelineProviderTask(TwitterTimelineProvider provider, Twitter twitter, Long id) {
         this.provider = provider;
