@@ -372,6 +372,12 @@ public class LinkResolver implements Serializable {
         } catch (UnsupportedEncodingException uee) {
             System.err.println("Unable to Decode URL. Decoding skipped.");
             uee.printStackTrace();
+        } catch (NullPointerException npe) {
+            System.err.println("NPE Decoding URL. Decoding skipped.");
+            npe.printStackTrace();
+        } catch (Throwable e) {
+            System.err.println("Misc error Decoding URL. Decoding skipped.");
+            e.printStackTrace();
         }
 
         // Remove the protocol, http:// ftp:// or similar from the front

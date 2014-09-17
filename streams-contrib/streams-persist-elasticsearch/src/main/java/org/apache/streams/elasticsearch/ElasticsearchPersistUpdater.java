@@ -18,43 +18,14 @@
 
 package org.apache.streams.elasticsearch;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.typesafe.config.Config;
-import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
-import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
-import org.elasticsearch.action.bulk.BulkItemResponse;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.index.query.IdsQueryBuilder;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
-import java.io.Flushable;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.*;
-
-//import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
+import java.util.Map;
 
 public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter implements StreamsPersistWriter {
 
@@ -71,32 +42,30 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
     @Override
     public void write(StreamsDatum streamsDatum) {
 
-        Preconditions.checkNotNull(streamsDatum);
-        Preconditions.checkNotNull(streamsDatum.getDocument());
-        Preconditions.checkNotNull(streamsDatum.getMetadata());
-        Preconditions.checkNotNull(streamsDatum.getMetadata().get("id"));
+        if(streamsDatum == null || streamsDatum.getDocument() == null)
+            return;
 
-        String index;
-        String type;
-        String id;
+        LOGGER.debug("Update Document: {}", streamsDatum.getDocument());
+
+        Map<String, Object> metadata = streamsDatum.getMetadata();
+
+        LOGGER.debug("Update Metadata: {}", metadata);
+
+        String index = getIndex(metadata, config);
+        String type = getType(metadata, config);
+        String id = getId(streamsDatum);
+
         String json;
         try {
 
             json = OBJECT_MAPPER.writeValueAsString(streamsDatum.getDocument());
 
-            index = Optional.fromNullable(
-                    (String) streamsDatum.getMetadata().get("index"))
-                    .or(config.getIndex());
-            type = Optional.fromNullable(
-                    (String) streamsDatum.getMetadata().get("type"))
-                    .or(config.getType());
-            id = (String) streamsDatum.getMetadata().get("id");
+            LOGGER.debug("Attempt Update: ({},{},{}) {}", index, type, id, json);
 
             update(index, type, id, json);
 
-        } catch (JsonProcessingException e) {
-            LOGGER.warn("{} {}", e.getLocation(), e.getMessage());
-
+        } catch (Throwable e) {
+            LOGGER.warn("Unable to Update Document in ElasticSearch: {}", e.getMessage());
         }
     }
 
@@ -112,6 +81,9 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
                 .type(type)
                 .id(id)
                 .doc(json);
+
+        // add fields
+        updateRequest.docAsUpsert(true);
 
         add(updateRequest);
 
