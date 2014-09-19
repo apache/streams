@@ -15,17 +15,13 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
-  -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-runtimes</artifactId>
-        <version>0.1.0-W2O-SNAPSHOT</version>
+        <version>0.1.1-W2O-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-runtime-local</artifactId>
@@ -46,17 +42,17 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-core</artifactId>
-            <version>0.1.0-W2O-SNAPSHOT</version>
+            <version>0.1.1-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-util</artifactId>
-            <version>0.1.0-W2O-SNAPSHOT</version>
+            <version>0.1.1-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-pojo</artifactId>
-            <version>0.1.0-W2O-SNAPSHOT</version>
+            <version>0.1.1-W2O-SNAPSHOT</version>
         </dependency>
 
         <dependency>
