@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.*;
 
 /**
+ * A fixed ThreadPoolExecutor that will shutdown a stream upon a thread ending execution due to an unhandled throwable.
  * @see {@link java.util.concurrent.ThreadPoolExecutor}
  */
 public class ShutdownStreamOnUnhandleThrowableThreadPoolExecutor extends ThreadPoolExecutor {
