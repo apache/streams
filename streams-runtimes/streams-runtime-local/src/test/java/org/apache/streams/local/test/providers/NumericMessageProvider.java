@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.core.test.providers;
+package org.apache.streams.local.test.providers;
 
 import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamsDatum;

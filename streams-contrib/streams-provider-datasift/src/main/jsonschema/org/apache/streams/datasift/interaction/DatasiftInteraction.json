@@ -1,0 +1,92 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "javaType": "org.apache.streams.datasift.interaction.Interaction",
+    "properties": {
+        "author": {
+            "javaType": "org.apache.streams.datasift.interaction.Author",
+            "type": "object",
+            "dynamic": "true",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "content": {
+            "type": "string"
+        },
+        "contenttype": {
+            "type": "string"
+        },
+        "created_at": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "geo": {
+            "javaType": "org.apache.streams.datasift.interaction.Geo",
+            "type": "object",
+            "dynamic": "true",
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                }
+            }
+        },
+        "id": {
+            "type": "string"
+        },
+        "link": {
+            "type": "string"
+        },
+        "received_at": {
+            "type": "long"
+        },
+        "subtype": {
+            "type": "string"
+        },
+        "schema": {
+            "dynamic": "true",
+            "properties": {
+                "version": {
+                    "type": "integer"
+                }
+            }
+        },
+        "source": {
+            "type": "string"
+        },
+        "subtype": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "title": {
+            "type": "string"
+        },
+        "type": {
+            "type": "string"
+        }
+    }
+}

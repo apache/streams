@@ -19,11 +19,14 @@
 
 package org.apache.streams.regex;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +49,7 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
 
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractRegexExtensionExtractor.class);
 
+    private final static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     private String pattern;
 
@@ -61,18 +65,23 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
-        if (!(entry.getDocument() instanceof Activity)) {
+        Activity activity;
+        if (entry.getDocument() instanceof Activity) {
+            activity = (Activity) entry.getDocument();
+        } else if (entry.getDocument() instanceof ObjectNode) {
+            activity = mapper.convertValue(entry.getDocument(), Activity.class);
+        } else {
             return Lists.newArrayList();
         }
         if (Strings.isNullOrEmpty(pattern)) {
             prepare(null);
         }
-        Activity activity = (Activity) entry.getDocument();
         Map<String, List<Integer>> matches = RegexUtils.extractMatches(pattern, activity.getContent());
         Collection<T> entities = ensureTargetObject(activity);
         for (String key : matches.keySet()) {
             entities.add(prepareObject(key));
         }
+        entry.setDocument(activity);
         return Lists.newArrayList(entry);
     }
 

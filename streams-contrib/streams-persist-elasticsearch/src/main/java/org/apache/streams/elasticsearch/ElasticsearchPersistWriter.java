@@ -19,12 +19,8 @@
 
 package org.apache.streams.elasticsearch;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
@@ -43,7 +39,6 @@ import org.elasticsearch.common.joda.time.DateTime;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.core.JsonParser;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -144,16 +139,15 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         checkForBackOff();
 
-        String index = Optional.fromNullable(
-                (String) streamsDatum.getMetadata().get("index"))
-                .or(config.getIndex());
-        String type = Optional.fromNullable(
-                (String) streamsDatum.getMetadata().get("type"))
-                .or(config.getType());
-        String id = (String) streamsDatum.getMetadata().get("id");
+        LOGGER.debug("Write Document: {}", streamsDatum.getDocument());
 
-        if(id == null)
-            id = streamsDatum.getId();
+        Map<String, Object> metadata = streamsDatum.getMetadata();
+
+        LOGGER.debug("Write Metadata: {}", metadata);
+
+        String index = getIndex(metadata, config);
+        String type = getType(metadata, config);
+        String id = getId(streamsDatum);
 
         try {
             add(index, type, id,
@@ -163,7 +157,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             LOGGER.warn("Unable to Write Datum to ElasticSearch: {}", e.getMessage());
         }
     }
-
 
     private String convertAndAppendMetadata(StreamsDatum streamsDatum) throws IOException {
         Object object = streamsDatum.getDocument();
@@ -499,4 +492,46 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 MEGABYTE_FORMAT.format(sizeInBytes / (double) (1024 * 1024)), NUMBER_FORMAT.format(passed), NUMBER_FORMAT.format(failed), NUMBER_FORMAT.format(millis),
                 MEGABYTE_FORMAT.format((double) totalSizeInBytes.get() / (double) (1024 * 1024)), NUMBER_FORMAT.format(totalOk), NUMBER_FORMAT.format(totalFailed), NUMBER_FORMAT.format(totalSeconds), NUMBER_FORMAT.format(getTotalOutstanding()));
     }
+
+    protected String getIndex(Map<String, Object> metadata, ElasticsearchWriterConfiguration config) {
+
+        String index = null;
+
+        if( metadata != null && metadata.containsKey("index"))
+            index = (String) metadata.get("index");
+
+        if(index == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
+            index = config.getIndex();
+        }
+
+        return index;
+    }
+
+    protected String getType(Map<String, Object> metadata, ElasticsearchWriterConfiguration config) {
+
+        String type = null;
+
+        if( metadata != null && metadata.containsKey("type"))
+            type = (String) metadata.get("type");
+
+        if(type == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
+            type = config.getType();
+        }
+
+
+        return type;
+    }
+
+    protected String getId(StreamsDatum datum) {
+
+        String id = datum.getId();
+
+        Map<String, Object> metadata = datum.getMetadata();
+
+        if( id == null && metadata != null && metadata.containsKey("id"))
+            id = (String) datum.getMetadata().get("id");
+
+        return id;
+    }
+
 }

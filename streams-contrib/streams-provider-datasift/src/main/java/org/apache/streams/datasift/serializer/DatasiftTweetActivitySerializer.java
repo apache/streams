@@ -19,6 +19,7 @@ under the License.
 package org.apache.streams.datasift.serializer;
 
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -257,4 +258,9 @@ public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySeri
 
         return userMentions;
     }
+
+    public static String formatId(String... idparts) {
+        return Joiner.on(":").join(Lists.asList("id:twitter", idparts));
+    }
+
 }

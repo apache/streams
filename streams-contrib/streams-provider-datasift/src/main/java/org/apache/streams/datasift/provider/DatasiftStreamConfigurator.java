@@ -18,10 +18,11 @@ under the License.
 */
 package org.apache.streams.datasift.provider;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
 import org.apache.streams.datasift.DatasiftConfiguration;
-import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +33,18 @@ public class DatasiftStreamConfigurator {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftStreamConfigurator.class);
 
+    private static final ObjectMapper MAPPER = StreamsDatasiftMapper.getInstance();
+
     public static DatasiftConfiguration detectConfiguration(Config datasift) {
 
-        DatasiftConfiguration datasiftConfiguration;
-        datasiftConfiguration = StreamsJacksonMapper.getInstance().convertValue(datasift.root().render(ConfigRenderOptions.concise()), DatasiftConfiguration.class);
+        DatasiftConfiguration datasiftConfiguration = null;
+
+        try {
+            datasiftConfiguration = MAPPER.readValue(datasift.root().render(ConfigRenderOptions.concise()), DatasiftConfiguration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not parse datasiftConfiguration");
+        }
         return datasiftConfiguration;
     }
 

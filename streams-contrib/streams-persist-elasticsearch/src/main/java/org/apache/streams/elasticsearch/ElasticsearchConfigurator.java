@@ -24,10 +24,6 @@ import com.typesafe.config.ConfigRenderOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Converts a {@link com.typesafe.config.Config} element into an instance of ElasticSearchConfiguration
  */
@@ -38,39 +34,28 @@ public class ElasticsearchConfigurator {
     private final static ObjectMapper mapper = new ObjectMapper();
 
     public static ElasticsearchConfiguration detectConfiguration(Config elasticsearch) {
-        List<String> hosts = elasticsearch.getStringList("hosts");
-        Long port = elasticsearch.getLong("port");
-        String clusterName = elasticsearch.getString("clusterName");
 
-        ElasticsearchConfiguration elasticsearchConfiguration = new ElasticsearchConfiguration();
+        ElasticsearchConfiguration elasticsearchConfiguration = null;
 
-        elasticsearchConfiguration.setHosts(hosts);
-        elasticsearchConfiguration.setPort(port);
-        elasticsearchConfiguration.setClusterName(clusterName);
+        try {
+            elasticsearchConfiguration = mapper.readValue(elasticsearch.root().render(ConfigRenderOptions.concise()), ElasticsearchConfiguration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not parse elasticsearchconfiguration");
+        }
 
         return elasticsearchConfiguration;
     }
 
     public static ElasticsearchReaderConfiguration detectReaderConfiguration(Config elasticsearch) {
 
-        ElasticsearchConfiguration elasticsearchConfiguration = detectConfiguration(elasticsearch);
-        ElasticsearchReaderConfiguration elasticsearchReaderConfiguration = mapper.convertValue(elasticsearchConfiguration, ElasticsearchReaderConfiguration.class);
+        ElasticsearchReaderConfiguration elasticsearchReaderConfiguration = null;
 
-        List<String> indexes = elasticsearch.getStringList("indexes");
-        List<String> types = elasticsearch.getStringList("types");
-
-        elasticsearchReaderConfiguration.setIndexes(indexes);
-        elasticsearchReaderConfiguration.setTypes(types);
-
-        if( elasticsearch.hasPath("_search") ) {
-            LOGGER.info("_search supplied by config");
-            Config searchConfig = elasticsearch.getConfig("_search");
-            try {
-                elasticsearchReaderConfiguration.setSearch(mapper.readValue(searchConfig.root().render(ConfigRenderOptions.concise()), Map.class));
-            } catch (IOException e) {
-                e.printStackTrace();
-                LOGGER.warn("Could not parse _search supplied by config");
-            }
+        try {
+            elasticsearchReaderConfiguration = mapper.readValue(elasticsearch.root().render(ConfigRenderOptions.concise()), ElasticsearchReaderConfiguration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not parse elasticsearchconfiguration");
         }
 
         return elasticsearchReaderConfiguration;

@@ -19,9 +19,9 @@
 package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.test.processors.PassthroughDatumCounterProcessor;
-import org.apache.streams.core.test.providers.NumericMessageProvider;
-import org.apache.streams.core.test.writer.DatumCounterWriter;
+import org.apache.streams.local.test.processors.PassthroughDatumCounterProcessor;
+import org.apache.streams.local.test.providers.NumericMessageProvider;
+import org.apache.streams.local.test.writer.DatumCounterWriter;
 import org.junit.Test;
 
 import java.util.Queue;

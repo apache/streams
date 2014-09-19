@@ -44,6 +44,39 @@
                     "type": "string"
                 }
             }
+        },
+        "userAccessTokens": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "description": "User access tokens"
+            },
+            "description": "User access tokens that have been authorized for this app"
+        },
+        "ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "object",
+                "description": "id for the application to use. user id, page id, etc. with date ranges",
+                "javaType": "org.apache.streams.facebook.IdConfig",
+                "javaInterfaces": ["java.io.Serializable"],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "beforeDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "afterDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "description": "ids for the application to use. user ids, page ids, etc."
         }
    }
 }

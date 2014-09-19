@@ -19,6 +19,7 @@
 package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.*;
+import org.apache.streams.core.util.DatumUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     private Map<String, Object> config;
 
     private int timeout;
+    private long sleepTime;
     private int zeros = 0;
     private DatumStatusCounter statusCounter = new DatumStatusCounter();
 
@@ -73,6 +75,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         else
             this.type = Type.READ_CURRENT;
         this.timeout = DEFAULT_TIMEOUT_MS;
+        this.sleepTime = DEFAULT_SLEEP_TIME_MS;
     }
 
     /**
@@ -85,6 +88,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         this.type = Type.READ_NEW;
         this.sequence = sequence;
         this.timeout = DEFAULT_TIMEOUT_MS;
+        this.sleepTime = DEFAULT_SLEEP_TIME_MS;
     }
 
     /**
@@ -100,10 +104,15 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         this.dateRange[START] = start;
         this.dateRange[END] = end;
         this.timeout = DEFAULT_TIMEOUT_MS;
+        this.sleepTime = DEFAULT_SLEEP_TIME_MS;
     }
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    public void setSleepTime(long sleepTime) {
+        this.sleepTime = sleepTime;
     }
 
     @Override
@@ -129,7 +138,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             this.provider.prepare(this.config); //TODO allow for configuration objects
             StreamsResultSet resultSet = null;
             //Negative values mean we want to run forever
-            long maxZeros = timeout < 0 ? Long.MAX_VALUE : (timeout / DEFAULT_SLEEP_TIME_MS);
+            long maxZeros = timeout < 0 ? Long.MAX_VALUE : (timeout / sleepTime);
             switch(this.type) {
                 case PERPETUAL: {
                     provider.startStream();
@@ -146,7 +155,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                             // the way this works needs to change...
                             if(zeros > maxZeros)
                                 this.keepRunning.set(false);
-                            Thread.sleep(DEFAULT_SLEEP_TIME_MS);
+                            Thread.sleep(sleepTime);
                         } catch (InterruptedException e) {
                             LOGGER.warn("Thread interrupted");
                             this.keepRunning.set(false);
@@ -176,6 +185,9 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         } finally {
             LOGGER.debug("Complete Provider Task execution for {}", this.provider.getClass().getSimpleName());
             this.provider.cleanUp();
+            //Setting started to 'true' here will allow the isRunning() method to return false in the event of an exception
+            //before started would normally be set to true n the run method.
+            this.started.set(true);
             this.keepRunning.set(false);
         }
     }
@@ -203,11 +215,12 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                     statusCounter.incrementStatus(DatumStatus.SUCCESS);
                 } catch( Exception e ) {
                     statusCounter.incrementStatus(DatumStatus.FAIL);
+                    DatumUtils.addErrorToMetadata(datum, e, this.provider.getClass());
                 }
             }
             else {
                 try {
-                    Thread.sleep(DEFAULT_SLEEP_TIME_MS);
+                    Thread.sleep(sleepTime);
                 } catch (InterruptedException e) {
                     LOGGER.warn("Thread interrupted");
                     this.keepRunning.set(false);
