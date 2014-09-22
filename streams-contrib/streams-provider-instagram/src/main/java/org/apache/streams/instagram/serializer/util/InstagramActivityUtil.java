@@ -85,6 +85,11 @@ public class InstagramActivityUtil {
         activity.setProvider(getProvider());
     }
 
+    /**
+     * Builds an Actor object given a UserInfoData object
+     * @param item
+     * @return Actor object
+     */
     public static Actor buildActor(UserInfoData item) {
         Actor actor = new Actor();
 
