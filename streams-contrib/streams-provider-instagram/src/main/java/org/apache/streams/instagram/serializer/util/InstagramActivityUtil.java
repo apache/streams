@@ -26,6 +26,8 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.*;
 import org.jinstagram.entity.comments.CommentData;
 import org.jinstagram.entity.common.*;
+import org.jinstagram.entity.users.basicinfo.Counts;
+import org.jinstagram.entity.users.basicinfo.UserInfoData;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -72,11 +74,53 @@ public class InstagramActivityUtil {
     }
 
     /**
+     * Updates the given Activity object with the values from the item
+     * @param item the object to use as the source
+     * @param activity the target of the updates.  Will receive all values from the tweet.
+     * @throws ActivitySerializerException
+     */
+    public static void updateActivity(UserInfoData item, Activity activity) throws ActivitySerializerException {
+        activity.setActor(buildActor(item));
+        activity.setId(null);
+        activity.setProvider(getProvider());
+    }
+
+    public static Actor buildActor(UserInfoData item) {
+        Actor actor = new Actor();
+
+        try {
+            Image image = new Image();
+            image.setUrl(item.getProfile_picture());
+
+            Counts counts = item.getCounts();
+
+            Map<String, Object> extensions = new HashMap<String, Object>();
+
+            extensions.put("followers", counts.getFollwed_by());
+            extensions.put("follows", counts.getFollows());
+            extensions.put("screenName", item.getUsername());
+
+            actor.setId(formatId(String.valueOf(item.getId())));
+            actor.setImage(image);
+            actor.setDisplayName(item.getFullName());
+            actor.setSummary(item.getBio());
+            actor.setUrl(item.getWebsite());
+
+            actor.setAdditionalProperty("handle", item.getUsername());
+            actor.setAdditionalProperty("extensions", extensions);
+        } catch (Exception e) {
+            LOGGER.error("Exception trying to build actor object: {}", e.getMessage());
+        }
+
+        return actor;
+    }
+
+    /**
      * Builds the actor
      * @param item the item
      * @return a valid Actor
      */
-    public static  Actor buildActor(MediaFeedData item) {
+    public static Actor buildActor(MediaFeedData item) {
         Actor actor = new Actor();
 
         try {
