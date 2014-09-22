@@ -322,8 +322,11 @@ public class InstagramActivityUtil {
 
         Comments comments = item.getComments();
         String commentsConcat = "";
-        for(CommentData commentData : comments.getComments()) {
-            commentsConcat += " " + commentData.getText();
+
+        if(comments != null) {
+            for (CommentData commentData : comments.getComments()) {
+                commentsConcat += " " + commentData.getText();
+            }
         }
         if(item.getCaption() != null) {
             commentsConcat += " " + item.getCaption().getText();
