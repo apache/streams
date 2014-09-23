@@ -24,6 +24,7 @@ import org.apache.streams.instagram.serializer.util.InstagramDeserializer;
 import org.apache.streams.instagram.serializer.InstagramJsonActivitySerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+import org.jinstagram.entity.users.basicinfo.UserInfoData;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import static org.apache.streams.instagram.serializer.util.InstagramActivityUtil.updateActivity;
 import static org.hamcrest.CoreMatchers.*;
@@ -50,7 +52,7 @@ public class InstagramActivitySerDeTest {
     private final static Logger LOGGER = LoggerFactory.getLogger(InstagramActivitySerDeTest.class);
 
     @Test
-    public void Tests() {
+    public void TestMediaFeedObjects() {
         InstagramDeserializer instagramDeserializer = new InstagramDeserializer("");
         InputStream is = InstagramActivitySerDeTest.class.getResourceAsStream("/testMediaFeedObjects.txt");
         InputStreamReader isr = new InputStreamReader(is);
@@ -75,6 +77,55 @@ public class InstagramActivitySerDeTest {
                     assertThat(activity.getId(), is(not(nullValue())));
                     assertThat(activity.getActor(), is(not(nullValue())));
                     assertThat(activity.getActor().getId(), is(not(nullValue())));
+                    assertThat(activity.getVerb(), is(not(nullValue())));
+                    assertThat(activity.getProvider(), is(not(nullValue())));
+                }
+            }
+        } catch( Exception e ) {
+            System.out.println(e);
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void TestUserInfoData() {
+        InstagramDeserializer instagramDeserializer = new InstagramDeserializer("");
+        InputStream is = InstagramActivitySerDeTest.class.getResourceAsStream("/testUserInfoData.txt");
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+
+        try {
+            while (br.ready()) {
+                String line = br.readLine();
+                if(!StringUtils.isEmpty(line))
+                {
+                    LOGGER.info("raw: {}", line);
+
+                    UserInfoData userInfoData = instagramDeserializer.createObjectFromResponse(UserInfoData.class, line);
+
+                    Activity activity = new Activity();
+
+                    LOGGER.info("activity: {}", activity.toString());
+
+                    updateActivity(userInfoData, activity);
+                    assertThat(activity, is(not(nullValue())));
+
+                    assertThat(activity.getId(), is(nullValue()));
+                    assertThat(activity.getActor(), is(not(nullValue())));
+                    assertThat(activity.getActor().getImage(), is(not(nullValue())));
+                    assertThat(activity.getActor().getDisplayName(), is(not(nullValue())));
+                    assertThat(activity.getActor().getSummary(), is(not(nullValue())));
+
+                    Map<String, Object> extensions = (Map<String, Object>)activity.getActor().getAdditionalProperties().get("extensions");
+                    assertThat(extensions, is(not(nullValue())));
+                    assertThat(extensions.get("follows"), is(not(nullValue())));
+                    assertThat(extensions.get("followers"), is(not(nullValue())));
+                    assertThat(extensions.get("screenName"), is(not(nullValue())));
+
+                    assertThat(activity.getActor().getAdditionalProperties().get("handle"), is(not(nullValue())));
+                    assertThat(activity.getActor().getId(), is(not(nullValue())));
+                    assertThat(activity.getActor().getUrl(), is(not(nullValue())));
                     assertThat(activity.getVerb(), is(not(nullValue())));
                     assertThat(activity.getProvider(), is(not(nullValue())));
                 }
