@@ -48,7 +48,7 @@ public class LinkResolverProcessor implements StreamsProcessor {
         if (entry.getDocument() instanceof Activity) {
             activity = (Activity) entry.getDocument();
 
-            activity.setLinks(unwind(activity.getLinks()));
+            activity.setLinks(Lists.newArrayList(unwind(activity.getLinks())));
 
             entry.setDocument(activity);
 
@@ -65,7 +65,7 @@ public class LinkResolverProcessor implements StreamsProcessor {
                 return (Lists.newArrayList(entry));
             }
 
-            activity.setLinks(unwind(activity.getLinks()));
+            activity.setLinks(Lists.newArrayList(unwind(activity.getLinks())));
 
             try {
                 entry.setDocument(mapper.writeValueAsString(activity));
@@ -96,8 +96,8 @@ public class LinkResolverProcessor implements StreamsProcessor {
     }
 
 
-    protected List<String> unwind(List<String> inputLinks) {
-        List<String> outputLinks = Lists.newArrayList();
+    protected Set<String> unwind(List<String> inputLinks) {
+        Set<String> outputLinks = new HashSet<String>();
         for (String link : inputLinks) {
             try {
                 LinkResolver unwinder = new LinkResolver(link);
