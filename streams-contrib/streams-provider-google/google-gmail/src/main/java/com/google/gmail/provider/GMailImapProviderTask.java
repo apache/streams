@@ -46,20 +46,7 @@ public class GMailImapProviderTask implements Runnable {
     @Override
     public void run() {
 
-        Calendar calendar = new GregorianCalendar();
-
-        calendar.set(Calendar.YEAR, 2000);
-        calendar.set(Calendar.MONTH, 0);
-        calendar.set(Calendar.DAY_OF_MONTH, 0);
-        calendar.set(Calendar.HOUR, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        final List<GmailMessage> messages = this.provider.imapClient.getMessagesBy(
-                GmailClient.EmailSearchStrategy.DATE_GT,
-                calendar.getTime().toString()
-        );
+        final List<GmailMessage> messages = this.provider.imapClient.getUnreadMessages();
 
         for (GmailMessage message : messages) {
 
