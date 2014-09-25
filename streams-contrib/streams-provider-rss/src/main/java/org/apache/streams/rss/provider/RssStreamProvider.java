@@ -137,7 +137,7 @@ public class RssStreamProvider implements StreamsProvider {
     @Override
     public StreamsResultSet readCurrent() {
 
-        return (StreamsResultSet) providerQueue;
+        return new StreamsResultSet(providerQueue);
 
     }
 
