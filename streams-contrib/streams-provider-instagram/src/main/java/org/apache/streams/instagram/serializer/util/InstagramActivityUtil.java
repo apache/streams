@@ -135,6 +135,10 @@ public class InstagramActivityUtil {
             Map<String, Object> extensions = new HashMap<String, Object>();
             extensions.put("screenName", item.getUser().getUserName());
 
+            actor.setDisplayName(item.getUser().getFullName());
+            actor.setSummary(item.getUser().getBio());
+            actor.setUrl(item.getUser().getWebsiteUrl());
+
             actor.setId(formatId(String.valueOf(item.getUser().getId())));
             actor.setImage(image);
             actor.setAdditionalProperty("extensions", extensions);
@@ -158,12 +162,12 @@ public class InstagramActivityUtil {
         actObj.setAttachments(buildActivityObjectAttachments(item));
 
         Image standardResolution = new Image();
-        if(item.getType() == "image" && item.getImages() != null) {
+        if(item.getType().equals("image") && item.getImages() != null) {
             ImageData standardResolutionData = item.getImages().getStandardResolution();
             standardResolution.setHeight((double)standardResolutionData.getImageHeight());
             standardResolution.setWidth((double)standardResolutionData.getImageWidth());
             standardResolution.setUrl(standardResolutionData.getImageUrl());
-        } else if(item.getType() == "video" && item.getVideos() != null) {
+        } else if(item.getType().equals("video") && item.getVideos() != null) {
             VideoData standardResolutionData = item.getVideos().getStandardResolution();
             standardResolution.setHeight((double)standardResolutionData.getHeight());
             standardResolution.setWidth((double)standardResolutionData.getWidth());
