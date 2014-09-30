@@ -26,6 +26,8 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.*;
 import org.jinstagram.entity.comments.CommentData;
 import org.jinstagram.entity.common.*;
+import org.jinstagram.entity.users.basicinfo.Counts;
+import org.jinstagram.entity.users.basicinfo.UserInfoData;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -72,11 +74,58 @@ public class InstagramActivityUtil {
     }
 
     /**
+     * Updates the given Activity object with the values from the item
+     * @param item the object to use as the source
+     * @param activity the target of the updates.  Will receive all values from the tweet.
+     * @throws ActivitySerializerException
+     */
+    public static void updateActivity(UserInfoData item, Activity activity) throws ActivitySerializerException {
+        activity.setActor(buildActor(item));
+        activity.setId(null);
+        activity.setProvider(getProvider());
+    }
+
+    /**
+     * Builds an Actor object given a UserInfoData object
+     * @param item
+     * @return Actor object
+     */
+    public static Actor buildActor(UserInfoData item) {
+        Actor actor = new Actor();
+
+        try {
+            Image image = new Image();
+            image.setUrl(item.getProfile_picture());
+
+            Counts counts = item.getCounts();
+
+            Map<String, Object> extensions = new HashMap<String, Object>();
+
+            extensions.put("followers", counts.getFollwed_by());
+            extensions.put("follows", counts.getFollows());
+            extensions.put("screenName", item.getUsername());
+
+            actor.setId(formatId(String.valueOf(item.getId())));
+            actor.setImage(image);
+            actor.setDisplayName(item.getFullName());
+            actor.setSummary(item.getBio());
+            actor.setUrl(item.getWebsite());
+
+            actor.setAdditionalProperty("handle", item.getUsername());
+            actor.setAdditionalProperty("extensions", extensions);
+        } catch (Exception e) {
+            LOGGER.error("Exception trying to build actor object: {}", e.getMessage());
+        }
+
+        return actor;
+    }
+
+    /**
      * Builds the actor
      * @param item the item
      * @return a valid Actor
      */
-    public static  Actor buildActor(MediaFeedData item) {
+    public static Actor buildActor(MediaFeedData item) {
         Actor actor = new Actor();
 
         try {
@@ -85,6 +134,10 @@ public class InstagramActivityUtil {
 
             Map<String, Object> extensions = new HashMap<String, Object>();
             extensions.put("screenName", item.getUser().getUserName());
+
+            actor.setDisplayName(item.getUser().getFullName());
+            actor.setSummary(item.getUser().getBio());
+            actor.setUrl(item.getUser().getWebsiteUrl());
 
             actor.setId(formatId(String.valueOf(item.getUser().getId())));
             actor.setImage(image);
@@ -109,12 +162,12 @@ public class InstagramActivityUtil {
         actObj.setAttachments(buildActivityObjectAttachments(item));
 
         Image standardResolution = new Image();
-        if(item.getType() == "image" && item.getImages() != null) {
+        if(item.getType().equals("image") && item.getImages() != null) {
             ImageData standardResolutionData = item.getImages().getStandardResolution();
             standardResolution.setHeight((double)standardResolutionData.getImageHeight());
             standardResolution.setWidth((double)standardResolutionData.getImageWidth());
             standardResolution.setUrl(standardResolutionData.getImageUrl());
-        } else if(item.getType() == "video" && item.getVideos() != null) {
+        } else if(item.getType().equals("video") && item.getVideos() != null) {
             VideoData standardResolutionData = item.getVideos().getStandardResolution();
             standardResolution.setHeight((double)standardResolutionData.getHeight());
             standardResolution.setWidth((double)standardResolutionData.getWidth());
@@ -273,8 +326,11 @@ public class InstagramActivityUtil {
 
         Comments comments = item.getComments();
         String commentsConcat = "";
-        for(CommentData commentData : comments.getComments()) {
-            commentsConcat += " " + commentData.getText();
+
+        if(comments != null) {
+            for (CommentData commentData : comments.getComments()) {
+                commentsConcat += " " + commentData.getText();
+            }
         }
         if(item.getCaption() != null) {
             commentsConcat += " " + item.getCaption().getText();

@@ -114,12 +114,14 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
     protected Collection<T> ensureTargetObject(Activity activity) {
         Map<String, Object> extensions = ensureExtensions(activity);
         Set<T> hashtags;
-        if(extensions.containsKey(extensionKey)) {
+        if(extensions.containsKey(extensionKey) && extensions.get(extensionKey) != null) {
             hashtags = Sets.newHashSet((Iterable<T>) extensions.get(extensionKey));
         } else {
             hashtags = Sets.newHashSet();
-            extensions.put(extensionKey, hashtags);
         }
+
+        extensions.put(extensionKey, hashtags);
+
         return hashtags;
     }
 }

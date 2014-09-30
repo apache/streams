@@ -78,9 +78,10 @@ public class InstagramTypeConverter implements StreamsProcessor {
 
 
             } else if(item instanceof UserInfoData) {
-                activity = this.userInfoSerializer.deserialize((UserInfoData) item );
+                activity = new Activity();
+                instagramActivityUtil.updateActivity((UserInfoData) item, activity);
             }
-            if(activity != null && activity.getId() != null) {
+            if(activity != null) {
                 result = new StreamsDatum(activity);
                 count++;
             }
