@@ -32,9 +32,6 @@ import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.elasticsearch.ElasticsearchConfigurator;
 import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.elasticsearch.action.get.GetRequestBuilder;
-import org.elasticsearch.action.get.GetResponse;
-import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -43,9 +40,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Uses index and type in metadata map stored in datum document to populate current document into datums
+ * Uses index and type in metadata to populate current document into datums
  */
-public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, Serializable {
+public class DocumentToMetadataProcessor implements StreamsProcessor, Serializable {
 
     public final static String STREAMS_ID = "DatumFromMetadataProcessor";
 
@@ -54,16 +51,16 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
 
     private ObjectMapper mapper;
 
-    public DatumFromMetadataAsDocumentProcessor() {
+    public DocumentToMetadataProcessor() {
         Config config = StreamsConfigurator.config.getConfig("elasticsearch");
         this.config = ElasticsearchConfigurator.detectReaderConfiguration(config);
     }
 
-    public DatumFromMetadataAsDocumentProcessor(Config config) {
+    public DocumentToMetadataProcessor(Config config) {
         this.config = ElasticsearchConfigurator.detectReaderConfiguration(config);
     }
 
-    public DatumFromMetadataAsDocumentProcessor(ElasticsearchReaderConfiguration config) {
+    public DocumentToMetadataProcessor(ElasticsearchReaderConfiguration config) {
         this.config = config;
     }
 
@@ -78,38 +75,12 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
             return result;
         }
 
-        Map<String, Object> metadata = DocumentToMetadataProcessor.asMap(metadataObjectNode);
+        Map<String, Object> metadata = asMap(metadataObjectNode);
 
-        if(entry == null || entry.getMetadata() == null)
+        if(entry == null || metadata == null)
             return result;
 
-        String index = (String) metadata.get("index");
-        String type = (String) metadata.get("type");
-        String id = (String) metadata.get("id");
-
-        if( index == null ) {
-            index = this.config.getIndexes().get(0);
-        }
-        if( type == null ) {
-            type = this.config.getTypes().get(0);
-        }
-        if( id == null ) {
-            id = entry.getId();
-        }
-
-        GetRequestBuilder getRequestBuilder = elasticsearchClientManager.getClient().prepareGet(index, type, id);
-        getRequestBuilder.setFields("*", "_timestamp");
-        getRequestBuilder.setFetchSource(true);
-        GetResponse getResponse = getRequestBuilder.get();
-
-        if( getResponse == null || getResponse.isExists() == false || getResponse.isSourceEmpty() == true )
-            return result;
-
-        entry.setDocument(getResponse.getSource());
-        if( getResponse.getField("_timestamp") != null) {
-            DateTime timestamp = new DateTime(((Long) getResponse.getField("_timestamp").getValue()).longValue());
-            entry.setTimestamp(timestamp);
-        }
+        entry.setMetadata(metadata);
 
         result.add(entry);
 
@@ -121,6 +92,7 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
         this.elasticsearchClientManager = new ElasticsearchClientManager(config);
         mapper = StreamsJacksonMapper.getInstance();
         mapper.registerModule(new JsonOrgModule());
+
     }
 
     @Override
@@ -128,4 +100,19 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
         this.elasticsearchClientManager.getClient().close();
     }
 
+    public static Map<String, Object> asMap(JsonNode node) {
+
+        Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
+        Map<String, Object> ret = Maps.newHashMap();
+
+        Map.Entry<String, JsonNode> entry;
+
+        while (iterator.hasNext()) {
+            entry = iterator.next();
+            if( entry.getValue().asText() != null )
+                ret.put(entry.getKey(), entry.getValue().asText());
+        }
+
+        return ret;
+    }
 }
