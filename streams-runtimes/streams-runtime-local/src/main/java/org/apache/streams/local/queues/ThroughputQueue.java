@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * A {@link java.util.concurrent.BlockingQueue} implementation that allows the measure measurement of how
- * data flows through the queue.  Is also a <code>MBean</code> so the flow statistics can be viewed through
+ * data flows through the queue.  Is also a {@code MBean} so the flow statistics can be viewed through
  * JMX. Registration of the bean happens whenever a constructor receives a non-null id.
  *
  * !!! Warning !!!
@@ -46,14 +46,14 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     private volatile boolean active;
 
     /**
-     * Creates an unbounded, unregistered <code>ThroughputQueue</code>
+     * Creates an unbounded, unregistered {@code ThroughputQueue}
      */
     public ThroughputQueue() {
         this(-1, null);
     }
 
     /**
-     * Creates a bounded, unregistered <code>ThroughputQueue</code>
+     * Creates a bounded, unregistered {@code ThroughputQueue}
      * @param maxSize maximum capacity of queue, if maxSize < 1 then unbounded
      */
     public ThroughputQueue(int maxSize) {
@@ -61,7 +61,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     }
 
     /**
-     * Creates an unbounded, registered <code>ThroughputQueue</code>
+     * Creates an unbounded, registered {@code ThroughputQueue}
      * @param id unique id for this queue to be registered with. if id == NULL then not registered
      */
     public ThroughputQueue(String id) {
@@ -69,7 +69,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     }
 
     /**
-     * Creates a bounded, registered <code>ThroughputQueue</code>
+     * Creates a bounded, registered {@code ThroughputQueue}
      * @param maxSize maximum capacity of queue, if maxSize < 1 then unbounded
      * @param id unique id for this queue to be registered with. if id == NULL then not registered
      */
