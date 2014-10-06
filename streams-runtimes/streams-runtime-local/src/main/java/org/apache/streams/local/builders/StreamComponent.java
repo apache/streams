@@ -28,6 +28,7 @@ import org.joda.time.DateTime;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Stores the implementations of {@link org.apache.streams.core.StreamsOperation}, the StreamsOperations it is connected
@@ -40,8 +41,8 @@ public class StreamComponent {
 
     private String id;
     private Set<StreamComponent> inBound;
-    private Map<StreamComponent, Queue<StreamsDatum>> outBound;
-    private Queue<StreamsDatum> inQueue;
+    private Map<StreamComponent, BlockingQueue<StreamsDatum>> outBound;
+    private BlockingQueue<StreamsDatum> inQueue;
     private StreamsProvider provider;
     private StreamsProcessor processor;
     private StreamsPersistWriter writer;
@@ -98,7 +99,7 @@ public class StreamComponent {
      * @param inQueue
      * @param numTasks
      */
-    public StreamComponent(String id, StreamsProcessor processor, Queue<StreamsDatum> inQueue, int numTasks) {
+    public StreamComponent(String id, StreamsProcessor processor, BlockingQueue<StreamsDatum> inQueue, int numTasks) {
         this.id = id;
         this.processor = processor;
         this.inQueue = inQueue;
@@ -113,7 +114,7 @@ public class StreamComponent {
      * @param inQueue
      * @param numTasks
      */
-    public StreamComponent(String id, StreamsPersistWriter writer, Queue<StreamsDatum> inQueue, int numTasks) {
+    public StreamComponent(String id, StreamsPersistWriter writer, BlockingQueue<StreamsDatum> inQueue, int numTasks) {
         this.id = id;
         this.writer = writer;
         this.inQueue = inQueue;
@@ -123,7 +124,7 @@ public class StreamComponent {
 
     private void initializePrivateVariables() {
         this.inBound = new HashSet<StreamComponent>();
-        this.outBound = new HashMap<StreamComponent, Queue<StreamsDatum>>();
+        this.outBound = new HashMap<StreamComponent, BlockingQueue<StreamsDatum>>();
     }
 
     /**
@@ -131,7 +132,7 @@ public class StreamComponent {
      * @param component the component that this supplying their inbound queue
      * @param queue the queue to to put post processed/provided datums on
      */
-    public void addOutBoundQueue(StreamComponent component, Queue<StreamsDatum> queue) {
+    public void addOutBoundQueue(StreamComponent component, BlockingQueue<StreamsDatum> queue) {
         this.outBound.put(component, queue);
     }
 
@@ -163,7 +164,7 @@ public class StreamComponent {
      * The inbound queue for this component
      * @return inbound queue
      */
-    public Queue<StreamsDatum> getInBoundQueue() {
+    public BlockingQueue<StreamsDatum> getInBoundQueue() {
         return this.inQueue;
     }
 

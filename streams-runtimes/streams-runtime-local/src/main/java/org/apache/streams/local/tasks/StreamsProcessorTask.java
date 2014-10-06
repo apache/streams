@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -42,7 +43,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
     private long sleepTime;
     private AtomicBoolean keepRunning;
     private Map<String, Object> streamConfig;
-    private Queue<StreamsDatum> inQueue;
+    private BlockingQueue<StreamsDatum> inQueue;
     private AtomicBoolean isRunning;
 
     private DatumStatusCounter statusCounter = new DatumStatusCounter();
@@ -83,7 +84,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
     }
 
     @Override
-    public void addInputQueue(Queue<StreamsDatum> inputQueue) {
+    public void addInputQueue(BlockingQueue<StreamsDatum> inputQueue) {
         this.inQueue = inputQueue;
     }
 
@@ -96,34 +97,65 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
     public void run() {
         try {
             this.processor.prepare(this.streamConfig);
-            StreamsDatum datum = this.inQueue.poll();
             while(this.keepRunning.get()) {
+                StreamsDatum datum = null;
+                try {
+                    datum = this.inQueue.take();
+                } catch (InterruptedException ie) {
+                    LOGGER.warn("Received InteruptedException, shutting down and re-applying interrupt status.");
+                    Thread.currentThread().interrupt();
+                }
                 if(datum != null) {
                     try {
                         List<StreamsDatum> output = this.processor.process(datum);
-
                         if(output != null) {
                             for(StreamsDatum outDatum : output) {
-                                super.addToOutgoingQueue(outDatum);
+                                super.addToOutgoingQueue(datum);
                                 statusCounter.incrementStatus(DatumStatus.SUCCESS);
                             }
                         }
-                    } catch (Throwable e) {
-                        LOGGER.error("Throwable Streams Processor {}", e);
+                    } catch (InterruptedException ie) {
+                        LOGGER.warn("Received InteruptedException, shutting down and re-applying interrupt status.");
+                        Thread.currentThread().interrupt();
+                    } catch (Throwable t) {
+                        LOGGER.warn("Caught Throwable in processor, {} : {}", this.processor.getClass().getName(), t.getMessage());
                         statusCounter.incrementStatus(DatumStatus.FAIL);
                         //Add the error to the metadata, but keep processing
-                        DatumUtils.addErrorToMetadata(datum, e, this.processor.getClass());
+                        DatumUtils.addErrorToMetadata(datum, t, this.processor.getClass());
                     }
+                } else {
+                    LOGGER.warn("Removed NULL datum from queue at processor : {}", this.processor.getClass().getName());
                 }
-                else {
-                    try {
-                        Thread.sleep(this.sleepTime);
-                    } catch (InterruptedException e) {
-                        this.keepRunning.set(false);
-                    }
-                }
-                datum = this.inQueue.poll();
             }
+
+//            this.processor.prepare(this.streamConfig);
+//            StreamsDatum datum = this.inQueue.poll();
+//            while(this.keepRunning.get()) {
+//                if(datum != null) {
+//                    try {
+//                        List<StreamsDatum> output = this.processor.process(datum);
+//                        if(output != null) {
+//                            for(StreamsDatum outDatum : output) {
+//                                super.addToOutgoingQueue(outDatum);
+//                                statusCounter.incrementStatus(DatumStatus.SUCCESS);
+//                            }
+//                        }
+//                    } catch (Throwable e) {
+//                        LOGGER.error("Throwable Streams Processor {}", e);
+//                        statusCounter.incrementStatus(DatumStatus.FAIL);
+//                        //Add the error to the metadata, but keep processing
+//                        DatumUtils.addErrorToMetadata(datum, e, this.processor.getClass());
+//                    }
+//                }
+//                else {
+//                    try {
+//                        Thread.sleep(this.sleepTime);
+//                    } catch (InterruptedException e) {
+//                        this.keepRunning.set(false);
+//                    }
+//                }
+//                datum = this.inQueue.poll();
+//            }
 
         } finally {
             this.isRunning.set(false);
@@ -132,8 +164,8 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
     }
 
     @Override
-    public List<Queue<StreamsDatum>> getInputQueues() {
-        List<Queue<StreamsDatum>> queues = new LinkedList<Queue<StreamsDatum>>();
+    public List<BlockingQueue<StreamsDatum>> getInputQueues() {
+        List<BlockingQueue<StreamsDatum>> queues = new LinkedList<BlockingQueue<StreamsDatum>>();
         queues.add(this.inQueue);
         return queues;
     }

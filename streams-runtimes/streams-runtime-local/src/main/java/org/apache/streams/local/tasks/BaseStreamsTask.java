@@ -20,6 +20,7 @@ package org.apache.streams.local.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
@@ -30,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -38,8 +41,8 @@ public abstract class BaseStreamsTask implements StreamsTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseStreamsTask.class);
 
-    private List<Queue<StreamsDatum>> inQueues = new ArrayList<Queue<StreamsDatum>>();
-    private List<Queue<StreamsDatum>> outQueues = new LinkedList<Queue<StreamsDatum>>();
+    private List<BlockingQueue<StreamsDatum>> inQueues = new ArrayList<BlockingQueue<StreamsDatum>>();
+    private List<BlockingQueue<StreamsDatum>> outQueues = new LinkedList<BlockingQueue<StreamsDatum>>();
     private int inIndex = 0;
     private ObjectMapper mapper;
 
@@ -50,31 +53,31 @@ public abstract class BaseStreamsTask implements StreamsTask {
 
 
     @Override
-    public void addInputQueue(Queue<StreamsDatum> inputQueue) {
+    public void addInputQueue(BlockingQueue<StreamsDatum> inputQueue) {
         this.inQueues.add(inputQueue);
     }
 
     @Override
-    public void addOutputQueue(Queue<StreamsDatum> outputQueue) {
+    public void addOutputQueue(BlockingQueue<StreamsDatum> outputQueue) {
         this.outQueues.add(outputQueue);
     }
 
     @Override
-    public List<Queue<StreamsDatum>> getInputQueues() {
+    public List<BlockingQueue<StreamsDatum>> getInputQueues() {
         return this.inQueues;
     }
 
     @Override
-    public List<Queue<StreamsDatum>> getOutputQueues() {
+    public List<BlockingQueue<StreamsDatum>> getOutputQueues() {
         return this.outQueues;
     }
 
     /**
-     * NOTE NECESSARY AT THE MOMENT.  MAY BECOME NECESSARY AS WE LOOK AT MAKING JOIN TASKS. CURRENTLY ALL TASK HAVE MAX
-     * OF 1 INPUT QUEUE.
+     * SHOULD NOT BE NECCESARY, WILL REMOVE.
      * Round Robins through input queues to get the next StreamsDatum. If all input queues are empty, it will return null.
      * @return the next StreamsDatum or null if all input queues are empty.
      */
+    @Deprecated
     protected StreamsDatum getNextDatum() {
         int startIndex = this.inIndex;
         int index = startIndex;
@@ -91,23 +94,41 @@ public abstract class BaseStreamsTask implements StreamsTask {
      * clones of the datum and adds a new clone to each queue.
      * @param datum
      */
-    protected void addToOutgoingQueue(StreamsDatum datum) {
+    protected void addToOutgoingQueue(StreamsDatum datum) throws InterruptedException{
         if(this.outQueues.size() == 1) {
-            ComponentUtils.offerUntilSuccess(datum, outQueues.get(0));
+            outQueues.get(0).put(datum);
         }
         else {
             StreamsDatum newDatum = null;
-            for(Queue<StreamsDatum> queue : this.outQueues) {
+            List<BlockingQueue<StreamsDatum>> failedQueues = Lists.newLinkedList();
+            // TODO
+            // Needs to be optimized better but workable now
+            // Adds datums to queues that aren't full, then adds to full queues with blocking
+            for(BlockingQueue<StreamsDatum> queue : this.outQueues) {
                 try {
                     newDatum = cloneStreamsDatum(datum);
                     if(newDatum != null) {
-                        ComponentUtils.offerUntilSuccess(newDatum, queue);
+                        if(!queue.offer(newDatum, 500, TimeUnit.MILLISECONDS)) {
+                            failedQueues.add(queue);
+                        }
                     }
                 } catch (RuntimeException e) {
                     LOGGER.debug("Failed to add StreamsDatum to outgoing queue : {}", datum);
                     LOGGER.error("Exception while offering StreamsDatum to outgoing queue: {}", e);
                 }
             }
+            for(BlockingQueue<StreamsDatum> queue : failedQueues) {
+                try {
+                    newDatum = cloneStreamsDatum(datum);
+                    if(newDatum != null) {
+                        queue.put(newDatum);
+                    }
+                } catch (RuntimeException e) {
+                    LOGGER.debug("Failed to add StreamsDatum to outgoing queue : {}", datum);
+                    LOGGER.error("Exception while offering StreamsDatum to outgoing queue: {}", e);
+                }
+            }
+
         }
     }
 

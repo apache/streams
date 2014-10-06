@@ -21,17 +21,16 @@ package org.apache.streams.local.builders;
 import org.apache.log4j.spi.LoggerFactory;
 import org.apache.streams.core.*;
 import org.apache.streams.local.executors.ShutdownStreamOnUnhandleThrowableThreadPoolExecutor;
+import org.apache.streams.local.queues.ThroughputQueue;
 import org.apache.streams.local.tasks.LocalStreamProcessMonitorThread;
 import org.apache.streams.local.tasks.StatusCounterMonitorThread;
 import org.apache.streams.local.tasks.StreamsProviderTask;
 import org.apache.streams.local.tasks.StreamsTask;
-import org.apache.streams.util.SerializationUtil;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +47,6 @@ public class LocalStreamBuilder implements StreamBuilder {
     public static final String TIMEOUT_KEY = "TIMEOUT";
     private Map<String, StreamComponent> providers;
     private Map<String, StreamComponent> components;
-    private Queue<StreamsDatum> queue;
     private Map<String, Object> streamConfig;
     private ExecutorService executor;
     private ExecutorService monitor;
@@ -57,12 +55,13 @@ public class LocalStreamBuilder implements StreamBuilder {
     private LocalStreamProcessMonitorThread monitorThread;
     private Map<String, List<StreamsTask>> tasks;
     private Thread shutdownHook;
+    private int maxQueueCapacity;
 
     /**
      *
      */
     public LocalStreamBuilder(){
-        this(new ConcurrentLinkedQueue<StreamsDatum>(), null);
+        this(-1, null);
     }
 
     /**
@@ -70,29 +69,29 @@ public class LocalStreamBuilder implements StreamBuilder {
      * @param streamConfig
      */
     public LocalStreamBuilder(Map<String, Object> streamConfig) {
-        this(new ConcurrentLinkedQueue<StreamsDatum>(), streamConfig);
+        this(-1, streamConfig);
     }
 
     /**
      *
-     * @param queueType
+     * @param maxQueueCapacity
      */
-    public LocalStreamBuilder(Queue<StreamsDatum> queueType) {
-        this(queueType, null);
+    public LocalStreamBuilder(int maxQueueCapacity) {
+        this(maxQueueCapacity, null);
     }
 
     /**
      *
-     * @param queueType
+     * @param maxQueueCapacity
      * @param streamConfig
      */
-    public LocalStreamBuilder(Queue<StreamsDatum> queueType, Map<String, Object> streamConfig) {
-        this.queue = queueType;
+    public LocalStreamBuilder(int maxQueueCapacity, Map<String, Object> streamConfig) {
         this.providers = new HashMap<String, StreamComponent>();
         this.components = new HashMap<String, StreamComponent>();
         this.streamConfig = streamConfig;
         this.totalTasks = 0;
         this.monitorTasks = 0;
+        this.maxQueueCapacity = maxQueueCapacity;
         final LocalStreamBuilder self = this;
         this.shutdownHook = new Thread() {
             @Override
@@ -146,7 +145,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     @Override
     public StreamBuilder addStreamsProcessor(String id, StreamsProcessor processor, int numTasks, String... inBoundIds) {
         validateId(id);
-        StreamComponent comp = new StreamComponent(id, processor, cloneQueue(), numTasks);
+        StreamComponent comp = new StreamComponent(id, processor, new ThroughputQueue<StreamsDatum>(this.maxQueueCapacity, id), numTasks);
         this.components.put(id, comp);
         connectToOtherComponents(inBoundIds, comp);
         this.totalTasks += numTasks;
@@ -158,7 +157,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     @Override
     public StreamBuilder addStreamsPersistWriter(String id, StreamsPersistWriter writer, int numTasks, String... inBoundIds) {
         validateId(id);
-        StreamComponent comp = new StreamComponent(id, writer, cloneQueue(), numTasks);
+        StreamComponent comp = new StreamComponent(id, writer, new ThroughputQueue<StreamsDatum>(this.maxQueueCapacity, id), numTasks);
         this.components.put(id, comp);
         connectToOtherComponents(inBoundIds, comp);
         this.totalTasks += numTasks;
@@ -373,13 +372,13 @@ public class LocalStreamBuilder implements StreamBuilder {
     private void validateId(String id) {
         if(this.providers.containsKey(id) || this.components.containsKey(id)) {
             throw new InvalidStreamException("Duplicate id. "+id+" is already assigned to another component");
+        } else if(id.contains(":")) {
+            throw new InvalidStreamException("Invalid character, ':', in component id : "+id);
         }
     }
 
 
-    private Queue<StreamsDatum> cloneQueue() {
-        return (Queue<StreamsDatum>) SerializationUtil.cloneBySerialization(this.queue);
-    }
+
 
     protected int getTimeout() {
     //Set the timeout of it is configured, otherwise signal downstream components to use their default

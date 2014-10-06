@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -122,7 +123,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     }
 
     @Override
-    public void addInputQueue(Queue<StreamsDatum> inputQueue) {
+    public void addInputQueue(BlockingQueue<StreamsDatum> inputQueue) {
         throw new UnsupportedOperationException(this.getClass().getName()+" does not support method - setInputQueue()");
     }
 

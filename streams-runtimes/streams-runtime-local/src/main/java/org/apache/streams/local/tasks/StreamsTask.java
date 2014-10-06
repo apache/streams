@@ -23,6 +23,7 @@ import org.apache.streams.core.StreamsDatum;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Interface for all task that will be used to execute instances of {@link org.apache.streams.core.StreamsOperation}
@@ -49,13 +50,13 @@ public interface StreamsTask extends Runnable{
      * Add an input {@link java.util.Queue} for this task.
      * @param inputQueue
      */
-    public void addInputQueue(Queue<StreamsDatum> inputQueue);
+    public void addInputQueue(BlockingQueue<StreamsDatum> inputQueue);
 
     /**
      * Add an output {@link java.util.Queue} for this task.
      * @param outputQueue
      */
-    public void addOutputQueue(Queue<StreamsDatum> outputQueue);
+    public void addOutputQueue(BlockingQueue<StreamsDatum> outputQueue);
 
     /**
      * Set the configuration object that will shared and passed to all instances of StreamsTask.
@@ -73,12 +74,12 @@ public interface StreamsTask extends Runnable{
      * Returns the input queues that have been set for this task.
      * @return list of input queues
      */
-    public List<Queue<StreamsDatum>> getInputQueues();
+    public List<BlockingQueue<StreamsDatum>> getInputQueues();
 
     /**
      * Returns the output queues that have been set for this task
      * @return list of output queues
      */
-    public List<Queue<StreamsDatum>> getOutputQueues();
+    public List<BlockingQueue<StreamsDatum>> getOutputQueues();
 
 }
