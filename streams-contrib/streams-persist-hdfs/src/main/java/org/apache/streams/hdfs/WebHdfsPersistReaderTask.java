@@ -62,7 +62,10 @@ public class WebHdfsPersistReaderTask implements Runnable {
                         if( !Strings.isNullOrEmpty(line) ) {
                             reader.countersCurrent.incrementAttempt();
                             String[] fields = line.split(Character.toString(reader.DELIMITER));
-                            StreamsDatum entry = new StreamsDatum(fields[3], fields[0], new DateTime(Long.parseLong(fields[2])));
+                            // Temporarily disabling timestamp reads to make reader and writer compatible
+                            // This capability will be restore in PR for STREAMS-169
+                            //StreamsDatum entry = new StreamsDatum(fields[3], fields[0], new DateTime(Long.parseLong(fields[2])));
+                            StreamsDatum entry = new StreamsDatum(fields[3], fields[0]);
                             write( entry );
                             reader.countersCurrent.incrementStatus(DatumStatus.SUCCESS);
                         }
