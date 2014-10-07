@@ -73,7 +73,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.8</version>
                 <executions>
                     <execution>
                         <id>add-source-jsonschema2pojo</id>
@@ -140,7 +139,7 @@
                         <plugin>
                             <groupId>org.jvnet.jaxb2_commons</groupId>
                             <artifactId>jaxb2-basics</artifactId>
-                            <version>0.6.5</version>
+                            <version>${jaxb2-basics.version}</version>
                         </plugin>
                     </plugins>
                 </configuration>
