@@ -116,6 +116,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                         }
                     } catch (InterruptedException ie) {
                         LOGGER.warn("Received InteruptedException, shutting down and re-applying interrupt status.");
+                        this.keepRunning.set(false);
                         Thread.currentThread().interrupt();
                     } catch (Throwable t) {
                         LOGGER.warn("Caught Throwable in processor, {} : {}", this.processor.getClass().getName(), t.getMessage());

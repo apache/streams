@@ -83,7 +83,7 @@ public class BasicTasksTest {
     @Test
     public void testProcessorTask() {
         int numMessages = 100;
-        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor();
+        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor("");
         StreamsProcessorTask task = new StreamsProcessorTask(processor);
         BlockingQueue<StreamsDatum> outQueue = new LinkedBlockingQueue<>();
         BlockingQueue<StreamsDatum> inQueue = createInputQueue(numMessages);
@@ -121,7 +121,7 @@ public class BasicTasksTest {
     @Test
     public void testWriterTask() {
         int numMessages = 100;
-        DatumCounterWriter writer = new DatumCounterWriter();
+        DatumCounterWriter writer = new DatumCounterWriter("");
         StreamsPersistWriterTask task = new StreamsPersistWriterTask(writer);
         BlockingQueue<StreamsDatum> outQueue = new LinkedBlockingQueue<>();
         BlockingQueue<StreamsDatum> inQueue = createInputQueue(numMessages);
@@ -203,7 +203,7 @@ public class BasicTasksTest {
     @Test
     public void testBranching() {
         int numMessages = 100;
-        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor();
+        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor("");
         StreamsProcessorTask task = new StreamsProcessorTask(processor);
         BlockingQueue<StreamsDatum> outQueue1 = new LinkedBlockingQueue<>();
         BlockingQueue<StreamsDatum> outQueue2 = new LinkedBlockingQueue<>();
@@ -246,7 +246,7 @@ public class BasicTasksTest {
     @Test
     public void testBranchingSerialization() {
         int numMessages = 1;
-        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor();
+        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor("");
         StreamsProcessorTask task = new StreamsProcessorTask(processor);
         BlockingQueue<StreamsDatum> outQueue1 = new LinkedBlockingQueue<>();
         BlockingQueue<StreamsDatum> outQueue2 = new LinkedBlockingQueue<>();

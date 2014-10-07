@@ -22,43 +22,70 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Created by rebanks on 2/18/14.
+ *
  */
 public class PassthroughDatumCounterProcessor implements StreamsProcessor {
 
-    public static Set<Integer> claimedNumber = new HashSet<Integer>();
-    public static final Random rand = new Random();
-    public static Set<Integer> sawData = new HashSet<Integer>();
+    /**
+     * Set of all ids that have been claimed.  Ensures all instances are assigned unique ids
+     */
+    public static Set<Integer> CLAIMED_ID = new HashSet<Integer>();
+    /**
+     * Random instance to generate ids
+     */
+    public static final Random RAND = new Random();
+    /**
+     * Set of instance ids that received data. Usefully for testing parrallelization is actually working.
+     */
+    public final static Set<Integer> SEEN_DATA = new HashSet<Integer>();
+    /**
+     * The total count of data seen by a all instances of a processor.
+     */
+    public static final ConcurrentHashMap<String, AtomicLong> COUNTS = new ConcurrentHashMap<>();
 
     private int count = 0;
     private int id;
+    private String procId;
+
+    public PassthroughDatumCounterProcessor(String procId) {
+        this.procId = procId;
+    }
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
         ++this.count;
         List<StreamsDatum> result = new LinkedList<StreamsDatum>();
         result.add(entry);
-        synchronized (sawData) {
-            sawData.add(this.id);
+        synchronized (SEEN_DATA) {
+            SEEN_DATA.add(this.id);
         }
         return result;
     }
 
     @Override
     public void prepare(Object configurationObject) {
-        synchronized (claimedNumber) {
-            this.id = rand.nextInt();
-            while(!claimedNumber.add(this.id)) {
-                this.id = rand.nextInt();
+        synchronized (CLAIMED_ID) {
+            this.id = RAND.nextInt();
+            while(!CLAIMED_ID.add(this.id)) {
+                this.id = RAND.nextInt();
             }
         }
     }
 
     @Override
     public void cleanUp() {
-
+        synchronized (COUNTS) {
+            AtomicLong count = COUNTS.get(this.procId);
+            if(count == null) {
+                COUNTS.put(this.procId, new AtomicLong(this.count));
+            } else {
+                count.addAndGet(this.count);
+            }
+        }
     }
 
     public int getMessageCount() {
