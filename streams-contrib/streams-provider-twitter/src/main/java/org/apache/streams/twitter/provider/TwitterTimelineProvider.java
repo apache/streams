@@ -19,7 +19,6 @@
 package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import org.apache.streams.core.DatumStatusCounter;
@@ -116,11 +115,11 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         executor.shutdown();
     }
 
-    protected boolean shouldContinuePulling(List<Status> statuses) {
+    public boolean shouldContinuePulling(List<Status> statuses) {
         return (statuses != null) && (statuses.size() > 0);
     }
 
-    private void submitTimelineThreads(Long[] ids) {
+    protected void submitTimelineThreads(Long[] ids) {
         Twitter client = getTwitterClient();
 
         for(int i = 0; i < ids.length; i++) {
@@ -267,8 +266,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         }
     }
 
-    protected Twitter getTwitterClient()
-    {
+    public Twitter getTwitterClient() {
         String baseUrl = "https://api.twitter.com:443/1.1/";
 
         ConfigurationBuilder builder = new ConfigurationBuilder()
@@ -291,7 +289,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         shutdownAndAwaitTermination(executor);
     }
 
-    protected void addDatum(StreamsDatum datum) {
+    public void addDatum(StreamsDatum datum) {
         try {
             lock.readLock().lock();
             ComponentUtils.offerUntilSuccess(datum, providerQueue);
