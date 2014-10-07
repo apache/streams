@@ -26,7 +26,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * NOT USED.  When joins/partions are implemented, a similar pattern could be followed. Done only as basic proof
  * of concept.
+ * NEEDS TO BE RE-WRITTEN
  */
+@Deprecated
 public class StreamsMergeTask extends BaseStreamsTask {
 
     private AtomicBoolean keepRunning;
@@ -62,7 +64,11 @@ public class StreamsMergeTask extends BaseStreamsTask {
         while(this.keepRunning.get()) {
             StreamsDatum datum = super.getNextDatum();
             if(datum != null) {
-                super.addToOutgoingQueue(datum);
+                try {
+                    super.addToOutgoingQueue(datum);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
             }
             else {
                 try {

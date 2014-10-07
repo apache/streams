@@ -189,13 +189,13 @@ public class StreamComponent {
             if(this.numTasks > 1) {
                 task =  new StreamsProcessorTask((StreamsProcessor)SerializationUtil.cloneBySerialization(this.processor));
                 task.addInputQueue(this.inQueue);
-                for(Queue<StreamsDatum> q : this.outBound.values()) {
+                for(BlockingQueue<StreamsDatum> q : this.outBound.values()) {
                     task.addOutputQueue(q);
                 }
             } else {
                 task = new StreamsProcessorTask(this.processor);
                 task.addInputQueue(this.inQueue);
-                for(Queue<StreamsDatum> q : this.outBound.values()) {
+                for(BlockingQueue<StreamsDatum> q : this.outBound.values()) {
                     task.addOutputQueue(q);
                 }
             }
@@ -226,7 +226,7 @@ public class StreamComponent {
             if(timeout != 0) {
                 ((StreamsProviderTask)task).setTimeout(timeout);
             }
-            for(Queue<StreamsDatum> q : this.outBound.values()) {
+            for(BlockingQueue<StreamsDatum> q : this.outBound.values()) {
                 task.addOutputQueue(q);
             }
         }

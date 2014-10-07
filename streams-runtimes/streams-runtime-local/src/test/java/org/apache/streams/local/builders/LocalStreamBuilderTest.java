@@ -223,7 +223,7 @@ public class LocalStreamBuilderTest {
         int timeout = 10000;
         config.put(LocalStreamBuilder.TIMEOUT_KEY, timeout);
         long start = System.currentTimeMillis();
-        StreamBuilder builder = new LocalStreamBuilder(Queues.<StreamsDatum>newLinkedBlockingQueue(), config);
+        StreamBuilder builder = new LocalStreamBuilder(-1, config);
         builder.newPerpetualStream("prov1", new EmptyResultSetProvider())
                 .addStreamsProcessor("proc1", new PassthroughDatumCounterProcessor(), 1, "prov1")
                 .addStreamsProcessor("proc2", new PassthroughDatumCounterProcessor(), 1, "proc1")
@@ -238,7 +238,7 @@ public class LocalStreamBuilderTest {
     public void ensureShutdownWithBlockedQueue() throws InterruptedException {
         ExecutorService service = Executors.newSingleThreadExecutor();
         int before = Thread.activeCount();
-        final StreamBuilder builder = new LocalStreamBuilder(Queues.<StreamsDatum>newLinkedBlockingQueue(1));
+        final StreamBuilder builder = new LocalStreamBuilder(1);
         builder.newPerpetualStream("prov1", new NumericMessageProvider(30))
                 .addStreamsProcessor("proc1", new SlowProcessor(), 1, "prov1")
                 .addStreamsPersistWriter("w1", new SystemOutWriter(), 1, "proc1");
