@@ -21,12 +21,15 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.S3ClientOptions;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.common.collect.Queues;
 import org.apache.streams.core.*;
 import org.joda.time.DateTime;
@@ -104,13 +107,15 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
             AWSCredentials credentials = new BasicAWSCredentials(s3ReaderConfiguration.getKey(), s3ReaderConfiguration.getSecretKey());
 
             ClientConfiguration clientConfig = new ClientConfiguration();
-            clientConfig.setProtocol(Protocol.valueOf(s3ReaderConfiguration.getProtocol().toUpperCase()));
+            clientConfig.setProtocol(Protocol.valueOf(s3ReaderConfiguration.getProtocol().toString()));
 
-            // We want path style access
+            // We do not want path style access
             S3ClientOptions clientOptions = new S3ClientOptions();
-            clientOptions.setPathStyleAccess(true);
+            clientOptions.setPathStyleAccess(false);
 
             this.amazonS3Client = new AmazonS3Client(credentials, clientConfig);
+            if( !Strings.isNullOrEmpty(s3ReaderConfiguration.getRegion()))
+                this.amazonS3Client.setRegion(Region.getRegion(Regions.fromName(s3ReaderConfiguration.getRegion())));
             this.amazonS3Client.setS3ClientOptions(clientOptions);
         }
 
