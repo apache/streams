@@ -54,7 +54,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
     private FileSystem client;
     private Path path;
     private String filePart = "default";
-    private int linesPerFile = 1000;
+    private int linesPerFile;
     private int totalRecordsWritten = 0;
     private final List<Path> writtenFiles = new ArrayList<Path>();
     private int fileLineCounter = 0;
@@ -75,6 +75,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
 
     public WebHdfsPersistWriter(HdfsWriterConfiguration hdfsConfiguration) {
         this.hdfsConfiguration = hdfsConfiguration;
+        this.linesPerFile = hdfsConfiguration.getLinesPerFile().intValue();
     }
 
     public URI getURI() throws URISyntaxException {
@@ -253,7 +254,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
             return null;
         else
             return new StringBuilder()
-                    .append(entry.getSequenceid())
+                    .append(entry.getId())
                     .append(DELIMITER)
                     .append(entry.getTimestamp())
                     .append(DELIMITER)
