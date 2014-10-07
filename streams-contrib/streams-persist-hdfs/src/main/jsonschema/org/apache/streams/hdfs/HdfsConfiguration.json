@@ -5,6 +5,12 @@
     "javaType" : "org.apache.streams.hdfs.HdfsConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
+        "scheme": {
+            "type": "string",
+            "description": "scheme",
+            "enum" : ["file", "hdfs", "webhdfs"],
+            "default": "webhdfs"
+        },
         "host": {
             "type": "string",
             "description": "WebHdfs host"
