@@ -47,6 +47,11 @@ public interface StreamsTask extends Runnable{
     public void stopTask();
 
     /**
+     * Returns true if the task is waiting on more data to process
+     * @return true, if waiting on more data to process
+     */
+    public boolean isWaiting();
+    /**
      * Add an input {@link java.util.Queue} for this task.
      * @param inputQueue
      */

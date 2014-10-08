@@ -165,7 +165,22 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
 
     @Override
     public E poll(long timeout, TimeUnit unit) throws InterruptedException {
-        throw new NotImplementedException();
+        ThroughputElement<E> e = this.underlyingQueue.poll(timeout, unit);
+        if(e != null) {
+            try {
+                this.takeCountsLock.writeLock().lockInterruptibly();
+                ++this.elementsRemoved;
+                Long queueTime = e.getWaited();
+                this.totalQueueTime += queueTime;
+                if(this.maxQueuedTime < queueTime) {
+                    this.maxQueuedTime = queueTime;
+                }
+            } finally {
+                this.takeCountsLock.writeLock().unlock();
+            }
+            return e.getElement();
+        }
+        return null;
     }
 
     @Override

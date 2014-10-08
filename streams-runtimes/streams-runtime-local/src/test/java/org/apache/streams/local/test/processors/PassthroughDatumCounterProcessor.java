@@ -78,6 +78,7 @@ public class PassthroughDatumCounterProcessor implements StreamsProcessor {
 
     @Override
     public void cleanUp() {
+        System.out.println("Clean up "+this.procId);
         synchronized (COUNTS) {
             AtomicLong count = COUNTS.get(this.procId);
             if(count == null) {
@@ -86,6 +87,7 @@ public class PassthroughDatumCounterProcessor implements StreamsProcessor {
                 count.addAndGet(this.count);
             }
         }
+        System.out.println(this.procId+"\t"+this.count);
     }
 
     public int getMessageCount() {

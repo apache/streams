@@ -33,6 +33,7 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -48,6 +49,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     private Map<String, StreamComponent> providers;
     private Map<String, StreamComponent> components;
     private Map<String, Object> streamConfig;
+    private Map<StreamsTask, Future> futures;
     private ExecutorService executor;
     private ExecutorService monitor;
     private int totalTasks;
@@ -100,6 +102,7 @@ public class LocalStreamBuilder implements StreamBuilder {
                 self.stopInternal(true);
             }
         };
+        this.futures = new HashMap<>();
     }
 
     @Override
@@ -177,6 +180,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         this.monitor = Executors.newFixedThreadPool(this.monitorTasks+1);
         Map<String, StreamsProviderTask> provTasks = new HashMap<String, StreamsProviderTask>();
         tasks = new HashMap<String, List<StreamsTask>>();
+        boolean forcedShutDown = false;
         try {
             monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
             this.monitor.submit(monitorThread);
@@ -198,8 +202,9 @@ public class LocalStreamBuilder implements StreamBuilder {
             LOGGER.debug("Components are no longer running or timed out");
         } catch (InterruptedException e){
             LOGGER.warn("Runtime interrupted.  Beginning shutdown");
+            forcedShutDown = true;
         } finally{
-            stop();
+            stopInternal(forcedShutDown);
         }
 
     }
@@ -216,10 +221,12 @@ public class LocalStreamBuilder implements StreamBuilder {
 
     protected void forceShutdown(Map<String, List<StreamsTask>> streamsTasks) {
         LOGGER.debug("Shutdown failed.  Forcing shutdown");
-        //give the stream 30secs to try to shutdown gracefully, then force shutdown otherwise
         for(List<StreamsTask> tasks : streamsTasks.values()) {
             for(StreamsTask task : tasks) {
                 task.stopTask();
+                if(task.isWaiting()) {
+                    this.futures.get(task).cancel(true);
+                }
             }
         }
         this.executor.shutdown();
@@ -277,7 +284,7 @@ public class LocalStreamBuilder implements StreamBuilder {
             for(int i=0; i < tasks; ++i) {
                 StreamsTask task = comp.createConnectedTask(getTimeout());
                 task.setStreamConfig(this.streamConfig);
-                this.executor.submit(task);
+                this.futures.put(task, this.executor.submit(task));
                 compTasks.add(task);
                 if( comp.isOperationCountable() ) {
                     this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10));
@@ -311,6 +318,9 @@ public class LocalStreamBuilder implements StreamBuilder {
             if(parentsShutDown) {
                 for(StreamsTask task : tasks) {
                     task.stopTask();
+                    if(task.isWaiting()) {
+                        this.futures.get(task).cancel(true); // no data to process, interrupt block queue
+                    }
                 }
                 for(StreamsTask task : tasks) {
                     int count = 0;

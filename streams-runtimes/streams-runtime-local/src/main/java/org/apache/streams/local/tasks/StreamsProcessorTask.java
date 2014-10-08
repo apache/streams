@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -45,6 +46,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
     private Map<String, Object> streamConfig;
     private BlockingQueue<StreamsDatum> inQueue;
     private AtomicBoolean isRunning;
+    private AtomicBoolean blocked;
 
     private DatumStatusCounter statusCounter = new DatumStatusCounter();
 
@@ -71,6 +73,12 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
         this.sleepTime = sleepTime;
         this.keepRunning = new AtomicBoolean(true);
         this.isRunning = new AtomicBoolean(true);
+        this.blocked = new AtomicBoolean(true);
+    }
+
+    @Override
+    public boolean isWaiting() {
+        return this.inQueue.isEmpty() && this.blocked.get();
     }
 
     @Override
@@ -100,9 +108,12 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
             while(this.keepRunning.get()) {
                 StreamsDatum datum = null;
                 try {
-                    datum = this.inQueue.take();
+                    this.blocked.set(true);
+                    datum = this.inQueue.poll(5, TimeUnit.SECONDS);
+                    this.blocked.set(false);
                 } catch (InterruptedException ie) {
                     LOGGER.warn("Received InteruptedException, shutting down and re-applying interrupt status.");
+                    this.keepRunning.set(false);
                     Thread.currentThread().interrupt();
                 }
                 if(datum != null) {
@@ -125,7 +136,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                         DatumUtils.addErrorToMetadata(datum, t, this.processor.getClass());
                     }
                 } else {
-                    LOGGER.warn("Removed NULL datum from queue at processor : {}", this.processor.getClass().getName());
+                    LOGGER.debug("Removed NULL datum from queue at processor : {}", this.processor.getClass().getName());
                 }
             }
 

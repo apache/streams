@@ -132,6 +132,18 @@ public abstract class BaseStreamsTask implements StreamsTask {
         }
     }
 
+    @Override
+    public boolean isWaiting() {
+        if(this.inQueues == null || this.inQueues.size() == 0) {
+            return true;
+        }
+        boolean empty = true;
+        for(Queue queue : this.inQueues) {
+            empty = empty && queue.isEmpty();
+        }
+        return empty;
+    }
+
     /**
      * //TODO LOCAL MODE HACK. Need to fix
      * In order for our data streams to ported to other data flow frame works(Storm, Hadoop, Spark, etc) we need to be able to

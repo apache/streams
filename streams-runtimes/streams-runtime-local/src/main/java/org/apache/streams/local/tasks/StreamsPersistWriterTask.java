@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -43,6 +44,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     private Map<String, Object> streamConfig;
     private BlockingQueue<StreamsDatum> inQueue;
     private AtomicBoolean isRunning;
+    private AtomicBoolean blocked;
 
     private DatumStatusCounter statusCounter = new DatumStatusCounter();
 
@@ -70,6 +72,12 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
         this.sleepTime = sleepTime;
         this.keepRunning = new AtomicBoolean(true);
         this.isRunning = new AtomicBoolean(true);
+        this.blocked = new AtomicBoolean(false);
+    }
+
+    @Override
+    public boolean isWaiting() {
+        return this.inQueue.isEmpty() && this.blocked.get();
     }
 
     @Override
@@ -94,7 +102,9 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
             while(this.keepRunning.get()) {
                 StreamsDatum datum = null;
                 try {
-                    datum = this.inQueue.take();
+                    this.blocked.set(true);
+                    datum = this.inQueue.poll(5, TimeUnit.SECONDS);
+                    this.blocked.set(false);
                 } catch (InterruptedException ie) {
                     LOGGER.error("Received InterruptedException. Shutting down and re-applying interrupt status.");
                     this.keepRunning.set(false);
@@ -111,7 +121,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                         DatumUtils.addErrorToMetadata(datum, e, this.writer.getClass());
                     }
                 } else { //datums should never be null
-                    LOGGER.warn("Received null StreamsDatum @ writer : {}", this.writer.getClass().getName());
+                    LOGGER.debug("Received null StreamsDatum @ writer : {}", this.writer.getClass().getName());
                 }
             }
 //            StreamsDatum datum = this.inQueue.poll();

@@ -63,7 +63,7 @@ public class NumericMessageProvider implements StreamsProvider {
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
-        System.out.println("******************\n**\tBatchSize="+batch.size()+"\n******************");
+//        System.out.println("******************\n**\tBatchSize="+batch.size()+"\n******************");
         this.complete = batch.isEmpty() && this.data.isEmpty();
         return new StreamsResultSet(batch);
     }

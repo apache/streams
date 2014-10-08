@@ -43,7 +43,6 @@ public class StreamsMergeTask extends BaseStreamsTask {
         this.keepRunning = new AtomicBoolean(true);
     }
 
-
     @Override
     public void stopTask() {
         this.keepRunning.set(false);

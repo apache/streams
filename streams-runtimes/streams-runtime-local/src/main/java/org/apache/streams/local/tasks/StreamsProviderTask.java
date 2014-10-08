@@ -117,6 +117,11 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     }
 
     @Override
+    public boolean isWaiting() {
+        return false; //providers don't have inbound queues
+    }
+
+    @Override
     public void stopTask() {
         LOGGER.debug("Stopping Provider Task for {}", this.provider.getClass().getSimpleName());
         this.keepRunning.set(false);
