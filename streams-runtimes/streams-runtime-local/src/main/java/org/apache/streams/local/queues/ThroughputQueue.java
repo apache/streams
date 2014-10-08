@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -48,10 +49,8 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     private static final Logger LOGGER = LoggerFactory.getLogger(ThroughputQueue.class);
 
     private BlockingQueue<ThroughputElement<E>> underlyingQueue;
-    private ReadWriteLock putCountsLock;
     private ReadWriteLock takeCountsLock;
-    @GuardedBy("putCountsLock")
-    private long elementsAdded;
+    private AtomicLong elementsAdded;
     @GuardedBy("takeCountsLock")
     private long elementsRemoved;
     @GuardedBy("this")
@@ -96,10 +95,9 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
         } else {
             this.underlyingQueue = new LinkedBlockingQueue<>(maxSize);
         }
-        this.elementsAdded = 0;
+        this.elementsAdded = new AtomicLong(0);
         this.elementsRemoved = 0;
         this.startTime = -1;
-        this.putCountsLock = new ReentrantReadWriteLock();
         this.takeCountsLock = new ReentrantReadWriteLock();
         this.active = false;
         this.maxQueuedTime = -1;
@@ -128,12 +126,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     @Override
     public void put(E e) throws InterruptedException {
         this.underlyingQueue.put(new ThroughputElement<E>(e));
-        try {
-            this.putCountsLock.writeLock().lockInterruptibly();
-            ++this.elementsAdded;
-        } finally {
-            this.putCountsLock.writeLock().unlock();
-        }
+        this.elementsAdded.incrementAndGet();
         synchronized (this) {
             if (!this.active) {
                 this.startTime = System.currentTimeMillis();
@@ -146,12 +139,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     @Override
     public boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException {
         if(this.underlyingQueue.offer(new ThroughputElement<E>(e), timeout, unit)) {
-            try {
-                this.putCountsLock.writeLock().lockInterruptibly();
-                ++this.elementsAdded;
-            } finally {
-                this.putCountsLock.writeLock().unlock();
-            }
+            this.elementsAdded.incrementAndGet();
             synchronized (this) {
                 if (!this.active) {
                     this.startTime = System.currentTimeMillis();
@@ -283,17 +271,12 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     @Override
     public long getCurrentSize() {
         long size = -1;
-        try {
-            this.putCountsLock.readLock().lock();
             try {
                 this.takeCountsLock.readLock().lock();
-                size = this.elementsAdded - this.elementsRemoved;
+                size = this.elementsAdded.get() - this.elementsRemoved;
             } finally {
                 this.takeCountsLock.readLock().unlock();
             }
-        } finally {
-            this.putCountsLock.readLock().unlock();
-        }
         return size;
     }
 
@@ -340,14 +323,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
 
     @Override
     public long getAdded() {
-        long num = -1;
-        try {
-            this.putCountsLock.readLock().lock();
-            num = this.elementsAdded;
-        } finally {
-            this.putCountsLock.readLock().unlock();
-        }
-        return num;
+        return this.elementsAdded.get();
     }
 
     @Override

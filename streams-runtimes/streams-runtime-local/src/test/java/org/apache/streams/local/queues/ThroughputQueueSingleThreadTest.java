@@ -50,6 +50,7 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
             assertEquals(i+1, queue.size());
             assertEquals(queue.size(), queue.getCurrentSize());
         }
+        safeSleep(100); //ensure measurable wait time
         int takeCount = randomIntBetween(1, putCount);
         for(int i=0; i < takeCount; ++i) {
             Integer element = queue.take();
@@ -60,9 +61,9 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
         }
         assertEquals(putCount-takeCount, queue.size());
         assertEquals(queue.size(), queue.getCurrentSize());
-        assertTrue(0 < queue.getMaxWait());
-        assertTrue(0 < queue.getAvgWait());
-        assertTrue(0 < queue.getThroughput());
+        assertTrue(0.0 < queue.getMaxWait());
+        assertTrue(0.0 < queue.getAvgWait());
+        assertTrue(0.0 < queue.getThroughput());
         assertEquals(putCount, queue.getAdded());
         assertEquals(takeCount, queue.getRemoved());
     }
