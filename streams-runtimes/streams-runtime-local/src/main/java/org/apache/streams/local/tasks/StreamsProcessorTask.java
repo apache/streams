@@ -139,36 +139,6 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                     LOGGER.debug("Removed NULL datum from queue at processor : {}", this.processor.getClass().getName());
                 }
             }
-
-//            this.processor.prepare(this.streamConfig);
-//            StreamsDatum datum = this.inQueue.poll();
-//            while(this.keepRunning.get()) {
-//                if(datum != null) {
-//                    try {
-//                        List<StreamsDatum> output = this.processor.process(datum);
-//                        if(output != null) {
-//                            for(StreamsDatum outDatum : output) {
-//                                super.addToOutgoingQueue(outDatum);
-//                                statusCounter.incrementStatus(DatumStatus.SUCCESS);
-//                            }
-//                        }
-//                    } catch (Throwable e) {
-//                        LOGGER.error("Throwable Streams Processor {}", e);
-//                        statusCounter.incrementStatus(DatumStatus.FAIL);
-//                        //Add the error to the metadata, but keep processing
-//                        DatumUtils.addErrorToMetadata(datum, e, this.processor.getClass());
-//                    }
-//                }
-//                else {
-//                    try {
-//                        Thread.sleep(this.sleepTime);
-//                    } catch (InterruptedException e) {
-//                        this.keepRunning.set(false);
-//                    }
-//                }
-//                datum = this.inQueue.poll();
-//            }
-
         } finally {
             this.isRunning.set(false);
             this.processor.cleanUp();
