@@ -155,7 +155,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                             // the way this works needs to change...
                             if(zeros > maxZeros)
                                 this.keepRunning.set(false);
-                            Thread.sleep(sleepTime);
+                            if(zeros > 0)
+                                Thread.sleep(sleepTime);
                         } catch (InterruptedException e) {
                             LOGGER.warn("Thread interrupted");
                             this.keepRunning.set(false);
@@ -216,14 +217,6 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                 } catch( Exception e ) {
                     statusCounter.incrementStatus(DatumStatus.FAIL);
                     DatumUtils.addErrorToMetadata(datum, e, this.provider.getClass());
-                }
-            }
-            else {
-                try {
-                    Thread.sleep(sleepTime);
-                } catch (InterruptedException e) {
-                    LOGGER.warn("Thread interrupted");
-                    this.keepRunning.set(false);
                 }
             }
         }
