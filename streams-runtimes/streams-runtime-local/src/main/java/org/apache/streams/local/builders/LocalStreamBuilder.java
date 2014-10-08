@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 public class LocalStreamBuilder implements StreamBuilder {
 
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(LocalStreamBuilder.class);
+    private static final int DEFAULT_QUEUE_SIZE = 500;
 
     public static final String TIMEOUT_KEY = "TIMEOUT";
     private Map<String, StreamComponent> providers;
@@ -60,22 +61,23 @@ public class LocalStreamBuilder implements StreamBuilder {
     private int maxQueueCapacity;
 
     /**
-     *
+     * Creates a local stream builder with no config object and default maximum internal queue size of 500
      */
     public LocalStreamBuilder(){
-        this(-1, null);
+        this(DEFAULT_QUEUE_SIZE, null);
     }
 
     /**
-     *
+     * Creates a local stream builder with a config object and default maximum internal queue size of 500
      * @param streamConfig
      */
     public LocalStreamBuilder(Map<String, Object> streamConfig) {
-        this(-1, streamConfig);
+        this(DEFAULT_QUEUE_SIZE, streamConfig);
     }
 
     /**
-     *
+     * Creates a local stream builder with no config object. If maxQueueCapacity is less than 1 the queue is
+     * unbounded.
      * @param maxQueueCapacity
      */
     public LocalStreamBuilder(int maxQueueCapacity) {
@@ -83,7 +85,8 @@ public class LocalStreamBuilder implements StreamBuilder {
     }
 
     /**
-     *
+     * Creates a local stream builder with a config object. If maxQueueCapacity is less than 1 the queue is
+     * unbounded.
      * @param maxQueueCapacity
      * @param streamConfig
      */
