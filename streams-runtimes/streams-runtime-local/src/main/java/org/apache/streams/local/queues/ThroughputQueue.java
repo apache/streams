@@ -338,8 +338,10 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
         double tp = -1.0;
         synchronized (this) {
             try {
-                this.takeCountsLock.readLock().lock();
-                tp = this.elementsRemoved / ((System.currentTimeMillis() - this.startTime) / 1000.0);
+                if(active) {
+                    this.takeCountsLock.readLock().lock();
+                    tp = this.elementsRemoved / ((System.currentTimeMillis() - this.startTime) / 1000.0);
+                }
             } finally {
                 this.takeCountsLock.readLock().unlock();
             }

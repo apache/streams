@@ -38,8 +38,9 @@ public interface ThroughputQueueMXBean {
     public long getAdded();
 
     /**
-     * Get the the throughput of the queue measured by the time the queue has been active divided by
-     * the number of items removed from the queue.  Active time starts once the first item has been pl
+     * Get the the throughput of the queue measured by the number of items removed from the queue
+     * dived by the time the queue has been active.
+     * Active time starts once the first item has been placed on the queue
      * @return throughput of queue. items/sec, items removed / time active
      */
     public double getThroughput();
