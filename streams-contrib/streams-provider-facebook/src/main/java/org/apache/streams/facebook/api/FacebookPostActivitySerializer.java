@@ -51,7 +51,7 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<org.ap
     public static final DateTimeFormatter FACEBOOK_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
     public static final DateTimeFormatter ACTIVITY_FORMAT = ISODateTimeFormat.basicDateTime();
 
-    public static final String PROVIDER_NAME = "facebook";
+    public static final String PROVIDER_NAME = "Facebook";
 
     public static ObjectMapper mapper;
     static {
