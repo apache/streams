@@ -59,8 +59,8 @@ public class InstagramActivityUtil {
             activity.setPublished(new DateTime(Long.parseLong(item.getCreatedTime()) * 1000));
 
         activity.setId(formatId(activity.getVerb(),
-            Optional.fromNullable(
-                    item.getId())
+                Optional.fromNullable(
+                        item.getId())
                         .orNull()));
 
         activity.setProvider(getProvider());
@@ -104,6 +104,7 @@ public class InstagramActivityUtil {
             extensions.put("followers", counts.getFollwed_by());
             extensions.put("follows", counts.getFollows());
             extensions.put("screenName", item.getUsername());
+            extensions.put("posts", counts.getMedia());
 
             actor.setId(formatId(String.valueOf(item.getId())));
             actor.setImage(image);
