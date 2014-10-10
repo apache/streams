@@ -115,13 +115,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     @Override
     public boolean add(E e) {
         if (this.underlyingQueue.add(new ThroughputElement<E>(e))) {
-            this.elementsAdded.incrementAndGet();
-            synchronized (this) {
-                if (!this.active) {
-                    this.startTime.set(System.currentTimeMillis());
-                    this.active = true;
-                }
-            }
+            internalAddElement();
             return true;
         }
         return false;
@@ -130,13 +124,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     @Override
     public boolean offer(E e) {
         if (this.underlyingQueue.offer(new ThroughputElement<E>(e))) {
-            this.elementsAdded.incrementAndGet();
-            synchronized (this) {
-                if (!this.active) {
-                    this.startTime.set(System.currentTimeMillis());
-                    this.active = true;
-                }
-            }
+            internalAddElement();
             return true;
         }
         return false;
@@ -145,25 +133,13 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     @Override
     public void put(E e) throws InterruptedException {
         this.underlyingQueue.put(new ThroughputElement<E>(e));
-        this.elementsAdded.incrementAndGet();
-        synchronized (this) {
-            if (!this.active) {
-                this.startTime.set(System.currentTimeMillis());
-                this.active = true;
-            }
-        }
+        internalAddElement();
     }
 
     @Override
     public boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException {
         if (this.underlyingQueue.offer(new ThroughputElement<E>(e), timeout, unit)) {
-            this.elementsAdded.incrementAndGet();
-            synchronized (this) {
-                if (!this.active) {
-                    this.startTime.set(System.currentTimeMillis());
-                    this.active = true;
-                }
-            }
+            internalAddElement();
             return true;
         }
         return false;
@@ -172,26 +148,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     @Override
     public E take() throws InterruptedException {
         ThroughputElement<E> e = this.underlyingQueue.take();
-        this.elementsRemoved.incrementAndGet();
-        Long queueTime = e.getWaited();
-        this.totalQueueTime.addAndGet(queueTime);
-        boolean unlocked = false;
-        try {
-            this.maxQueueTimeLock.readLock().lock();
-            if (this.maxQueuedTime < queueTime) {
-                this.maxQueueTimeLock.readLock().unlock();
-                unlocked = true;
-                try {
-                    this.maxQueueTimeLock.writeLock().lock();
-                    this.maxQueuedTime = queueTime;
-                } finally {
-                    this.maxQueueTimeLock.writeLock().unlock();
-                }
-            }
-        } finally {
-            if(!unlocked)
-                this.maxQueueTimeLock.readLock().unlock();
-        }
+        internalRemoveElement(e);
         return e.getElement();
     }
 
@@ -199,26 +156,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     public E poll(long timeout, TimeUnit unit) throws InterruptedException {
         ThroughputElement<E> e = this.underlyingQueue.poll(timeout, unit);
         if(e != null) {
-            this.elementsRemoved.incrementAndGet();
-            Long queueTime = e.getWaited();
-            this.totalQueueTime.addAndGet(queueTime);
-            boolean unlocked = false;
-            try {
-                this.maxQueueTimeLock.readLock().lock();
-                if (this.maxQueuedTime < queueTime) {
-                    this.maxQueueTimeLock.readLock().unlock();
-                    unlocked = true;
-                    try {
-                        this.maxQueueTimeLock.writeLock().lock();
-                        this.maxQueuedTime = queueTime;
-                    } finally {
-                        this.maxQueueTimeLock.writeLock().unlock();
-                    }
-                }
-            } finally {
-                if(!unlocked)
-                    this.maxQueueTimeLock.readLock().unlock();
-            }
+            internalRemoveElement(e);
             return e.getElement();
         }
         return null;
@@ -261,26 +199,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     public E remove() {
         ThroughputElement<E> e = this.underlyingQueue.remove();
         if(e != null) {
-            this.elementsRemoved.incrementAndGet();
-            Long queueTime = e.getWaited();
-            this.totalQueueTime.addAndGet(queueTime);
-            boolean unlocked = false;
-            try {
-                this.maxQueueTimeLock.readLock().lock();
-                if (this.maxQueuedTime < queueTime) {
-                    this.maxQueueTimeLock.readLock().unlock();
-                    unlocked = true;
-                    try {
-                        this.maxQueueTimeLock.writeLock().lock();
-                        this.maxQueuedTime = queueTime;
-                    } finally {
-                        this.maxQueueTimeLock.writeLock().unlock();
-                    }
-                }
-            } finally {
-                if(!unlocked)
-                    this.maxQueueTimeLock.readLock().unlock();
-            }
+            internalRemoveElement(e);
             return e.getElement();
         }
         return null;
@@ -290,26 +209,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     public E poll() {
         ThroughputElement<E> e = this.underlyingQueue.poll();
         if(e != null) {
-            this.elementsRemoved.incrementAndGet();
-            Long queueTime = e.getWaited();
-            this.totalQueueTime.addAndGet(queueTime);
-            boolean unlocked = false;
-            try {
-                this.maxQueueTimeLock.readLock().lock();
-                if (this.maxQueuedTime < queueTime) {
-                    this.maxQueueTimeLock.readLock().unlock();
-                    unlocked = true;
-                    try {
-                        this.maxQueueTimeLock.writeLock().lock();
-                        this.maxQueuedTime = queueTime;
-                    } finally {
-                        this.maxQueueTimeLock.writeLock().unlock();
-                    }
-                }
-            } finally {
-                if(!unlocked)
-                    this.maxQueueTimeLock.readLock().unlock();
-            }
+            internalRemoveElement(e);
             return e.getElement();
         }
         return null;
@@ -437,6 +337,48 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
             return this.elementsRemoved.get() / ((System.currentTimeMillis() - this.startTime.get()) / 1000.0);
         }
         return 0.0;
+    }
+
+    /**
+     * Handles updating the stats whenever elements are added to the queue
+     */
+    private void internalAddElement() {
+        this.elementsAdded.incrementAndGet();
+        synchronized (this) {
+            if (!this.active) {
+                this.startTime.set(System.currentTimeMillis());
+                this.active = true;
+            }
+        }
+    }
+
+    /**
+     * Handle updating the stats whenever elements are removed from the queue
+     * @param e Element removed
+     */
+    private void internalRemoveElement(ThroughputElement<E> e) {
+        if(e != null) {
+            this.elementsRemoved.incrementAndGet();
+            Long queueTime = e.getWaited();
+            this.totalQueueTime.addAndGet(queueTime);
+            boolean unlocked = false;
+            try {
+                this.maxQueueTimeLock.readLock().lock();
+                if (this.maxQueuedTime < queueTime) {
+                    this.maxQueueTimeLock.readLock().unlock();
+                    unlocked = true;
+                    try {
+                        this.maxQueueTimeLock.writeLock().lock();
+                        this.maxQueuedTime = queueTime;
+                    } finally {
+                        this.maxQueueTimeLock.writeLock().unlock();
+                    }
+                }
+            } finally {
+                if (!unlocked)
+                    this.maxQueueTimeLock.readLock().unlock();
+            }
+        }
     }
 
 
