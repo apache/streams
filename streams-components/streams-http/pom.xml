@@ -27,9 +27,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>streams-processor-http</artifactId>
+    <artifactId>streams-http</artifactId>
 
-    <name>streams-processor-http</name>
+    <name>streams-http</name>
 
     <dependencies>
 
@@ -38,6 +38,12 @@
             <artifactId>jsonschema2pojo-core</artifactId>
             <type>jar</type>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>validation-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -78,7 +84,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
-
     </dependencies>
 
     <build>

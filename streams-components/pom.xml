@@ -37,7 +37,7 @@
     </properties>
 
     <modules>
-        <module>streams-processor-http</module>
+        <module>streams-http</module>
     </modules>
 
     <dependencyManagement>

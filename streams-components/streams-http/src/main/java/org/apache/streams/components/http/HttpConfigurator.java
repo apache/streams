@@ -24,10 +24,6 @@ import com.typesafe.config.ConfigRenderOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Converts a {@link com.typesafe.config.Config} element into an instance of ElasticSearchConfiguration
  */
@@ -37,7 +33,20 @@ public class HttpConfigurator {
 
     private final static ObjectMapper mapper = new ObjectMapper();
 
-    public static HttpProcessorConfiguration detectConfiguration(Config config) {
+    public static HttpProviderConfiguration detectProviderConfiguration(Config config) {
+
+        HttpProviderConfiguration httpProviderConfiguration = null;
+
+        try {
+            httpProviderConfiguration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), HttpProviderConfiguration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not parse http configuration", e.getMessage());
+        }
+        return httpProviderConfiguration;
+    }
+
+    public static HttpProcessorConfiguration detectProcessorConfiguration(Config config) {
 
         HttpProcessorConfiguration httpProcessorConfiguration = null;
 

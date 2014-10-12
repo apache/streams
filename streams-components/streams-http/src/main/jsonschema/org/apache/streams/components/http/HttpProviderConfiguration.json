@@ -1,0 +1,18 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.components.http.HttpProviderConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "extends": { "$ref": "HttpConfiguration.json" },
+    "properties": {
+        "resource": {
+            "type": "string",
+            "required" : false
+        },
+        "resourcePostfix": {
+            "type": "string",
+            "required" : false
+        }
+    }
+}

@@ -1,32 +1,27 @@
-package org.apache.streams.components.http;
+package org.apache.streams.components.http.processor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigValue;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.streams.components.http.HttpConfigurator;
+import org.apache.streams.components.http.HttpProcessorConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.data.util.ActivityUtil;
 import org.apache.streams.data.util.ExtensionUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.Actor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +30,12 @@ import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
+/**
+ * Processor retrieves contents from an known url and stores the resulting object in an extension field
+ */
 public class SimpleHTTPGetProcessor implements StreamsProcessor {
 
     private final static String STREAMS_ID = "SimpleHTTPGetProcessor";
@@ -56,14 +52,15 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
     protected CloseableHttpClient httpclient;
 
     protected HttpProcessorConfiguration configuration;
+
+    protected String authHeader;
 //
 //    // authorized only
 //    //private PeoplePatternConfiguration peoplePatternConfiguration = null;
 //    //private String authHeader;
 //
     public SimpleHTTPGetProcessor() {
-        LOGGER.info("creating SimpleHTTPGetProcessor");
-        this.configuration = HttpConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("http"));
+        this(HttpConfigurator.detectProcessorConfiguration(StreamsConfigurator.config.getConfig("http")));
     }
 
     public SimpleHTTPGetProcessor(HttpProcessorConfiguration processorConfiguration) {
@@ -72,13 +69,6 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
         this.configuration = processorConfiguration;
     }
 
-    /**
-      Override this to add parameters to the request
-     */
-    protected Map<String, String> prepareParams(StreamsDatum entry) {
-
-        return Maps.newHashMap();
-    }
 
     /**
      Override this to store a result other than exact json representation of response
@@ -189,9 +179,20 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
 
     }
 
+    /**
+     Override this to add parameters to the request
+     */
+    protected Map<String, String> prepareParams(StreamsDatum entry) {
+
+        return Maps.newHashMap();
+    }
+
+
     public HttpGet prepareHttpGet(URI uri) {
         HttpGet httpget = new HttpGet(uri);
         httpget.addHeader("content-type", this.configuration.getContentType());
+        if( !Strings.isNullOrEmpty(authHeader))
+            httpget.addHeader("Authorization", String.format("Basic %s", authHeader));
         return httpget;
     }
 
@@ -206,8 +207,19 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
         uriBuilder = new URIBuilder()
             .setScheme(this.configuration.getProtocol())
             .setHost(this.configuration.getHostname())
-            .setPath(this.configuration.getResourceUri());
+            .setPath(this.configuration.getResourcePath());
 
+        if( !Strings.isNullOrEmpty(configuration.getAccessToken()) )
+            uriBuilder = uriBuilder.addParameter("access_token", configuration.getAccessToken());
+        if( !Strings.isNullOrEmpty(configuration.getUsername())
+            && !Strings.isNullOrEmpty(configuration.getPassword())) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(configuration.getUsername());
+            stringBuilder.append(":");
+            stringBuilder.append(configuration.getPassword());
+            String string = stringBuilder.toString();
+            authHeader = Base64.encodeBase64String(string.getBytes());
+        }
         httpclient = HttpClients.createDefault();
     }
 

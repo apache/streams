@@ -2,7 +2,7 @@
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
     "id": "#",
-    "javaType" : "org.apache.streams.components.http.HttpProcessorConfiguration",
+    "javaType" : "org.apache.streams.components.http.HttpConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "protocol": {
@@ -20,28 +20,31 @@
             "description": "Port",
             "default": 80
         },
-        "resourceUri": {
+        "resourcePath": {
             "type": "string",
-            "description": "Resource URI",
+            "description": "Resource Path",
             "required" : true
         },
         "content-type": {
             "type": "string",
-            "description": "Resource URI",
+            "description": "Resource content-type",
             "required" : true,
             "default": "application/json"
         },
-        "entity": {
+        "access_token": {
             "type": "string",
-            "description": "Entity to extend",
-            "enum": [ "activity", "actor", "object", "target" ],
-            "required" : true,
-            "default": "activity"
+            "description": "Known Access Token",
+            "required" : false
         },
-        "extension": {
+        "username": {
             "type": "string",
-            "description": "Extension identifier",
-            "required" : true
+            "description": "Basic Auth Username",
+            "required" : false
+        },
+        "password": {
+            "type": "string",
+            "description": "Basic Auth Password",
+            "required" : false
         }
     }
 }
