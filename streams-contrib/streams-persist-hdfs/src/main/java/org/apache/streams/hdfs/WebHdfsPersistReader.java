@@ -19,6 +19,7 @@
 package org.apache.streams.hdfs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.common.collect.Queues;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
@@ -74,7 +75,17 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
         this.hdfsConfiguration = hdfsConfiguration;
     }
 
-    public URI getURI() throws URISyntaxException { return new URI(WebHdfsFileSystem.SCHEME + "://" + hdfsConfiguration.getHost() + ":" + hdfsConfiguration.getPort()); }
+    public URI getURI() throws URISyntaxException {
+        StringBuilder uriBuilder = new StringBuilder();
+        uriBuilder.append(hdfsConfiguration.getScheme());
+        uriBuilder.append("://");
+        if( !Strings.isNullOrEmpty(hdfsConfiguration.getHost()))
+            uriBuilder.append(hdfsConfiguration.getHost() + ":" + hdfsConfiguration.getPort());
+        else
+            uriBuilder.append("/");
+        return new URI(uriBuilder.toString());
+    }
+
     public boolean isConnected() 		                { return (client != null); }
 
     public final synchronized FileSystem getFileSystem()

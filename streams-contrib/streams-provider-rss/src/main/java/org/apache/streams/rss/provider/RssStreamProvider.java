@@ -18,7 +18,10 @@
 
 package org.apache.streams.rss.provider;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -33,6 +36,8 @@ import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.rss.FeedDetails;
 import org.apache.streams.rss.RssStreamConfiguration;
+import org.apache.streams.rss.provider.perpetual.RssFeedScheduler;
+import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,103 +47,88 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Created by sblackmon on 12/10/13.
+ *
  */
 public class RssStreamProvider implements StreamsProvider {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RssStreamProvider.class);
+    private final static int MAX_SIZE = 1000;
 
     private RssStreamConfiguration config;
+    private boolean perpetual;
+    private Set<String> urlFeeds;
+    private ExecutorService executor;
+    private BlockingQueue<StreamsDatum> dataQueue;
+    private AtomicBoolean isComplete;
+    private int consecutiveEmptyReads;
 
-    private Class klass;
+    @VisibleForTesting
+    protected RssFeedScheduler scheduler;
 
-    public RssStreamConfiguration getConfig() {
-        return config;
+    public RssStreamProvider() {
+        this(RssStreamConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("rss")), false);
+    }
+
+    public RssStreamProvider(boolean perpetual) {
+        this(RssStreamConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("rss")), perpetual);
+    }
+
+    public RssStreamProvider(RssStreamConfiguration config) {
+        this(config, false);
+    }
+
+    public RssStreamProvider(RssStreamConfiguration config, boolean perpetual) {
+        this.perpetual = perpetual;
+        this.config = config;
     }
 
     public void setConfig(RssStreamConfiguration config) {
         this.config = config;
     }
 
-    protected BlockingQueue inQueue = new LinkedBlockingQueue<SyndEntry>(10000);
-
-    protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<StreamsDatum>();
-
-    public BlockingQueue<Object> getInQueue() {
-        return inQueue;
+    public void setRssFeeds(Set<String> urlFeeds) {
+        this.urlFeeds = urlFeeds;
     }
 
-    protected ListeningExecutorService executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(100, 100));
-
-    protected List<SyndFeed> feeds;
-
-    private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
-        return new ThreadPoolExecutor(nThreads, nThreads,
-                5000L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
-    }
-
-    public RssStreamProvider() {
-        Config config = StreamsConfigurator.config.getConfig("rss");
-        this.config = RssStreamConfigurator.detectConfiguration(config);
-    }
-
-    public RssStreamProvider(RssStreamConfiguration config) {
-        this.config = config;
-    }
-
-    public RssStreamProvider(Class klass) {
-        Config config = StreamsConfigurator.config.getConfig("rss");
-        this.config = RssStreamConfigurator.detectConfiguration(config);
-        this.klass = klass;
-    }
-
-    public RssStreamProvider(RssStreamConfiguration config, Class klass) {
-        this.config = config;
-        this.klass = klass;
+    public void setRssFeeds(Map<String, Long> feeds) {
+        if(this.config == null) {
+            this.config = new RssStreamConfiguration();
+        }
+        List<FeedDetails> feedDetails = Lists.newLinkedList();
+        for(String feed : feeds.keySet()) {
+            Long delay = feeds.get(feed);
+            FeedDetails detail = new FeedDetails();
+            detail.setUrl(feed);
+            detail.setPollIntervalMillis(delay);
+            feedDetails.add(detail);
+        }
+        this.config.setFeeds(feedDetails);
     }
 
     @Override
     public void startStream() {
-
-        Preconditions.checkNotNull(this.klass);
-
-        Preconditions.checkNotNull(config.getFeeds());
-
-        Preconditions.checkNotNull(config.getFeeds().get(0).getUrl());
-
-        for( FeedDetails feedDetails : config.getFeeds()) {
-
-            executor.submit(new RssFeedSetupTask(this, feedDetails));
-
-        }
-
-        for( int i = 0; i < ((config.getFeeds().size() / 5) + 1); i++ )
-            executor.submit(new RssEventProcessor(inQueue, providerQueue, klass));
-
-    }
-
-    public void stop() {
-        for (int i = 0; i < ((config.getFeeds().size() / 5) + 1); i++) {
-            inQueue.add(RssEventProcessor.TERMINATE);
-        }
-    }
-
-    public Queue<StreamsDatum> getProviderQueue() {
-        return this.providerQueue;
+        LOGGER.trace("Starting Rss Scheduler");
+        this.executor.submit(this.scheduler);
     }
 
     @Override
     public StreamsResultSet readCurrent() {
-
-        return (StreamsResultSet) providerQueue;
-
+        Queue<StreamsDatum> batch = Queues.newConcurrentLinkedQueue();
+        int batchSize = 0;
+        while(!this.dataQueue.isEmpty() && batchSize < MAX_SIZE) {
+            StreamsDatum datum = ComponentUtils.pollWhileNotEmpty(this.dataQueue);
+            if(datum != null) {
+                ++batchSize;
+                batch.add(datum);
+            }
+        }
+        this.isComplete.set(this.scheduler.isComplete() && batch.isEmpty() && this.dataQueue.isEmpty());
+        return new StreamsResultSet(batch);
     }
 
     @Override
@@ -153,50 +143,31 @@ public class RssStreamProvider implements StreamsProvider {
 
     @Override
     public boolean isRunning() {
-        return !executor.isTerminated() && !executor.isShutdown();
+        return !this.isComplete.get();
     }
 
     @Override
     public void prepare(Object configurationObject) {
-        
+        this.executor = new ThreadPoolExecutor(1, 4, 15L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+        this.dataQueue = Queues.newLinkedBlockingQueue();
+        this.scheduler = getScheduler(this.dataQueue);
+        this.isComplete = new AtomicBoolean(false);
+        this.consecutiveEmptyReads = 0;
+    }
+
+    @VisibleForTesting
+    protected RssFeedScheduler getScheduler(BlockingQueue<StreamsDatum> queue) {
+        if(this.perpetual)
+            return new RssFeedScheduler(this.executor, this.config.getFeeds(), queue);
+        else
+            return new RssFeedScheduler(this.executor, this.config.getFeeds(), queue, 0);
     }
 
     @Override
     public void cleanUp() {
-        stop();
+        this.scheduler.stop();
+        ComponentUtils.shutdownExecutor(this.executor, 10, 10);
     }
 
-    private class RssFeedSetupTask implements Runnable {
 
-        private RssStreamProvider provider;
-        private FeedDetails feedDetails;
-
-        private RssFeedSetupTask(RssStreamProvider provider, FeedDetails feedDetails) {
-            this.provider = provider;
-            this.feedDetails = feedDetails;
-        }
-
-        @Override
-        public void run() {
-
-            URL feedUrl;
-            SyndFeed feed;
-            try {
-                feedUrl = new URL(feedDetails.getUrl());
-                SyndFeedInput input = new SyndFeedInput();
-                try {
-                    feed = input.build(new XmlReader(feedUrl));
-                    executor.submit(new RssStreamProviderTask(provider, feed, feedDetails));
-                    LOGGER.info("Connected: " + feedDetails.getUrl());
-                } catch (FeedException e) {
-                    LOGGER.warn("FeedException: " + feedDetails.getUrl());
-                } catch (IOException e) {
-                    LOGGER.warn("IOException: " + feedDetails.getUrl());
-                }
-            } catch (MalformedURLException e) {
-                LOGGER.warn("MalformedURLException: " + feedDetails.getUrl());
-            }
-
-        }
-    }
 }

@@ -54,7 +54,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
     private FileSystem client;
     private Path path;
     private String filePart = "default";
-    private int linesPerFile = 1000;
+    private int linesPerFile;
     private int totalRecordsWritten = 0;
     private final List<Path> writtenFiles = new ArrayList<Path>();
     private int fileLineCounter = 0;
@@ -75,10 +75,18 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
 
     public WebHdfsPersistWriter(HdfsWriterConfiguration hdfsConfiguration) {
         this.hdfsConfiguration = hdfsConfiguration;
+        this.linesPerFile = hdfsConfiguration.getLinesPerFile().intValue();
     }
 
     public URI getURI() throws URISyntaxException {
-        return new URI(WebHdfsFileSystem.SCHEME + "://" + hdfsConfiguration.getHost() + ":" + hdfsConfiguration.getPort());
+        StringBuilder uriBuilder = new StringBuilder();
+        uriBuilder.append(hdfsConfiguration.getScheme());
+        uriBuilder.append("://");
+        if( !Strings.isNullOrEmpty(hdfsConfiguration.getHost()))
+            uriBuilder.append(hdfsConfiguration.getHost() + ":" + hdfsConfiguration.getPort());
+        else
+            uriBuilder.append("/");
+        return new URI(uriBuilder.toString());
     }
 
     public boolean isConnected() {
@@ -253,7 +261,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
             return null;
         else
             return new StringBuilder()
-                    .append(entry.getSequenceid())
+                    .append(entry.getId())
                     .append(DELIMITER)
                     .append(entry.getTimestamp())
                     .append(DELIMITER)

@@ -13,6 +13,11 @@
         "writerFilePrefix": {
             "type": "string",
             "description": "File Prefix"
+        },
+        "linesPerFile": {
+            "type": "integer",
+            "description": "Lines Per File",
+            "default": 1000
         }
     }
 }
