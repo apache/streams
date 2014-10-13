@@ -67,6 +67,16 @@
             <artifactId>rome</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.healthmarketscience.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>1.0.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -86,7 +96,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.8</version>
                 <executions>
                     <execution>
                         <id>add-source</id>
@@ -124,45 +133,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.jvnet.jaxb2.maven2</groupId>-->
-                <!--<artifactId>maven-jaxb2-plugin</artifactId>-->
-                <!--<configuration>-->
-                    <!--<schemaDirectory>src/main/xmlschema</schemaDirectory>-->
-                    <!--<generateDirectory>target/generated-sources/jaxb2</generateDirectory>-->
-                    <!--<verbose>true</verbose>-->
-                    <!--<debug>true</debug>-->
-                    <!--<encoding>${project.build.sourceEncoding}</encoding>-->
-                    <!--<forceRegenerate>true</forceRegenerate>-->
-                    <!--<removeOldOutput>false</removeOldOutput>-->
-                    <!--<generatePackage>org.apache.streams.rss</generatePackage>-->
-                    <!--<schemas>-->
-                        <!--<schema>-->
-                        <!--<fileset>-->
-                            <!--&lt;!&ndash; Defaults to schemaIncludes &ndash;&gt;-->
-                            <!--<includes>-->
-                                <!--<include>contents.xsd</include>-->
-                                <!--<include>opml.xsd</include>-->
-                            <!--</includes>-->
-                        <!--</fileset>-->
-                        <!--</schema>-->
-                    <!--</schemas>-->
-                    <!--&lt;!&ndash;<plugins>&ndash;&gt;-->
-                        <!--&lt;!&ndash;<plugin>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<groupId>org.jvnet.jaxb2_commons</groupId>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<artifactId>jaxb2-basics</artifactId>&ndash;&gt;-->
-                            <!--&lt;!&ndash;<version>0.6.5</version>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</plugin>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</plugins>&ndash;&gt;-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>generate</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
         </plugins>
     </build>
 </project>

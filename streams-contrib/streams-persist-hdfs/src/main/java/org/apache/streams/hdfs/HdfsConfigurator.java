@@ -20,6 +20,7 @@ package org.apache.streams.hdfs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigRenderOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,45 +34,26 @@ public class HdfsConfigurator {
     private final static ObjectMapper mapper = new ObjectMapper();
 
     public static HdfsConfiguration detectConfiguration(Config hdfs) {
-        String host = hdfs.getString("host");
-        Long port = hdfs.getLong("port");
-        String path = hdfs.getString("path");
-        String user = hdfs.getString("user");
-        String password = hdfs.getString("password");
 
-        HdfsConfiguration hdfsConfiguration = new HdfsConfiguration();
+        HdfsConfiguration hdfsConfiguration = null;
 
-        hdfsConfiguration.setHost(host);
-        hdfsConfiguration.setPort(port);
-        hdfsConfiguration.setPath(path);
-        hdfsConfiguration.setUser(user);
-        hdfsConfiguration.setPassword(password);
-
+        try {
+            hdfsConfiguration = mapper.readValue(hdfs.root().render(ConfigRenderOptions.concise()), HdfsConfiguration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not parse HdfsConfiguration");
+        }
         return hdfsConfiguration;
     }
 
     public static HdfsReaderConfiguration detectReaderConfiguration(Config hdfs) {
 
-        HdfsConfiguration hdfsConfiguration = detectConfiguration(hdfs);
-        HdfsReaderConfiguration hdfsReaderConfiguration  = mapper.convertValue(hdfsConfiguration, HdfsReaderConfiguration.class);
-
-        String readerPath = hdfs.getString("readerPath");
-
-        hdfsReaderConfiguration.setReaderPath(readerPath);
-
-        return hdfsReaderConfiguration;
+        return mapper.convertValue(detectConfiguration(hdfs), HdfsReaderConfiguration.class);
     }
 
     public static HdfsWriterConfiguration detectWriterConfiguration(Config hdfs) {
 
-        HdfsConfiguration hdfsConfiguration = detectConfiguration(hdfs);
-        HdfsWriterConfiguration hdfsWriterConfiguration  = mapper.convertValue(hdfsConfiguration, HdfsWriterConfiguration.class);
-
-        String writerPath = hdfs.getString("writerPath");
-
-        hdfsWriterConfiguration.setWriterPath(writerPath);
-
-        return hdfsWriterConfiguration;
+        return mapper.convertValue(detectConfiguration(hdfs), HdfsWriterConfiguration.class);
     }
 
 }

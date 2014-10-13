@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.streams.local.queues;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
@@ -33,6 +50,7 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
             assertEquals(i+1, queue.size());
             assertEquals(queue.size(), queue.getCurrentSize());
         }
+        safeSleep(100); //ensure measurable wait time
         int takeCount = randomIntBetween(1, putCount);
         for(int i=0; i < takeCount; ++i) {
             Integer element = queue.take();
@@ -43,12 +61,78 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
         }
         assertEquals(putCount-takeCount, queue.size());
         assertEquals(queue.size(), queue.getCurrentSize());
-        assertTrue(0 < queue.getMaxWait());
-        assertTrue(0 < queue.getAvgWait());
-        assertTrue(0 < queue.getThroughput());
+        assertTrue(0.0 < queue.getMaxWait());
+        assertTrue(0.0 < queue.getAvgWait());
+        assertTrue(0.0 < queue.getThroughput());
         assertEquals(putCount, queue.getAdded());
         assertEquals(takeCount, queue.getRemoved());
     }
+
+    /**
+     * Test that add and remove queue and dequeue data as expected
+     * and all measurements from the queue are returning data
+     */
+    @Test
+    @Repeat(iterations = 3)
+    public void testAddAndRemove() {
+        ThroughputQueue<Integer> queue = new ThroughputQueue<>();
+        int putCount = randomIntBetween(1, 1000);
+        for(int i=0; i < putCount; ++i) {
+            queue.add(i);
+            assertEquals(i+1, queue.size());
+            assertEquals(queue.size(), queue.getCurrentSize());
+        }
+        safeSleep(100); //ensure measurable wait time
+        int takeCount = randomIntBetween(1, putCount);
+        for(int i=0; i < takeCount; ++i) {
+            Integer element = queue.remove();
+            assertNotNull(element);
+            assertEquals(i, element.intValue());
+            assertEquals(putCount - (1+i), queue.size());
+            assertEquals(queue.size(), queue.getCurrentSize());
+        }
+        assertEquals(putCount-takeCount, queue.size());
+        assertEquals(queue.size(), queue.getCurrentSize());
+        assertTrue(0.0 < queue.getMaxWait());
+        assertTrue(0.0 < queue.getAvgWait());
+        assertTrue(0.0 < queue.getThroughput());
+        assertEquals(putCount, queue.getAdded());
+        assertEquals(takeCount, queue.getRemoved());
+    }
+
+    /**
+     * Test that offer and poll queue and dequeue data as expected
+     * and all measurements from the queue are returning data
+     */
+    @Test
+    @Repeat(iterations = 3)
+    public void testOfferAndPoll() {
+        ThroughputQueue<Integer> queue = new ThroughputQueue<>();
+        int putCount = randomIntBetween(1, 1000);
+        for(int i=0; i < putCount; ++i) {
+            queue.offer(i);
+            assertEquals(i+1, queue.size());
+            assertEquals(queue.size(), queue.getCurrentSize());
+        }
+        safeSleep(100); //ensure measurable wait time
+        int takeCount = randomIntBetween(1, putCount);
+        for(int i=0; i < takeCount; ++i) {
+            Integer element = queue.poll();
+            assertNotNull(element);
+            assertEquals(i, element.intValue());
+            assertEquals(putCount - (1+i), queue.size());
+            assertEquals(queue.size(), queue.getCurrentSize());
+        }
+        assertEquals(putCount-takeCount, queue.size());
+        assertEquals(queue.size(), queue.getCurrentSize());
+        assertTrue(0.0 < queue.getMaxWait());
+        assertTrue(0.0 < queue.getAvgWait());
+        assertTrue(0.0 < queue.getThroughput());
+        assertEquals(putCount, queue.getAdded());
+        assertEquals(takeCount, queue.getRemoved());
+    }
+
+
 
     /**
      * Test that max wait and avg wait return expected values
