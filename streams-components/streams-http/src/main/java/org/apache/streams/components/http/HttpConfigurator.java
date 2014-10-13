@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Converts a {@link com.typesafe.config.Config} element into an instance of ElasticSearchConfiguration
+ * Converts a {@link com.typesafe.config.Config} element into an instance of HttpConfiguration
  */
 public class HttpConfigurator {
 

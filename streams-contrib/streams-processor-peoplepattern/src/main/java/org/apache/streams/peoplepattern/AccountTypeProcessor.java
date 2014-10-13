@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 /**
- * Enrich actor with demographics
+ * Enrich actor with account type
  */
 public class AccountTypeProcessor extends SimpleHTTPGetProcessor {
 
