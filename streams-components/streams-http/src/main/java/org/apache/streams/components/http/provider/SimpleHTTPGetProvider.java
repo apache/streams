@@ -89,9 +89,6 @@ public class SimpleHTTPGetProvider implements StreamsProvider {
     @Override
     public void prepare(Object configurationObject) {
 
-//        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-//        Preconditions.checkArgument(factory.getValidator().validate(this.configuration, HttpProcessorConfiguration.class).size() == 0);
-
         mapper = StreamsJacksonMapper.getInstance();
 
         uriBuilder = new URIBuilder()

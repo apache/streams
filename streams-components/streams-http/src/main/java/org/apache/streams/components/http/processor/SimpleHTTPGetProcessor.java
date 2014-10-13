@@ -3,7 +3,6 @@ package org.apache.streams.components.http.processor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -25,8 +24,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -198,9 +195,6 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
 
     @Override
     public void prepare(Object configurationObject) {
-
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Preconditions.checkArgument(factory.getValidator().validate(this.configuration, HttpProcessorConfiguration.class).size() == 0);
 
         mapper = StreamsJacksonMapper.getInstance();
 

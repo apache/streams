@@ -38,12 +38,6 @@
             <artifactId>jsonschema2pojo-core</artifactId>
             <type>jar</type>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.validation</groupId>
-                    <artifactId>validation-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
