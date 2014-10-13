@@ -20,6 +20,11 @@
             },
             "description": "Types to read from"
         },
+        "scrollTimeout": {
+            "type": "string",
+            "description": "Scroll Timeout (JodaTime)",
+            "default": "5m"
+        },
         "_search": {
             "type": "object",
             "javaType" : "java.util.Map",

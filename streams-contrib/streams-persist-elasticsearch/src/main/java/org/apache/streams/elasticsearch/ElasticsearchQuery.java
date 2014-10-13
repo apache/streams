@@ -47,21 +47,15 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchQuery.class);
     private static final int SCROLL_POSITION_NOT_INITIALIZED = -3;
-    private static final Integer DEFAULT_BATCH_SIZE = 500;
-    private static final String DEFAULT_SCROLL_TIMEOUT = "5m";
 
     private ElasticsearchClientManager elasticsearchClientManager;
     private ElasticsearchReaderConfiguration config;
     private List<String> indexes = Lists.newArrayList();
     private List<String> types = Lists.newArrayList();
-    private String[] withfields;
-    private String[] withoutfields;
-    private DateTime startDate;
-    private DateTime endDate;
     private int limit = 1000 * 1000 * 1000; // we are going to set the default limit very high to 1bil
     private boolean random = false;
     private int batchSize = 100;
-    private String scrollTimeout = null;
+    private String scrollTimeout = "5m";
     private org.elasticsearch.index.query.QueryBuilder queryBuilder;
     private org.elasticsearch.index.query.FilterBuilder filterBuilder;// These are private to help us manage the scroll
     private SearchRequestBuilder search;
@@ -74,8 +68,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     private StreamsJacksonMapper mapper = StreamsJacksonMapper.getInstance();
 
     public ElasticsearchQuery() {
-        Config config = StreamsConfigurator.config.getConfig("elasticsearch");
-        this.config = ElasticsearchConfigurator.detectReaderConfiguration(config);
+        this(ElasticsearchConfigurator.detectReaderConfiguration(StreamsConfigurator.config.getConfig("elasticsearch")));
     }
 
     public ElasticsearchQuery(ElasticsearchReaderConfiguration config) {
@@ -83,6 +76,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
         this.elasticsearchClientManager = new ElasticsearchClientManager(config);
         this.indexes.addAll(config.getIndexes());
         this.types.addAll(config.getTypes());
+        this.scrollTimeout = config.getScrollTimeout();
     }
 
     public long getHitCount() {
@@ -128,8 +122,8 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
                     .setExplain(true)
                     .addField("*")
                     .setFetchSource(true)
-                    .setSize(Objects.firstNonNull(batchSize, DEFAULT_BATCH_SIZE).intValue())
-                    .setScroll(Objects.firstNonNull(scrollTimeout, DEFAULT_SCROLL_TIMEOUT))
+                    .setSize(batchSize)
+                    .setScroll(scrollTimeout)
                     .addField("_timestamp");
 
             String searchJson;
@@ -197,7 +191,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
                 // get the next hits of the scroll
                 scrollResp = elasticsearchClientManager.getClient()
                         .prepareSearchScroll(scrollResp.getScrollId())
-                        .setScroll(Objects.firstNonNull(scrollTimeout, DEFAULT_SCROLL_TIMEOUT))
+                        .setScroll(scrollTimeout)
                         .execute()
                         .actionGet();
 
