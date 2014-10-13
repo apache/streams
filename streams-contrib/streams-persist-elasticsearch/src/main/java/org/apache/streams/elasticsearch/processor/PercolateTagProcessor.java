@@ -39,8 +39,6 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsReques
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.percolate.PercolateRequestBuilder;
 import org.elasticsearch.action.percolate.PercolateResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -68,8 +66,8 @@ import java.util.*;
 public class PercolateTagProcessor implements StreamsProcessor {
 
     public static final String STREAMS_ID = "PercolateTagProcessor";
-
     private final static Logger LOGGER = LoggerFactory.getLogger(PercolateTagProcessor.class);
+    private final static String DEFAULT_PERCOLATE_FIELD = "_all";
 
     private ObjectMapper mapper;
 
@@ -81,9 +79,15 @@ public class PercolateTagProcessor implements StreamsProcessor {
     private ElasticsearchWriterConfiguration config;
     private ElasticsearchClientManager manager;
     private BulkRequestBuilder bulkBuilder;
+    protected String usePercolateField;
 
     public PercolateTagProcessor(ElasticsearchWriterConfiguration config) {
+        this(config, DEFAULT_PERCOLATE_FIELD);
+    }
+
+    public PercolateTagProcessor(ElasticsearchWriterConfiguration config, String defaultPercolateField) {
         this.config = config;
+        this.usePercolateField = defaultPercolateField;
     }
 
     public ElasticsearchClientManager getManager() {
@@ -201,7 +205,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
         deleteOldQueries(config.getIndex());
         for (String tag : config.getTags().getAdditionalProperties().keySet()) {
             String query = (String)config.getTags().getAdditionalProperties().get(tag);
-            PercolateQueryBuilder queryBuilder = new PercolateQueryBuilder(tag, query);
+            PercolateQueryBuilder queryBuilder = new PercolateQueryBuilder(tag, query, this.usePercolateField);
             addPercolateRule(queryBuilder, config.getIndex());
         }
         if (writePercolateRules() == true)
@@ -314,59 +318,15 @@ public class PercolateTagProcessor implements StreamsProcessor {
         return !response.hasFailures();
     }
 
-//    public static class PercolateQueryBuilder {
-//
-//        private BoolQueryBuilder queryBuilder;
-//        private String id;
-//
-//        public PercolateQueryBuilder(String id) {
-//            this.id = id;
-//            this.queryBuilder = QueryBuilders.boolQuery();
-//        }
-//
-//        public void setMinumumNumberShouldMatch(int shouldMatch) {
-//            this.queryBuilder.minimumNumberShouldMatch(shouldMatch);
-//        }
-//
-//
-//        public void addQuery(String query, FilterLevel level, String... fields) {
-//            QueryStringQueryBuilder builder = QueryBuilders.queryString(query);
-//            if(fields != null && fields.length > 0) {
-//                for(String field : fields) {
-//                    builder.field(field);
-//                }
-//            }
-//            switch (level) {
-//                case MUST:
-//                    this.queryBuilder.must(builder);
-//                    break;
-//                case SHOULD:
-//                    this.queryBuilder.should(builder);
-//                    break;
-//                case MUST_NOT:
-//                    this.queryBuilder.mustNot(builder);
-//            }
-//        }
-//
-//        public String getId() {
-//            return this.id;
-//        }
-//
-//        public String getSource() {
-//            return "{ \n\"query\" : "+this.queryBuilder.toString()+"\n}";
-//        }
-//
-//
-//    }
-
     public static class PercolateQueryBuilder {
 
         private QueryStringQueryBuilder queryBuilder;
         private String id;
 
-        public PercolateQueryBuilder(String id, String query) {
+        public PercolateQueryBuilder(String id, String query, String defaultPercolateField) {
             this.id = id;
             this.queryBuilder = QueryBuilders.queryString(query);
+            this.queryBuilder.defaultField(defaultPercolateField);
         }
 
         public String getId() {
@@ -379,9 +339,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
 
     }
 
-
     public enum FilterLevel {
         MUST, SHOULD, MUST_NOT
     }
-
 }
