@@ -18,7 +18,6 @@
 
 package org.apache.streams.peoplepattern;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Maps;
 import org.apache.streams.components.http.HttpConfigurator;
 import org.apache.streams.components.http.HttpProcessorConfiguration;
@@ -27,6 +26,7 @@ import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.data.util.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,10 +62,9 @@ public class AccountTypeProcessor extends SimpleHTTPGetProcessor {
     @Override
     protected Map<String, String> prepareParams(StreamsDatum entry) {
         Activity activity = mapper.convertValue(entry.getDocument(), Activity.class);
-        //Actor actor = mapper.convertValue(entry.getDocument(), Actor.class);
         Actor actor = activity.getActor();
-        ObjectNode actorObjectNode = mapper.convertValue(actor, ObjectNode.class);
-        String username = (String) ExtensionUtil.getExtension(actorObjectNode, "screenName");
+        ActivityObject actorObject = mapper.convertValue(actor, ActivityObject.class);
+        String username = (String) ExtensionUtil.getExtension(actorObject, "screenName");
         Map<String, String> params = Maps.newHashMap();
         params.put("id", actor.getId());
         params.put("name", actor.getDisplayName());

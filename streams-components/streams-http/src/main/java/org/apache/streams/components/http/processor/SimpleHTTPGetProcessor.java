@@ -21,6 +21,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.data.util.ExtensionUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.json.ActivityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,15 +100,30 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
         }
 
     }
-        /**
-         Override this to place result in non-standard location on document
-         */
-    protected ObjectNode getEntityToExtend(ObjectNode rootDocument) {
+
+    /**
+     Override this to place result in non-standard location on document
+     */
+    protected ActivityObject getEntityToExtend(ObjectNode rootDocument) {
 
         if( this.configuration.getEntity().equals(HttpProcessorConfiguration.Entity.ACTIVITY))
-            return rootDocument;
+            return mapper.convertValue(rootDocument, ActivityObject.class);
         else
-            return (ObjectNode) rootDocument.get(this.configuration.getEntity().toString());
+            return mapper.convertValue(rootDocument.get(this.configuration.getEntity().toString()), ActivityObject.class);
+
+    }
+
+    /**
+     Override this to place result in non-standard location on document
+     */
+    protected ObjectNode setEntityToExtend(ObjectNode rootDocument, ActivityObject activityObject) {
+
+        if( this.configuration.getEntity().equals(HttpProcessorConfiguration.Entity.ACTIVITY))
+            return mapper.convertValue(activityObject, ObjectNode.class);
+        else
+            rootDocument.set(this.configuration.getEntity().toString(), mapper.convertValue(activityObject, ObjectNode.class));
+
+        return rootDocument;
 
     }
 
@@ -150,9 +166,6 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
             try {
                 response.close();
             } catch (IOException e) {}
-            try {
-                httpclient.close();
-            } catch (IOException e) {}
         }
 
         if( entityString == null )
@@ -162,11 +175,11 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
 
         ObjectNode extensionFragment = prepareExtensionFragment(entityString);
 
-        ObjectNode extensionEntity = getEntityToExtend(rootDocument);
-
-        ExtensionUtil.ensureExtensions(extensionEntity);
+        ActivityObject extensionEntity = getEntityToExtend(rootDocument);
 
         ExtensionUtil.addExtension(extensionEntity, this.configuration.getExtension(), extensionFragment);
+
+        rootDocument = setEntityToExtend(rootDocument, extensionEntity);
 
         entry.setDocument(rootDocument);
 
@@ -220,5 +233,18 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
     @Override
     public void cleanUp() {
         LOGGER.info("shutting down SimpleHTTPGetProcessor");
+        try {
+            httpclient.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                httpclient = null;
+            }
+        }
     }
 }

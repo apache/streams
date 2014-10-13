@@ -1,7 +1,6 @@
 package org.apache.streams.data.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Maps;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.ActivityObject;
@@ -41,38 +40,33 @@ public class ExtensionUtil {
 
     private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    public static Map<String, Object> getExtensions(ObjectNode object) {
+    public static Map<String, Object> getExtensions(ActivityObject object) {
         ActivityObject activityObject = mapper.convertValue(object, ActivityObject.class);
-        Map<String,Object> extensions = (Map<String,Object>) activityObject.getAdditionalProperties().get(EXTENSION_PROPERTY);
+        Map<String,Object> extensions = ensureExtensions(object);
         return extensions;
     }
 
-    public static Object getExtension(ObjectNode object, String key) {
-        ActivityObject activityObject = mapper.convertValue(object, ActivityObject.class);
-        Map<String,Object> extensions = (Map<String,Object>) activityObject.getAdditionalProperties().get(EXTENSION_PROPERTY);
+    public static Object getExtension(ActivityObject object, String key) {
+        Map<String,Object> extensions = ensureExtensions(object);
         return extensions.get(key);
     }
 
-    public static void setExtensions(ObjectNode object, Map<String, Object> extensions) {
-        ActivityObject activityObject = mapper.convertValue(object, ActivityObject.class);
-        activityObject.setAdditionalProperty(EXTENSION_PROPERTY, extensions);
+    public static void setExtensions(ActivityObject object, Map<String, Object> extensions) {
+        object.setAdditionalProperty(EXTENSION_PROPERTY, extensions);
     };
 
-    public static void addExtension(ObjectNode object, String key, Object extension) {
-        ActivityObject activityObject = mapper.convertValue(object, ActivityObject.class);
-        Map<String,Object> extensions = (Map<String,Object>) activityObject.getAdditionalProperties().get(EXTENSION_PROPERTY);
+    public static void addExtension(ActivityObject object, String key, Object extension) {
+        Map<String,Object> extensions = ensureExtensions(object);
         extensions.put(key, extension);
     };
 
-    public static void addExtensions(ObjectNode object, Map<String, Object> extensions) {
-        ActivityObject activityObject = mapper.convertValue(object, ActivityObject.class);
+    public static void addExtensions(ActivityObject object, Map<String, Object> extensions) {
         for( Map.Entry<String, Object> item : extensions.entrySet())
-            activityObject.getAdditionalProperties().put(item.getKey(), item.getValue());
+            addExtension(object, item.getKey(), item.getValue());
     };
 
-    public static void removeExtension(ObjectNode object, String key) {
-        ActivityObject activityObject = mapper.convertValue(object, ActivityObject.class);
-        Map<String,Object> extensions = (Map<String,Object>) activityObject.getAdditionalProperties().get(EXTENSION_PROPERTY);
+    public static void removeExtension(ActivityObject object, String key) {
+        Map<String,Object> extensions = ensureExtensions(object);
         extensions.remove(key);
     };
 
@@ -82,13 +76,12 @@ public class ExtensionUtil {
      * @return the Map representing the extensions property
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> ensureExtensions(ObjectNode object) {
-        ActivityObject activityObject = mapper.convertValue(object, ActivityObject.class);
-        Map<String,Object> extensions = (Map<String,Object>) activityObject.getAdditionalProperties().get(EXTENSION_PROPERTY);
+    public static Map<String, Object> ensureExtensions(ActivityObject object) {
+        Map<String,Object> extensions = (Map<String,Object>) object.getAdditionalProperties().get(EXTENSION_PROPERTY);
         if(extensions == null) {
             extensions = Maps.newHashMap();
             setExtensions(object, extensions);
         }
-        return getExtensions(object);
+        return extensions;
     }
 }

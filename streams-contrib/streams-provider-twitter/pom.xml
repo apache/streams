@@ -55,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-processor-http</artifactId>
+            <artifactId>streams-http</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
