@@ -99,36 +99,17 @@ public abstract class BaseStreamsTask implements StreamsTask {
             outQueues.get(0).put(datum);
         }
         else {
-            StreamsDatum newDatum = null;
-            List<BlockingQueue<StreamsDatum>> failedQueues = Lists.newLinkedList();
-            // TODO
-            // Needs to be optimized better but workable now
-            // Adds datums to queues that aren't full, then adds to full queues with blocking
-            for(BlockingQueue<StreamsDatum> queue : this.outQueues) {
-                try {
-                    newDatum = cloneStreamsDatum(datum);
-                    if(newDatum != null) {
-                        if(!queue.offer(newDatum, 500, TimeUnit.MILLISECONDS)) {
-                            failedQueues.add(queue);
+            List<BlockingQueue<StreamsDatum>> toOutput = Lists.newLinkedList(this.outQueues);
+            while(!toOutput.isEmpty()) {
+                for (BlockingQueue<StreamsDatum> queue : toOutput) {
+                    StreamsDatum newDatum = cloneStreamsDatum(datum);
+                    if (newDatum != null) {
+                        if (queue.offer(newDatum, 500, TimeUnit.MILLISECONDS)) {
+                            toOutput.remove(queue);
                         }
                     }
-                } catch (RuntimeException e) {
-                    LOGGER.debug("Failed to add StreamsDatum to outgoing queue : {}", datum);
-                    LOGGER.error("Exception while offering StreamsDatum to outgoing queue: {}", e);
                 }
             }
-            for(BlockingQueue<StreamsDatum> queue : failedQueues) {
-                try {
-                    newDatum = cloneStreamsDatum(datum);
-                    if(newDatum != null) {
-                        queue.put(newDatum);
-                    }
-                } catch (RuntimeException e) {
-                    LOGGER.debug("Failed to add StreamsDatum to outgoing queue : {}", datum);
-                    LOGGER.error("Exception while offering StreamsDatum to outgoing queue: {}", e);
-                }
-            }
-
         }
     }
 
