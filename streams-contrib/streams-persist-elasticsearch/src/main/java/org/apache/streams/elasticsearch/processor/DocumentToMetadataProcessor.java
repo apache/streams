@@ -40,7 +40,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Uses index and type in metadata to populate current document into datums
+ * Moves a json representation of metadata out of the document to the metadata field.
+ *
+ * This is useful if you have a list of document metadata references in the document field,
+ * for example loaded from a file, and need them in the metadata field.
  */
 public class DocumentToMetadataProcessor implements StreamsProcessor, Serializable {
 
