@@ -17,7 +17,7 @@
  */
 
 package org.apache.streams.core;
-
+@Deprecated
 public class DatumStatusCounter
 {
     private volatile int attempted = 0;
