@@ -48,6 +48,16 @@ public interface StreamsTaskCounterMXBean {
      */
     public long getNumUnhandledErrors();
 
+    /**
+     * Returns the average time in milliseconds it takes the task to readCurrent, process, or write to return.
+     * @return
+     */
+    public double getAvgTime();
 
+    /**
+     * Returns the max time in milliseconds it takes the task to readCurrent, process, or write to return.
+     * @return
+     */
+    public long getMaxTime();
 
 }
