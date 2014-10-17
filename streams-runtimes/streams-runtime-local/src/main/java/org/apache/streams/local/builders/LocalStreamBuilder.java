@@ -57,6 +57,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     private LocalStreamProcessMonitorThread monitorThread;
     private Map<String, List<StreamsTask>> tasks;
     private Thread shutdownHook;
+    private boolean useDepricatedMonitoring;
 
     /**
      *
@@ -101,6 +102,32 @@ public class LocalStreamBuilder implements StreamBuilder {
                 self.stopInternal(true);
             }
         };
+        this.useDepricatedMonitoring = false;
+    }
+
+    /**
+     * Enables the deprecated monitoring that uses extra threads to print to the console.
+     *
+     * Current monitoring uses MXBeans to publish information to be viewable through JMX.
+     *
+     * THIS MUST SET BEFORE ANY PROVIDERS/PROCESSORS/WRITERS ARE SET.
+     *
+     * CORRECT USAGE:
+     * localStreamsBuilder.usedDepricatedMonitoring(true);
+     * localStreamsBuilder.newPerpetual....
+     * localStreamsBuilder.add.......
+     * localStreamsBuilder.start();
+     *
+     * INCORRECT:
+     * localStreamsBuilder.newPerpetual....
+     * localStreamsBuilder.add.......
+     * localStreamsBuilder.usedDepricatedMonitoring(true);
+     * localStreamsBuilder.start();
+     *
+     * @param use true to used depricated monitoring.
+     */
+    public void useDepricatedMonitoring(boolean use) {
+        this.useDepricatedMonitoring = true;
     }
 
     @Override
@@ -108,7 +135,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, true));
         ++this.totalTasks;
-        if( provider instanceof DatumStatusCountable )
+        if(this.useDepricatedMonitoring && provider instanceof DatumStatusCountable )
             ++this.monitorTasks;
         return this;
     }
@@ -118,7 +145,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, false));
         ++this.totalTasks;
-        if( provider instanceof DatumStatusCountable )
+        if(this.useDepricatedMonitoring && provider instanceof DatumStatusCountable )
             ++this.monitorTasks;
         return this;
     }
@@ -128,7 +155,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, sequence));
         ++this.totalTasks;
-        if( provider instanceof DatumStatusCountable )
+        if(this.useDepricatedMonitoring && provider instanceof DatumStatusCountable )
             ++this.monitorTasks;
         return this;
     }
@@ -138,7 +165,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         validateId(id);
         this.providers.put(id, new StreamComponent(id, provider, start, end));
         ++this.totalTasks;
-        if( provider instanceof DatumStatusCountable )
+        if(this.useDepricatedMonitoring && provider instanceof DatumStatusCountable )
             ++this.monitorTasks;
         return this;
     }
@@ -150,7 +177,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         this.components.put(id, comp);
         connectToOtherComponents(inBoundIds, comp);
         this.totalTasks += numTasks;
-        if( processor instanceof DatumStatusCountable )
+        if(this.useDepricatedMonitoring && processor instanceof DatumStatusCountable )
             ++this.monitorTasks;
         return this;
     }
@@ -162,7 +189,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         this.components.put(id, comp);
         connectToOtherComponents(inBoundIds, comp);
         this.totalTasks += numTasks;
-        if( writer instanceof DatumStatusCountable )
+        if(this.useDepricatedMonitoring && writer instanceof DatumStatusCountable )
             ++this.monitorTasks;
         return this;
     }
@@ -175,11 +202,15 @@ public class LocalStreamBuilder implements StreamBuilder {
         attachShutdownHandler();
         boolean isRunning = true;
         this.executor = new ShutdownStreamOnUnhandleThrowableThreadPoolExecutor(this.totalTasks, this);
-        this.monitor = Executors.newFixedThreadPool(this.monitorTasks+1);
+        if(this.useDepricatedMonitoring) {
+            this.monitor = Executors.newFixedThreadPool(this.monitorTasks + 1);
+        }
         Map<String, StreamsProviderTask> provTasks = new HashMap<String, StreamsProviderTask>();
         tasks = new HashMap<String, List<StreamsTask>>();
         try {
-            monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
+            if(this.useDepricatedMonitoring ) {
+                monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
+            }
             this.monitor.submit(monitorThread);
             setupComponentTasks(tasks);
             setupProviderTasks(provTasks);
@@ -264,7 +295,7 @@ public class LocalStreamBuilder implements StreamBuilder {
             task.setStreamConfig(this.streamConfig);
             this.executor.submit(task);
             provTasks.put(prov.getId(), (StreamsProviderTask) task);
-            if( prov.isOperationCountable() ) {
+            if(this.useDepricatedMonitoring && prov.isOperationCountable() ) {
                 this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) prov.getOperation(), 10));
                 this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
             }
@@ -280,7 +311,7 @@ public class LocalStreamBuilder implements StreamBuilder {
                 task.setStreamConfig(this.streamConfig);
                 this.executor.submit(task);
                 compTasks.add(task);
-                if( comp.isOperationCountable() ) {
+                if(this.useDepricatedMonitoring && comp.isOperationCountable() ) {
                     this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10));
                     this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
                 }
