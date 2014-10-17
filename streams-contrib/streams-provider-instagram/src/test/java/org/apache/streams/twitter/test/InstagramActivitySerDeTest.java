@@ -18,11 +18,8 @@
 
 package org.apache.streams.twitter.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.streams.instagram.serializer.util.InstagramDeserializer;
-import org.apache.streams.instagram.serializer.InstagramJsonActivitySerializer;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.jinstagram.entity.users.basicinfo.UserInfoData;
 import org.jinstagram.entity.users.feed.MediaFeedData;
@@ -40,13 +37,6 @@ import static org.apache.streams.instagram.serializer.util.InstagramActivityUtil
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
-/**
-* Created with IntelliJ IDEA.
-* User: sblackmon
-* Date: 8/20/13
-* Time: 5:57 PM
-* To change this template use File | Settings | File Templates.
-*/
 public class InstagramActivitySerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(InstagramActivitySerDeTest.class);
@@ -122,6 +112,7 @@ public class InstagramActivitySerDeTest {
                     assertThat(extensions.get("follows"), is(not(nullValue())));
                     assertThat(extensions.get("followers"), is(not(nullValue())));
                     assertThat(extensions.get("screenName"), is(not(nullValue())));
+                    assertThat(extensions.get("posts"), is(not(nullValue())));
 
                     assertThat(activity.getActor().getAdditionalProperties().get("handle"), is(not(nullValue())));
                     assertThat(activity.getActor().getId(), is(not(nullValue())));
