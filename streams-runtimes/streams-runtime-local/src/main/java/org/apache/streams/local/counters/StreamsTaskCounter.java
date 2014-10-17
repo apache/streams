@@ -42,6 +42,10 @@ public class StreamsTaskCounter implements StreamsTaskCounterMXBean{
     @GuardedBy("this")
     private volatile long maxTime;
 
+    /**
+     *
+     * @param id
+     */
     public StreamsTaskCounter(String id) {
         this.emitted = new AtomicLong(0);
         this.received = new AtomicLong(0);
