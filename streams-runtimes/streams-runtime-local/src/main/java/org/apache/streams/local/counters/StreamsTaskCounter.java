@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @ThreadSafe
 public class StreamsTaskCounter implements StreamsTaskCounterMXBean{
 
-    public static final String NAME_TEMPLATE = "org.apache.streams.local:type=DatumCounter,name=%s";
+    public static final String NAME_TEMPLATE = "org.apache.streams.local:type=StreamsTaskCounter,name=%s";
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamsTaskCounter.class);
 
     private AtomicLong emitted;
