@@ -27,6 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -40,8 +42,9 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     private long sleepTime;
     private AtomicBoolean keepRunning;
     private Map<String, Object> streamConfig;
-    private Queue<StreamsDatum> inQueue;
+    private BlockingQueue<StreamsDatum> inQueue;
     private AtomicBoolean isRunning;
+    private AtomicBoolean blocked;
 
     private DatumStatusCounter statusCounter = new DatumStatusCounter();
 
@@ -69,6 +72,12 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
         this.sleepTime = sleepTime;
         this.keepRunning = new AtomicBoolean(true);
         this.isRunning = new AtomicBoolean(true);
+        this.blocked = new AtomicBoolean(false);
+    }
+
+    @Override
+    public boolean isWaiting() {
+        return this.inQueue.isEmpty() && this.blocked.get();
     }
 
     @Override
@@ -77,7 +86,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     }
 
     @Override
-    public void addInputQueue(Queue<StreamsDatum> inputQueue) {
+    public void addInputQueue(BlockingQueue<StreamsDatum> inputQueue) {
         this.inQueue = inputQueue;
     }
 
@@ -90,28 +99,30 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     public void run() {
         try {
             this.writer.prepare(this.streamConfig);
-            StreamsDatum datum = this.inQueue.poll();
             while(this.keepRunning.get()) {
+                StreamsDatum datum = null;
+                try {
+                    this.blocked.set(true);
+                    datum = this.inQueue.poll(5, TimeUnit.SECONDS);
+                    this.blocked.set(false);
+                } catch (InterruptedException ie) {
+                    LOGGER.error("Received InterruptedException. Shutting down and re-applying interrupt status.");
+                    this.keepRunning.set(false);
+                    Thread.currentThread().interrupt();
+                }
                 if(datum != null) {
                     try {
                         this.writer.write(datum);
                         statusCounter.incrementStatus(DatumStatus.SUCCESS);
                     } catch (Exception e) {
                         LOGGER.error("Error writing to persist writer {}", this.writer.getClass().getSimpleName(), e);
-                        this.keepRunning.set(false);
+                        this.keepRunning.set(false); // why do we shutdown on a failed write ?
                         statusCounter.incrementStatus(DatumStatus.FAIL);
                         DatumUtils.addErrorToMetadata(datum, e, this.writer.getClass());
                     }
+                } else { //datums should never be null
+                    LOGGER.debug("Received null StreamsDatum @ writer : {}", this.writer.getClass().getName());
                 }
-                else {
-                    try {
-                        Thread.sleep(this.sleepTime);
-                    } catch (InterruptedException e) {
-                        LOGGER.warn("Thread interrupted in Writer task for {}",this.writer.getClass().getSimpleName(), e);
-                        this.keepRunning.set(false);
-                    }
-                }
-                datum = this.inQueue.poll();
             }
 
         } catch(Exception e) {
@@ -129,13 +140,13 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
 
 
     @Override
-    public void addOutputQueue(Queue<StreamsDatum> outputQueue) {
+    public void addOutputQueue(BlockingQueue<StreamsDatum> outputQueue) {
         throw new UnsupportedOperationException(this.getClass().getName()+" does not support method - setOutputQueue()");
     }
 
     @Override
-    public List<Queue<StreamsDatum>> getInputQueues() {
-        List<Queue<StreamsDatum>> queues = new LinkedList<Queue<StreamsDatum>>();
+    public List<BlockingQueue<StreamsDatum>> getInputQueues() {
+        List<BlockingQueue<StreamsDatum>> queues = new LinkedList<>();
         queues.add(this.inQueue);
         return queues;
     }
