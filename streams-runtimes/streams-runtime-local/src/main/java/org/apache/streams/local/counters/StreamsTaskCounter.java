@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @ThreadSafe
 public class StreamsTaskCounter implements StreamsTaskCounterMXBean{
 
-    public static final String NAME_TEMPLATE = "org.apache.streams.local:type=DatumCounter,name=%s";
+    public static final String NAME_TEMPLATE = "org.apache.streams.local:type=StreamsTaskCounter,name=%s";
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamsTaskCounter.class);
 
     private AtomicLong emitted;
@@ -145,10 +145,15 @@ public class StreamsTaskCounter implements StreamsTaskCounterMXBean{
 
     @Override
     public double getAvgTime() {
-        if(this.received.get() == 0) {
+        long rec = this.received.get();
+        long emit = this.emitted.get();
+        if(rec == 0 && emit == 0 ) {
             return 0.0;
+        } else if( rec == 0) { //provider instance
+            return this.totalTime.get() / (double) emit;
+        } else {
+            return this.totalTime.get() / ((double) this.received.get() - this.errors.get());
         }
-        return this.totalTime.get() / (double) this.received.get();
     }
 
     @Override
