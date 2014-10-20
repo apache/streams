@@ -19,12 +19,18 @@
 package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.local.counters.DatumStatusCounter;
+import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.queues.ThroughputQueue;
 import org.apache.streams.local.test.processors.PassthroughDatumCounterProcessor;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
+import org.junit.After;
 import org.junit.Test;
 
+import javax.management.InstanceNotFoundException;
+import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
 import java.util.Queue;
 import java.util.concurrent.*;
 
@@ -35,6 +41,21 @@ import static org.junit.Assert.*;
  */
 public class BasicTasksTest {
 
+
+    private static final String MBEAN_ID = "test_bean";
+
+    /**
+     * Remove registered mbeans from previous tests
+     * @throws Exception
+     */
+    @After
+    public void unregisterMXBean() throws Exception {
+        try {
+            ManagementFactory.getPlatformMBeanServer().unregisterMBean(new ObjectName(String.format(StreamsTaskCounter.NAME_TEMPLATE, MBEAN_ID)));
+        } catch (InstanceNotFoundException ife) {
+            //No-op
+        }
+    }
 
 
     @Test
@@ -77,7 +98,7 @@ public class BasicTasksTest {
             assertTrue("Task should have completed running in aloted time.", service.isTerminated());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        };
+        }
     }
 
     @Test
@@ -85,6 +106,8 @@ public class BasicTasksTest {
         int numMessages = 100;
         PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor("");
         StreamsProcessorTask task = new StreamsProcessorTask(processor);
+        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID);
+        task.setStreamsTaskCounter(counter);
         BlockingQueue<StreamsDatum> outQueue = new LinkedBlockingQueue<>();
         BlockingQueue<StreamsDatum> inQueue = createInputQueue(numMessages);
         task.addOutputQueue(outQueue);
@@ -104,8 +127,7 @@ public class BasicTasksTest {
                 fail("Processor task failed to output "+numMessages+" in a timely fashion.");
             }
         }
-        task.stopTask();
-        assertEquals(numMessages, processor.getMessageCount());
+        task.stopTask();;
         service.shutdown();
         try {
             if(!service.awaitTermination(5, TimeUnit.SECONDS)){
@@ -116,6 +138,11 @@ public class BasicTasksTest {
         } catch (InterruptedException e) {
             fail("Test Interupted.");
         }
+        assertEquals(numMessages, processor.getMessageCount());
+        assertEquals(numMessages, counter.getNumReceived());
+        assertEquals(numMessages, counter.getNumEmitted());
+        assertEquals(0, counter.getNumUnhandledErrors());
+        assertEquals(0.0, counter.getErrorRate(), 0.0);
     }
 
     @Test
@@ -123,6 +150,8 @@ public class BasicTasksTest {
         int numMessages = 100;
         DatumCounterWriter writer = new DatumCounterWriter("");
         StreamsPersistWriterTask task = new StreamsPersistWriterTask(writer);
+        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID);
+        task.setStreamsTaskCounter(counter);
         BlockingQueue<StreamsDatum> outQueue = new LinkedBlockingQueue<>();
         BlockingQueue<StreamsDatum> inQueue = createInputQueue(numMessages);
 
@@ -150,7 +179,6 @@ public class BasicTasksTest {
             }
         }
         task.stopTask();
-        assertEquals(numMessages, writer.getDatumsCounted());
         service.shutdown();
         try {
             if(!service.awaitTermination(5, TimeUnit.SECONDS)){
@@ -161,6 +189,11 @@ public class BasicTasksTest {
         } catch (InterruptedException e) {
             fail("Test Interupted.");
         }
+        assertEquals(numMessages, writer.getDatumsCounted());
+        assertEquals(numMessages, counter.getNumReceived());
+        assertEquals(0, counter.getNumEmitted());
+        assertEquals(0, counter.getNumUnhandledErrors());
+        assertEquals(0.0, counter.getErrorRate(), 0.0);
     }
 
     @Test
