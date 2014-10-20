@@ -24,6 +24,7 @@ package org.apache.streams.core;
 @Deprecated
 public interface DatumStatusCountable {
 
+    @Deprecated
     public DatumStatusCounter getDatumStatusCounter();
 
 }
