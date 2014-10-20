@@ -145,10 +145,15 @@ public class StreamsTaskCounter implements StreamsTaskCounterMXBean{
 
     @Override
     public double getAvgTime() {
-        if(this.received.get() == 0) {
+        long rec = this.received.get();
+        long emit = this.emitted.get();
+        if(rec == 0 && emit == 0 ) {
             return 0.0;
+        } else if( rec == 0) { //provider instance
+            return this.totalTime.get() / (double) emit;
+        } else {
+            return this.totalTime.get() / ((double) this.received.get() - this.errors.get());
         }
-        return this.totalTime.get() / (double) this.received.get();
     }
 
     @Override
