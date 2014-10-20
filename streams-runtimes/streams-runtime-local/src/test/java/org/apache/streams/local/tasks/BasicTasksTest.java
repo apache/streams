@@ -19,21 +19,19 @@
 package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.local.queues.ThroughputQueue;
 import org.apache.streams.local.test.processors.PassthroughDatumCounterProcessor;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
 import org.junit.Test;
 
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static org.junit.Assert.*;
 
 /**
- * Created by rebanks on 2/18/14.
+ *
  */
 public class BasicTasksTest {
 
@@ -44,9 +42,10 @@ public class BasicTasksTest {
         int numMessages = 100;
         NumericMessageProvider provider = new NumericMessageProvider(numMessages);
         StreamsProviderTask task = new StreamsProviderTask(provider, false);
-        Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+        BlockingQueue<StreamsDatum> outQueue = new LinkedBlockingQueue<>();
         task.addOutputQueue(outQueue);
-        Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
+        //Test that adding input queues to providers is not valid
+        BlockingQueue<StreamsDatum> inQueue = createInputQueue(numMessages);
         Exception exp = null;
         try {
             task.addInputQueue(inQueue);
@@ -54,6 +53,7 @@ public class BasicTasksTest {
             exp = uoe;
         }
         assertNotNull(exp);
+
         ExecutorService service = Executors.newFixedThreadPool(1);
         service.submit(task);
         int attempts = 0;
@@ -61,7 +61,7 @@ public class BasicTasksTest {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                //Ignore
+                Thread.currentThread().interrupt();
             }
             ++attempts;
             if(attempts == 10) {
@@ -76,17 +76,17 @@ public class BasicTasksTest {
             }
             assertTrue("Task should have completed running in aloted time.", service.isTerminated());
         } catch (InterruptedException e) {
-            fail("Test Interupted.");
+            Thread.currentThread().interrupt();
         };
     }
 
     @Test
     public void testProcessorTask() {
         int numMessages = 100;
-        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor();
+        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor("");
         StreamsProcessorTask task = new StreamsProcessorTask(processor);
-        Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
-        Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
+        BlockingQueue<StreamsDatum> outQueue = new LinkedBlockingQueue<>();
+        BlockingQueue<StreamsDatum> inQueue = createInputQueue(numMessages);
         task.addOutputQueue(outQueue);
         task.addInputQueue(inQueue);
         assertEquals(numMessages, task.getInputQueues().get(0).size());
@@ -121,10 +121,10 @@ public class BasicTasksTest {
     @Test
     public void testWriterTask() {
         int numMessages = 100;
-        DatumCounterWriter writer = new DatumCounterWriter();
+        DatumCounterWriter writer = new DatumCounterWriter("");
         StreamsPersistWriterTask task = new StreamsPersistWriterTask(writer);
-        Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
-        Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
+        BlockingQueue<StreamsDatum> outQueue = new LinkedBlockingQueue<>();
+        BlockingQueue<StreamsDatum> inQueue = createInputQueue(numMessages);
 
         Exception exp = null;
         try {
@@ -168,7 +168,7 @@ public class BasicTasksTest {
         int numMessages = 100;
         int incoming = 5;
         StreamsMergeTask task = new StreamsMergeTask();
-        Queue<StreamsDatum> outQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+        BlockingQueue<StreamsDatum> outQueue = new LinkedBlockingQueue<>();
         task.addOutputQueue(outQueue);
         for(int i=0; i < incoming; ++i) {
             task.addInputQueue(createInputQueue(numMessages));
@@ -203,11 +203,11 @@ public class BasicTasksTest {
     @Test
     public void testBranching() {
         int numMessages = 100;
-        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor();
+        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor("");
         StreamsProcessorTask task = new StreamsProcessorTask(processor);
-        Queue<StreamsDatum> outQueue1 = new ConcurrentLinkedQueue<StreamsDatum>();
-        Queue<StreamsDatum> outQueue2 = new ConcurrentLinkedQueue<StreamsDatum>();
-        Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
+        BlockingQueue<StreamsDatum> outQueue1 = new LinkedBlockingQueue<>();
+        BlockingQueue<StreamsDatum> outQueue2 = new LinkedBlockingQueue<>();
+        BlockingQueue<StreamsDatum> inQueue = createInputQueue(numMessages);
         task.addOutputQueue(outQueue1);
         task.addOutputQueue(outQueue2);
         task.addInputQueue(inQueue);
@@ -246,11 +246,11 @@ public class BasicTasksTest {
     @Test
     public void testBranchingSerialization() {
         int numMessages = 1;
-        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor();
+        PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor("");
         StreamsProcessorTask task = new StreamsProcessorTask(processor);
-        Queue<StreamsDatum> outQueue1 = new ConcurrentLinkedQueue<StreamsDatum>();
-        Queue<StreamsDatum> outQueue2 = new ConcurrentLinkedQueue<StreamsDatum>();
-        Queue<StreamsDatum> inQueue = createInputQueue(numMessages);
+        BlockingQueue<StreamsDatum> outQueue1 = new LinkedBlockingQueue<>();
+        BlockingQueue<StreamsDatum> outQueue2 = new LinkedBlockingQueue<>();
+        BlockingQueue<StreamsDatum> inQueue = createInputQueue(numMessages);
         task.addOutputQueue(outQueue1);
         task.addOutputQueue(outQueue2);
         task.addInputQueue(inQueue);
@@ -291,8 +291,8 @@ public class BasicTasksTest {
         assertNotEquals(datum1, datum2);
     }
 
-    private Queue<StreamsDatum> createInputQueue(int numDatums) {
-        Queue<StreamsDatum> queue = new ConcurrentLinkedQueue<StreamsDatum>();
+    private BlockingQueue<StreamsDatum> createInputQueue(int numDatums) {
+        BlockingQueue<StreamsDatum> queue = new LinkedBlockingQueue<>();
         for(int i=0; i < numDatums; ++i) {
             queue.add(new StreamsDatum(i));
         }

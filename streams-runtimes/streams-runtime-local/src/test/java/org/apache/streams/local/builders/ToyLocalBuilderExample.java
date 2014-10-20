@@ -19,12 +19,11 @@
 package org.apache.streams.local.builders;
 
 import org.apache.streams.core.StreamBuilder;
-import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.local.test.processors.DoNothingProcessor;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.writer.DoNothingWriter;
 
-import java.util.concurrent.LinkedBlockingQueue;
+
 
 /**
  * Created by rebanks on 2/20/14.
@@ -36,7 +35,7 @@ public class ToyLocalBuilderExample {
      * @param args
      */
     public static void main(String[] args) {
-        StreamBuilder builder = new LocalStreamBuilder(new LinkedBlockingQueue<StreamsDatum>());
+        StreamBuilder builder = new LocalStreamBuilder();
         builder.newReadCurrentStream("prov", new NumericMessageProvider(1000000))
                 .addStreamsProcessor("proc", new DoNothingProcessor(), 100, "prov")
                 .addStreamsPersistWriter("writer", new DoNothingWriter(), 3, "proc");
