@@ -27,6 +27,7 @@ import org.joda.time.DateTime;
 import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -35,7 +36,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class NumericMessageProvider implements StreamsProvider {
 
+    private static final int DEFAULT_BATCH_SIZE = 100;
+
     private int numMessages;
+    private BlockingQueue<StreamsDatum> data;
+    private volatile boolean complete = false;
 
     public NumericMessageProvider(int numMessages) {
         this.numMessages = numMessages;
@@ -43,12 +48,24 @@ public class NumericMessageProvider implements StreamsProvider {
 
     @Override
     public void startStream() {
-        // no op
+        this.data = constructQueue();
     }
 
     @Override
     public StreamsResultSet readCurrent() {
-        return new StreamsResultSet(constructQueue());
+        int batchSize = 0;
+        Queue<StreamsDatum> batch = Queues.newLinkedBlockingQueue();
+        try {
+            while (!this.data.isEmpty() && batchSize < DEFAULT_BATCH_SIZE) {
+                batch.add(this.data.take());
+                ++batchSize;
+            }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+//        System.out.println("******************\n**\tBatchSize="+batch.size()+"\n******************");
+        this.complete = batch.isEmpty() && this.data.isEmpty();
+        return new StreamsResultSet(batch);
     }
 
     @Override
@@ -63,12 +80,12 @@ public class NumericMessageProvider implements StreamsProvider {
 
     @Override
     public boolean isRunning() {
-        return false;
+        return !this.complete;
     }
 
     @Override
     public void prepare(Object configurationObject) {
-
+        this.data = constructQueue();
     }
 
     @Override
@@ -76,8 +93,8 @@ public class NumericMessageProvider implements StreamsProvider {
 
     }
 
-    private Queue<StreamsDatum> constructQueue() {
-        Queue<StreamsDatum> datums = Queues.newArrayBlockingQueue(numMessages);
+    private BlockingQueue<StreamsDatum> constructQueue() {
+        BlockingQueue<StreamsDatum> datums = Queues.newArrayBlockingQueue(numMessages);
         for(int i=0;i<numMessages;i++) {
             datums.add(new StreamsDatum(i));
         }
