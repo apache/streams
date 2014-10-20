@@ -18,6 +18,7 @@
 
 package org.apache.streams.elasticsearch.processor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -32,6 +33,8 @@ import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.elasticsearch.ElasticsearchConfigurator;
 import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -49,32 +52,24 @@ public class DocumentToMetadataProcessor implements StreamsProcessor, Serializab
 
     public final static String STREAMS_ID = "DatumFromMetadataProcessor";
 
-    private ElasticsearchClientManager elasticsearchClientManager;
-    private ElasticsearchReaderConfiguration config;
-
     private ObjectMapper mapper;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentToMetadataProcessor.class);
+
     public DocumentToMetadataProcessor() {
-        Config config = StreamsConfigurator.config.getConfig("elasticsearch");
-        this.config = ElasticsearchConfigurator.detectReaderConfiguration(config);
-    }
-
-    public DocumentToMetadataProcessor(Config config) {
-        this.config = ElasticsearchConfigurator.detectReaderConfiguration(config);
-    }
-
-    public DocumentToMetadataProcessor(ElasticsearchReaderConfiguration config) {
-        this.config = config;
     }
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
         List<StreamsDatum> result = Lists.newArrayList();
 
+        Object object = entry.getDocument();
         ObjectNode metadataObjectNode;
         try {
-            metadataObjectNode = mapper.readValue((String) entry.getDocument(), ObjectNode.class);
-        } catch (IOException e) {
+            String docAsJson = (object instanceof String) ? object.toString() : mapper.writeValueAsString(object);
+            metadataObjectNode = mapper.readValue(docAsJson, ObjectNode.class);
+        } catch (Throwable e) {
+            LOGGER.warn("Exception: %s", e.getMessage());
             return result;
         }
 
@@ -92,15 +87,13 @@ public class DocumentToMetadataProcessor implements StreamsProcessor, Serializab
 
     @Override
     public void prepare(Object configurationObject) {
-        this.elasticsearchClientManager = new ElasticsearchClientManager(config);
         mapper = StreamsJacksonMapper.getInstance();
         mapper.registerModule(new JsonOrgModule());
-
     }
 
     @Override
     public void cleanUp() {
-        this.elasticsearchClientManager.getClient().close();
+        mapper = null;
     }
 
     public static Map<String, Object> asMap(JsonNode node) {
