@@ -50,6 +50,8 @@ import org.apache.streams.local.test.providers.EmptyResultSetProvider;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
 import org.apache.streams.local.test.writer.SystemOutWriter;
+import org.apache.streams.util.ComponentUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -71,6 +73,16 @@ import javax.management.*;
  *
  */
 public class LocalStreamBuilderTest extends RandomizedTest {
+
+
+    @After
+    public void removeLocalMBeans() {
+        try {
+            ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
+        } catch (Exception e) {
+            //No op.  proceed to next test
+        }
+    }
 
 
     public void removeRegisteredMBeans(String... ids) {
