@@ -51,9 +51,9 @@ public class ElasticsearchPersistDeleter extends ElasticsearchPersistWriter impl
 
         LOGGER.debug("Delete Metadata: {}", metadata);
 
-        String index = getIndex(metadata, config);
-        String type = getType(metadata, config);
-        String id = getId(streamsDatum);
+        String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
+        String type = ElasticsearchMetadataUtil.getType(metadata, config);
+        String id = ElasticsearchMetadataUtil.getId(streamsDatum);
 
         try {
             delete(index, type, id);
