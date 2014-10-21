@@ -51,9 +51,9 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
 
         LOGGER.debug("Update Metadata: {}", metadata);
 
-        String index = getIndex(metadata, config);
-        String type = getType(metadata, config);
-        String id = getId(streamsDatum);
+        String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
+        String type = ElasticsearchMetadataUtil.getType(metadata, config);
+        String id = ElasticsearchMetadataUtil.getId(streamsDatum);
 
         String json;
         try {
