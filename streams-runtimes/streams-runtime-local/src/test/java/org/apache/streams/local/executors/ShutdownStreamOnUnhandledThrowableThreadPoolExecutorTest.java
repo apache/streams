@@ -1,6 +1,8 @@
 package org.apache.streams.local.executors;
 
 import org.apache.streams.local.builders.LocalStreamBuilder;
+import org.apache.streams.util.ComponentUtils;
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -22,6 +24,15 @@ import static org.mockito.Mockito.when;
  */
 public class ShutdownStreamOnUnhandledThrowableThreadPoolExecutorTest {
 
+
+    @After
+    public void removeLocalMBeans() {
+        try {
+            ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
+        } catch (Exception e) {
+            //No op.  proceed to next test
+        }
+    }
 
     @Test
     public void testShutDownOnException() {
