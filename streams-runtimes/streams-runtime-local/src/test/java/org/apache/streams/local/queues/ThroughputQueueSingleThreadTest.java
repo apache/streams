@@ -19,6 +19,8 @@ package org.apache.streams.local.queues;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.Repeat;
+import org.apache.streams.util.ComponentUtils;
+import org.junit.After;
 import org.junit.Test;
 
 import javax.management.MBeanServer;
@@ -34,6 +36,15 @@ import static org.junit.Assert.assertEquals;
  */
 public class ThroughputQueueSingleThreadTest extends RandomizedTest {
 
+
+    @After
+    public void removeLocalMBeans() {
+        try {
+            ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
+        } catch (Exception e) {
+            //No op.  proceed to next test
+        }
+    }
 
     /**
      * Test that take and put queue and dequeue data as expected and all

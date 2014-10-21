@@ -23,6 +23,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.util.ComponentUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,6 +48,15 @@ public class StreamsProviderTaskTest {
     public void setup() {
         mockProvider = mock(StreamsProvider.class);
         pool = Executors.newFixedThreadPool(1);
+    }
+
+    @After
+    public void removeLocalMBeans() {
+        try {
+            ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
+        } catch (Exception e) {
+            //No op.  proceed to next test
+        }
     }
 
     @Test

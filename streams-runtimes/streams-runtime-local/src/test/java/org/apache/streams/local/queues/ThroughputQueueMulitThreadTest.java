@@ -19,6 +19,7 @@ package org.apache.streams.local.queues;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.Repeat;
+import org.apache.streams.util.ComponentUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -47,6 +48,15 @@ public class ThroughputQueueMulitThreadTest extends RandomizedTest {
             ManagementFactory.getPlatformMBeanServer().unregisterMBean(new ObjectName(String.format(ThroughputQueue.NAME_TEMPLATE, MBEAN_ID)));
         } catch (InstanceNotFoundException ife) {
             //No-op
+        }
+    }
+
+    @After
+    public void removeLocalMBeans() {
+        try {
+            ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
+        } catch (Exception e) {
+            //No op.  proceed to next test
         }
     }
 
