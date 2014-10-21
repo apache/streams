@@ -31,6 +31,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.elasticsearch.ElasticsearchConfigurator;
+import org.apache.streams.elasticsearch.ElasticsearchMetadataUtil;
 import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
@@ -73,7 +74,7 @@ public class DocumentToMetadataProcessor implements StreamsProcessor, Serializab
             return result;
         }
 
-        Map<String, Object> metadata = asMap(metadataObjectNode);
+        Map<String, Object> metadata = ElasticsearchMetadataUtil.asMap(metadataObjectNode);
 
         if(entry == null || metadata == null)
             return result;
@@ -96,19 +97,4 @@ public class DocumentToMetadataProcessor implements StreamsProcessor, Serializab
         mapper = null;
     }
 
-    public static Map<String, Object> asMap(JsonNode node) {
-
-        Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
-        Map<String, Object> ret = Maps.newHashMap();
-
-        Map.Entry<String, JsonNode> entry;
-
-        while (iterator.hasNext()) {
-            entry = iterator.next();
-            if( entry.getValue().asText() != null )
-                ret.put(entry.getKey(), entry.getValue().asText());
-        }
-
-        return ret;
-    }
 }

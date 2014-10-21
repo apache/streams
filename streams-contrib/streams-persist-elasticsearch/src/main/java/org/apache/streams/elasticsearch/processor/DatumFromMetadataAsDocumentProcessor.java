@@ -30,6 +30,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.elasticsearch.ElasticsearchConfigurator;
+import org.apache.streams.elasticsearch.ElasticsearchMetadataUtil;
 import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.elasticsearch.action.get.GetRequestBuilder;
@@ -78,24 +79,14 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
             return result;
         }
 
-        Map<String, Object> metadata = DocumentToMetadataProcessor.asMap(metadataObjectNode);
+        Map<String, Object> metadata = ElasticsearchMetadataUtil.asMap(metadataObjectNode);
 
         if(entry == null || entry.getMetadata() == null)
             return result;
 
-        String index = (String) metadata.get("index");
-        String type = (String) metadata.get("type");
-        String id = (String) metadata.get("id");
-
-        if( index == null ) {
-            index = this.config.getIndexes().get(0);
-        }
-        if( type == null ) {
-            type = this.config.getTypes().get(0);
-        }
-        if( id == null ) {
-            id = entry.getId();
-        }
+        String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
+        String type = ElasticsearchMetadataUtil.getType(metadata, config);
+        String id = ElasticsearchMetadataUtil.getId(metadata);
 
         GetRequestBuilder getRequestBuilder = elasticsearchClientManager.getClient().prepareGet(index, type, id);
         getRequestBuilder.setFields("*", "_timestamp");
