@@ -236,15 +236,19 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
      * Using the "info" list that is contained in the configuration, ensure that all
      * account identifiers are converted to IDs (Longs) instead of screenNames (Strings)
      */
-    private void consolidateToIDs() {
+    protected void consolidateToIDs() {
         List<String> screenNames = Lists.newArrayList();
         ids = Lists.newArrayList();
 
         for(String account : config.getInfo()) {
-            if(new Long(account) != null) {
-                ids.add(Long.parseLong(Objects.toString(account, null)));
-            } else {
-                screenNames.add(account);
+            try {
+                if (new Long(account) != null) {
+                    ids.add(Long.parseLong(Objects.toString(account, null)));
+                } else {
+                    screenNames.add(account);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Exception while trying to add ID: {{}}, {}", account, e);
             }
         }
 
