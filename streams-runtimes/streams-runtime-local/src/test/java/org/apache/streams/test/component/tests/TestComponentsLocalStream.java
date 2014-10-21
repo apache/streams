@@ -22,12 +22,23 @@ import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.apache.streams.test.component.ExpectedDatumsPersistWriter;
 import org.apache.streams.test.component.FileReaderProvider;
 import org.apache.streams.test.component.StringToDocumentConverter;
+import org.apache.streams.util.ComponentUtils;
+import org.junit.After;
 import org.junit.Test;
 
 /**
- * Created by rebanks on 2/28/14.
+ *
  */
 public class TestComponentsLocalStream {
+
+    @After
+    public void removeLocalMBeans() {
+        try {
+            ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
+        } catch (Exception e) {
+            //No op.  proceed to next test
+        }
+    }
 
     @Test
     public void testLocalStreamWithComponent() {

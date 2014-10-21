@@ -22,9 +22,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.*;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -104,6 +106,20 @@ public class ComponentUtils {
         } catch (InterruptedException ie) {
             stream.shutdownNow();
             Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Removes all mbeans registered undered a specific domain.  Made specificly to clean up at unit tests
+     * @param domain
+     */
+    public static void removeAllMBeansOfDomain(String domain) throws Exception {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        domain = domain.endsWith(":") ? domain : domain+":";
+        ObjectName objectName = new ObjectName(domain+"*");
+        Set<ObjectName> mbeanNames = mbs.queryNames(objectName, null);
+        for(ObjectName name : mbeanNames) {
+            mbs.unregisterMBean(name);
         }
     }
 

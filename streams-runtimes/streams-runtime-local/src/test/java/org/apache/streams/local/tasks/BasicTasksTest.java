@@ -23,6 +23,8 @@ import org.apache.streams.local.queues.ThroughputQueue;
 import org.apache.streams.local.test.processors.PassthroughDatumCounterProcessor;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
+import org.apache.streams.util.ComponentUtils;
+import org.junit.After;
 import org.junit.Test;
 
 import java.util.Queue;
@@ -36,6 +38,14 @@ import static org.junit.Assert.*;
 public class BasicTasksTest {
 
 
+    @After
+    public void removeLocalMBeans() {
+        try {
+            ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
+        } catch (Exception e) {
+            //No op.  proceed to next test
+        }
+    }
 
     @Test
     public void testProviderTask() {
