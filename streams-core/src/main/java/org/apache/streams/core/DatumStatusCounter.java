@@ -17,7 +17,7 @@
  */
 
 package org.apache.streams.core;
-
+@Deprecated
 public class DatumStatusCounter
 {
     private volatile int attempted = 0;
@@ -35,6 +35,7 @@ public class DatumStatusCounter
     public DatumStatusCounter() {
     }
 
+    @Deprecated
     public void add(DatumStatusCounter datumStatusCounter) {
         this.attempted += datumStatusCounter.getAttempted();
         this.success += datumStatusCounter.getSuccess();
@@ -43,14 +44,17 @@ public class DatumStatusCounter
         this.emitted += datumStatusCounter.getEmitted();
     }
 
+    @Deprecated
     public void incrementAttempt() {
         this.attempted += 1;
     }
 
+    @Deprecated
     public void incrementAttempt(int counter) {
         this.attempted += counter;
     }
 
+    @Deprecated
     public synchronized void incrementStatus(DatumStatus workStatus) {
         // add this to the record counter
         switch(workStatus) {
@@ -61,6 +65,7 @@ public class DatumStatusCounter
         this.emitted += 1;
     }
 
+    @Deprecated
     public synchronized void incrementStatus(DatumStatus workStatus, int counter) {
         // add this to the record counter
         switch(workStatus) {
