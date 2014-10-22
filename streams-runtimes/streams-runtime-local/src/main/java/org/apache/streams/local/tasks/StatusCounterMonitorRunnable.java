@@ -18,6 +18,7 @@
 
 package org.apache.streams.local.tasks;
 
+@Deprecated
 public interface StatusCounterMonitorRunnable extends Runnable {
     void shutdown();
     boolean isRunning();
