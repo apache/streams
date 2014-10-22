@@ -272,6 +272,7 @@ public class StreamComponent {
         }
     }
 
+    @Deprecated
     protected boolean isOperationCountable() {
         return getOperation() instanceof DatumStatusCountable;
     }
