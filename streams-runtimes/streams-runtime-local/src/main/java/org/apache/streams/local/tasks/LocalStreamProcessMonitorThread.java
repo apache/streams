@@ -25,6 +25,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.util.concurrent.Executor;
 
+@Deprecated
 public class LocalStreamProcessMonitorThread implements StatusCounterMonitorRunnable
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalStreamProcessMonitorThread.class);
