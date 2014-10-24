@@ -2,8 +2,7 @@
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
     "id": "#",
-    "javaType" : "org.apache.streams.blueprints.BlueprintsVertexWriterConfiguration",
-    "extends": {"$ref":"BlueprintsWriterConfiguration.json"},
+    "javaType" : "org.apache.streams.blueprints.BlueprintsEdgeWriterConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "verbs": {

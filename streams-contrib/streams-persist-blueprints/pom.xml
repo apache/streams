@@ -9,10 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>streams-persist-mongo</artifactId>
+    <artifactId>streams-persist-blueprints</artifactId>
 
     <properties>
-        <mongo-driver.version>2.12.0-rc0</mongo-driver.version>
+        <tinkerpop.version>2.6.0</tinkerpop.version>
     </properties>
 
     <dependencies>
@@ -37,15 +37,21 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>${mongo-driver.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.tinkerpop.blueprints</groupId>
+            <artifactId>blueprints-core</artifactId>
+            <version>${tinkerpop.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tinkerpop.blueprints</groupId>
+            <artifactId>blueprints-rexster-graph</artifactId>
+            <version>${tinkerpop.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.tinkerpop.rexster</groupId>
+            <artifactId>rexster-protocol</artifactId>
+            <version>${tinkerpop.version}</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
     <build>
@@ -75,7 +81,7 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/org/apache/streams/mongo/MongoConfiguration.json</sourcePath>
+                        <sourcePath>src/main/jsonschema</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.mongo.pojo</targetPackage>

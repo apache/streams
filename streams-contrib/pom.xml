@@ -37,6 +37,7 @@
     </properties>
 
     <modules>
+        <module>streams-persist-blueprints</module>
         <module>streams-persist-cassandra</module>
         <module>streams-persist-console</module>
         <module>streams-persist-elasticsearch</module>
