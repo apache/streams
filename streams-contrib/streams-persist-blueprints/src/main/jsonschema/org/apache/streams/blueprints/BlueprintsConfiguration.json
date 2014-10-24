@@ -1,0 +1,26 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.blueprints.BlueprintsConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "type": {
+            "type": "string",
+            "description": "Blueprint DB type",
+            "enum" : ["tinkergraph", "rexster"]
+        },
+        "host": {
+            "type": "string",
+            "description": "Blueprint DB host"
+        },
+        "port": {
+            "type": "integer",
+            "description": "Blueprint DB Port"
+        },
+        "graph": {
+            "type": "string",
+            "description": "Blueprint DB Graph ID"
+        }
+    }
+}
