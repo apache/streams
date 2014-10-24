@@ -1,0 +1,28 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.blueprints.BlueprintsWriterConfiguration",
+    "extends": {"$ref":"BlueprintsConfiguration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "bulk": {
+            "type": "boolean",
+            "description": "Index in large or small batches",
+            "default": "false"
+        },
+        "batchSize": {
+            "type": "integer",
+            "description": "Item Count before flush",
+            "default": 100
+        },
+        "vertices": {
+            "type": "object",
+            "$ref": "./BlueprintsVertexWriterConfiguration.json"
+        },
+        "edges": {
+            "type": "object",
+            "$ref": "./BlueprintsEdgeWriterConfiguration.json"
+        }
+    }
+}
