@@ -65,7 +65,7 @@ public class TwitterEventClassifier {
         else if( objectNode.findValue("friends") != null ||
                 objectNode.findValue("friends_str") != null )
             return FriendList.class;
-        else if( objectNode.findValue("target_object") != null )
+        else if( objectNode.findValue("event") != null )
             return UserstreamEvent.class;
         else if ( objectNode.findValue("location") != null && objectNode.findValue("user") == null)
             return User.class;

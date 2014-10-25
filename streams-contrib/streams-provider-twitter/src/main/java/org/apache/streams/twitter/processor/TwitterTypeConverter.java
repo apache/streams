@@ -31,6 +31,7 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.twitter.pojo.UserstreamEvent;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
 import org.apache.streams.twitter.serializer.*;
 import org.slf4j.Logger;

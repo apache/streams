@@ -148,6 +148,8 @@
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/collection.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/media_link.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/object.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.pojo.json</targetPackage>
