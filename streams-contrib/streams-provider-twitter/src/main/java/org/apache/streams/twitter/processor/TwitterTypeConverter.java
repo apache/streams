@@ -100,7 +100,7 @@ public class TwitterTypeConverter implements StreamsProcessor {
                 LOGGER.debug("DELETE");
                 result = mapper.convertValue(event, Delete.class);
             }
-        } else if( outClass.equals( ObjectNode.class )) {
+        } else {
             LOGGER.debug("OBJECTNODE");
             result = mapper.convertValue(event, ObjectNode.class);
         }

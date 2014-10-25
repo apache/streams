@@ -51,6 +51,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class BlueprintsPersistWriter implements StreamsPersistWriter {
 
+    public static final String STREAMS_ID = BlueprintsPersistWriter.class.getCanonicalName();
+
     private final static Logger LOGGER = LoggerFactory.getLogger(BlueprintsPersistWriter.class);
     private final static long MAX_WRITE_LATENCY = 1000;
 
@@ -75,6 +77,7 @@ public class BlueprintsPersistWriter implements StreamsPersistWriter {
     @Override
     public void write(StreamsDatum streamsDatum) {
 
+        persistElements(streamsDatum);
     }
 
     @Override
