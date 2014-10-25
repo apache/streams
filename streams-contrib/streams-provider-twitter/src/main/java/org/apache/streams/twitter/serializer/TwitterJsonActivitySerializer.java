@@ -39,6 +39,7 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
     TwitterJsonRetweetActivitySerializer retweetActivitySerializer = new TwitterJsonRetweetActivitySerializer();
     TwitterJsonDeleteActivitySerializer deleteActivitySerializer = new TwitterJsonDeleteActivitySerializer();
     TwitterJsonUserActivitySerializer userActivitySerializer = new TwitterJsonUserActivitySerializer();
+    TwitterJsonUserstreameventActivitySerializer userstreameventActivitySerializer = new TwitterJsonUserstreameventActivitySerializer();
 
     @Override
     public String serializationFormat() {
@@ -64,6 +65,9 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
             activity = deleteActivitySerializer.deserialize(serialized);
         else if( documentSubType == User.class )
             activity = userActivitySerializer.deserialize(serialized);
+        else if( documentSubType == UserstreamEvent.class )
+            activity = userstreameventActivitySerializer.deserialize(serialized);
+
         else throw new ActivitySerializerException("unrecognized type");
 
         return activity;

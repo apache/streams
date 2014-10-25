@@ -1,0 +1,16 @@
+{
+  "type" : "object",
+  "title" : "Follow",
+  "description" : "To remove an object from collection of liked items",
+  "extends": {"$ref":"../activity.json"},
+  "properties" :{
+    "verb" :{
+      "type" : "string",
+      "default" : "unlike"
+    },
+    "title" : {
+      "type" : "string",
+      "default" : "{actor.displayName} unliked {object.displayName}"
+    }
+  }
+}
