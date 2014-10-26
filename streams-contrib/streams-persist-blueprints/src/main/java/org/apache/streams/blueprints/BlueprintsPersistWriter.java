@@ -23,13 +23,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Element;
-import com.tinkerpop.blueprints.Graph;
-import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.*;
 import com.tinkerpop.blueprints.impls.rexster.RexsterGraph;
-import com.tinkerpop.rexster.client.RexsterClient;
-import com.tinkerpop.rexster.client.RexsterClientFactory;
+import com.tinkerpop.blueprints.util.wrappers.id.IdGraph;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
@@ -39,12 +35,9 @@ import org.apache.streams.pojo.json.ActivityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -58,8 +51,8 @@ public class BlueprintsPersistWriter implements StreamsPersistWriter {
 
     private BlueprintsWriterConfiguration configuration;
 
-    protected RexsterClient client;
-    protected RexsterGraph graph;
+    protected Graph graph;
+
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
     private volatile AtomicLong lastWrite = new AtomicLong(System.currentTimeMillis());
     private ScheduledExecutorService backgroundFlushTask = Executors.newSingleThreadScheduledExecutor();
@@ -77,18 +70,28 @@ public class BlueprintsPersistWriter implements StreamsPersistWriter {
     @Override
     public void write(StreamsDatum streamsDatum) {
 
-        persistElements(streamsDatum);
+        List<Element> affected;
+        try {
+            affected = persistElements(streamsDatum);
+            LOGGER.info("wrote datum - " + affected.size() + " elements affected");
+            for( Element element : affected )
+                element = null;
+            affected = null;
+        } catch( Throwable e ) {
+            LOGGER.warn(e.getMessage());
+        }
     }
 
     @Override
     public void prepare(Object configurationObject) {
 
-        connectToGraph();
+        LOGGER.info("initializing - " + configuration.toString());
 
-        Preconditions.checkNotNull(client);
+        graph = connectToGraph();
 
         Preconditions.checkNotNull(graph);
-        Preconditions.checkNotNull(graph.getGraphURI());
+
+        LOGGER.info("initialized - " + graph.toString());
 
     }
 
@@ -97,13 +100,7 @@ public class BlueprintsPersistWriter implements StreamsPersistWriter {
 
         graph.shutdown();
 
-        try {
-            client.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            client = null;
-        }
+        LOGGER.info("exiting");
 
     }
 
@@ -130,7 +127,7 @@ public class BlueprintsPersistWriter implements StreamsPersistWriter {
 
         // always add vertices first
         // what types of verbs are relevant for adding vertices?
-        if( configuration.getVertices().getVerbs().contains(activity.getVerb().toString())) {
+        if( configuration.getVertices().getVerbs().contains(activity.getVerb())) {
 
             // what objectTypes are relevant for adding vertices?
             if( configuration.getVertices().getObjectTypes().contains(activity.getActor().getObjectType())) {
@@ -145,7 +142,7 @@ public class BlueprintsPersistWriter implements StreamsPersistWriter {
 
         // always add edges last
         // what types of verbs are relevant for adding edges?
-        if( configuration.getEdges().getVerbs().contains(activity.getVerb().toString())) {
+        if( configuration.getEdges().getVerbs().contains(activity.getVerb())) {
 
             // what objectTypes are relevant for adding edges?
             if( configuration.getEdges().getObjectTypes().contains(activity.getActor().getObjectType())
@@ -158,13 +155,12 @@ public class BlueprintsPersistWriter implements StreamsPersistWriter {
         return elements;
     }
 
-    private synchronized void connectToGraph() {
+    private Graph connectToGraph() {
+
+        Graph graph;
 
         if( configuration.getType().equals(BlueprintsConfiguration.Type.REXSTER)) {
             try {
-                client = RexsterClientFactory.open(
-                        configuration.getHost(),
-                        configuration.getGraph());
                 StringBuilder uri = new StringBuilder()
                         .append("http://")
                         .append(configuration.getHost())
@@ -172,34 +168,59 @@ public class BlueprintsPersistWriter implements StreamsPersistWriter {
                         .append(configuration.getPort())
                         .append("/graphs/")
                         .append(configuration.getGraph());
-                graph = new RexsterGraph(uri.toString());
-            } catch (Exception e) {
-                LOGGER.error("ERROR: ", e.getMessage());
+                KeyIndexableGraph graph1 = new RexsterGraph(uri.toString());
+                graph = new IdGraph(graph1, true, false);
+            } catch (Throwable e) {
+                LOGGER.error("ERROR: " + e.getMessage());
+                return null;
             }
-            return;
+            return graph;
 
+        } else {
+            return null;
         }
     }
 
     protected Vertex persistVertex(ActivityObject object) {
-        Iterator<Vertex> existing = graph.query().limit(1).has("id", object.getId()).vertices().iterator();
-        if( !existing.hasNext()) {
-            Vertex vertex = graph.addVertex(object);
+        Preconditions.checkNotNull(object);
+        Preconditions.checkNotNull(object.getId());
+        LOGGER.info("stream vertex: " + object.getId());
+        Vertex existing = graph.getVertex(object.getId());
+        if( existing == null ) {
+            LOGGER.info(object.getId() + " is new");
+            Vertex vertex = null;
+            if( !Strings.isNullOrEmpty(object.getId()) ) {
+                vertex = graph.addVertex(object.getId());
+                if (vertex != null) {
+                    if (!Strings.isNullOrEmpty(object.getDisplayName()))
+                        vertex.setProperty("displayName", object.getDisplayName());
+                    if (!Strings.isNullOrEmpty(object.getObjectType()))
+                        vertex.setProperty("objectType", object.getObjectType());
+                    if (!Strings.isNullOrEmpty(object.getUrl()))
+                        vertex.setProperty("url", object.getUrl());
+                    LOGGER.info(vertex.toString());
+                } else {
+                    LOGGER.warn("Vertex null after add");
+                }
+            } else {
+                LOGGER.warn("Can't persist vertex without id");
+            }
             return vertex;
         } else {
-            return existing.next();
+            LOGGER.info(object.getId() + " already exists");
+            return existing;
         }
     }
 
     protected Edge persistEdge(Activity activity) {
-        Iterator<Edge> existing = graph.query().limit(1).has("id", activity.getId()).edges().iterator();
-        if( !existing.hasNext()) {
+        Edge existing = graph.getEdge(activity.getId());
+        if( existing == null ) {
             Vertex s = persistVertex(activity.getActor());
             Vertex d = persistVertex(activity.getObject());
             Edge edge = graph.addEdge(activity, s, d, activity.getVerb());
             return edge;
         } else {
-            return existing.next();
+            return existing;
         }
     }
 }

@@ -12,14 +12,26 @@
     <artifactId>streams-persist-blueprints</artifactId>
 
     <properties>
-        <tinkerpop.version>2.6.0</tinkerpop.version>
+        <tinkerpop.version>2.5.0</tinkerpop.version>
     </properties>
 
     <dependencies>
         <dependency>
+            <groupId>com.tinkerpop.blueprints</groupId>
+            <artifactId>blueprints-test</artifactId>
+            <version>${tinkerpop.version}</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-config</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+            <version>1.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
@@ -52,6 +64,11 @@
             <artifactId>rexster-protocol</artifactId>
             <version>${tinkerpop.version}</version>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.tinkerpop.blueprints</groupId>
+            <artifactId>blueprints-core</artifactId>
+            <version>${tinkerpop.version}</version>
         </dependency>
     </dependencies>
     <build>
