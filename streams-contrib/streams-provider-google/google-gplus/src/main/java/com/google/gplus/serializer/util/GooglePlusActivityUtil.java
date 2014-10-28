@@ -20,25 +20,26 @@
 package com.google.gplus.serializer.util;
 
 import com.google.api.services.plus.model.Person;
+import org.apache.streams.pojo.json.*;
+import org.apache.streams.pojo.json.Activity;
+import org.joda.time.DateTime;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.streams.exceptions.ActivitySerializerException;
-import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.Actor;
-import org.apache.streams.pojo.json.Image;
-import org.apache.streams.pojo.json.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 public class GooglePlusActivityUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(GooglePlusActivityUtil.class);
 
     /**
-     * Given a Person object and an activity, fill out the appropriate actor details
+     * Given a {@link com.google.api.services.plus.model.Person} object and an
+     * {@link org.apache.streams.pojo.json.Activity} object, fill out the appropriate details
      *
      * @param item
      * @param activity
@@ -57,7 +58,133 @@ public class GooglePlusActivityUtil {
     }
 
     /**
-     * Extract the relevant details from the passed in Person object and build
+     * Given a Google Plus {@link com.google.api.services.plus.model.Activity},
+     * convert that into an Activity streams formatted {@link org.apache.streams.pojo.json.Activity}
+     *
+     * @param gPlusActivity
+     * @param activity
+     */
+    public static void updateActivity(com.google.api.services.plus.model.Activity gPlusActivity, Activity activity) {
+        activity.setActor(buildActor(gPlusActivity.getActor()));
+        activity.setVerb("post");
+        activity.setTitle(gPlusActivity.getTitle());
+        activity.setUrl(gPlusActivity.getUrl());
+        activity.setProvider(getProvider());
+
+        if(gPlusActivity.getObject() != null) {
+            activity.setContent(gPlusActivity.getObject().getContent());
+        }
+
+        activity.setId(formatId(activity.getVerb(),
+                Optional.fromNullable(
+                        gPlusActivity.getId())
+                        .orNull()));
+
+        DateTime published = new DateTime(String.valueOf(gPlusActivity.getPublished()));
+        activity.setPublished(published);
+
+        setObject(activity, gPlusActivity.getObject());
+        addGPlusExtensions(activity, gPlusActivity);
+    }
+
+    /**
+     * Add in necessary extensions from the passed in {@link com.google.api.services.plus.model.Activity} to the
+     * {@link org.apache.streams.pojo.json.Activity} object
+     *
+     * @param activity
+     * @param gPlusActivity
+     */
+    private static void addGPlusExtensions(Activity activity, com.google.api.services.plus.model.Activity gPlusActivity) {
+        Map<String, Object> extensions = ensureExtensions(activity);
+
+        com.google.api.services.plus.model.Activity.PlusObject object = gPlusActivity.getObject();
+        extensions.put("googlePlus", gPlusActivity);
+
+        if(object != null) {
+            com.google.api.services.plus.model.Activity.PlusObject.Plusoners plusoners = object.getPlusoners();
+            if(plusoners != null) {
+                Map<String, Object> likes = new HashMap<>();
+                likes.put("count", plusoners.getTotalItems());
+                extensions.put("likes", likes);
+            }
+
+            com.google.api.services.plus.model.Activity.PlusObject.Resharers resharers = object.getResharers();
+            if(resharers != null) {
+                Map<String, Object> rebroadcasts = new HashMap<>();
+                rebroadcasts.put("count", resharers.getTotalItems());
+                extensions.put("rebroadcasts", rebroadcasts);
+            }
+
+            extensions.put("keywords", object.getContent());
+        }
+    }
+
+    /**
+     * Set the {@link org.apache.streams.pojo.json.ActivityObject} field given the passed in
+     * {@link com.google.api.services.plus.model.Activity.PlusObject}
+     *
+     * @param activity
+     * @param object
+     */
+    private static void setObject(Activity activity, com.google.api.services.plus.model.Activity.PlusObject object) {
+        if(object != null) {
+            ActivityObject activityObject = new ActivityObject();
+
+            activityObject.setContent(object.getContent());
+            activityObject.setObjectType(object.getObjectType());
+
+            java.util.List<ActivityObject> attachmentsList = Lists.newArrayList();
+            for (com.google.api.services.plus.model.Activity.PlusObject.Attachments attachments : object.getAttachments()) {
+                ActivityObject attach = new ActivityObject();
+
+                attach.setContent(attachments.getContent());
+                attach.setDisplayName(attachments.getDisplayName());
+                attach.setObjectType(attachments.getObjectType());
+                attach.setUrl(attachments.getUrl());
+
+                Image image = new Image();
+                com.google.api.services.plus.model.Activity.PlusObject.Attachments.Image image1 = attachments.getImage();
+
+                if (image1 != null) {
+                    image.setUrl(image1.getUrl());
+                    attach.setImage(image);
+                }
+
+                attachmentsList.add(attach);
+            }
+
+            activityObject.setAttachments(attachmentsList);
+
+            activity.setObject(activityObject);
+        }
+    }
+
+    /**
+     * Given a {@link com.google.api.services.plus.model.Activity.Actor} object, return a fully fleshed
+     * out {@link org.apache.streams.pojo.json.Actor} object
+     *
+     * @param gPlusActor
+     * @return
+     */
+    private static Actor buildActor(com.google.api.services.plus.model.Activity.Actor gPlusActor) {
+        Actor actor = new Actor();
+
+        actor.setDisplayName(gPlusActor.getDisplayName());
+        actor.setId(formatId(String.valueOf(gPlusActor.getId())));
+        actor.setUrl(gPlusActor.getUrl());
+
+        Image image = new Image();
+        com.google.api.services.plus.model.Activity.Actor.Image googlePlusImage = gPlusActor.getImage();
+
+        if(googlePlusImage != null) {
+            image.setUrl(googlePlusImage.getUrl());
+        }
+        actor.setImage(image);
+
+        return actor;
+    }
+    /**
+     * Extract the relevant details from the passed in {@link com.google.api.services.plus.model.Person} object and build
      * an actor with them
      *
      * @param person
