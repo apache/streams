@@ -15,19 +15,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.streams.urls;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
 
 public class LinkResolverProcessor implements StreamsProcessor {
 
@@ -48,7 +47,7 @@ public class LinkResolverProcessor implements StreamsProcessor {
         if (entry.getDocument() instanceof Activity) {
             activity = (Activity) entry.getDocument();
 
-            activity.setLinks(Lists.newArrayList(unwind(activity.getLinks())));
+            activity.setLinks(unwind(activity.getLinks()));
 
             entry.setDocument(activity);
 
@@ -65,7 +64,7 @@ public class LinkResolverProcessor implements StreamsProcessor {
                 return (Lists.newArrayList(entry));
             }
 
-            activity.setLinks(Lists.newArrayList(unwind(activity.getLinks())));
+            activity.setLinks(unwind(activity.getLinks()));
 
             try {
                 entry.setDocument(mapper.writeValueAsString(activity));
@@ -95,14 +94,14 @@ public class LinkResolverProcessor implements StreamsProcessor {
         // noOp
     }
 
-
-    protected Set<String> unwind(List<String> inputLinks) {
-        Set<String> outputLinks = new HashSet<String>();
+    protected List<String> unwind(List<String> inputLinks) {
+        List<String> outputLinks = Lists.newArrayList();
         for (String link : inputLinks) {
             try {
                 LinkResolver unwinder = new LinkResolver(link);
                 unwinder.run();
-                outputLinks.add(unwinder.getLinkDetails().getFinalURL());
+                if(unwinder.getLinkDetails().getLinkStatus() == LinkDetails.LinkStatus.SUCCESS)
+                    outputLinks.add(unwinder.getLinkDetails().getFinalURL());
             } catch (Exception e) {
                 //if unwindable drop
                 LOGGER.debug("Failed to unwind link : {}", link);
