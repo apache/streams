@@ -67,7 +67,7 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-plus</artifactId>
-            <version>v1-rev118-1.17.0-rc</version>
+            <version>v1-rev184-1.19.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>

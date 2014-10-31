@@ -22,7 +22,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.management.*;
+import java.lang.management.ManagementFactory;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -102,6 +105,36 @@ public class ComponentUtils {
         } catch (InterruptedException ie) {
             stream.shutdownNow();
             Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Removes all mbeans registered undered a specific domain.  Made specificly to clean up at unit tests
+     * @param domain
+     */
+    public static void removeAllMBeansOfDomain(String domain) throws Exception {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        domain = domain.endsWith(":") ? domain : domain+":";
+        ObjectName objectName = new ObjectName(domain+"*");
+        Set<ObjectName> mbeanNames = mbs.queryNames(objectName, null);
+        for(ObjectName name : mbeanNames) {
+            mbs.unregisterMBean(name);
+        }
+    }
+
+    /**
+     * Attempts to register an object with local MBeanServer.  Throws runtime exception on errors.
+     * @param name name to register bean with
+     * @param mbean mbean to register
+     */
+    public static <V> void registerLocalMBean(String name, V mbean) {
+        try {
+            ObjectName objectName = new ObjectName(name);
+            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            mbs.registerMBean(mbean, objectName);
+        } catch (MalformedObjectNameException | InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException e) {
+            LOGGER.error("Failed to register MXBean : {}", e);
+            throw new RuntimeException(e);
         }
     }
 

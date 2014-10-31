@@ -19,6 +19,7 @@ package org.apache.streams.local.counters;
 
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
+import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,14 +53,7 @@ public class StreamsTaskCounter implements StreamsTaskCounterMXBean{
         this.errors = new AtomicLong(0);
         this.totalTime = new AtomicLong(0);
         this.maxTime = -1;
-        try {
-            ObjectName name = new ObjectName(String.format(NAME_TEMPLATE, id));
-            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            mbs.registerMBean(this, name);
-        } catch (MalformedObjectNameException | InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException e) {
-            LOGGER.error("Failed to register MXBean : {}", e);
-            throw new RuntimeException(e);
-        }
+        ComponentUtils.registerLocalMBean(String.format(NAME_TEMPLATE, id), this);
     }
 
     /**

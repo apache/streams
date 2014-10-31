@@ -18,7 +18,9 @@
 package org.apache.streams.s3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigRenderOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,53 +32,46 @@ public class S3Configurator {
 
     public static S3Configuration detectConfiguration(Config s3) {
 
-        S3Configuration s3Configuration = new S3Configuration();
+        S3Configuration s3Configuration = null;
 
-        s3Configuration.setBucket(s3.getString("bucket"));
-        s3Configuration.setKey(s3.getString("key"));
-        s3Configuration.setSecretKey(s3.getString("secretKey"));
-
-        // The Amazon S3 Library defaults to HTTPS
-        String protocol = (!s3.hasPath("protocol") ? "https": s3.getString("protocol")).toLowerCase();
-
-        if(!(protocol.equals("https") || protocol.equals("http"))) {
-            // you must specify either HTTP or HTTPS
-            throw new RuntimeException("You must specify either HTTP or HTTPS as a protocol");
+        try {
+            s3Configuration = mapper.readValue(s3.root().render(ConfigRenderOptions.concise()), S3Configuration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not parse S3Configuration");
         }
-
-        s3Configuration.setProtocol(protocol.toLowerCase());
 
         return s3Configuration;
     }
 
     public static S3ReaderConfiguration detectReaderConfiguration(Config s3) {
 
-        S3Configuration S3Configuration = detectConfiguration(s3);
-        S3ReaderConfiguration s3ReaderConfiguration = mapper.convertValue(S3Configuration, S3ReaderConfiguration.class);
+        S3ReaderConfiguration s3Configuration = null;
 
-        s3ReaderConfiguration.setReaderPath(s3.getString("readerPath"));
+        try {
+            s3Configuration = mapper.readValue(s3.root().render(ConfigRenderOptions.concise()), S3ReaderConfiguration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not parse S3Configuration");
+        }
 
-        return s3ReaderConfiguration;
+        return s3Configuration;
     }
 
     public static S3WriterConfiguration detectWriterConfiguration(Config s3) {
 
-        S3Configuration s3Configuration = detectConfiguration(s3);
-        S3WriterConfiguration s3WriterConfiguration  = mapper.convertValue(s3Configuration, S3WriterConfiguration.class);
+        S3WriterConfiguration s3Configuration = null;
 
-        String rootPath = s3.getString("writerPath");
+        try {
+            s3Configuration = mapper.readValue(s3.root().render(ConfigRenderOptions.concise()), S3WriterConfiguration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not parse S3Configuration");
+        }
 
-        // if the root path doesn't end in a '/' then we need to force the '/' at the end of the path.
-        s3WriterConfiguration.setWriterPath(rootPath + (rootPath.endsWith("/") ? "" : "/"));
+        Preconditions.checkArgument(s3Configuration.getWriterPath().endsWith("/"), s3Configuration.getWriterPath() + " must end with '/'");
 
-        s3WriterConfiguration.setWriterFilePrefix(s3.hasPath("writerFilePrefix") ? s3.getString("writerFilePrefix") : "default");
-
-        if(s3.hasPath("maxFileSize"))
-            s3WriterConfiguration.setMaxFileSize((long)s3.getInt("maxFileSize"));
-        if(s3.hasPath("chunk"))
-            s3WriterConfiguration.setChunk(s3.getBoolean("chunk"));
-
-        return s3WriterConfiguration;
+        return s3Configuration;
     }
 
 }

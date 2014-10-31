@@ -18,6 +18,7 @@
 package org.apache.streams.local.counters;
 
 import net.jcip.annotations.ThreadSafe;
+import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,14 +41,7 @@ public class DatumStatusCounter implements DatumStatusCounterMXBean{
     public DatumStatusCounter(String id) {
         this.failed = new AtomicLong(0);
         this.passed = new AtomicLong(0);
-        try {
-            ObjectName name = new ObjectName(String.format(NAME_TEMPLATE, id));
-            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            mbs.registerMBean(this, name);
-        } catch (MalformedObjectNameException | InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException e) {
-            LOGGER.error("Failed to register MXBean : {}", e);
-            throw new RuntimeException(e);
-        }
+        ComponentUtils.registerLocalMBean(String.format(NAME_TEMPLATE, id), this);
     }
 
     public void incrementFailedCount() {
@@ -70,10 +64,11 @@ public class DatumStatusCounter implements DatumStatusCounterMXBean{
     @Override
     public double getFailRate() {
         double failed = this.failed.get();
-        if(failed == 0.0 && this.passed.get() == 0) {
+        double passed = this.passed.get();
+        if(failed == 0.0 && passed == 0) {
             return 0.0;
         }
-        return failed / (this.passed.get() + failed);
+        return failed / (passed + failed);
     }
 
     @Override

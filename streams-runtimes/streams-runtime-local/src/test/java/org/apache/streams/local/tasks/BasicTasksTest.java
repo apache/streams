@@ -25,6 +25,7 @@ import org.apache.streams.local.queues.ThroughputQueue;
 import org.apache.streams.local.test.processors.PassthroughDatumCounterProcessor;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
+import org.apache.streams.util.ComponentUtils;
 import org.junit.After;
 import org.junit.Test;
 
@@ -43,20 +44,14 @@ public class BasicTasksTest {
 
 
     private static final String MBEAN_ID = "test_bean";
-
-    /**
-     * Remove registered mbeans from previous tests
-     * @throws Exception
-     */
     @After
-    public void unregisterMXBean() throws Exception {
+    public void removeLocalMBeans() {
         try {
-            ManagementFactory.getPlatformMBeanServer().unregisterMBean(new ObjectName(String.format(StreamsTaskCounter.NAME_TEMPLATE, MBEAN_ID)));
-        } catch (InstanceNotFoundException ife) {
-            //No-op
+            ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
+        } catch (Exception e) {
+            //No op.  proceed to next test
         }
     }
-
 
     @Test
     public void testProviderTask() {

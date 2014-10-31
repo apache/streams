@@ -126,8 +126,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                         this.counter.addTime(System.currentTimeMillis() - startTime);
                         if(output != null) {
                             for(StreamsDatum outDatum : output) {
-                                super.addToOutgoingQueue(datum);
-                                this.counter.incrementEmittedCount();
+                                super.addToOutgoingQueue(outDatum);
                                 statusCounter.incrementStatus(DatumStatus.SUCCESS);
                             }
                         }
