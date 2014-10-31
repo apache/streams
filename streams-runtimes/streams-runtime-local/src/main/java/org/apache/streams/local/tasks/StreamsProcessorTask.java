@@ -127,6 +127,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                         if(output != null) {
                             for(StreamsDatum outDatum : output) {
                                 super.addToOutgoingQueue(outDatum);
+                                this.counter.incrementEmittedCount();
                                 statusCounter.incrementStatus(DatumStatus.SUCCESS);
                             }
                         }
