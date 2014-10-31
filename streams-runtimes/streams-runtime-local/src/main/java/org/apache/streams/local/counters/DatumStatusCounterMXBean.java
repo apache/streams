@@ -15,16 +15,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.streams.core;
+package org.apache.streams.local.counters;
 
 /**
- * Created by steveblackmon on 3/24/14.
+ *
  */
-@Deprecated
-public interface DatumStatusCountable {
+public interface DatumStatusCounterMXBean {
 
-    @Deprecated
-    public DatumStatusCounter getDatumStatusCounter();
+    /**
+     * Get number of failed datums
+     * @return number of failed datums
+     */
+    public long getNumFailed();
+
+    /**
+     * Get number of passed datums
+     * @return number of passed datums
+     */
+    public long getNumPassed();
+
+    /**
+     * Get the failure rate.  Calculated by num failed divided by (num passed + num failed)
+     * @return the failure rate
+     */
+    public double getFailRate();
 
 }

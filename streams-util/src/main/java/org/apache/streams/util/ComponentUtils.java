@@ -22,8 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
+import javax.management.*;
 import java.lang.management.ManagementFactory;
 import java.util.Queue;
 import java.util.Set;
@@ -120,6 +119,22 @@ public class ComponentUtils {
         Set<ObjectName> mbeanNames = mbs.queryNames(objectName, null);
         for(ObjectName name : mbeanNames) {
             mbs.unregisterMBean(name);
+        }
+    }
+
+    /**
+     * Attempts to register an object with local MBeanServer.  Throws runtime exception on errors.
+     * @param name name to register bean with
+     * @param mbean mbean to register
+     */
+    public static <V> void registerLocalMBean(String name, V mbean) {
+        try {
+            ObjectName objectName = new ObjectName(name);
+            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            mbs.registerMBean(mbean, objectName);
+        } catch (MalformedObjectNameException | InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException e) {
+            LOGGER.error("Failed to register MXBean : {}", e);
+            throw new RuntimeException(e);
         }
     }
 
