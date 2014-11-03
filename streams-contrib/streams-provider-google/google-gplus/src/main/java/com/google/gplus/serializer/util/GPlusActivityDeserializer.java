@@ -50,7 +50,7 @@ public class GPlusActivityDeserializer extends JsonDeserializer<Activity> {
      * @throws JsonProcessingException
      */
     @Override
-    public Activity deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    public Activity deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
 
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
         Activity activity = new Activity();
@@ -64,66 +64,99 @@ public class GPlusActivityDeserializer extends JsonDeserializer<Activity> {
             activity.setId(node.get("id").asText());
             activity.setVerb(node.get("verb").asText());
 
-            Activity.Actor actor = new Activity.Actor();
-            JsonNode actorNode = node.get("actor");
+            activity.setActor(buildActor(node));
 
-            actor.setId(actorNode.get("id").asText());
-            actor.setDisplayName(actorNode.get("displayName").asText());
-            actor.setUrl(actorNode.get("url").asText());
-
-            Activity.Actor.Image image = new Activity.Actor.Image();
-            JsonNode imageNode = actorNode.get("image");
-            image.setUrl(imageNode.get("url").asText());
-
-            actor.setImage(image);
-            activity.setActor(actor);
-
-            Activity.PlusObject object = new Activity.PlusObject();
-            JsonNode objectNode = node.get("object");
-            object.setObjectType(objectNode.get("objectType").asText());
-            object.setContent(objectNode.get("content").asText());
-            object.setUrl(objectNode.get("url").asText());
-
-            Activity.PlusObject.Replies replies = new Activity.PlusObject.Replies();
-            JsonNode repliesNode = objectNode.get("replies");
-            replies.setTotalItems(repliesNode.get("totalItems").asLong());
-            replies.setSelfLink(repliesNode.get("selfLink").asText());
-            object.setReplies(replies);
-
-            Activity.PlusObject.Plusoners plusoners = new Activity.PlusObject.Plusoners();
-            JsonNode plusonersNode = objectNode.get("plusoners");
-            plusoners.setTotalItems(plusonersNode.get("totalItems").asLong());
-            plusoners.setSelfLink(plusonersNode.get("selfLink").asText());
-            object.setPlusoners(plusoners);
-
-            Activity.PlusObject.Resharers resharers = new Activity.PlusObject.Resharers();
-            JsonNode resharersNode = objectNode.get("resharers");
-            resharers.setTotalItems(resharersNode.get("totalItems").asLong());
-            resharers.setSelfLink(resharersNode.get("selfLink").asText());
-            object.setResharers(resharers);
-
-            List<Activity.PlusObject.Attachments> attachments = Lists.newArrayList();
-            for (JsonNode attachmentNode : objectNode.get("attachments")) {
-                Activity.PlusObject.Attachments attachments1 = new Activity.PlusObject.Attachments();
-                attachments1.setObjectType(attachmentNode.get("objectType").asText());
-                attachments1.setDisplayName(attachmentNode.get("displayName").asText());
-                attachments1.setContent(attachmentNode.get("content").asText());
-                attachments1.setUrl(attachmentNode.get("url").asText());
-
-                Activity.PlusObject.Attachments.Image image1 = new Activity.PlusObject.Attachments.Image();
-                JsonNode imageNode1 = attachmentNode.get("image");
-                image1.setUrl(imageNode1.get("url").asText());
-                attachments1.setImage(image1);
-
-                attachments.add(attachments1);
-            }
-            object.setAttachments(attachments);
-
-            activity.setObject(object);
+            activity.setObject(buildPlusObject(node));
         } catch (Exception e) {
             LOGGER.error("Exception while trying to deserialize activity object: {}", e);
         }
 
         return activity;
+    }
+
+    /**
+     * Given a raw JsonNode, build out the G+ {@link com.google.api.services.plus.model.Activity.Actor} object
+     *
+     * @param node
+     * @return {@link com.google.api.services.plus.model.Activity.Actor} object
+     */
+    private Activity.Actor buildActor(JsonNode node) {
+        Activity.Actor actor = new Activity.Actor();
+        JsonNode actorNode = node.get("actor");
+
+        actor.setId(actorNode.get("id").asText());
+        actor.setDisplayName(actorNode.get("displayName").asText());
+        actor.setUrl(actorNode.get("url").asText());
+
+        Activity.Actor.Image image = new Activity.Actor.Image();
+        JsonNode imageNode = actorNode.get("image");
+        image.setUrl(imageNode.get("url").asText());
+
+        actor.setImage(image);
+
+        return actor;
+    }
+
+    /**
+     * Given a JsonNode, build out all aspects of the {@link com.google.api.services.plus.model.Activity.PlusObject} object
+     *
+     * @param node
+     * @return {@link com.google.api.services.plus.model.Activity.PlusObject} object
+     */
+    private Activity.PlusObject buildPlusObject(JsonNode node) {
+        Activity.PlusObject object = new Activity.PlusObject();
+        JsonNode objectNode = node.get("object");
+        object.setObjectType(objectNode.get("objectType").asText());
+        object.setContent(objectNode.get("content").asText());
+        object.setUrl(objectNode.get("url").asText());
+
+        Activity.PlusObject.Replies replies = new Activity.PlusObject.Replies();
+        JsonNode repliesNode = objectNode.get("replies");
+        replies.setTotalItems(repliesNode.get("totalItems").asLong());
+        replies.setSelfLink(repliesNode.get("selfLink").asText());
+        object.setReplies(replies);
+
+        Activity.PlusObject.Plusoners plusoners = new Activity.PlusObject.Plusoners();
+        JsonNode plusonersNode = objectNode.get("plusoners");
+        plusoners.setTotalItems(plusonersNode.get("totalItems").asLong());
+        plusoners.setSelfLink(plusonersNode.get("selfLink").asText());
+        object.setPlusoners(plusoners);
+
+        Activity.PlusObject.Resharers resharers = new Activity.PlusObject.Resharers();
+        JsonNode resharersNode = objectNode.get("resharers");
+        resharers.setTotalItems(resharersNode.get("totalItems").asLong());
+        resharers.setSelfLink(resharersNode.get("selfLink").asText());
+        object.setResharers(resharers);
+
+        object.setAttachments(buildAttachments(objectNode));//attachments);
+
+        return object;
+    }
+
+    /**
+     * Given a raw JsonNode representation of an Activity's attachments, build out that
+     * list of {@link com.google.api.services.plus.model.Activity.PlusObject.Attachments} objects
+     *
+     * @param objectNode
+     * @return list of {@link com.google.api.services.plus.model.Activity.PlusObject.Attachments} objects
+     */
+    private List<Activity.PlusObject.Attachments> buildAttachments(JsonNode objectNode) {
+        List<Activity.PlusObject.Attachments> attachments = Lists.newArrayList();
+        for (JsonNode attachmentNode : objectNode.get("attachments")) {
+            Activity.PlusObject.Attachments attachments1 = new Activity.PlusObject.Attachments();
+            attachments1.setObjectType(attachmentNode.get("objectType").asText());
+            attachments1.setDisplayName(attachmentNode.get("displayName").asText());
+            attachments1.setContent(attachmentNode.get("content").asText());
+            attachments1.setUrl(attachmentNode.get("url").asText());
+
+            Activity.PlusObject.Attachments.Image image1 = new Activity.PlusObject.Attachments.Image();
+            JsonNode imageNode1 = attachmentNode.get("image");
+            image1.setUrl(imageNode1.get("url").asText());
+            attachments1.setImage(image1);
+
+            attachments.add(attachments1);
+        }
+
+        return attachments;
     }
 }
