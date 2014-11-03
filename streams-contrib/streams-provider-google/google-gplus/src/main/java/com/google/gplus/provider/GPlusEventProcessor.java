@@ -29,9 +29,6 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * Created by sblackmon on 12/10/13.
- */
 public class GPlusEventProcessor implements Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(GPlusEventProcessor.class);
