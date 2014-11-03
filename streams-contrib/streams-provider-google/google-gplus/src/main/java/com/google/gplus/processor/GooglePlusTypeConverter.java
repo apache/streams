@@ -58,10 +58,13 @@ public class GooglePlusTypeConverter implements StreamsProcessor {
 
             LOGGER.debug("{} processing {}", STREAMS_ID, item.getClass());
             Activity activity = null;
+
             if(item instanceof Person) {
                 activity = new Activity();
-
                 googlePlusActivityUtil.updateActivity((Person)item, activity);
+            } else if(item instanceof com.google.api.services.plus.model.Activity) {
+                activity = new Activity();
+                googlePlusActivityUtil.updateActivity((com.google.api.services.plus.model.Activity)item, activity);
             }
 
             if(activity != null) {
