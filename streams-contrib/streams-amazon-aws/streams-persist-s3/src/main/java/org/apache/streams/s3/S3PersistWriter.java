@@ -21,8 +21,6 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.S3ClientOptions;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -258,15 +256,13 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
                 AWSCredentials credentials = new BasicAWSCredentials(s3WriterConfiguration.getKey(), s3WriterConfiguration.getSecretKey());
 
                 ClientConfiguration clientConfig = new ClientConfiguration();
-                clientConfig.setProtocol(Protocol.valueOf(s3WriterConfiguration.getProtocol().toString()));
+                clientConfig.setProtocol(Protocol.valueOf(s3WriterConfiguration.getProtocol().toUpperCase()));
 
-                // We do not want path style access
+                // We want path style access
                 S3ClientOptions clientOptions = new S3ClientOptions();
-                clientOptions.setPathStyleAccess(false);
+                clientOptions.setPathStyleAccess(true);
 
                 this.amazonS3Client = new AmazonS3Client(credentials, clientConfig);
-                if( !Strings.isNullOrEmpty(s3WriterConfiguration.getRegion()))
-                    this.amazonS3Client.setRegion(Region.getRegion(Regions.fromName(s3WriterConfiguration.getRegion())));
                 this.amazonS3Client.setS3ClientOptions(clientOptions);
             }
         }

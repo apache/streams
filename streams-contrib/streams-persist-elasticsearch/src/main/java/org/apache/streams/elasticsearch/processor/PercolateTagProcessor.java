@@ -202,11 +202,9 @@ public class PercolateTagProcessor implements StreamsProcessor {
         manager = new ElasticsearchClientManager(config);
         bulkBuilder = manager.getClient().prepareBulk();
         createIndexIfMissing(config.getIndex());
-        if( config.getReplaceTags() == true ) {
-            deleteOldQueries(config.getIndex());
-        }
+        deleteOldQueries(config.getIndex());
         for (String tag : config.getTags().getAdditionalProperties().keySet()) {
-            String query = (String) config.getTags().getAdditionalProperties().get(tag);
+            String query = (String)config.getTags().getAdditionalProperties().get(tag);
             PercolateQueryBuilder queryBuilder = new PercolateQueryBuilder(tag, query, this.usePercolateField);
             addPercolateRule(queryBuilder, config.getIndex());
         }
@@ -215,12 +213,12 @@ public class PercolateTagProcessor implements StreamsProcessor {
         else
             LOGGER.error("FAILED writing " + bulkBuilder.numberOfActions() + " tags to " + config.getIndex() + " _percolator");
 
+
     }
 
     @Override
     public void cleanUp() {
-        if( config.getCleanupTags() == true )
-            deleteOldQueries(config.getIndex());
+        deleteOldQueries(config.getIndex());
         manager.getClient().close();
     }
 
