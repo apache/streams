@@ -7,29 +7,19 @@
     "properties": {
         "key": {
             "type": "string",
-            "description": "Your Amazon Key",
-            "required": true
+            "description": "Your Amazon Key"
         },
         "secretKey": {
             "type": "string",
-            "description": "Your Amazon Secret Key",
-            "required": true
+            "description": "Your Amazon Secret Key"
         },
         "bucket": {
             "type": "string",
-            "description": "Your AWS bucket",
-            "required": true
+            "description": "The AWS bucket you want to write to"
         },
         "protocol": {
             "type": "string",
-            "description": "Whether you are using HTTP or HTTPS",
-            "enum": ["HTTP", "HTTPS"],
-            "default": "HTTPS"
-        },
-        "region": {
-            "type": "string",
-            "description": "The AWS region where your bucket resides",
-            "required": false
+            "description": "Whether you are using HTTP or HTTPS"
         }
     }
 }

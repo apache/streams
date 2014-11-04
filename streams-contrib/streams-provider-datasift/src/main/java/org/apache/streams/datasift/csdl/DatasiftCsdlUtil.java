@@ -1,16 +1,11 @@
 package org.apache.streams.datasift.csdl;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 
 public class DatasiftCsdlUtil {
 
@@ -111,80 +106,6 @@ public class DatasiftCsdlUtil {
         }
         csdlBuilder.append("\"\n");
         csdlBuilder.append(")\n");
-
-        log.debug(csdlBuilder.toString());
-
-        return csdlBuilder.toString();
-    }
-
-    //public static String csdlMultifieldMatch(Multimap<String, String> includes, Multimap<String, String> excludes) throws Exception {
-    public static String csdlMultifieldMatch(Multimap<String, String> require1, Multimap<String, String> require2, Multimap<String, String> exclude) throws Exception {
-
-        StringBuilder csdlBuilder = new StringBuilder();
-
-        String require1String;
-        String require2String = null;
-        String excludeString = null;
-        List<String> require1clauses = Lists.newArrayList();
-        for( String includeField : require1.keySet() ) {
-            StringBuilder clauseBuilder = new StringBuilder();
-            Collection<String> values = require1.get(includeField);
-            String match_clause = null ;
-            if( values.size() > 1 )
-                match_clause = "contains_any";
-            else if( values.size() == 1 )
-                match_clause = "contains";
-            if( match_clause != null ) {
-                clauseBuilder.append(includeField + " " + match_clause + " \"");
-                Joiner.on(",").skipNulls().appendTo(clauseBuilder, values);
-                clauseBuilder.append("\"");
-                require1clauses.add(clauseBuilder.toString());
-            }
-        }
-        require1String = "(\n" + Joiner.on("\nOR\n").skipNulls().join(require1clauses) + "\n)\n";
-
-        if( require2 != null && require2.keySet().size() > 0 ) {
-            List<String> require2clauses = Lists.newArrayList();
-            for (String includeField : require2.keySet()) {
-                StringBuilder clauseBuilder = new StringBuilder();
-                Collection<String> values = require2.get(includeField);
-                String match_clause = null;
-                if (values.size() > 1)
-                    match_clause = "contains_any";
-                else if (values.size() == 1)
-                    match_clause = "contains";
-                if( match_clause != null ) {
-                    clauseBuilder.append(includeField + " " + match_clause + " \"");
-                    Joiner.on(",").skipNulls().appendTo(clauseBuilder, values);
-                    clauseBuilder.append("\"");
-                    require2clauses.add(clauseBuilder.toString());
-                }
-            }
-            require2String = "(\n" + Joiner.on("\nOR\n").skipNulls().join(require2clauses) + "\n)\n";
-        }
-
-        if( exclude != null && exclude.keySet().size() > 0) {
-            List<String> excludeclauses = Lists.newArrayList();
-            for (String includeField : exclude.keySet()) {
-                StringBuilder clauseBuilder = new StringBuilder();
-                Collection<String> values = exclude.get(includeField);
-                String match_clause = null;
-                if (values.size() > 1)
-                    match_clause = "contains_any";
-                else if (values.size() == 1)
-                    match_clause = "contains";
-                if( match_clause != null ) {
-                    clauseBuilder.append(includeField + " " + match_clause + " \"");
-                    Joiner.on(",").skipNulls().appendTo(clauseBuilder, values);
-                    clauseBuilder.append("\"");
-                    excludeclauses.add(clauseBuilder.toString());
-                }
-            }
-            excludeString = "(\n" + Joiner.on("\nOR\n").skipNulls().join(excludeclauses) + "\n)\n";
-        }
-
-        Joiner.on("AND\n").skipNulls().appendTo(csdlBuilder, require1String, require2String);
-        csdlBuilder.append("AND NOT\n" + excludeString);
 
         log.debug(csdlBuilder.toString());
 
