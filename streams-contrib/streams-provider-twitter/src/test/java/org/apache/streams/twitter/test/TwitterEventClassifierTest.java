@@ -18,11 +18,16 @@
 
 package org.apache.streams.twitter.test;
 
+import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
+import org.apache.streams.twitter.serializer.TwitterJsonDeleteActivitySerializer;
+import org.apache.streams.twitter.serializer.TwitterJsonRetweetActivitySerializer;
+import org.apache.streams.twitter.serializer.TwitterJsonTweetActivitySerializer;
+import org.apache.streams.twitter.serializer.TwitterJsonUserActivitySerializer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -63,4 +68,33 @@ public class TwitterEventClassifierTest {
         if( !result.equals(User.class) )
             Assert.fail();
     }
+
+    @Test
+    public void testDetectTweetSerializer() {
+        ActivitySerializer serializer = TwitterEventClassifier.bestSerializer(tweet);
+        if( !(serializer instanceof TwitterJsonTweetActivitySerializer) )
+            Assert.fail();
+    }
+
+    @Test
+    public void testDetectRetweetSerializer() {
+        ActivitySerializer serializer = TwitterEventClassifier.bestSerializer(retweet);
+        if( !(serializer instanceof TwitterJsonRetweetActivitySerializer) )
+            Assert.fail();
+    }
+
+    @Test
+    public void testDetectDeleteSerializer() {
+        ActivitySerializer serializer = TwitterEventClassifier.bestSerializer(delete);
+        if( !(serializer instanceof TwitterJsonDeleteActivitySerializer) )
+            Assert.fail();
+    }
+
+    @Test
+    public void testDetectUserSerializer() {
+        ActivitySerializer serializer = TwitterEventClassifier.bestSerializer(user);
+        if( !(serializer instanceof TwitterJsonUserActivitySerializer) )
+            Assert.fail();
+    }
+
 }

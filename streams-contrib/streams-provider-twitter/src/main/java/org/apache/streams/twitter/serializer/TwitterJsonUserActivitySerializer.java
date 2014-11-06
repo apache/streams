@@ -36,6 +36,12 @@ public class TwitterJsonUserActivitySerializer implements ActivitySerializer<Str
 
     public TwitterJsonUserActivitySerializer() {}
 
+    private static TwitterJsonUserActivitySerializer instance = new TwitterJsonUserActivitySerializer();
+
+    public static TwitterJsonUserActivitySerializer getInstance() {
+        return instance;
+    }
+
     @Override
     public String serializationFormat() {
         return null;
