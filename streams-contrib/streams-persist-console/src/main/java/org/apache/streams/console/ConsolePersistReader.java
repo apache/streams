@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.math.BigInteger;
 import java.util.Queue;
 import java.util.Scanner;
@@ -44,16 +45,16 @@ public class ConsolePersistReader implements StreamsPersistReader {
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    protected InputStream inputStream = System.in;
 
     public ConsolePersistReader() {
         this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
     }
 
-    public ConsolePersistReader(Queue<StreamsDatum> persistQueue) {
-        this.persistQueue = persistQueue;
+    public ConsolePersistReader(InputStream inputStream) {
+        this();
+        this.inputStream = inputStream;
     }
-
     public void prepare(Object o) {
 
     }
@@ -77,7 +78,7 @@ public class ConsolePersistReader implements StreamsPersistReader {
 
         LOGGER.info("{} readCurrent", STREAMS_ID);
 
-        Scanner sc = new Scanner(System.in);
+        Scanner sc = new Scanner(inputStream);
 
         while( sc.hasNextLine() ) {
 
