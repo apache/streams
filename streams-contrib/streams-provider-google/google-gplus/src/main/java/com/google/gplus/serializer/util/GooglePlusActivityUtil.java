@@ -19,6 +19,8 @@
 
 package com.google.gplus.serializer.util;
 
+import com.google.api.client.util.Maps;
+import com.google.api.services.plus.model.Comment;
 import com.google.api.services.plus.model.Person;
 import org.apache.streams.pojo.json.*;
 import org.apache.streams.pojo.json.Activity;
@@ -31,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.List;
 
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
@@ -55,6 +58,22 @@ public class GooglePlusActivityUtil {
                         .orNull()));
 
         activity.setProvider(getProvider());
+    }
+
+    /**
+     * Given a {@link List} of {@link com.google.api.services.plus.model.Comment} objects and an
+     * {@link org.apache.streams.pojo.json.Activity}, update that Activity to contain all comments
+     *
+     * @param comments
+     * @param activity
+     */
+    public static void updateActivity(List<Comment> comments, Activity activity) {
+        for(Comment comment : comments) {
+            addComment(activity, comment);
+        }
+
+        Map<String, Object> extensions = ensureExtensions(activity);
+        extensions.put("comment_count", comments.size());
     }
 
     /**
@@ -85,6 +104,37 @@ public class GooglePlusActivityUtil {
 
         setObject(activity, gPlusActivity.getObject());
         addGPlusExtensions(activity, gPlusActivity);
+    }
+
+    /**
+     * Adds a single {@link com.google.api.services.plus.model.Comment} to the Object.Attachments
+     * section of the passed in {@link org.apache.streams.pojo.json.Activity}
+     *
+     * @param activity
+     * @param comment
+     */
+    private static void addComment(Activity activity, Comment comment) {
+        ActivityObject obj = new ActivityObject();
+
+        obj.setId(comment.getId());
+        obj.setPublished(new DateTime(String.valueOf(comment.getPublished())));
+        obj.setUpdated(new DateTime(String.valueOf(comment.getUpdated())));
+        obj.setContent(comment.getObject().getContent());
+        obj.setObjectType(comment.getObject().getObjectType());
+
+        Map<String, Object> extensions = Maps.newHashMap();
+        extensions.put("googlePlus", comment);
+
+        obj.setAdditionalProperty("extensions", extensions);
+
+        if(activity.getObject() == null) {
+            activity.setObject(new ActivityObject());
+        }
+        if(activity.getObject().getAttachments() == null) {
+            activity.getObject().setAttachments(new ArrayList<ActivityObject>());
+        }
+
+        activity.getObject().getAttachments().add(obj);
     }
 
     /**

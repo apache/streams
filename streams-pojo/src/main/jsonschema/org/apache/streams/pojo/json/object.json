@@ -8,7 +8,7 @@
     "id" : {
       "type" : "string",
       "description" : "Provides a permanent, universally unique identifier for the object in the form of an absolute IRI [RFC3987]. An object SHOULD contain a single id property. If an object does not contain an id property, consumers MAY use the value of the url property as a less-reliable, non-unique identifier.",
-      "default" : "{link}"
+      "required" : true
     },
     "image" : {
       "format":"image",

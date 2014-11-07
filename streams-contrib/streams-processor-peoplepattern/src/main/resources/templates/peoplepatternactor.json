@@ -1,0 +1,25 @@
+{
+	"order": 20,
+	"template": "*activity*",
+	"settings": {},
+	"mappings": {
+        "activity": {
+            "properties": {
+                "actor": {
+                    "properties": {
+                        "extensions": {
+                            "properties": {
+                                "account_type": {
+                                    "type": "nested"
+                                },
+                                "demographics": {
+                                    "type": "nested"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

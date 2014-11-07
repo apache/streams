@@ -25,6 +25,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import java.util.List;
+
 /**
  * Created by sblackmon on 3/27/14.
  */
@@ -36,9 +38,27 @@ public class StreamsJacksonMapper extends ObjectMapper {
         return INSTANCE;
     }
 
+    public static StreamsJacksonMapper getInstance(List<String> formats){
+
+        StreamsJacksonMapper instance = new StreamsJacksonMapper(formats);
+
+        return instance;
+
+    }
+
     public StreamsJacksonMapper() {
         super();
         registerModule(new StreamsJacksonModule());
+        configure();
+    }
+
+    public StreamsJacksonMapper(List<String> formats) {
+        super();
+        registerModule(new StreamsJacksonModule(formats));
+        configure();
+    }
+
+    public void configure() {
         disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
         configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, Boolean.TRUE);
