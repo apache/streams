@@ -1,0 +1,13 @@
+{
+  "type" : "object",
+  "title" : "object",
+  "javaType": "org.apache.streams.pojo.json.Broadcast",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description" : "Base Broadcast class",
+  "properties" : {
+    "name": {
+      "type": "string",
+      "description": "Name of the MBean"
+    }
+  }
+}

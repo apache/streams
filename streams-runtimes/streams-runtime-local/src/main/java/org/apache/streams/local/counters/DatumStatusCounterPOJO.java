@@ -53,4 +53,10 @@ public class DatumStatusCounterPOJO {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return String.format("{\"name\" : \"%s\", \"passed\" : %s, \"failed\" : %s}",
+                name, passed, failed);
+    }
 }

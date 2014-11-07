@@ -41,7 +41,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Only the necessary methods for the local streams runtime are implemented.  All other methods throw a
  * {@link sun.reflect.generics.reflectiveObjects.NotImplementedException}.
  */
-public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBean {
+public class ThroughputQueue<E> extends NotificationBroadcasterSupport implements BlockingQueue<E>, ThroughputQueueMXBean {
 
     public static final String NAME_TEMPLATE = "org.apache.streams.local:type=ThroughputQueue,name=%s";
 
@@ -105,6 +105,14 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
                 ObjectName name = new ObjectName(String.format(NAME_TEMPLATE, id));
                 MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
                 mbs.registerMBean(this, name);
+
+                /*addNotificationListener(new NotificationListener() {
+                    @Override
+                    public void handleNotification(Notification notification, Object handback) {
+                        LOGGER.debug("Notification!");
+                    }
+                }, null, null);*/
+
             } catch (MalformedObjectNameException | InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException e) {
                 LOGGER.error("Failed to register MXBean : {}", e);
                 throw new RuntimeException(e);
@@ -116,6 +124,10 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     public boolean add(E e) {
         if (this.underlyingQueue.add(new ThroughputElement<E>(e))) {
             internalAddElement();
+
+            Notification n = new AttributeChangeNotification(this, 1, System.currentTimeMillis(), "Added element to queue", "Added", "String", null, e);
+            sendNotification(n);
+
             return true;
         }
         return false;
@@ -139,6 +151,8 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
     @Override
     public boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException {
         if (this.underlyingQueue.offer(new ThroughputElement<E>(e), timeout, unit)) {
+            Notification n = new AttributeChangeNotification(this, 1, System.currentTimeMillis(), "Added element to queue", "Added", "String", null, e);
+            sendNotification(n);
             internalAddElement();
             return true;
         }

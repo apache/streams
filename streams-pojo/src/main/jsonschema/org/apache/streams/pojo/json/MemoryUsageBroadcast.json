@@ -1,6 +1,7 @@
 {
   "type" : "object",
   "title" : "object",
+  "extends" : {"$ref": "./Broadcast.json"},
   "javaType": "org.apache.streams.pojo.json.MemoryUsageBroadcast",
   "javaInterfaces": ["java.io.Serializable"],
   "description" : "Snapshot of current memory usage",
@@ -10,15 +11,15 @@
       "description": "Whether or not this is verbose"
     },
     "objectPendingFinalizationCount": {
-      "type": "number",
+      "type": "integer",
       "description": "The number of objects that are pending finalization"
     },
     "heapMemoryUsage": {
-      "type": "long",
+      "type": "integer",
       "description": "The amount of heap memory we are currently using"
     },
     "nonHeapMemoryUsage": {
-      "type": "long",
+      "type": "integer",
       "description": "The amount of non-heap memory we are using"
     },
     "name": {

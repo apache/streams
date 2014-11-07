@@ -19,6 +19,8 @@
 package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.local.counters.StreamsTaskCounter;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -77,5 +79,10 @@ public class StreamsMergeTask extends BaseStreamsTask {
                 }
             }
         }
+    }
+
+    @Override
+    public void setStreamsTaskCounter(StreamsTaskCounter counter) {
+        throw new NotImplementedException();
     }
 }
