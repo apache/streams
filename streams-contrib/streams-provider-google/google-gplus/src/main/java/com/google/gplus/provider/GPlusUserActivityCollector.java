@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.BlockingQueue;
 
 /**
- *
+ * Collects the public activities of a GPlus user. Has ability to filter by date ranges.
  */
 public class GPlusUserActivityCollector implements Runnable {
 

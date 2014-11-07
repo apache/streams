@@ -19,10 +19,13 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 /**
- *
+ * Unit tests for {@link com.google.gplus.provider.AbstractGPlusProvider}
  */
 public class TestAbstractGPlusProvider extends RandomizedTest{
 
+    /**
+     * Test that every collector will be run and that data queued from the collectors will be processed.
+     */
     @Test
     @Repeat(iterations = 3)
     public void testDataCollectorRunsPerUser() {

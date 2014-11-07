@@ -52,7 +52,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- *
+ * Provider that creates a GPlus client and will run task that queue data to an outing queue
  */
 public abstract class AbstractGPlusProvider implements StreamsProvider {
 

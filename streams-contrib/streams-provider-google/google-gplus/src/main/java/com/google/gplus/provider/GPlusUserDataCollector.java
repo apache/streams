@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.BlockingQueue;
 
 /**
- *
+ * Collects user profile information for a specific GPlus user
  */
 public  class GPlusUserDataCollector implements Runnable{
 
