@@ -43,7 +43,6 @@ import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.queues.ThroughputQueue;
 import org.apache.streams.local.test.processors.PassthroughDatumCounterProcessor;
 import org.apache.streams.local.test.processors.SlowProcessor;
@@ -94,15 +93,8 @@ public class LocalStreamBuilderTest extends RandomizedTest {
             } catch (MalformedObjectNameException|InstanceNotFoundException|MBeanRegistrationException e) {
                 //No-op
             }
-            try {
-                mbs.unregisterMBean(new ObjectName((String.format(StreamsTaskCounter.NAME_TEMPLATE, id))));
-            } catch (MalformedObjectNameException|InstanceNotFoundException|MBeanRegistrationException e) {
-                //No-op
-            }
         }
     }
-
-
 
 
     @Test
@@ -124,7 +116,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
             exp = e;
         }
         assertNotNull(exp);
-        removeRegisteredMBeans("1", "2", "id");
+        removeRegisteredMBeans("1", "2");
     }
 
     @Test
@@ -180,9 +172,9 @@ public class LocalStreamBuilderTest extends RandomizedTest {
             }
         } finally {
             for(int i=0; i < numProcessors; ++i) {
-                removeRegisteredMBeans(processorId+i, processorId+i+"-"+PassthroughDatumCounterProcessor.class.getCanonicalName());
+                removeRegisteredMBeans(processorId+i);
             }
-            removeRegisteredMBeans("writer", "numeric_provider");
+            removeRegisteredMBeans("writer");
         }
     }
 
@@ -219,7 +211,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
             for(int i=0; i < numProcessors; ++i) {
                 removeRegisteredMBeans(processorId+i);
             }
-            removeRegisteredMBeans("writer", "numeric_provider");
+            removeRegisteredMBeans("writer");
         }
     }
 
@@ -241,9 +233,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
             assertEquals(numDatums2, PassthroughDatumCounterProcessor.COUNTS.get("proc2").get());
             assertEquals(numDatums1+numDatums2, DatumCounterWriter.COUNTS.get("writer").get());
         } finally {
-            String procClass = "-"+PassthroughDatumCounterProcessor.class.getCanonicalName();
-            String writerClass = "-"+DatumCounterWriter.class.getCanonicalName();
-            removeRegisteredMBeans("proc1", "proc2", "writer1", "sp1", "sp2");
+            removeRegisteredMBeans("proc1", "proc2", "writer1");
         }
     }
 
@@ -261,9 +251,6 @@ public class LocalStreamBuilderTest extends RandomizedTest {
             assertEquals(numDatums, PassthroughDatumCounterProcessor.COUNTS.get("proc2").get());
             assertEquals(numDatums*2, DatumCounterWriter.COUNTS.get("writer").get());
         } finally {
-            String provClass = "-"+NumericMessageProvider.class.getCanonicalName();
-            String procClass = "-"+PassthroughDatumCounterProcessor.class.getCanonicalName();
-            String writerClass = "-"+DatumCounterWriter.class.getCanonicalName();
             removeRegisteredMBeans("prov1", "proc1", "proc2", "w1");
         }
     }
@@ -282,9 +269,6 @@ public class LocalStreamBuilderTest extends RandomizedTest {
             builder.start();
             assertEquals(numDatums, DatumCounterWriter.COUNTS.get("writer").get());
         } finally {
-            String provClass = "-"+NumericMessageProvider.class.getCanonicalName();
-            String procClass = "-"+PassthroughDatumCounterProcessor.class.getCanonicalName();
-            String writerClass = "-"+DatumCounterWriter.class.getCanonicalName();
             removeRegisteredMBeans("prov1", "proc1", "w1");
         }
     }
@@ -306,9 +290,6 @@ public class LocalStreamBuilderTest extends RandomizedTest {
             //We care mostly that it doesn't terminate too early.  With thread shutdowns, etc, the actual time is indeterminate.  Just make sure there is an upper bound
             assertThat((int) (end - start), is(allOf(greaterThanOrEqualTo(timeout), lessThanOrEqualTo(4 * timeout))));
         } finally {
-            String provClass = "-"+NumericMessageProvider.class.getCanonicalName();
-            String procClass = "-"+PassthroughDatumCounterProcessor.class.getCanonicalName();
-            String writerClass = "-"+DatumCounterWriter.class.getCanonicalName();
             removeRegisteredMBeans("prov1", "proc1", "proc2", "w1");
         }
     }
@@ -336,9 +317,6 @@ public class LocalStreamBuilderTest extends RandomizedTest {
             service.awaitTermination(30000, TimeUnit.MILLISECONDS);
             assertThat(Thread.activeCount(), is(equalTo(before)));
         } finally {
-            String provClass = "-"+NumericMessageProvider.class.getCanonicalName();
-            String procClass = "-"+PassthroughDatumCounterProcessor.class.getCanonicalName();
-            String writerClass = "-"+DatumCounterWriter.class.getCanonicalName();
             removeRegisteredMBeans("prov1", "proc1", "w1");
         }
     }

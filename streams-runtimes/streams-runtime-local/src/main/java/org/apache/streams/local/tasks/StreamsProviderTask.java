@@ -20,7 +20,6 @@ package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.*;
 import org.apache.streams.core.util.DatumUtils;
-import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.Queue;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -66,7 +64,6 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     private long sleepTime;
     private int zeros = 0;
     private DatumStatusCounter statusCounter = new DatumStatusCounter();
-    private StreamsTaskCounter counter;
 
     /**
      * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readCurrent()}
@@ -148,18 +145,13 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             StreamsResultSet resultSet = null;
             //Negative values mean we want to run forever
             long maxZeros = timeout < 0 ? Long.MAX_VALUE : (timeout / sleepTime);
-            if(this.counter == null) { //should never be null
-                this.counter = new StreamsTaskCounter(this.provider.getClass().getName()+ UUID.randomUUID().toString());
-            }
             switch(this.type) {
                 case PERPETUAL: {
                     provider.startStream();
                     this.started.set(true);
                     while(this.isRunning()) {
                         try {
-                            long startTime = System.currentTimeMillis();
                             resultSet = provider.readCurrent();
-                            this.counter.addTime(System.currentTimeMillis() - startTime);
                             if( resultSet.size() == 0 )
                                 zeros++;
                             else {
@@ -172,7 +164,6 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                             if(zeros > 0)
                                 Thread.sleep(sleepTime);
                         } catch (InterruptedException e) {
-                            this.counter.incrementErrorCount();
                             LOGGER.warn("Thread interrupted");
                             this.keepRunning.set(false);
                         }
@@ -228,10 +219,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             if(datum != null) {
                 try {
                     super.addToOutgoingQueue(datum);
-                    this.counter.incrementEmittedCount();
                     statusCounter.incrementStatus(DatumStatus.SUCCESS);
                 } catch( Exception e ) {
-                    this.counter.incrementErrorCount();
                     statusCounter.incrementStatus(DatumStatus.FAIL);
                     DatumUtils.addErrorToMetadata(datum, e, this.provider.getClass());
                 }
@@ -240,8 +229,4 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         this.flushing.set(false);
     }
 
-    @Override
-    public void setStreamsTaskCounter(StreamsTaskCounter counter) {
-        this.counter = counter;
-    }
 }
