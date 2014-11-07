@@ -14,6 +14,8 @@ specific language governing permissions and limitations
 under the License. */
 package org.apache.streams.util.api.requests.backoff;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @see org.apache.streams.util.api.requests.backoff.BackOffStrategy
  */
@@ -22,7 +24,7 @@ public abstract class AbstractBackOffStrategy implements BackOffStrategy {
     private long baseSleepTime;
     private long lastSleepTime;
     private int maxAttempts;
-    private int attemptsCount;
+    private AtomicInteger attemptsCount;
 
     /**
      * A BackOffStrategy that can effectively be used endlessly.
@@ -46,16 +48,17 @@ public abstract class AbstractBackOffStrategy implements BackOffStrategy {
         }
         this.baseSleepTime = baseBackOffTime;
         this.maxAttempts = maximumNumberOfBackOffAttempts;
-        this.attemptsCount = 0;
+        this.attemptsCount = new AtomicInteger(0);
     }
 
     @Override
     public void backOff() throws BackOffException {
-        if(this.attemptsCount++ >= this.maxAttempts && this.maxAttempts != -1) {
-            throw new BackOffException(this.attemptsCount-1, this.lastSleepTime);
+        int attempt = this.attemptsCount.getAndIncrement();
+        if(attempt >= this.maxAttempts && this.maxAttempts != -1) {
+            throw new BackOffException(attempt, this.lastSleepTime);
         } else {
             try {
-                Thread.sleep(this.lastSleepTime = calculateBackOffTime(this.attemptsCount, this.baseSleepTime));
+                Thread.sleep(this.lastSleepTime = calculateBackOffTime(attempt, this.baseSleepTime));
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }
@@ -64,7 +67,7 @@ public abstract class AbstractBackOffStrategy implements BackOffStrategy {
 
     @Override
     public void reset() {
-        this.attemptsCount = 0;
+        this.attemptsCount.set(0);
     }
 
     /**
