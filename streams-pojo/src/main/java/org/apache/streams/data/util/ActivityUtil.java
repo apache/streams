@@ -19,6 +19,7 @@
 package org.apache.streams.data.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 
@@ -61,7 +62,7 @@ public class ActivityUtil {
      */
     public static final String LOCATION_EXTENSION_COORDINATES = "coordinates";
 
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     /**
      * Creates a standard extension property
@@ -69,13 +70,14 @@ public class ActivityUtil {
      * @return the Map representing the extensions property
      */
     @SuppressWarnings("unchecked")
+    @Deprecated
     public static Map<String, Object> ensureExtensions(Activity activity) {
-        Map<String, Object> properties = (Map)activity.getAdditionalProperties().get(EXTENSION_PROPERTY);
-        if(properties == null) {
-            properties = new HashMap<String, Object>();
-            activity.setAdditionalProperty(EXTENSION_PROPERTY, properties);
+        Map<String, Object> extensions = (Map)activity.getAdditionalProperties().get(EXTENSION_PROPERTY);
+        if(extensions == null) {
+            extensions = new HashMap<String, Object>();
+            activity.setAdditionalProperty(EXTENSION_PROPERTY, extensions);
         }
-        return properties;
+        return extensions;
     }
 
     /**

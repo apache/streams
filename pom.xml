@@ -101,7 +101,9 @@
         <module>streams-osgi-components</module>
         <module>streams-core</module>
         <module>streams-config</module>
+        <module>streams-components</module>
         <module>streams-pojo</module>
+        <module>streams-pojo-extensions</module>
         <module>streams-util</module>
         <module>streams-contrib</module>
         <module>streams-runtimes</module>

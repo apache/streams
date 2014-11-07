@@ -27,40 +27,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>streams-contrib</artifactId>
+    <artifactId>streams-components</artifactId>
 
     <packaging>pom</packaging>
-    <name>streams-contrib</name>
+    <name>streams-components</name>
 
     <properties>
 
     </properties>
 
     <modules>
-        <module>streams-persist-cassandra</module>
-        <module>streams-persist-console</module>
-        <module>streams-persist-elasticsearch</module>
-        <module>streams-persist-hbase</module>
-        <module>streams-persist-hdfs</module>
-        <module>streams-persist-kafka</module>
-        <module>streams-persist-mongo</module>
-        <module>streams-amazon-aws</module>
-        <!--<module>streams-processor-lucene</module>-->
-        <!--<module>streams-processor-tika</module>-->
-        <module>streams-processor-jackson</module>
-        <module>streams-processor-json</module>
-        <module>streams-processor-urls</module>
-        <module>streams-processor-peoplepattern</module>
-        <module>streams-provider-datasift</module>
-        <module>streams-provider-facebook</module>
-        <module>streams-provider-google</module>
-        <module>streams-provider-gnip</module>
-        <module>streams-provider-instagram</module>
-        <module>streams-provider-moreover</module>
-        <module>streams-provider-twitter</module>
-        <module>streams-provider-sysomos</module>
-        <module>streams-provider-rss</module>
-        <module>streams-processor-regex</module>
+        <module>streams-http</module>
     </modules>
 
     <dependencyManagement>
