@@ -19,6 +19,7 @@
 package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.local.counters.StreamsTaskCounter;
 
 import java.util.List;
 import java.util.Map;
@@ -86,5 +87,8 @@ public interface StreamsTask extends Runnable{
      * @return list of output queues
      */
     public List<BlockingQueue<StreamsDatum>> getOutputQueues();
+
+
+    public void setStreamsTaskCounter(StreamsTaskCounter counter);
 
 }
