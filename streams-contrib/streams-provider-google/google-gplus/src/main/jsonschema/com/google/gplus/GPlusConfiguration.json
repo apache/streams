@@ -82,7 +82,7 @@
             "properties": {
                 "userId": {
                     "type": "string",
-                    "description": "instagram user id"
+                    "description": "Google+ user id"
                 },
                 "afterDate": {
                     "type": "string",

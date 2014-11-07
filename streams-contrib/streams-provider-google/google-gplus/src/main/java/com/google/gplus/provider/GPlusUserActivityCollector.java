@@ -22,7 +22,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Collects the public activities of a GPlus user. Has ability to filter by date ranges.
  */
-public class GPlusUserActivityCollector implements Runnable {
+public class GPlusUserActivityCollector extends GPlusDataCollector {
 
     /**
      * Key for all public activities
@@ -90,29 +90,7 @@ public class GPlusUserActivityCollector implements Runnable {
                         }
                     }
                 } catch (GoogleJsonResponseException gjre) {
-                    switch (gjre.getStatusCode()) {
-                        case 400 :
-                            LOGGER.warn("Bad Request for user={} : {}", userInfo.getUserId(), gjre);
-                            tryAgain = false;
-                            break;
-                        case 401 :
-                            LOGGER.warn("Invalid Credentials : {}", gjre);
-                            tryAgain = false;
-                        case 403 :
-                            LOGGER.warn("Possible rate limit exception. Retrying. : {}", gjre.getMessage());
-                            this.backOff.backOff();
-                            tryAgain = true;
-                            break;
-                        case 503 :
-                            LOGGER.warn("Google Backend Service Error : {}", gjre);
-                            tryAgain = false;
-                            break;
-                        default:
-                            LOGGER.warn("Google Service returned error : {}", gjre);
-                            tryAgain = true;
-                            this.backOff.backOff();
-                            break;
-                    }
+                    tryAgain = backoffAndIdentifyIfRetry(gjre, this.backOff);
                     ++attempt;
                 }
             } while((tryAgain || (feed != null && feed.getNextPageToken() != null)) && attempt < MAX_ATTEMPTS);

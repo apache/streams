@@ -19,7 +19,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Collects user profile information for a specific GPlus user
  */
-public  class GPlusUserDataCollector implements Runnable{
+public  class GPlusUserDataCollector extends GPlusDataCollector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GPlusUserDataCollector.class);
     private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
@@ -56,29 +56,7 @@ public  class GPlusUserDataCollector implements Runnable{
                     this.backOffStrategy.reset();
                     tryAgain = person == null;
                 } catch (GoogleJsonResponseException gjre) {
-                    switch (gjre.getStatusCode()) {
-                        case 400 :
-                            LOGGER.warn("Bad Request for user={} : {}", userInfo.getUserId(), gjre);
-                            tryAgain = false;
-                            break;
-                        case 401 :
-                            LOGGER.warn("Invalid Credentials : {}", gjre);
-                            tryAgain = false;
-                        case 403 :
-                            LOGGER.warn("Possible rate limit exception. Retrying. : {}", gjre.getMessage());
-                            this.backOffStrategy.backOff();
-                            tryAgain = true;
-                            break;
-                        case 503 :
-                            LOGGER.warn("Google Backend Service Error : {}", gjre);
-                            tryAgain = false;
-                            break;
-                        default:
-                            LOGGER.warn("Google Service returned error : {}", gjre);
-                            tryAgain = true;
-                            this.backOffStrategy.backOff();
-                            break;
-                    }
+                    tryAgain = backoffAndIdentifyIfRetry(gjre, this.backOffStrategy);
                 }
                 ++attempts;
             } while(tryAgain && attempts < MAX_ATTEMPTS);
