@@ -32,9 +32,9 @@ public class GPlusActivitySerializer implements ActivitySerializer<com.google.ap
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GPlusActivitySerializer.class);
 
-    GPlusProvider provider;
+    AbstractGPlusProvider provider;
 
-    public GPlusActivitySerializer(GPlusProvider provider) {
+    public GPlusActivitySerializer(AbstractGPlusProvider provider) {
 
         this.provider = provider;
     }
