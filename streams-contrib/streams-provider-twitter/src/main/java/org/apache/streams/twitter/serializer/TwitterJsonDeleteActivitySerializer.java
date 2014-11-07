@@ -46,6 +46,12 @@ import static org.apache.streams.twitter.serializer.util.TwitterActivityUtil.*;
 */
 public class TwitterJsonDeleteActivitySerializer implements ActivitySerializer<String>, Serializable {
 
+    private static TwitterJsonDeleteActivitySerializer instance = new TwitterJsonDeleteActivitySerializer();
+
+    public static TwitterJsonDeleteActivitySerializer getInstance() {
+        return instance;
+    }
+
     @Override
     public String serializationFormat() {
         return null;

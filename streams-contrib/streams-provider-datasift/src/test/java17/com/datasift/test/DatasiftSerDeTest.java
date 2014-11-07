@@ -20,7 +20,9 @@ package com.datasift.test;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.apache.streams.datasift.Datasift;
+import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -31,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -39,18 +43,11 @@ public class DatasiftSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftSerDeTest.class);
 
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsDatasiftMapper.DATASIFT_FORMAT));
 
-
-
-
-    @Test @Ignore
+    @Test
     public void Tests()
     {
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.TRUE);
-        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
-        mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
-
         InputStream is = DatasiftSerDeTest.class.getResourceAsStream("/part-r-00000.json");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
@@ -60,6 +57,7 @@ public class DatasiftSerDeTest {
                 String line = br.readLine();
                 LOGGER.debug(line);
                 System.out.println(line);
+
                 Datasift ser = mapper.readValue(line, Datasift.class);
 
                 String de = mapper.writeValueAsString(ser);
@@ -68,7 +66,7 @@ public class DatasiftSerDeTest {
 
                 Datasift serde = mapper.readValue(de, Datasift.class);
 
-//                Assert.assertEquals(ser, serde);
+                Assert.assertEquals(ser, serde);
 
                 LOGGER.debug(mapper.writeValueAsString(serde));
             }

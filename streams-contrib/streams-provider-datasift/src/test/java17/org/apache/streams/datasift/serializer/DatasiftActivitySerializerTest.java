@@ -2,8 +2,10 @@ package org.apache.streams.datasift.serializer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
 import org.junit.Test;
@@ -16,7 +18,8 @@ import static org.junit.Assert.assertNotNull;
 public class DatasiftActivitySerializerTest {
 
     private static final DatasiftActivitySerializer SERIALIZER = new DatasiftActivitySerializer();
-    private static final ObjectMapper MAPPER = StreamsDatasiftMapper.getInstance();
+
+    private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsDatasiftMapper.DATASIFT_FORMAT));
 
     @Test
     public void testGeneralConversion() throws Exception {
@@ -42,6 +45,7 @@ public class DatasiftActivitySerializerTest {
             testGeneralConversion(line);
             testDeserNoNull(line);
             testDeserNoAddProps(line);
+
             System.out.println("ORIGINAL -> "+line);
             System.out.println("ACTIVITY -> "+MAPPER.writeValueAsString(SERIALIZER.deserialize(line)));
             System.out.println("NODE     -> "+MAPPER.convertValue(SERIALIZER.deserialize(line), JsonNode.class));

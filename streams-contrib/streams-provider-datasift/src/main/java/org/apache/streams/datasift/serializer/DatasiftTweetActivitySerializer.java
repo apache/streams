@@ -46,9 +46,15 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 /**
  *
  */
-public class DatasiftTweetActivitySerializer extends DatasiftDefaultActivitySerializer {
+public class DatasiftTweetActivitySerializer extends DatasiftInteractionActivitySerializer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatasiftTweetActivitySerializer.class);
+
+    private static DatasiftTweetActivitySerializer instance = new DatasiftTweetActivitySerializer();
+
+    public static DatasiftTweetActivitySerializer getInstance() {
+        return instance;
+    }
 
     @Override
     public Activity convert(Datasift event) {
