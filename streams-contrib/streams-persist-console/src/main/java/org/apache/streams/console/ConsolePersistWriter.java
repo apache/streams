@@ -27,12 +27,15 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintStream;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ConsolePersistWriter implements StreamsPersistWriter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsolePersistWriter.class);
+
+    protected PrintStream printStream = System.out;
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
@@ -42,8 +45,9 @@ public class ConsolePersistWriter implements StreamsPersistWriter {
         this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
     }
 
-    public ConsolePersistWriter(Queue<StreamsDatum> persistQueue) {
-        this.persistQueue = persistQueue;
+    public ConsolePersistWriter(PrintStream printStream) {
+        this();
+        this.printStream = printStream;
     }
 
     public void prepare(Object o) {
@@ -61,8 +65,7 @@ public class ConsolePersistWriter implements StreamsPersistWriter {
 
             String text = mapper.writeValueAsString(entry);
 
-            System.out.println("\n"+text+"\n");
-//            LOGGER.info(text);
+            printStream.println(text);
 
         } catch (JsonProcessingException e) {
             LOGGER.warn("save: {}", e);
