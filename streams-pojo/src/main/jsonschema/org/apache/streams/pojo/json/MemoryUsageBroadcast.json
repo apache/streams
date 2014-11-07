@@ -1,0 +1,29 @@
+{
+  "type" : "object",
+  "title" : "object",
+  "javaType": "org.apache.streams.pojo.json.MemoryUsageBroadcast",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description" : "Snapshot of current memory usage",
+  "properties" : {
+    "verbose" : {
+      "type" : "boolean",
+      "description": "Whether or not this is verbose"
+    },
+    "objectPendingFinalizationCount": {
+      "type": "number",
+      "description": "The number of objects that are pending finalization"
+    },
+    "heapMemoryUsage": {
+      "type": "long",
+      "description": "The amount of heap memory we are currently using"
+    },
+    "nonHeapMemoryUsage": {
+      "type": "long",
+      "description": "The amount of non-heap memory we are using"
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of this MBean"
+    }
+  }
+}
