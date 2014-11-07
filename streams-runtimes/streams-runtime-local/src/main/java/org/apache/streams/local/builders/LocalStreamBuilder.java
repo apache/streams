@@ -20,6 +20,7 @@ package org.apache.streams.local.builders;
 
 import org.apache.log4j.spi.LoggerFactory;
 import org.apache.streams.core.*;
+import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.executors.ShutdownStreamOnUnhandleThrowableThreadPoolExecutor;
 import org.apache.streams.local.queues.ThroughputQueue;
 import org.apache.streams.local.tasks.*;
@@ -55,7 +56,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     private LocalStreamProcessMonitorThread monitorThread;
     private Map<String, List<StreamsTask>> tasks;
     private Thread shutdownHook;
-    private Thread broadcastMonitor;
+    private BroadcastMonitorThread broadcastMonitor;
     private int maxQueueCapacity;
 
     /**
@@ -186,8 +187,6 @@ public class LocalStreamBuilder implements StreamBuilder {
         tasks = new HashMap<String, List<StreamsTask>>();
         boolean forcedShutDown = false;
 
-        broadcastMonitor.start();
-
         try {
             monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
             this.monitor.submit(monitorThread);
@@ -275,6 +274,8 @@ public class LocalStreamBuilder implements StreamBuilder {
         for(StreamComponent prov : this.providers.values()) {
             StreamsTask task = prov.createConnectedTask(getTimeout());
             task.setStreamConfig(this.streamConfig);
+            StreamsTaskCounter counter = new StreamsTaskCounter(prov.getId());
+            task.setStreamsTaskCounter(counter);
             this.executor.submit(task);
             provTasks.put(prov.getId(), (StreamsProviderTask) task);
             if( prov.isOperationCountable() ) {
@@ -288,12 +289,15 @@ public class LocalStreamBuilder implements StreamBuilder {
         for(StreamComponent comp : this.components.values()) {
             int tasks = comp.getNumTasks();
             List<StreamsTask> compTasks = new LinkedList<StreamsTask>();
+            StreamsTaskCounter counter = new StreamsTaskCounter(comp.getId());
             for(int i=0; i < tasks; ++i) {
                 StreamsTask task = comp.createConnectedTask(getTimeout());
+                task.setStreamsTaskCounter(counter);
                 task.setStreamConfig(this.streamConfig);
                 this.futures.put(task, this.executor.submit(task));
                 compTasks.add(task);
                 if( comp.isOperationCountable() ) {
+                    this.monitor.submit(broadcastMonitor);
                     this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10));
                     this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
                 }
