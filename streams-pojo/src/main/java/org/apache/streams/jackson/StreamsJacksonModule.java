@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 
+import java.util.List;
+
 /**
  * Created by sblackmon on 3/27/14.
  */
@@ -36,5 +38,12 @@ public class StreamsJacksonModule extends SimpleModule {
         addDeserializer(Period.class, new StreamsPeriodDeserializer(Period.class));
     }
 
+    public StreamsJacksonModule(List<String> formats) {
+        super();
+        addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
+        addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class, formats));
 
+        addSerializer(Period.class, new StreamsPeriodSerializer(Period.class));
+        addDeserializer(Period.class, new StreamsPeriodDeserializer(Period.class));
+    }
 }
