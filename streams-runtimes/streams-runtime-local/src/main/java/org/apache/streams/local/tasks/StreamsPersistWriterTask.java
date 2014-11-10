@@ -20,13 +20,11 @@ package org.apache.streams.local.tasks;
 
 import org.apache.streams.core.*;
 import org.apache.streams.core.util.DatumUtils;
+import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,6 +43,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     private BlockingQueue<StreamsDatum> inQueue;
     private AtomicBoolean isRunning;
     private AtomicBoolean blocked;
+    private StreamsTaskCounter counter;
 
     private DatumStatusCounter statusCounter = new DatumStatusCounter();
 
@@ -99,6 +98,9 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     public void run() {
         try {
             this.writer.prepare(this.streamConfig);
+            if(this.counter == null) {
+                this.counter = new StreamsTaskCounter(this.writer.getClass().getName()+ UUID.randomUUID().toString());
+            }
             while(this.keepRunning.get()) {
                 StreamsDatum datum = null;
                 try {
@@ -111,14 +113,18 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                     Thread.currentThread().interrupt();
                 }
                 if(datum != null) {
+                    this.counter.incrementReceivedCount();
                     try {
+                        long startTime = System.currentTimeMillis();
                         this.writer.write(datum);
+                        this.counter.addTime(System.currentTimeMillis() - startTime);
                         statusCounter.incrementStatus(DatumStatus.SUCCESS);
                     } catch (Exception e) {
                         LOGGER.error("Error writing to persist writer {}", this.writer.getClass().getSimpleName(), e);
                         this.keepRunning.set(false); // why do we shutdown on a failed write ?
                         statusCounter.incrementStatus(DatumStatus.FAIL);
                         DatumUtils.addErrorToMetadata(datum, e, this.writer.getClass());
+                        this.counter.incrementErrorCount();
                     }
                 } else { //datums should never be null
                     LOGGER.debug("Received null StreamsDatum @ writer : {}", this.writer.getClass().getName());
@@ -151,4 +157,8 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
         return queues;
     }
 
+    @Override
+    public void setStreamsTaskCounter(StreamsTaskCounter counter) {
+        this.counter = counter;
+    }
 }
