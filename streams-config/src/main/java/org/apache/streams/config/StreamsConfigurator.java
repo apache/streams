@@ -18,8 +18,15 @@
 
 package org.apache.streams.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.reflect.TypeToken;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigRenderOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,9 +37,30 @@ import com.typesafe.config.ConfigFactory;
  */
 public class StreamsConfigurator {
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(ComponentConfigurator.class);
+
+    private final static ObjectMapper mapper = new ObjectMapper();
+
     /*
         Pull all configuration files from the classpath, system properties, and environment variables
      */
     public static Config config = ConfigFactory.load();
 
+    public static StreamsConfiguration detectConfiguration() {
+        return detectConfiguration(config);
+    }
+
+    public static StreamsConfiguration detectConfiguration(Config typesafeConfig) {
+
+        StreamsConfiguration pojoConfig = null;
+
+        try {
+            pojoConfig = mapper.readValue(typesafeConfig.root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Could not parse:", typesafeConfig);
+        }
+
+        return pojoConfig;
+    }
 }
