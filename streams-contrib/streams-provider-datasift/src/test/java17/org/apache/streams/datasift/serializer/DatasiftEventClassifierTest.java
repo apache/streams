@@ -18,25 +18,13 @@
 
 package org.apache.streams.datasift.serializer;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.instagram.Instagram;
 import org.apache.streams.datasift.twitter.Twitter;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.twitter.pojo.Delete;
-import org.apache.streams.twitter.pojo.Retweet;
-import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.pojo.User;
-import org.apache.streams.twitter.provider.TwitterEventClassifier;
-import org.apache.streams.twitter.serializer.TwitterJsonDeleteActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonRetweetActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonTweetActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonUserActivitySerializer;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Scanner;
@@ -56,7 +44,7 @@ public class DatasiftEventClassifierTest {
             line = scanner.nextLine();
             Datasift datasift = MAPPER.readValue(line, Datasift.class);
             assert(DatasiftEventClassifier.detectClass(datasift) == Twitter.class);
-            assert(DatasiftEventClassifier.bestSerializer(datasift) instanceof DatasiftTweetActivitySerializer);
+            assert(DatasiftEventClassifier.bestSerializer(datasift) instanceof DatasiftTwitterActivitySerializer);
         }
     }
 

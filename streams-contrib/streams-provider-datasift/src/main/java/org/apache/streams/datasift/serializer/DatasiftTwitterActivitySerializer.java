@@ -46,13 +46,13 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 /**
  *
  */
-public class DatasiftTweetActivitySerializer extends DatasiftInteractionActivitySerializer {
+public class DatasiftTwitterActivitySerializer extends DatasiftInteractionActivitySerializer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DatasiftTweetActivitySerializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatasiftTwitterActivitySerializer.class);
 
-    private static DatasiftTweetActivitySerializer instance = new DatasiftTweetActivitySerializer();
+    private static DatasiftTwitterActivitySerializer instance = new DatasiftTwitterActivitySerializer();
 
-    public static DatasiftTweetActivitySerializer getInstance() {
+    public static DatasiftTwitterActivitySerializer getInstance() {
         return instance;
     }
 

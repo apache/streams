@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
+import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Scanner;
@@ -17,18 +20,27 @@ import static org.junit.Assert.assertNotNull;
 
 public class DatasiftActivitySerializerTest {
 
-    private static final DatasiftActivitySerializer SERIALIZER = new DatasiftActivitySerializer();
+    protected ActivitySerializer SERIALIZER;
 
-    private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsDatasiftMapper.DATASIFT_FORMAT));
+    protected static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsDatasiftMapper.DATASIFT_FORMAT));
+
+    @Before
+    public void initSerializer() {
+        SERIALIZER = new DatasiftActivitySerializer();
+    }
 
     @Test
-    public void testGeneralConversion() throws Exception {
+    public void testConversion() throws Exception {
         Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/rand_sample_datasift_json.txt"));
         String line = null;
         while(scanner.hasNextLine()) {
             try {
                 line = scanner.nextLine();
-                testGeneralConversion(line);
+                Datasift item = MAPPER.readValue(line, Datasift.class);
+                testConversion(item);
+                String json = MAPPER.writeValueAsString(item);
+                testDeserNoNull(json);
+                testDeserNoAddProps(json);
             } catch (Exception e) {
                 System.err.println(line);
                 throw e;
@@ -36,59 +48,27 @@ public class DatasiftActivitySerializerTest {
         }
     }
 
-    @Test
-    public void testTwitterConversion() throws Exception {
-        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/twitter_datasift_json.txt"));
-        String line = null;
-        while(scanner.hasNextLine()) {
-            line = scanner.nextLine();
-            testGeneralConversion(line);
-            testDeserNoNull(line);
-            testDeserNoAddProps(line);
-
-            System.out.println("ORIGINAL -> "+line);
-            System.out.println("ACTIVITY -> "+MAPPER.writeValueAsString(SERIALIZER.deserialize(line)));
-            System.out.println("NODE     -> "+MAPPER.convertValue(SERIALIZER.deserialize(line), JsonNode.class));
-        }
-    }
-
-    @Test
-    public void testInstagramConversion() throws Exception {
-        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/instagram_datasift_json.txt"));
-        String line = null;
-        while(scanner.hasNextLine()) {
-            line = scanner.nextLine();
-            testGeneralConversion(line);
-            System.out.println("ORIGINAL -> "+line);
-            System.out.println("ACTIVITY -> "+MAPPER.writeValueAsString(SERIALIZER.deserialize(line)));
-            System.out.println("NODE     -> "+MAPPER.convertValue(SERIALIZER.deserialize(line), JsonNode.class));
-        }
-    }
-
     /**
      * Test that the minimum number of things that an activity has
-     * @param json
+     * @param item
      */
-    private void testGeneralConversion(String json) throws Exception {
-        Activity activity = SERIALIZER.deserialize(json);
-        assertNotNull(json, activity.getId());
-        assertNotNull(json, activity.getPublished());
-        assertNotNull(json, activity.getProvider());
-        assertNotNull(json, activity.getUrl());
-        assertNotNull(json, activity.getVerb());
+    protected void testConversion(Datasift item) throws Exception {
+        Activity activity = SERIALIZER.deserialize(item);
+        assertNotNull("activity.id", activity.getId());
+        assertNotNull("activity.published", activity.getPublished());
+        assertNotNull("activity.provider", activity.getProvider());
+        assertNotNull("activity.url", activity.getUrl());
+        assertNotNull("activity.verb", activity.getVerb());
         Actor actor = activity.getActor();
-        assertNotNull(json, actor);
-
+        assertNotNull("activity.actor", actor);
     }
 
     /**
      * Test that null fields are not present
      * @param json
      */
-    private void testDeserNoNull(String json) throws Exception {
-        Activity ser = SERIALIZER.deserialize(json);
-        String deser = MAPPER.writeValueAsString(ser);
-        int nulls = StringUtils.countMatches(deser, ":null");
+    protected void testDeserNoNull(String json) throws Exception {
+        int nulls = StringUtils.countMatches(json, ":null");
         assertEquals(0l, (long)nulls);
 
     }
@@ -97,10 +77,8 @@ public class DatasiftActivitySerializerTest {
      * Test that null fields are not present
      * @param json
      */
-    private void testDeserNoAddProps(String json) throws Exception {
-        Activity ser = SERIALIZER.deserialize(json);
-        String deser = MAPPER.writeValueAsString(ser);
-        int nulls = StringUtils.countMatches(deser, "additionalProperties:{");
+    protected void testDeserNoAddProps(String json) throws Exception {
+        int nulls = StringUtils.countMatches(json, "additionalProperties:{");
         assertEquals(0l, (long)nulls);
 
     }

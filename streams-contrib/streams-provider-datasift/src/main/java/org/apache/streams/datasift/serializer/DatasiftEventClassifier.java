@@ -43,7 +43,7 @@ public class DatasiftEventClassifier {
     public static ActivitySerializer bestSerializer(Datasift event) {
 
         if(event.getTwitter() != null) {
-            return DatasiftTweetActivitySerializer.getInstance();
+            return DatasiftTwitterActivitySerializer.getInstance();
         } else if(event.getInstagram() != null) {
             return DatasiftInstagramActivitySerializer.getInstance();
         } else {
