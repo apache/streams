@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.file.FileConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "path": {
+            "type": "string",
+            "description": "A file path to read/write from",
+            "default": "/tmp/streams-file-queue.txt"
+        }
+    }
+}
