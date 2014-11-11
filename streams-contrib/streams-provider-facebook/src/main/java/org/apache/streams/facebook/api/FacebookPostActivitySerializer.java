@@ -78,7 +78,6 @@ public class FacebookPostActivitySerializer implements ActivitySerializer<org.ap
         setProvider(activity);
         setObjectType(post.getType(), activity);
         parseObject(activity, mapper.convertValue(post, ObjectNode.class));
-        fixObjectId(activity);
         fixContentFromSummary(activity);
         activity.setVerb("post");
         List<String> links = Lists.newLinkedList();
