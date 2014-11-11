@@ -45,6 +45,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     private ObjectMapper objectMapper;
     private Map<String, Object> streamConfig;
     private String broadcastURI = null;
+    private String streamName = null;
     private MessagePersister messagePersister;
     private volatile boolean keepRunning;
 
@@ -54,6 +55,8 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
         server = ManagementFactory.getPlatformMBeanServer();
 
         setBroadcastURI();
+        setStreamName();
+
         messagePersister = new BroadcastMessagePersister(broadcastURI);
 
         initializeObjectMapper();
@@ -103,6 +106,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                         }
 
                         if(broadcast != null) {
+                            broadcast.setStreamIdentifier(streamName);
                             messages.add(objectMapper.writeValueAsString(broadcast));
                         }
                     }
@@ -127,6 +131,17 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                 streamConfig.get("broadcastURI") != null &&
                 streamConfig.get("broadcastURI") instanceof String) {
             broadcastURI = streamConfig.get("broadcastURI").toString();
+        }
+    }
+
+    private void setStreamName() {
+        if(streamConfig != null &&
+                streamConfig.containsKey("streamsID") &&
+                streamConfig.get("streamsID") != null &&
+                streamConfig.get("streamsID") instanceof String) {
+            streamName = streamConfig.get("streamsID").toString();
+        } else {
+            streamName = "{\"streamName\":\"Unknown Stream\"}";
         }
     }
 
