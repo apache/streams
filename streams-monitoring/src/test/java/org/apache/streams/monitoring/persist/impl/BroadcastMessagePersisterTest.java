@@ -18,7 +18,6 @@
 package org.apache.streams.monitoring.persist.impl;
 
 import com.google.common.collect.Lists;
-import com.sun.javafx.binding.StringFormatter;
 import org.junit.Test;
 
 import java.util.List;
@@ -35,7 +34,7 @@ public class BroadcastMessagePersisterTest {
 
         List<String> messages = Lists.newArrayList();
         for(int x = 0; x < 10; x ++) {
-            messages.add(StringFormatter.format("Fake_message #%s", x).getValue());
+            messages.add("Fake_message #" + x);
         }
 
         int statusCode = persister.persistMessages(messages);
@@ -50,7 +49,7 @@ public class BroadcastMessagePersisterTest {
 
         List<String> messages = Lists.newArrayList();
         for(int x = 0; x < 10; x ++) {
-            messages.add(StringFormatter.format("Fake_message #%s", x).getValue());
+            messages.add("Fake_message #" + x);
         }
 
         int statusCode = persister.persistMessages(messages);
