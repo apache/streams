@@ -71,6 +71,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-monitoring</artifactId>
+            <version>${version}</version>
+        </dependency>
         <!-- This ensures slf4j-log4j12 is not packaged in implementations -->
         <dependency>
             <groupId>org.slf4j</groupId>

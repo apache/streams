@@ -15,30 +15,56 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.local.tasks;
+package org.apache.streams.monitoring.tasks;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
 import org.apache.streams.jackson.*;
+import org.apache.streams.monitoring.persist.MessagePersister;
+import org.apache.streams.monitoring.persist.impl.BroadcastMessagePersister;
 import org.apache.streams.pojo.json.*;
 import org.slf4j.Logger;
 
 import javax.management.*;
 import java.lang.management.ManagementFactory;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+/**
+ * This thread runs inside of a Streams runtime and periodically persists information
+ * from relevant JMX beans
+ */
 public class BroadcastMonitorThread extends NotificationBroadcasterSupport implements Runnable {
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(BroadcastMonitorThread.class);
     private static MBeanServer server;
+
     private long DEFAULT_WAIT_TIME = 30000;
     private ObjectMapper objectMapper;
+    private Map<String, Object> streamConfig;
+    private String broadcastURI = null;
+    private MessagePersister messagePersister;
+    private volatile boolean keepRunning;
 
-    public BroadcastMonitorThread() {
+    public BroadcastMonitorThread(Map<String, Object> streamConfig) {
+        keepRunning = true;
+        this.streamConfig = streamConfig;
         server = ManagementFactory.getPlatformMBeanServer();
 
+        setBroadcastURI();
+        messagePersister = new BroadcastMessagePersister(broadcastURI);
+
+        initializeObjectMapper();
+    }
+
+    /**
+     * Initialize our object mapper with all of our bean's custom deserializers
+     * This way we can convert them to and from Strings dictated by our
+     * POJOs which are generated from JSON schemas
+     */
+    private void initializeObjectMapper() {
         objectMapper = new StreamsJacksonMapper();
         SimpleModule simpleModule = new SimpleModule();
 
@@ -51,9 +77,12 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    /**
+     * Get all relevant JMX beans, convert their values to strings, and then persist them
+     */
     @Override
     public void run() {
-        while(true) {
+        while(keepRunning) {
             try {
                 List<String> messages = Lists.newArrayList();
                 Set<ObjectName> beans = server.queryNames(null, null);
@@ -79,6 +108,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                     }
                 }
 
+                messagePersister.persistMessages(messages);
                 Thread.sleep(DEFAULT_WAIT_TIME);
             } catch (InterruptedException e) {
                 LOGGER.error("Interrupted!: {}", e);
@@ -86,5 +116,30 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                 LOGGER.error("Exception: {}", e);
             }
         }
+    }
+
+    /**
+     * Go through streams config and set the broadcastURI (if present)
+     */
+    private void setBroadcastURI() {
+        if(streamConfig != null &&
+                streamConfig.containsKey("broadcastURI") &&
+                streamConfig.get("broadcastURI") != null &&
+                streamConfig.get("broadcastURI") instanceof String) {
+            broadcastURI = streamConfig.get("broadcastURI").toString();
+        }
+    }
+
+    public void shutdown() {
+        this.keepRunning = false;
+        LOGGER.debug("Shutting down BroadcastMonitor Thread");
+    }
+
+    public long getDefaultWaitTime() {
+        return DEFAULT_WAIT_TIME;
+    }
+
+    public void setDefaultWaitTime(long defaultWaitTime) {
+        this.DEFAULT_WAIT_TIME = defaultWaitTime;
     }
 }
