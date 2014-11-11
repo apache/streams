@@ -56,7 +56,7 @@ public class FilePersistReader implements StreamsPersistReader, Serializable {
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     private FileConfiguration config;
 
@@ -137,8 +137,22 @@ public class FilePersistReader implements StreamsPersistReader, Serializable {
             //Handle exception
         }
 
+        mapper = new ObjectMapper();
+
+        File file = new File( config.getPath());
+
+        if( !file.exists() )
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        Preconditions.checkArgument(file.exists());
+        Preconditions.checkArgument(file.canRead());
+
         try {
-            queueFile = new QueueFile(new File(config.getFile()));
+            queueFile = new QueueFile(file);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -82,11 +82,16 @@ public class FilePersistWriter implements StreamsPersistWriter, Serializable {
 
         mapper = new ObjectMapper();
 
+        File file = new File( config.getPath());
+
         try {
-            queueFile = new QueueFile(new File(config.getFile()));
+            queueFile = new QueueFile(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Preconditions.checkArgument(file.exists());
+        Preconditions.checkArgument(file.canWrite());
 
         Preconditions.checkNotNull(queueFile);
 

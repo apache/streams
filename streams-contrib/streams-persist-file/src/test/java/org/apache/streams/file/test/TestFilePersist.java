@@ -26,9 +26,9 @@ public class TestFilePersist {
     public void testPersistWriterString() {
 
         testConfiguration = new FileConfiguration();
-        //testConfiguration.setFile("./test-queue.txt");
+        testConfiguration.setPath("target/TestFilePersist.txt");
 
-        File file = new File( testConfiguration.getFile());
+        File file = new File( testConfiguration.getPath());
         if( file.exists() )
             file.delete();
 

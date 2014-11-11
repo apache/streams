@@ -57,9 +57,9 @@ public class FilePersistIT {
     public void prepareTest() {
 
         testConfiguration = new FileConfiguration();
-        //testConfiguration.setFile("./test-queue.txt");
+        testConfiguration.setPath("target/FilePersistIT.txt");
 
-        File file = new File( testConfiguration.getFile());
+        File file = new File( testConfiguration.getPath());
         if( file.exists() )
             file.delete();
 
