@@ -40,16 +40,21 @@ import java.io.IOException;
 
 /**
  * Created by sblackmon on 3/27/14.
+ *
+ * Deprecated: Use StreamsJacksonMapper
  */
+@Deprecated
 public class StreamsTwitterMapper extends StreamsJacksonMapper {
 
-    public static final DateTimeFormatter TWITTER_FORMAT = DateTimeFormat.forPattern("EEE MMM dd HH:mm:ss Z yyyy");
+    public static final String TWITTER_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
+
+    public static final DateTimeFormatter TWITTER_FORMATTER = DateTimeFormat.forPattern(TWITTER_FORMAT);
 
     public static final Long getMillis(String dateTime) {
 
         // this function is for pig which doesn't handle exceptions well
         try {
-            Long result = TWITTER_FORMAT.parseMillis(dateTime);
+            Long result = TWITTER_FORMATTER.parseMillis(dateTime);
             return result;
         } catch( Exception e ) {
             return null;
@@ -73,7 +78,7 @@ public class StreamsTwitterMapper extends StreamsJacksonMapper {
                     public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException, JsonProcessingException {
                         DateTime result = null;
                         try {
-                            result = TWITTER_FORMAT.parseDateTime(jpar.getValueAsString());
+                            result = TWITTER_FORMATTER.parseDateTime(jpar.getValueAsString());
                         } catch( Exception e ) { }
                         try {
                             result = RFC3339Utils.getInstance().parseToUTC(jpar.getValueAsString());

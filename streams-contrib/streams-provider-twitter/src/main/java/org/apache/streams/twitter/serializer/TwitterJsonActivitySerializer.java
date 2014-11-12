@@ -35,10 +35,11 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
 
     }
 
-    TwitterJsonTweetActivitySerializer tweetActivitySerializer = new TwitterJsonTweetActivitySerializer();
-    TwitterJsonRetweetActivitySerializer retweetActivitySerializer = new TwitterJsonRetweetActivitySerializer();
-    TwitterJsonDeleteActivitySerializer deleteActivitySerializer = new TwitterJsonDeleteActivitySerializer();
-    TwitterJsonUserActivitySerializer userActivitySerializer = new TwitterJsonUserActivitySerializer();
+    private static TwitterJsonActivitySerializer instance = new TwitterJsonActivitySerializer();
+
+    public static TwitterJsonActivitySerializer getInstance() {
+        return instance;
+    }
 
     @Override
     public String serializationFormat() {
@@ -53,18 +54,11 @@ public class TwitterJsonActivitySerializer implements ActivitySerializer<String>
     @Override
     public Activity deserialize(String serialized) throws ActivitySerializerException {
 
-        Class documentSubType = TwitterEventClassifier.detectClass(serialized);
+        ActivitySerializer serializer = TwitterEventClassifier.bestSerializer(serialized);
+        Activity activity = serializer.deserialize(serialized);
 
-        Activity activity;
-        if( documentSubType == Tweet.class )
-            activity = tweetActivitySerializer.deserialize(serialized);
-        else if( documentSubType == Retweet.class )
-            activity = retweetActivitySerializer.deserialize(serialized);
-        else if( documentSubType == Delete.class )
-            activity = deleteActivitySerializer.deserialize(serialized);
-        else if( documentSubType == User.class )
-            activity = userActivitySerializer.deserialize(serialized);
-        else throw new ActivitySerializerException("unrecognized type");
+        if( activity == null )
+            throw new ActivitySerializerException("unrecognized type");
 
         return activity;
     }

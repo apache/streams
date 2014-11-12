@@ -39,9 +39,15 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 /**
  *
  */
-public class DatasiftInstagramActivitySerializer extends DatasiftDefaultActivitySerializer {
+public class DatasiftInstagramActivitySerializer extends DatasiftInteractionActivitySerializer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DatasiftInstagramActivitySerializer.class);
+
+    private static DatasiftInstagramActivitySerializer instance = new DatasiftInstagramActivitySerializer();
+
+    public static DatasiftInstagramActivitySerializer getInstance() {
+        return instance;
+    }
 
     @Override
     public Activity convert(Datasift event) {

@@ -2,6 +2,7 @@ package org.apache.streams.datasift.serializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.datasift.Datasift;
@@ -22,11 +23,15 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 /**
  *
  */
-public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Datasift>, Serializable {
+public class DatasiftInteractionActivitySerializer implements ActivitySerializer<Datasift>, Serializable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DatasiftDefaultActivitySerializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatasiftInteractionActivitySerializer.class);
 
-    public static final String DATE_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
+    private static DatasiftInteractionActivitySerializer instance = new DatasiftInteractionActivitySerializer();
+
+    public static DatasiftInteractionActivitySerializer getInstance() {
+        return instance;
+    }
 
     ObjectMapper mapper = StreamsDatasiftMapper.getInstance();
 
@@ -106,6 +111,9 @@ public class DatasiftDefaultActivitySerializer implements ActivitySerializer<Dat
     }
 
     public Activity convert(Datasift event) {
+
+        Preconditions.checkNotNull(event);
+        Preconditions.checkNotNull(event.getInteraction());
 
         Activity activity = new Activity();
         activity.setActor(buildActor(event.getInteraction()));
