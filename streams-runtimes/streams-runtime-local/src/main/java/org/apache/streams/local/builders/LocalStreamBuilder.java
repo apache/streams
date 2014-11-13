@@ -18,7 +18,6 @@
 
 package org.apache.streams.local.builders;
 
-import org.apache.log4j.spi.LoggerFactory;
 import org.apache.streams.core.*;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.executors.ShutdownStreamOnUnhandleThrowableThreadPoolExecutor;
@@ -27,6 +26,7 @@ import org.apache.streams.local.tasks.LocalStreamProcessMonitorThread;
 import org.apache.streams.local.tasks.StatusCounterMonitorThread;
 import org.apache.streams.local.tasks.StreamsProviderTask;
 import org.apache.streams.local.tasks.StreamsTask;
+import org.apache.streams.monitoring.tasks.BroadcastMonitorThread;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 
@@ -48,6 +48,9 @@ public class LocalStreamBuilder implements StreamBuilder {
     private static final int DEFAULT_QUEUE_SIZE = 500;
 
     public static final String TIMEOUT_KEY = "TIMEOUT";
+    public static final String BROADCAST_KEY = "broadcastURI";
+    public static final String BROADCAST_INTERVAL_KEY = "monitoring_broadcast_interval_ms";
+
     private Map<String, StreamComponent> providers;
     private Map<String, StreamComponent> components;
     private Map<String, Object> streamConfig;
@@ -59,6 +62,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     private LocalStreamProcessMonitorThread monitorThread;
     private Map<String, List<StreamsTask>> tasks;
     private Thread shutdownHook;
+    private BroadcastMonitorThread broadcastMonitor;
     private int maxQueueCapacity;
 
     /**
@@ -106,6 +110,9 @@ public class LocalStreamBuilder implements StreamBuilder {
                 self.stopInternal(true);
             }
         };
+
+        this.broadcastMonitor = new BroadcastMonitorThread(this.streamConfig);
+
         this.futures = new HashMap<>();
     }
 
@@ -185,6 +192,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         Map<String, StreamsProviderTask> provTasks = new HashMap<String, StreamsProviderTask>();
         tasks = new HashMap<String, List<StreamsTask>>();
         boolean forcedShutDown = false;
+
         try {
             monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
             this.monitor.submit(monitorThread);
@@ -295,6 +303,7 @@ public class LocalStreamBuilder implements StreamBuilder {
                 this.futures.put(task, this.executor.submit(task));
                 compTasks.add(task);
                 if( comp.isOperationCountable() ) {
+                    this.monitor.submit(broadcastMonitor);
                     this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10));
                     this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
                 }
@@ -394,9 +403,6 @@ public class LocalStreamBuilder implements StreamBuilder {
             throw new InvalidStreamException("Invalid character, ':', in component id : "+id);
         }
     }
-
-
-
 
     protected int getTimeout() {
     //Set the timeout of it is configured, otherwise signal downstream components to use their default
