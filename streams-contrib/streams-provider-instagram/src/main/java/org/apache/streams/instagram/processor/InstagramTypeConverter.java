@@ -21,7 +21,7 @@ package org.apache.streams.instagram.processor;
 import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.instagram.serializer.InstagramUserInfoSerializer;
+import org.apache.streams.instagram.serializer.InstagramUserInfoConverter;
 import org.apache.streams.instagram.serializer.util.InstagramActivityUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.jinstagram.entity.users.basicinfo.UserInfoData;
@@ -42,7 +42,7 @@ public class InstagramTypeConverter implements StreamsProcessor {
     private Queue<StreamsDatum> outQueue;
 
     private InstagramActivityUtil instagramActivityUtil;
-    private InstagramUserInfoSerializer userInfoSerializer;
+    private InstagramUserInfoConverter userInfoSerializer;
 
     private int count = 0;
 
@@ -99,7 +99,7 @@ public class InstagramTypeConverter implements StreamsProcessor {
     @Override
     public void prepare(Object o) {
         instagramActivityUtil = new InstagramActivityUtil();
-        this.userInfoSerializer = new InstagramUserInfoSerializer();
+        this.userInfoSerializer = new InstagramUserInfoConverter();
     }
 
     @Override

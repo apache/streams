@@ -29,9 +29,9 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.facebook.Post;
-import org.apache.streams.facebook.api.FacebookPageActivitySerializer;
-import org.apache.streams.facebook.api.FacebookPostActivitySerializer;
-import org.apache.streams.facebook.provider.FacebookEventClassifier;
+import org.apache.streams.facebook.api.FacebookPageActivityConverter;
+import org.apache.streams.facebook.api.FacebookPostActivityConverter;
+import org.apache.streams.facebook.serializer.FacebookDocumentClassifier;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
@@ -41,6 +41,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Queue;
 
+/*
+ * Deprecated: Use TypeConverterProcessor
+ */
+@Deprecated
 public class FacebookTypeConverter implements StreamsProcessor {
 
     public final static String STREAMS_ID = "FacebookTypeConverter";
@@ -55,8 +59,8 @@ public class FacebookTypeConverter implements StreamsProcessor {
     private Class inClass;
     private Class outClass;
 
-    private FacebookPostActivitySerializer facebookPostActivitySerializer;
-    private FacebookPageActivitySerializer facebookPageActivitySerializer;
+    private FacebookPostActivityConverter facebookPostActivitySerializer;
+    private FacebookPageActivityConverter facebookPageActivitySerializer;
 
     private int count = 0;
 
@@ -156,7 +160,7 @@ public class FacebookTypeConverter implements StreamsProcessor {
 
                     // since data is coming from outside provider, we don't know what type the events are
                     // for now we'll assume post
-                    Class inClass = FacebookEventClassifier.detectClass((String) item);
+                    Class inClass = FacebookDocumentClassifier.getInstance().detectClass((String) item);
 
                     Object out = convert(node, inClass, outClass);
 
@@ -169,7 +173,7 @@ public class FacebookTypeConverter implements StreamsProcessor {
                 // first check for valid json
                 node = (ObjectNode)mapper.valueToTree(item);
 
-                Class inClass = FacebookEventClassifier.detectClass(mapper.writeValueAsString(item));
+                Class inClass = FacebookDocumentClassifier.getInstance().detectClass(mapper.writeValueAsString(item));
 
                 Object out = convert(node, inClass, outClass);
 
@@ -198,8 +202,8 @@ public class FacebookTypeConverter implements StreamsProcessor {
     public void prepare(Object o) {
         mapper = new StreamsJacksonMapper();
 
-        facebookPageActivitySerializer = new FacebookPageActivitySerializer();
-        facebookPostActivitySerializer = new FacebookPostActivitySerializer();
+        facebookPageActivitySerializer = new FacebookPageActivityConverter();
+        facebookPostActivitySerializer = new FacebookPostActivityConverter();
     }
 
     @Override

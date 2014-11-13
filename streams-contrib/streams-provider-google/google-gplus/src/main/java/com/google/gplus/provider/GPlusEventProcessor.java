@@ -41,7 +41,7 @@ public class GPlusEventProcessor implements Runnable {
     private Class inClass;
     private Class outClass;
 
-    private GPlusActivitySerializer gPlusActivitySerializer = new GPlusActivitySerializer();
+    private GPlusActivityConverter gPlusActivitySerializer = new GPlusActivityConverter();
 
     public final static String TERMINATE = new String("TERMINATE");
 

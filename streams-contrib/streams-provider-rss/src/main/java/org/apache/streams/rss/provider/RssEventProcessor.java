@@ -19,11 +19,10 @@
 package org.apache.streams.rss.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.syndication.feed.synd.SyndEntry;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.rss.serializer.SyndEntryActivitySerializer;
+import org.apache.streams.rss.serializer.SyndEntryActivityConverter;
 import org.apache.streams.rss.serializer.SyndEntrySerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +42,7 @@ public class RssEventProcessor implements Runnable {
     private Class inClass;
     private Class outClass;
 
-    private SyndEntryActivitySerializer syndEntryActivitySerializer = new SyndEntryActivitySerializer();
+    private SyndEntryActivityConverter syndEntryActivitySerializer = new SyndEntryActivityConverter();
     private SyndEntrySerializer syndEntrySerializer = new SyndEntrySerializer();
 
     public final static String TERMINATE = new String("TERMINATE");

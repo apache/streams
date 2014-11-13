@@ -18,7 +18,9 @@
 
 package org.apache.streams.datasift.serializer;
 
-import org.apache.streams.data.ActivitySerializer;
+import com.google.common.base.Preconditions;
+import org.apache.streams.data.ActivityConverter;
+import org.apache.streams.data.DocumentClassifier;
 import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.instagram.Instagram;
 import org.apache.streams.datasift.interaction.Interaction;
@@ -27,27 +29,29 @@ import org.apache.streams.datasift.twitter.Twitter;
 /**
  * Created by sblackmon on 11/6/14.
  */
-public class DatasiftEventClassifier {
+public class DatasiftEventClassifier implements DocumentClassifier {
 
-    public static Class detectClass(Datasift event) {
+    public DatasiftEventClassifier() {
 
-        if(event.getTwitter() != null) {
+    }
+
+    private static DatasiftEventClassifier instance = new DatasiftEventClassifier();
+
+    public static DatasiftEventClassifier getInstance() {
+        return instance;
+    }
+
+    public Class detectClass(Object document) {
+
+        Preconditions.checkArgument(document instanceof Datasift);
+        Datasift datasift = (Datasift)document;
+        if(datasift.getTwitter() != null) {
             return Twitter.class;
-        } else if(event.getInstagram() != null) {
+        } else if(datasift.getInstagram() != null) {
             return Instagram.class;
         } else {
             return Interaction.class;
         }
     }
 
-    public static ActivitySerializer bestSerializer(Datasift event) {
-
-        if(event.getTwitter() != null) {
-            return DatasiftTwitterActivitySerializer.getInstance();
-        } else if(event.getInstagram() != null) {
-            return DatasiftInstagramActivitySerializer.getInstance();
-        } else {
-            return DatasiftInteractionActivitySerializer.getInstance();
-        }
-    }
 }

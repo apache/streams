@@ -43,7 +43,7 @@ public class DatasiftSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftSerDeTest.class);
 
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsDatasiftMapper.DATASIFT_FORMAT));
+    private ObjectMapper mapper = StreamsJacksonMapper.getInstance(StreamsDatasiftMapper.DATASIFT_FORMAT);
 
     @Test
     public void Tests()

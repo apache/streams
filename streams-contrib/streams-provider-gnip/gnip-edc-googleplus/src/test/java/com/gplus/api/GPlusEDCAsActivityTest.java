@@ -43,10 +43,10 @@ public class GPlusEDCAsActivityTest {
 
     private ObjectMapper jsonMapper;
     XmlMapper xmlMapper;
-    private GPlusActivitySerializer gplusSerializer;
+    private GPlusActivityConverter gplusSerializer;
 
     public GPlusEDCAsActivityTest() {
-        gplusSerializer = new GPlusActivitySerializer();
+        gplusSerializer = new GPlusActivityConverter();
         jsonMapper = new ObjectMapper();
         xmlMapper = new XmlMapper();
     }
