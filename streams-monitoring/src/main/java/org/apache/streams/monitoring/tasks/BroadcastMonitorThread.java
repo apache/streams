@@ -42,6 +42,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     private static MBeanServer server;
 
     private long DEFAULT_WAIT_TIME = 30000;
+    private long waitTime;
     private ObjectMapper objectMapper;
     private Map<String, Object> streamConfig;
     private String broadcastURI = null;
@@ -56,6 +57,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
 
         setBroadcastURI();
         setStreamName();
+        setWaitTime();
 
         messagePersister = new BroadcastMessagePersister(broadcastURI);
 
@@ -113,7 +115,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                 }
 
                 messagePersister.persistMessages(messages);
-                Thread.sleep(DEFAULT_WAIT_TIME);
+                Thread.sleep(waitTime);
             } catch (InterruptedException e) {
                 LOGGER.error("Interrupted!: {}", e);
             } catch (Exception e) {
@@ -135,13 +137,37 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     }
 
     private void setStreamName() {
-        if(streamConfig != null &&
+        if (streamConfig != null &&
                 streamConfig.containsKey("streamsID") &&
                 streamConfig.get("streamsID") != null &&
                 streamConfig.get("streamsID") instanceof String) {
             streamName = streamConfig.get("streamsID").toString();
         } else {
             streamName = "{\"streamName\":\"Unknown Stream\"}";
+        }
+    }
+
+    /**
+     * Go through streams config and set the thread's wait time (if present)
+     */
+    private void setWaitTime() {
+        try {
+            if (streamConfig != null &&
+                    streamConfig.containsKey("monitoring_broadcast_interval_ms") &&
+                    streamConfig.get("monitoring_broadcast_interval_ms") != null &&
+                    streamConfig.get("monitoring_broadcast_interval_ms") instanceof Long ||
+                    streamConfig.get("monitoring_broadcast_interval_ms") instanceof Integer) {
+                waitTime = Long.parseLong(streamConfig.get("monitoring_broadcast_interval_ms").toString());
+            } else {
+                waitTime = DEFAULT_WAIT_TIME;
+            }
+
+            //Shutdown
+            if(waitTime == -1) {
+                this.keepRunning = false;
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception while trying to set default broadcast thread wait time: {}", e);
         }
     }
 

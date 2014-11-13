@@ -50,6 +50,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     public static final String TIMEOUT_KEY = "TIMEOUT";
     public static final String BROADCAST_KEY = "broadcastURI";
     public static final String STREAM_IDENTIFIER_KEY = "streamsID";
+    public static final String BROADCAST_INTERVAL_KEY = "monitoring_broadcast_interval_ms";
 
     private Map<String, StreamComponent> providers;
     private Map<String, StreamComponent> components;
