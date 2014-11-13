@@ -58,11 +58,13 @@ public class TwitterJsonActivityConverter implements ActivityConverter<String>, 
     @Override
     public Activity deserialize(String serialized) throws ActivitySerializerException {
 
-        Class converterClass = TwitterDocumentClassifier.getInstance().detectClass(serialized);
+        Class documentClass = TwitterDocumentClassifier.getInstance().detectClass(serialized);
+
+        Class converterClass = TwitterConverterResolver.getInstance().bestSerializer(documentClass);
 
         ActivityConverter converter = ActivityConverterFactory.getInstance(converterClass);
 
-        Object typedObject = TypeConverterUtil.convert(serialized, converterClass);
+        Object typedObject = TypeConverterUtil.convert(serialized, documentClass);
 
         Activity activity = converter.deserialize(typedObject);
 

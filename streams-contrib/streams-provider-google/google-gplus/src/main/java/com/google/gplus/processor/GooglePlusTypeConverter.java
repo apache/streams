@@ -30,6 +30,10 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Queue;
 
+@Deprecated
+/*
+ * Modules and streams should adopt TypeConverterProcessor and ActivityConverterProcessor
+ */
 public class GooglePlusTypeConverter implements StreamsProcessor {
     public final static String STREAMS_ID = "GooglePlusTypeConverter";
 
