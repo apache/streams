@@ -57,7 +57,12 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
         List<StreamsDatum> result = Lists.newLinkedList();
         Object doc;
         try {
-            doc = this.converter.convert(entry.getDocument(), this.mapper);
+            if( entry.getDocument() instanceof String ) {
+                ObjectNode node = this.mapper.readValue((String)entry.getDocument(), ObjectNode.class);
+                doc = this.converter.convert(node, this.mapper);
+            } else {
+                doc = this.converter.convert(entry.getDocument(), this.mapper);
+            }
             if(doc != null) {
                 result.add(new StreamsDatum(doc, entry.getId()));
             }
