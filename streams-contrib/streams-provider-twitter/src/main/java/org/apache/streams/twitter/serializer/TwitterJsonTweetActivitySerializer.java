@@ -34,6 +34,12 @@ import static org.apache.streams.twitter.serializer.util.TwitterActivityUtil.*;
 
 public class TwitterJsonTweetActivitySerializer implements ActivitySerializer<String>, Serializable {
 
+    private static TwitterJsonTweetActivitySerializer instance = new TwitterJsonTweetActivitySerializer();
+
+    public static TwitterJsonTweetActivitySerializer getInstance() {
+        return instance;
+    }
+
     @Override
     public String serializationFormat() {
         return null;
