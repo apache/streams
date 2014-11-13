@@ -17,6 +17,8 @@
  */
 package org.apache.streams.facebook.serializer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -25,6 +27,7 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.facebook.*;
 import org.apache.streams.facebook.Place;
 import org.apache.streams.facebook.Post;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,6 +205,7 @@ public class FacebookActivityUtil {
      * @param post
      */
     public static void buildExtensions(Activity activity, Post post) {
+        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
         Map<String, Object> extensions = ensureExtensions(activity);
 
         if(post.getLikes() != null) {
@@ -241,6 +245,8 @@ public class FacebookActivityUtil {
                 extensions.put(LOCATION_EXTENSION, place.getAdditionalProperties().get("location"));
             }
         }
+
+        extensions.put("facebook", mapper.convertValue(post, ObjectNode.class));
     }
 
     /**
