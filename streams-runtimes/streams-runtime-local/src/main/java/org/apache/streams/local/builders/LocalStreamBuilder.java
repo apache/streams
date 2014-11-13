@@ -18,12 +18,15 @@
 
 package org.apache.streams.local.builders;
 
-import org.apache.log4j.spi.LoggerFactory;
 import org.apache.streams.core.*;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.executors.ShutdownStreamOnUnhandleThrowableThreadPoolExecutor;
 import org.apache.streams.local.queues.ThroughputQueue;
-import org.apache.streams.local.tasks.*;
+import org.apache.streams.local.tasks.LocalStreamProcessMonitorThread;
+import org.apache.streams.local.tasks.StatusCounterMonitorThread;
+import org.apache.streams.local.tasks.StreamsProviderTask;
+import org.apache.streams.local.tasks.StreamsTask;
+import org.apache.streams.monitoring.tasks.BroadcastMonitorThread;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 
@@ -45,6 +48,9 @@ public class LocalStreamBuilder implements StreamBuilder {
     private static final int DEFAULT_QUEUE_SIZE = 500;
 
     public static final String TIMEOUT_KEY = "TIMEOUT";
+    public static final String BROADCAST_KEY = "broadcastURI";
+    public static final String BROADCAST_INTERVAL_KEY = "monitoring_broadcast_interval_ms";
+
     private Map<String, StreamComponent> providers;
     private Map<String, StreamComponent> components;
     private Map<String, Object> streamConfig;
@@ -105,7 +111,7 @@ public class LocalStreamBuilder implements StreamBuilder {
             }
         };
 
-        this.broadcastMonitor = new BroadcastMonitorThread();
+        this.broadcastMonitor = new BroadcastMonitorThread(this.streamConfig);
 
         this.futures = new HashMap<>();
     }
@@ -397,9 +403,6 @@ public class LocalStreamBuilder implements StreamBuilder {
             throw new InvalidStreamException("Invalid character, ':', in component id : "+id);
         }
     }
-
-
-
 
     protected int getTimeout() {
     //Set the timeout of it is configured, otherwise signal downstream components to use their default
