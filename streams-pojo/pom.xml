@@ -189,11 +189,6 @@
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/share.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/tag.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/update.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/Broadcast.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/StreamsTaskCounterBroadcast.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/ThroughputQueueBroadcast.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/DatumStatusCounterBroadcast.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/MemoryUsageBroadcast.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.pojo.json</targetPackage>
