@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import org.apache.pig.data.Tuple;
 import org.apache.pig.pigunit.PigTest;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 import org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer;
 import org.apache.streams.twitter.serializer.TwitterJsonTweetActivitySerializer;
 import org.apache.tools.ant.util.StringUtils;
@@ -49,7 +50,7 @@ public class PigSerializerTest {
         TwitterJsonActivitySerializer serializer = new TwitterJsonActivitySerializer();
 
         String doc = (String) StringUtils.split(input[0], '\t').get(3);
-        String outdoc = StreamsJacksonMapper.getInstance().writeValueAsString(serializer.deserialize(doc));
+        String outdoc = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsTwitterMapper.TWITTER_FORMAT)).writeValueAsString(serializer.deserialize(doc));
 
         String[] output = new String[1];
         output[0] = "(159475541894897679,twitter,statuses/user_timeline,1384499359006," + outdoc + ")";
