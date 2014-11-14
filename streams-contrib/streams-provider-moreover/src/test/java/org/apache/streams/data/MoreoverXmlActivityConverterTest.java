@@ -21,6 +21,7 @@ package org.apache.streams.data;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
+import org.apache.streams.data.moreover.conversion.MoreoverXmlActivityConverter;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Before;
 import org.junit.Test;

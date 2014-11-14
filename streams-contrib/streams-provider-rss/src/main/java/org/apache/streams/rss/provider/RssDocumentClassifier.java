@@ -20,13 +20,17 @@ package org.apache.streams.rss.provider;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.syndication.feed.synd.SyndEntry;
+import org.apache.streams.data.DocumentClassifier;
 
 /**
  * Created by sblackmon on 12/13/13.
  */
-public class RssEventClassifier {
+public class RssDocumentClassifier implements DocumentClassifier {
 
-    public static Class detectClass( ObjectNode bean ) {
-        return SyndEntry.class;
+    @Override
+    public Class detectClass(Object document) {
+        if( document instanceof SyndEntry )
+            return SyndEntry.class;
+        return null;
     }
 }

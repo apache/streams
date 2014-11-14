@@ -32,8 +32,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+@Deprecated
 /**
  * Converts ObjectNode representations of Rome SyndEntries to activities.
+ * Deprecated: Modules and streams should adopt TypeConverterProcessor and ActivityConverterProcessor
+ * TODO: Have RSS Provider always output ObjectNode, place ActivityConverterProcessor afterward with RssDocumentClassifier and RssConverterResolver available
+ * TODO: Refactor tests and examples
  */
 public class RssTypeConverter implements StreamsProcessor{
 
