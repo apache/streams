@@ -24,7 +24,9 @@ import com.google.common.base.Joiner;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.streams.facebook.Post;
+import org.apache.streams.facebook.serializer.FacebookActivityUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.json.Activity;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -33,13 +35,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 
-/**
-* Created with IntelliJ IDEA.
-* User: sblackmon
-* Date: 8/20/13
-* Time: 5:57 PM
-* To change this template use File | Settings | File Templates.
-*/
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class FacebookPostSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FacebookPostSerDeTest.class);
@@ -72,6 +70,22 @@ public class FacebookPostSerDeTest {
             Assert.assertEquals(ser, serde);
 
             LOGGER.debug(mapper.writeValueAsString(serde));
+
+            Activity activity = new Activity();
+            FacebookActivityUtil.updateActivity(ser, activity);
+
+            assertNotNull(activity);
+            assertNotNull(activity.getActor().getId());
+            assertNotNull(activity.getActor().getDisplayName());
+            assertNotNull(activity.getId());
+            assert(activity.getVerb().equals("post"));
+            assertNotNull(activity.getObject());
+            assertNotNull(activity.getUpdated());
+            assertNotNull(activity.getPublished());
+            assertEquals(activity.getProvider().getId(), "id:providers:facebook");
+            assertEquals(activity.getProvider().getDisplayName(), "Facebook");
+            assertEquals(activity.getLinks().size(), 1);
+            assertNotNull(activity.getAdditionalProperties().get("extensions"));
 
         } catch( Exception e ) {
             System.out.println(e);
