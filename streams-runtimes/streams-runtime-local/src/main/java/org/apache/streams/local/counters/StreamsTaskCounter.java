@@ -19,7 +19,9 @@ package org.apache.streams.local.counters;
 
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
+import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.apache.streams.util.ComponentUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +33,9 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  */
 @ThreadSafe
-public class StreamsTaskCounter implements StreamsTaskCounterMXBean{
+public class StreamsTaskCounter implements StreamsTaskCounterMXBean {
 
-    public static final String NAME_TEMPLATE = "org.apache.streams.local:type=StreamsTaskCounter,name=%s";
+    public static final String NAME_TEMPLATE = "org.apache.streams.local:type=StreamsTaskCounter,name=%s,identifier=%s,startedAt=%s";
     private static final Logger LOGGER = LoggerFactory.getLogger(StreamsTaskCounter.class);
 
     private AtomicLong emitted;
@@ -48,12 +50,20 @@ public class StreamsTaskCounter implements StreamsTaskCounterMXBean{
      * @param id
      */
     public StreamsTaskCounter(String id) {
+        this(id, LocalStreamBuilder.DEFAULT_STREAM_IDENTIFIER, -1);
+    }
+
+    /**
+     *
+     * @param id
+     */
+    public StreamsTaskCounter(String id, String streamId, long startedAt) {
         this.emitted = new AtomicLong(0);
         this.received = new AtomicLong(0);
         this.errors = new AtomicLong(0);
         this.totalTime = new AtomicLong(0);
         this.maxTime = -1;
-        ComponentUtils.registerLocalMBean(String.format(NAME_TEMPLATE, id), this);
+        ComponentUtils.registerLocalMBean(String.format(NAME_TEMPLATE, id, streamId, startedAt), this);
     }
 
     /**

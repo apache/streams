@@ -51,6 +51,8 @@ public class LocalStreamBuilder implements StreamBuilder {
     public static final String BROADCAST_KEY = "broadcastURI";
     public static final String STREAM_IDENTIFIER_KEY = "streamsID";
     public static final String BROADCAST_INTERVAL_KEY = "monitoring_broadcast_interval_ms";
+    public static final String DEFAULT_STREAM_IDENTIFIER = "Unknown_Stream";
+    public static final String DEFAULT_STARTED_AT_KEY = "startedAt";
 
     private Map<String, StreamComponent> providers;
     private Map<String, StreamComponent> components;
@@ -65,6 +67,8 @@ public class LocalStreamBuilder implements StreamBuilder {
     private Thread shutdownHook;
     private BroadcastMonitorThread broadcastMonitor;
     private int maxQueueCapacity;
+    private String streamIdentifier = DEFAULT_STREAM_IDENTIFIER;
+    private DateTime startedAt = new DateTime();
 
     /**
      * Creates a local stream builder with no config object and default maximum internal queue size of 500
@@ -112,6 +116,11 @@ public class LocalStreamBuilder implements StreamBuilder {
             }
         };
 
+        setStreamIdentifier();
+        if(this.streamConfig != null) {
+            this.streamConfig.put(DEFAULT_STARTED_AT_KEY, startedAt.getMillis());
+        }
+
         this.broadcastMonitor = new BroadcastMonitorThread(this.streamConfig);
 
         this.futures = new HashMap<>();
@@ -120,7 +129,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     @Override
     public StreamBuilder newPerpetualStream(String id, StreamsProvider provider) {
         validateId(id);
-        this.providers.put(id, new StreamComponent(id, provider, true));
+        this.providers.put(id, new StreamComponent(id, provider, true, streamConfig));
         ++this.totalTasks;
         if( provider instanceof DatumStatusCountable )
             ++this.monitorTasks;
@@ -130,7 +139,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     @Override
     public StreamBuilder newReadCurrentStream(String id, StreamsProvider provider) {
         validateId(id);
-        this.providers.put(id, new StreamComponent(id, provider, false));
+        this.providers.put(id, new StreamComponent(id, provider, false, streamConfig));
         ++this.totalTasks;
         if( provider instanceof DatumStatusCountable )
             ++this.monitorTasks;
@@ -140,7 +149,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     @Override
     public StreamBuilder newReadNewStream(String id, StreamsProvider provider, BigInteger sequence) {
         validateId(id);
-        this.providers.put(id, new StreamComponent(id, provider, sequence));
+        this.providers.put(id, new StreamComponent(id, provider, sequence, streamConfig));
         ++this.totalTasks;
         if( provider instanceof DatumStatusCountable )
             ++this.monitorTasks;
@@ -150,7 +159,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     @Override
     public StreamBuilder newReadRangeStream(String id, StreamsProvider provider, DateTime start, DateTime end) {
         validateId(id);
-        this.providers.put(id, new StreamComponent(id, provider, start, end));
+        this.providers.put(id, new StreamComponent(id, provider, start, end, streamConfig));
         ++this.totalTasks;
         if( provider instanceof DatumStatusCountable )
             ++this.monitorTasks;
@@ -160,7 +169,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     @Override
     public StreamBuilder addStreamsProcessor(String id, StreamsProcessor processor, int numTasks, String... inBoundIds) {
         validateId(id);
-        StreamComponent comp = new StreamComponent(id, processor, new ThroughputQueue<StreamsDatum>(this.maxQueueCapacity, id), numTasks);
+        StreamComponent comp = new StreamComponent(id, processor, new ThroughputQueue<StreamsDatum>(this.maxQueueCapacity, id, streamIdentifier, startedAt.getMillis()), numTasks, streamConfig);
         this.components.put(id, comp);
         connectToOtherComponents(inBoundIds, comp);
         this.totalTasks += numTasks;
@@ -172,7 +181,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     @Override
     public StreamBuilder addStreamsPersistWriter(String id, StreamsPersistWriter writer, int numTasks, String... inBoundIds) {
         validateId(id);
-        StreamComponent comp = new StreamComponent(id, writer, new ThroughputQueue<StreamsDatum>(this.maxQueueCapacity, id), numTasks);
+        StreamComponent comp = new StreamComponent(id, writer, new ThroughputQueue<StreamsDatum>(this.maxQueueCapacity, id, streamIdentifier, startedAt.getMillis()), numTasks, streamConfig);
         this.components.put(id, comp);
         connectToOtherComponents(inBoundIds, comp);
         this.totalTasks += numTasks;
@@ -281,7 +290,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         for(StreamComponent prov : this.providers.values()) {
             StreamsTask task = prov.createConnectedTask(getTimeout());
             task.setStreamConfig(this.streamConfig);
-            StreamsTaskCounter counter = new StreamsTaskCounter(prov.getId());
+            StreamsTaskCounter counter = new StreamsTaskCounter(prov.getId(), streamIdentifier, startedAt.getMillis());
             task.setStreamsTaskCounter(counter);
             this.executor.submit(task);
             provTasks.put(prov.getId(), (StreamsProviderTask) task);
@@ -296,7 +305,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         for(StreamComponent comp : this.components.values()) {
             int tasks = comp.getNumTasks();
             List<StreamsTask> compTasks = new LinkedList<StreamsTask>();
-            StreamsTaskCounter counter = new StreamsTaskCounter(comp.getId());
+            StreamsTaskCounter counter = new StreamsTaskCounter(comp.getId(), streamIdentifier, startedAt.getMillis());
             for(int i=0; i < tasks; ++i) {
                 StreamsTask task = comp.createConnectedTask(getTimeout());
                 task.setStreamsTaskCounter(counter);
@@ -408,6 +417,16 @@ public class LocalStreamBuilder implements StreamBuilder {
     protected int getTimeout() {
     //Set the timeout of it is configured, otherwise signal downstream components to use their default
         return streamConfig != null && streamConfig.containsKey(TIMEOUT_KEY) ? (Integer)streamConfig.get(TIMEOUT_KEY) : -1;
+    }
+
+    private void setStreamIdentifier() {
+        if(streamConfig.containsKey(STREAM_IDENTIFIER_KEY) &&
+                streamConfig.get(STREAM_IDENTIFIER_KEY) != null &&
+                streamConfig.get(STREAM_IDENTIFIER_KEY).toString().length() > 0) {
+            this.streamIdentifier = streamConfig.get(STREAM_IDENTIFIER_KEY).toString();
+        } else {
+            this.streamIdentifier = DEFAULT_STREAM_IDENTIFIER;
+        }
     }
 
 }

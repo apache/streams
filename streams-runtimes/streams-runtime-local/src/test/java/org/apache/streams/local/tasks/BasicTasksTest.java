@@ -57,7 +57,7 @@ public class BasicTasksTest {
     public void testProviderTask() {
         int numMessages = 100;
         NumericMessageProvider provider = new NumericMessageProvider(numMessages);
-        StreamsProviderTask task = new StreamsProviderTask(provider, false);
+        StreamsProviderTask task = new StreamsProviderTask(provider, false, null);
         BlockingQueue<StreamsDatum> outQueue = new LinkedBlockingQueue<>();
         task.addOutputQueue(outQueue);
         //Test that adding input queues to providers is not valid
@@ -101,7 +101,7 @@ public class BasicTasksTest {
         int numMessages = 100;
         PassthroughDatumCounterProcessor processor = new PassthroughDatumCounterProcessor("");
         StreamsProcessorTask task = new StreamsProcessorTask(processor);
-        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID);
+        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, null, -1);
         task.setStreamsTaskCounter(counter);
         BlockingQueue<StreamsDatum> outQueue = new LinkedBlockingQueue<>();
         BlockingQueue<StreamsDatum> inQueue = createInputQueue(numMessages);
@@ -145,7 +145,7 @@ public class BasicTasksTest {
         int numMessages = 100;
         DatumCounterWriter writer = new DatumCounterWriter("");
         StreamsPersistWriterTask task = new StreamsPersistWriterTask(writer);
-        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID);
+        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, null, -1);
         task.setStreamsTaskCounter(counter);
         BlockingQueue<StreamsDatum> outQueue = new LinkedBlockingQueue<>();
         BlockingQueue<StreamsDatum> inQueue = createInputQueue(numMessages);
