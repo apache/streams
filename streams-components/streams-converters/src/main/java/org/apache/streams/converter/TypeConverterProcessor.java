@@ -19,7 +19,6 @@ under the License.
 package org.apache.streams.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
@@ -27,13 +26,13 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 
 /**
  *
  */
-public class TypeConverterProcessor implements StreamsProcessor {
+public class TypeConverterProcessor implements StreamsProcessor, Serializable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TypeConverterProcessor.class);
 

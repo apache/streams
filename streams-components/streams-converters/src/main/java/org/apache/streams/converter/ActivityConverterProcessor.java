@@ -74,6 +74,9 @@ public class ActivityConverterProcessor extends TypeConverterProcessor {
                     break;
             }
 
+            //Preconditions.checkNotNull(datumClass);
+            if( datumClass == null) return result;
+
             // This implementation is primitive, greedy, takes first it can resolve
             Class converterClass = null;
             for( ActivityConverterResolver resolver : resolvers ) {
@@ -82,7 +85,13 @@ public class ActivityConverterProcessor extends TypeConverterProcessor {
                     break;
             }
 
+            //Preconditions.checkNotNull(converterClass);
+            if( converterClass == null) return result;
+
             ActivityConverter converter = ActivityConverterFactory.getInstance(converterClass);
+
+            //Preconditions.checkNotNull(converter);
+            if( converter == null) return result;
 
             Object typedDoc;
             if( datumClass.isInstance(inDoc) )
@@ -90,17 +99,25 @@ public class ActivityConverterProcessor extends TypeConverterProcessor {
             else
                 typedDoc = TypeConverterUtil.convert(inDoc, datumClass, mapper);
 
+            //Preconditions.checkNotNull(typedDoc);
+            if( typedDoc == null) return result;
+
             Activity activity = converter.deserialize(typedDoc);
+
+            //Preconditions.checkNotNull(activity);
+            if( activity == null) return result;
 
             entry.setDocument(activity);
 
             result.add(entry);
 
-        } catch( Throwable e ) {
-            LOGGER.warn("Unable to serialize!", e.getMessage());
+        } catch( Exception e ) {
+            LOGGER.warn("Unable to serialize!  " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            return result;
         }
 
-        return result;
     }
 
     @Override

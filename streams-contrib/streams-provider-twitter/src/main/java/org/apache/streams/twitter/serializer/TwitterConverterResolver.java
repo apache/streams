@@ -18,25 +18,9 @@
 
 package org.apache.streams.twitter.serializer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.StringUtils;
-import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.data.ActivityConverterResolver;
-import org.apache.streams.data.DocumentClassifier;
 import org.apache.streams.exceptions.ActivitySerializerException;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.twitter.pojo.Delete;
-import org.apache.streams.twitter.pojo.FriendList;
-import org.apache.streams.twitter.pojo.Retweet;
-import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.pojo.User;
-import org.apache.streams.twitter.pojo.UserstreamEvent;
-
-import java.io.IOException;
-import java.io.Serializable;
+import org.apache.streams.twitter.pojo.*;
 
 /**
  * Created by sblackmon on 12/13/13.
@@ -50,10 +34,12 @@ public class TwitterConverterResolver implements ActivityConverterResolver {
     private static TwitterConverterResolver instance = new TwitterConverterResolver();
 
     public static TwitterConverterResolver getInstance() {
-        return instance;
-    }
 
-    private static ObjectMapper mapper = new StreamsJacksonMapper(StreamsTwitterMapper.TWITTER_FORMAT);
+        if( instance == null )
+            instance = new TwitterConverterResolver();
+        return instance;
+
+    }
 
     @Override
     public Class bestSerializer(Class documentClass) throws ActivitySerializerException {
@@ -66,7 +52,10 @@ public class TwitterConverterResolver implements ActivityConverterResolver {
             return TwitterJsonUserActivityConverter.class;
         else if (documentClass == UserstreamEvent.class)
             return TwitterJsonUserstreameventActivityConverter.class;
-        else return TwitterJsonTweetActivityConverter.class;
+        else if (documentClass == FriendList.class)
+            return null;
+        else
+            return TwitterJsonTweetActivityConverter.class;
 
     }
 }

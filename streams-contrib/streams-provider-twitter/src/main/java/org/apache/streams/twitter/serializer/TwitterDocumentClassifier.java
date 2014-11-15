@@ -23,13 +23,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.data.DocumentClassifier;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.pojo.*;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 /**
  * Created by sblackmon on 12/13/13.
@@ -40,13 +38,16 @@ public class TwitterDocumentClassifier implements DocumentClassifier {
 
     }
 
-    private static TwitterDocumentClassifier instance = new TwitterDocumentClassifier();
+    private static TwitterDocumentClassifier instance;
 
     public static TwitterDocumentClassifier getInstance() {
+
+        if( instance == null )
+            instance = new TwitterDocumentClassifier();
         return instance;
     }
 
-    private static ObjectMapper mapper = new StreamsJacksonMapper(Lists.newArrayList(StreamsTwitterMapper.TWITTER_FORMAT));
+    private static ObjectMapper mapper;
 
     public Class detectClass(Object document) {
 
@@ -55,6 +56,8 @@ public class TwitterDocumentClassifier implements DocumentClassifier {
 
         String json = (String)document;
         Preconditions.checkArgument(StringUtils.isNotEmpty(json));
+
+        mapper = new StreamsJacksonMapper(Lists.newArrayList(StreamsTwitterMapper.TWITTER_FORMAT));
 
         ObjectNode objectNode;
         try {
