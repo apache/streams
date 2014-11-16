@@ -31,7 +31,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.List;
 
-public class FacebookPostActivitySerializer implements ActivitySerializer<org.apache.streams.facebook.Post> {
+public class FacebookPostActivityConverter implements ActivityConverter<Post> {
 
     public FacebookPostActivityConverter() {
 
