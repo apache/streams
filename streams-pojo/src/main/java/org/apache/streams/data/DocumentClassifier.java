@@ -18,16 +18,17 @@
 
 package org.apache.streams.data;
 
-import org.apache.streams.exceptions.ActivitySerializerException;
-import org.apache.streams.pojo.json.Activity;
-
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Serializes and deserializes Activities
  */
 public interface DocumentClassifier extends Serializable {
+
+    /*
+      Every implementing class should have a static getInstance() method
+      But java 7 does not allow the interface to require that
+     */
 
     /**
      * Gets the supported content type that can be deserialized/serialized

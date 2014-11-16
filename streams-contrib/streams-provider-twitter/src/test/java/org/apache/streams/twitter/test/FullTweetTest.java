@@ -23,18 +23,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.apache.streams.converter.ActivityConverterProcessor;
+import org.apache.streams.converter.ActivityConverterProcessorConfiguration;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.data.ActivityConverterResolver;
 import org.apache.streams.data.DocumentClassifier;
-import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Retweet;
-import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 import org.apache.streams.twitter.serializer.TwitterConverterResolver;
 import org.apache.streams.twitter.serializer.TwitterDocumentClassifier;
-import org.apache.streams.twitter.serializer.TwitterJsonActivityConverter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -95,10 +93,12 @@ public class FullTweetTest {
 
         Activity activity = null;
         try {
-            ActivityConverterProcessor converter = new ActivityConverterProcessor(
-                    Lists.newArrayList((DocumentClassifier)TwitterDocumentClassifier.getInstance()),
-                    Lists.newArrayList((ActivityConverterResolver)TwitterConverterResolver.getInstance()));
-            converter.prepare(null);
+            ActivityConverterProcessorConfiguration converterProcessorConfiguration = new ActivityConverterProcessorConfiguration()
+                    .withClassifiers(Lists.newArrayList((DocumentClassifier)TwitterDocumentClassifier.getInstance()))
+                    .withResolvers(Lists.newArrayList((ActivityConverterResolver)TwitterConverterResolver.getInstance()));
+
+            ActivityConverterProcessor converter = new ActivityConverterProcessor(converterProcessorConfiguration);
+            converter.prepare(converterProcessorConfiguration);
             List<StreamsDatum> result = converter.process(new StreamsDatum(TWITTER_JSON));
             activity = (Activity)result.get(0).getDocument();
         } catch (Throwable e) {

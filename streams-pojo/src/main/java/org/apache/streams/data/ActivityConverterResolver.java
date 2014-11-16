@@ -27,6 +27,11 @@ import java.io.Serializable;
  */
 public interface ActivityConverterResolver extends Serializable {
 
+    /*
+      Every implementing class should have a static getInstance() method
+      But java 7 does not allow the interface to require that
+     */
+
     /**
      * Identifies a class that con convert this document to an activity
      *

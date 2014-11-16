@@ -38,21 +38,22 @@ public class ActivityConverterProcessor extends TypeConverterProcessor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ActivityConverterProcessor.class);
 
+    protected ActivityConverterProcessorConfiguration configuration;
+
     private List<DocumentClassifier> classifiers;
     private List<ActivityConverterResolver> resolvers;
 
     public ActivityConverterProcessor() {
         super(Activity.class);
-        this.classifiers = Lists.newArrayList((DocumentClassifier)BaseDocumentClassifier.getInstance());
-        this.resolvers = Lists.newArrayList((ActivityConverterResolver) BaseActivityConverterResolver.getInstance());
+        this.classifiers = Lists.newArrayList();
+        this.resolvers = Lists.newArrayList();
     }
 
-    public ActivityConverterProcessor(List<DocumentClassifier> classifiers, List<ActivityConverterResolver> factories) {
+    public ActivityConverterProcessor(ActivityConverterProcessorConfiguration configuration) {
         super(Activity.class);
-        this.classifiers = classifiers;
-        this.resolvers = factories;
-        this.classifiers.add(BaseDocumentClassifier.getInstance());
-        this.resolvers.add(BaseActivityConverterResolver.getInstance());
+        this.configuration = configuration;
+        this.classifiers = Lists.newArrayList();
+        this.resolvers = Lists.newArrayList();
     }
 
     @Override
@@ -75,7 +76,12 @@ public class ActivityConverterProcessor extends TypeConverterProcessor {
             }
 
             //Preconditions.checkNotNull(datumClass);
-            if( datumClass == null) return result;
+            if( datumClass == null) {
+                LOGGER.warn("Unable to classify");
+                return result;
+            } else {
+                LOGGER.debug("Classifies document as " + datumClass.getSimpleName());
+            }
 
             // This implementation is primitive, greedy, takes first it can resolve
             Class converterClass = null;
@@ -86,7 +92,13 @@ public class ActivityConverterProcessor extends TypeConverterProcessor {
             }
 
             //Preconditions.checkNotNull(converterClass);
-            if( converterClass == null) return result;
+            if( converterClass == null) {
+                LOGGER.warn("Unable to resolve converterClass");
+                return result;
+            }
+            else {
+                LOGGER.debug("Resolved converter: " + converterClass.getSimpleName());
+            }
 
             ActivityConverter converter = ActivityConverterFactory.getInstance(converterClass);
 
@@ -100,12 +112,18 @@ public class ActivityConverterProcessor extends TypeConverterProcessor {
                 typedDoc = TypeConverterUtil.convert(inDoc, datumClass, mapper);
 
             //Preconditions.checkNotNull(typedDoc);
-            if( typedDoc == null) return result;
+            if( typedDoc == null) {
+                LOGGER.warn("Unable to convert " + inDoc.getClass().getSimpleName() + " to " + datumClass.getSimpleName());
+                return result;
+            }
 
             Activity activity = converter.deserialize(typedDoc);
 
             //Preconditions.checkNotNull(activity);
-            if( activity == null) return result;
+            if( activity == null) {
+                LOGGER.warn("Unable to convert " + datumClass.getClass().getCanonicalName() + " to Activity");
+                return result;
+            }
 
             entry.setDocument(activity);
 
@@ -123,8 +141,14 @@ public class ActivityConverterProcessor extends TypeConverterProcessor {
     @Override
     public void prepare(Object configurationObject) {
         super.prepare(configurationObject);
-        Preconditions.checkArgument(classifiers.size() > 0);
-        Preconditions.checkArgument(resolvers.size() > 0);
+        if( configuration != null ) {
+            if (configuration.getClassifiers() != null && configuration.getClassifiers().size() > 0)
+                this.classifiers.addAll(configuration.getClassifiers());
+            if (configuration.getResolvers() != null && configuration.getResolvers().size() > 0)
+                this.resolvers.addAll(configuration.getResolvers());
+        }
+        this.classifiers.add(BaseDocumentClassifier.getInstance());
+        this.resolvers.add(BaseActivityConverterResolver.getInstance());
     }
 
 };
