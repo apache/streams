@@ -52,11 +52,15 @@ public class RssStreamProviderTest extends RandomizedTest {
             StreamsResultSet batch = provider.readCurrent();
             LOGGER.debug("Batch size : {}", batch.size());
             datumCount += batch.size();
+            if(batch.size() != 0) { //if race condition happened, pull again
+                batch = provider.readCurrent();
+                assertEquals(0, batch.size());
+            }
 
             assertTrue(provider.scheduler.isComplete());
+            assertEquals(20, datumCount);
             assertFalse(provider.isRunning());
             assertEquals(0, datums.size());
-            assertEquals(20, datumCount);
             provider.cleanUp();
         } finally {
             if(provider != null)
