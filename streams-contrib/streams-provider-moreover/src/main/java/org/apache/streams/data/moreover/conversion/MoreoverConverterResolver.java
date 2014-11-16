@@ -6,7 +6,7 @@ import org.apache.streams.data.ActivityConverterResolver;
 import org.apache.streams.exceptions.ActivitySerializerException;
 
 /**
- * Created by sblackmon on 11/13/14.
+ * Ensures moreover documents can be converted to Activity
  */
 public class MoreoverConverterResolver implements ActivityConverterResolver {
     @Override

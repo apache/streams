@@ -29,7 +29,9 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 /**
- * Created by sblackmon on 3/27/14.
+ * StreamsJacksonMapper is the recommended interface to jackson for any streams component.
+ *
+ * Date-time formats that must be supported can be specified with constructor arguments.
  */
 public class StreamsJacksonMapper extends ObjectMapper {
 

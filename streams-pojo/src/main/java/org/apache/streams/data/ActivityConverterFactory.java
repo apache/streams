@@ -1,14 +1,12 @@
 package org.apache.streams.data;
 
-import org.apache.streams.data.ActivityConverter;
-
 /**
- * Created by sblackmon on 11/13/14.
+ * Instantiates a class that con convert a type of document to an activity
  */
-public class ActivityConverterFactory {
+ public class ActivityConverterFactory {
 
     /**
-     * Identifies a class that con convert this document to an activity
+     * Instantiates a class that con convert this type of document to an activity
      *
      * @param converterClass known class of the converter
      * @return an appropriate ActivityConverter

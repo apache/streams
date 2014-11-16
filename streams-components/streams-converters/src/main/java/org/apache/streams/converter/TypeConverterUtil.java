@@ -9,7 +9,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Created by sblackmon on 11/13/14.
+ * TypeConverterUtil supports TypeConverterProcessor in converting between String json and
+ * jackson-compatible POJO objects
  */
 public class TypeConverterUtil {
 

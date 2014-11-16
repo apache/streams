@@ -32,6 +32,19 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
+ * ActivityConverterProcessor is a utility processor for converting any datum document
+ * to an Activity.
+ *
+ * By default it will handle string json and objectnode representation of existing Activities.
+ *
+ * Implementations can add DocumentClassifiers and ActivityConverterResolvers to the processor
+ * to ensure additional ActivityConverters will be resolved and applied.
+ *
+ * A DocumentClassifier's reponsibility is to recognize document formats and label them, using
+ * a jackson-compatible POJO class.
+ *
+ * An ActivityConverterResolver's reponsibility is to identify ActivityConverter implementations
+ * capable of converting a raw document associated with that POJO class into an activity.
  *
  */
 public class ActivityConverterProcessor extends TypeConverterProcessor {

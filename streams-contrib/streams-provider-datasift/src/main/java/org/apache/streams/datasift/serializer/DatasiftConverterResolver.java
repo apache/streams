@@ -18,17 +18,12 @@
 
 package org.apache.streams.datasift.serializer;
 
-import com.google.common.base.Preconditions;
-import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.data.ActivityConverterResolver;
-import org.apache.streams.data.DocumentClassifier;
-import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.instagram.Instagram;
-import org.apache.streams.datasift.interaction.Interaction;
 import org.apache.streams.datasift.twitter.Twitter;
 
 /**
- * Created by sblackmon on 11/6/14.
+ * Ensures datasift documents can be converted to Activity
  */
 public class DatasiftConverterResolver implements ActivityConverterResolver {
 

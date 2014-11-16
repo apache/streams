@@ -2,11 +2,10 @@ package org.apache.streams.sysomos.conversion;
 
 import com.sysomos.xml.BeatApi;
 import org.apache.streams.data.ActivityConverterResolver;
-import org.apache.streams.data.DocumentClassifier;
 import org.apache.streams.exceptions.ActivitySerializerException;
 
 /**
- * Created by sblackmon on 11/13/14.
+ * Ensures sysomos documents can be converted to Activity
  */
 public class SysomosConverterResolver implements ActivityConverterResolver {
 

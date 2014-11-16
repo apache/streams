@@ -30,7 +30,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- *
+ * TypeConverterProcessor converts between String json and jackson-compatible POJO objects
  */
 public class TypeConverterProcessor implements StreamsProcessor, Serializable {
 

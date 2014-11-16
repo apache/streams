@@ -4,7 +4,7 @@ import com.sysomos.xml.BeatApi;
 import org.apache.streams.data.DocumentClassifier;
 
 /**
- * Created by sblackmon on 11/13/14.
+ * Ensures sysomos documents can be converted to Activity
  */
 public class SysomosDocumentClassifier implements DocumentClassifier {
     @Override

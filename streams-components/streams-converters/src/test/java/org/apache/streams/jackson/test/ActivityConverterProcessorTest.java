@@ -33,7 +33,8 @@ import java.util.List;
 import static junit.framework.Assert.*;
 
 /**
- *
+ * Test for
+ * @see {@link org.apache.streams.converter.ActivityConverterProcessor}
  */
 public class ActivityConverterProcessorTest {
 
@@ -82,21 +83,4 @@ public class ActivityConverterProcessorTest {
         assertTrue(((Activity)resultDatum.getDocument()).getVerb().equals("share"));
     }
 
-//    @Test
-//    public void testTypeConverterObjectNodeToString() throws IOException {
-//        final String ID = "1";
-//        StreamsProcessor processor = new ActivitySerializerProcessor(ObjectNode.class, String.class, Lists.newArrayList(DATASIFT_FORMAT));
-//        processor.prepare(null);
-//        ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(DATASIFT_FORMAT));
-//        ObjectNode node = mapper.readValue(DATASIFT_JSON, ObjectNode.class);
-//        StreamsDatum datum = new StreamsDatum(node, ID);
-//        List<StreamsDatum> result = processor.process(datum);
-//        assertNotNull(result);
-//        assertEquals(1, result.size());
-//        StreamsDatum resultDatum = result.get(0);
-//        assertNotNull(resultDatum);
-//        assertNotNull(resultDatum.getDocument());
-//        assertTrue(resultDatum.getDocument() instanceof String);
-//        assertEquals(ID, resultDatum.getId());
-//    }
 }

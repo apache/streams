@@ -11,7 +11,11 @@ import org.apache.streams.pojo.json.Activity;
 import java.util.List;
 
 /**
- * Created by sblackmon on 11/13/14.
+ * BaseObjectNodeActivityConverter is included by default in all
+ * @see {@link org.apache.streams.converter.ActivityConverterProcessor}
+ *
+ * Ensures generic String Json representation of an Activity can be converted to Activity
+ *
  */
 public class BaseStringActivityConverter implements ActivityConverter<String> {
 

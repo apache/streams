@@ -27,13 +27,14 @@ import org.apache.streams.datasift.instagram.Instagram;
 import org.apache.streams.datasift.twitter.Twitter;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
 import org.junit.Test;
 
 import java.util.Scanner;
 
 /**
- * Created by sblackmon on 12/13/13.
+ * Test for
+ * @see {@link org.apache.streams.datasift.serializer.DatasiftEventClassifier}
+ *
  */
 public class DatasiftEventClassifierTest {
 

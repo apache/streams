@@ -33,7 +33,8 @@ import java.util.List;
 import static junit.framework.Assert.*;
 
 /**
- *
+ * Test for
+ * @see {@link org.apache.streams.converter.TypeConverterProcessor}
  */
 public class TypeConverterProcessorTest {
 

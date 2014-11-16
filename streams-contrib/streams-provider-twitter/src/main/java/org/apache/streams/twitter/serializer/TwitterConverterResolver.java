@@ -23,7 +23,7 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.twitter.pojo.*;
 
 /**
- * Created by sblackmon on 12/13/13.
+ * Ensures twitter documents can be converted to Activity
  */
 public class TwitterConverterResolver implements ActivityConverterResolver {
 

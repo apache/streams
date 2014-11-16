@@ -6,7 +6,7 @@ import com.moreover.api.Article;
 import org.apache.streams.data.DocumentClassifier;
 
 /**
- * Created by sblackmon on 11/13/14.
+ * Ensures moreover documents can be converted to Activity
  */
 public class MoreoverDocumentClassifier implements DocumentClassifier {
     @Override

@@ -30,7 +30,7 @@ import org.apache.streams.twitter.pojo.*;
 import java.io.IOException;
 
 /**
- * Created by sblackmon on 12/13/13.
+ * Ensures twitter documents can be converted to Activity
  */
 public class TwitterDocumentClassifier implements DocumentClassifier {
 

@@ -11,7 +11,11 @@ import org.apache.streams.pojo.json.Activity;
 import java.io.IOException;
 
 /**
- * Created by sblackmon on 11/12/14.
+ * BaseDocumentClassifier is included by default in all
+ * @see {@link org.apache.streams.converter.ActivityConverterProcessor}
+ *
+ * Ensures generic String and ObjectNode documents can be converted to Activity
+ *
  */
 public class BaseDocumentClassifier implements DocumentClassifier {
 

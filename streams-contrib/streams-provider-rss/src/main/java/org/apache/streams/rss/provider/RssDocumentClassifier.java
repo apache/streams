@@ -18,12 +18,11 @@
 
 package org.apache.streams.rss.provider;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.syndication.feed.synd.SyndEntry;
 import org.apache.streams.data.DocumentClassifier;
 
 /**
- * Created by sblackmon on 12/13/13.
+ * Ensures rss documents can be converted to Activity
  */
 public class RssDocumentClassifier implements DocumentClassifier {
 
