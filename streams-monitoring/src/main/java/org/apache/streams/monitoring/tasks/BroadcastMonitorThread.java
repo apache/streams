@@ -140,8 +140,8 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
             if (streamConfig != null &&
                     streamConfig.containsKey("monitoring_broadcast_interval_ms") &&
                     streamConfig.get("monitoring_broadcast_interval_ms") != null &&
-                    streamConfig.get("monitoring_broadcast_interval_ms") instanceof Long ||
-                    streamConfig.get("monitoring_broadcast_interval_ms") instanceof Integer) {
+                    (streamConfig.get("monitoring_broadcast_interval_ms") instanceof Long ||
+                    streamConfig.get("monitoring_broadcast_interval_ms") instanceof Integer)) {
                 waitTime = Long.parseLong(streamConfig.get("monitoring_broadcast_interval_ms").toString());
             } else {
                 waitTime = DEFAULT_WAIT_TIME;
