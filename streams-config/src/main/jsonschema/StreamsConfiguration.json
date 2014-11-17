@@ -2,13 +2,14 @@
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
     "id": "#",
-    "javaType" : "org.apache.streams.StreamsConfiguration",
+    "javaType" : "org.apache.streams.config.StreamsConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "pipeline": {
-            "type" : "string"
+            "type" : "string",
+            "default": "No-name Stream"
         },
-        "broadcastURI": {
+		"broadcastURI": {
             "type": "string"
         }
     }
