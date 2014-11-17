@@ -46,6 +46,10 @@ public class StreamsConfigurator {
      */
     public static Config config = ConfigFactory.load();
 
+    public static Config getConfig() {
+        return config;
+    }
+
     public static StreamsConfiguration detectConfiguration() {
         return detectConfiguration(config);
     }
