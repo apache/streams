@@ -1,0 +1,22 @@
+{
+  "type" : "object",
+  "title" : "object",
+  "extends" : {"$ref": "./Broadcast.json"},
+  "javaType": "org.apache.streams.pojo.json.DatumStatusCounterBroadcast",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description" : "Snapshot of the DatumStatusCounter",
+  "properties" : {
+    "passed": {
+      "type": "boolean",
+      "description": "Number of objects that have passed"
+    },
+    "failed": {
+      "type": "boolean",
+      "description": "Number of objects that have faile"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the MBean"
+    }
+  }
+}

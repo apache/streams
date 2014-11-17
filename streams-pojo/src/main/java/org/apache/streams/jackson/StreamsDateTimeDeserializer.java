@@ -21,23 +21,44 @@ package org.apache.streams.jackson;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.google.common.collect.Lists;
 import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by sblackmon on 3/27/14.
  */
 public class StreamsDateTimeDeserializer extends StdDeserializer<DateTime> implements Serializable {
 
+    List<DateTimeFormatter> formatters = Lists.newArrayList();
+
     protected StreamsDateTimeDeserializer(Class<DateTime> dateTimeClass) {
         super(dateTimeClass);
     }
 
+    protected StreamsDateTimeDeserializer(Class<DateTime> dateTimeClass, List<String> formats) {
+        super(dateTimeClass);
+        for( String format : formats )
+            formatters.add(DateTimeFormat.forPattern(format));
+    }
+
     @Override
     public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException {
-        return RFC3339Utils.getInstance().parseToUTC(jpar.getValueAsString());
+
+        DateTime result = RFC3339Utils.parseToUTC(jpar.getValueAsString());
+        Iterator<DateTimeFormatter> iterator = formatters.iterator();
+        while( result == null && iterator.hasNext()) {
+            DateTimeFormatter formatter = iterator.next();
+            result = formatter.parseDateTime(jpar.getValueAsString());
+        }
+        return result;
     }
 }

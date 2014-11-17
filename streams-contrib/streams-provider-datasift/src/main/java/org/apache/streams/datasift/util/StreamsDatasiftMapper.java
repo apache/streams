@@ -33,16 +33,21 @@ import java.io.IOException;
 
 /**
  * Created by sblackmon on 3/27/14.
+ *
+ * Depracated: Use StreamsJacksonMapper instead
  */
+@Deprecated()
 public class StreamsDatasiftMapper extends StreamsJacksonMapper {
 
-    public static final DateTimeFormatter DATASIFT_FORMAT = DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss Z");
+    public static final String DATASIFT_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
+
+    public static final DateTimeFormatter DATASIFT_FORMATTER = DateTimeFormat.forPattern(DATASIFT_FORMAT);
 
     public static final Long getMillis(String dateTime) {
 
         // this function is for pig which doesn't handle exceptions well
         try {
-            Long result = DATASIFT_FORMAT.parseMillis(dateTime);
+            Long result = DATASIFT_FORMATTER.parseMillis(dateTime);
             return result;
         } catch( Exception e ) {
             return null;
@@ -66,7 +71,7 @@ public class StreamsDatasiftMapper extends StreamsJacksonMapper {
                     public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException, JsonProcessingException {
                         DateTime result = null;
                         try {
-                            result = DATASIFT_FORMAT.parseDateTime(jpar.getValueAsString());
+                            result = DATASIFT_FORMATTER.parseDateTime(jpar.getValueAsString());
                         } catch (Exception e) {}
                         if (result == null) {
                             try {

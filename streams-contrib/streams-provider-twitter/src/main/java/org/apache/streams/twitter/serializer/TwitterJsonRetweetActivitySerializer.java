@@ -37,6 +37,12 @@ public class TwitterJsonRetweetActivitySerializer implements ActivitySerializer<
 
     }
 
+    private static TwitterJsonRetweetActivitySerializer instance = new TwitterJsonRetweetActivitySerializer();
+
+    public static TwitterJsonRetweetActivitySerializer getInstance() {
+        return instance;
+    }
+
     @Override
     public String serializationFormat() {
         return null;

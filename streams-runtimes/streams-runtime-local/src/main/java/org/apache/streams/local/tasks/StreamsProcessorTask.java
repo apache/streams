@@ -21,13 +21,11 @@ package org.apache.streams.local.tasks;
 import com.google.common.collect.Maps;
 import org.apache.streams.core.*;
 import org.apache.streams.core.util.DatumUtils;
+import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,6 +45,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
     private BlockingQueue<StreamsDatum> inQueue;
     private AtomicBoolean isRunning;
     private AtomicBoolean blocked;
+    private StreamsTaskCounter counter;
 
     private DatumStatusCounter statusCounter = new DatumStatusCounter();
 
@@ -105,6 +104,9 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
     public void run() {
         try {
             this.processor.prepare(this.streamConfig);
+            if(this.counter == null) {
+                this.counter = new StreamsTaskCounter(this.processor.getClass().getName()+ UUID.randomUUID().toString());
+            }
             while(this.keepRunning.get()) {
                 StreamsDatum datum = null;
                 try {
@@ -117,11 +119,15 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                     Thread.currentThread().interrupt();
                 }
                 if(datum != null) {
+                    this.counter.incrementReceivedCount();
                     try {
+                        long startTime = System.currentTimeMillis();
                         List<StreamsDatum> output = this.processor.process(datum);
+                        this.counter.addTime(System.currentTimeMillis() - startTime);
                         if(output != null) {
                             for(StreamsDatum outDatum : output) {
                                 super.addToOutgoingQueue(outDatum);
+                                this.counter.incrementEmittedCount();
                                 statusCounter.incrementStatus(DatumStatus.SUCCESS);
                             }
                         }
@@ -130,6 +136,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                         this.keepRunning.set(false);
                         Thread.currentThread().interrupt();
                     } catch (Throwable t) {
+                        this.counter.incrementErrorCount();
                         LOGGER.warn("Caught Throwable in processor, {} : {}", this.processor.getClass().getName(), t.getMessage());
                         statusCounter.incrementStatus(DatumStatus.FAIL);
                         //Add the error to the metadata, but keep processing
@@ -150,5 +157,10 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
         List<BlockingQueue<StreamsDatum>> queues = new LinkedList<BlockingQueue<StreamsDatum>>();
         queues.add(this.inQueue);
         return queues;
+    }
+
+    @Override
+    public void setStreamsTaskCounter(StreamsTaskCounter counter) {
+        this.counter = counter;
     }
 }
