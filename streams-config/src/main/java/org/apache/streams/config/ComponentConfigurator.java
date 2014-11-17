@@ -21,7 +21,6 @@ package org.apache.streams.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,41 +28,46 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 
 /**
- * StreamsConfigurator supplies the entire typesafe tree to runtimes and modules.
+ * ComponentConfigurator supplies serializable configuration beans derived from a specified typesafe path or object.
  *
- * StreamsConfigurator also supplies StreamsConfiguration POJO to runtimes and modules.
+ * Typically a component will select a 'default' typesafe path to be used if no other path or object is provided.
+ *
+ * For example, streams-persist-elasticsearch will use 'elasticsearch' by default, but an implementation
+ *   such as github.com/w2ogroup/elasticsearch-reindex can resolve a reader from elasticsearch.source
+ *   and a writer from elasticsearch.destination
  *
  */
-public class StreamsConfigurator {
+public class ComponentConfigurator<T extends Serializable> {
+
+    private Class<T> configClass;
+    public ComponentConfigurator(Class<T> configClass) {
+        this.configClass = configClass;
+    }
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ComponentConfigurator.class);
 
     private final static ObjectMapper mapper = new ObjectMapper();
 
-    /*
-        Pull all configuration files from the classpath, system properties, and environment variables
-     */
-    public static Config config = ConfigFactory.load();
+    public T detectConfiguration(Config typesafeConfig) {
 
-    public static Config getConfig() {
-        return config;
-    }
-
-    public static StreamsConfiguration detectConfiguration() {
-        return detectConfiguration(config);
-    }
-
-    public static StreamsConfiguration detectConfiguration(Config typesafeConfig) {
-
-        StreamsConfiguration pojoConfig = null;
+        T pojoConfig = null;
 
         try {
-            pojoConfig = mapper.readValue(typesafeConfig.root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
+            pojoConfig = mapper.readValue(typesafeConfig.root().render(ConfigRenderOptions.concise()), configClass);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.warn("Could not parse:", typesafeConfig);
         }
 
         return pojoConfig;
+    }
+
+    public T detectConfiguration(String subConfig) {
+        Config streamsConfig = StreamsConfigurator.getConfig();
+        return detectConfiguration( streamsConfig.getConfig(subConfig));
+    }
+
+    public T detectConfiguration(Config typesafeConfig, String subConfig) {
+        return detectConfiguration( typesafeConfig.getConfig(subConfig));
     }
 }
