@@ -29,11 +29,10 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: sblackmon
- * Date: 9/23/13
- * Time: 10:44 AM
- * To change this template use File | Settings | File Templates.
+ * StreamsConfigurator supplies the entire typesafe tree to runtimes and modules.
+ *
+ * StreamsConfigurator also supplies StreamsConfiguration POJO to runtimes and modules.
+ *
  */
 public class StreamsConfigurator {
 

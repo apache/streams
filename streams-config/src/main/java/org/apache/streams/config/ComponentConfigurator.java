@@ -63,7 +63,7 @@ public class ComponentConfigurator<T extends Serializable> {
     }
 
     public T detectConfiguration(String subConfig) {
-        Config streamsConfig = StreamsConfigurator.config;
+        Config streamsConfig = StreamsConfigurator.getConfig();
         return detectConfiguration( streamsConfig.getConfig(subConfig));
     }
 
