@@ -82,8 +82,6 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
     protected GoogleCredential credential;
     protected Plus plus;
 
-
-
     public AbstractGPlusProvider() {
         Config config = StreamsConfigurator.config.getConfig("gplus");
         this.config = GPlusConfigurator.detectConfiguration(config);
