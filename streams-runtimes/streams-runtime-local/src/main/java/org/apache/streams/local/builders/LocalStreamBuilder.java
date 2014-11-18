@@ -420,7 +420,8 @@ public class LocalStreamBuilder implements StreamBuilder {
     }
 
     private void setStreamIdentifier() {
-        if(streamConfig.containsKey(STREAM_IDENTIFIER_KEY) &&
+        if(streamConfig != null &&
+                streamConfig.containsKey(STREAM_IDENTIFIER_KEY) &&
                 streamConfig.get(STREAM_IDENTIFIER_KEY) != null &&
                 streamConfig.get(STREAM_IDENTIFIER_KEY).toString().length() > 0) {
             this.streamIdentifier = streamConfig.get(STREAM_IDENTIFIER_KEY).toString();

@@ -205,7 +205,8 @@ public abstract class BaseStreamsTask implements StreamsTask {
     }
 
     public void setStartedAt() {
-        if(streamConfig.containsKey(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY) &&
+        if(streamConfig != null &&
+                streamConfig.containsKey(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY) &&
                 streamConfig.get(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY) != null &&
                 streamConfig.get(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY) instanceof Long) {
             this.startedAt = Long.parseLong(streamConfig.get(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY).toString());
@@ -219,7 +220,8 @@ public abstract class BaseStreamsTask implements StreamsTask {
     }
 
     public void setStreamIdentifier() {
-        if(streamConfig.containsKey(LocalStreamBuilder.STREAM_IDENTIFIER_KEY) &&
+        if(streamConfig != null &&
+                streamConfig.containsKey(LocalStreamBuilder.STREAM_IDENTIFIER_KEY) &&
                 streamConfig.get(LocalStreamBuilder.STREAM_IDENTIFIER_KEY) != null &&
                 streamConfig.get(LocalStreamBuilder.STREAM_IDENTIFIER_KEY).toString().length() > 0) {
             this.streamIdentifier = streamConfig.get(LocalStreamBuilder.STREAM_IDENTIFIER_KEY).toString();
