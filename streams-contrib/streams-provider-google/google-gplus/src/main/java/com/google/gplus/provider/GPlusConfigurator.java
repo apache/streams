@@ -40,22 +40,6 @@ public class GPlusConfigurator {
     private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
     public static GPlusConfiguration detectConfiguration(Config config) {
-//        Config oauth = StreamsConfigurator.config.getConfig("gplus.oauth");
-//
-//        GPlusConfiguration gplusConfiguration = new GPlusConfiguration();
-//
-//        gplusConfiguration.setProtocol(config.getString("protocol"));
-//        gplusConfiguration.setHost(config.getString("host"));
-//        gplusConfiguration.setPort(config.getLong("port"));
-//        gplusConfiguration.setVersion(config.getString("version"));
-//        GPlusOAuthConfiguration gPlusOAuthConfiguration = new GPlusOAuthConfiguration();
-//        gPlusOAuthConfiguration.setConsumerKey(oauth.getString("consumerKey"));
-//        gPlusOAuthConfiguration.setConsumerSecret(oauth.getString("consumerSecret"));
-//        gPlusOAuthConfiguration.setAccessToken(oauth.getString("accessToken"));
-//        gPlusOAuthConfiguration.setAccessTokenSecret(oauth.getString("accessTokenSecret"));
-//        gPlusOAuthConfiguration.setAppName(oauth.getString("appName"));
-//        gplusConfiguration.setOauth(gPlusOAuthConfiguration);
-//
         GPlusConfiguration configuration = null;
         try {
             configuration = MAPPER.readValue(config.root().render(ConfigRenderOptions.concise()), GPlusConfiguration.class);
