@@ -18,6 +18,7 @@
 package org.apache.streams.local.counters;
 
 import net.jcip.annotations.ThreadSafe;
+import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,16 +33,20 @@ import java.util.concurrent.atomic.AtomicLong;
 @ThreadSafe
 public class DatumStatusCounter implements DatumStatusCounterMXBean{
 
-    public static final String NAME_TEMPLATE = "org.apache.streams.local:type=DatumCounter,name=%s";
+    public static final String NAME_TEMPLATE = "org.apache.streams.local:type=DatumCounter,name=%s,identifier=%s,startedAt=%s";
     private static final Logger LOGGER = LoggerFactory.getLogger(DatumStatusCounter.class);
 
     private AtomicLong failed;
     private AtomicLong passed;
 
     public DatumStatusCounter(String id) {
+        this(id, LocalStreamBuilder.DEFAULT_STREAM_IDENTIFIER, -1);
+    }
+
+    public DatumStatusCounter(String id, String streamIdentifier, long startedAt) {
         this.failed = new AtomicLong(0);
         this.passed = new AtomicLong(0);
-        ComponentUtils.registerLocalMBean(String.format(NAME_TEMPLATE, id), this);
+        ComponentUtils.registerLocalMBean(String.format(NAME_TEMPLATE, id, streamIdentifier, startedAt), this);
     }
 
     public void incrementFailedCount() {

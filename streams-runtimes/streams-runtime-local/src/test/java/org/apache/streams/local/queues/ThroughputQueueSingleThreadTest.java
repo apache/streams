@@ -20,6 +20,7 @@ package org.apache.streams.local.queues;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.Repeat;
 import org.apache.streams.util.ComponentUtils;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 
@@ -35,7 +36,9 @@ import static org.junit.Assert.assertEquals;
  * Single thread unit tests for {@link org.apache.streams.local.queues.ThroughputQueue}
  */
 public class ThroughputQueueSingleThreadTest extends RandomizedTest {
-
+    private static final String MBEAN_ID = "test_id";
+    private static final String STREAM_ID = "test_stream";
+    private static long STREAM_START_TIME = (new DateTime()).getMillis();
 
     @After
     public void removeLocalMBeans() {
@@ -208,10 +211,9 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
         try {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             Integer beanCount = mbs.getMBeanCount();
-            String id = "testQueue";
-            ThroughputQueue queue = new ThroughputQueue(id);
+            ThroughputQueue queue = new ThroughputQueue(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
             assertEquals("Expected bean to be registered", new Integer(beanCount+1), mbs.getMBeanCount());
-            ObjectInstance mBean = mbs.getObjectInstance(new ObjectName(String.format(ThroughputQueue.NAME_TEMPLATE, id)));
+            ObjectInstance mBean = mbs.getObjectInstance(new ObjectName(String.format(ThroughputQueue.NAME_TEMPLATE, MBEAN_ID, STREAM_ID, STREAM_START_TIME)));
             assertNotNull(mBean);
         } catch (Exception e) {
             fail("Failed to register MXBean : "+e.getMessage());
@@ -226,12 +228,11 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
         try {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             Integer beanCount = mbs.getMBeanCount();
-            String id = "testQueue";
             int numReg = randomIntBetween(2, 100);
             for(int i=0; i < numReg; ++i) {
-                ThroughputQueue queue = new ThroughputQueue(id+i);
+                ThroughputQueue queue = new ThroughputQueue(MBEAN_ID + "" + i, STREAM_ID, STREAM_START_TIME);
                 assertEquals("Expected bean to be registered", new Integer(beanCount + (i+1)), mbs.getMBeanCount());
-                ObjectInstance mBean = mbs.getObjectInstance(new ObjectName(String.format(ThroughputQueue.NAME_TEMPLATE, id+i)));
+                ObjectInstance mBean = mbs.getObjectInstance(new ObjectName(String.format(ThroughputQueue.NAME_TEMPLATE, MBEAN_ID + "" + i, STREAM_ID, STREAM_START_TIME)));
                 assertNotNull(mBean);
             }
         } catch (Exception e) {
