@@ -18,6 +18,7 @@
 
 package com.google.gplus.provider;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
@@ -43,8 +44,14 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,7 +64,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class AbstractGPlusProvider implements StreamsProvider {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractGPlusProvider.class);
-    private final static String SCOPE = "https://www.googleapis.com/auth/plus.stream.read";
+    private final static Set<String> SCOPE = new HashSet<String>() {{ add("https://www.googleapis.com/auth/plus.login");}};
     private final static int MAX_BATCH_SIZE = 1000;
 
     private static final HttpTransport TRANSPORT = new NetHttpTransport();
@@ -88,6 +95,7 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
 
     @Override
     public void startStream() {
+
         BackOffStrategy backOffStrategy = new ExponentialBackOffStrategy(2);
         for(UserInfo user : this.config.getGooglePlusUsers()) {
             if(this.config.getDefaultAfterDate() != null && user.getAfterDate() == null) {
@@ -138,14 +146,13 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
     @Override
     public void prepare(Object configurationObject) {
 
-        Preconditions.checkNotNull(config.getOauth().getConsumerKey());
-        Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
-        Preconditions.checkNotNull(config.getOauth().getAccessToken());
-        Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
+        Preconditions.checkNotNull(config.getOauth().getPathToP12KeyFile());
+        Preconditions.checkNotNull(config.getOauth().getAppName());
+        Preconditions.checkNotNull(config.getOauth().getServiceAccountEmailAddress());
 
         try {
             this.plus = createPlusClient();
-        } catch (IOException e) {
+        } catch (IOException|GeneralSecurityException e) {
             LOGGER.error("Failed to created oauth for GPlus : {}", e);
             throw new RuntimeException(e);
         }
@@ -159,15 +166,15 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
     }
 
     @VisibleForTesting
-    protected Plus createPlusClient() throws IOException{
+    protected Plus createPlusClient() throws IOException, GeneralSecurityException {
         credential = new GoogleCredential.Builder()
                 .setJsonFactory(JSON_FACTORY)
                 .setTransport(TRANSPORT)
-                .setClientSecrets(config.getOauth().getConsumerKey(), config.getOauth().getConsumerSecret()).build()
-                .setFromTokenResponse(JSON_FACTORY.fromString(
-                        config.getOauth().getAccessToken(), GoogleTokenResponse.class));
-        credential.refreshToken();
-        return new Plus.Builder(TRANSPORT,JSON_FACTORY, credential).build();
+                .setServiceAccountScopes(SCOPE)
+                .setServiceAccountId(this.config.getOauth().getServiceAccountEmailAddress())
+                .setServiceAccountPrivateKeyFromP12File(new File(this.config.getOauth().getPathToP12KeyFile()))
+                .build();
+        return new Plus.Builder(TRANSPORT,JSON_FACTORY, credential).setApplicationName(this.config.getOauth().getAppName()).build();
     }
 
     @Override
