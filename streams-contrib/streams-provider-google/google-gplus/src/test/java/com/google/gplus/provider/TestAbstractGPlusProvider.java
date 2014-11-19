@@ -36,10 +36,9 @@ public class TestAbstractGPlusProvider extends RandomizedTest{
         }
         GPlusConfiguration config = new GPlusConfiguration();
         GPlusOAuthConfiguration oauth = new GPlusOAuthConfiguration();
-        oauth.setAccessToken("a");
-        oauth.setConsumerKey("a");
-        oauth.setConsumerSecret("a");
-        oauth.setAccessTokenSecret("a");
+        oauth.setAppName("a");
+        oauth.setPathToP12KeyFile("a");
+        oauth.setServiceAccountEmailAddress("a");
         config.setOauth(oauth);
         config.setGooglePlusUsers(userList);
         AbstractGPlusProvider provider = new AbstractGPlusProvider(config) {
