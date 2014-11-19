@@ -58,7 +58,11 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
      * @param writer writer to execute in task
      */
     public StreamsPersistWriterTask(StreamsPersistWriter writer) {
-        this(writer, DEFAULT_SLEEP_TIME_MS);
+        this(writer, DEFAULT_SLEEP_TIME_MS, null);
+    }
+
+    public StreamsPersistWriterTask(StreamsPersistWriter writer, Map<String, Object> streamConfig) {
+        this(writer, DEFAULT_SLEEP_TIME_MS, streamConfig);
     }
 
     /**
@@ -66,7 +70,8 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
      * @param writer writer to execute in task
      * @param sleepTime time to sleep when inbound queue is empty.
      */
-    public StreamsPersistWriterTask(StreamsPersistWriter writer, long sleepTime) {
+    public StreamsPersistWriterTask(StreamsPersistWriter writer, long sleepTime, Map<String, Object> streamConfig) {
+        super(streamConfig);
         this.writer = writer;
         this.sleepTime = sleepTime;
         this.keepRunning = new AtomicBoolean(true);
@@ -99,7 +104,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
         try {
             this.writer.prepare(this.streamConfig);
             if(this.counter == null) {
-                this.counter = new StreamsTaskCounter(this.writer.getClass().getName()+ UUID.randomUUID().toString());
+                this.counter = new StreamsTaskCounter(this.writer.getClass().getName()+ UUID.randomUUID().toString(), getStreamIdentifier(), getStartedAt());
             }
             while(this.keepRunning.get()) {
                 StreamsDatum datum = null;
