@@ -37,10 +37,15 @@ public class StreamsMergeTask extends BaseStreamsTask {
     private long sleepTime;
 
     public StreamsMergeTask() {
-        this(DEFAULT_SLEEP_TIME_MS);
+        this(DEFAULT_SLEEP_TIME_MS, null);
     }
 
     public StreamsMergeTask(long sleepTime) {
+        this(sleepTime, null);
+    }
+
+    public StreamsMergeTask(long sleepTime, Map<String, Object> streamConfig) {
+        super(streamConfig);
         this.sleepTime = sleepTime;
         this.keepRunning = new AtomicBoolean(true);
     }
