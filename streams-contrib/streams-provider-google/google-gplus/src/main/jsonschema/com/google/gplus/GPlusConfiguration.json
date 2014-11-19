@@ -54,21 +54,18 @@
             "dynamic": "true",
             "javaType" : "org.apache.streams.google.gplus.GPlusOAuthConfiguration",
             "javaInterfaces": ["java.io.Serializable"],
+            "description": "DEPRICATED",
             "properties": {
                 "appName": {
                     "type": "string"
                 },
-                "consumerKey": {
-                    "type": "string"
+                "pathToP12KeyFile": {
+                    "type": "string",
+                    "description": "Absolute Path to key file"
                 },
-                "consumerSecret": {
-                    "type": "string"
-                },
-                "accessToken": {
-                    "type": "string"
-                },
-                "accessTokenSecret": {
-                    "type": "string"
+                "serviceAccountEmailAddress": {
+                    "type": "string",
+                    "description": "Service Account email address for your app"
                 }
             }
         }

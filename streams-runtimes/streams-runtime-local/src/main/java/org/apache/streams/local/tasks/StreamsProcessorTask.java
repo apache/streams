@@ -59,15 +59,23 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
      * @param processor process to run in task
      */
     public StreamsProcessorTask(StreamsProcessor processor) {
-        this(processor, DEFAULT_SLEEP_TIME_MS);
+        this(processor, DEFAULT_SLEEP_TIME_MS, null);
     }
+
+    /**
+     *
+     * @param processor
+     * @param streamConfig
+     */
+    public StreamsProcessorTask(StreamsProcessor processor, Map<String, Object> streamConfig) { this(processor, DEFAULT_SLEEP_TIME_MS, streamConfig); }
 
     /**
      *
      * @param processor processor to run in task
      * @param sleepTime time to sleep when incoming queue is empty
      */
-    public StreamsProcessorTask(StreamsProcessor processor, long sleepTime) {
+    public StreamsProcessorTask(StreamsProcessor processor, long sleepTime, Map<String, Object> streamConfig) {
+        super(streamConfig);
         this.processor = processor;
         this.sleepTime = sleepTime;
         this.keepRunning = new AtomicBoolean(true);
@@ -105,7 +113,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
         try {
             this.processor.prepare(this.streamConfig);
             if(this.counter == null) {
-                this.counter = new StreamsTaskCounter(this.processor.getClass().getName()+ UUID.randomUUID().toString());
+                this.counter = new StreamsTaskCounter(this.processor.getClass().getName()+ UUID.randomUUID().toString(), getStreamIdentifier(), getStartedAt());
             }
             while(this.keepRunning.get()) {
                 StreamsDatum datum = null;

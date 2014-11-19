@@ -29,6 +29,12 @@
             "type": "string",
             "default" : ""
         },
+        "rawContent": {
+            "type": "string"
+        },
+        "contentsType": {
+            "type": "string"
+        },
         "finalURL": {
             "type": "string",
             "default" : ""

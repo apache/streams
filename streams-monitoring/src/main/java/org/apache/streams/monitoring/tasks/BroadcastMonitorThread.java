@@ -56,6 +56,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
 
         setBroadcastURI();
         setWaitTime();
+
         messagePersister = new BroadcastMessagePersister(broadcastURI);
 
         initializeObjectMapper();
@@ -84,7 +85,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
      */
     @Override
     public void run() {
-        while(keepRunning) {
+        while(keepRunning && !Thread.currentThread().isInterrupted()) {
             try {
                 List<String> messages = Lists.newArrayList();
                 Set<ObjectName> beans = server.queryNames(null, null);
@@ -114,6 +115,8 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                 Thread.sleep(waitTime);
             } catch (InterruptedException e) {
                 LOGGER.error("Interrupted!: {}", e);
+                keepRunning = false;
+                Thread.currentThread().interrupt();
             } catch (Exception e) {
                 LOGGER.error("Exception: {}", e);
             }
@@ -140,8 +143,8 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
             if (streamConfig != null &&
                     streamConfig.containsKey("monitoring_broadcast_interval_ms") &&
                     streamConfig.get("monitoring_broadcast_interval_ms") != null &&
-                    streamConfig.get("monitoring_broadcast_interval_ms") instanceof Long ||
-                    streamConfig.get("monitoring_broadcast_interval_ms") instanceof Integer) {
+                    (streamConfig.get("monitoring_broadcast_interval_ms") instanceof Long ||
+                    streamConfig.get("monitoring_broadcast_interval_ms") instanceof Integer)) {
                 waitTime = Long.parseLong(streamConfig.get("monitoring_broadcast_interval_ms").toString());
             } else {
                 waitTime = DEFAULT_WAIT_TIME;
