@@ -52,6 +52,7 @@ import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
 import org.apache.streams.local.test.writer.SystemOutWriter;
 import org.apache.streams.util.ComponentUtils;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -74,7 +75,9 @@ import javax.management.*;
  *
  */
 public class LocalStreamBuilderTest extends RandomizedTest {
-
+    private static final String MBEAN_ID = "test_id";
+    private static final String STREAM_ID = "test_stream";
+    private static long STREAM_START_TIME = (new DateTime()).getMillis();
 
     @After
     public void removeLocalMBeans() {
@@ -90,12 +93,12 @@ public class LocalStreamBuilderTest extends RandomizedTest {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         for(String id : ids) {
             try {
-                mbs.unregisterMBean(new ObjectName(String.format(ThroughputQueue.NAME_TEMPLATE, id)));
+                mbs.unregisterMBean(new ObjectName(String.format(ThroughputQueue.NAME_TEMPLATE, id, STREAM_ID, STREAM_START_TIME)));
             } catch (MalformedObjectNameException|InstanceNotFoundException|MBeanRegistrationException e) {
                 //No-op
             }
             try {
-                mbs.unregisterMBean(new ObjectName((String.format(StreamsTaskCounter.NAME_TEMPLATE, id))));
+                mbs.unregisterMBean(new ObjectName((String.format(StreamsTaskCounter.NAME_TEMPLATE, id, STREAM_ID, STREAM_START_TIME))));
             } catch (MalformedObjectNameException|InstanceNotFoundException|MBeanRegistrationException e) {
                 //No-op
             }

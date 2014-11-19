@@ -61,7 +61,7 @@ public class StreamsProviderTaskTest {
 
     @Test
     public void runPerpetual() {
-        StreamsProviderTask task = new StreamsProviderTask(mockProvider, true);
+        StreamsProviderTask task = new StreamsProviderTask(mockProvider, true, null);
         when(mockProvider.isRunning()).thenReturn(true);
         when(mockProvider.readCurrent()).thenReturn(new StreamsResultSet(new LinkedBlockingQueue<StreamsDatum>()));
         task.setTimeout(500);
@@ -75,7 +75,7 @@ public class StreamsProviderTaskTest {
     @Test
     public void flushes() {
         BlockingQueue<StreamsDatum> out = new LinkedBlockingQueue<>();
-        StreamsProviderTask task = new StreamsProviderTask(mockProvider, true);
+        StreamsProviderTask task = new StreamsProviderTask(mockProvider, true, null);
         when(mockProvider.isRunning()).thenReturn(true);
         when(mockProvider.readCurrent()).thenReturn(new StreamsResultSet(getQueue(3)));
         task.setTimeout(100);
@@ -95,7 +95,7 @@ public class StreamsProviderTaskTest {
 
     @Test
     public void runNonPerpetual() {
-        StreamsProviderTask task = new StreamsProviderTask(mockProvider, false);
+        StreamsProviderTask task = new StreamsProviderTask(mockProvider, false, null);
         when(mockProvider.isRunning()).thenReturn(true);
         when(mockProvider.readCurrent()).thenReturn(new StreamsResultSet(new LinkedBlockingQueue<StreamsDatum>()));
         task.setTimeout(500);
@@ -108,7 +108,7 @@ public class StreamsProviderTaskTest {
 
     @Test
     public void stoppable() throws InterruptedException {
-        StreamsProviderTask task = new StreamsProviderTask(mockProvider, true);
+        StreamsProviderTask task = new StreamsProviderTask(mockProvider, true, null);
         when(mockProvider.isRunning()).thenReturn(true);
         when(mockProvider.readCurrent()).thenReturn(new StreamsResultSet(new LinkedBlockingQueue<StreamsDatum>()));
         task.setTimeout(-1);
@@ -129,7 +129,7 @@ public class StreamsProviderTaskTest {
 
     @Test
     public void earlyException() throws InterruptedException {
-        StreamsProviderTask task = new StreamsProviderTask(mockProvider, true);
+        StreamsProviderTask task = new StreamsProviderTask(mockProvider, true, null);
         when(mockProvider.isRunning()).thenReturn(true);
         doThrow(new RuntimeException()).when(mockProvider).prepare(null);
         task.setTimeout(-1);

@@ -52,7 +52,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
     @Test
     public void testConstructor() {
         try {
-            new StreamsTaskCounter(MBEAN_ID);
+            new StreamsTaskCounter(MBEAN_ID, null, -1);
         } catch (Throwable t) {
             fail("Constructor threw error : "+t.getMessage());
         }
@@ -65,7 +65,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
     @Test
     @Repeat(iterations = 3)
     public void testEmitted() throws Exception {
-        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID);
+        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, null, -1);
         int numIncrements = randomIntBetween(1, 100000);
         for(int i=0; i < numIncrements; ++i) {
             counter.incrementEmittedCount();
@@ -74,7 +74,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
 
         unregisterMXBean();
 
-        counter = new StreamsTaskCounter(MBEAN_ID);
+        counter = new StreamsTaskCounter(MBEAN_ID, null, -1);
         numIncrements = randomIntBetween(1, 100000);
         long total = 0;
         for(int i=0; i < numIncrements; ++i) {
@@ -92,7 +92,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
     @Test
     @Repeat(iterations = 3)
     public void testReceived() throws Exception {
-        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID);
+        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, null, -1);
         int numIncrements = randomIntBetween(1, 100000);
         for(int i=0; i < numIncrements; ++i) {
             counter.incrementReceivedCount();
@@ -101,7 +101,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
 
         unregisterMXBean();
 
-        counter = new StreamsTaskCounter(MBEAN_ID);
+        counter = new StreamsTaskCounter(MBEAN_ID, null, -1);
         numIncrements = randomIntBetween(1, 100000);
         long total = 0;
         for(int i=0; i < numIncrements; ++i) {
@@ -119,7 +119,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
     @Test
     @Repeat(iterations = 3)
     public void testError() throws Exception {
-        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID);
+        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, null, -1);
         int numIncrements = randomIntBetween(1, 100000);
         for(int i=0; i < numIncrements; ++i) {
             counter.incrementErrorCount();
@@ -128,7 +128,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
 
         unregisterMXBean();
 
-        counter = new StreamsTaskCounter(MBEAN_ID);
+        counter = new StreamsTaskCounter(MBEAN_ID, null, -1);
         numIncrements = randomIntBetween(1, 100000);
         long total = 0;
         for(int i=0; i < numIncrements; ++i) {
@@ -146,7 +146,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
     @Test
     @Repeat(iterations = 3)
     public void testErrorRate() throws Exception {
-        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID);
+        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, null, -1);
         assertEquals(0.0, counter.getErrorRate(), 0);
         int failures = randomIntBetween(0, 100000);
         int received = randomIntBetween(0, 100000);

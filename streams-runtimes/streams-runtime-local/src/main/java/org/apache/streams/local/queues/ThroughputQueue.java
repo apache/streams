@@ -17,6 +17,7 @@
  */
 package org.apache.streams.local.queues;
 
+import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -43,7 +44,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBean {
 
-    public static final String NAME_TEMPLATE = "org.apache.streams.local:type=ThroughputQueue,name=%s";
+    public static final String NAME_TEMPLATE = "org.apache.streams.local:type=ThroughputQueue,name=%s,identifier=%s,startedAt=%s";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ThroughputQueue.class);
 
@@ -60,7 +61,16 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
      * Creates an unbounded, unregistered {@code ThroughputQueue}
      */
     public ThroughputQueue() {
-        this(-1, null);
+        this(-1, null, LocalStreamBuilder.DEFAULT_STREAM_IDENTIFIER, -1);
+    }
+
+    /**
+     *
+     * @param streamIdentifier
+     * @param startedAt
+     */
+    public ThroughputQueue(String streamIdentifier, long startedAt) {
+        this(-1, null, streamIdentifier, startedAt);
     }
 
     /**
@@ -69,7 +79,17 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
      * @param maxSize maximum capacity of queue, if maxSize < 1 then unbounded
      */
     public ThroughputQueue(int maxSize) {
-        this(maxSize, null);
+        this(maxSize, null, LocalStreamBuilder.DEFAULT_STREAM_IDENTIFIER, -1);
+    }
+
+    /**
+     *
+     * @param maxSize
+     * @param streamIdentifier
+     * @param startedAt
+     */
+    public ThroughputQueue(int maxSize, String streamIdentifier, long startedAt) {
+        this(maxSize, null, streamIdentifier, startedAt);
     }
 
     /**
@@ -78,7 +98,27 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
      * @param id unique id for this queue to be registered with. if id == NULL then not registered
      */
     public ThroughputQueue(String id) {
-        this(-1, id);
+        this(-1, id, LocalStreamBuilder.DEFAULT_STREAM_IDENTIFIER, -1);
+    }
+
+    /**
+     *
+     * @param id
+     * @param streamIdentifier
+     * @param startedAt
+     */
+    public ThroughputQueue(String id, String streamIdentifier, long startedAt) {
+        this(-1, id, streamIdentifier, startedAt);
+    }
+
+    /**
+     *
+     * @param maxSize
+     * @param id
+     */
+    public ThroughputQueue(int maxSize, String id) {
+        this(maxSize, id, LocalStreamBuilder.DEFAULT_STREAM_IDENTIFIER, -1);
+
     }
 
     /**
@@ -87,7 +127,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
      * @param maxSize maximum capacity of queue, if maxSize < 1 then unbounded
      * @param id      unique id for this queue to be registered with. if id == NULL then not registered
      */
-    public ThroughputQueue(int maxSize, String id) {
+    public ThroughputQueue(int maxSize, String id, String streamIdentifier, long startedAt) {
         if (maxSize < 1) {
             this.underlyingQueue = new LinkedBlockingQueue<>();
         } else {
@@ -102,7 +142,7 @@ public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBe
         this.totalQueueTime = new AtomicLong(0);
         if (id != null) {
             try {
-                ObjectName name = new ObjectName(String.format(NAME_TEMPLATE, id));
+                ObjectName name = new ObjectName(String.format(NAME_TEMPLATE, id, streamIdentifier, startedAt));
                 MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
                 mbs.registerMBean(this, name);
             } catch (MalformedObjectNameException | InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException e) {

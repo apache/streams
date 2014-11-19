@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.SerializationUtil;
@@ -45,10 +46,18 @@ public abstract class BaseStreamsTask implements StreamsTask {
     private List<BlockingQueue<StreamsDatum>> outQueues = new LinkedList<BlockingQueue<StreamsDatum>>();
     private int inIndex = 0;
     private ObjectMapper mapper;
+    protected Map<String, Object> streamConfig;
 
-    public BaseStreamsTask() {
+    private long startedAt;
+    private String streamIdentifier;
+
+    public BaseStreamsTask(Map<String, Object> config) {
         this.mapper = new StreamsJacksonMapper();
         this.mapper.registerSubtypes(Activity.class);
+        this.streamConfig = config;
+
+        setStreamIdentifier();
+        setStartedAt();
     }
 
 
@@ -189,5 +198,35 @@ public abstract class BaseStreamsTask implements StreamsTask {
                 toMeta.put(key, value);
         }
         return copyTo;
+    }
+
+    public long getStartedAt() {
+        return startedAt;
+    }
+
+    public void setStartedAt() {
+        if(streamConfig != null &&
+                streamConfig.containsKey(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY) &&
+                streamConfig.get(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY) != null &&
+                streamConfig.get(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY) instanceof Long) {
+            this.startedAt = Long.parseLong(streamConfig.get(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY).toString());
+        } else {
+            this.startedAt = -1;
+        }
+    }
+
+    public String getStreamIdentifier() {
+        return streamIdentifier;
+    }
+
+    public void setStreamIdentifier() {
+        if(streamConfig != null &&
+                streamConfig.containsKey(LocalStreamBuilder.STREAM_IDENTIFIER_KEY) &&
+                streamConfig.get(LocalStreamBuilder.STREAM_IDENTIFIER_KEY) != null &&
+                streamConfig.get(LocalStreamBuilder.STREAM_IDENTIFIER_KEY).toString().length() > 0) {
+            this.streamIdentifier = streamConfig.get(LocalStreamBuilder.STREAM_IDENTIFIER_KEY).toString();
+        } else {
+            this.streamIdentifier = LocalStreamBuilder.DEFAULT_STREAM_IDENTIFIER;
+        }
     }
 }
