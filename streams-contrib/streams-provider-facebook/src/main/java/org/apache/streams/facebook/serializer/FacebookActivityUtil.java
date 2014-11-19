@@ -208,7 +208,7 @@ public class FacebookActivityUtil {
         ObjectMapper mapper = StreamsJacksonMapper.getInstance();
         Map<String, Object> extensions = ensureExtensions(activity);
 
-        if(post.getLikes() != null) {
+        if(post.getLikes() != null && post.getLikes().size() > 0) {
             Map<String, Object> likes = Maps.newHashMap();
             org.apache.streams.facebook.Like like = post.getLikes().get(0);
 
