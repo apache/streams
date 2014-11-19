@@ -19,7 +19,7 @@
 package org.apache.streams.storm.trident;
 
 import backtype.storm.Config;
-import org.apache.streams.StreamsConfiguration;
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import storm.trident.TridentTopology;
 
