@@ -85,7 +85,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
      */
     @Override
     public void run() {
-        while(keepRunning) {
+        while(keepRunning && !Thread.currentThread().isInterrupted()) {
             try {
                 List<String> messages = Lists.newArrayList();
                 Set<ObjectName> beans = server.queryNames(null, null);
@@ -115,6 +115,8 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                 Thread.sleep(waitTime);
             } catch (InterruptedException e) {
                 LOGGER.error("Interrupted!: {}", e);
+                keepRunning = false;
+                Thread.currentThread().interrupt();
             } catch (Exception e) {
                 LOGGER.error("Exception: {}", e);
             }
