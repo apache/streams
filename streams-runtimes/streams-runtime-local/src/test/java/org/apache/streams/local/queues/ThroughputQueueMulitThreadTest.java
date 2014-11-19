@@ -20,6 +20,7 @@ package org.apache.streams.local.queues;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.Repeat;
 import org.apache.streams.util.ComponentUtils;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -37,6 +38,8 @@ public class ThroughputQueueMulitThreadTest extends RandomizedTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ThroughputQueueMulitThreadTest.class);
     private static final String MBEAN_ID = "testQueue";
+    private static final String STREAM_ID = "test_stream";
+    private static long STREAM_START_TIME = (new DateTime()).getMillis();
 
     /**
      * Remove registered mbeans from previous tests
@@ -45,7 +48,7 @@ public class ThroughputQueueMulitThreadTest extends RandomizedTest {
     @After
     public void unregisterMXBean() throws Exception {
         try {
-            ManagementFactory.getPlatformMBeanServer().unregisterMBean(new ObjectName(String.format(ThroughputQueue.NAME_TEMPLATE, MBEAN_ID)));
+            ManagementFactory.getPlatformMBeanServer().unregisterMBean(new ObjectName(String.format(ThroughputQueue.NAME_TEMPLATE, MBEAN_ID, STREAM_ID, STREAM_START_TIME)));
         } catch (InstanceNotFoundException ife) {
             //No-op
         }
