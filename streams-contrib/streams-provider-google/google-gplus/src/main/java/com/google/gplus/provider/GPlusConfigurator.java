@@ -18,12 +18,18 @@
 
 package com.google.gplus.provider;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigRenderOptions;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.google.gplus.GPlusConfiguration;
 import org.apache.streams.google.gplus.GPlusOAuthConfiguration;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * Created by sblackmon on 12/10/13.
@@ -31,24 +37,18 @@ import org.slf4j.LoggerFactory;
 public class GPlusConfigurator {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(GPlusConfigurator.class);
+    private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
     public static GPlusConfiguration detectConfiguration(Config config) {
-        Config oauth = StreamsConfigurator.config.getConfig("gplus.oauth");
+        GPlusConfiguration configuration = null;
+        try {
+            configuration = MAPPER.readValue(config.root().render(ConfigRenderOptions.concise()), GPlusConfiguration.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Preconditions.checkNotNull(configuration);
 
-        GPlusConfiguration gplusConfiguration = new GPlusConfiguration();
-
-        gplusConfiguration.setProtocol(config.getString("protocol"));
-        gplusConfiguration.setHost(config.getString("host"));
-        gplusConfiguration.setPort(config.getLong("port"));
-        gplusConfiguration.setVersion(config.getString("version"));
-        GPlusOAuthConfiguration gPlusOAuthConfiguration = new GPlusOAuthConfiguration();
-        gPlusOAuthConfiguration.setConsumerKey(oauth.getString("consumerKey"));
-        gPlusOAuthConfiguration.setConsumerSecret(oauth.getString("consumerSecret"));
-        gPlusOAuthConfiguration.setAccessToken(oauth.getString("accessToken"));
-        gPlusOAuthConfiguration.setAccessTokenSecret(oauth.getString("accessTokenSecret"));
-        gplusConfiguration.setOauth(gPlusOAuthConfiguration);
-
-        return gplusConfiguration;
+        return configuration;
     }
 
 }
