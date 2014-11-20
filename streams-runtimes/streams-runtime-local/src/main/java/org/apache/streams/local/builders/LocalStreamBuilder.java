@@ -205,8 +205,6 @@ public class LocalStreamBuilder implements StreamBuilder {
         boolean forcedShutDown = false;
 
         try {
-//            monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
-//            this.monitor.submit(monitorThread);
             if( broadcastMonitor.getWaitTime() != -1 )
                 this.monitor.submit(broadcastMonitor);
             setupComponentTasks(tasks);
