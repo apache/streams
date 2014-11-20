@@ -6,6 +6,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
+import org.apache.streams.core.StreamsResource;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.ComponentUtils;
@@ -14,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -24,6 +24,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -34,13 +35,13 @@ import java.util.regex.Pattern;
 @Path("/streams/webhooks")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class WebhookResource implements StreamsProvider {
+public class GenericWebhookResource implements StreamsProvider, StreamsResource {
 
-    public WebhookResource() {
+    public GenericWebhookResource() {
     }
 
     private static final Logger log = LoggerFactory
-            .getLogger(WebhookResource.class);
+            .getLogger(GenericWebhookResource.class);
 
     private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
@@ -89,7 +90,7 @@ public class WebhookResource implements StreamsProvider {
 
         try {
 
-            for( String item : Splitter.on('\n').split(body)) {
+            for( String item : Splitter.on(newLinePattern).split(body)) {
                 StreamsDatum datum = new StreamsDatum(item);
 
                 lock.writeLock().lock();
@@ -117,55 +118,57 @@ public class WebhookResource implements StreamsProvider {
 
     }
 
-//    @POST
-//    @Path("json_meta")
-//    public Response json_meta(@Context HttpHeaders headers,
-//                                       String body) {
-//
-//        //log.debug(headers.toString(), headers);
-//
-//        //log.debug(body.toString(), body);
-//
-//        ObjectNode response = mapper.createObjectNode();
-//
-//        if (body.equalsIgnoreCase("{}")) {
-//
-//            Boolean success = true;
-//
-//            response.put("success", success);
-//
-//            return Response.status(200).entity(response).build();
-//        }
-//
-//        try {
-//
-//            ObjectNode objectWrapper = mapper.readValue(body, ObjectNode.class);
-//
-//            for( ObjectNode item : objectWrapper.getData()) {
-//
-//                String json = mapper.writeValueAsString(item);
-//
-//                StreamsDatum datum = new StreamsDatum(json, item.getInteraction().getId(), item.getInteraction().getCreatedAt());
-//
-//                lock.writeLock().lock();
-//                ComponentUtils.offerUntilSuccess(datum, providerQueue);
-//                lock.writeLock().unlock();
-//            }
-//
-//            log.info("interactionQueue: " + providerQueue.size());
-//
-//            Boolean success = true;
-//
-//            response.put("success", success);
-//
-//            return Response.status(200).entity(response).build();
-//
-//        } catch (Exception e) {
-//            log.warn(e.toString(), e);
-//        }
-//
-//        return Response.status(500).build();
-//    }
+    @POST
+    @Path("json_meta")
+    public Response json_meta(@Context HttpHeaders headers,
+                                       String body) {
+
+        //log.debug(headers.toString(), headers);
+
+        //log.debug(body.toString(), body);
+
+        ObjectNode response = mapper.createObjectNode();
+
+        if (body.equalsIgnoreCase("{}")) {
+
+            Boolean success = true;
+
+            response.put("success", success);
+
+            return Response.status(200).entity(response).build();
+        }
+
+        try {
+
+            GenericWebhookData objectWrapper = mapper.readValue(body, GenericWebhookData.class);
+
+            for( ObjectNode item : objectWrapper.getData()) {
+
+                String json = mapper.writeValueAsString(item);
+
+                StreamsDatum datum = new StreamsDatum(json);
+
+                lock.writeLock().lock();
+                ComponentUtils.offerUntilSuccess(datum, providerQueue);
+                lock.writeLock().unlock();
+            }
+
+            Boolean success = true;
+
+            response.put("success", success);
+
+            return Response.status(200).entity(response).build();
+
+        } catch (Exception e) {
+            log.warn(e.toString(), e);
+        }
+
+        return Response.status(500).build();
+    }
+
+    public List<ObjectNode> getData(GenericWebhookData wrapper) {
+        return wrapper.getData();
+    }
 
     @Override
     public void startStream() {
@@ -198,7 +201,7 @@ public class WebhookResource implements StreamsProvider {
 
     @Override
     public boolean isRunning() {
-        return false;
+        return true;
     }
 
     @Override
@@ -211,12 +214,4 @@ public class WebhookResource implements StreamsProvider {
 
     }
 
-    public void addDatum(StreamsDatum datum) {
-        try {
-            lock.readLock().lock();
-            ComponentUtils.offerUntilSuccess(datum, providerQueue);
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
 }
