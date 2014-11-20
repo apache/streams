@@ -52,7 +52,11 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     public BroadcastMonitorThread(Map<String, Object> streamConfig) {
         keepRunning = true;
         this.streamConfig = streamConfig;
+
+        LOGGER.info("BroadcastMonitorThread starting" + streamConfig);
+
         server = ManagementFactory.getPlatformMBeanServer();
+
 
         setBroadcastURI();
         setWaitTime();
@@ -60,6 +64,8 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
         messagePersister = new BroadcastMessagePersister(broadcastURI);
 
         initializeObjectMapper();
+
+        LOGGER.info("BroadcastMonitorThread started");
     }
 
     /**
@@ -85,6 +91,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
      */
     @Override
     public void run() {
+        LOGGER.info("BroadcastMonitorThread running");
         while(keepRunning) {
             try {
                 List<String> messages = Lists.newArrayList();
@@ -160,6 +167,14 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     public void shutdown() {
         this.keepRunning = false;
         LOGGER.debug("Shutting down BroadcastMonitor Thread");
+    }
+
+    public String getBroadcastURI() {
+        return broadcastURI;
+    }
+
+    public long getWaitTime() {
+        return waitTime;
     }
 
     public long getDefaultWaitTime() {
