@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
@@ -48,6 +50,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -171,6 +174,26 @@ public class DatasiftPushProvider implements StreamsProvider {
                 String json = mapper.writeValueAsString(item);
 
                 StreamsDatum datum = new StreamsDatum(json);
+                if( item.getInteraction() != null &&
+                    !Strings.isNullOrEmpty(item.getInteraction().getId())) {
+                    datum.setId(item.getInteraction().getId());
+                }
+                if( item.getInteraction() != null &&
+                    item.getInteraction().getCreatedAt() != null) {
+                    datum.setTimestamp(item.getInteraction().getCreatedAt());
+                }
+                Map<String, Object> metadata = Maps.newHashMap();
+                metadata.put("datasift.hash", objectWrapper.getHash());
+                metadata.put("datasift.hashType", objectWrapper.getHashType());
+                metadata.put("datasift.id",objectWrapper.getId());
+
+                if( item.getInteraction() != null &&
+                        item.getInteraction().getTags() != null &&
+                        item.getInteraction().getTags().size() > 0) {
+                    metadata.put("datasift.interaction.tags", item.getInteraction().getTags());
+                }
+
+                datum.setMetadata(metadata);
 
                 lock.writeLock().lock();
                 ComponentUtils.offerUntilSuccess(datum, providerQueue);
