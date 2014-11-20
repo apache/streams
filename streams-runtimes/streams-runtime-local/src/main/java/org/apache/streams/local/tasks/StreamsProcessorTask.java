@@ -120,11 +120,12 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                 try {
                     this.blocked.set(true);
                     datum = this.inQueue.poll(5, TimeUnit.SECONDS);
-                    this.blocked.set(false);
                 } catch (InterruptedException ie) {
-                    LOGGER.warn("Received InteruptedException, shutting down and re-applying interrupt status.");
+                    LOGGER.debug("Received InteruptedException, shutting down and re-applying interrupt status.");
                     this.keepRunning.set(false);
                     Thread.currentThread().interrupt();
+                } finally {
+                    this.blocked.set(false);
                 }
                 if(datum != null) {
                     this.counter.incrementReceivedCount();
@@ -171,4 +172,6 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
     public void setStreamsTaskCounter(StreamsTaskCounter counter) {
         this.counter = counter;
     }
+
+
 }
