@@ -6,7 +6,9 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.hubspot.dropwizard.guice.GuiceBundle;
+import com.sun.jersey.api.core.ResourceConfig;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
@@ -14,21 +16,36 @@ import io.dropwizard.Application;
 import io.dropwizard.jackson.GuavaExtrasModule;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.console.ConsolePersistWriter;
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsPersistWriter;
+import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.apache.streams.pojo.json.Activity;
+import org.joda.time.DateTime;
+import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import com.google.inject.Inject;
+
+import javax.annotation.Resource;
+import javax.ws.rs.Path;
 
 public class StreamsApplication extends Application<StreamsDropwizardConfiguration> {
 
@@ -37,11 +54,11 @@ public class StreamsApplication extends Application<StreamsDropwizardConfigurati
 
     private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    private StreamBuilder builder;
+    protected StreamBuilder builder;
 
-    private WebhookResource webhook;
+    private static StreamsConfiguration streamsConfiguration;
 
-    private String broadcastURI;
+    private Set<StreamsProvider> resourceProviders = Sets.newConcurrentHashSet();
 
     private Executor executor = Executors.newSingleThreadExecutor();
 
@@ -70,33 +87,63 @@ public class StreamsApplication extends Application<StreamsDropwizardConfigurati
     @Override
     public void run(StreamsDropwizardConfiguration streamsDropwizardConfiguration, Environment environment) throws Exception {
 
-        webhook = new WebhookResource();
-
         executor = Executors.newSingleThreadExecutor();
 
-        executor.execute(new StreamsDropwizardRunner());
+        for( Class<?> resourceProviderClass : environment.jersey().getResourceConfig().getRootResourceClasses() ) {
+            StreamsProvider provider = (StreamsProvider)resourceProviderClass.newInstance();
+            if( StreamsProvider.class.isInstance(provider))
+                resourceProviders.add(provider);
+        }
+
+        streamsConfiguration = mapper.convertValue(streamsDropwizardConfiguration, StreamsConfiguration.class);
+
+        builder = setup(streamsConfiguration, resourceProviders);
+
+        executor.execute(new StreamsDropwizardRunner(builder, streamsConfiguration));
 
         // wait for streams to start up
         Thread.sleep(10000);
 
-        //environment.jersey().register(webhook);
+        for (StreamsProvider resource : resourceProviders) {
+            environment.jersey().register(resource);
+            LOGGER.info("Added resource class: {}", resource);
+        }
 
+    }
+
+    public StreamBuilder setup(StreamsConfiguration streamsConfiguration, Set<StreamsProvider> resourceProviders) {
+
+        Map<String, Object> streamConfig = Maps.newHashMap();
+        streamConfig.put(LocalStreamBuilder.TIMEOUT_KEY, 20 * 60 * 1000 * 1000);
+        if(! Strings.isNullOrEmpty(streamsConfiguration.getBroadcastURI()) ) streamConfig.put("broadcastURI", streamsConfiguration.getBroadcastURI());
+        StreamBuilder builder = new StreamDropwizardBuilder(1000, streamConfig);
+
+        List<String> providers = new ArrayList<>();
+        for( StreamsProvider provider: resourceProviders) {
+            String providerId = provider.getClass().getSimpleName();
+            builder.newPerpetualStream(providerId, provider);
+            providers.add(providerId);
+        }
+
+        return builder;
     }
 
     private class StreamsDropwizardRunner implements Runnable {
 
+        private StreamsConfiguration streamsConfiguration;
+
+        private StreamBuilder builder;
+
+        protected StreamsDropwizardRunner(StreamBuilder builder, StreamsConfiguration streamsConfiguration) {
+            this.streamsConfiguration = streamsConfiguration;
+            this.builder = builder;
+        }
+
         @Override
         public void run() {
 
-            Map<String, Object> streamConfig = Maps.newHashMap();
-            streamConfig.put(LocalStreamBuilder.TIMEOUT_KEY, 20 * 60 * 1000 * 1000);
-            if(! Strings.isNullOrEmpty(broadcastURI) ) streamConfig.put("broadcastURI", broadcastURI);
-            builder = new LocalStreamBuilder(1000, streamConfig);
+            builder.start();
 
-            // prepare stream components
-            builder.newPerpetualStream("webhooks", webhook);
-
-            builder.addStreamsPersistWriter("console", new ConsolePersistWriter(), 1, "webhooks");
         }
     }
 
@@ -104,9 +151,8 @@ public class StreamsApplication extends Application<StreamsDropwizardConfigurati
     public static void main(String[] args) throws Exception
     {
 
-        StreamsApplication application = new StreamsApplication();
-        if( args.length == 1 ) application.broadcastURI = args[0];
-        application.run(args);
+        new StreamsApplication().run(args);
 
     }
+
 }

@@ -138,11 +138,6 @@
             <artifactId>streams-runtime-local</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-persist-console</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
