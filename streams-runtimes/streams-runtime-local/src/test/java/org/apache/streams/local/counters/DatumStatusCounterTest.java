@@ -19,6 +19,7 @@ package org.apache.streams.local.counters;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.Repeat;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 
@@ -32,7 +33,8 @@ import java.lang.management.ManagementFactory;
 public class DatumStatusCounterTest extends RandomizedTest {
 
     private static final String MBEAN_ID = "test_id";
-
+    private static final String STREAM_ID = "test_stream";
+    private static long STREAM_START_TIME = (new DateTime()).getMillis();
 
 
     /**
@@ -42,7 +44,7 @@ public class DatumStatusCounterTest extends RandomizedTest {
     @After
     public void unregisterMXBean() throws Exception {
         try {
-            ManagementFactory.getPlatformMBeanServer().unregisterMBean(new ObjectName(String.format(DatumStatusCounter.NAME_TEMPLATE, MBEAN_ID)));
+            ManagementFactory.getPlatformMBeanServer().unregisterMBean(new ObjectName(String.format(DatumStatusCounter.NAME_TEMPLATE, MBEAN_ID, STREAM_ID, STREAM_START_TIME)));
         } catch (InstanceNotFoundException ife) {
             //No-op
         }
@@ -54,7 +56,7 @@ public class DatumStatusCounterTest extends RandomizedTest {
     @Test
     public void testConstructor() {
         try {
-            new DatumStatusCounter(MBEAN_ID);
+            new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
         } catch (Throwable t) {
             fail("Constructor Threw Exception : "+t.getMessage());
         }
@@ -67,7 +69,7 @@ public class DatumStatusCounterTest extends RandomizedTest {
     @Test
     @Repeat(iterations = 3)
     public void testPassed() throws Exception {
-        DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID);
+        DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
         int numIncrements = randomIntBetween(1, 100000);
         for(int i=0; i < numIncrements; ++i) {
             counter.incrementPassedCount();
@@ -76,7 +78,7 @@ public class DatumStatusCounterTest extends RandomizedTest {
 
         unregisterMXBean();
 
-        counter = new DatumStatusCounter(MBEAN_ID);
+        counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
         numIncrements = randomIntBetween(1, 100000);
         long total = 0;
         for(int i=0; i < numIncrements; ++i) {
@@ -94,7 +96,7 @@ public class DatumStatusCounterTest extends RandomizedTest {
     @Test
     @Repeat(iterations = 3)
     public void testFailed() throws Exception {
-        DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID);
+        DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
         int numIncrements = randomIntBetween(1, 100000);
         for(int i=0; i < numIncrements; ++i) {
             counter.incrementFailedCount();
@@ -103,7 +105,7 @@ public class DatumStatusCounterTest extends RandomizedTest {
 
         unregisterMXBean();
 
-        counter = new DatumStatusCounter(MBEAN_ID);
+        counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
         numIncrements = randomIntBetween(1, 100000);
         long total = 0;
         for(int i=0; i < numIncrements; ++i) {
@@ -121,7 +123,7 @@ public class DatumStatusCounterTest extends RandomizedTest {
     @Test
     @Repeat(iterations = 3)
     public void testFailureRate() {
-        DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID);
+        DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
         assertEquals(0.0, counter.getFailRate(), 0);
         int failures = randomIntBetween(0, 100000);
         int passes = randomIntBetween(0, 100000);
@@ -129,6 +131,4 @@ public class DatumStatusCounterTest extends RandomizedTest {
         counter.incrementFailedCount(failures);
         assertEquals((double)failures / (double)(passes + failures), counter.getFailRate(), 0);
     }
-
-
 }

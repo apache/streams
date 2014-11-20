@@ -1,0 +1,23 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.config.ComponentConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "inClasses": {
+            "type" : "array",
+            "items" : {
+                "type" : "string"
+            },
+            "default": ["java.lang.String"]
+        },
+        "outClasses": {
+            "type" : "array",
+            "items" : {
+                "type" : "string"
+            },
+            "default": ["java.lang.String"]
+        }
+    }
+}
