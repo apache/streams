@@ -29,6 +29,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
+import org.apache.streams.core.StreamsResource;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.DatasiftConfiguration;
@@ -66,7 +67,7 @@ import java.util.regex.Pattern;
 @Path("/streams/webhooks/datasift")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class DatasiftPushProvider implements StreamsProvider {
+public class DatasiftPushProvider implements StreamsProvider, StreamsResource {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftPushProvider.class);
 
@@ -183,14 +184,14 @@ public class DatasiftPushProvider implements StreamsProvider {
                     datum.setTimestamp(item.getInteraction().getCreatedAt());
                 }
                 Map<String, Object> metadata = Maps.newHashMap();
-                metadata.put("datasift.hash", objectWrapper.getHash());
-                metadata.put("datasift.hashType", objectWrapper.getHashType());
-                metadata.put("datasift.id",objectWrapper.getId());
+                metadata.put("hash", objectWrapper.getHash());
+                metadata.put("hashType", objectWrapper.getHashType());
+                metadata.put("id",objectWrapper.getId());
 
                 if( item.getInteraction() != null &&
                         item.getInteraction().getTags() != null &&
                         item.getInteraction().getTags().size() > 0) {
-                    metadata.put("datasift.interaction.tags", item.getInteraction().getTags());
+                    metadata.put("tags", item.getInteraction().getTags());
                 }
 
                 datum.setMetadata(metadata);
