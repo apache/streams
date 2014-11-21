@@ -111,11 +111,12 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                 try {
                     this.blocked.set(true);
                     datum = this.inQueue.poll(5, TimeUnit.SECONDS);
-                    this.blocked.set(false);
                 } catch (InterruptedException ie) {
-                    LOGGER.error("Received InterruptedException. Shutting down and re-applying interrupt status.");
+                    LOGGER.debug("Received InterruptedException. Shutting down and re-applying interrupt status.");
                     this.keepRunning.set(false);
                     Thread.currentThread().interrupt();
+                } finally {
+                    this.blocked.set(false);
                 }
                 if(datum != null) {
                     this.counter.incrementReceivedCount();
