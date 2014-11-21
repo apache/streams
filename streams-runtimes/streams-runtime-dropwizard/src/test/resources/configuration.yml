@@ -1,5 +1,5 @@
 template: Hello, %s!
-defaultName: datasift
+defaultName: streams
 
 server:
   type: simple
@@ -7,7 +7,7 @@ server:
   adminContextPath: /admin
   connector:
     type: http
-    port: 8000
+    port: 8003
 
 logging:
   level: DEBUG
@@ -15,13 +15,4 @@ logging:
     - type: console
       threshold: ALL
       target: stdout
-
-elasticsearch:
-  hosts:
-    - "localhost"
-  port: 9300
-  clusterName: elasticsearch
-  index: datasift_webhook
-  type: activity
-  batchSize: 100
 

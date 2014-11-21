@@ -11,7 +11,9 @@ import java.math.BigInteger;
 import java.util.Map;
 
 /**
- * Created by sblackmon on 11/20/14.
+ * StreamDropwizardBuilder is currently a light wrapper around LocalStreamBuilder
+ *
+ * It's a seperate class because they will almost certainly deviate going forward
  */
 public class StreamDropwizardBuilder extends LocalStreamBuilder implements StreamBuilder {
 

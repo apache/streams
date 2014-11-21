@@ -1,5 +1,7 @@
 package org.apache.streams.dropwizard;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
@@ -14,6 +16,7 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
 import io.dropwizard.Application;
 import io.dropwizard.jackson.GuavaExtrasModule;
+import io.dropwizard.metrics.MetricsFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.apache.streams.config.StreamsConfiguration;
@@ -47,12 +50,19 @@ import com.google.inject.Inject;
 import javax.annotation.Resource;
 import javax.ws.rs.Path;
 
+/**
+ * Entry point to a dropwizard streams application
+ *
+ * It will start up a stream in the local runtime, as well as bind any
+ * StreamsProvider on the classpath with a @Resource annotation.
+ *
+ */
 public class StreamsApplication extends Application<StreamsDropwizardConfiguration> {
 
     private static final Logger LOGGER = LoggerFactory
 			.getLogger(StreamsApplication.class);
 
-    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    protected static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     protected StreamBuilder builder;
 
@@ -95,6 +105,10 @@ public class StreamsApplication extends Application<StreamsDropwizardConfigurati
                 resourceProviders.add(provider);
         }
 
+        MetricRegistry metrics = new MetricRegistry();
+        MetricsFactory mfac = streamsDropwizardConfiguration.getMetricsFactory();
+        mfac.configure(environment.lifecycle(), metrics);
+
         streamsConfiguration = mapper.convertValue(streamsDropwizardConfiguration, StreamsConfiguration.class);
 
         builder = setup(streamsConfiguration, resourceProviders);
@@ -115,7 +129,8 @@ public class StreamsApplication extends Application<StreamsDropwizardConfigurati
 
         Map<String, Object> streamConfig = Maps.newHashMap();
         streamConfig.put(LocalStreamBuilder.TIMEOUT_KEY, 20 * 60 * 1000 * 1000);
-        if(! Strings.isNullOrEmpty(streamsConfiguration.getBroadcastURI()) ) streamConfig.put("broadcastURI", streamsConfiguration.getBroadcastURI());
+        //if(! Strings.isNullOrEmpty(streamsConfiguration.getBroadcastURI()) ) streamConfig.put("broadcastURI", streamsConfiguration.getBroadcastURI());
+        streamConfig.put("monitoring_broadcast_interval_ms", -1);
         StreamBuilder builder = new StreamDropwizardBuilder(1000, streamConfig);
 
         List<String> providers = new ArrayList<>();

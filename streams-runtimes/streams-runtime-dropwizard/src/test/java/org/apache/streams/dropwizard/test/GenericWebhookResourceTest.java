@@ -29,7 +29,7 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 /**
- * Created by sblackmon on 11/21/14.
+ * Tests {@link: org.apache.streams.dropwizard.GenericWebhookResource}
  */
 public class GenericWebhookResourceTest {
 

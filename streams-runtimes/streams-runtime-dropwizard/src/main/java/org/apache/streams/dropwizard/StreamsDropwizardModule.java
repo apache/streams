@@ -13,7 +13,10 @@ import org.apache.streams.config.StreamsConfigurator;
 import java.io.IOException;
 
 /**
- * Created by sblackmon on 11/18/14.
+ * This class exists because dropwizard-guice requires at least
+ * one module to run
+ *
+ * Do not expect @Inject StreamsConfiguration to work at the moment.
  */
 public class StreamsDropwizardModule extends AbstractModule {
 

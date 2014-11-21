@@ -6,7 +6,6 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
-import org.apache.streams.core.StreamsResource;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.ComponentUtils;
@@ -31,11 +30,17 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
+/**
+ * GenericWebhookResource provides basic webhook connectivity.
+ *
+ * Add processors / persistWriters that read from "GenericWebhookResource" to
+ * consume data posted to streams.
+ */
 @Resource
 @Path("/streams/webhooks")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class GenericWebhookResource implements StreamsProvider, StreamsResource {
+public class GenericWebhookResource implements StreamsProvider {
 
     public GenericWebhookResource() {
     }
@@ -57,19 +62,35 @@ public class GenericWebhookResource implements StreamsProvider, StreamsResource 
                                   String body) {
 
         ObjectNode response = mapper.createObjectNode();
+        int responseCode = Response.Status.BAD_REQUEST.getStatusCode();
 
-        StreamsDatum datum = new StreamsDatum(body);
+        try {
+            ObjectNode item = mapper.readValue(body, ObjectNode.class);
 
-        lock.writeLock().lock();
-        ComponentUtils.offerUntilSuccess(datum, providerQueue);
-        lock.writeLock().unlock();
+            StreamsDatum datum = new StreamsDatum(body);
 
-        Boolean success = true;
+            lock.writeLock().lock();
+            ComponentUtils.offerUntilSuccess(datum, providerQueue);
+            lock.writeLock().unlock();
 
-        response.put("success", success);
+            Boolean success = true;
 
-        return Response.status(200).entity(response).build();
+            response.put("success", success);
 
+            responseCode = Response.Status.OK.getStatusCode();
+
+        } catch (Exception e) {
+            log.warn(e.toString(), e);
+
+            Boolean success = false;
+
+            response.put("success", success);
+            responseCode = Response.Status.BAD_REQUEST.getStatusCode();
+
+        } finally {
+            return Response.status(responseCode).entity(response).build();
+
+        }
     }
 
     @POST
@@ -78,19 +99,22 @@ public class GenericWebhookResource implements StreamsProvider, StreamsResource 
                                            String body) {
 
         ObjectNode response = mapper.createObjectNode();
+        int responseCode = Response.Status.BAD_REQUEST.getStatusCode();
 
         if (body.equalsIgnoreCase("{}")) {
 
             Boolean success = true;
 
             response.put("success", success);
-
-            return Response.status(200).entity(response).build();
+            responseCode = Response.Status.OK.getStatusCode();
+            return Response.status(responseCode).entity(response).build();
         }
 
         try {
 
-            for( String item : Splitter.on(newLinePattern).split(body)) {
+            for( String line : Splitter.on(newLinePattern).split(body)) {
+                ObjectNode item = mapper.readValue(line, ObjectNode.class);
+
                 StreamsDatum datum = new StreamsDatum(item);
 
                 lock.writeLock().lock();
@@ -102,8 +126,7 @@ public class GenericWebhookResource implements StreamsProvider, StreamsResource 
             Boolean success = true;
 
             response.put("success", success);
-
-            return Response.status(200).entity(response).build();
+            responseCode = Response.Status.OK.getStatusCode();
 
         } catch (Exception e) {
             log.warn(e.toString(), e);
@@ -111,8 +134,10 @@ public class GenericWebhookResource implements StreamsProvider, StreamsResource 
             Boolean success = false;
 
             response.put("success", success);
+            responseCode = Response.Status.BAD_REQUEST.getStatusCode();
 
-            return Response.status(500).entity(response).build();
+        } finally {
+            return Response.status(responseCode).entity(response).build();
 
         }
 
@@ -123,19 +148,17 @@ public class GenericWebhookResource implements StreamsProvider, StreamsResource 
     public Response json_meta(@Context HttpHeaders headers,
                                        String body) {
 
-        //log.debug(headers.toString(), headers);
-
-        //log.debug(body.toString(), body);
-
         ObjectNode response = mapper.createObjectNode();
+        int responseCode = Response.Status.BAD_REQUEST.getStatusCode();
 
         if (body.equalsIgnoreCase("{}")) {
 
             Boolean success = true;
 
             response.put("success", success);
+            responseCode = Response.Status.OK.getStatusCode();
 
-            return Response.status(200).entity(response).build();
+            return Response.status(responseCode).entity(response).build();
         }
 
         try {
@@ -144,9 +167,7 @@ public class GenericWebhookResource implements StreamsProvider, StreamsResource 
 
             for( ObjectNode item : objectWrapper.getData()) {
 
-                String json = mapper.writeValueAsString(item);
-
-                StreamsDatum datum = new StreamsDatum(json);
+                StreamsDatum datum = new StreamsDatum(item);
 
                 lock.writeLock().lock();
                 ComponentUtils.offerUntilSuccess(datum, providerQueue);
@@ -156,18 +177,19 @@ public class GenericWebhookResource implements StreamsProvider, StreamsResource 
             Boolean success = true;
 
             response.put("success", success);
-
-            return Response.status(200).entity(response).build();
+            responseCode = Response.Status.OK.getStatusCode();
 
         } catch (Exception e) {
             log.warn(e.toString(), e);
+
+            Boolean success = false;
+
+            response.put("success", success);
+            responseCode = Response.Status.BAD_REQUEST.getStatusCode();
+        } finally {
+            return Response.status(responseCode).entity(response).build();
         }
 
-        return Response.status(500).build();
-    }
-
-    public List<ObjectNode> getData(GenericWebhookData wrapper) {
-        return wrapper.getData();
     }
 
     @Override
