@@ -379,19 +379,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         stopInternal(false);
     }
 
-    /**
-     * Attempts to shut down the stream and let all data in flight finish processing.  When shutdown(long) is called, it
-     * immediately stops all {@link org.apache.streams.core.StreamsProvider}s and will attempt to let all {@link org.apache.streams.core.StreamsProcessor}s
-     * and all {@link org.apache.streams.core.StreamsPersistWriter}s finish processing.
-     * @param waitInMs
-     */
-    public void shutdown(Long waitInMs) {
 
-    }
-
-    public void shutdownNow() {
-
-    }
 
     protected void stopInternal(boolean systemExiting) {
         try {
