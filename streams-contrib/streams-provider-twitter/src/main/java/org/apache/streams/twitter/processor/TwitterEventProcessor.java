@@ -47,8 +47,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * This class performs conversion of a twitter event to a specified outClass
+ *
+ * Deprecated: use TypeConverterProcessor and ActivityConverterProcessor instead
  */
+@Deprecated
 public class TwitterEventProcessor implements StreamsProcessor {
 
     private final static String STREAMS_ID = "TwitterEventProcessor";

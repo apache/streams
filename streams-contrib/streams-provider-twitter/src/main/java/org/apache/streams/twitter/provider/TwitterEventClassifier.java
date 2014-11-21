@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * Created by sblackmon on 12/13/13.
+ * TwitterEventClassifier classifies twitter events
  */
 public class TwitterEventClassifier implements Serializable {
 
