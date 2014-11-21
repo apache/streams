@@ -58,9 +58,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
 /**
- * Requires Java Version 1.7!
- * {@code DatasiftStreamProvider} is an implementation of the {@link org.apache.streams.core.StreamsProvider} interface.  The provider
- * uses the Datasift java api to make connections. A single provider creates one connection per StreamHash in the configuration.
+ * {@code DatasiftPushProvider} is an implementation of the {@link org.apache.streams.core.StreamsProvider} interface, with
+ * annotations that allow it to bind as jersey resources within streams-runtime-dropwizard.
+ *
+ * Whereas GenericWebhookResource outputs ObjectNode datums, DatasiftPushProvider outputs Datasift datums, with
+ * metadata when the json_meta endpoint is used.
  */
 @Resource
 @Path("/streams/webhooks/datasift")
