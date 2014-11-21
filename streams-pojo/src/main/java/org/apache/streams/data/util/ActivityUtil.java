@@ -28,7 +28,10 @@ import java.util.Map;
 
 /**
  * Utility class for managing activities
+ *
+ * Deprecated: Use {@link org.apache.streams.pojo.extensions.ExtensionUtil}
  */
+@Deprecated
 public class ActivityUtil {
 
     private ActivityUtil() {}

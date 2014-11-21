@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.data.util;
+package org.apache.streams.pojo.extensions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;

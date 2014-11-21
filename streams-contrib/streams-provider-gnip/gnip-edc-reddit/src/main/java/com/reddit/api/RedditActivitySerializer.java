@@ -21,7 +21,7 @@ package com.reddit.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
-import org.apache.streams.data.util.ActivityUtil;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.gnip.powertrack.GnipActivityFixer;
 import org.apache.streams.pojo.json.Activity;
 import org.json.JSONObject;
@@ -82,7 +82,7 @@ public class RedditActivitySerializer implements ActivitySerializer<String> {
         Activity activity = new Activity();
         try {
             activity = jsonMapper.readValue(fixedObject.toString(), Activity.class);
-            Map<String, Object> extension = ActivityUtil.ensureExtensions(activity);
+            Map<String, Object> extension = ExtensionUtil.ensureExtensions(activity);
             if (fixedObject.names().toString().contains("object")){
                 if (fixedObject.getJSONObject("object").names().toString().contains("statistics")){
                     if (fixedObject.getJSONObject("object").getJSONObject("statistics").names().toString().contains("upVotes")){

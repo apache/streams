@@ -28,6 +28,7 @@ import org.apache.streams.facebook.*;
 import org.apache.streams.facebook.Place;
 import org.apache.streams.facebook.Post;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,7 +207,7 @@ public class FacebookActivityUtil {
      */
     public static void buildExtensions(Activity activity, Post post) {
         ObjectMapper mapper = StreamsJacksonMapper.getInstance();
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
 
         if(post.getLikes() != null) {
             Map<String, Object> likes = Maps.newHashMap();
