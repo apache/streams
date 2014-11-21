@@ -29,7 +29,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
-import org.apache.streams.core.StreamsResource;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.DatasiftConfiguration;
@@ -67,7 +66,7 @@ import java.util.regex.Pattern;
 @Path("/streams/webhooks/datasift")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class DatasiftPushProvider implements StreamsProvider, StreamsResource {
+public class DatasiftPushProvider implements StreamsProvider {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftPushProvider.class);
 
