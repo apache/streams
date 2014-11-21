@@ -1,0 +1,27 @@
+template: Hello, %s!
+defaultName: datasift
+
+server:
+  type: simple
+  applicationContextPath: /
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 8000
+
+logging:
+  level: DEBUG
+  appenders:
+    - type: console
+      threshold: ALL
+      target: stdout
+
+elasticsearch:
+  hosts:
+    - "localhost"
+  port: 9300
+  clusterName: elasticsearch
+  index: datasift_webhook
+  type: activity
+  batchSize: 100
+
