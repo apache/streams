@@ -142,7 +142,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
             response = httpclient.execute(httpPost);
             HttpEntity entity = response.getEntity();
             // TODO: handle retry
-            if (response.getStatusLine().getStatusCode() >= 200 && entity != null) {
+            if (response.getStatusLine() != null && response.getStatusLine().getStatusCode() >= 200 && entity != null) {
                 entityString = EntityUtils.toString(entity);
                 result = mapper.readValue(entityString, ObjectNode.class);
             }
