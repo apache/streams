@@ -13,7 +13,9 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.apache.streams.components.http.HttpProcessorConfiguration;
+import org.apache.streams.components.http.HttpConfigurator;
+import org.apache.streams.components.http.HttpPersistWriterConfiguration;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -41,7 +43,16 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
 
     protected CloseableHttpClient httpclient;
 
-    protected HttpProcessorConfiguration configuration;
+    protected HttpPersistWriterConfiguration configuration;
+
+    public SimpleHTTPPostPersistWriter() {
+        this(HttpConfigurator.detectPersistWriterConfiguration(StreamsConfigurator.config.getConfig("http")));
+    }
+
+    public SimpleHTTPPostPersistWriter(HttpPersistWriterConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
 
     @Override
     public void write(StreamsDatum entry) {
@@ -56,8 +67,6 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
         URI uri = prepareURI(params);
 
         HttpPost httppost = prepareHttpPost(uri, payload);
-
-        CloseableHttpResponse response = null;
 
         ObjectNode result = executePost(httppost);
 
@@ -133,7 +142,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
             response = httpclient.execute(httpPost);
             HttpEntity entity = response.getEntity();
             // TODO: handle retry
-            if (response.getStatusLine().getStatusCode() == 200 && entity != null) {
+            if (response.getStatusLine().getStatusCode() >= 200 && entity != null) {
                 entityString = EntityUtils.toString(entity);
                 result = mapper.readValue(entityString, ObjectNode.class);
             }
@@ -155,6 +164,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
         uriBuilder = new URIBuilder()
                 .setScheme(this.configuration.getProtocol())
                 .setHost(this.configuration.getHostname())
+                .setPort(this.configuration.getPort().intValue())
                 .setPath(this.configuration.getResourcePath());
 
         httpclient = HttpClients.createDefault();

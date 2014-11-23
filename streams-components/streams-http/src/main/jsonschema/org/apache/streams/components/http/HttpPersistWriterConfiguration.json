@@ -6,13 +6,6 @@
     "javaInterfaces": ["java.io.Serializable"],
     "extends": { "$ref": "HttpConfiguration.json" },
     "properties": {
-        "entity": {
-            "type": "string",
-            "description": "Entity to extend",
-            "enum": [ "activity", "actor", "object", "target" ],
-            "required" : true,
-            "default": "activity"
-        },
         "resourcePostfixPattern": {
             "type": "string",
             "description": "Pattern for supplying final path for write",
