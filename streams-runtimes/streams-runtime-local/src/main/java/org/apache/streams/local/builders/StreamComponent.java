@@ -51,15 +51,18 @@ public class StreamComponent {
     private int numTasks = 1;
     private boolean perpetual;
 
+    private Map<String, Object> streamConfig;
+
     /**
      *
      * @param id
      * @param provider
      */
-    public StreamComponent(String id, StreamsProvider provider, boolean perpetual) {
+    public StreamComponent(String id, StreamsProvider provider, boolean perpetual, Map<String, Object> streamConfig) {
         this.id = id;
         this.provider = provider;
         this.perpetual = perpetual;
+        this.streamConfig = streamConfig;
         initializePrivateVariables();
     }
 
@@ -70,12 +73,13 @@ public class StreamComponent {
      * @param start
      * @param end
      */
-    public StreamComponent(String id, StreamsProvider provider, DateTime start, DateTime end) {
+    public StreamComponent(String id, StreamsProvider provider, DateTime start, DateTime end, Map<String, Object> streamConfig) {
         this.id = id;
         this.provider = provider;
         this.dateRange = new DateTime[2];
         this.dateRange[START] = start;
         this.dateRange[END] = end;
+        this.streamConfig = streamConfig;
         initializePrivateVariables();
     }
 
@@ -86,10 +90,11 @@ public class StreamComponent {
      * @param provider
      * @param sequence
      */
-    public StreamComponent(String id, StreamsProvider provider, BigInteger sequence) {
+    public StreamComponent(String id, StreamsProvider provider, BigInteger sequence, Map<String, Object> streamConfig) {
         this.id = id;
         this.provider = provider;
         this.sequence = sequence;
+        this.streamConfig = streamConfig;
     }
 
     /**
@@ -99,11 +104,12 @@ public class StreamComponent {
      * @param inQueue
      * @param numTasks
      */
-    public StreamComponent(String id, StreamsProcessor processor, BlockingQueue<StreamsDatum> inQueue, int numTasks) {
+    public StreamComponent(String id, StreamsProcessor processor, BlockingQueue<StreamsDatum> inQueue, int numTasks, Map<String, Object> streamConfig) {
         this.id = id;
         this.processor = processor;
         this.inQueue = inQueue;
         this.numTasks = numTasks;
+        this.streamConfig = streamConfig;
         initializePrivateVariables();
     }
 
@@ -114,11 +120,12 @@ public class StreamComponent {
      * @param inQueue
      * @param numTasks
      */
-    public StreamComponent(String id, StreamsPersistWriter writer, BlockingQueue<StreamsDatum> inQueue, int numTasks) {
+    public StreamComponent(String id, StreamsPersistWriter writer, BlockingQueue<StreamsDatum> inQueue, int numTasks, Map<String, Object> streamConfig) {
         this.id = id;
         this.writer = writer;
         this.inQueue = inQueue;
         this.numTasks = numTasks;
+        this.streamConfig = streamConfig;
         initializePrivateVariables();
     }
 
@@ -187,13 +194,13 @@ public class StreamComponent {
         StreamsTask task;
         if(this.processor != null) {
             if(this.numTasks > 1) {
-                task =  new StreamsProcessorTask((StreamsProcessor)SerializationUtil.cloneBySerialization(this.processor));
+                task =  new StreamsProcessorTask((StreamsProcessor)SerializationUtil.cloneBySerialization(this.processor), streamConfig);
                 task.addInputQueue(this.inQueue);
                 for(BlockingQueue<StreamsDatum> q : this.outBound.values()) {
                     task.addOutputQueue(q);
                 }
             } else {
-                task = new StreamsProcessorTask(this.processor);
+                task = new StreamsProcessorTask(this.processor, streamConfig);
                 task.addInputQueue(this.inQueue);
                 for(BlockingQueue<StreamsDatum> q : this.outBound.values()) {
                     task.addOutputQueue(q);
@@ -202,10 +209,10 @@ public class StreamComponent {
         }
         else if(this.writer != null) {
             if(this.numTasks > 1) {
-                task = new StreamsPersistWriterTask((StreamsPersistWriter) SerializationUtil.cloneBySerialization(this.writer));
+                task = new StreamsPersistWriterTask((StreamsPersistWriter) SerializationUtil.cloneBySerialization(this.writer), streamConfig);
                 task.addInputQueue(this.inQueue);
             } else {
-                task = new StreamsPersistWriterTask(this.writer);
+                task = new StreamsPersistWriterTask(this.writer, streamConfig);
                 task.addInputQueue(this.inQueue);
             }
         }
@@ -217,11 +224,11 @@ public class StreamComponent {
                 prov = this.provider;
             }
             if(this.dateRange == null && this.sequence == null)
-                task = new StreamsProviderTask(prov, this.perpetual);
+                task = new StreamsProviderTask(prov, this.perpetual, streamConfig);
             else if(this.sequence != null)
-                task = new StreamsProviderTask(prov, this.sequence);
+                task = new StreamsProviderTask(prov, this.sequence, streamConfig);
             else
-                task = new StreamsProviderTask(prov, this.dateRange[0], this.dateRange[1]);
+                task = new StreamsProviderTask(prov, this.dateRange[0], this.dateRange[1], streamConfig);
             //Adjust the timeout if necessary
             if(timeout != 0) {
                 ((StreamsProviderTask)task).setTimeout(timeout);

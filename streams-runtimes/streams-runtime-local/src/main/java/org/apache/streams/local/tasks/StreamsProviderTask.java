@@ -72,7 +72,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
      * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readCurrent()}
      * @param provider
      */
-    public StreamsProviderTask(StreamsProvider provider, boolean perpetual) {
+    public StreamsProviderTask(StreamsProvider provider, boolean perpetual, Map<String, Object> streamConfig) {
+        super(streamConfig);
         this.provider = provider;
         if( perpetual )
             this.type = Type.PERPETUAL;
@@ -87,7 +88,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
      * @param provider
      * @param sequence
      */
-    public StreamsProviderTask(StreamsProvider provider, BigInteger sequence) {
+    public StreamsProviderTask(StreamsProvider provider, BigInteger sequence, Map<String, Object> streamConfig) {
+        super(streamConfig);
         this.provider = provider;
         this.type = Type.READ_NEW;
         this.sequence = sequence;
@@ -101,7 +103,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
      * @param start
      * @param end
      */
-    public StreamsProviderTask(StreamsProvider provider, DateTime start, DateTime end) {
+    public StreamsProviderTask(StreamsProvider provider, DateTime start, DateTime end, Map<String, Object> streamConfig) {
+        super(streamConfig);
         this.provider = provider;
         this.type = Type.READ_RANGE;
         this.dateRange = new DateTime[2];
@@ -149,7 +152,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             //Negative values mean we want to run forever
             long maxZeros = timeout < 0 ? Long.MAX_VALUE : (timeout / sleepTime);
             if(this.counter == null) { //should never be null
-                this.counter = new StreamsTaskCounter(this.provider.getClass().getName()+ UUID.randomUUID().toString());
+                this.counter = new StreamsTaskCounter(this.provider.getClass().getName()+ UUID.randomUUID().toString(), getStreamIdentifier(), getStartedAt());
             }
             switch(this.type) {
                 case PERPETUAL: {
@@ -244,4 +247,6 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     public void setStreamsTaskCounter(StreamsTaskCounter counter) {
         this.counter = counter;
     }
+
+
 }

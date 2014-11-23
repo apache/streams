@@ -18,12 +18,20 @@
 
 package com.google.gplus.processor;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.api.services.plus.model.Person;
 import com.google.common.collect.Lists;
+import com.google.gplus.serializer.util.GPlusActivityDeserializer;
+import com.google.gplus.serializer.util.GPlusEventClassifier;
+import com.google.gplus.serializer.util.GPlusPersonDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +46,7 @@ public class GooglePlusTypeConverter implements StreamsProcessor {
     public final static String STREAMS_ID = "GooglePlusTypeConverter";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(GooglePlusTypeConverter.class);
+    private StreamsJacksonMapper mapper;
     private Queue<Person> inQueue;
     private Queue<StreamsDatum> outQueue;
     private GooglePlusActivityUtil googlePlusActivityUtil;
@@ -63,6 +72,10 @@ public class GooglePlusTypeConverter implements StreamsProcessor {
             LOGGER.debug("{} processing {}", STREAMS_ID, item.getClass());
             Activity activity = null;
 
+            if(item instanceof String) {
+                item = deserializeItem(item);
+            }
+
             if(item instanceof Person) {
                 activity = new Activity();
                 googlePlusActivityUtil.updateActivity((Person)item, activity);
@@ -86,9 +99,34 @@ public class GooglePlusTypeConverter implements StreamsProcessor {
             return Lists.newArrayList();
     }
 
+    private Object deserializeItem(Object item) {
+        try {
+            Class klass = GPlusEventClassifier.detectClass((String) item);
+
+            if (klass.equals(Person.class)) {
+                item = mapper.readValue((String) item, Person.class);
+            } else if (klass.equals(com.google.api.services.plus.model.Activity.class)) {
+                item = mapper.readValue((String) item, com.google.api.services.plus.model.Activity.class);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception while trying to deserializeItem: {}", e);
+        }
+
+        return item;
+    }
+
     @Override
     public void prepare(Object configurationObject) {
         googlePlusActivityUtil = new GooglePlusActivityUtil();
+        mapper = new StreamsJacksonMapper();
+
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addDeserializer(Person.class, new GPlusPersonDeserializer());
+        mapper.registerModule(simpleModule);
+
+        simpleModule = new SimpleModule();
+        simpleModule.addDeserializer(com.google.api.services.plus.model.Activity.class, new GPlusActivityDeserializer());
+        mapper.registerModule(simpleModule);
     }
 
     @Override
