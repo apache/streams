@@ -11,7 +11,7 @@
             "javaType": "org.apache.streams.graph.GraphVertexWriterConfiguration"
         },
         "edges": {
-            "type": "string",
+            "type": "object",
             "javaType": "org.apache.streams.graph.GraphEdgeWriterConfiguration"
         }
     }
