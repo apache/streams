@@ -28,6 +28,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.util.EntityUtils;
 import org.apache.streams.components.http.HttpPersistWriterConfiguration;
 import org.apache.streams.components.http.persist.SimpleHTTPPostPersistWriter;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.graph.neo4j.CypherGraphUtil;
@@ -59,7 +60,7 @@ public class GraphPersistWriter extends SimpleHTTPPostPersistWriter {
     protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public GraphPersistWriter() {
-        this(GraphConfigurator.detectWriterConfiguration(StreamsConfigurator.config.getConfig("blueprints")));
+        this(new ComponentConfigurator<GraphWriterConfiguration>(GraphWriterConfiguration.class).detectConfiguration(StreamsConfigurator.config.getConfig("graph")));
     }
 
     public GraphPersistWriter(GraphWriterConfiguration configuration) {
