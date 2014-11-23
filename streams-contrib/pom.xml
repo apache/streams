@@ -40,6 +40,7 @@
         <module>streams-persist-cassandra</module>
         <module>streams-persist-console</module>
         <module>streams-persist-elasticsearch</module>
+        <module>streams-persist-graph</module>
         <module>streams-persist-hbase</module>
         <module>streams-persist-hdfs</module>
         <module>streams-persist-kafka</module>
