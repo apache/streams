@@ -20,16 +20,9 @@
 package org.apache.streams.pig;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.data.ActivityConverter;
 import org.slf4j.Logger;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Static reflection wrappers for instantiating StreamsComponents
@@ -38,7 +31,7 @@ public class StreamsComponentFactory {
 
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StreamsComponentFactory.class);
 
-    public static ActivitySerializer getSerializerInstance(Class<?> serializerClazz) {
+    public static ActivityConverter getSerializerInstance(Class<?> serializerClazz) {
 
         Object object = null;
         try {
@@ -49,7 +42,7 @@ public class StreamsComponentFactory {
 
         Preconditions.checkNotNull(object);
 
-        ActivitySerializer serializer = (ActivitySerializer) object;
+        ActivityConverter serializer = (ActivityConverter) object;
 
         return serializer;
 

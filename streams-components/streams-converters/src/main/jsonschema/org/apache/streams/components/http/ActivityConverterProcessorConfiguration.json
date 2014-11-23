@@ -1,0 +1,23 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.converter.ActivityConverterProcessorConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "classifiers": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "javaType": "org.apache.streams.data.DocumentClassifier"
+            }
+        },
+        "resolvers": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "javaType": "org.apache.streams.data.ActivityConverterResolver"
+            }
+        }
+    }
+}
