@@ -1,0 +1,18 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "javaType" : "org.apache.streams.graph.GraphWriterConfiguration",
+    "extends" : {"$ref":"GraphConfiguration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "vertices": {
+            "type": "object",
+            "javaType": "org.apache.streams.graph.GraphVertexWriterConfiguration"
+        },
+        "edges": {
+            "type": "string",
+            "javaType": "org.apache.streams.graph.GraphEdgeWriterConfiguration"
+        }
+    }
+}
