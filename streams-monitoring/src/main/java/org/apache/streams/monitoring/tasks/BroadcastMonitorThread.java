@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.apache.streams.jackson.*;
 import org.apache.streams.monitoring.persist.MessagePersister;
 import org.apache.streams.monitoring.persist.impl.BroadcastMessagePersister;
+import org.apache.streams.monitoring.persist.impl.SLF4JMessagePersister;
 import org.apache.streams.pojo.json.*;
 import org.slf4j.Logger;
 
@@ -57,7 +58,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
         setBroadcastURI();
         setWaitTime();
 
-        messagePersister = new BroadcastMessagePersister(broadcastURI);
+        messagePersister = new SLF4JMessagePersister();
 
         initializeObjectMapper();
     }
