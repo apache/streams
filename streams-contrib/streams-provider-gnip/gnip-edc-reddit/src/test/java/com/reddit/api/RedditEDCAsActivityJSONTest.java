@@ -43,10 +43,10 @@ public class RedditEDCAsActivityJSONTest {
 
     private ObjectMapper jsonMapper;
     XmlMapper xmlMapper;
-    private RedditActivityConverter redditSerializer;
+    private RedditActivitySerializer redditSerializer;
 
     public RedditEDCAsActivityJSONTest() {
-        redditSerializer = new RedditActivityConverter();
+        redditSerializer = new RedditActivitySerializer();
         jsonMapper = new ObjectMapper();
         xmlMapper = new XmlMapper();
     }

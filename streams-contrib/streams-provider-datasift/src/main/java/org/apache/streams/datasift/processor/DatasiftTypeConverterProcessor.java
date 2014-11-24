@@ -25,10 +25,10 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.provider.DatasiftConverter;
-import org.apache.streams.datasift.serializer.DatasiftActivityConverter;
+import org.apache.streams.datasift.serializer.DatasiftActivitySerializer;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.converter.CleanAdditionalPropertiesProcessor;
+import org.apache.streams.jackson.CleanAdditionalPropertiesProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
 
     private ObjectMapper mapper;
     private Class outClass;
-    private DatasiftActivityConverter datasiftInteractionActivitySerializer;
+    private DatasiftActivitySerializer datasiftInteractionActivitySerializer;
     private DatasiftConverter converter;
 
     public final static String TERMINATE = new String("TERMINATE");
@@ -75,7 +75,7 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
     @Override
     public void prepare(Object configurationObject) {
         this.mapper = StreamsDatasiftMapper.getInstance();
-        this.datasiftInteractionActivitySerializer = new DatasiftActivityConverter();
+        this.datasiftInteractionActivitySerializer = new DatasiftActivitySerializer();
         if(this.outClass.equals(Activity.class)) {
             this.converter = new ActivityConverter();
         } else if (this.outClass.equals(String.class)) {

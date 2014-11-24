@@ -20,8 +20,6 @@ package org.apache.streams.datasift.serializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.apache.streams.data.ActivityConverter;
-import org.apache.streams.data.ActivityConverterFactory;
 import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.instagram.Instagram;
 import org.apache.streams.datasift.twitter.Twitter;
@@ -32,9 +30,7 @@ import org.junit.Test;
 import java.util.Scanner;
 
 /**
- * Test for
- * @see {@link org.apache.streams.datasift.serializer.DatasiftEventClassifier}
- *
+ * Created by sblackmon on 12/13/13.
  */
 public class DatasiftEventClassifierTest {
 
@@ -42,33 +38,25 @@ public class DatasiftEventClassifierTest {
 
     @Test
     public void testTwitterDetection() throws Exception {
-        Scanner scanner = new Scanner(DatasiftActivityConverterTest.class.getResourceAsStream("/twitter_datasift_json.txt"));
+        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/twitter_datasift_json.txt"));
         String line = null;
         while(scanner.hasNextLine()) {
             line = scanner.nextLine();
             Datasift datasift = MAPPER.readValue(line, Datasift.class);
-            Class detectedClass = DatasiftEventClassifier.getInstance().detectClass(datasift);
-            assert(detectedClass == Twitter.class);
-            Class converterClass = DatasiftConverterResolver.getInstance().bestSerializer(detectedClass);
-            assert(converterClass == DatasiftTwitterActivityConverter.class);
-            ActivityConverter detectedConverter = ActivityConverterFactory.getInstance(converterClass);
-            assert(detectedConverter instanceof DatasiftTwitterActivityConverter);
+            assert(DatasiftEventClassifier.detectClass(datasift) == Twitter.class);
+            assert(DatasiftEventClassifier.bestSerializer(datasift) instanceof DatasiftTwitterActivitySerializer);
         }
     }
 
     @Test
     public void testInstagramDetection() throws Exception {
-        Scanner scanner = new Scanner(DatasiftActivityConverterTest.class.getResourceAsStream("/instagram_datasift_json.txt"));
+        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/instagram_datasift_json.txt"));
         String line = null;
         while(scanner.hasNextLine()) {
             line = scanner.nextLine();
             Datasift datasift = MAPPER.readValue(line, Datasift.class);
-            Class detectedClass = DatasiftEventClassifier.getInstance().detectClass(datasift);
-            assert(detectedClass == Instagram.class);
-            Class converterClass = DatasiftConverterResolver.getInstance().bestSerializer(detectedClass);
-            assert(converterClass == DatasiftInstagramActivityConverter.class);
-            ActivityConverter detectedConverter = ActivityConverterFactory.getInstance(converterClass);
-            assert(detectedConverter instanceof DatasiftInstagramActivityConverter);
+            assert(DatasiftEventClassifier.detectClass(datasift) == Instagram.class);
+            assert(DatasiftEventClassifier.bestSerializer(datasift) instanceof DatasiftInstagramActivitySerializer);
         }
     }
     

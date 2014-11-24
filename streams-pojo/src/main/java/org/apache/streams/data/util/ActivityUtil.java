@@ -120,7 +120,4 @@ public class ActivityUtil {
         return String.format("id:%s:activities:%s", providerName, activityId);
     }
 
-    public static boolean isValid(Activity activity) {
-        return activity.getId() != null && activity.getVerb() != null && activity.getProvider().getId() != null;
-    }
 }

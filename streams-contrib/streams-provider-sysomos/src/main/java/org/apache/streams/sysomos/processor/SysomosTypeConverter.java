@@ -27,12 +27,8 @@ import org.apache.streams.sysomos.conversion.SysomosBeatActivityConverter;
 
 import java.util.List;
 
-@Deprecated
 /**
  * Stream processor that converts Sysomos type to Activity
- * Deprecated: Modules and streams should adopt TypeConverterProcessor and ActivityConverterProcessor
- * TODO: Create SysomosDocumentClassifier and SysomosConverterResolver
- * TODO: Refactor any streams
  */
 public class SysomosTypeConverter implements StreamsProcessor {
 

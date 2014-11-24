@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.facebook.Page;
-import org.apache.streams.facebook.api.FacebookPageActivityConverter;
+import org.apache.streams.facebook.api.FacebookPageActivitySerializer;
 import org.apache.streams.facebook.processor.FacebookTypeConverter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
@@ -48,7 +48,7 @@ public class SimplePageTest {
 
     private static final String FACEBOOK_JSON= "{\"metadata\":null,\"id\":\"142803045874943\",\"name\":\"Senator Angus S. King, Jr.\",\"category\":\"Government official\",\"createdTime\":null,\"link\":\"https://www.facebook.com/SenatorAngusSKingJr\",\"likes\":10246,\"location\":{\"street\":\"359 Dirksen Senate Office Building\",\"city\":\"Washington, District of Columbia\",\"state\":\"DC\",\"country\":\"United States\",\"zip\":\"20510\",\"latitude\":null,\"longitude\":null,\"text\":null},\"phone\":\"202-224-5344\",\"checkins\":0,\"picture\":null,\"cover\":{\"id\":null,\"source\":\"https://fbcdn-sphotos-g-a.akamaihd.net/hphotos-ak-xpa1/v/t1.0-9/10288792_321537751334804_8200105519500362465_n.jpg?oh=fbcde9b3e1e011dfa3e699628629bc53&oe=546FB617&__gda__=1416717487_3fa5781d7d9c3d58f2bc798a36ac6fc0\",\"offsetY\":9},\"website\":\"http://www.king.senate.gov\",\"talkingAboutCount\":5034,\"accessToken\":null,\"wereHereCount\":0,\"about\":\"Welcome to the official Facebook page of Senator Angus S. King, Jr. (I-ME).\\nhttp://king.senate.gov\\nhttps://twitter.com/SenAngusKing\\nhttps://www.youtube.com/SenatorAngusKing\",\"username\":\"SenatorAngusSKingJr\",\"published\":true,\"communityPage\":false}";
 
-    private FacebookPageActivityConverter facebookPageActivitySerializer = new FacebookPageActivityConverter();
+    private FacebookPageActivitySerializer facebookPageActivitySerializer = new FacebookPageActivitySerializer();
 
     @Before
     public void setUp() throws Exception {
