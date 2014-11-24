@@ -13,7 +13,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public class GPlusUserDataProvider extends AbstractGPlusProvider{
 
-    public GPlusUserDataProvider(){
+    public GPlusUserDataProvider() {
         super();
     }
 

@@ -219,6 +219,8 @@ public class LocalStreamBuilder implements StreamBuilder {
                 }
                 if(isRunning) {
                     Thread.sleep(3000);
+                } else {
+                    LOGGER.info("Stream has completed successfully, shutting down @ {}", System.currentTimeMillis());
                 }
             }
             LOGGER.debug("Components are no longer running or timed out");
@@ -376,6 +378,8 @@ public class LocalStreamBuilder implements StreamBuilder {
     public void stop() {
         stopInternal(false);
     }
+
+
 
     protected void stopInternal(boolean systemExiting) {
         try {

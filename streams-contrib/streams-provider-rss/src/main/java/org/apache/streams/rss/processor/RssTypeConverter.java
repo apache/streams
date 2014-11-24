@@ -24,7 +24,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.rss.serializer.SyndEntryActivitySerializer;
+import org.apache.streams.rss.serializer.SyndEntryActivityConverter;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
@@ -32,14 +32,18 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+@Deprecated
 /**
  * Converts ObjectNode representations of Rome SyndEntries to activities.
+ * Deprecated: Modules and streams should adopt TypeConverterProcessor and ActivityConverterProcessor
+ * TODO: Have RSS Provider always output ObjectNode, place ActivityConverterProcessor afterward with RssDocumentClassifier and RssConverterResolver available
+ * TODO: Refactor tests and examples
  */
 public class RssTypeConverter implements StreamsProcessor{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RssTypeConverter.class);
 
-    private SyndEntryActivitySerializer serializer;
+    private SyndEntryActivityConverter serializer;
     private int successCount = 0;
     private int failCount = 0;
 
@@ -62,7 +66,7 @@ public class RssTypeConverter implements StreamsProcessor{
 
     @Override
     public void prepare(Object o) {
-        this.serializer = new SyndEntryActivitySerializer();
+        this.serializer = new SyndEntryActivityConverter();
     }
 
     @Override
