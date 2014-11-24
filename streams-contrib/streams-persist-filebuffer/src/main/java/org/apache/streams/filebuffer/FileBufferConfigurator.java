@@ -16,21 +16,24 @@
  * under the License.
  */
 
-package org.apache.streams.file;
+package org.apache.streams.filebuffer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
-import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.file.FileConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * Resolves FileBufferConfiguration from typesafe
+ *
+ * Deprecated: use ComponentConfigurator<FileBufferConfiguration> instead.
  */
-public class FileConfigurator {
+@Deprecated
+public class FileBufferConfigurator {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FileConfigurator.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(FileBufferConfigurator.class);
 
     private final static ObjectMapper mapper = new ObjectMapper();
 

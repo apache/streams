@@ -16,17 +16,17 @@
  * under the License.
  */
 
-package org.apache.streams.file;
+package org.apache.streams.filebuffer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.Queues;
 import com.squareup.tape.QueueFile;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistReader;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.file.FileConfiguration;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,21 +38,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Queue;
-import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
-public class FilePersistReader implements StreamsPersistReader, Serializable {
+/**
+ * Reads data from a buffer stored on the file-system.
+ */
+public class FileBufferPersistReader implements StreamsPersistReader, Serializable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FilePersistReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileBufferPersistReader.class);
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
@@ -67,11 +63,11 @@ public class FilePersistReader implements StreamsPersistReader, Serializable {
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public FilePersistReader() {
-        this(FileConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("file")));
+    public FileBufferPersistReader() {
+        this(FileBufferConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("file")));
     }
 
-    public FilePersistReader(FileConfiguration config) {
+    public FileBufferPersistReader(FileConfiguration config) {
         this.config = config;
     }
 
@@ -141,12 +137,13 @@ public class FilePersistReader implements StreamsPersistReader, Serializable {
 
         File file = new File( config.getPath());
 
-        if( !file.exists() )
+        if( !file.exists() ) {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage());
             }
+        }
 
         Preconditions.checkArgument(file.exists());
         Preconditions.checkArgument(file.canRead());
@@ -154,7 +151,7 @@ public class FilePersistReader implements StreamsPersistReader, Serializable {
         try {
             queueFile = new QueueFile(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
 
         Preconditions.checkNotNull(queueFile);

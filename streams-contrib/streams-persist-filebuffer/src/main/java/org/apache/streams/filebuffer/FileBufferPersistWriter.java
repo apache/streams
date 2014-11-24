@@ -16,33 +16,32 @@
  * under the License.
  */
 
-package org.apache.streams.file;
+package org.apache.streams.filebuffer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.squareup.tape.QueueFile;
-import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
+import org.apache.streams.file.FileConfiguration;
 import org.apache.streams.util.GuidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class FilePersistWriter implements StreamsPersistWriter, Serializable {
+/**
+ * Writes data to a buffer stored on the file-system.
+ */
+public class FileBufferPersistWriter implements StreamsPersistWriter, Serializable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FilePersistWriter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileBufferPersistWriter.class);
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
@@ -52,11 +51,11 @@ public class FilePersistWriter implements StreamsPersistWriter, Serializable {
 
     private QueueFile queueFile;
 
-    public FilePersistWriter() {
-       this(FileConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("file")));
+    public FileBufferPersistWriter() {
+       this(FileBufferConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("filebuffer")));
     }
 
-    public FilePersistWriter(FileConfiguration config) {
+    public FileBufferPersistWriter(FileConfiguration config) {
         this.config = config;
     }
 

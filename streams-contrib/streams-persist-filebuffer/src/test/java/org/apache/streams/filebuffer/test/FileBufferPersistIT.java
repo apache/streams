@@ -1,4 +1,22 @@
-package org.apache.streams.file.test;
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.streams.filebuffer.test;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -8,41 +26,29 @@ import org.apache.streams.console.ConsolePersistWriter;
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.filebuffer.FileBufferPersistReader;
+import org.apache.streams.filebuffer.FileBufferPersistWriter;
 import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.apache.streams.file.FileConfiguration;
-import org.apache.streams.file.FilePersistReader;
-import org.apache.streams.file.FilePersistWriter;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.powermock.api.mockito.PowerMockito;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.mock;
 
 /**
- * Created by sblackmon on 10/20/14.
+ * Tests {@link org.apache.streams.filebuffer.FileBufferPersistWriter }
+ * Tests {@link org.apache.streams.filebuffer.FileBufferPersistReader }
  */
-public class FilePersistIT {
+public class FileBufferPersistIT {
 
     private FileConfiguration testConfiguration;
 
@@ -80,11 +86,22 @@ public class FilePersistIT {
 
         StreamBuilder builder = new LocalStreamBuilder(1, streamConfig);
 
-        FilePersistWriter fileWriter = new FilePersistWriter(testConfiguration);
-        FilePersistReader fileReader = new FilePersistReader(testConfiguration);
+        FileBufferPersistWriter fileWriter = new FileBufferPersistWriter(testConfiguration);
+        FileBufferPersistReader fileReader = new FileBufferPersistReader(testConfiguration);
 
         builder.newReadCurrentStream("stdin", reader);
         builder.addStreamsPersistWriter("writer", fileWriter, 1, "stdin");
+        builder.start();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ie) {
+            //Handle exception
+        }
+
+        builder.stop();
+
+        builder = new LocalStreamBuilder(1, streamConfig);
         builder.newReadCurrentStream("reader", fileReader);
         builder.addStreamsPersistWriter("stdout", writer, 1, "reader");
 

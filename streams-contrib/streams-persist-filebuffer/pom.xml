@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>streams-persist-file</artifactId>
+    <artifactId>streams-persist-filebuffer</artifactId>
 
     <properties>
         <tape.version>1.2.3</tape.version>
