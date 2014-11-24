@@ -26,7 +26,7 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Author;
 import org.apache.streams.pojo.json.Provider;
-import org.apache.streams.rss.serializer.SyndEntryActivitySerializer;
+import org.apache.streams.rss.serializer.SyndEntryActivityConverter;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class SyndEntryActivitySerizlizerTest {
         List<Activity> activities = Lists.newLinkedList();
         List<ObjectNode> objects = Lists.newLinkedList();
 
-        SyndEntryActivitySerializer serializer = new SyndEntryActivitySerializer();
+        SyndEntryActivityConverter serializer = new SyndEntryActivityConverter();
 
         while(scanner.hasNext()) {
             String line = scanner.nextLine();

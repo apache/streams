@@ -87,6 +87,7 @@ public class TwitterActivityUtil {
     public static void updateActivity(User user, Activity activity) throws ActivitySerializerException {
         activity.setActor(buildActor(user));
         activity.setId(null);
+        activity.setVerb(null);
     }
 
     /**
@@ -114,6 +115,7 @@ public class TwitterActivityUtil {
     public static  Actor buildActor(Delete delete) {
         Actor actor = new Actor();
         actor.setId(formatId(delete.getDelete().getStatus().getUserIdStr()));
+        actor.setObjectType("page");
         return actor;
     }
 
@@ -161,7 +163,7 @@ public class TwitterActivityUtil {
                 .orNull();
         if( id != null )
             actObj.setId(id);
-        actObj.setObjectType("tweet");
+        actObj.setObjectType("post");
         actObj.setContent(tweet.getText());
         return actObj;
     }
@@ -191,6 +193,7 @@ public class TwitterActivityUtil {
                         .or(Optional.of(user.getId().toString()))
                         .orNull()
         ));
+        actor.setObjectType("page");
 
         actor.setDisplayName(user.getName());
         actor.setAdditionalProperty("handle", user.getScreenName());
@@ -267,7 +270,9 @@ public class TwitterActivityUtil {
     public static Provider getProvider() {
         Provider provider = new Provider();
         provider.setId("id:providers:twitter");
+        provider.setObjectType("application");
         provider.setDisplayName("Twitter");
+
         return provider;
     }
     /**

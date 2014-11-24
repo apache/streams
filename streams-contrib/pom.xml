@@ -36,6 +36,7 @@
         <module>streams-persist-cassandra</module>
         <module>streams-persist-console</module>
         <module>streams-persist-elasticsearch</module>
+        <module>streams-persist-graph</module>
         <module>streams-persist-hbase</module>
         <module>streams-persist-hdfs</module>
         <module>streams-persist-kafka</module>
@@ -43,7 +44,6 @@
         <module>streams-amazon-aws</module>
         <!--<module>streams-processor-lucene</module>-->
         <!--<module>streams-processor-tika</module>-->
-        <module>streams-processor-jackson</module>
         <module>streams-processor-json</module>
         <module>streams-processor-urls</module>
         <module>streams-processor-peoplepattern</module>

@@ -27,7 +27,7 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
-import org.apache.streams.twitter.provider.TwitterEventClassifier;
+import org.apache.streams.twitter.serializer.TwitterDocumentClassifier;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +91,7 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
                 item = mapper.writeValueAsString((ObjectNode)entry.getDocument());
             }
 
-            Class inClass = TwitterEventClassifier.detectClass(item);
+            Class inClass = TwitterDocumentClassifier.getInstance().detectClass(item);
 
             User user;
 

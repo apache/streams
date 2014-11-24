@@ -32,9 +32,8 @@ import org.joda.time.format.DateTimeFormatter;
 import java.io.IOException;
 
 /**
- * Created by sblackmon on 3/27/14.
- *
  * Depracated: Use StreamsJacksonMapper instead
+ * TODO: find another place to hold DATASIFT_FORMAT and delete this class
  */
 @Deprecated()
 public class StreamsDatasiftMapper extends StreamsJacksonMapper {

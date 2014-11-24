@@ -29,12 +29,15 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by sblackmon on 3/27/14.
+ * StreamsDateTimeDeserializer is a supporting class for
+ * @see {@link org.apache.streams.jackson.StreamsJacksonMapper}
+ *
+ * Converting date-time strings other than RFC3339 to joda DateTime objects requires
+ * additional formats to be provided when instantiating StreamsJacksonMapper.
  */
 public class StreamsDateTimeDeserializer extends StdDeserializer<DateTime> implements Serializable {
 
@@ -50,6 +53,9 @@ public class StreamsDateTimeDeserializer extends StdDeserializer<DateTime> imple
             formatters.add(DateTimeFormat.forPattern(format));
     }
 
+    /**
+     * Applies each additional format in turn, until it can provide a non-null DateTime
+     */
     @Override
     public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException {
 

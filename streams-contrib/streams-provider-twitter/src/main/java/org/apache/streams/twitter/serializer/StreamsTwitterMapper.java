@@ -18,20 +18,13 @@
 
 package org.apache.streams.twitter.serializer;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.streams.data.util.RFC3339Utils;
-import org.apache.streams.jackson.StreamsDateTimeDeserializer;
-import org.apache.streams.jackson.StreamsDateTimeSerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.jackson.StreamsJacksonModule;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -39,9 +32,8 @@ import org.joda.time.format.DateTimeFormatter;
 import java.io.IOException;
 
 /**
- * Created by sblackmon on 3/27/14.
- *
  * Deprecated: Use StreamsJacksonMapper
+ * TODO: find another place to put TWITTER_FORMAT and delete this class
  */
 @Deprecated
 public class StreamsTwitterMapper extends StreamsJacksonMapper {
