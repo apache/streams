@@ -154,7 +154,16 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
 
         Map<String, String> params = prepareParams(entry);
 
-        URI uri = prepareURI(params);
+        URI uri;
+        for( Map.Entry<String,String> param : params.entrySet()) {
+            uriBuilder = uriBuilder.setParameter(param.getKey(), param.getValue());
+        }
+        try {
+            uri = uriBuilder.build();
+        } catch (URISyntaxException e) {
+            LOGGER.error("URI error {}", uriBuilder.toString());
+            return result;
+        }
 
         HttpGet httpget = prepareHttpGet(uri);
 
@@ -199,23 +208,6 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
     }
 
     /**
-     Override this to alter request URI
-     */
-    protected URI prepareURI(Map<String, String> params) {
-
-        URI uri = null;
-        for( Map.Entry<String,String> param : params.entrySet()) {
-            uriBuilder = uriBuilder.setParameter(param.getKey(), param.getValue());
-        }
-        try {
-            uri = uriBuilder.build();
-        } catch (URISyntaxException e) {
-            LOGGER.error("URI error {}", uriBuilder.toString());
-        }
-        return uri;
-    }
-
-    /**
      Override this to add parameters to the request
      */
     protected Map<String, String> prepareParams(StreamsDatum entry) {
@@ -223,12 +215,6 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
         return Maps.newHashMap();
     }
 
-    /**
-     Override this to set a payload on the request
-     */
-    protected ObjectNode preparePayload(StreamsDatum entry) {
-        return null;
-    }
 
     public HttpGet prepareHttpGet(URI uri) {
         HttpGet httpget = new HttpGet(uri);

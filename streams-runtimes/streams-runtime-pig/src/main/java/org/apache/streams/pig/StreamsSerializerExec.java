@@ -21,14 +21,26 @@ package org.apache.streams.pig;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import datafu.pig.util.SimpleEvalFunc;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.pig.EvalFunc;
 import org.apache.pig.builtin.MonitoredUDF;
-import org.apache.streams.data.ActivityConverter;
+import org.apache.pig.data.BagFactory;
+import org.apache.pig.data.DataBag;
+import org.apache.pig.data.Tuple;
+import org.apache.pig.data.TupleFactory;
+import org.apache.pig.impl.util.UDFContext;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,7 +53,7 @@ public class StreamsSerializerExec extends SimpleEvalFunc<String> {
 
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StreamsSerializerExec.class);
 
-    ActivityConverter activitySerializer;
+    ActivitySerializer activitySerializer;
     ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     public StreamsSerializerExec(String... execArgs) throws ClassNotFoundException{

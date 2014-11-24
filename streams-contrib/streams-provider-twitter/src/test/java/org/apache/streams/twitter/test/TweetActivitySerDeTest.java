@@ -18,20 +18,18 @@
 
 package org.apache.streams.twitter.test;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-import org.apache.streams.converter.TypeConverterUtil;
-import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.serializer.TwitterDocumentClassifier;
+import org.apache.streams.twitter.provider.TwitterEventClassifier;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
-import org.apache.streams.twitter.serializer.TwitterJsonActivityConverter;
-import org.apache.streams.twitter.serializer.TwitterJsonRetweetActivityConverter;
-import org.apache.streams.twitter.serializer.TwitterJsonTweetActivityConverter;
+import org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -41,6 +39,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static java.util.regex.Pattern.matches;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -56,7 +55,9 @@ public class TweetActivitySerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TweetActivitySerDeTest.class);
 
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance(StreamsTwitterMapper.TWITTER_FORMAT);
+    private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsTwitterMapper.TWITTER_FORMAT));
+
+    private TwitterJsonActivitySerializer twitterJsonActivitySerializer = new TwitterJsonActivitySerializer();
 
     @Test
     public void Tests()
@@ -65,8 +66,6 @@ public class TweetActivitySerDeTest {
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 
-        ActivityConverter activityConverter;
-
         try {
             while (br.ready()) {
                 String line = br.readLine();
@@ -74,20 +73,9 @@ public class TweetActivitySerDeTest {
                 {
                     LOGGER.info("raw: {}", line);
 
-                    Class detected = TwitterDocumentClassifier.getInstance().detectClass(line);
+                    Class detected = TwitterEventClassifier.detectClass(line);
 
-                    if( detected == Tweet.class ) {
-                        activityConverter = new TwitterJsonTweetActivityConverter();
-                    } else if( detected == Retweet.class ) {
-                        activityConverter = new TwitterJsonRetweetActivityConverter();
-                    } else {
-                        Assert.fail();
-                        return;
-                    }
-
-                    Object typedObject = TypeConverterUtil.convert(line, detected, mapper);
-
-                    Activity activity = activityConverter.deserialize(typedObject);
+                    Activity activity = twitterJsonActivitySerializer.deserialize(line);
 
                     String activitystring = mapper.writeValueAsString(activity);
 

@@ -18,7 +18,7 @@
 
 package org.apache.streams.facebook.test;
 
-import org.apache.streams.facebook.api.FacebookPostActivityConverter;
+import org.apache.streams.facebook.api.FacebookPostActivitySerializer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
@@ -37,7 +37,7 @@ import java.io.InputStream;
 public class FacebookActivitySerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FacebookActivitySerDeTest.class);
-    private FacebookPostActivityConverter serializer = new FacebookPostActivityConverter();
+    private FacebookPostActivitySerializer serializer = new FacebookPostActivitySerializer();
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Test

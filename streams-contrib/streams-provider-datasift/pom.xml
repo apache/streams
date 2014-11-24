@@ -37,7 +37,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-converters</artifactId>
+            <artifactId>streams-processor-jackson</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

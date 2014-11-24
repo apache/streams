@@ -23,7 +23,8 @@ import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.datasift.Datasift;
-import org.apache.streams.datasift.serializer.DatasiftActivityConverter;
+import org.apache.streams.datasift.provider.DatasiftConverter;
+import org.apache.streams.datasift.serializer.DatasiftActivitySerializer;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
@@ -41,7 +42,7 @@ public class DatasiftActivitySerializerProcessor implements StreamsProcessor {
 
     private ObjectMapper mapper;
     private Class outClass;
-    private DatasiftActivityConverter datasiftActivitySerializer;
+    private DatasiftActivitySerializer datasiftActivitySerializer;
 
     public final static String TERMINATE = new String("TERMINATE");
 
@@ -76,8 +77,8 @@ public class DatasiftActivitySerializerProcessor implements StreamsProcessor {
 
     @Override
     public void prepare(Object configurationObject) {
-        this.mapper = StreamsJacksonMapper.getInstance(StreamsDatasiftMapper.DATASIFT_FORMAT);
-        this.datasiftActivitySerializer = new DatasiftActivityConverter();
+        this.mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsDatasiftMapper.DATASIFT_FORMAT));
+        this.datasiftActivitySerializer = new DatasiftActivitySerializer();
     }
 
     @Override

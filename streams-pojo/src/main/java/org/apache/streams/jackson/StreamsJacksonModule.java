@@ -25,8 +25,7 @@ import org.joda.time.Period;
 import java.util.List;
 
 /**
- * StreamsJacksonModule is a supporting class for
- * @see {@link org.apache.streams.jackson.StreamsJacksonMapper}
+ * Created by sblackmon on 3/27/14.
  */
 public class StreamsJacksonModule extends SimpleModule {
 

@@ -31,7 +31,7 @@ import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.provider.TwitterConfigurator;
-import org.apache.streams.twitter.serializer.TwitterDocumentClassifier;
+import org.apache.streams.twitter.provider.TwitterEventClassifier;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +111,7 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     }
 
     protected void replace(Activity doc, String json) throws java.io.IOException, ActivitySerializerException {
-        Class documentSubType = TwitterDocumentClassifier.getInstance().detectClass(json);
+        Class documentSubType = TwitterEventClassifier.detectClass(json);
         Object object = mapper.readValue(json, documentSubType);
 
         if(documentSubType.equals(Retweet.class) || documentSubType.equals(Tweet.class)) {

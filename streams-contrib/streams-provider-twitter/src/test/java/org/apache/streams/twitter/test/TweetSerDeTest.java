@@ -25,10 +25,11 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.serializer.TwitterDocumentClassifier;
+import org.apache.streams.twitter.provider.TwitterEventClassifier;
 import org.apache.streams.twitter.serializer.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,6 +40,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static java.util.regex.Pattern.matches;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
@@ -56,6 +58,8 @@ public class TweetSerDeTest {
     private final static Logger LOGGER = LoggerFactory.getLogger(TweetSerDeTest.class);
 
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsTwitterMapper.TWITTER_FORMAT));
+
+    private TwitterJsonActivitySerializer twitterJsonActivitySerializer = new TwitterJsonActivitySerializer();
 
     @Test
     public void Tests()
@@ -78,7 +82,7 @@ public class TweetSerDeTest {
                 {
                     LOGGER.info("raw: {}", line);
 
-                    Class detected = TwitterDocumentClassifier.getInstance().detectClass(line);
+                    Class detected = TwitterEventClassifier.detectClass(line);
 
                     ObjectNode event = (ObjectNode) mapper.readTree(line);
 
