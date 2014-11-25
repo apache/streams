@@ -142,6 +142,7 @@
                         <sourcePath>src/main/jsonschema/com/twitter/TwitterUserInformationConfiguration.json</sourcePath>
                         <sourcePath>src/main/jsonschema/com/twitter/Delete.json</sourcePath>
                         <sourcePath>src/main/jsonschema/com/twitter/UserstreamEvent.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/com/twitter/Follow.json</sourcePath>
                         <sourcePath>src/main/jsonschema/com/twitter/FriendList.json</sourcePath>
                         <sourcePath>src/main/jsonschema/com/twitter/Retweet.json</sourcePath>
                         <sourcePath>src/main/jsonschema/com/twitter/tweet.json</sourcePath>

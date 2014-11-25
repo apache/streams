@@ -54,7 +54,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     public static final String STREAMS_ID = "TwitterUserInformationProvider";
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitterUserInformationProvider.class);
 
-
     private TwitterUserInformationConfiguration twitterUserInformationConfiguration;
 
     private Class klass;
@@ -110,8 +109,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
         running.set(true);
     }
 
-
-    private void loadBatch(Long[] ids) {
+    protected void loadBatch(Long[] ids) {
         Twitter client = getTwitterClient();
         int keepTrying = 0;
 
@@ -140,7 +138,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
         }
     }
 
-    private void loadBatch(String[] ids) {
+    protected void loadBatch(String[] ids) {
         Twitter client = getTwitterClient();
         int keepTrying = 0;
 
@@ -234,7 +232,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
         executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
         Preconditions.checkNotNull(providerQueue);
-        Preconditions.checkNotNull(this.klass);
         Preconditions.checkNotNull(twitterUserInformationConfiguration.getOauth().getConsumerKey());
         Preconditions.checkNotNull(twitterUserInformationConfiguration.getOauth().getConsumerSecret());
         Preconditions.checkNotNull(twitterUserInformationConfiguration.getOauth().getAccessToken());
