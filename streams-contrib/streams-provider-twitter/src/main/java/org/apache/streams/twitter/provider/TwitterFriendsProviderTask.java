@@ -70,9 +70,7 @@ public class TwitterFriendsProviderTask implements Runnable {
 
         long curser = -1;
 
-        // keep trying to load, give it 5 attempts.
-        //while (keepTrying < 10)
-        while (keepTrying < 1)
+        do
         {
             try
             {
@@ -107,8 +105,6 @@ public class TwitterFriendsProviderTask implements Runnable {
                     }
                 }
                 curser = followeeList.getNextCursor();
-                keepTrying = 10;
-
             }
             catch(TwitterException twitterException) {
                 keepTrying += TwitterErrorHandler.handleTwitterError(client, twitterException);
@@ -116,7 +112,7 @@ public class TwitterFriendsProviderTask implements Runnable {
             catch(Exception e) {
                 keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
             }
-        }
+        } while (curser != 0 && keepTrying < 10);
     }
 
 }

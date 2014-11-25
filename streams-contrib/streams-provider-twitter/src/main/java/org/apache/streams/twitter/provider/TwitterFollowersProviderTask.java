@@ -29,6 +29,7 @@ import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import twitter4j.PagableResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
@@ -67,12 +68,9 @@ public class TwitterFollowersProviderTask implements Runnable {
 
         int keepTrying = 0;
 
-        long paging = 1;
+        long curser = -1;
 
-
-        // keep trying to load, give it 5 attempts.
-        //while (keepTrying < 10)
-        while (keepTrying < 5)
+        do
         {
             try
             {
@@ -86,7 +84,9 @@ public class TwitterFollowersProviderTask implements Runnable {
                     break;
                 }
 
-                for (twitter4j.User follower4j : client.friendsFollowers().getFollowersList(id.longValue(), paging)) {
+                PagableResponseList<twitter4j.User> followerList = client.friendsFollowers().getFollowersList(id.longValue(), curser);
+
+                for (twitter4j.User follower4j : followerList) {
 
                     String followerJson = TwitterObjectFactory.getRawJSON(follower4j);
 
@@ -103,9 +103,8 @@ public class TwitterFollowersProviderTask implements Runnable {
                     } catch (IOException e) {
                         LOGGER.warn(e.getMessage());
                     }
-                    paging++;
-                    keepTrying = 10;
                 }
+                curser = followerList.getNextCursor();
             }
             catch(TwitterException twitterException) {
                 keepTrying += TwitterErrorHandler.handleTwitterError(client, twitterException);
@@ -113,7 +112,7 @@ public class TwitterFollowersProviderTask implements Runnable {
             catch(Exception e) {
                 keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
             }
-        }
+        } while (curser != 0 && keepTrying < 10);
     }
 
 }
