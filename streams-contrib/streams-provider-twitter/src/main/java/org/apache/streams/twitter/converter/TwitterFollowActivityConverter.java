@@ -16,30 +16,35 @@
  * under the License.
  */
 
-package org.apache.streams.twitter.serializer;
+package org.apache.streams.twitter.converter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.streams.data.ActivitySerializer;
-import org.apache.streams.exceptions.ActivitySerializerException;
-import org.apache.streams.jackson.StreamsJacksonMapper;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.streams.data.ActivityConverter;
+import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Follow;
-import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.converter.util.TwitterActivityUtil;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
-public class TwitterFollowActivitySerializer implements ActivitySerializer<Follow>, Serializable {
+public class TwitterFollowActivityConverter implements ActivityConverter<Follow>, Serializable {
 
-    public TwitterFollowActivitySerializer() {}
+    public TwitterFollowActivityConverter() {
+    }
 
-    private static TwitterFollowActivitySerializer instance = new TwitterFollowActivitySerializer();
+    private static TwitterFollowActivityConverter instance = new TwitterFollowActivityConverter();
 
-    public static TwitterFollowActivitySerializer getInstance() {
+    public static TwitterFollowActivityConverter getInstance() {
         return instance;
+    }
+
+    public static Class requiredClass = Follow.class;
+
+    @Override
+    public Class requiredClass() {
+        return requiredClass;
     }
 
     @Override
@@ -48,23 +53,29 @@ public class TwitterFollowActivitySerializer implements ActivitySerializer<Follo
     }
 
     @Override
-    public Follow serialize(Activity deserialized) throws ActivitySerializerException {
-        return null;
+    public Follow fromActivity(Activity deserialized) throws ActivityConversionException {
+        throw new NotImplementedException();
     }
 
     @Override
-    public Activity deserialize(Follow event) throws ActivitySerializerException {
+    public List<Activity> toActivityList(Follow event) throws ActivityConversionException {
 
         Activity activity = new Activity();
         activity.setVerb("follow");
         activity.setActor(TwitterActivityUtil.buildActor(event.getFollower()));
         activity.setObject(TwitterActivityUtil.buildActor(event.getFollowee()));
 
-        return activity;
+        return Lists.newArrayList(activity);
     }
 
     @Override
-    public List<Activity> deserializeAll(List<Follow> serializedList) {
-        return null;
+    public List<Follow> fromActivityList(List<Activity> list) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public List<Activity> toActivityList(List<Follow> list) {
+        throw new NotImplementedException();
     }
 }
+

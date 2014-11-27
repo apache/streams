@@ -48,6 +48,7 @@ public class TwitterFollowersProviderTask implements Runnable {
     protected TwitterFollowingProvider provider;
     protected Twitter client;
     protected Long id;
+    protected String screenName;
 
     public TwitterFollowersProviderTask(TwitterFollowingProvider provider, Twitter twitter, Long id) {
         this.provider = provider;
@@ -55,12 +56,22 @@ public class TwitterFollowersProviderTask implements Runnable {
         this.id = id;
     }
 
+    public TwitterFollowersProviderTask(TwitterFollowingProvider provider, Twitter twitter, String screenName) {
+        this.provider = provider;
+        this.client = twitter;
+        this.screenName = screenName;
+    }
+
+
     @Override
     public void run() {
 
-        getFollowers(id);
+        if( id != null )
+            getFollowers(id);
+        if( screenName != null)
+            getFollowers(screenName);
 
-        LOGGER.info(id + " Thread Finished");
+        LOGGER.info(id != null ? id.toString() : screenName + " Thread Finished");
 
     }
 
@@ -114,5 +125,57 @@ public class TwitterFollowersProviderTask implements Runnable {
             }
         } while (curser != 0 && keepTrying < 10);
     }
+
+    protected void getFollowers(String screenName) {
+
+        int keepTrying = 0;
+
+        long curser = -1;
+
+        do
+        {
+            try
+            {
+                twitter4j.User followee4j;
+                String followeeJson;
+                try {
+                    followee4j = client.users().showUser(screenName);
+                    followeeJson = TwitterObjectFactory.getRawJSON(followee4j);
+                } catch (TwitterException e) {
+                    LOGGER.error("Failure looking up " + screenName);
+                    break;
+                }
+
+                PagableResponseList<twitter4j.User> followerList = client.friendsFollowers().getFollowersList(screenName, curser);
+
+                for (twitter4j.User follower4j : followerList) {
+
+                    String followerJson = TwitterObjectFactory.getRawJSON(follower4j);
+
+                    try {
+                        Follow follow = new Follow()
+                                .withFollowee(mapper.readValue(followeeJson, User.class))
+                                .withFollower(mapper.readValue(followerJson, User.class));
+
+                        ComponentUtils.offerUntilSuccess(new StreamsDatum(follow), provider.providerQueue);
+                    } catch (JsonParseException e) {
+                        LOGGER.warn(e.getMessage());
+                    } catch (JsonMappingException e) {
+                        LOGGER.warn(e.getMessage());
+                    } catch (IOException e) {
+                        LOGGER.warn(e.getMessage());
+                    }
+                }
+                curser = followerList.getNextCursor();
+            }
+            catch(TwitterException twitterException) {
+                keepTrying += TwitterErrorHandler.handleTwitterError(client, twitterException);
+            }
+            catch(Exception e) {
+                keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
+            }
+        } while (curser != 0 && keepTrying < 10);
+    }
+
 
 }

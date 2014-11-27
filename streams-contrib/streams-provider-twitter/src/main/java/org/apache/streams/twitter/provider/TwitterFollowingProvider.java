@@ -60,12 +60,15 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
 
         running.set(true);
 
-        Preconditions.checkArgument(idsBatches.hasNext());
+        Preconditions.checkArgument(idsBatches.hasNext() || screenNameBatches.hasNext());
 
         LOGGER.info("startStream");
 
         while (idsBatches.hasNext()) {
             submitFollowingThreads(idsBatches.next());
+        }
+        while (screenNameBatches.hasNext()) {
+            submitFollowingThreads(screenNameBatches.next());
         }
 
         running.set(true);
@@ -85,6 +88,22 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
         } else if( getConfig().getEndpoint().equals("followers") ) {
             for (int i = 0; i < ids.length; i++) {
                 TwitterFollowersProviderTask providerTask = new TwitterFollowersProviderTask(this, client, ids[i]);
+                executor.submit(providerTask);
+            }
+        }
+    }
+
+    protected void submitFollowingThreads(String[] screenNames) {
+        Twitter client = getTwitterClient();
+
+        if( getConfig().getEndpoint().equals("friends") ) {
+            for (int i = 0; i < screenNames.length; i++) {
+                TwitterFriendsProviderTask providerTask = new TwitterFriendsProviderTask(this, client, screenNames[i]);
+                executor.submit(providerTask);
+            }
+        } else if( getConfig().getEndpoint().equals("followers") ) {
+            for (int i = 0; i < screenNames.length; i++) {
+                TwitterFollowersProviderTask providerTask = new TwitterFollowersProviderTask(this, client, screenNames[i]);
                 executor.submit(providerTask);
             }
         }
