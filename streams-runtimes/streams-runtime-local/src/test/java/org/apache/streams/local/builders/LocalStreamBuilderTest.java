@@ -233,7 +233,9 @@ public class LocalStreamBuilderTest extends RandomizedTest {
             int numDatums2 = randomIntBetween(1, 300000);
             StreamsProcessor processor1 = new PassthroughDatumCounterProcessor("proc1");
             StreamsProcessor processor2 = new PassthroughDatumCounterProcessor("proc2");
-            StreamBuilder builder = new LocalStreamBuilder();
+            Map<String, Object> streamConfig = Maps.newHashMap();
+            streamConfig.put("monitoring_broadcast_interval_ms", -1);
+            StreamBuilder builder = new LocalStreamBuilder(streamConfig);
             builder.newPerpetualStream("sp1", new NumericMessageProvider(numDatums1))
                     .newPerpetualStream("sp2", new NumericMessageProvider(numDatums2))
                     .addStreamsProcessor("proc1", processor1, 1, "sp1")

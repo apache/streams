@@ -18,6 +18,7 @@
 
 package org.apache.streams.local.builders;
 
+import com.google.common.base.Strings;
 import org.apache.streams.core.*;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.executors.ShutdownStreamOnUnhandleThrowableThreadPoolExecutor;
@@ -204,8 +205,8 @@ public class LocalStreamBuilder implements StreamBuilder {
         boolean forcedShutDown = false;
 
         try {
-            monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
-            this.monitor.submit(monitorThread);
+            if( broadcastMonitor.getWaitTime() != -1 )
+                this.monitor.submit(broadcastMonitor);
             setupComponentTasks(tasks);
             setupProviderTasks(provTasks);
             LOGGER.info("Started stream with {} components", tasks.size());
@@ -315,7 +316,6 @@ public class LocalStreamBuilder implements StreamBuilder {
                 this.futures.put(task, this.executor.submit(task));
                 compTasks.add(task);
                 if( comp.isOperationCountable() ) {
-                    this.monitor.submit(broadcastMonitor);
                     this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10));
                     this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
                 }
