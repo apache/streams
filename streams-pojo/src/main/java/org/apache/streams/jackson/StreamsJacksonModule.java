@@ -22,17 +22,44 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 
+import org.reflections.Reflections;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Created by sblackmon on 3/27/14.
+ * StreamsJacksonModule is a supporting class for
+ * @see {@link org.apache.streams.jackson.StreamsJacksonMapper}
+ *
+ * RFC3339 dates are supported by default.
  */
 public class StreamsJacksonModule extends SimpleModule {
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsJacksonModule.class);
+
     public StreamsJacksonModule() {
         super();
+
+        Reflections reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forManifest()));
+
+        Set<Class<? extends StreamsDateTimeFormat>> dateTimeFormatClasses = reflections.getSubTypesOf(StreamsDateTimeFormat.class);
+
+        List<String> dateTimeFormats = new ArrayList<>();
+        for (Class dateTimeFormatClass : dateTimeFormatClasses) {
+            try {
+                dateTimeFormats.add(((StreamsDateTimeFormat) (dateTimeFormatClass.newInstance())).getFormat());
+            } catch (Exception e) {
+                LOGGER.warn("Exception getting format from " + dateTimeFormatClass);
+            }
+        }
+
         addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
-        addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class));
+        addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class, dateTimeFormats));
 
         addSerializer(Period.class, new StreamsPeriodSerializer(Period.class));
         addDeserializer(Period.class, new StreamsPeriodDeserializer(Period.class));
@@ -40,6 +67,7 @@ public class StreamsJacksonModule extends SimpleModule {
 
     public StreamsJacksonModule(List<String> formats) {
         super();
+
         addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
         addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class, formats));
 
