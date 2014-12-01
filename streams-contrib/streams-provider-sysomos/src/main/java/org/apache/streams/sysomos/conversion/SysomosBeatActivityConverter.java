@@ -22,6 +22,7 @@ package org.apache.streams.sysomos.conversion;
 import com.google.common.collect.Maps;
 import com.sysomos.xml.BeatApi;
 import org.apache.commons.lang.StringUtils;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
@@ -49,7 +50,7 @@ public class SysomosBeatActivityConverter {
         converted.setUrl(beat.getLink());
         converted.setActor(new Actor());
         Map<String, BeatApi.BeatResponse.Beat.Tag> mappedTags = mapTags(beat);
-        Map<String, Object> extensions = ensureExtensions(converted);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(converted);
         extensions.put("keywords", beat.getContent());
         setLocation(beat, extensions);
         setObject(beat, converted);

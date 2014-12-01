@@ -25,6 +25,7 @@ import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.instagram.From;
 import org.apache.streams.datasift.instagram.Instagram;
 import org.apache.streams.instagram.serializer.util.InstagramActivityUtil;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
@@ -97,7 +98,7 @@ public class DatasiftInstagramActivitySerializer extends DatasiftInteractionActi
     }
 
     public void addInstagramExtensions(Activity activity, Instagram instagram) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
         List<String> hashTags;
         if(instagram.getMedia() != null) {
             hashTags = instagram.getMedia().getTags();
