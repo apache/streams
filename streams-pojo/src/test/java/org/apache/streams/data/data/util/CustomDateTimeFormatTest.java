@@ -11,7 +11,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by sblackmon on 12/1/14.
+ * Testing {@link org.apache.streams.jackson.StreamsJacksonMapper} ability to bind
+ * custom DateTime formats.
  */
 public class CustomDateTimeFormatTest {
 
