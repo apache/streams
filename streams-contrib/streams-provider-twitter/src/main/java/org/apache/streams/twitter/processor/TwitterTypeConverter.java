@@ -41,8 +41,11 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * This class performs conversion of a twitter event to a specified outClass
+ *
+ * Deprecated: use TypeConverterProcessor and ActivityConverterProcessor instead
  */
+@Deprecated
 public class TwitterTypeConverter implements StreamsProcessor {
 
     public final static String STREAMS_ID = "TwitterTypeConverter";
