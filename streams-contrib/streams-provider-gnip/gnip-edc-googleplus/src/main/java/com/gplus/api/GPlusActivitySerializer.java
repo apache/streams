@@ -21,7 +21,7 @@ package com.gplus.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
-import org.apache.streams.data.util.ActivityUtil;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.gnip.powertrack.GnipActivityFixer;
 import org.apache.streams.pojo.json.Activity;
 import org.json.JSONObject;
@@ -74,7 +74,7 @@ public class GPlusActivitySerializer implements ActivitySerializer<String> {
         Activity activity = new Activity();
         try {
             activity = jsonMapper.readValue(fixedObject.toString(), Activity.class);
-            Map<String, Object> extension = ActivityUtil.ensureExtensions(activity);
+            Map<String, Object> extension = ExtensionUtil.ensureExtensions(activity);
             extension.put("likes", fixedObject.getJSONObject("object").getJSONObject("plusoners").get("totalItems"));
             extension.put("rebroadcast", fixedObject.getJSONObject("object").getJSONObject("resharers").get("totalItems"));
         } catch( Exception e ) {

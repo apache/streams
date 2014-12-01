@@ -37,7 +37,7 @@ import org.apache.streams.components.http.HttpProcessorConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.data.util.ExtensionUtil;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.slf4j.Logger;

@@ -28,6 +28,7 @@ import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.data.util.ActivityUtil;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.elasticsearch.ElasticsearchConfiguration;
 import org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration;
@@ -181,7 +182,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
     }
 
     protected void appendMatches(ArrayNode tagArray, Activity activity) {
-        Map<String, Object> extensions = ActivityUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
 
         extensions.put(TAGS_EXTENSION, tagArray);
 

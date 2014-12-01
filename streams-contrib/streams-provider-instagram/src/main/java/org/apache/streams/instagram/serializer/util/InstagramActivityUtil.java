@@ -23,6 +23,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.*;
 import org.jinstagram.entity.comments.CommentData;
 import org.jinstagram.entity.common.*;
@@ -275,7 +276,7 @@ public class InstagramActivityUtil {
      * @param item the object to use as the source
      */
     public static void addLocationExtension(Activity activity, MediaFeedData item) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
 
         if(item.getLocation() != null) {
             Map<String, Object> coordinates = new HashMap<String, Object>();
@@ -313,7 +314,7 @@ public class InstagramActivityUtil {
      * @param item
      */
     public static void addInstagramExtensions(Activity activity, MediaFeedData item) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
 
         addLocationExtension(activity, item);
 
