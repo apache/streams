@@ -12,14 +12,5 @@ Example SimpleHTTPGetProcessor configuration:
         "resourceUri": "1/urls/count.json"
     }
 
-Example SimpleHTTPPostPersistWriter configuration:
-
-    "http": {
-        "protocol": "http",
-        "hostname": "localhost",
-        "port": 7474,
-        "resourceUri": "db/data/cypher"
-    }
-
 
 

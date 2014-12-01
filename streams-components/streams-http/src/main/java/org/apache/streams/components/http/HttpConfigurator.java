@@ -59,17 +59,4 @@ public class HttpConfigurator {
         return httpProcessorConfiguration;
     }
 
-    public static HttpPersistWriterConfiguration detectPersistWriterConfiguration(Config config) {
-
-        HttpPersistWriterConfiguration httpPersistWriterConfiguration = null;
-
-        try {
-            httpPersistWriterConfiguration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), HttpPersistWriterConfiguration.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.warn("Could not parse http configuration", e.getMessage());
-        }
-        return httpPersistWriterConfiguration;
-    }
-
 }

@@ -19,20 +19,15 @@
 
 package org.apache.streams.sysomos.conversion;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.sysomos.xml.BeatApi;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.streams.data.ActivityConverter;
-import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.apache.streams.data.util.ActivityUtil.*;
@@ -40,36 +35,9 @@ import static org.apache.streams.data.util.ActivityUtil.*;
 /**
  * Converts an instance of a {@link com.sysomos.xml.BeatApi.BeatResponse.Beat} to an {@link org.apache.streams.pojo.json.Activity}
  */
-public class SysomosBeatActivityConverter implements ActivityConverter<BeatApi.BeatResponse.Beat> {
+public class SysomosBeatActivityConverter {
 
     public static final String LANGUAGE_KEY = "LANGUAGE";
-
-    @Override
-    public String serializationFormat() {
-        return null;
-    }
-
-    @Override
-    public BeatApi.BeatResponse.Beat serialize(Activity deserialized) throws ActivitySerializerException {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public Activity deserialize(BeatApi.BeatResponse.Beat serialized) throws ActivitySerializerException {
-        return convert(serialized);
-    }
-
-    @Override
-    public List<Activity> deserializeAll(List<BeatApi.BeatResponse.Beat> serializedList) {
-        List<Activity> result = Lists.newArrayList();
-        for( BeatApi.BeatResponse.Beat item : serializedList ) {
-            try {
-                Activity activity = deserialize(item);
-                result.add(activity);
-            } catch (ActivitySerializerException e) {}
-        }
-        return result;
-    }
 
     public Activity convert(BeatApi.BeatResponse.Beat beat) {
         Activity converted = new Activity();
@@ -166,5 +134,6 @@ public class SysomosBeatActivityConverter implements ActivityConverter<BeatApi.B
         }
         return tags;
     }
+
 
 }

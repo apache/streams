@@ -32,9 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-/**
- * Consider replacing this with a simpler Processer which extends SimpleHTTPGetProcessor
- */
 public class GooglePlusCommentProcessor implements StreamsProcessor {
     private final static String STREAMS_ID = "GooglePlusCommentProcessor";
     private final static Logger LOGGER = LoggerFactory.getLogger(GooglePlusCommentProcessor.class);

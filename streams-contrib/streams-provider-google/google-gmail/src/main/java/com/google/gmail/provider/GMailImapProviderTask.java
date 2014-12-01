@@ -18,6 +18,7 @@
 
 package com.google.gmail.provider;
 
+import com.googlecode.gmail4j.GmailClient;
 import com.googlecode.gmail4j.GmailMessage;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.pojo.json.Activity;
@@ -25,6 +26,8 @@ import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -48,7 +51,7 @@ public class GMailImapProviderTask implements Runnable {
         for (GmailMessage message : messages) {
 
             Activity activity;
-            GMailMessageActivityConverter serializer = new GMailMessageActivityConverter( this.provider );
+            GMailMessageActivitySerializer serializer = new GMailMessageActivitySerializer( this.provider );
             activity = serializer.deserialize(message);
             StreamsDatum entry = new StreamsDatum(activity);
             ComponentUtils.offerUntilSuccess(entry, this.provider.providerQueue);

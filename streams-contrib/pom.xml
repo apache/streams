@@ -19,7 +19,7 @@
     <parent>
         <artifactId>streams-project</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.1.4-W2O-SNAPSHOT</version>
+        <version>0.1.5-W2O-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -36,7 +36,6 @@
         <module>streams-persist-cassandra</module>
         <module>streams-persist-console</module>
         <module>streams-persist-elasticsearch</module>
-        <module>streams-persist-graph</module>
         <module>streams-persist-hbase</module>
         <module>streams-persist-hdfs</module>
         <module>streams-persist-kafka</module>
@@ -44,6 +43,7 @@
         <module>streams-amazon-aws</module>
         <!--<module>streams-processor-lucene</module>-->
         <!--<module>streams-processor-tika</module>-->
+        <module>streams-processor-jackson</module>
         <module>streams-processor-json</module>
         <module>streams-processor-urls</module>
         <module>streams-processor-peoplepattern</module>
@@ -64,17 +64,17 @@
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-config</artifactId>
-                <version>0.1.4-W2O-SNAPSHOT</version>
+                <version>0.1.5-W2O-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-core</artifactId>
-                <version>0.1.4-W2O-SNAPSHOT</version>
+                <version>0.1.5-W2O-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-pojo</artifactId>
-                <version>0.1.4-W2O-SNAPSHOT</version>
+                <version>0.1.5-W2O-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
