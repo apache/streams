@@ -225,7 +225,7 @@ public class TwitterActivityUtil {
         List<String> links = Lists.newArrayList();
         if( tweet.getEntities().getUrls() != null ) {
             for (Url url : tweet.getEntities().getUrls()) {
-                links.add(url.getExpandedUrl());
+                links.add(url.getUrl());
             }
         }
         else
