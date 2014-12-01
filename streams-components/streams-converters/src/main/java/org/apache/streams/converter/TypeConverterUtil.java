@@ -27,7 +27,8 @@ public class TypeConverterUtil {
             try {
                 node = mapper.readValue((String)object, ObjectNode.class);
             } catch (IOException e) {
-                e.printStackTrace();
+               LOGGER.warn(e.getMessage());
+                LOGGER.warn(object.toString());
             }
         } else {
             node = mapper.convertValue(object, ObjectNode.class);

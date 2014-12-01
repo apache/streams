@@ -35,7 +35,7 @@ import java.util.List;
 import static junit.framework.Assert.*;
 
 /**
- * Test for
+ * Tests for
  * @see {@link org.apache.streams.converter.TypeConverterProcessor}
  */
 public class TypeConverterProcessorTest {
@@ -46,6 +46,9 @@ public class TypeConverterProcessorTest {
 
     public static final String DATASIFT_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
 
+    /**
+     * Tests conversion from String to String
+     */
     @Test
     public void testTypeConverterStringToString() {
         final String ID = "1";
@@ -62,6 +65,9 @@ public class TypeConverterProcessorTest {
         assertEquals(ID, resultDatum.getId());
     }
 
+    /**
+     * Tests conversion from String to ObjectNode
+     */
     @Test
     public void testTypeConverterStringToObjectNode() {
         final String ID = "1";
@@ -78,6 +84,9 @@ public class TypeConverterProcessorTest {
         assertEquals(ID, resultDatum.getId());
     }
 
+    /**
+     * Tests conversion from ObjectNode to String
+     */
     @Test
     public void testTypeConverterObjectNodeToString() throws IOException {
         final String ID = "1";
@@ -96,6 +105,9 @@ public class TypeConverterProcessorTest {
         assertEquals(ID, resultDatum.getId());
     }
 
+    /**
+     * Tests conversion from String to POJO (Activity)
+     */
     @Test
     public void testTypeConverterStringToActivity() {
         final String ID = "1";
@@ -113,6 +125,9 @@ public class TypeConverterProcessorTest {
         assertEquals(ID, resultDatum.getId());
     }
 
+    /**
+     * Tests conversion from ObjectNode to POJO (Activity)
+     */
     @Test
     public void testTypeConverterObjectNodeToActivity() throws IOException {
         final String ID = "1";
@@ -132,6 +147,9 @@ public class TypeConverterProcessorTest {
         assertEquals(ID, resultDatum.getId());
     }
 
+    /**
+     * Tests conversion from POJO (Activity) to String
+     */
     @Test
     public void testTypeConverterActivityToString() throws IOException {
         final String ID = "1";
