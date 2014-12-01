@@ -80,6 +80,12 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
         for (String key : matches.keySet()) {
             entities.add(prepareObject(key));
         }
+
+        Set<T> set = Sets.newHashSet();
+        set.addAll(entities);
+        entities.clear();
+        entities.addAll(set);
+
         entry.setDocument(activity);
         return Lists.newArrayList(entry);
     }
