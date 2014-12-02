@@ -16,6 +16,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 */
+
 package org.apache.streams.converter;
 
 import com.google.common.base.Preconditions;
@@ -95,7 +96,7 @@ public class ActivityConverterProcessor implements StreamsProcessor {
             }
 
             // for each of these classes:
-            //   use TypeUtil to switch the document to
+            //   use TypeUtil to switch the document to that type
             Map<Class, Object> typedDocs = convertToDetectedClasses(detectedClasses, document);
 
             if( typedDocs.size() == 0 ) {
@@ -106,41 +107,58 @@ public class ActivityConverterProcessor implements StreamsProcessor {
                 LOGGER.debug("Document has " + typedDocs.size() + " representations: " + typedDocs.toString());
             }
 
+            // for each specified / discovered converter
             for( ActivityConverter converter : converters ) {
 
                 Object typedDoc = typedDocs.get(converter.requiredClass());
 
+                // if the document can be typed as the required class
                 if( typedDoc != null ) {
 
                     StreamsDatum datum = DatumUtils.cloneDatum(entry);
 
-                    List<Activity> activities = convertToActivity(converter, document);
+                    // let the converter create activities if it can
+                    List<Activity> activities;
+                    try {
+                        activities = convertToActivity(converter, typedDoc);
 
-                    for( Activity activity : activities ) {
+                        if( activities != null && activities.size() > 0) {
 
-                        if (activity != null) {
+                            for (Activity activity : activities) {
 
-                            if( ActivityUtil.isValid(activity)) {
-                                datum.setDocument(activity);
-                                datum.setId(activity.getId());
-                                result.add(datum);
-                            } else {
-                                LOGGER.debug(converter.getClass().getCanonicalName() + " produced invalid Activity converting " + converter.requiredClass().getClass().getCanonicalName());
+                                if (activity != null) {
+
+                                    // only accept valid activities
+                                    //   this primitive validity check should be replaced with
+                                    //   one that applies javax.validation to JSR303 annotations
+                                    //   on the Activity json schema once a suitable implementation
+                                    //   is found.
+                                    if (ActivityUtil.isValid(activity)) {
+                                        datum.setDocument(activity);
+                                        datum.setId(activity.getId());
+                                        result.add(datum);
+                                    } else {
+                                        LOGGER.debug(converter.getClass().getCanonicalName() + " produced invalid Activity converting " + converter.requiredClass().getClass().getCanonicalName());
+                                    }
+
+                                } else {
+                                    LOGGER.debug(converter.getClass().getCanonicalName() + " returned null converting " + converter.requiredClass().getClass().getCanonicalName() + " to Activity");
+                                }
+
                             }
-
-                        } else {
-                            LOGGER.debug(converter.getClass().getCanonicalName() + " returned null converting " + converter.requiredClass().getClass().getCanonicalName() + " to Activity");
                         }
-
+                    } catch( Exception e ) {
+                        LOGGER.debug("convertToActivity caught exception " + e.getMessage());
                     }
+
+
 
                 }
 
             }
 
         } catch( Exception e ) {
-            LOGGER.warn("Unable to fromActivity!  " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.warn("General exception in process! " + e.getMessage());
         } finally {
             return result;
         }

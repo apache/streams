@@ -36,8 +36,10 @@ import static junit.framework.Assert.*;
 /**
  * Test for
  * @see {@link org.apache.streams.converter.ActivityConverterProcessor}
+ *
+ * Test that default String & ObjectNode conversion works.
  */
-public class ActivityConverterProcessorTest {
+public class BaseActivityConverterProcessorTest {
 
     private static final ObjectMapper mapper = new StreamsJacksonMapper();
 
