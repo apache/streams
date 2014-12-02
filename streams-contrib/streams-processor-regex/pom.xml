@@ -29,11 +29,15 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.streams</groupId>
+            <artifactId>streams-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
             <artifactId>streams-pojo</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-core</artifactId>
+            <artifactId>streams-pojo-extensions</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -22,6 +22,7 @@ package org.apache.streams.regex;
 
 import com.google.common.collect.Sets;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +33,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -67,7 +67,7 @@ public class RegexHashtagExtractorTest {
         List<StreamsDatum> result = new RegexHashtagExtractor().process(datum);
         assertThat(result.size(), is(equalTo(1)));
         Activity output = (Activity)result.get(0).getDocument();
-        Set<String> extracted = (Set) ensureExtensions(output).get(RegexHashtagExtractor.EXTENSION_KEY);
+        Set<String> extracted = (Set) ExtensionUtil.ensureExtensions(output).get(RegexHashtagExtractor.EXTENSION_KEY);
         Sets.SetView<String> diff = Sets.difference(extracted, hashtags);
         assertThat(diff.size(), is(equalTo(0)));
     }

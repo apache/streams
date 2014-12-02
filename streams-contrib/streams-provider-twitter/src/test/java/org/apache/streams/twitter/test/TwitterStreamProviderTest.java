@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * Tests {@link: org.apache.streams.twitter.provider.TwitterStreamProvider}
  */
 public class TwitterStreamProviderTest {
 

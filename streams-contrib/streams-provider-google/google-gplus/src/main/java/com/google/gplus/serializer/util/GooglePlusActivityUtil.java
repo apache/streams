@@ -22,6 +22,7 @@ package com.google.gplus.serializer.util;
 import com.google.api.client.util.Maps;
 import com.google.api.services.plus.model.Comment;
 import com.google.api.services.plus.model.Person;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.*;
 import org.apache.streams.pojo.json.Activity;
 import org.joda.time.DateTime;
@@ -145,7 +146,7 @@ public class GooglePlusActivityUtil {
      * @param gPlusActivity
      */
     private static void addGPlusExtensions(Activity activity, com.google.api.services.plus.model.Activity gPlusActivity) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
 
         com.google.api.services.plus.model.Activity.PlusObject object = gPlusActivity.getObject();
         extensions.put("googlePlus", gPlusActivity);

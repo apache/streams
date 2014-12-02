@@ -19,6 +19,7 @@
 package org.apache.streams.data.util;
 
 import com.moreover.api.*;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
@@ -118,7 +119,7 @@ public class MoreoverUtils {
     }
 
     public static void addLocationExtension(Activity activity, Source value) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
         String country = value.getLocation().getCountryCode() == null ? value.getLocation().getCountry() : value.getLocation().getCountryCode();
         if (country != null) {
             Map<String, Object> location = new HashMap<String, Object>();
@@ -128,7 +129,7 @@ public class MoreoverUtils {
     }
 
     public static void addLanguageExtension(Activity activity, Article value) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
         String language = value.getLanguage();
         if (language != null) {
             extensions.put(LANGUAGE_EXTENSION, language);

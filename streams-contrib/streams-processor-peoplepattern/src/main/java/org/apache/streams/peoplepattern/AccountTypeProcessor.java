@@ -24,7 +24,7 @@ import org.apache.streams.components.http.HttpProcessorConfiguration;
 import org.apache.streams.components.http.processor.SimpleHTTPGetProcessor;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.data.util.ExtensionUtil;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;

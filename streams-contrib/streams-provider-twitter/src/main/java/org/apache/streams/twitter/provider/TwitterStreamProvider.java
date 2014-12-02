@@ -51,7 +51,8 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * TwitterStreamProvider wraps a hosebird client and passes recieved documents
+ * to subscribing components.
  */
 public class TwitterStreamProvider implements StreamsProvider, Serializable, DatumStatusCountable {
 
