@@ -50,6 +50,7 @@ public class RegexUrlExtractorTest {
         return Arrays.asList(new Object[][]{
                 {"This is the http://t.co/foo of a standard tweet", Sets.newHashSet("http://t.co/foo")},
                 {"This is the https://t.co/foo of a standard tweet", Sets.newHashSet("https://t.co/foo")},
+                {"This is the https://t.co/foo of a standard tweet https://t.co/foo", Sets.newHashSet("https://t.co/foo")},
                 {"This is the http://amd.com/test of a standard tweet", Sets.newHashSet("http://amd.com/test")},
                 {"This is the content of a standard tweet", Sets.newHashSet()},
                 {"This is the http://www.google.com/articles/awesome?with=query&params=true of a standard @tweet",  Sets.newHashSet("http://www.google.com/articles/awesome?with=query&params=true")}
