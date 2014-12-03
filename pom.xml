@@ -76,7 +76,7 @@
         <junit.version>4.11</junit.version>
         <surefire.plugin.version>2.17</surefire.plugin.version>
         <failsafe.plugin.version>2.17</failsafe.plugin.version>
-        <war.plugin.version>2.4</war.plugin.version>
+        <war.plugin.version>2.5</war.plugin.version>
         <slf4j.version>1.7.6</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
         <logback.version>1.1.1</logback.version>
