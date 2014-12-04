@@ -39,9 +39,9 @@ import org.joda.time.format.DateTimeFormatter;
 import java.io.IOException;
 
 /**
- * Created by sblackmon on 3/27/14.
+ * This class assist with handling twitter's date-time format during conversion
  *
- * Deprecated: Use StreamsJacksonMapper
+ * Deprecated: use StreamsJacksonMapper.getInstance(StreamsTwitterMapper.TWITTER_FORMAT) instead
  */
 @Deprecated
 public class StreamsTwitterMapper extends StreamsJacksonMapper {

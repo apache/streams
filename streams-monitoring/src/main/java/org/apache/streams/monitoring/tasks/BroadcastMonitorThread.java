@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.apache.streams.jackson.*;
 import org.apache.streams.monitoring.persist.MessagePersister;
 import org.apache.streams.monitoring.persist.impl.BroadcastMessagePersister;
+import org.apache.streams.monitoring.persist.impl.SLF4JMessagePersister;
 import org.apache.streams.pojo.json.*;
 import org.slf4j.Logger;
 
@@ -52,14 +53,20 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     public BroadcastMonitorThread(Map<String, Object> streamConfig) {
         keepRunning = true;
         this.streamConfig = streamConfig;
+
+        LOGGER.info("BroadcastMonitorThread starting" + streamConfig);
+
         server = ManagementFactory.getPlatformMBeanServer();
+
 
         setBroadcastURI();
         setWaitTime();
 
-        messagePersister = new BroadcastMessagePersister(broadcastURI);
+        messagePersister = new SLF4JMessagePersister();
 
         initializeObjectMapper();
+
+        LOGGER.info("BroadcastMonitorThread started");
     }
 
     /**
@@ -85,6 +92,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
      */
     @Override
     public void run() {
+        LOGGER.info("BroadcastMonitorThread running");
         while(keepRunning) {
             try {
                 List<String> messages = Lists.newArrayList();
@@ -160,6 +168,14 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     public void shutdown() {
         this.keepRunning = false;
         LOGGER.debug("Shutting down BroadcastMonitor Thread");
+    }
+
+    public String getBroadcastURI() {
+        return broadcastURI;
+    }
+
+    public long getWaitTime() {
+        return waitTime;
     }
 
     public long getDefaultWaitTime() {

@@ -9,6 +9,7 @@ import org.apache.streams.datasift.Datasift;
 import org.apache.streams.datasift.interaction.Interaction;
 import org.apache.streams.datasift.links.Links;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +103,7 @@ public class DatasiftInteractionActivitySerializer implements ActivitySerializer
     }
 
     public static void addDatasiftExtension(Activity activity, Datasift datasift) {
-        Map<String, Object> extensions = org.apache.streams.data.util.ActivityUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
         extensions.put("datasift", datasift);
     }
 
@@ -205,7 +206,7 @@ public class DatasiftInteractionActivitySerializer implements ActivitySerializer
     }
 
     public static void addLocationExtension(Activity activity, Interaction interaction) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
         Map<String, Object> location = new HashMap<String, Object>();
         Map<String, Double> coordinates = new HashMap<String, Double>();
         coordinates.put("latitude", interaction.getGeo().getLatitude());

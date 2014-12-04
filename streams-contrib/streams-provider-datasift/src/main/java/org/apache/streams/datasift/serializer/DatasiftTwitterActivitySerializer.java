@@ -29,6 +29,7 @@ import org.apache.streams.datasift.interaction.Interaction;
 import org.apache.streams.datasift.twitter.DatasiftTwitterUser;
 import org.apache.streams.datasift.twitter.Retweet;
 import org.apache.streams.datasift.twitter.Twitter;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
@@ -180,7 +181,7 @@ public class DatasiftTwitterActivitySerializer extends DatasiftInteractionActivi
     }
 
     public void addLocationExtension(Activity activity, Twitter twitter) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
         Map<String, Object> location = Maps.newHashMap();
         double[] coordiantes = new double[] { twitter.getGeo().getLongitude(), twitter.getGeo().getLatitude() };
         Map<String, Object> coords = Maps.newHashMap();
@@ -192,7 +193,7 @@ public class DatasiftTwitterActivitySerializer extends DatasiftInteractionActivi
 
     public void addTwitterExtensions(Activity activity, Twitter twitter, Interaction interaction) {
         Retweet retweet = twitter.getRetweet();
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
         List<String> hashTags = Lists.newLinkedList();
         List<Object> hts = Lists.newLinkedList();
         if(twitter.getHashtags() != null) {

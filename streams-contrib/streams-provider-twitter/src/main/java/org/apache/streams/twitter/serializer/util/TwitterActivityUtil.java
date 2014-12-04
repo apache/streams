@@ -26,6 +26,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.*;
 import org.apache.streams.twitter.Url;
 import org.apache.streams.twitter.pojo.*;
@@ -225,7 +226,7 @@ public class TwitterActivityUtil {
         List<String> links = Lists.newArrayList();
         if( tweet.getEntities().getUrls() != null ) {
             for (Url url : tweet.getEntities().getUrls()) {
-                links.add(url.getExpandedUrl());
+                links.add(url.getUrl());
             }
         }
         else
@@ -248,7 +249,7 @@ public class TwitterActivityUtil {
      * @param tweet the object to use as the source
      */
     public static void addLocationExtension(Activity activity, Tweet tweet) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
         Map<String, Object> location = new HashMap<String, Object>();
         location.put("id", formatId(
                 Optional.fromNullable(
@@ -276,7 +277,7 @@ public class TwitterActivityUtil {
      * @param event the Twitter event to add as the extension
      */
     public static void addTwitterExtension(Activity activity, ObjectNode event) {
-        Map<String, Object> extensions = org.apache.streams.data.util.ActivityUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
         extensions.put("twitter", event);
     }
     /**
@@ -295,7 +296,7 @@ public class TwitterActivityUtil {
      * @param tweet
      */
     public static void addTwitterExtensions(Activity activity, Tweet tweet) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
 
         List<String> hashtags = new ArrayList<String>();
         for(Hashtag hashtag : tweet.getEntities().getHashtags()) {

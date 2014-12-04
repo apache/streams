@@ -16,11 +16,12 @@
  * under the License.
  */
 
-package org.apache.streams.data.util;
+package org.apache.streams.pojo.extensions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 
 import java.util.Map;
@@ -61,6 +62,35 @@ public class ExtensionUtil {
 
     private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
+    public static Map<String, Object> getExtensions(Activity activity) {
+        Map<String,Object> extensions = ensureExtensions(activity);
+        return extensions;
+    }
+
+    public static Object getExtension(Activity activity, String key) {
+        Map<String,Object> extensions = ensureExtensions(activity);
+        return extensions.get(key);
+    }
+
+    public static void setExtensions(Activity activity, Map<String, Object> extensions) {
+        activity.setAdditionalProperty(EXTENSION_PROPERTY, extensions);
+    };
+
+    public static void addExtension(Activity activity, String key, Object extension) {
+        Map<String,Object> extensions = ensureExtensions(activity);
+        extensions.put(key, extension);
+    };
+
+    public static void addExtensions(Activity activity, Map<String, Object> extensions) {
+        for( Map.Entry<String, Object> item : extensions.entrySet())
+            addExtension(activity, item.getKey(), item.getValue());
+    };
+
+    public static void removeExtension(Activity activity, String key) {
+        Map<String,Object> extensions = ensureExtensions(activity);
+        extensions.remove(key);
+    };
+
     public static Map<String, Object> getExtensions(ActivityObject object) {
         ActivityObject activityObject = mapper.convertValue(object, ActivityObject.class);
         Map<String,Object> extensions = ensureExtensions(object);
@@ -93,6 +123,21 @@ public class ExtensionUtil {
 
     /**
      * Creates a standard extension property
+     * @param activity activity to create the property in
+     * @return the Map representing the extensions property
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> ensureExtensions(Activity activity) {
+        Map<String,Object> extensions = (Map<String,Object>) activity.getAdditionalProperties().get(EXTENSION_PROPERTY);
+        if(extensions == null) {
+            extensions = Maps.newHashMap();
+            setExtensions(activity, extensions);
+        }
+        return extensions;
+    }
+
+    /**
+     * Creates a standard extension property
      * @param object objectnode to create the property in
      * @return the Map representing the extensions property
      */
@@ -105,4 +150,5 @@ public class ExtensionUtil {
         }
         return extensions;
     }
+
 }

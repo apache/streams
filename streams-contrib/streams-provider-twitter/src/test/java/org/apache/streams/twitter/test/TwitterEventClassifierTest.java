@@ -32,7 +32,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Created by sblackmon on 12/13/13.
+ * Tests {@link: org.apache.streams.twitter.processor.TwitterEventClassifier}
  */
 public class TwitterEventClassifierTest {
 

@@ -27,6 +27,7 @@ import com.google.common.collect.Sets;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +36,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
  * Provides a base implementation for extracting entities from text using regular expressions and then
@@ -81,6 +80,12 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
         for (String key : matches.keySet()) {
             entities.add(prepareObject(key));
         }
+
+        Set<T> set = Sets.newHashSet();
+        set.addAll(entities);
+        entities.clear();
+        entities.addAll(set);
+
         entry.setDocument(activity);
         return Lists.newArrayList(entry);
     }
@@ -112,7 +117,7 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
 
     @SuppressWarnings("unchecked")
     protected Collection<T> ensureTargetObject(Activity activity) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
         Set<T> hashtags;
         if(extensions.containsKey(extensionKey) && extensions.get(extensionKey) != null) {
             hashtags = Sets.newHashSet((Iterable<T>) extensions.get(extensionKey));

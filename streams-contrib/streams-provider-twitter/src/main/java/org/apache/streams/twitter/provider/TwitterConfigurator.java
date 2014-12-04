@@ -32,8 +32,11 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * This class resolves TwitterConfiguration from typesafe config
+ *
+ * Deprecated: use ComponentConfigurator.detectConfig() instead
  */
+@Deprecated
 public class TwitterConfigurator {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterConfigurator.class);
