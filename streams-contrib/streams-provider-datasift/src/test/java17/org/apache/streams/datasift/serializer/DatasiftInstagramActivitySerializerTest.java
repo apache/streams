@@ -12,6 +12,7 @@ import org.apache.streams.pojo.json.Actor;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.util.Scanner;
 
 import static org.junit.Assert.assertEquals;
@@ -28,7 +29,10 @@ public class DatasiftInstagramActivitySerializerTest extends DatasiftActivitySer
     @Test
     @Override
     public void testConversion() throws Exception {
-        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/instagram_datasift_json.txt"));
+
+        InputStream testFileStream = DatasiftTwitterActivitySerializerTest.class.getResourceAsStream("/instagram_datasift_json.txt");
+        Scanner scanner = new Scanner(testFileStream, "UTF-8").useDelimiter(newLinePattern);
+
         String line = null;
         while(scanner.hasNextLine()) {
             line = scanner.nextLine();

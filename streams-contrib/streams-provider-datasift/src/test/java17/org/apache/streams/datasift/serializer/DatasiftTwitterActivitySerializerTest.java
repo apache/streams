@@ -12,7 +12,10 @@ import org.apache.streams.pojo.json.Actor;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -28,7 +31,10 @@ public class DatasiftTwitterActivitySerializerTest extends DatasiftActivitySeria
     @Test
     @Override
     public void testConversion() throws Exception {
-        Scanner scanner = new Scanner(DatasiftTwitterActivitySerializerTest.class.getResourceAsStream("/twitter_datasift_json.txt"));
+
+        InputStream testFileStream = DatasiftTwitterActivitySerializerTest.class.getResourceAsStream("/twitter_datasift_json.txt");
+        Scanner scanner = new Scanner(testFileStream, "UTF-8").useDelimiter(newLinePattern);
+
         String line = null;
         while(scanner.hasNextLine()) {
             line = scanner.nextLine();
