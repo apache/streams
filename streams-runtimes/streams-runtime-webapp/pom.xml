@@ -32,7 +32,9 @@
 
   <name>${bundle.symbolicName} [${bundle.namespace}]</name>
 
-  <properties>
+    <description>Apache Streams Runtimes</description>
+
+    <properties>
         <bundle.symbolicName>streams-eip-routes</bundle.symbolicName>
         <bundle.namespace>org.apache.streams</bundle.namespace>
         <jackson.old.version>1.9.11</jackson.old.version>

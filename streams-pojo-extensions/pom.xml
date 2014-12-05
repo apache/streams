@@ -31,6 +31,8 @@
 
     <name>streams-pojo-extensions</name>
 
+    <description>Support for adding and modifying extension properties</description>
+
     <dependencies>
 
         <dependency>
