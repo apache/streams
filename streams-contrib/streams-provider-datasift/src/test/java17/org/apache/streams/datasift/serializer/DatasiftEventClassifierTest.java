@@ -25,6 +25,7 @@ import org.apache.streams.datasift.instagram.Instagram;
 import org.apache.streams.datasift.twitter.Twitter;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.util.files.StreamsScannerUtil;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -38,13 +39,10 @@ public class DatasiftEventClassifierTest {
 
     private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsDatasiftMapper.DATASIFT_FORMAT));
 
-    protected static Pattern newLinePattern = Pattern.compile("(\\r\\n?|\\n)", Pattern.MULTILINE);
-
     @Test
     public void testTwitterDetection() throws Exception {
 
-        InputStream testFileStream = DatasiftTwitterActivitySerializerTest.class.getResourceAsStream("/twitter_datasift_json.txt");
-        Scanner scanner = new Scanner(testFileStream, "UTF-8").useDelimiter(newLinePattern);
+        Scanner scanner = StreamsScannerUtil.getInstance("/twitter_datasift_json.txt");
 
         String line = null;
         while(scanner.hasNextLine()) {
@@ -58,8 +56,7 @@ public class DatasiftEventClassifierTest {
     @Test
     public void testInstagramDetection() throws Exception {
 
-        InputStream testFileStream = DatasiftTwitterActivitySerializerTest.class.getResourceAsStream("/instagram_datasift_json.txt");
-        Scanner scanner = new Scanner(testFileStream, "UTF-8").useDelimiter(newLinePattern);
+        Scanner scanner = StreamsScannerUtil.getInstance("/instagram_datasift_json.txt");
 
         String line = null;
         while(scanner.hasNextLine()) {

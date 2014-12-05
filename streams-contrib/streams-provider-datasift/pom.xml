@@ -90,7 +90,13 @@
             <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-util</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

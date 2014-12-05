@@ -10,6 +10,7 @@ import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.util.files.StreamsScannerUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,8 +27,6 @@ public class DatasiftActivitySerializerTest {
 
     protected static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsDatasiftMapper.DATASIFT_FORMAT));
 
-    protected static Pattern newLinePattern = Pattern.compile("(\\r\\n?|\\n)", Pattern.MULTILINE);
-
     @Before
     public void initSerializer() {
         SERIALIZER = new DatasiftActivitySerializer();
@@ -36,8 +35,7 @@ public class DatasiftActivitySerializerTest {
     @Test
     public void testConversion() throws Exception {
 
-        InputStream testFileStream = DatasiftTwitterActivitySerializerTest.class.getResourceAsStream("/rand_sample_datasift_json.txt");
-        Scanner scanner = new Scanner(testFileStream, "UTF-8").useDelimiter(newLinePattern);
+        Scanner scanner = StreamsScannerUtil.getInstance("/rand_sample_datasift_json.txt");
 
         String line = null;
         while(scanner.hasNextLine()) {
