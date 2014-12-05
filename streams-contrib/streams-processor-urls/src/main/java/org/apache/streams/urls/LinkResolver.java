@@ -19,6 +19,9 @@
 package org.apache.streams.urls;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import org.apache.commons.codec.net.URLCodec;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,8 +140,10 @@ public class LinkResolver implements Serializable {
             this.linkDetails.setRedirected(false);
 
         linkDetails.setFinalURL(cleanURL(linkDetails.getFinalURL()));
-        linkDetails.setNormalizedURL(normalizeURL(linkDetails.getFinalURL()));
-        linkDetails.setUrlParts(tokenizeURL(linkDetails.getNormalizedURL()));
+        if( !Strings.isNullOrEmpty(linkDetails.getFinalURL()))
+            linkDetails.setNormalizedURL(normalizeURL(linkDetails.getFinalURL()));
+        if( !Strings.isNullOrEmpty(linkDetails.getNormalizedURL()))
+            linkDetails.setUrlParts(tokenizeURL(linkDetails.getNormalizedURL()));
 
         this.updateTookInMillis();
     }
@@ -151,6 +156,13 @@ public class LinkResolver implements Serializable {
     public void unwindLink(String url) {
         Preconditions.checkNotNull(linkDetails);
         Preconditions.checkNotNull(url);
+
+        // Check url validity
+        UrlValidator urlValidator = new UrlValidator();
+        if (!urlValidator.isValid(url)) {
+            linkDetails.setLinkStatus(LinkDetails.LinkStatus.MALFORMED_URL);
+            return;
+        }
 
         // Check to see if they wound up in a redirect loop,
         // IE: 'A' redirects to 'B', then 'B' redirects to 'A'
@@ -365,13 +377,17 @@ public class LinkResolver implements Serializable {
         // Decode URL to remove any %20 type stuff
         String normalizedUrl = url;
         try {
-            // I've used a URLDecoder that's part of Java here,
-            // but this functionality exists in most modern languages
-            // and is universally called url decoding
-            normalizedUrl = URLDecoder.decode(url, "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-            System.err.println("Unable to Decode URL. Decoding skipped.");
-            uee.printStackTrace();
+
+            // Replaced URLDecode with commons-codec b/c of failing tests
+
+            URLCodec codec = new URLCodec();
+
+            normalizedUrl = codec.decode(url);
+
+            // Remove the protocol, http:// ftp:// or similar from the front
+            if (normalizedUrl.contains("://"))
+                normalizedUrl = normalizedUrl.split(":/{2}")[1];
+
         } catch (NullPointerException npe) {
             System.err.println("NPE Decoding URL. Decoding skipped.");
             npe.printStackTrace();
@@ -380,9 +396,6 @@ public class LinkResolver implements Serializable {
             e.printStackTrace();
         }
 
-        // Remove the protocol, http:// ftp:// or similar from the front
-        if (normalizedUrl.contains("://"))
-            normalizedUrl = normalizedUrl.split(":/{2}")[1];
 
         // Room here to do more pre-processing
 

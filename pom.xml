@@ -81,6 +81,8 @@
         <log4j.version>1.2.16</log4j.version>
         <logback.version>1.1.1</logback.version>
         <commons-io.version>2.4</commons-io.version>
+        <commons-codec.version>1.10</commons-codec.version>
+        <commons-validator.version>1.4.0</commons-validator.version>
         <commons-lang3.version>3.1</commons-lang3.version>
         <typesafe.config.version>1.2.0</typesafe.config.version>
         <orgjson.version>20140107</orgjson.version>
@@ -249,6 +251,16 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>${commons-validator.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
