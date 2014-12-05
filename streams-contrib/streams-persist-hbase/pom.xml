@@ -16,13 +16,6 @@
         <hbase.version>0.94.6-cdh4.5.0</hbase.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>cloudera</id>
-            <url>https://repository.cloudera.com/artifactory/repo</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.streams</groupId>
