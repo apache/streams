@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-provider-gnip</artifactId>
-        <version>0.1.5-W2O-SNAPSHOT</version>
+        <version>0.1.6-W2O-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
