@@ -29,6 +29,9 @@
     </parent>
 
     <artifactId>streams-runtime-local</artifactId>
+    <name>streams-runtime-local</name>
+
+    <description>Streams Local Runtime</description>
 
     <dependencies>
         <dependency>

@@ -32,6 +32,8 @@
     <packaging>pom</packaging>
     <name>streams-amazon-aws</name>
 
+    <description>Amazon AWS Modules</description>
+
     <properties>
 
     </properties>

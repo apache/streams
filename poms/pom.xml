@@ -30,7 +30,7 @@
   <groupId>org.apache.streams.build</groupId>
   <artifactId>shared-plugin-settings</artifactId>
 
-  <name>apache-streams - plugin configuration</name>
+  <name>${artifactId}</name>
 
   <packaging>pom</packaging>
 
