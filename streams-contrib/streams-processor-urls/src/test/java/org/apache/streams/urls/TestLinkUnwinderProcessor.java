@@ -44,7 +44,7 @@ public class TestLinkUnwinderProcessor {
         LinkResolver resolver = new LinkResolver("http://nope@#$%");
         resolver.run();
         LinkDetails details = resolver.getLinkDetails();
-        assertEquals("Should be 404", LinkDetails.LinkStatus.MALFORMED_URL, details.getLinkStatus());
+        assertEquals("Should be 400", LinkDetails.LinkStatus.MALFORMED_URL, details.getLinkStatus());
     }
 
     @Test
