@@ -27,7 +27,9 @@ import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 /**
  * Created by sblackmon on 12/13/13.
@@ -36,9 +38,14 @@ public class DatasiftEventClassifierTest {
 
     private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsDatasiftMapper.DATASIFT_FORMAT));
 
+    protected static Pattern newLinePattern = Pattern.compile("(\\r\\n?|\\n)", Pattern.MULTILINE);
+
     @Test
     public void testTwitterDetection() throws Exception {
-        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/twitter_datasift_json.txt"));
+
+        InputStream testFileStream = DatasiftTwitterActivitySerializerTest.class.getResourceAsStream("/twitter_datasift_json.txt");
+        Scanner scanner = new Scanner(testFileStream, "UTF-8").useDelimiter(newLinePattern);
+
         String line = null;
         while(scanner.hasNextLine()) {
             line = scanner.nextLine();
@@ -50,7 +57,10 @@ public class DatasiftEventClassifierTest {
 
     @Test
     public void testInstagramDetection() throws Exception {
-        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/instagram_datasift_json.txt"));
+
+        InputStream testFileStream = DatasiftTwitterActivitySerializerTest.class.getResourceAsStream("/instagram_datasift_json.txt");
+        Scanner scanner = new Scanner(testFileStream, "UTF-8").useDelimiter(newLinePattern);
+
         String line = null;
         while(scanner.hasNextLine()) {
             line = scanner.nextLine();
