@@ -15,13 +15,6 @@
         <hdfs.version>2.0.0-cdh4.5.0</hdfs.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>cloudera</id>
-            <url>https://repository.cloudera.com/artifactory/repo</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.streams</groupId>
