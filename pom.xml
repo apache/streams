@@ -60,6 +60,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.7</java.version>
         <org.osgi.service.http.port>8080</org.osgi.service.http.port>
         <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
@@ -77,6 +78,7 @@
         <surefire.plugin.version>2.17</surefire.plugin.version>
         <failsafe.plugin.version>2.17</failsafe.plugin.version>
         <war.plugin.version>2.5</war.plugin.version>
+        <resources.plugin.version>2.7</resources.plugin.version>
         <slf4j.version>1.7.6</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
         <logback.version>1.1.1</logback.version>
@@ -127,6 +129,7 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
@@ -170,6 +173,14 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
             </plugin>
         </plugins>
         <pluginManagement>
@@ -279,7 +290,6 @@
                 <artifactId>config</artifactId>
                 <version>${typesafe.config.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>

@@ -25,9 +25,12 @@ import org.apache.streams.datasift.instagram.Instagram;
 import org.apache.streams.datasift.twitter.Twitter;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.util.files.StreamsScannerUtil;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 /**
  * Created by sblackmon on 12/13/13.
@@ -38,7 +41,9 @@ public class DatasiftEventClassifierTest {
 
     @Test
     public void testTwitterDetection() throws Exception {
-        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/twitter_datasift_json.txt"));
+
+        Scanner scanner = StreamsScannerUtil.getInstance("/twitter_datasift_json.txt");
+
         String line = null;
         while(scanner.hasNextLine()) {
             line = scanner.nextLine();
@@ -50,7 +55,9 @@ public class DatasiftEventClassifierTest {
 
     @Test
     public void testInstagramDetection() throws Exception {
-        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/instagram_datasift_json.txt"));
+
+        Scanner scanner = StreamsScannerUtil.getInstance("/instagram_datasift_json.txt");
+
         String line = null;
         while(scanner.hasNextLine()) {
             line = scanner.nextLine();
