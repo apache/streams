@@ -22,10 +22,7 @@ import org.apache.streams.core.*;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.executors.ShutdownStreamOnUnhandleThrowableThreadPoolExecutor;
 import org.apache.streams.local.queues.ThroughputQueue;
-import org.apache.streams.local.tasks.LocalStreamProcessMonitorThread;
-import org.apache.streams.local.tasks.StatusCounterMonitorThread;
-import org.apache.streams.local.tasks.StreamsProviderTask;
-import org.apache.streams.local.tasks.StreamsTask;
+import org.apache.streams.local.tasks.*;
 import org.apache.streams.monitoring.tasks.BroadcastMonitorThread;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -215,7 +212,13 @@ public class LocalStreamBuilder implements StreamBuilder {
                     isRunning = isRunning || task.isRunning();
                 }
                 for(StreamComponent task: components.values()) {
-                    isRunning = isRunning || task.getInBoundQueue().size() > 0;
+                    boolean tasksRunning = false;
+                    for(StreamsTask t : task.getStreamsTasks()) {
+                        if(t instanceof BaseStreamsTask) {
+                            tasksRunning = tasksRunning || ((BaseStreamsTask) t).isRunning();
+                        }
+                    }
+                    isRunning = isRunning || (tasksRunning && task.getInBoundQueue().size() > 0);
                 }
                 if(isRunning) {
                     Thread.sleep(3000);
@@ -314,11 +317,11 @@ public class LocalStreamBuilder implements StreamBuilder {
                 task.setStreamConfig(this.streamConfig);
                 this.futures.put(task, this.executor.submit(task));
                 compTasks.add(task);
-                if( comp.isOperationCountable() ) {
+                /*if( comp.isOperationCountable() ) {
                     this.monitor.submit(broadcastMonitor);
                     this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10));
                     this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
-                }
+                }*/
             }
             streamsTasks.put(comp.getId(), compTasks);
         }
