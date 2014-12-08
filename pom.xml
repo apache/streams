@@ -58,6 +58,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.7</java.version>
         <org.osgi.service.http.port>8080</org.osgi.service.http.port>
         <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
@@ -74,9 +75,14 @@
         <junit.version>4.11</junit.version>
         <surefire.plugin.version>2.17</surefire.plugin.version>
         <failsafe.plugin.version>2.17</failsafe.plugin.version>
+        <war.plugin.version>2.5</war.plugin.version>
+        <resources.plugin.version>2.7</resources.plugin.version>
         <slf4j.version>1.7.6</slf4j.version>
+        <log4j.version>1.2.16</log4j.version>
         <logback.version>1.1.1</logback.version>
         <commons-io.version>2.4</commons-io.version>
+        <commons-codec.version>1.10</commons-codec.version>
+        <commons-validator.version>1.4.0</commons-validator.version>
         <commons-lang3.version>3.1</commons-lang3.version>
         <typesafe.config.version>1.2.0</typesafe.config.version>
         <orgjson.version>20140107</orgjson.version>
@@ -121,6 +127,7 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
@@ -165,6 +172,14 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -182,6 +197,11 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>${build-helper.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${war.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -242,6 +262,16 @@
                 <version>${commons-io.version}</version>
             </dependency>
             <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>${commons-validator.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
@@ -258,7 +288,6 @@
                 <artifactId>config</artifactId>
                 <version>${typesafe.config.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -303,6 +332,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>log4j-over-slf4j</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>

@@ -92,7 +92,13 @@
             <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-util</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -125,6 +131,18 @@
                             </sources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/java17</source>
+                            </sources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -149,34 +167,4 @@
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>java7</id>
-            <activation>
-                <jdk>[1.7,]</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>add-test-source</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>add-test-source</goal>
-                                </goals>
-                                <configuration>
-                                    <sources>
-                                        <source>src/test/java17</source>
-                                    </sources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
