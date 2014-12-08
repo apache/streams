@@ -10,10 +10,13 @@ import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.util.files.StreamsScannerUtil;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -31,7 +34,9 @@ public class DatasiftActivitySerializerTest {
 
     @Test
     public void testConversion() throws Exception {
-        Scanner scanner = new Scanner(DatasiftActivitySerializerTest.class.getResourceAsStream("/rand_sample_datasift_json.txt"));
+
+        Scanner scanner = StreamsScannerUtil.getInstance("/rand_sample_datasift_json.txt");
+
         String line = null;
         while(scanner.hasNextLine()) {
             try {
