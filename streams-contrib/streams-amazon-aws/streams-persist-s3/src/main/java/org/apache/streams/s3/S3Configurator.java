@@ -70,7 +70,7 @@ public class S3Configurator {
         }
 
         if(!s3Configuration.getWriterPath().endsWith("/")) {
-            s3Configuration.setWriterPath(s3Configuration.getWriterPath());
+            s3Configuration.setWriterPath(s3Configuration.getWriterPath() + "/");
         }
 
         return s3Configuration;
