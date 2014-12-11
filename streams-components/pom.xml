@@ -37,6 +37,7 @@
     </properties>
 
     <modules>
+        <module>streams-converters</module>
         <module>streams-http</module>
     </modules>
 

@@ -123,6 +123,9 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                 } catch (InterruptedException ie) {
                     LOGGER.debug("Received InteruptedException, shutting down and re-applying interrupt status.");
                     this.keepRunning.set(false);
+                    if(!this.inQueue.isEmpty()) {
+                        LOGGER.error("Received InteruptedException and input queue still has data, count={}, processor={}",this.inQueue.size(), this.processor.getClass().getName());
+                    }
                     Thread.currentThread().interrupt();
                 } finally {
                     this.blocked.set(false);

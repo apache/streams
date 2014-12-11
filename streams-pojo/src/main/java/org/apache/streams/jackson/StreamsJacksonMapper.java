@@ -24,11 +24,16 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.common.collect.Lists;
 
 import java.util.List;
 
 /**
- * Created by sblackmon on 3/27/14.
+ * StreamsJacksonMapper is the recommended interface to jackson for any streams component.
+ *
+ * Date-time formats that must be supported can be specified with constructor arguments.
+ *
+ * If no Date-time formats are specified, streams will use reflection to find formats.
  */
 public class StreamsJacksonMapper extends ObjectMapper {
 
@@ -38,6 +43,13 @@ public class StreamsJacksonMapper extends ObjectMapper {
         return INSTANCE;
     }
 
+    public static StreamsJacksonMapper getInstance(String format){
+
+        StreamsJacksonMapper instance = new StreamsJacksonMapper(Lists.newArrayList(format));
+
+        return instance;
+
+    }
     public static StreamsJacksonMapper getInstance(List<String> formats){
 
         StreamsJacksonMapper instance = new StreamsJacksonMapper(formats);
@@ -49,6 +61,12 @@ public class StreamsJacksonMapper extends ObjectMapper {
     public StreamsJacksonMapper() {
         super();
         registerModule(new StreamsJacksonModule());
+        configure();
+    }
+
+    public StreamsJacksonMapper(String format) {
+        super();
+        registerModule(new StreamsJacksonModule(Lists.newArrayList(format)));
         configure();
     }
 

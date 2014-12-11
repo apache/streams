@@ -16,16 +16,27 @@
  * under the License.
  */
 
-package org.apache.streams.data.data.util;
+package org.apache.streams.exceptions;
 
+/**
+ *  ActivityConversionException is a typed exception appropriate when a valid Activity
+ *  cannot be created from a given document.
+ */
+public class ActivityConversionException extends Exception {
 
-import org.junit.Ignore;
-import org.junit.Test;
+    public ActivityConversionException() {
+    }
 
-public class JsonUtilTest {
+    public ActivityConversionException(String message) {
+        super(message);
+    }
 
-    @Ignore @Test
-    public void testJsonToObject(){
+    public ActivityConversionException(Throwable cause) {
+        super(cause);
+    }
+
+    public ActivityConversionException(String message, Throwable cause) {
+        super(message, cause);
     }
 
 }
