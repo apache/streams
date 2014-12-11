@@ -397,6 +397,7 @@ public class LocalStreamBuilder implements StreamBuilder {
         try {
             shutdown(tasks);
         } catch (Exception e) {
+            LOGGER.error("Exception while trying to shutdown Stream: {}", e);
             forceShutdown(tasks);
         } finally {
             if(!systemExiting) {
