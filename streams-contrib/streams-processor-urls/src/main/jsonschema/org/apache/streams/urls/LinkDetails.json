@@ -1,3 +1,4 @@
+
 {
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
@@ -10,7 +11,6 @@
             "enum" : [
                 "SUCCESS",
                 "ERROR",
-                "TIME_OUT",
                 "MALFORMED_URL",
                 "NOT_FOUND",
                 "FORBIDDEN",
@@ -18,34 +18,17 @@
                 "UNAUTHORIZED",
                 "LOOP",
                 "HTTP_ERROR_STATUS",
-                "EXCEPTION",
-                "EMPTY",
-                "TOO_LARGE",
-                "NONE"
-            ],
-            "default" : "NONE"
+                "EXCEPTION"
+            ]
         },
         "originalURL": {
-            "type": "string",
-            "default" : ""
-        },
-        "rawContent": {
-            "type": "string"
-        },
-        "contentsType": {
             "type": "string"
         },
         "finalURL": {
-            "type": "string",
-            "default" : ""
-        },
-        "contentType" : {
-            "type" : "string",
-            "default" : ""
+            "type": "string"
         },
         "normalizedURL": {
-            "type": "string",
-            "default" : ""
+            "type": "string"
         },
         "urlParts": {
             "type": "array",
@@ -54,8 +37,10 @@
             }
         },
         "domain": {
-            "type": "string",
-            "default" : ""
+            "type": "string"
+        },
+        "redirected": {
+            "type": "boolean"
         },
         "redirects": {
             "type": "array",
@@ -63,18 +48,19 @@
                 "type": "string"
             }
         },
+        "redirectCount": {
+            "type": "integer",
+            "default": 0
+        },
         "tracked": {
-            "type": "boolean",
-            "default" : "false"
+            "type": "boolean"
         },
         "finalResponseCode" : {
-            "type" : "integer",
-            "default" : "-1"
+            "type" : "integer"
         },
         "cookies": {
             "type": "array",
             "uniqueItems": true,
-
             "items": {
                 "type": "string"
             }
@@ -85,16 +71,6 @@
         },
         "tookInMills": {
             "type": "integer"
-        },
-        "contentsType" : {
-            "type" : "string",
-            "enum" : [
-                "RAW_HTML",
-                "BASE64"
-            ]
-        },
-        "rawContent": {
-            "type": "string"
         }
     }
 }
