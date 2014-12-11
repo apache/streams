@@ -30,7 +30,8 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by sblackmon on 3/31/14.
+ * Testing {@link org.apache.streams.jackson.StreamsJacksonMapper} ability to read and write
+ * RFC3339 format.
  */
 public class DateTimeSerDeTest {
 
