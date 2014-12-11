@@ -200,14 +200,16 @@ public class LocalStreamBuilder implements StreamBuilder {
         attachShutdownHandler();
         boolean isRunning = true;
         this.executor = new ShutdownStreamOnUnhandleThrowableThreadPoolExecutor(this.totalTasks, this);
-        this.monitor = Executors.newFixedThreadPool(this.monitorTasks + 1);
+        this.monitor = Executors.newCachedThreadPool();
         Map<String, StreamsProviderTask> provTasks = new HashMap<String, StreamsProviderTask>();
         tasks = new HashMap<String, List<StreamsTask>>();
         boolean forcedShutDown = false;
 
         try {
-            monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
-            this.monitor.submit(monitorThread);
+            if (this.useDeprecatedMonitors) {
+                monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
+                this.monitor.submit(monitorThread);
+            }
             setupComponentTasks(tasks);
             setupProviderTasks(provTasks);
             LOGGER.info("Started stream with {} components", tasks.size());
@@ -279,7 +281,9 @@ public class LocalStreamBuilder implements StreamBuilder {
 
     protected void shutdown(Map<String, List<StreamsTask>> streamsTasks) throws InterruptedException {
         LOGGER.info("Attempting to shutdown tasks");
-        this.monitorThread.shutdown();
+        if (this.monitorThread != null) {
+            this.monitorThread.shutdown();
+        }
         this.executor.shutdown();
         //complete stream shut down gracfully
         for(StreamComponent prov : this.providers.values()) {
@@ -322,13 +326,11 @@ public class LocalStreamBuilder implements StreamBuilder {
                 task.setStreamConfig(this.streamConfig);
                 this.futures.put(task, this.executor.submit(task));
                 compTasks.add(task);
-                if(comp.isOperationCountable() ) {
-                    if(this.useDeprecatedMonitors) {
-                        this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10));
-                        this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
-                    }
-                    this.monitor.submit(broadcastMonitor);
+                if(this.useDeprecatedMonitors &&  comp.isOperationCountable() ) {
+                    this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10));
+                    this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
                 }
+                this.monitor.submit(broadcastMonitor);
             }
             streamsTasks.put(comp.getId(), compTasks);
         }
