@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.streams.core.*;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -253,7 +254,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
             try {
                 // if the user has chosen to not set the object mapper, then set a default object mapper for them.
                 if (this.objectMapper == null)
-                    this.objectMapper = new ObjectMapper();
+                    this.objectMapper = new StreamsJacksonMapper();
 
                 // Create the credentials Object
                 if (this.amazonS3Client == null) {
