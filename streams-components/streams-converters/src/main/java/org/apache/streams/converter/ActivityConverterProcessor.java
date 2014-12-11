@@ -114,12 +114,12 @@ public class ActivityConverterProcessor implements StreamsProcessor {
 
                 List<Activity> activities = applyConverter(converter, typedDoc);
 
-            }
-
-            for (Activity activity : activities) {
-                StreamsDatum datum = DatumUtils.cloneDatum(entry);
-                datum.setId(activity.getId());
-                result.add(datum);
+                for (Activity activity : activities) {
+                    StreamsDatum datum = DatumUtils.cloneDatum(entry);
+                    datum.setId(activity.getId());
+                    datum.setDocument(activity);
+                    result.add(datum);
+                }
             }
 
         } catch( Exception e ) {
@@ -132,23 +132,19 @@ public class ActivityConverterProcessor implements StreamsProcessor {
 
     protected List<Activity> applyConverter(ActivityConverter converter, Object typedDoc) {
 
+        List<Activity> activities = Lists.newArrayList();
         // if the document can be typed as the required class
         if( typedDoc != null ) {
 
             // let the converter create activities if it can
-            List<Activity> activities;
             try {
                 activities = convertToActivity(converter, typedDoc);
-
-                if( activities != null && activities.size() > 0) {
-
-
-                }
             } catch( Exception e ) {
                 LOGGER.debug("convertToActivity caught exception " + e.getMessage());
             }
 
         }
+        return activities;
     }
 
     protected List<Activity> convertToActivity(ActivityConverter converter, Object document) {
@@ -216,7 +212,7 @@ public class ActivityConverterProcessor implements StreamsProcessor {
     @Override
     public void prepare(Object configurationObject) {
         Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage("org.apache.streams.data"))
+                .setUrls(ClasspathHelper.forPackage("org.apache.streams"))
                 .setScanners(new SubTypesScanner()));
         if (configuration.getClassifiers().size() > 0) {
             for( DocumentClassifier classifier : configuration.getClassifiers()) {
