@@ -10,6 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>streams-persist-elasticsearch</artifactId>
+    <name>${artifactId}</name>
+
+    <description>Elasticsearch Module</description>
 
     <properties>
         <elasticsearch.version>1.1.0</elasticsearch.version>

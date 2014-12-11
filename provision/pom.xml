@@ -29,7 +29,7 @@
 
   <groupId>org.apache.streams.build</groupId>
   <artifactId>provision</artifactId>
-  <name>apache-streams - imported bundles</name>
+  <name>${artifactId}</name>
 
   <packaging>pom</packaging>
 
