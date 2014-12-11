@@ -22,7 +22,10 @@ package org.apache.streams.core.util;
 import com.google.common.collect.Maps;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsOperation;
+import org.joda.time.DateTime;
 
+import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -45,5 +48,14 @@ public class DatumUtils {
         }
         Map<String, Throwable> errors = (Map)datum.getMetadata().get("errors");
         errors.put(operationClass.getCanonicalName(), e);
+    }
+
+    public static StreamsDatum cloneDatum(StreamsDatum datum) {
+        StreamsDatum clone = new StreamsDatum(datum.getDocument());
+        clone.setId(datum.getId() == null ? null : new String(datum.getId()));
+        clone.setTimestamp(datum.getTimestamp() == null ? null : new DateTime(datum.getTimestamp()));
+        clone.setSequenceid(datum.getSequenceid() == null ? null : datum.getSequenceid());
+        clone.setMetadata(datum.getMetadata() == null ? null : new HashMap<>(datum.getMetadata()));
+        return clone;
     }
 }

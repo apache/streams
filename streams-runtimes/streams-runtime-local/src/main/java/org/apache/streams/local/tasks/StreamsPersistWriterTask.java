@@ -114,6 +114,9 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                 } catch (InterruptedException ie) {
                     LOGGER.debug("Received InterruptedException. Shutting down and re-applying interrupt status.");
                     this.keepRunning.set(false);
+                    if(!this.inQueue.isEmpty()) {
+                        LOGGER.error("Received InteruptedException and input queue still has data, count={}, processor={}",this.inQueue.size(), this.writer.getClass().getName());
+                    }
                     Thread.currentThread().interrupt();
                 } finally {
                     this.blocked.set(false);
