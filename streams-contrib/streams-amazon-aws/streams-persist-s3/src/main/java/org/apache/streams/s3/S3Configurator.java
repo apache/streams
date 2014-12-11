@@ -69,7 +69,9 @@ public class S3Configurator {
             LOGGER.warn("Could not parse S3Configuration");
         }
 
-        Preconditions.checkArgument(s3Configuration.getWriterPath().endsWith("/"), s3Configuration.getWriterPath() + " must end with '/'");
+        if(!s3Configuration.getWriterPath().endsWith("/")) {
+            s3Configuration.setWriterPath(s3Configuration.getWriterPath() + "/");
+        }
 
         return s3Configuration;
     }

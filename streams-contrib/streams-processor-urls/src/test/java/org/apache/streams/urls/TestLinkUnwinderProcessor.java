@@ -1,10 +1,30 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.apache.streams.urls;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.jackson.StreamsJacksonModule;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Test;
 
@@ -20,6 +40,14 @@ public class TestLinkUnwinderProcessor {
     private static String activityString;
 
     @Test
+    public void testLinkUnwinderBadDomain() {
+        LinkResolver resolver = new LinkResolver("http://nope@#$%");
+        resolver.run();
+        LinkDetails details = resolver.getLinkDetails();
+        assertEquals("Should be 400", LinkDetails.LinkStatus.MALFORMED_URL, details.getLinkStatus());
+    }
+
+    @Test
     public void testLinkResolverSerializability() {
         LinkResolver resolver = new LinkResolver("http://bit.ly/1cX5Rh4");
         LinkResolver clone = SerializationUtils.clone(resolver);
@@ -30,7 +58,7 @@ public class TestLinkUnwinderProcessor {
         LinkResolver resolver = new LinkResolver("http://www.kneesupmotherbrown.me/2013/05/26/well-its-fair-to-say-may-has-been-a-crappy-month");
         resolver.run();
         LinkDetails details = resolver.getLinkDetails();
-        assertTrue("Should be 404", details.getLinkStatus() == LinkDetails.LinkStatus.NOT_FOUND);
+        assertEquals("Should be 404", LinkDetails.LinkStatus.NOT_FOUND, details.getLinkStatus());
     }
 
     @Test
@@ -71,14 +99,9 @@ public class TestLinkUnwinderProcessor {
 
     @Test
     public void testActivityLinkUnwinderProcessorMulti() throws Exception{
-        testActivityUnwinderHelper(Lists.newArrayList("http://x.co/3yapt", "http://ow.ly/u4Kte", "http://goo.gl/wSrHDA"), Lists.newArrayList("http://www.wcgworld.com/", "http://www.wcgworld.com/", "http://www.wcgworld.com/"));
-        testStringActivityUnwinderHelper(Lists.newArrayList("http://x.co/3yapt", "http://ow.ly/u4Kte", "http://goo.gl/wSrHDA"), Lists.newArrayList("http://www.wcgworld.com/", "http://www.wcgworld.com/", "http://www.wcgworld.com/"));
-    }
-
-    @Test
-    public void testActivityLinkUnwinderProcessorUnwindable() throws Exception{
-        testActivityUnwinderHelper(Lists.newArrayList("http://bit.ly/1cX5Rh4", "http://nope@#$%e"), Lists.newArrayList("http://www.wcgworld.com/"));
-        testStringActivityUnwinderHelper(Lists.newArrayList("http://bit.ly/1cX5Rh4", "http://nope@#$%s"), Lists.newArrayList("http://www.wcgworld.com/"));
+        // changed these tests because the processor now guarantees each result returned only once
+        testActivityUnwinderHelper(Lists.newArrayList("http://x.co/3yapt", "http://ow.ly/u4Kte", "http://goo.gl/wSrHDA"), Lists.newArrayList("http://www.wcgworld.com/"));
+        testStringActivityUnwinderHelper(Lists.newArrayList("http://x.co/3yapt", "http://ow.ly/u4Kte", "http://goo.gl/wSrHDA"), Lists.newArrayList("http://www.wcgworld.com/"));
     }
 
     public void testActivityUnwinderHelper(List<String> input, List<String> expected) throws Exception{

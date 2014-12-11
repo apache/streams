@@ -53,11 +53,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     public BroadcastMonitorThread(Map<String, Object> streamConfig) {
         keepRunning = true;
         this.streamConfig = streamConfig;
-
-        LOGGER.info("BroadcastMonitorThread starting" + streamConfig);
-
         server = ManagementFactory.getPlatformMBeanServer();
-
 
         setBroadcastURI();
         setWaitTime();
@@ -65,8 +61,6 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
         messagePersister = new SLF4JMessagePersister();
 
         initializeObjectMapper();
-
-        LOGGER.info("BroadcastMonitorThread started");
     }
 
     /**
@@ -92,8 +86,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
      */
     @Override
     public void run() {
-        LOGGER.info("BroadcastMonitorThread running");
-        while(keepRunning) {
+        while(keepRunning && !Thread.currentThread().isInterrupted()) {
             try {
                 List<String> messages = Lists.newArrayList();
                 Set<ObjectName> beans = server.queryNames(null, null);
@@ -123,6 +116,8 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                 Thread.sleep(waitTime);
             } catch (InterruptedException e) {
                 LOGGER.error("Interrupted!: {}", e);
+                keepRunning = false;
+                Thread.currentThread().interrupt();
             } catch (Exception e) {
                 LOGGER.error("Exception: {}", e);
             }
@@ -168,14 +163,6 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     public void shutdown() {
         this.keepRunning = false;
         LOGGER.debug("Shutting down BroadcastMonitor Thread");
-    }
-
-    public String getBroadcastURI() {
-        return broadcastURI;
-    }
-
-    public long getWaitTime() {
-        return waitTime;
     }
 
     public long getDefaultWaitTime() {
