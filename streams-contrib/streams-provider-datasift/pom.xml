@@ -97,7 +97,7 @@
             <artifactId>streams-util</artifactId>
             <scope>jar</scope>
             <type>test-jar</type>
-            <version>0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
