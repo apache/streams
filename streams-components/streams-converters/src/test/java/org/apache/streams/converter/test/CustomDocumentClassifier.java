@@ -63,8 +63,9 @@ public class CustomDocumentClassifier implements DocumentClassifier {
         } else if( document instanceof ObjectNode ){
             classes.add(ObjectNode.class);
             possibleMatchDocument = this.mapper.convertValue((ObjectNode)document, CustomType.class);
-            if(possibleMatchDocument != null && possibleMatchDocument.getTest() != null)
+            if(possibleMatchDocument != null && possibleMatchDocument.getTest() != null) {
                 classes.add(CustomType.class);
+            }
         } else {
             classes.add(document.getClass());
         }

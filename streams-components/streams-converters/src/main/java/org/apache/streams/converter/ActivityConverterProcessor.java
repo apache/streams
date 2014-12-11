@@ -32,6 +32,7 @@ import org.apache.streams.data.util.ActivityUtil;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
@@ -72,8 +73,7 @@ public class ActivityConverterProcessor implements StreamsProcessor {
     }
 
     public ActivityConverterProcessor(ActivityConverterProcessorConfiguration configuration) {
-        this.classifiers = Lists.newArrayList();
-        this.converters = Lists.newArrayList();
+        this();
         this.configuration = configuration;
     }
 
@@ -112,49 +112,14 @@ public class ActivityConverterProcessor implements StreamsProcessor {
 
                 Object typedDoc = typedDocs.get(converter.requiredClass());
 
-                // if the document can be typed as the required class
-                if( typedDoc != null ) {
+                List<Activity> activities = applyConverter(converter, typedDoc);
 
-                    StreamsDatum datum = DatumUtils.cloneDatum(entry);
+            }
 
-                    // let the converter create activities if it can
-                    List<Activity> activities;
-                    try {
-                        activities = convertToActivity(converter, typedDoc);
-
-                        if( activities != null && activities.size() > 0) {
-
-                            for (Activity activity : activities) {
-
-                                if (activity != null) {
-
-                                    // only accept valid activities
-                                    //   this primitive validity check should be replaced with
-                                    //   one that applies javax.validation to JSR303 annotations
-                                    //   on the Activity json schema once a suitable implementation
-                                    //   is found.
-                                    if (ActivityUtil.isValid(activity)) {
-                                        datum.setDocument(activity);
-                                        datum.setId(activity.getId());
-                                        result.add(datum);
-                                    } else {
-                                        LOGGER.debug(converter.getClass().getCanonicalName() + " produced invalid Activity converting " + converter.requiredClass().getClass().getCanonicalName());
-                                    }
-
-                                } else {
-                                    LOGGER.debug(converter.getClass().getCanonicalName() + " returned null converting " + converter.requiredClass().getClass().getCanonicalName() + " to Activity");
-                                }
-
-                            }
-                        }
-                    } catch( Exception e ) {
-                        LOGGER.debug("convertToActivity caught exception " + e.getMessage());
-                    }
-
-
-
-                }
-
+            for (Activity activity : activities) {
+                StreamsDatum datum = DatumUtils.cloneDatum(entry);
+                datum.setId(activity.getId());
+                result.add(datum);
             }
 
         } catch( Exception e ) {
@@ -165,6 +130,27 @@ public class ActivityConverterProcessor implements StreamsProcessor {
 
     }
 
+    protected List<Activity> applyConverter(ActivityConverter converter, Object typedDoc) {
+
+        // if the document can be typed as the required class
+        if( typedDoc != null ) {
+
+            // let the converter create activities if it can
+            List<Activity> activities;
+            try {
+                activities = convertToActivity(converter, typedDoc);
+
+                if( activities != null && activities.size() > 0) {
+
+
+                }
+            } catch( Exception e ) {
+                LOGGER.debug("convertToActivity caught exception " + e.getMessage());
+            }
+
+        }
+    }
+
     protected List<Activity> convertToActivity(ActivityConverter converter, Object document) {
 
         List<Activity> activities = Lists.newArrayList();
@@ -172,6 +158,26 @@ public class ActivityConverterProcessor implements StreamsProcessor {
             activities = converter.toActivityList(document);
         } catch (ActivityConversionException e1) {
             LOGGER.debug(converter.getClass().getCanonicalName() + " unable to convert " + converter.requiredClass().getClass().getCanonicalName() + " to Activity");
+        }
+
+        for (Activity activity : activities) {
+
+            if (activity != null) {
+
+                // only accept valid activities
+                //   this primitive validity check should be replaced with
+                //   one that applies javax.validation to JSR303 annotations
+                //   on the Activity json schema once a suitable implementation
+                //   is found.
+                if (!ActivityUtil.isValid(activity)) {
+                    activities.remove(activity);
+                    LOGGER.debug(converter.getClass().getCanonicalName() + " produced invalid Activity converting " + converter.requiredClass().getClass().getCanonicalName());
+                }
+
+            } else {
+                LOGGER.debug(converter.getClass().getCanonicalName() + " returned null converting " + converter.requiredClass().getClass().getCanonicalName() + " to Activity");
+            }
+
         }
         return activities;
 
@@ -209,9 +215,9 @@ public class ActivityConverterProcessor implements StreamsProcessor {
 
     @Override
     public void prepare(Object configurationObject) {
-//        Preconditions.checkArgument(configurationObject instanceof ActivityConverterProcessorConfiguration);
-//        ActivityConverterProcessorConfiguration configuration = (ActivityConverterProcessorConfiguration) configurationObject;
-        Reflections reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forManifest()));
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .setUrls(ClasspathHelper.forPackage("org.apache.streams.data"))
+                .setScanners(new SubTypesScanner()));
         if (configuration.getClassifiers().size() > 0) {
             for( DocumentClassifier classifier : configuration.getClassifiers()) {
                 try {
