@@ -70,7 +70,7 @@
         <joda-time.version>2.2</joda-time.version>
         <rave.version>0.22</rave.version>
         <datastax.version>1.0.3</datastax.version>
-        <jsonschema2pojo.version>0.4.5</jsonschema2pojo.version>
+        <jsonschema2pojo.version>0.4.6</jsonschema2pojo.version>
         <jaxb2.version>0.8.3</jaxb2.version>
         <jaxb2-basics.version>0.8.4</jaxb2-basics.version>
         <jaxbutil.version>1.2.6</jaxbutil.version>
@@ -87,6 +87,7 @@
         <commons-validator.version>1.4.0</commons-validator.version>
         <commons-lang3.version>3.1</commons-lang3.version>
         <typesafe.config.version>1.2.0</typesafe.config.version>
+        <reflections.version>0.9.9</reflections.version>
         <orgjson.version>20140107</orgjson.version>
         <guava.version>17.0</guava.version>
         <scala.version>2.8.0</scala.version>
@@ -240,6 +241,19 @@
                         </excludes>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.reflections</groupId>
+                    <artifactId>reflections-maven</artifactId>
+                    <version>${reflections.version}-RC2</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>reflections</goal>
+                            </goals>
+                            <phase>process-classes</phase>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -289,6 +303,11 @@
                 <groupId>com.typesafe</groupId>
                 <artifactId>config</artifactId>
                 <version>${typesafe.config.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.reflections</groupId>
+                <artifactId>reflections</artifactId>
+                <version>${reflections.version}</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

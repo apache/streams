@@ -33,6 +33,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+/**
+ * Testing {@link org.apache.streams.data.util.RFC3339Utils}
+ */
 public class RFC3339UtilsTest {
 
     @Test

@@ -28,11 +28,10 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * Created by sblackmon on 3/27/14.
+ * StreamsDateTimeSerializer is a supporting class for
+ * @see {@link org.apache.streams.jackson.StreamsJacksonMapper}
  */
 public class StreamsDateTimeSerializer extends StdSerializer<DateTime> implements Serializable {
-
-
 
     protected StreamsDateTimeSerializer(Class<DateTime> dateTimeClass) {
         super(dateTimeClass);
