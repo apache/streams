@@ -22,10 +22,7 @@ import org.apache.streams.core.*;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.executors.ShutdownStreamOnUnhandleThrowableThreadPoolExecutor;
 import org.apache.streams.local.queues.ThroughputQueue;
-import org.apache.streams.local.tasks.LocalStreamProcessMonitorThread;
-import org.apache.streams.local.tasks.StatusCounterMonitorThread;
-import org.apache.streams.local.tasks.StreamsProviderTask;
-import org.apache.streams.local.tasks.StreamsTask;
+import org.apache.streams.local.tasks.*;
 import org.apache.streams.monitoring.tasks.BroadcastMonitorThread;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -203,16 +200,14 @@ public class LocalStreamBuilder implements StreamBuilder {
         attachShutdownHandler();
         boolean isRunning = true;
         this.executor = new ShutdownStreamOnUnhandleThrowableThreadPoolExecutor(this.totalTasks, this);
-        this.monitor = Executors.newCachedThreadPool();
+        this.monitor = Executors.newFixedThreadPool(this.monitorTasks + 1);
         Map<String, StreamsProviderTask> provTasks = new HashMap<String, StreamsProviderTask>();
         tasks = new HashMap<String, List<StreamsTask>>();
         boolean forcedShutDown = false;
 
         try {
-            if(this.useDeprecatedMonitors) {
-                monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
-                this.monitor.submit(monitorThread);
-            }
+            monitorThread = new LocalStreamProcessMonitorThread(executor, 10);
+            this.monitor.submit(monitorThread);
             setupComponentTasks(tasks);
             setupProviderTasks(provTasks);
             LOGGER.info("Started stream with {} components", tasks.size());
@@ -222,7 +217,13 @@ public class LocalStreamBuilder implements StreamBuilder {
                     isRunning = isRunning || task.isRunning();
                 }
                 for(StreamComponent task: components.values()) {
-                    isRunning = isRunning || task.getInBoundQueue().size() > 0;
+                    boolean tasksRunning = false;
+                    for(StreamsTask t : task.getStreamsTasks()) {
+                        if(t instanceof BaseStreamsTask) {
+                            tasksRunning = tasksRunning || ((BaseStreamsTask) t).isRunning();
+                        }
+                    }
+                    isRunning = isRunning || (tasksRunning && task.getInBoundQueue().size() > 0);
                 }
                 if(isRunning) {
                     Thread.sleep(3000);
@@ -321,11 +322,13 @@ public class LocalStreamBuilder implements StreamBuilder {
                 task.setStreamConfig(this.streamConfig);
                 this.futures.put(task, this.executor.submit(task));
                 compTasks.add(task);
-                if(this.useDeprecatedMonitors &&  comp.isOperationCountable() ) {
-                    this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10));
-                    this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
+                if(comp.isOperationCountable() ) {
+                    if(this.useDeprecatedMonitors) {
+                        this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) comp.getOperation(), 10));
+                        this.monitor.submit(new StatusCounterMonitorThread((DatumStatusCountable) task, 10));
+                    }
+                    this.monitor.submit(broadcastMonitor);
                 }
-                this.monitor.submit(broadcastMonitor);
             }
             streamsTasks.put(comp.getId(), compTasks);
         }
@@ -426,7 +429,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     }
 
     protected int getTimeout() {
-    //Set the timeout of it is configured, otherwise signal downstream components to use their default
+        //Set the timeout of it is configured, otherwise signal downstream components to use their default
         return streamConfig != null && streamConfig.containsKey(TIMEOUT_KEY) ? (Integer)streamConfig.get(TIMEOUT_KEY) : -1;
     }
 
