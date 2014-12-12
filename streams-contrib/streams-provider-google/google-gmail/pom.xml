@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>google-gmail</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>GMail Provider</description>
 

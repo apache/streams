@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>streams-processor-urls</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>URL Utility Processors</description>
 

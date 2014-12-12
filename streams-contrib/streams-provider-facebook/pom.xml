@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>streams-provider-facebook</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Facebook Provider</description>
 

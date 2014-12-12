@@ -29,7 +29,7 @@
     </parent>
 
     <artifactId>streams-config</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Stream and Stream Component General Configuration Objects and Utilities</description>
 

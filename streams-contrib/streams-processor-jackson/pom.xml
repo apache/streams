@@ -29,7 +29,7 @@
     </parent>
 
     <artifactId>streams-processor-jackson</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Jackson Utility Processors</description>
 

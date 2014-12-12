@@ -30,7 +30,7 @@
 
   <artifactId>wrapper-bundle-settings</artifactId>
 
-  <name>${artifactId}</name>
+  <name>${project.artifactId}</name>
 
     <!--
      | don't apply project details to wrapped jars
