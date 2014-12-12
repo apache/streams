@@ -27,7 +27,7 @@
   <artifactId>streams-web</artifactId>
   <packaging>war</packaging>
 
-  <name>${artifactId}</name>
+  <name>${project.artifactId}</name>
 
   <description>Apache Streams Web App</description>
 
@@ -192,7 +192,7 @@
                       </goals>
                       <configuration>
                           <overwrite>true</overwrite>
-                          <outputDirectory>${project.build.directory}/${project.artifactId}/WEB-INF/spring</outputDirectory>
+                          <outputDirectory>${project.build.directory}/${project.project.artifactId}/WEB-INF/spring</outputDirectory>
                           <resources>
                               <resource>
                                   <directory>${project.parent.basedir}/streams-eip-routes/src/main/resources/META-INF/spring</directory>

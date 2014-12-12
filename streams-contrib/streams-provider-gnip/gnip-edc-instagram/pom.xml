@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>gnip-edc-instagram</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Gnip EDC Instagram Provider</description>
 

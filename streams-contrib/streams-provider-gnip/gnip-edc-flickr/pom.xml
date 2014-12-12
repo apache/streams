@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>gnip-edc-flickr</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Gnip EDC Flickr Provider</description>
 

@@ -29,7 +29,7 @@
     </parent>
 
     <artifactId>streams-processor-json</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>JsonPath Utility Processors</description>
 

@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>gnip-edc-facebook</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Gnip EDC Facebook Provider</description>
 

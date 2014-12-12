@@ -29,7 +29,7 @@
     </parent>
 
     <artifactId>streams-monitoring</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Monitoring of executing streams and stream components.</description>
 

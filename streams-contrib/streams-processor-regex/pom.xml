@@ -31,7 +31,7 @@
     </parent>
 
     <artifactId>streams-processor-regex</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Regex Utility Processors</description>
 

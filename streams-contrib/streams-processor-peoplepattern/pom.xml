@@ -29,7 +29,7 @@
     </parent>
 
     <artifactId>streams-processor-peoplepattern</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>PeoplePattern API Processors</description>
 

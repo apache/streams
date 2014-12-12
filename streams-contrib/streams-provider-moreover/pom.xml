@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>streams-provider-moreover</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Moreover Provider</description>
 

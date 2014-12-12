@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>google-gplus</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Google+ Provider</description>
 
