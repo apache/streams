@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -15,14 +15,12 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
-  -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>streams-project</artifactId>
     <groupId>org.apache.streams</groupId>
-    <version>0.1.6-W2O-SNAPSHOT</version>
+    <version>0.1.7-W2O-SNAPSHOT</version>
   </parent>
   <artifactId>streams-web</artifactId>
   <packaging>war</packaging>
@@ -46,19 +44,19 @@
      <dependency>
          <groupId>org.apache.streams</groupId>
          <artifactId>streams-runtime-webapp</artifactId>
-         <version>${project.version}</version>
+         <version>0.1.7-W2O-SNAPSHOT</version>
      </dependency>
 
       <dependency>
           <groupId>org.apache.streams.osgi.components</groupId>
           <artifactId>streams-components-all</artifactId>
-        <version>${project.version}</version>
+        <version>0.1.7-W2O-SNAPSHOT</version>
       </dependency>
 
       <dependency>
           <groupId>org.apache.streams</groupId>
           <artifactId>streams-persist-cassandra</artifactId>
-          <version>${project.version}</version>
+          <version>0.1.7-W2O-SNAPSHOT</version>
       </dependency>
 
       <dependency>
@@ -170,7 +168,7 @@
                       <!-- enable easy JMX connection to JConsole -->
                       <systemProperty>
                           <name>com.sun.management.jmxremote</name>
-                          <value/>
+                          <value />
                       </systemProperty>
                   </systemProperties>
                   <scanIntervalSeconds>10</scanIntervalSeconds>
