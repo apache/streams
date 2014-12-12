@@ -1,16 +1,24 @@
 {
-  "type" : "object",
-  "title" : "Save",
-  "description" : "To save an object",
-  "extends": {"$ref":"../activity.json"},
-  "properties" :{
-    "verb" :{
-      "type" : "string",
-      "default" : "save"
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "title": "Save",
+    "description": "To save an object",
+    "extends": {
+        "$ref": "../activity.json"
     },
-    "title" : {
-      "type" : "string",
-      "default" : "{actor.displayName} saved {object.displayName}"
+    "properties": {
+        "verb": {
+            "type": "string",
+            "default": "save"
+        },
+        "title": {
+            "type": "string",
+            "default": "{actor.displayName} saved {object.displayName}"
+        }
     }
-  }
 }

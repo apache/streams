@@ -15,8 +15,8 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.streams.data.data.util;
 
+package org.apache.streams.data.data.util;
 
 import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.DateTime;
