@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>streams-provider-twitter</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Twitter Provider</description>
 

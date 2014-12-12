@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>streams-provider-sysomos</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Sysomos Provider</description>
 

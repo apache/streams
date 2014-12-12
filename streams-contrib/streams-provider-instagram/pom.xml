@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>streams-provider-instagram</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Instagram Provider</description>
 

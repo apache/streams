@@ -30,7 +30,7 @@
 
   <artifactId>compiled-bundle-settings</artifactId>
 
-  <name>${artifactId}</name>
+  <name>${project.artifactId}</name>
 
   <packaging>pom</packaging>
 

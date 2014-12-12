@@ -29,7 +29,7 @@
     </parent>
 
     <artifactId>streams-runtimes</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Apache Streams Runtimes</description>
 

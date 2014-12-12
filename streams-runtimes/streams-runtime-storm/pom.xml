@@ -27,7 +27,7 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
     <artifactId>streams-runtime-storm</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
     <description>Apache Streams Runtimes</description>
 
     <properties>

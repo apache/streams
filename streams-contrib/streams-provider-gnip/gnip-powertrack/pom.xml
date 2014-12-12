@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>gnip-powertrack</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Gnip Powertrack Provider</description>
 

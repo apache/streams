@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>gnip-edc-googleplus</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Gnip EDC Google+ Provider</description>
 

@@ -28,7 +28,7 @@
     </parent>
 
     <artifactId>streams-core</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Core classes and interfaces for streams.</description>
 

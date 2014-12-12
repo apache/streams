@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>streams-provider-google</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <description>Google Providers</description>
 
