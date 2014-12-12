@@ -116,10 +116,11 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                 Thread.sleep(waitTime);
             } catch (InterruptedException e) {
                 LOGGER.error("Interrupted!: {}", e);
-                keepRunning = false;
                 Thread.currentThread().interrupt();
+                this.keepRunning = false;
             } catch (Exception e) {
                 LOGGER.error("Exception: {}", e);
+                this.keepRunning = false;
             }
         }
     }
