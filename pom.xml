@@ -543,6 +543,7 @@
                                 <exclude>**/*.properties</exclude>
                                 <exclude>**/*.iml</exclude>
                                 <exclude>**/*.ini</exclude>
+                                <exclude>**/*.jar</exclude>
                                 <exclude>dependency-reduced-pom.xml</exclude>
                                 <exclude>rat.txt</exclude>
                             </excludes>
