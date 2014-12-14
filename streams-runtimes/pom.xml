@@ -29,6 +29,9 @@
     </parent>
 
     <artifactId>streams-runtimes</artifactId>
+    <name>${project.artifactId}</name>
+
+    <description>Apache Streams Runtimes</description>
 
     <packaging>pom</packaging>
 

@@ -29,8 +29,9 @@
     </parent>
 
     <artifactId>streams-persist-cassandra</artifactId>
+    <name>${project.artifactId}</name>
 
-    <name>${bundle.symbolicName} [${bundle.namespace}]</name>
+    <description>Cassandra Module</description>
 
     <properties>
         <bundle.symbolicName>streams-persist-cassandra</bundle.symbolicName>

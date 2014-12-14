@@ -30,11 +30,11 @@
 
   <artifactId>wrapper-bundle-settings</artifactId>
 
-  <name>apache-streams - wrapper instructions</name>
+  <name>${project.artifactId}</name>
 
-  <!--
-   | don't apply project details to wrapped jars
-  -->
+    <!--
+     | don't apply project details to wrapped jars
+    -->
   <organization/>
   <description>
     Simple OSGi wrapper around third-party jar(s)
