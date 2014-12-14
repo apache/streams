@@ -543,6 +543,7 @@
                                 <exclude>**/*.properties</exclude>
                                 <exclude>**/*.iml</exclude>
                                 <exclude>**/*.ini</exclude>
+                                <exclude>**/rat.txt</exclude>
                             </excludes>
                         </configuration>
                     </plugin>
