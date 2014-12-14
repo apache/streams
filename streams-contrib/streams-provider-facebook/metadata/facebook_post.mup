@@ -1,694 +1,697 @@
 {
-  "title": "Serializer",
-  "id": 1,
-  "formatVersion": 2,
-  "attr": {
-    "style": {}
-  },
-  "ideas": {
-    "1": {
-      "title": "Activity",
-      "id": 2,
-      "ideas": {
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "title": "Serializer",
+    "id": 1,
+    "formatVersion": 2,
+    "attr": {
+        "style": {}
+    },
+    "ideas": {
         "1": {
-          "title": "actor",
-          "id": 4,
-          "ideas": {
-            "1": {
-              "title": "summary",
-              "id": 28
-            },
-            "7": {
-              "title": "url",
-              "id": 41
-            },
-            "0.5": {
-              "title": "displayName",
-              "id": 32,
-              "attr": {
-                "style": {}
-              }
-            },
-            "0.75": {
-              "title": "extensions",
-              "id": 33,
-              "ideas": {
+            "title": "Activity",
+            "id": 2,
+            "ideas": {
                 "1": {
-                  "title": "followers",
-                  "id": 34
+                    "title": "actor",
+                    "id": 4,
+                    "ideas": {
+                        "1": {
+                            "title": "summary",
+                            "id": 28
+                        },
+                        "7": {
+                            "title": "url",
+                            "id": 41
+                        },
+                        "0.5": {
+                            "title": "displayName",
+                            "id": 32,
+                            "attr": {
+                                "style": {}
+                            }
+                        },
+                        "0.75": {
+                            "title": "extensions",
+                            "id": 33,
+                            "ideas": {
+                                "1": {
+                                    "title": "followers",
+                                    "id": 34
+                                },
+                                "2": {
+                                    "title": "handle",
+                                    "id": 35
+                                },
+                                "3": {
+                                    "title": "location",
+                                    "id": 36
+                                },
+                                "4": {
+                                    "title": "location",
+                                    "id": 37
+                                },
+                                "5": {
+                                    "title": "screenName",
+                                    "id": 38
+                                },
+                                "6": {
+                                    "title": "posts",
+                                    "id": 39
+                                },
+                                "7": {
+                                    "title": "favorites",
+                                    "id": 40
+                                }
+                            },
+                            "attr": {
+                                "style": {}
+                            }
+                        },
+                        "0.875": {
+                            "title": "handle",
+                            "id": 30,
+                            "attr": {
+                                "style": {}
+                            }
+                        },
+                        "0.9375": {
+                            "title": "id",
+                            "id": 29,
+                            "attr": {
+                                "style": {}
+                            }
+                        },
+                        "0.96875": {
+                            "title": "image",
+                            "id": 31,
+                            "attr": {
+                                "style": {}
+                            }
+                        }
+                    }
                 },
                 "2": {
-                  "title": "handle",
-                  "id": 35
+                    "title": "id",
+                    "id": 5
                 },
                 "3": {
-                  "title": "location",
-                  "id": 36
+                    "title": "verb",
+                    "id": 6
+                },
+                "1.5": {
+                    "title": "content",
+                    "id": 16,
+                    "attr": {
+                        "style": {}
+                    }
+                },
+                "2.5": {
+                    "title": "icon",
+                    "id": 13,
+                    "attr": {
+                        "style": {}
+                    }
+                },
+                "1.75": {
+                    "title": "generator",
+                    "id": 12,
+                    "attr": {
+                        "style": {}
+                    },
+                    "ideas": {
+                        "1": {
+                            "title": "id",
+                            "id": 62
+                        },
+                        "0.5": {
+                            "title": "displayName",
+                            "id": 63,
+                            "attr": {
+                                "style": {}
+                            }
+                        }
+                    }
+                },
+                "2.75": {
+                    "title": "links",
+                    "id": 18,
+                    "attr": {
+                        "style": {}
+                    }
+                },
+                "2.875": {
+                    "title": "object",
+                    "id": 8,
+                    "attr": {
+                        "style": {}
+                    },
+                    "ideas": {
+                        "1": {
+                            "title": "content",
+                            "id": 22
+                        },
+                        "2": {
+                            "title": "id",
+                            "id": 23
+                        },
+                        "4": {
+                            "title": "objectType",
+                            "id": 25
+                        },
+                        "1.5": {
+                            "title": "geo",
+                            "id": 24,
+                            "ideas": {
+                                "1": {
+                                    "title": "coordinates",
+                                    "id": 26
+                                }
+                            },
+                            "attr": {
+                                "style": {}
+                            }
+                        }
+                    }
+                },
+                "2.9375": {
+                    "title": "published",
+                    "id": 10,
+                    "attr": {
+                        "style": {}
+                    },
+                    "ideas": {}
+                },
+                "2.90625": {
+                    "title": "provider",
+                    "id": 14,
+                    "attr": {
+                        "style": {}
+                    },
+                    "ideas": {
+                        "1": {
+                            "title": "id",
+                            "id": 20
+                        },
+                        "0.5": {
+                            "title": "displayName",
+                            "id": 21,
+                            "attr": {
+                                "style": {}
+                            }
+                        }
+                    }
+                },
+                "2.96875": {
+                    "title": "target",
+                    "id": 9,
+                    "attr": {
+                        "style": {}
+                    },
+                    "ideas": {
+                        "1": {
+                            "title": "id",
+                            "id": 64
+                        },
+                        "2": {
+                            "title": "image",
+                            "id": 65
+                        },
+                        "4": {
+                            "title": "summary",
+                            "id": 67
+                        },
+                        "0.5": {
+                            "title": "displayName",
+                            "id": 66,
+                            "attr": {
+                                "style": {}
+                            }
+                        },
+                        "0.25": {
+                            "title": "content",
+                            "id": 68,
+                            "attr": {
+                                "style": {}
+                            }
+                        }
+                    }
+                },
+                "2.984375": {
+                    "title": "updated",
+                    "id": 11,
+                    "attr": {
+                        "style": {}
+                    }
+                },
+                "2.9765625": {
+                    "title": "title",
+                    "id": 15,
+                    "attr": {
+                        "style": {}
+                    }
+                },
+                "2.9921875": {
+                    "title": "url",
+                    "id": 17,
+                    "attr": {
+                        "style": {}
+                    }
+                },
+                "1.625": {
+                    "title": "extensions",
+                    "id": 42,
+                    "ideas": {
+                        "1": {
+                            "title": "facebook",
+                            "id": 43,
+                            "ideas": {}
+                        },
+                        "6": {
+                            "title": "user_mentions",
+                            "id": 58,
+                            "ideas": {
+                                "1": {
+                                    "title": "id",
+                                    "id": 59
+                                },
+                                "2": {
+                                    "title": "handle",
+                                    "id": 60
+                                },
+                                "3": {
+                                    "title": "displayName",
+                                    "id": 61
+                                }
+                            }
+                        },
+                        "0.5": {
+                            "title": "hashtags",
+                            "id": 57,
+                            "attr": {
+                                "style": {}
+                            }
+                        },
+                        "0.75": {
+                            "title": "location",
+                            "id": 48,
+                            "ideas": {
+                                "1": {
+                                    "title": "id",
+                                    "id": 49
+                                },
+                                "2": {
+                                    "title": "coordinates",
+                                    "id": 50,
+                                    "ideas": {
+                                        "1": {
+                                            "title": "type",
+                                            "id": 52
+                                        },
+                                        "2": {
+                                            "title": "coordinates",
+                                            "id": 53
+                                        }
+                                    }
+                                }
+                            },
+                            "attr": {
+                                "style": {}
+                            }
+                        },
+                        "0.625": {
+                            "title": "likes",
+                            "id": 54,
+                            "ideas": {
+                                "1": {
+                                    "title": "perspectival",
+                                    "id": 55
+                                },
+                                "2": {
+                                    "title": "count",
+                                    "id": 56
+                                }
+                            },
+                            "attr": {
+                                "style": {}
+                            }
+                        },
+                        "0.875": {
+                            "title": "rebroadcasts",
+                            "id": 45,
+                            "ideas": {
+                                "1": {
+                                    "title": "perspectival",
+                                    "id": 46
+                                },
+                                "2": {
+                                    "title": "count",
+                                    "id": 47
+                                }
+                            },
+                            "attr": {
+                                "style": {}
+                            }
+                        }
+                    },
+                    "attr": {
+                        "style": {}
+                    }
+                }
+            }
+        },
+        "-1": {
+            "title": "Facebook Post",
+            "id": 3,
+            "ideas": {
+                "1": {
+                    "title": "id",
+                    "id": 69
+                },
+                "2": {
+                    "title": "likes",
+                    "id": 92,
+                    "ideas": {
+                        "1": {
+                            "title": "data",
+                            "id": 93,
+                            "ideas": {
+                                "1": {
+                                    "title": "id",
+                                    "id": 94
+                                },
+                                "2": {
+                                    "title": "name",
+                                    "id": 95
+                                }
+                            }
+                        }
+                    },
+                    "attr": {
+                        "style": {}
+                    }
+                },
+                "3": {
+                    "title": "message",
+                    "id": 74
                 },
                 "4": {
-                  "title": "location",
-                  "id": 37
-                },
-                "5": {
-                  "title": "screenName",
-                  "id": 38
-                },
-                "6": {
-                  "title": "posts",
-                  "id": 39
+                    "title": "picture",
+                    "id": 75
                 },
                 "7": {
-                  "title": "favorites",
-                  "id": 40
-                }
-              },
-              "attr": {
-                "style": {}
-              }
-            },
-            "0.875": {
-              "title": "handle",
-              "id": 30,
-              "attr": {
-                "style": {}
-              }
-            },
-            "0.9375": {
-              "title": "id",
-              "id": 29,
-              "attr": {
-                "style": {}
-              }
-            },
-            "0.96875": {
-              "title": "image",
-              "id": 31,
-              "attr": {
-                "style": {}
-              }
-            }
-          }
-        },
-        "2": {
-          "title": "id",
-          "id": 5
-        },
-        "3": {
-          "title": "verb",
-          "id": 6
-        },
-        "1.5": {
-          "title": "content",
-          "id": 16,
-          "attr": {
-            "style": {}
-          }
-        },
-        "2.5": {
-          "title": "icon",
-          "id": 13,
-          "attr": {
-            "style": {}
-          }
-        },
-        "1.75": {
-          "title": "generator",
-          "id": 12,
-          "attr": {
-            "style": {}
-          },
-          "ideas": {
-            "1": {
-              "title": "id",
-              "id": 62
-            },
-            "0.5": {
-              "title": "displayName",
-              "id": 63,
-              "attr": {
-                "style": {}
-              }
-            }
-          }
-        },
-        "2.75": {
-          "title": "links",
-          "id": 18,
-          "attr": {
-            "style": {}
-          }
-        },
-        "2.875": {
-          "title": "object",
-          "id": 8,
-          "attr": {
-            "style": {}
-          },
-          "ideas": {
-            "1": {
-              "title": "content",
-              "id": 22
-            },
-            "2": {
-              "title": "id",
-              "id": 23
-            },
-            "4": {
-              "title": "objectType",
-              "id": 25
-            },
-            "1.5": {
-              "title": "geo",
-              "id": 24,
-              "ideas": {
-                "1": {
-                  "title": "coordinates",
-                  "id": 26
-                }
-              },
-              "attr": {
-                "style": {}
-              }
-            }
-          }
-        },
-        "2.9375": {
-          "title": "published",
-          "id": 10,
-          "attr": {
-            "style": {}
-          },
-          "ideas": {}
-        },
-        "2.90625": {
-          "title": "provider",
-          "id": 14,
-          "attr": {
-            "style": {}
-          },
-          "ideas": {
-            "1": {
-              "title": "id",
-              "id": 20
-            },
-            "0.5": {
-              "title": "displayName",
-              "id": 21,
-              "attr": {
-                "style": {}
-              }
-            }
-          }
-        },
-        "2.96875": {
-          "title": "target",
-          "id": 9,
-          "attr": {
-            "style": {}
-          },
-          "ideas": {
-            "1": {
-              "title": "id",
-              "id": 64
-            },
-            "2": {
-              "title": "image",
-              "id": 65
-            },
-            "4": {
-              "title": "summary",
-              "id": 67
-            },
-            "0.5": {
-              "title": "displayName",
-              "id": 66,
-              "attr": {
-                "style": {}
-              }
-            },
-            "0.25": {
-              "title": "content",
-              "id": 68,
-              "attr": {
-                "style": {}
-              }
-            }
-          }
-        },
-        "2.984375": {
-          "title": "updated",
-          "id": 11,
-          "attr": {
-            "style": {}
-          }
-        },
-        "2.9765625": {
-          "title": "title",
-          "id": 15,
-          "attr": {
-            "style": {}
-          }
-        },
-        "2.9921875": {
-          "title": "url",
-          "id": 17,
-          "attr": {
-            "style": {}
-          }
-        },
-        "1.625": {
-          "title": "extensions",
-          "id": 42,
-          "ideas": {
-            "1": {
-              "title": "facebook",
-              "id": 43,
-              "ideas": {}
-            },
-            "6": {
-              "title": "user_mentions",
-              "id": 58,
-              "ideas": {
-                "1": {
-                  "title": "id",
-                  "id": 59
-                },
-                "2": {
-                  "title": "handle",
-                  "id": 60
-                },
-                "3": {
-                  "title": "displayName",
-                  "id": 61
-                }
-              }
-            },
-            "0.5": {
-              "title": "hashtags",
-              "id": 57,
-              "attr": {
-                "style": {}
-              }
-            },
-            "0.75": {
-              "title": "location",
-              "id": 48,
-              "ideas": {
-                "1": {
-                  "title": "id",
-                  "id": 49
-                },
-                "2": {
-                  "title": "coordinates",
-                  "id": 50,
-                  "ideas": {
-                    "1": {
-                      "title": "type",
-                      "id": 52
+                    "title": "shares",
+                    "id": 97,
+                    "ideas": {
+                        "1": {
+                            "title": "count",
+                            "id": 98
+                        }
                     },
-                    "2": {
-                      "title": "coordinates",
-                      "id": 53
+                    "attr": {
+                        "style": {}
                     }
-                  }
-                }
-              },
-              "attr": {
-                "style": {}
-              }
-            },
-            "0.625": {
-              "title": "likes",
-              "id": 54,
-              "ideas": {
-                "1": {
-                  "title": "perspectival",
-                  "id": 55
                 },
-                "2": {
-                  "title": "count",
-                  "id": 56
-                }
-              },
-              "attr": {
-                "style": {}
-              }
-            },
-            "0.875": {
-              "title": "rebroadcasts",
-              "id": 45,
-              "ideas": {
-                "1": {
-                  "title": "perspectival",
-                  "id": 46
+                "10": {
+                    "title": "type",
+                    "id": 96
                 },
-                "2": {
-                  "title": "count",
-                  "id": 47
-                }
-              },
-              "attr": {
-                "style": {}
-              }
-            }
-          },
-          "attr": {
-            "style": {}
-          }
-        }
-      }
-    },
-    "-1": {
-      "title": "Facebook Post",
-      "id": 3,
-      "ideas": {
-        "1": {
-          "title": "id",
-          "id": 69
-        },
-        "2": {
-          "title": "likes",
-          "id": 92,
-          "ideas": {
-            "1": {
-              "title": "data",
-              "id": 93,
-              "ideas": {
-                "1": {
-                  "title": "id",
-                  "id": 94
-                },
-                "2": {
-                  "title": "name",
-                  "id": 95
-                }
-              }
-            }
-          },
-          "attr": {
-            "style": {}
-          }
-        },
-        "3": {
-          "title": "message",
-          "id": 74
-        },
-        "4": {
-          "title": "picture",
-          "id": 75
-        },
-        "7": {
-          "title": "shares",
-          "id": 97,
-          "ideas": {
-            "1": {
-              "title": "count",
-              "id": 98
-            }
-          },
-          "attr": {
-            "style": {}
-          }
-        },
-        "10": {
-          "title": "type",
-          "id": 96
-        },
-        "15": {
-          "title": "updated_time",
-          "id": 105
-        },
-        "0.5": {
-          "title": "actions",
-          "id": 78,
-          "ideas": {
-            "1": {
-              "title": "name",
-              "id": 79
-            },
-            "0.5": {
-              "title": "link",
-              "id": 80,
-              "attr": {
-                "style": {}
-              }
-            }
-          },
-          "attr": {
-            "style": {}
-          }
-        },
-        "0.75": {
-          "title": "application",
-          "id": 100,
-          "ideas": {
-            "1": {
-              "title": "name",
-              "id": 101
-            },
-            "3": {
-              "title": "namespace",
-              "id": 103
-            },
-            "0.5": {
-              "title": "id",
-              "id": 102,
-              "attr": {
-                "style": {}
-              }
-            }
-          },
-          "attr": {
-            "style": {}
-          }
-        },
-        "0.875": {
-          "title": "comments",
-          "id": 81,
-          "ideas": {
-            "1": {
-              "title": "data",
-              "id": 82,
-              "ideas": {
-                "1": {
-                  "title": "user_likes",
-                  "id": 83
+                "15": {
+                    "title": "updated_time",
+                    "id": 105
                 },
                 "0.5": {
-                  "title": "can_remove",
-                  "id": 87,
-                  "attr": {
-                    "style": {}
-                  }
+                    "title": "actions",
+                    "id": 78,
+                    "ideas": {
+                        "1": {
+                            "title": "name",
+                            "id": 79
+                        },
+                        "0.5": {
+                            "title": "link",
+                            "id": 80,
+                            "attr": {
+                                "style": {}
+                            }
+                        }
+                    },
+                    "attr": {
+                        "style": {}
+                    }
                 },
                 "0.75": {
-                  "title": "created_time",
-                  "id": 91,
-                  "attr": {
-                    "style": {}
-                  }
+                    "title": "application",
+                    "id": 100,
+                    "ideas": {
+                        "1": {
+                            "title": "name",
+                            "id": 101
+                        },
+                        "3": {
+                            "title": "namespace",
+                            "id": 103
+                        },
+                        "0.5": {
+                            "title": "id",
+                            "id": 102,
+                            "attr": {
+                                "style": {}
+                            }
+                        }
+                    },
+                    "attr": {
+                        "style": {}
+                    }
                 },
                 "0.875": {
-                  "title": "id",
-                  "id": 85,
-                  "attr": {
-                    "style": {}
-                  },
-                  "ideas": {}
-                },
-                "0.8125": {
-                  "title": "from",
-                  "id": 88,
-                  "ideas": {
-                    "1": {
-                      "title": "id",
-                      "id": 89
+                    "title": "comments",
+                    "id": 81,
+                    "ideas": {
+                        "1": {
+                            "title": "data",
+                            "id": 82,
+                            "ideas": {
+                                "1": {
+                                    "title": "user_likes",
+                                    "id": 83
+                                },
+                                "0.5": {
+                                    "title": "can_remove",
+                                    "id": 87,
+                                    "attr": {
+                                        "style": {}
+                                    }
+                                },
+                                "0.75": {
+                                    "title": "created_time",
+                                    "id": 91,
+                                    "attr": {
+                                        "style": {}
+                                    }
+                                },
+                                "0.875": {
+                                    "title": "id",
+                                    "id": 85,
+                                    "attr": {
+                                        "style": {}
+                                    },
+                                    "ideas": {}
+                                },
+                                "0.8125": {
+                                    "title": "from",
+                                    "id": 88,
+                                    "ideas": {
+                                        "1": {
+                                            "title": "id",
+                                            "id": 89
+                                        },
+                                        "2": {
+                                            "title": "name",
+                                            "id": 90
+                                        }
+                                    },
+                                    "attr": {
+                                        "style": {}
+                                    }
+                                },
+                                "0.9375": {
+                                    "title": "like_count",
+                                    "id": 86,
+                                    "attr": {
+                                        "style": {}
+                                    }
+                                },
+                                "0.96875": {
+                                    "title": "message",
+                                    "id": 84,
+                                    "attr": {
+                                        "style": {}
+                                    }
+                                }
+                            }
+                        }
                     },
-                    "2": {
-                      "title": "name",
-                      "id": 90
+                    "attr": {
+                        "style": {}
                     }
-                  },
-                  "attr": {
-                    "style": {}
-                  }
                 },
                 "0.9375": {
-                  "title": "like_count",
-                  "id": 86,
-                  "attr": {
-                    "style": {}
-                  }
+                    "title": "from",
+                    "id": 70,
+                    "ideas": {
+                        "1": {
+                            "title": "id",
+                            "id": 71
+                        },
+                        "2": {
+                            "title": "name",
+                            "id": 72
+                        },
+                        "0.5": {
+                            "title": "category",
+                            "id": 73,
+                            "attr": {
+                                "style": {}
+                            }
+                        }
+                    },
+                    "attr": {
+                        "style": {}
+                    }
                 },
                 "0.96875": {
-                  "title": "message",
-                  "id": 84,
-                  "attr": {
-                    "style": {}
-                  }
+                    "title": "icon",
+                    "id": 77,
+                    "attr": {
+                        "style": {}
+                    }
+                },
+                "2.5": {
+                    "title": "link",
+                    "id": 76,
+                    "attr": {
+                        "style": {}
+                    }
+                },
+                "3.5": {
+                    "title": "object_id",
+                    "id": 99,
+                    "attr": {
+                        "style": {}
+                    }
+                },
+                "0.8125": {
+                    "title": "created_time",
+                    "id": 104,
+                    "attr": {
+                        "style": {}
+                    }
                 }
-              }
             }
-          },
-          "attr": {
-            "style": {}
-          }
-        },
-        "0.9375": {
-          "title": "from",
-          "id": 70,
-          "ideas": {
-            "1": {
-              "title": "id",
-              "id": 71
-            },
-            "2": {
-              "title": "name",
-              "id": 72
-            },
-            "0.5": {
-              "title": "category",
-              "id": 73,
-              "attr": {
-                "style": {}
-              }
+        }
+    },
+    "links": [
+        {
+            "ideaIdFrom": 104,
+            "ideaIdTo": 10,
+            "attr": {
+                "style": {
+                    "color": "#FF0000",
+                    "lineStyle": "dashed"
+                }
             }
-          },
-          "attr": {
-            "style": {}
-          }
         },
-        "0.96875": {
-          "title": "icon",
-          "id": 77,
-          "attr": {
-            "style": {}
-          }
+        {
+            "ideaIdFrom": 21,
+            "ideaIdTo": 101,
+            "attr": {
+                "style": {
+                    "color": "#FF0000",
+                    "lineStyle": "dashed"
+                }
+            }
         },
-        "2.5": {
-          "title": "link",
-          "id": 76,
-          "attr": {
-            "style": {}
-          }
+        {
+            "ideaIdFrom": 102,
+            "ideaIdTo": 20,
+            "attr": {
+                "style": {
+                    "color": "#FF0000",
+                    "lineStyle": "dashed"
+                }
+            }
         },
-        "3.5": {
-          "title": "object_id",
-          "id": 99,
-          "attr": {
-            "style": {}
-          }
+        {
+            "ideaIdFrom": 43,
+            "ideaIdTo": 3,
+            "attr": {
+                "style": {
+                    "color": "#FF0000",
+                    "lineStyle": "dashed"
+                }
+            }
         },
-        "0.8125": {
-          "title": "created_time",
-          "id": 104,
-          "attr": {
-            "style": {}
-          }
+        {
+            "ideaIdFrom": 72,
+            "ideaIdTo": 32,
+            "attr": {
+                "style": {
+                    "color": "#FF0000",
+                    "lineStyle": "dashed"
+                }
+            }
+        },
+        {
+            "ideaIdFrom": 13,
+            "ideaIdTo": 77,
+            "attr": {
+                "style": {
+                    "color": "#FF0000",
+                    "lineStyle": "dashed"
+                }
+            }
+        },
+        {
+            "ideaIdFrom": 18,
+            "ideaIdTo": 76,
+            "attr": {
+                "style": {
+                    "color": "#FF0000",
+                    "lineStyle": "dashed"
+                }
+            }
+        },
+        {
+            "ideaIdFrom": 74,
+            "ideaIdTo": 16,
+            "attr": {
+                "style": {
+                    "color": "#FF0000",
+                    "lineStyle": "dashed"
+                }
+            }
+        },
+        {
+            "ideaIdFrom": 98,
+            "ideaIdTo": 47,
+            "attr": {
+                "style": {
+                    "color": "#FF0000",
+                    "lineStyle": "dashed"
+                }
+            }
+        },
+        {
+            "ideaIdFrom": 105,
+            "ideaIdTo": 11,
+            "attr": {
+                "style": {
+                    "color": "#FF0000",
+                    "lineStyle": "dashed"
+                }
+            }
         }
-      }
-    }
-  },
-  "links": [
-    {
-      "ideaIdFrom": 104,
-      "ideaIdTo": 10,
-      "attr": {
-        "style": {
-          "color": "#FF0000",
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "ideaIdFrom": 21,
-      "ideaIdTo": 101,
-      "attr": {
-        "style": {
-          "color": "#FF0000",
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "ideaIdFrom": 102,
-      "ideaIdTo": 20,
-      "attr": {
-        "style": {
-          "color": "#FF0000",
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "ideaIdFrom": 43,
-      "ideaIdTo": 3,
-      "attr": {
-        "style": {
-          "color": "#FF0000",
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "ideaIdFrom": 72,
-      "ideaIdTo": 32,
-      "attr": {
-        "style": {
-          "color": "#FF0000",
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "ideaIdFrom": 13,
-      "ideaIdTo": 77,
-      "attr": {
-        "style": {
-          "color": "#FF0000",
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "ideaIdFrom": 18,
-      "ideaIdTo": 76,
-      "attr": {
-        "style": {
-          "color": "#FF0000",
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "ideaIdFrom": 74,
-      "ideaIdTo": 16,
-      "attr": {
-        "style": {
-          "color": "#FF0000",
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "ideaIdFrom": 98,
-      "ideaIdTo": 47,
-      "attr": {
-        "style": {
-          "color": "#FF0000",
-          "lineStyle": "dashed"
-        }
-      }
-    },
-    {
-      "ideaIdFrom": 105,
-      "ideaIdTo": 11,
-      "attr": {
-        "style": {
-          "color": "#FF0000",
-          "lineStyle": "dashed"
-        }
-      }
-    }
-  ]
+    ]
 }

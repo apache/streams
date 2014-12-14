@@ -1,8 +1,12 @@
 {
-    "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
-    "javaType": "com.moreover.Moreover",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
     "id": "#",
+    "type": "object",
+    "javaType": "com.moreover.Moreover",
+    "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "tags": {
             "type": "string"
