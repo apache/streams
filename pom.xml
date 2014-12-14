@@ -640,6 +640,38 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <excludes>
+                                <exclude>.git/**</exclude>
+                                <exclude>.idea/**</exclude>
+                                <exclude>**/DEPENDENCIES</exclude>
+                                <exclude>**/LICENSE</exclude>
+                                <exclude>**/MANIFEST.MF</exclude>
+                                <exclude>**/NOTICE</exclude>
+                                <exclude>**/README.*</exclude>
+                                <exclude>**/target/**</exclude>
+                                <exclude>**/src/main/resources/**</exclude>
+                                <exclude>**/src/test/resources/**</exclude>
+                                <exclude>**/.gitignore</exclude>
+                                <exclude>**/*.properties</exclude>
+                                <exclude>**/*.iml</exclude>
+                                <exclude>**/*.ini</exclude>
+                                <exclude>dependency-reduced-pom.xml</exclude>
+                                <exclude>rat.txt</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
             <reporting>

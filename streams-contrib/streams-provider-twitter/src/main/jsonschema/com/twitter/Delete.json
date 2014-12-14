@@ -1,12 +1,16 @@
 {
-    "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
     "id": "#",
     "javaType" : "org.apache.streams.twitter.pojo.Delete",
+    "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "delete": {
             "type": "object",
             "javaType" : "org.apache.streams.twitter.pojo.DeleteDetails",
+            "javaInterfaces": ["java.io.Serializable"],
             "properties": {
                 "status": {
                     "type": "object",

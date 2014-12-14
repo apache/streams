@@ -1,26 +1,34 @@
 {
-  "type" : "object",
-  "title" : "Update",
-  "description" : "To update a property on an object. Ex: Monica updated her street address to 234 Awesome St.",
-  "notes" : "The new property value can be a scalar value or an object. See the property object type",
-  "extends": {"$ref":"../activity.json"},
-  "properties" :{
-    "verb" :{
-      "type" : "string",
-      "default" : "update"
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "title": "Update",
+    "description": "To update a property on an object. Ex: Monica updated her street address to 234 Awesome St.",
+    "notes": "The new property value can be a scalar value or an object. See the property object type",
+    "extends": {
+        "$ref": "../activity.json"
     },
-    "title" : {
-      "type" : "string",
-      "default" : "{actor.displayName} updated {target.displayName}'s {object.displayName} to {object.value}"
-    },
-    "object" : {
-      "type" : "object",
-      "$ref" : "../object.json"
-    },
-    "target" : {
-      "type" : "object",
-      "optional" : true,
-      "$ref" : "../object.json"
+    "properties": {
+        "verb": {
+            "type": "string",
+            "default": "update"
+        },
+        "title": {
+            "type": "string",
+            "default": "{actor.displayName} updated {target.displayName}'s {object.displayName} to {object.value}"
+        },
+        "object": {
+            "type": "object",
+            "$ref": "../object.json"
+        },
+        "target": {
+            "type": "object",
+            "optional": true,
+            "$ref": "../object.json"
+        }
     }
-  }
 }
