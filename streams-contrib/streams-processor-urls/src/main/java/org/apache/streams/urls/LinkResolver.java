@@ -56,6 +56,7 @@ public class LinkResolver implements Serializable {
 
     private static final int MAX_ALLOWED_REDIRECTS = 30;                // We will only chase the link to it's final destination a max of 30 times.
     private static final int DEFAULT_HTTP_TIMEOUT = 10000;              // We will only wait a max of 10,000 milliseconds (10 seconds) for any HTTP response
+    public static final int MAX_ALLOWABLE_DOWNLOAD = 1073741824;
     private static final String LOCATION_IDENTIFIER = "location";
     private static final String SET_COOKIE_IDENTIFIER = "set-cookie";
 

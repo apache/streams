@@ -18,7 +18,8 @@
                 "UNAUTHORIZED",
                 "LOOP",
                 "HTTP_ERROR_STATUS",
-                "EXCEPTION"
+                "EXCEPTION",
+                "NONE"
             ]
         },
         "originalURL": {
@@ -71,6 +72,16 @@
         },
         "tookInMills": {
             "type": "integer"
+        },
+        "rawContent": {
+            "type": "string"
+        },
+        "contentsType": {
+            "type": "string",
+            "enum": [
+                "RAW_HTML",
+                "BASE64"
+            ]
         }
     }
 }
