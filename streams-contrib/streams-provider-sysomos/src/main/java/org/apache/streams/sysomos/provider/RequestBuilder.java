@@ -78,7 +78,7 @@ public interface RequestBuilder {
     RequestBuilder setHeartBeatId(String hid);
 
     /**
-     * Returns the full url need to execute a request.
+     * Returns the full urls need to execute a request.
      *
      * Example:
      * http://api.sysomos.com/dev/v1/heartbeat/content?apiKey=YOUR

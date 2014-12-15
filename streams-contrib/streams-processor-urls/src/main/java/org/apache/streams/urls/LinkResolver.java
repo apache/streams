@@ -56,6 +56,7 @@ public class LinkResolver implements Serializable {
 
     private static final int MAX_ALLOWED_REDIRECTS = 30;                // We will only chase the link to it's final destination a max of 30 times.
     private static final int DEFAULT_HTTP_TIMEOUT = 10000;              // We will only wait a max of 10,000 milliseconds (10 seconds) for any HTTP response
+    public static final int MAX_ALLOWABLE_DOWNLOAD = 1073741824;
     private static final String LOCATION_IDENTIFIER = "location";
     private static final String SET_COOKIE_IDENTIFIER = "set-cookie";
 
@@ -157,7 +158,7 @@ public class LinkResolver implements Serializable {
         Preconditions.checkNotNull(linkDetails);
         Preconditions.checkNotNull(url);
 
-        // Check url validity
+        // Check urls validity
         UrlValidator urlValidator = new UrlValidator();
         if (!urlValidator.isValid(url)) {
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.MALFORMED_URL);
@@ -361,14 +362,14 @@ public class LinkResolver implements Serializable {
         if (url.length() < startLength)
             linkDetails.setTracked(Boolean.TRUE);
 
-        // return our url.
+        // return our urls.
         return url;
     }
 
     /**
      * Removes the protocol, if it exists, from the front and
      * removes any random encoding characters
-     * Extend this to do other url cleaning/pre-processing
+     * Extend this to do other urls cleaning/pre-processing
      *
      * @param url - The String URL to normalize
      * @return normalizedUrl - The String URL that has no junk or surprises
@@ -407,7 +408,7 @@ public class LinkResolver implements Serializable {
      * in a classifier to help us determine if we are working with
      * <p/>
      * Reference:
-     * http://stackoverflow.com/questions/10046178/pattern-matching-for-url-classification
+     * http://stackoverflow.com/questions/10046178/pattern-matching-for-urls-classification
      *
      * @param url - Url to be tokenized
      * @return tokens - A String array of all the tokens
@@ -436,11 +437,11 @@ public class LinkResolver implements Serializable {
 
         // Destroys anything that's not alphanumeric and things that are
         // alphanumeric but only 1 character long
-        //String[] tokens = url.split("(?:[\\W_]+\\w)*[\\W_]+");
+        //String[] tokens = urls.split("(?:[\\W_]+\\w)*[\\W_]+");
 
         // Destroys anything that's not alphanumeric and things that are
         // alphanumeric but only 1 or 2 characters long
-        //String[] tokens = url.split("(?:[\\W_]+\\w{1,2})*[\\W_]+");
+        //String[] tokens = urls.split("(?:[\\W_]+\\w{1,2})*[\\W_]+");
     }
 
 

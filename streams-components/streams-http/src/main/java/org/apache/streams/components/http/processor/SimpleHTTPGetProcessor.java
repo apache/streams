@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Processor retrieves contents from an known url and stores the resulting object in an extension field
+ * Processor retrieves contents from an known urls and stores the resulting object in an extension field
  */
 public class SimpleHTTPGetProcessor implements StreamsProcessor {
 

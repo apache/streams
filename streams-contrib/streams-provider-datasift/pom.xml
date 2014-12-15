@@ -95,8 +95,8 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-util</artifactId>
-            <scope>jar</scope>
             <type>test-jar</type>
+            <scope>test</scope>
             <version>0.1.7-W2O-SNAPSHOT</version>
         </dependency>
     </dependencies>

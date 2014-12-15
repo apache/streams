@@ -65,6 +65,7 @@
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-config</artifactId>
                 <version>0.1.7-W2O-SNAPSHOT</version>
+                <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
