@@ -62,7 +62,7 @@ public class DatasiftActivitySerializerTest {
         assertNotNull("activity.id", activity.getId());
         assertNotNull("activity.published", activity.getPublished());
         assertNotNull("activity.provider", activity.getProvider());
-        assertNotNull("activity.url", activity.getUrl());
+        assertNotNull("activity.urls", activity.getUrl());
         assertNotNull("activity.verb", activity.getVerb());
         Actor actor = activity.getActor();
         assertNotNull("activity.actor", actor);

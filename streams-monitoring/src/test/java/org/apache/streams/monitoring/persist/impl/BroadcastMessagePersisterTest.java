@@ -30,7 +30,7 @@ public class BroadcastMessagePersisterTest {
 
     @Test
     public void testFailedPersist() {
-        BroadcastMessagePersister persister = new BroadcastMessagePersister("http://fake.urls.com/fake_endpointasdfasdfas");
+        BroadcastMessagePersister persister = new BroadcastMessagePersister("fake.urlskjlkjhlhjkhlkjlhjk.com/fake_endpointasdfasdfas");
 
         List<String> messages = Lists.newArrayList();
         for(int x = 0; x < 10; x ++) {
