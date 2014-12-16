@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-contrib</artifactId>
-        <version>0.1.7-W2O-SNAPSHOT</version>
+        <version>0.1.8-W2O-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

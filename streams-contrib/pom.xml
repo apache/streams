@@ -19,7 +19,7 @@
     <parent>
         <artifactId>streams-project</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.1.7-W2O-SNAPSHOT</version>
+        <version>0.1.8-W2O-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -64,23 +64,23 @@
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-config</artifactId>
-                <version>0.1.7-W2O-SNAPSHOT</version>
+                <version>0.1.8-W2O-SNAPSHOT</version>
                 <type>jar</type>
             </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-core</artifactId>
-                <version>0.1.7-W2O-SNAPSHOT</version>
+                <version>0.1.8-W2O-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-pojo</artifactId>
-                <version>0.1.7-W2O-SNAPSHOT</version>
+                <version>0.1.8-W2O-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-pojo-extensions</artifactId>
-                <version>0.1.7-W2O-SNAPSHOT</version>
+                <version>0.1.8-W2O-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
