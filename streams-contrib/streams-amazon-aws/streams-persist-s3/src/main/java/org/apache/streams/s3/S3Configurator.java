@@ -64,13 +64,13 @@ public class S3Configurator {
 
         try {
             s3Configuration = mapper.readValue(s3.root().render(ConfigRenderOptions.concise()), S3WriterConfiguration.class);
+
+            if(!s3Configuration.getWriterPath().endsWith("/")) {
+                s3Configuration.setWriterPath(s3Configuration.getWriterPath() + "/");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.warn("Could not parse S3Configuration");
-        }
-
-        if(!s3Configuration.getWriterPath().endsWith("/")) {
-            s3Configuration.setWriterPath(s3Configuration.getWriterPath() + "/");
         }
 
         return s3Configuration;
