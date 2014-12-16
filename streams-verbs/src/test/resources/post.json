@@ -1,0 +1,15 @@
+{
+    "id": "http://incubator.streams.apache.org/verbs/test/post",
+    "value": "post",
+    "objects": [
+        {
+            "actor": "*",
+            "object": "*",
+            "provider": "*",
+            "target": "*",
+            "templates": {
+                "*": "[{provider}] {actor} post {object} to {target}"
+            }
+        }
+    ]
+}

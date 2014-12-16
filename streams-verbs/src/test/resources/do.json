@@ -1,0 +1,14 @@
+{
+    "id": "http://incubator.streams.apache.org/verbs/test/do",
+    "value": "do",
+    "objects": [
+        {
+            "actor": "*",
+            "object": "*",
+            "target": "*",
+            "templates": {
+                "*": "{actor} do {object} to {target}"
+            }
+        }
+    ]
+}

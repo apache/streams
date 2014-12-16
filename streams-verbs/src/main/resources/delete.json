@@ -1,0 +1,16 @@
+{
+    "objectType": "verb",
+    "id": "http://incubator.streams.apache.org/verbs/delete",
+    "value": "delete",
+    "objects": [
+        {
+            "actor": "page",
+            "object": "activity",
+            "target": "*",
+            "targetRequired": false,
+            "templates": {
+                "*": "{actor.displayName} deleted {object.displayName}"
+            }
+        }
+    ]
+}

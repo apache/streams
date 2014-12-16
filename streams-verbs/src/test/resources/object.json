@@ -1,0 +1,9 @@
+{
+    "id": "http://incubator.streams.apache.org/verbs/test/targetrequired",
+    "value": "post",
+    "objects": [
+        {
+            "object": "task"
+        }
+    ]
+}

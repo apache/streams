@@ -1,0 +1,16 @@
+{
+  "objectType": "verb",
+  "id": "http://incubator.streams.apache.org/verbs/post",
+  "value": "post",
+  "objects": [
+    {
+      "actor": "page",
+      "object": "note",
+      "target": "*",
+      "targetRequired": false,
+      "templates": {
+        "*": "{actor.displayName} posted {object.content}"
+      }
+    }
+  ]
+}

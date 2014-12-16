@@ -1,0 +1,4 @@
+{"id":"1","verb":"do","provider":{"id":"providerId","objectType":"product"}}
+{"id":"2","verb":"do","actor":{"id":"actorId","objectType":"person"}}
+{"id":"3","verb":"do","object":{"id":"objectId","objectType":"task"}}
+{"id":"4","verb":"do","target":{"id":"targetId","objectType":"group"}}

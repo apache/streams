@@ -1,0 +1,16 @@
+{
+    "objectType": "verb",
+    "id": "http://incubator.streams.apache.org/verbs/follow",
+    "value": "follow",
+    "objects": [
+        {
+            "actor": "page",
+            "object": "page",
+            "target": "*",
+            "targetRequired": false,
+            "templates": {
+                "*": "{actor.displayName} followed {object.displayName}"
+            }
+        }
+    ]
+}

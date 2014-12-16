@@ -232,6 +232,7 @@
         <module>streams-pojo-extensions</module>
         <module>streams-runtimes</module>
         <module>streams-util</module>
+        <module>streams-verbs</module>
     </modules>
 
     <packaging>pom</packaging>
