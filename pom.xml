@@ -195,10 +195,6 @@
         <jaxb2-basics.version>0.8.4</jaxb2-basics.version>
         <jaxbutil.version>1.2.6</jaxbutil.version>
         <junit.version>4.11</junit.version>
-        <surefire.plugin.version>2.17</surefire.plugin.version>
-        <failsafe.plugin.version>2.17</failsafe.plugin.version>
-        <war.plugin.version>2.5</war.plugin.version>
-        <resources.plugin.version>2.7</resources.plugin.version>
         <slf4j.version>1.7.6</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
         <logback.version>1.1.1</logback.version>
