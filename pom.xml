@@ -102,6 +102,7 @@
         <powermock.version>1.5.6</powermock.version>
         <httpcomponents.core.version>4.3.3</httpcomponents.core.version>
         <httpcomponents.client.version>4.3.5</httpcomponents.client.version>
+        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
     </properties>
 
     <modules>
@@ -485,4 +486,96 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>apache-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.4</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/*.md5</exclude>
+                                <exclude>**/*.sha1</exclude>
+                                <exclude>**/*.asc</exclude>
+                            </excludes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-project-info-reports-plugin</artifactId>
+                        <configuration>
+                            <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.10.1</version>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                            <aggregate>true</aggregate>
+                            <failOnError>false</failOnError>
+                            <minmemory>128m</minmemory>
+                            <maxmemory>1g</maxmemory>
+                        </configuration>
+                        <reportSets>
+                            <reportSet>
+                                <id>aggregate</id>
+                                <reports>
+                                    <report>javadoc-no-fork</report>
+                                    <report>test-javadoc-no-fork</report>
+                                    <report>aggregate</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-site-plugin</artifactId>
+                        <version>${site.plugin.version}</version>
+                    </plugin>
+                </plugins>
+            </reporting>
+        </profile>
+    </profiles>
+
 </project>
