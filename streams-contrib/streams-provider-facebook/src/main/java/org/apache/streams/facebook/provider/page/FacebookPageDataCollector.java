@@ -47,9 +47,13 @@ public class FacebookPageDataCollector extends FacebookDataCollector {
             } catch (FacebookException fe) {
                 LOGGER.error("Facebook returned an exception : {}", fe);
                 LOGGER.error("Facebook returned an exception while trying to get feed for page, {} : {}", pageId, fe.getMessage());
-                //TODO Rate limit exceptions with facebook4j unclear http://facebook4j.org/oldjavadocs/1.1.12-2.0.0/2.0.0/index.html?facebook4j/internal/http/HttpResponseCode.html
-                // back off at all exceptions until figured out.
-                super.backOff.backOff();
+
+                int errorCode = fe.getErrorCode();
+
+                //Some sort of rate limiting
+                if(errorCode == 17 || errorCode == 4 || errorCode == 341) {
+                    super.backOff.backOff();
+                }
             }
         }
         throw new Exception("Failed to get data from facebook after "+MAX_ATTEMPTS);
