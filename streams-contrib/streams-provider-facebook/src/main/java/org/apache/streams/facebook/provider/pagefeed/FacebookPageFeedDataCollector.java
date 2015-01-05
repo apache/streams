@@ -23,6 +23,7 @@ import facebook4j.json.DataObjectFactory;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.facebook.FacebookConfiguration;
 import org.apache.streams.facebook.IdConfig;
+import org.apache.streams.facebook.provider.FacebookDataCollector;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

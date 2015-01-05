@@ -15,17 +15,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.facebook.provider.pagefeed;
+package org.apache.streams.facebook.provider.page;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.facebook.FacebookConfiguration;
 import org.apache.streams.facebook.provider.FacebookDataCollector;
 import org.apache.streams.facebook.provider.FacebookProvider;
 
+import java.util.concurrent.BlockingQueue;
+
 /**
- *
+ * Streams Provider which aggregates Page Profiles based on the ID List contained in the
+ * FacebookConfiguration object
  */
-public class FacebookPageFeedProvider extends FacebookProvider {
+public class FacebookPageProvider extends FacebookProvider {
+
+    public FacebookPageProvider(FacebookConfiguration facebookConfiguration) {
+        super(facebookConfiguration);
+    }
+
+    @VisibleForTesting
+    BlockingQueue<StreamsDatum> getQueue() {
+        return super.datums;
+    }
+
     @Override
     protected FacebookDataCollector getDataCollector() {
-        return new FacebookPageFeedDataCollector(super.datums, super.configuration);
+        return new FacebookPageDataCollector(super.datums, super.configuration);
     }
 }

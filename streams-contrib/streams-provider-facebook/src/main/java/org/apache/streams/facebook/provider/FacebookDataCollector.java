@@ -15,12 +15,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.facebook.provider.pagefeed;
+package org.apache.streams.facebook.provider;
 
 import com.google.common.annotations.VisibleForTesting;
 import facebook4j.Facebook;
 import facebook4j.FacebookFactory;
-import facebook4j.auth.AccessToken;
 import facebook4j.conf.ConfigurationBuilder;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.facebook.FacebookConfiguration;
@@ -32,7 +31,6 @@ import org.apache.streams.util.oauth.tokens.tokenmanager.impl.BasicTokenManger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -134,5 +132,10 @@ public abstract class FacebookDataCollector implements Runnable {
             }
         }
         this.isComplete.set(true);
+    }
+
+    @VisibleForTesting
+    protected BlockingQueue<StreamsDatum> getQueue() {
+        return queue;
     }
 }
