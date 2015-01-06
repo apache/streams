@@ -23,7 +23,7 @@ public class ObjectCombinationSpecificOrderingTest {
         provider.setObjectType("application");
         Activity activity2 = new Activity().withProvider(provider);
         ObjectCombination combination3 = new ObjectCombination();
-        ObjectCombination combination4 = new ObjectCombination().withProvider("provider");
+        ObjectCombination combination4 = new ObjectCombination().withProvider("application");
         assert (new ObjectCombinationSpecificOrdering(activity2)).compare(combination3, combination4) > 0;
     }
 
