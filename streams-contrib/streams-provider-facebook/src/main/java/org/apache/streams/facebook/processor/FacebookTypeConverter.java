@@ -24,10 +24,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import org.apache.streams.facebook.Page;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.facebook.Page;
 import org.apache.streams.facebook.Post;
 import org.apache.streams.facebook.api.FacebookPageActivitySerializer;
 import org.apache.streams.facebook.api.FacebookPostActivitySerializer;
@@ -175,7 +175,7 @@ public class FacebookTypeConverter implements StreamsProcessor {
 
                 if( out != null && validate(out, outClass))
                     result = new StreamsDatum(out);
-            } else if(item instanceof Post) {
+            } else if(item instanceof Post || item instanceof Page) {
                 Object out = convert(mapper.convertValue(item, ObjectNode.class), inClass, outClass);
 
                 if( out != null && validate(out, outClass))
