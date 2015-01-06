@@ -15,12 +15,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.facebook.provider.pagefeed;
+package org.apache.streams.facebook.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
-import com.sun.corba.se.spi.orb.DataCollector;
 import com.typesafe.config.ConfigRenderOptions;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
@@ -134,6 +133,4 @@ public abstract class FacebookProvider implements StreamsProvider {
         }
         this.configuration.setIds(ids);
     }
-
-
 }
