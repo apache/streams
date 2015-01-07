@@ -221,19 +221,17 @@
     </properties>
 
     <modules>
-        <module>poms</module>
-        <module>provision</module>
-        <module>streams-osgi-components</module>
         <module>streams-core</module>
         <module>streams-config</module>
+        <module>streams-contrib</module>
         <module>streams-components</module>
+        <module>streams-monitoring</module>
+        <module>streams-osgi-components</module>
         <module>streams-pojo</module>
         <module>streams-pojo-extensions</module>
-        <module>streams-util</module>
-        <module>streams-contrib</module>
         <module>streams-runtimes</module>
+        <module>streams-util</module>
         <module>streams-web</module>
-        <module>streams-monitoring</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -252,20 +250,6 @@
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>${site.plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.ops4j</groupId>
-                <artifactId>maven-pax-plugin</artifactId>
-                <version>1.5</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <compilerVersion>1.5</compilerVersion>
-                    <provision>
-                        <param>--platform=felix</param>
-                    </provision>
-                </configuration>
-                <executions>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
