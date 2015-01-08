@@ -641,6 +641,7 @@
                                 <exclude>**/NOTICE</exclude>
                                 <exclude>**/README.*</exclude>
                                 <exclude>**/target/**</exclude>
+				<exclude>**/overlays/**</exclude>
                                 <exclude>**/src/main/resources/**</exclude>
                                 <exclude>**/src/test/resources/**</exclude>
                                 <exclude>**/.gitignore</exclude>
