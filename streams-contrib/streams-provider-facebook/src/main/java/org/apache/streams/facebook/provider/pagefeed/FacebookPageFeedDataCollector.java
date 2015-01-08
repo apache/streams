@@ -47,39 +47,39 @@ public class FacebookPageFeedDataCollector extends FacebookDataCollector {
     protected void getData(IdConfig id) throws Exception {
         boolean exit = false;
 
-                ResponseList<Post> facebookPosts = getPosts(id.getId());
-                LOGGER.debug("Post received : {}", facebookPosts.size());
-                backOff.reset();
-                do {
-                    for(Post post : facebookPosts) {
-                        if(id.getBeforeDate() != null && id.getAfterDate() != null) {
-                            if(id.getBeforeDate().isAfter(post.getCreatedTime().getTime())
-                                    && id.getAfterDate().isBefore(post.getCreatedTime().getTime())) {
-                                super.outputData(MAPPER.readValue(DataObjectFactory.getRawJSON(post), org.apache.streams.facebook.Post.class), post.getId());
+        ResponseList<Post> facebookPosts = getPosts(id.getId());
+        LOGGER.debug("Post received : {}", facebookPosts.size());
+        backOff.reset();
+        do {
+            for(Post post : facebookPosts) {
+                if(id.getBeforeDate() != null && id.getAfterDate() != null) {
+                    if(id.getBeforeDate().isAfter(post.getCreatedTime().getTime())
+                            && id.getAfterDate().isBefore(post.getCreatedTime().getTime())) {
+                        super.outputData(MAPPER.readValue(DataObjectFactory.getRawJSON(post), org.apache.streams.facebook.Post.class), post.getId());
 
-                            }
-                        } else if(id.getBeforeDate() != null && id.getBeforeDate().isAfter(post.getCreatedTime().getTime())) {
-                            super.outputData(MAPPER.readValue(DataObjectFactory.getRawJSON(post), org.apache.streams.facebook.Post.class), post.getId());
-                        } else if(id.getAfterDate() != null && id.getAfterDate().isBefore(post.getCreatedTime().getTime())) {
-                            super.outputData(MAPPER.readValue(DataObjectFactory.getRawJSON(post), org.apache.streams.facebook.Post.class), post.getId());
-                        } else if(id.getBeforeDate() == null && id.getAfterDate() == null) {
-                            super.outputData(MAPPER.readValue(DataObjectFactory.getRawJSON(post), org.apache.streams.facebook.Post.class), post.getId());
-                        } else {
-                            exit = true;
-                            LOGGER.debug("Breaking on post, {}, with createdAtDate {}", post.getId(), post.getCreatedTime());
-                            break;
-                        }
                     }
-                    if(facebookPosts.getPaging() != null && !exit) {
-                        LOGGER.debug("Paging. . .");
-                        facebookPosts = getPosts(facebookPosts.getPaging());
-                        backOff.reset();
-                        LOGGER.debug("Paging received {} posts*", facebookPosts.size());
-                    } else {
-                        LOGGER.debug("No more paging.");
-                        facebookPosts = null;
-                    }
-                } while(facebookPosts != null && facebookPosts.size() != 0);
+                } else if(id.getBeforeDate() != null && id.getBeforeDate().isAfter(post.getCreatedTime().getTime())) {
+                    super.outputData(MAPPER.readValue(DataObjectFactory.getRawJSON(post), org.apache.streams.facebook.Post.class), post.getId());
+                } else if(id.getAfterDate() != null && id.getAfterDate().isBefore(post.getCreatedTime().getTime())) {
+                    super.outputData(MAPPER.readValue(DataObjectFactory.getRawJSON(post), org.apache.streams.facebook.Post.class), post.getId());
+                } else if(id.getBeforeDate() == null && id.getAfterDate() == null) {
+                    super.outputData(MAPPER.readValue(DataObjectFactory.getRawJSON(post), org.apache.streams.facebook.Post.class), post.getId());
+                } else {
+                    exit = true;
+                    LOGGER.debug("Breaking on post, {}, with createdAtDate {}", post.getId(), post.getCreatedTime());
+                    break;
+                }
+            }
+            if(facebookPosts.getPaging() != null && !exit) {
+                LOGGER.debug("Paging. . .");
+                facebookPosts = getPosts(facebookPosts.getPaging());
+                backOff.reset();
+                LOGGER.debug("Paging received {} posts*", facebookPosts.size());
+            } else {
+                LOGGER.debug("No more paging.");
+                facebookPosts = null;
+            }
+        } while(facebookPosts != null && facebookPosts.size() != 0);
 
 
     }
@@ -116,7 +116,12 @@ public class FacebookPageFeedDataCollector extends FacebookDataCollector {
                 LOGGER.error("Facebook returned an exception while trying to get feed for page, {} : {}", pageId, fe.getMessage());
                 //TODO Rate limit exceptions with facebook4j unclear http://facebook4j.org/oldjavadocs/1.1.12-2.0.0/2.0.0/index.html?facebook4j/internal/http/HttpResponseCode.html
                 // back off at all exceptions until figured out.
-                super.backOff.backOff();
+                int errorCode = fe.getErrorCode();
+
+                //Some sort of rate limiting
+                if(errorCode == 17 || errorCode == 4 || errorCode == 341) {
+                    super.backOff.backOff();
+                }
             }
         }
         throw new Exception("Failed to get data from facebook after "+MAX_ATTEMPTS);
