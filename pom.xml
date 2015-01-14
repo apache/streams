@@ -287,6 +287,26 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                  <execution>
+                    <goals>
+                      <goal>process</goal>
+                    </goals>
+                    <configuration>
+                      <resourceBundles>
+                        <!-- Will generate META-INF/DEPENDENCIES META-INF/LICENSE META-INF/NOTICE -->
+                        <resourceBundle>org.apache.apache.resources:apache-jar-resource-bundle:1.5-SNAPSHOT</resourceBundle>
+                        <!-- Will generate META-INF/DISCLAIMER  -->
+                        <resourceBundle>org.apache.apache.resources:apache-incubator-disclaimer-resource-bundle:1.2-SNAPSHOT</resourceBundle>
+                      </resourceBundles>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -642,6 +662,32 @@
                         </executions>
                     </plugin>
                     <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <dependencies>
+                      <dependency>
+                        <groupId>org.apache.apache.resources</groupId>
+                        <artifactId>apache-source-release-assembly-descriptor</artifactId>
+                        <version>1.0.5-SNAPSHOT</version>
+                      </dependency>
+                    </dependencies>
+                    <executions>
+                      <execution>
+                        <id>source-release-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                          <goal>single</goal>
+                        </goals>
+                        <configuration>
+                          <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
+                          <descriptorRefs>
+                            <descriptorRef>source-release</descriptorRef>
+                          </descriptorRefs>
+                          <tarLongFileMode>gnu</tarLongFileMode>
+                        </configuration>
+                      </execution>
+                    </executions>
+                  </plugin>
+                  <plugin>
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
                         <executions>
