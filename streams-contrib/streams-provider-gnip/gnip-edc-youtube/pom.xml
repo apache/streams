@@ -20,7 +20,7 @@
     <parent>
         <artifactId>streams-provider-gnip</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.1-incubating</version>
+        <version>0.2-incubating-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
