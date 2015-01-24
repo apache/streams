@@ -27,7 +27,9 @@
   <artifactId>streams-web</artifactId>
   <packaging>war</packaging>
 
-  <name>Apache Streams Web App</name>
+  <name>${artifactId}</name>
+
+  <description>Apache Streams Web App</description>
 
   <properties>
     <spring.version>3.0.5.RELEASE</spring.version>

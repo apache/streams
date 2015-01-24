@@ -31,6 +31,8 @@
 
     <name>streams-http</name>
 
+    <description>HTTP Utility Components</description>
+
     <dependencies>
 
         <dependency>

@@ -30,7 +30,7 @@
 
   <artifactId>compiled-bundle-settings</artifactId>
 
-  <name>apache-streams - bundle instructions</name>
+  <name>${artifactId}</name>
 
   <packaging>pom</packaging>
 

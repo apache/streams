@@ -31,6 +31,8 @@
 
     <name>streams-pojo</name>
 
+    <description>Activity json schemas and POJOs, and supporting classes.</description>
+
     <dependencies>
 
         <dependency>
