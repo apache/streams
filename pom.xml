@@ -231,7 +231,6 @@
         <module>streams-pojo-extensions</module>
         <module>streams-runtimes</module>
         <module>streams-util</module>
-        <module>streams-web</module>
     </modules>
 
     <packaging>pom</packaging>
