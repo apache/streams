@@ -20,6 +20,8 @@ package org.apache.streams.facebook.provider.pagefeed;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.facebook.FacebookConfiguration;
 import org.apache.streams.facebook.IdConfig;
+import org.apache.streams.facebook.provider.FacebookDataCollector;
+import org.apache.streams.facebook.provider.FacebookProvider;
 import org.junit.Test;
 
 import java.util.concurrent.BlockingQueue;
@@ -29,7 +31,7 @@ import java.util.concurrent.CyclicBarrier;
 import static org.junit.Assert.*;
 
 /**
- * Unit Tests For {@link org.apache.streams.facebook.provider.pagefeed.FacebookProvider}
+ * Unit Tests For {@link org.apache.streams.facebook.provider.FacebookProvider}
  */
 public class TestFacebookProvider {
 

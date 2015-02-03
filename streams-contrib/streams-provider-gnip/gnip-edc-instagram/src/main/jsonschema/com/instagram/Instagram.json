@@ -1,8 +1,12 @@
 {
-    "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
     "id": "#",
+    "type": "object",
     "javaType" : "com.instagram.pojo.Instagram",
+    "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "caption": {
             "type": "object",

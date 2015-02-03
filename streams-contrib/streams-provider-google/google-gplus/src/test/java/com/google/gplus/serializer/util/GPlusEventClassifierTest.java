@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.google.gplus.serializer.util;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;

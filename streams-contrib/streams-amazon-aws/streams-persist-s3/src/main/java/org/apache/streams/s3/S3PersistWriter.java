@@ -27,8 +27,10 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.S3ClientOptions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.streams.core.*;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -249,26 +251,32 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
         // Connect to S3
         synchronized (this) {
 
-            // if the user has chosen to not set the object mapper, then set a default object mapper for them.
-            if(this.objectMapper == null)
-                this.objectMapper = new ObjectMapper();
+            try {
+                // if the user has chosen to not set the object mapper, then set a default object mapper for them.
+                if (this.objectMapper == null)
+                    this.objectMapper = new StreamsJacksonMapper();
 
-            // Create the credentials Object
-            if(this.amazonS3Client == null) {
-                AWSCredentials credentials = new BasicAWSCredentials(s3WriterConfiguration.getKey(), s3WriterConfiguration.getSecretKey());
+                // Create the credentials Object
+                if (this.amazonS3Client == null) {
+                    AWSCredentials credentials = new BasicAWSCredentials(s3WriterConfiguration.getKey(), s3WriterConfiguration.getSecretKey());
 
-                ClientConfiguration clientConfig = new ClientConfiguration();
-                clientConfig.setProtocol(Protocol.valueOf(s3WriterConfiguration.getProtocol().toString()));
+                    ClientConfiguration clientConfig = new ClientConfiguration();
+                    clientConfig.setProtocol(Protocol.valueOf(s3WriterConfiguration.getProtocol().toString()));
 
-                // We do not want path style access
-                S3ClientOptions clientOptions = new S3ClientOptions();
-                clientOptions.setPathStyleAccess(false);
+                    // We do not want path style access
+                    S3ClientOptions clientOptions = new S3ClientOptions();
+                    clientOptions.setPathStyleAccess(false);
 
-                this.amazonS3Client = new AmazonS3Client(credentials, clientConfig);
-                if( !Strings.isNullOrEmpty(s3WriterConfiguration.getRegion()))
-                    this.amazonS3Client.setRegion(Region.getRegion(Regions.fromName(s3WriterConfiguration.getRegion())));
-                this.amazonS3Client.setS3ClientOptions(clientOptions);
+                    this.amazonS3Client = new AmazonS3Client(credentials, clientConfig);
+                    if (!Strings.isNullOrEmpty(s3WriterConfiguration.getRegion()))
+                        this.amazonS3Client.setRegion(Region.getRegion(Regions.fromName(s3WriterConfiguration.getRegion())));
+                    this.amazonS3Client.setS3ClientOptions(clientOptions);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Exception while preparing the S3 client: {}", e);
             }
+
+            Preconditions.checkArgument(this.amazonS3Client != null);
         }
     }
 

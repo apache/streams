@@ -15,8 +15,8 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-package org.apache.streams.data.data.util;
 
+package org.apache.streams.data.data.util;
 
 import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.DateTime;
@@ -33,6 +33,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+/**
+ * Testing {@link org.apache.streams.data.util.RFC3339Utils}
+ */
 public class RFC3339UtilsTest {
 
     @Test

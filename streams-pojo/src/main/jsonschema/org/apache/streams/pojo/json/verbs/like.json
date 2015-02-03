@@ -1,16 +1,24 @@
 {
-  "type" : "object",
-  "title" : "Like",
-  "description" : "To like an object",
-  "extends": {"$ref":"../activity.json"},
-  "properties" :{
-    "verb" :{
-      "type" : "string",
-      "default" : "like"
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "title": "Like",
+    "description": "To like an object",
+    "extends": {
+        "$ref": "../activity.json"
     },
-    "title" : {
-      "type" : "string",
-      "default" : "{actor.displayName} likes {object.displayName}"
+    "properties": {
+        "verb": {
+            "type": "string",
+            "default": "like"
+        },
+        "title": {
+            "type": "string",
+            "default": "{actor.displayName} likes {object.displayName}"
+        }
     }
-  }
 }

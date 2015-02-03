@@ -18,6 +18,7 @@
 
 package org.apache.streams.local.builders;
 
+import com.google.common.collect.Lists;
 import org.apache.streams.core.*;
 import org.apache.streams.local.tasks.StreamsPersistWriterTask;
 import org.apache.streams.local.tasks.StreamsProcessorTask;
@@ -50,6 +51,8 @@ public class StreamComponent {
     private BigInteger sequence;
     private int numTasks = 1;
     private boolean perpetual;
+
+    private List<StreamsTask> tasks;
 
     private Map<String, Object> streamConfig;
 
@@ -132,6 +135,7 @@ public class StreamComponent {
     private void initializePrivateVariables() {
         this.inBound = new HashSet<StreamComponent>();
         this.outBound = new HashMap<StreamComponent, BlockingQueue<StreamsDatum>>();
+        this.tasks = Lists.newArrayList();
     }
 
     /**
@@ -240,7 +244,16 @@ public class StreamComponent {
         else {
             throw new InvalidStreamException("Underlying StreamComponoent was NULL.");
         }
+
+        if(task != null) {
+            tasks.add(task);
+        }
+
         return task;
+    }
+
+    public List<StreamsTask> getStreamsTasks() {
+        return this.tasks;
     }
 
     /**

@@ -17,10 +17,13 @@
  */
 package org.apache.streams.facebook.provider.pagefeed;
 
+import org.apache.streams.facebook.provider.FacebookDataCollector;
+import org.apache.streams.facebook.provider.FacebookProvider;
+
 /**
  *
  */
-public class FacebookPageFeedProvider extends FacebookProvider{
+public class FacebookPageFeedProvider extends FacebookProvider {
     @Override
     protected FacebookDataCollector getDataCollector() {
         return new FacebookPageFeedDataCollector(super.datums, super.configuration);
