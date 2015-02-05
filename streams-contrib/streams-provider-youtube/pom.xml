@@ -50,17 +50,17 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-config</artifactId>
-            <version>0.2-incubating-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-core</artifactId>
-            <version>0.2-incubating-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-pojo</artifactId>
-            <version>0.2-incubating-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -83,18 +83,6 @@
             <artifactId>google-api-services-youtube</artifactId>
             <version>v3-rev126-1.19.1</version>
         </dependency>
-        <!-- TAKE ME OUT WHEN DONE TESTING -->
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-monitoring</artifactId>
-            <version>0.2-incubating-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-runtime-local</artifactId>
-            <version>0.2-incubating-SNAPSHOT</version>
-        </dependency>
-        <!--                                -->
     </dependencies>
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
