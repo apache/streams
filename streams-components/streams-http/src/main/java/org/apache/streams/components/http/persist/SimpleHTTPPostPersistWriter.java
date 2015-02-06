@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
@@ -112,9 +113,6 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
     public HttpPost prepareHttpPost(URI uri, ObjectNode payload) {
         HttpPost httppost = new HttpPost(uri);
         httppost.addHeader("content-type", this.configuration.getContentType());
-// TODO: add support for authentication
-//        if( !Strings.isNullOrEmpty(authHeader))
-//            httpget.addHeader("Authorization", String.format("Basic %s", authHeader));
         try {
             String entity = mapper.writeValueAsString(payload);
             httppost.setEntity(new StringEntity(entity));
@@ -139,7 +137,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
             response = httpclient.execute(httpPost);
             HttpEntity entity = response.getEntity();
             // TODO: handle retry
-            if (response.getStatusLine() != null && response.getStatusLine().getStatusCode() >= 200 && entity != null) {
+            if (response.getStatusLine() != null && response.getStatusLine().getStatusCode() >= HttpStatus.SC_OK && entity != null) {
                 entityString = EntityUtils.toString(entity);
                 result = mapper.readValue(entityString, ObjectNode.class);
             }
