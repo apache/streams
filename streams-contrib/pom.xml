@@ -57,6 +57,7 @@
         <module>streams-provider-sysomos</module>
         <module>streams-provider-rss</module>
         <module>streams-processor-regex</module>
+        <module>streams-provider-youtube</module>
     </modules>
 
     <dependencyManagement>
