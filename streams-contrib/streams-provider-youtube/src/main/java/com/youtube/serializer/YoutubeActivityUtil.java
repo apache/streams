@@ -123,6 +123,7 @@ public class YoutubeActivityUtil {
         actor.setId("id:youtube:" + id);
         actor.setDisplayName(video.getSnippet().getChannelTitle());
         actor.setSummary(video.getSnippet().getDescription());
+        actor.setAdditionalProperty("handle", video.getSnippet().getChannelTitle());
 
         return actor;
     }
