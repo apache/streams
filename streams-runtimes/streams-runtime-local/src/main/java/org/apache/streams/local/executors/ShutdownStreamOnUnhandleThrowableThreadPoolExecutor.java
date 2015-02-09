@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.local.executors;
 
 import org.apache.streams.local.builders.LocalStreamBuilder;

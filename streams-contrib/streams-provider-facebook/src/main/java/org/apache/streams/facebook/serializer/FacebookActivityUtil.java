@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.facebook.serializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
