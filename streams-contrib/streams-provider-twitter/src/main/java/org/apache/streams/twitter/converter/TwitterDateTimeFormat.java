@@ -16,18 +16,19 @@
  * under the License.
  */
 
-package org.apache.streams.twitter.processor;
+package org.apache.streams.twitter.converter;
 
-import org.apache.streams.converter.ActivityConverterProcessor;
+import org.apache.streams.jackson.StreamsDateTimeFormat;
 
 /**
- * This class performs conversion of a twitter event to a specified outClass
- *
- * Deprecated: use TypeConverterProcessor and ActivityConverterProcessor instead
+ * Created by sblackmon on 2/10/15.
  */
-@Deprecated
-public class TwitterTypeConverter extends ActivityConverterProcessor {
+public class TwitterDateTimeFormat implements StreamsDateTimeFormat {
 
-    public final static String STREAMS_ID = "TwitterTypeConverter";
+    public static final String TWITTER_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
 
+    @Override
+    public String getFormat() {
+        return TWITTER_FORMAT;
+    }
 }

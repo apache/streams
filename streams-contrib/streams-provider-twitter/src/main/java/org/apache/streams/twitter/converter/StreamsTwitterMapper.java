@@ -16,22 +16,15 @@
  * under the License.
  */
 
-package org.apache.streams.twitter.serializer;
+package org.apache.streams.twitter.converter;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.streams.data.util.RFC3339Utils;
-import org.apache.streams.jackson.StreamsDateTimeDeserializer;
-import org.apache.streams.jackson.StreamsDateTimeSerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.jackson.StreamsJacksonModule;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -41,7 +34,7 @@ import java.io.IOException;
 /**
  * This class assist with handling twitter's date-time format during conversion
  *
- * Deprecated: use StreamsJacksonMapper.getInstance(StreamsTwitterMapper.TWITTER_FORMAT) instead
+ * Deprecated: use StreamsJacksonMapper.getInstance() with TwitterDateTimeFormat on the classpath instead
  */
 @Deprecated
 public class StreamsTwitterMapper extends StreamsJacksonMapper {

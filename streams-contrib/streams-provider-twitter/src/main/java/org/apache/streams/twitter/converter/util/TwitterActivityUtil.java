@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.streams.twitter.serializer.util;
+package org.apache.streams.twitter.converter.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -25,7 +25,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
@@ -40,7 +40,7 @@ import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.pojo.UserMentions;
-import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
+import org.apache.streams.twitter.converter.StreamsTwitterMapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,9 +58,9 @@ public class TwitterActivityUtil {
      * Updates the given Activity object with the values from the Tweet
      * @param tweet the object to use as the source
      * @param activity the target of the updates.  Will receive all values from the tweet.
-     * @throws ActivitySerializerException
+     * @throws org.apache.streams.exceptions.ActivityConversionException
      */
-    public static void updateActivity(Tweet tweet, Activity activity) throws ActivitySerializerException {
+    public static void updateActivity(Tweet tweet, Activity activity) throws ActivityConversionException {
         ObjectMapper mapper = StreamsTwitterMapper.getInstance();
         activity.setActor(buildActor(tweet));
         activity.setId(formatId(activity.getVerb(),
@@ -76,11 +76,11 @@ public class TwitterActivityUtil {
         }
 
         if(Strings.isNullOrEmpty(activity.getId()))
-            throw new ActivitySerializerException("Unable to determine activity id");
+            throw new ActivityConversionException("Unable to determine activity id");
         try {
             activity.setPublished(tweet.getCreatedAt());
         } catch( Exception e ) {
-            throw new ActivitySerializerException("Unable to determine publishedDate", e);
+            throw new ActivityConversionException("Unable to determine publishedDate", e);
         }
         activity.setTarget(buildTarget(tweet));
         activity.setProvider(getProvider());
@@ -93,26 +93,27 @@ public class TwitterActivityUtil {
      * Updates the given Activity object with the values from the User
      * @param user the object to use as the source
      * @param activity the target of the updates.  Will receive all values from the tweet.
-     * @throws ActivitySerializerException
+     * @throws org.apache.streams.exceptions.ActivityConversionException
      */
-    public static void updateActivity(User user, Activity activity) throws ActivitySerializerException {
+    public static void updateActivity(User user, Activity activity) {
         activity.setActor(buildActor(user));
         activity.setId(null);
+        activity.setVerb(null);
     }
 
     /**
      * Updates the activity for a delete event
      * @param delete the delete event
      * @param activity the Activity object to update
-     * @throws ActivitySerializerException
+     * @throws org.apache.streams.exceptions.ActivityConversionException
      */
-    public static void updateActivity(Delete delete, Activity activity) throws ActivitySerializerException {
+    public static void updateActivity(Delete delete, Activity activity) throws ActivityConversionException {
         activity.setActor(buildActor(delete));
         activity.setVerb("delete");
         activity.setObject(buildActivityObject(delete));
         activity.setId(formatId(activity.getVerb(), delete.getDelete().getStatus().getIdStr()));
         if(Strings.isNullOrEmpty(activity.getId()))
-            throw new ActivitySerializerException("Unable to determine activity id");
+            throw new ActivityConversionException("Unable to determine activity id");
         activity.setProvider(getProvider());
         addTwitterExtension(activity, StreamsTwitterMapper.getInstance().convertValue(delete, ObjectNode.class));
     }
@@ -125,6 +126,7 @@ public class TwitterActivityUtil {
     public static Actor buildActor(Delete delete) {
         Actor actor = new Actor();
         actor.setId(formatId(delete.getDelete().getStatus().getUserIdStr()));
+        actor.setObjectType("page");
         return actor;
     }
 
@@ -172,7 +174,7 @@ public class TwitterActivityUtil {
                 .orNull();
         if( id != null )
             actObj.setId(id);
-        actObj.setObjectType("tweet");
+        actObj.setObjectType("post");
         actObj.setContent(tweet.getText());
         return actObj;
     }
@@ -202,7 +204,7 @@ public class TwitterActivityUtil {
                         .or(Optional.of(user.getId().toString()))
                         .orNull()
         ));
-
+        actor.setObjectType("page");
         actor.setDisplayName(user.getName());
         actor.setAdditionalProperty("handle", user.getScreenName());
         actor.setSummary(user.getDescription());
@@ -236,7 +238,7 @@ public class TwitterActivityUtil {
         List<String> links = Lists.newArrayList();
         if( tweet.getEntities().getUrls() != null ) {
             for (Url url : tweet.getEntities().getUrls()) {
-                links.add(url.getUrl());
+                links.add(url.getExpandedUrl());
             }
         }
         else
@@ -259,7 +261,7 @@ public class TwitterActivityUtil {
      * @param tweet the object to use as the source
      */
     public static void addLocationExtension(Activity activity, Tweet tweet) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ensureExtensions(activity);
         Map<String, Object> location = new HashMap<String, Object>();
         location.put("id", formatId(
                 Optional.fromNullable(
@@ -278,6 +280,7 @@ public class TwitterActivityUtil {
     public static Provider getProvider() {
         Provider provider = new Provider();
         provider.setId("id:providers:twitter");
+        provider.setObjectType("application");
         provider.setDisplayName("Twitter");
         return provider;
     }
@@ -287,7 +290,7 @@ public class TwitterActivityUtil {
      * @param event the Twitter event to add as the extension
      */
     public static void addTwitterExtension(Activity activity, ObjectNode event) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = org.apache.streams.data.util.ActivityUtil.ensureExtensions(activity);
         extensions.put("twitter", event);
     }
     /**
@@ -306,7 +309,7 @@ public class TwitterActivityUtil {
      * @param tweet
      */
     public static void addTwitterExtensions(Activity activity, Tweet tweet) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ensureExtensions(activity);
 
         List<String> hashtags = new ArrayList<String>();
         for(Hashtag hashtag : tweet.getEntities().getHashtags()) {

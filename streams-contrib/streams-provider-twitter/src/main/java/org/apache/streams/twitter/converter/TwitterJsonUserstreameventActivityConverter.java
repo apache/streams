@@ -16,15 +16,13 @@
  * under the License.
  */
 
-package org.apache.streams.twitter.serializer;
+package org.apache.streams.twitter.converter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.streams.data.ActivitySerializer;
-import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.data.ActivityConverter;
+import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
@@ -32,7 +30,7 @@ import org.apache.streams.twitter.pojo.UserstreamEvent;
 
 import java.util.List;
 
-import static org.apache.streams.twitter.serializer.util.TwitterActivityUtil.*;
+import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.*;
 
 
 /**
@@ -42,11 +40,18 @@ import static org.apache.streams.twitter.serializer.util.TwitterActivityUtil.*;
 * Time: 9:24 AM
 * To change this template use File | Settings | File Templates.
 */
-public class TwitterJsonUserstreameventActivitySerializer implements ActivitySerializer<String> {
+public class TwitterJsonUserstreameventActivityConverter implements ActivityConverter<UserstreamEvent> {
 
-    private static TwitterJsonUserstreameventActivitySerializer instance = new TwitterJsonUserstreameventActivitySerializer();
+    public static Class requiredClass = UserstreamEvent.class;
 
-    public static TwitterJsonUserstreameventActivitySerializer getInstance() {
+    @Override
+    public Class requiredClass() {
+        return requiredClass;
+    }
+
+    private static TwitterJsonUserstreameventActivityConverter instance = new TwitterJsonUserstreameventActivityConverter();
+
+    public static TwitterJsonUserstreameventActivityConverter getInstance() {
         return instance;
     }
 
@@ -56,29 +61,29 @@ public class TwitterJsonUserstreameventActivitySerializer implements ActivitySer
     }
 
     @Override
-    public String serialize(Activity deserialized) throws ActivitySerializerException {
+    public UserstreamEvent fromActivity(Activity deserialized) throws ActivityConversionException {
         throw new NotImplementedException();
     }
 
     @Override
-    public Activity deserialize(String serialized) throws ActivitySerializerException {
-        return null;
+    public List<Activity> toActivityList(UserstreamEvent userstreamEvent) throws ActivityConversionException {
+
+        Activity activity = convert(userstreamEvent);
+        return Lists.newArrayList(activity);
+
     }
 
     @Override
-    public List<Activity> deserializeAll(List<String> serializedList) {
+    public List<UserstreamEvent> fromActivityList(List<Activity> list) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public List<Activity> toActivityList(List<UserstreamEvent> serializedList) {
         return null;
     }
 
-    public Activity convert(ObjectNode item) throws ActivitySerializerException {
-
-        ObjectMapper mapper = StreamsTwitterMapper.getInstance();
-        UserstreamEvent event = null;
-        try {
-            event = mapper.treeToValue(item, UserstreamEvent.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+    public Activity convert(UserstreamEvent event) throws ActivityConversionException {
 
         Activity activity = new Activity();
         activity.setActor(buildActor(event));
@@ -86,7 +91,7 @@ public class TwitterJsonUserstreameventActivitySerializer implements ActivitySer
         activity.setObject(buildActivityObject(event));
         activity.setId(formatId(activity.getVerb()));
         if(Strings.isNullOrEmpty(activity.getId()))
-            throw new ActivitySerializerException("Unable to determine activity id");
+            throw new ActivityConversionException("Unable to determine activity id");
         activity.setProvider(getProvider());
         return activity;
     }

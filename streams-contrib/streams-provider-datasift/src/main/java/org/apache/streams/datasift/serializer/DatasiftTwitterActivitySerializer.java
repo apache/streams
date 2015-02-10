@@ -33,7 +33,7 @@ import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
-import org.apache.streams.twitter.serializer.util.TwitterActivityUtil;
+import org.apache.streams.twitter.converter.util.TwitterActivityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +41,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
  *

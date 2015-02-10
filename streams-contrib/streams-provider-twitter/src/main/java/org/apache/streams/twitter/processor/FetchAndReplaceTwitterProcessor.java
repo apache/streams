@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.TwitterStreamConfiguration;
 import org.apache.streams.twitter.pojo.Delete;
@@ -32,7 +32,7 @@ import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.provider.TwitterConfigurator;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
-import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
+import org.apache.streams.twitter.converter.StreamsTwitterMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.*;
@@ -40,7 +40,7 @@ import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.List;
 
-import static org.apache.streams.twitter.serializer.util.TwitterActivityUtil.*;
+import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.*;
 
 /**
  *  Given an Activity, fetches the tweet by the activity object id and replaces the existing activity with the converted activity
@@ -110,7 +110,7 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
         }
     }
 
-    protected void replace(Activity doc, String json) throws java.io.IOException, ActivitySerializerException {
+    protected void replace(Activity doc, String json) throws java.io.IOException, ActivityConversionException {
         Class documentSubType = TwitterEventClassifier.detectClass(json);
         Object object = mapper.readValue(json, documentSubType);
 
