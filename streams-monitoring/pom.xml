@@ -23,7 +23,7 @@
     <parent>
         <artifactId>streams-project</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.1.9-W2O-SNAPSHOT</version>
+        <version>/opt/jdk/latest</version>
     </parent>
 
     <artifactId>streams-monitoring</artifactId>
