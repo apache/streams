@@ -57,7 +57,7 @@ public class YoutubeActivityUtil {
 
         activity.setPublished(new DateTime(video.getSnippet().getPublishedAt().getValue()));
         activity.setTitle(video.getSnippet().getTitle());
-        activity.setContent(video.getSnippet().getTitle());
+        activity.setContent(video.getSnippet().getDescription());
         activity.setUrl("https://www.youtube.com/watch?v=" + video.getId());
 
         activity.setProvider(getProvider());
