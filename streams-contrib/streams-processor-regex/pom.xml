@@ -23,7 +23,7 @@
     <parent>
         <artifactId>streams-contrib</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>/opt/jdk/latest</version>
+        <version>0.2.1-W2O-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-processor-regex</artifactId>

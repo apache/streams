@@ -19,12 +19,12 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>streams-converters</artifactId>
-    <version>/opt/jdk/latest</version>
+    <version>0.2.1-W2O-SNAPSHOT</version>
 
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-components</artifactId>
-        <version>/opt/jdk/latest</version>
+        <version>0.2.1-W2O-SNAPSHOT</version>
     </parent>
 
     <dependencies>

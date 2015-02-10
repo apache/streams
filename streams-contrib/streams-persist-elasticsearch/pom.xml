@@ -19,7 +19,7 @@
     <parent>
         <artifactId>streams-contrib</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>/opt/jdk/latest</version>
+        <version>0.2.1-W2O-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -60,27 +60,27 @@
        <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-config</artifactId>
-            <version>/opt/jdk/latest</version>
+            <version>0.2.1-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-core</artifactId>
-            <version>/opt/jdk/latest</version>
+            <version>0.2.1-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-pojo</artifactId>
-            <version>/opt/jdk/latest</version>
+            <version>0.2.1-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-pojo-extensions</artifactId>
-            <version>/opt/jdk/latest</version>
+            <version>0.2.1-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-util</artifactId>
-            <version>/opt/jdk/latest</version>
+            <version>0.2.1-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>
