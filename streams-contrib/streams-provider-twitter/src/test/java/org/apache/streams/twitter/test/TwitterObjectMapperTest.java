@@ -25,12 +25,10 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.provider.TwitterEventClassifier;
-import org.apache.streams.twitter.serializer.*;
+import org.apache.streams.twitter.converter.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -40,7 +38,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import static java.util.regex.Pattern.matches;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
@@ -53,13 +50,11 @@ import static org.junit.Assert.assertThat;
 * Time: 5:57 PM
 * To change this template use File | Settings | File Templates.
 */
-public class TweetSerDeTest {
+public class TwitterObjectMapperTest {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TweetSerDeTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(TwitterObjectMapperTest.class);
 
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsTwitterMapper.TWITTER_FORMAT));
-
-    private TwitterJsonActivitySerializer twitterJsonActivitySerializer = new TwitterJsonActivitySerializer();
 
     @Test
     public void Tests()
@@ -68,7 +63,7 @@ public class TweetSerDeTest {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-        InputStream is = TweetSerDeTest.class.getResourceAsStream("/testtweets.txt");
+        InputStream is = TwitterObjectMapperTest.class.getResourceAsStream("/testtweets.txt");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 
@@ -82,7 +77,7 @@ public class TweetSerDeTest {
                 {
                     LOGGER.info("raw: {}", line);
 
-                    Class detected = TwitterEventClassifier.detectClass(line);
+                    Class detected = new TwitterDocumentClassifier().detectClasses(line).get(0);
 
                     ObjectNode event = (ObjectNode) mapper.readTree(line);
 
