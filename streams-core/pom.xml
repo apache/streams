@@ -20,7 +20,7 @@
     <parent>
         <artifactId>streams-project</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.2.1-W2O-SNAPSHOT</version>
+        <version>/opt/jdk/latest</version>
     </parent>
 
     <artifactId>streams-core</artifactId>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-util</artifactId>
-            <version>0.2.1-W2O-SNAPSHOT</version>
+            <version>/opt/jdk/latest</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-pojo</artifactId>
-            <version>0.2.1-W2O-SNAPSHOT</version>
+            <version>/opt/jdk/latest</version>
         </dependency>
     </dependencies>
 

@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-contrib</artifactId>
-        <version>0.2.1-W2O-SNAPSHOT</version>
+        <version>/opt/jdk/latest</version>
     </parent>
 
     <artifactId>streams-provider-instagram</artifactId>
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-util</artifactId>
-            <version>0.2.1-W2O-SNAPSHOT</version>
+            <version>/opt/jdk/latest</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
