@@ -134,9 +134,34 @@ public class YoutubeUserActivityCollector extends YoutubeDataCollector {
      */
     void processActivityFeed(ActivityListResponse feed, DateTime afterDate, DateTime beforeDate) throws IOException, InterruptedException {
         for(com.google.api.services.youtube.model.Activity activity : feed.getItems()) {
-            List<Video> videos = getVideoList(activity.getContentDetails().getUpload().getVideoId());
+            try {
+                List<Video> videos = Lists.newArrayList();
 
-            for(Video video : videos) {
+                if (activity.getContentDetails().getUpload() != null) {
+                    videos.addAll(getVideoList(activity.getContentDetails().getUpload().getVideoId()));
+                }
+                if (activity.getContentDetails().getPlaylistItem() != null && activity.getContentDetails().getPlaylistItem().getResourceId() != null) {
+                    videos.addAll(getVideoList(activity.getContentDetails().getPlaylistItem().getResourceId().getVideoId()));
+                }
+
+                processVideos(videos, afterDate, beforeDate, activity, feed);
+            } catch (Exception e) {
+                LOGGER.error("Error while trying to process activity: {}, {}", activity, e);
+            }
+        }
+    }
+
+    /**
+     * Process a list of Video objects
+     * @param videos
+     * @param afterDate
+     * @param beforeDate
+     * @param activity
+     * @param feed
+     */
+    void processVideos(List<Video> videos, DateTime afterDate, DateTime beforeDate, com.google.api.services.youtube.model.Activity activity, ActivityListResponse feed) {
+        try {
+            for (Video video : videos) {
                 if (video != null) {
                     org.joda.time.DateTime published = new org.joda.time.DateTime(video.getSnippet().getPublishedAt().getValue());
                     if ((afterDate == null && beforeDate == null)
@@ -151,6 +176,8 @@ public class YoutubeUserActivityCollector extends YoutubeDataCollector {
                     }
                 }
             }
+        } catch (Exception e) {
+            LOGGER.error("Exception while trying to process video list: {}, {}", videos, e);
         }
     }
 
