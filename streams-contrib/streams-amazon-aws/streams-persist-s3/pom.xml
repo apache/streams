@@ -20,7 +20,7 @@
     <parent>
         <artifactId>streams-amazon-aws</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>/opt/jdk/latest</version>
+        <version>0.1.9-W2O-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

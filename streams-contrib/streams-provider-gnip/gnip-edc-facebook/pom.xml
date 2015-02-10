@@ -21,7 +21,7 @@
     <parent>
         <artifactId>streams-provider-gnip</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>/opt/jdk/latest</version>
+        <version>0.1.9-W2O-SNAPSHOT</version>
     </parent>
 
     <artifactId>gnip-edc-facebook</artifactId>
