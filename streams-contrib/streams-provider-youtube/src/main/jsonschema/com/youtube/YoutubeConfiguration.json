@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.youtube.pojo.YoutubeConfiguration",
+  "javaInterfaces": ["java.io.Serializable"],
+  "properties": {
+    "protocol": {
+      "type": "string",
+      "description": "The protocol"
+    },
+    "host": {
+      "type": "string",
+      "description": "The host"
+    },
+    "port": {
+      "type": "integer",
+      "description": "The port"
+    },
+    "version": {
+      "type": "string",
+      "description": "The version"
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "The endpoint"
+    },
+    "apiKey": {
+      "type": "string",
+      "description": "API key to allow for authenticated (but not owned) requests"
+    },
+    "follow": {
+      "type": "array",
+      "description": "DEPRECATED. A list of user names, indicating the users whose activities should be delivered on the stream",
+      "items": {
+        "type": "string"
+      }
+    },
+    "youtubeUsers": {
+      "type": "array",
+      "description": "A list of user user ids and optional date parameters for the GPlus provider",
+      "items": {
+        "type": "object",
+        "$ref": "#/definitions/userInfo"
+      }
+    },
+    "defaultAfterDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional parameter for the provider. If this value is not null an the afterDate value in the userInfo is null, this value will be used."
+    },
+    "defaultBeforeDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional parameter for the provider. If this value is not null and the beforeDate value in the userInfo is null, this value will be used."
+    },
+    "oauth": {
+      "type": "object",
+      "dynamic": "true",
+      "javaType" : "org.apache.streams.google.gplus.GPlusOAuthConfiguration",
+      "javaInterfaces": ["java.io.Serializable"],
+      "description": "DEPRICATED",
+      "properties": {
+        "appName": {
+          "type": "string"
+        },
+        "pathToP12KeyFile": {
+          "type": "string",
+          "description": "Absolute Path to key file"
+        },
+        "serviceAccountEmailAddress": {
+          "type": "string",
+          "description": "Service Account email address for your app"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "userInfo": {
+      "type": "object",
+      "javaInterfaces" : ["java.io.Serializable"],
+      "dynamic": "true",
+      "javaType": "org.apache.streams.google.gplus.configuration.UserInfo",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Google+ user id"
+        },
+        "afterDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "If the api allows to gather data by date range, this date will be used as the start of the range for the request for this user. If this is null it will use the defaultBeforeDate."
+        },
+        "beforeDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "If the api allows to gather data by date range, this date will be used as the end of the range for the request for this user.. If this is null it will use the defaultAfterDate."
+        }
+      }
+    }
+  }
+}
