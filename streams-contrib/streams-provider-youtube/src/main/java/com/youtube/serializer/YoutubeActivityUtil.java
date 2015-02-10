@@ -47,7 +47,7 @@ public class YoutubeActivityUtil {
      * @throws org.apache.streams.exceptions.ActivitySerializerException
      */
     public static void updateActivity(Video video, Activity activity, String channelId) throws ActivitySerializerException {
-        activity.setActor(buildActor(video, channelId));
+        activity.setActor(buildActor(video, video.getSnippet().getChannelId()));
         activity.setVerb("post");
 
         activity.setId(formatId(activity.getVerb(),
