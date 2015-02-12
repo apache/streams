@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-project</artifactId>
-        <version>0.2.1-W2O-SNAPSHOT</version>
+        <version>0.2.2-W2O-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-runtimes</artifactId>
