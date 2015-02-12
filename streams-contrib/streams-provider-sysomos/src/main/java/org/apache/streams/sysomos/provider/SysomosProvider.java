@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -83,6 +84,7 @@ public class SysomosProvider implements StreamsProvider {
     private Map<String, String> addedAfter;
     private Mode mode = Mode.CONTINUOUS;
     private boolean started = false;
+    private AtomicInteger count;
 
     public SysomosProvider(SysomosConfiguration sysomosConfiguration) {
         this.config = sysomosConfiguration;
@@ -91,6 +93,7 @@ public class SysomosProvider implements StreamsProvider {
         this.minLatency = sysomosConfiguration.getMinDelayMs() == null ? LATENCY : sysomosConfiguration.getMinDelayMs();
         this.scheduledLatency = sysomosConfiguration.getScheduledDelayMs() == null ? (LATENCY * 15) : sysomosConfiguration.getScheduledDelayMs();
         this.maxApiBatch = sysomosConfiguration.getMinDelayMs() == null ? API_BATCH_SIZE : sysomosConfiguration.getApiBatchSize();
+        this.count = new AtomicInteger();
     }
 
     public SysomosConfiguration getConfig() {
@@ -138,6 +141,7 @@ public class SysomosProvider implements StreamsProvider {
         try {
             lock.writeLock().lock();
             LOGGER.debug("Creating new result set for {} items", providerQueue.size());
+            count.addAndGet(providerQueue.size());
             current = new StreamsResultSet(providerQueue);
             providerQueue = constructQueue();
         } finally {
@@ -288,5 +292,9 @@ public class SysomosProvider implements StreamsProvider {
 
     private Queue<StreamsDatum> constructQueue() {
         return Queues.newConcurrentLinkedQueue();
+    }
+
+    public int getCount() {
+        return this.count.get();
     }
 }
