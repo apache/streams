@@ -20,7 +20,7 @@ package org.apache.streams.local.queues;
 import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.management.*;
 import java.lang.management.ManagementFactory;
@@ -40,7 +40,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * <p/>
  * !!! Warning !!!
  * Only the necessary methods for the local streams runtime are implemented.  All other methods throw a
- * {@link sun.reflect.generics.reflectiveObjects.NotImplementedException}.
+ * {@link org.apache.commons.lang.NotImplementedException}.
  */
 public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBean {
 
