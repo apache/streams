@@ -1,0 +1,18 @@
+template: Hello, %s!
+defaultName: streams
+
+server:
+  type: simple
+  applicationContextPath: /
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 8003
+
+logging:
+  level: DEBUG
+  appenders:
+    - type: console
+      threshold: ALL
+      target: stdout
+
