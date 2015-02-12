@@ -20,6 +20,7 @@ package org.apache.streams.monitoring.tasks;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.streams.jackson.*;
 import org.apache.streams.monitoring.persist.MessagePersister;
@@ -58,11 +59,13 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
 
         server = ManagementFactory.getPlatformMBeanServer();
 
-
         setBroadcastURI();
         setWaitTime();
 
-        messagePersister = new SLF4JMessagePersister();
+        if( !Strings.isNullOrEmpty(broadcastURI))
+            messagePersister = new BroadcastMessagePersister(broadcastURI);
+        else
+            messagePersister = new SLF4JMessagePersister();
 
         initializeObjectMapper();
 
