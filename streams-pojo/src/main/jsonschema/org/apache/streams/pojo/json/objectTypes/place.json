@@ -10,15 +10,34 @@
     "extends": [
         {
             "$ref": "../object.json"
-        },
-        {
-            "$ref": "http://www.json-schema.org/address"
         }
     ],
     "properties": {
         "objectType": {
             "type": "string",
-            "default": "photo"
+            "default": "place"
+        },
+        "address": {
+          "type": "object",
+          "extends": [
+            {
+              "$ref": "http://www.json-schema.org/address"
+            }
+          ]
+        },
+        "position": {
+          "type": "object",
+          "properties": {
+            "altitude": {
+              "type": "number"
+            },
+            "latitude": {
+              "type": "number"
+            },
+            "longitude": {
+              "type": "number"
+            }
+          }
         }
     }
 }
