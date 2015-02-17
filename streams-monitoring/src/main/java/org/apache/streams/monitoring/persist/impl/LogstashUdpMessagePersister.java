@@ -49,7 +49,7 @@ public class LogstashUdpMessagePersister implements MessagePersister {
         try {
             uri = new URI(broadcastURI);
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
 
     }
