@@ -148,9 +148,10 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
         String type = ElasticsearchMetadataUtil.getType(metadata, config);
         String id = ElasticsearchMetadataUtil.getId(streamsDatum);
+        String parent = ElasticsearchMetadataUtil.getParent(streamsDatum);
 
         try {
-            add(index, type, id,
+            add(index, type, id, parent,
                     streamsDatum.getTimestamp() == null ? Long.toString(DateTime.now().getMillis()) : Long.toString(streamsDatum.getTimestamp().getMillis()),
                     convertAndAppendMetadata(streamsDatum));
         } catch (Throwable e) {
@@ -301,6 +302,10 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     }
 
     public void add(String indexName, String type, String id, String ts, String json) {
+        add(indexName, type, id, null, ts, json);
+    }
+
+    public void add(String indexName, String type, String id, String parent, String ts, String json) {
 
         // make sure that these are not null
         Preconditions.checkNotNull(indexName);
@@ -317,6 +322,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         if(ts != null)
             indexRequestBuilder.setTimestamp(ts);
+
+        if(parent != null)
+            indexRequestBuilder.setParent(parent);
 
         add(indexRequestBuilder.request());
     }
