@@ -28,7 +28,7 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import java.io.IOException;
 
 public class YoutubeEventClassifier {
-    private static ObjectMapper mapper = new StreamsJacksonMapper();
+    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
     private static final String VIDEO_IDENTIFIER = "\"youtube#video\"";
 
     public static Class detectClass(String json) {

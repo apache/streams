@@ -50,7 +50,7 @@ public class GooglePlusCommentSerDeTest {
 
     @Before
     public void setup() {
-        objectMapper = new StreamsJacksonMapper();
+        objectMapper = StreamsJacksonMapper.getInstance();
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(Comment.class, new GPlusCommentDeserializer());
         objectMapper.registerModule(simpleModule);

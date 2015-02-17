@@ -52,7 +52,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
     private String streamIdentifier;
 
     public BaseStreamsTask(Map<String, Object> config) {
-        this.mapper = new StreamsJacksonMapper();
+        this.mapper = StreamsJacksonMapper.getInstance();
         this.mapper.registerSubtypes(Activity.class);
         this.streamConfig = config;
 

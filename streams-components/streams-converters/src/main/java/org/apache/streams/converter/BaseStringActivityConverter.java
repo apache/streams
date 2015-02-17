@@ -42,7 +42,7 @@ public class BaseStringActivityConverter implements ActivityConverter<String> {
 
     public static Class requiredClass = String.class;
 
-    private ObjectMapper mapper = new StreamsJacksonMapper();
+    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Override
     public Class requiredClass() {
