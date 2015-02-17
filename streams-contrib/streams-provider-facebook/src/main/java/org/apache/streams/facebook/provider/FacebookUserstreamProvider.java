@@ -61,7 +61,7 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
     public static final String STREAMS_ID = "FacebookUserstreamProvider";
     private static final Logger LOGGER = LoggerFactory.getLogger(FacebookUserstreamProvider.class);
 
-    private static final ObjectMapper mapper = new StreamsJacksonMapper();
+    private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     private static final String ALL_PERMISSIONS = "read_stream";
     private FacebookUserstreamConfiguration configuration;

@@ -97,7 +97,7 @@ public class YoutubeTypeConverter implements StreamsProcessor {
     @Override
     public void prepare(Object o) {
         youtubeActivityUtil = new YoutubeActivityUtil();
-        mapper = new StreamsJacksonMapper();
+        mapper = StreamsJacksonMapper.getInstance();
 
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(Video.class, new YoutubeVideoDeserializer());

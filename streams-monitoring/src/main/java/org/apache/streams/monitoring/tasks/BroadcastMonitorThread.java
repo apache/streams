@@ -83,7 +83,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
      * POJOs which are generated from JSON schemas
      */
     private void initializeObjectMapper() {
-        objectMapper = new StreamsJacksonMapper();
+        objectMapper = StreamsJacksonMapper.getInstance();
         SimpleModule simpleModule = new SimpleModule();
 
         simpleModule.addDeserializer(MemoryUsageBroadcast.class, new MemoryUsageDeserializer());

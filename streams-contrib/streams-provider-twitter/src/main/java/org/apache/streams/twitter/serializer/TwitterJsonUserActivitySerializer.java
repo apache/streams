@@ -55,7 +55,7 @@ public class TwitterJsonUserActivitySerializer implements ActivitySerializer<Str
     @Override
     public Activity deserialize(String event) throws ActivitySerializerException {
 
-        ObjectMapper mapper = new StreamsJacksonMapper();
+        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
         User user = null;
         try {
             user = mapper.readValue(event, User.class);
