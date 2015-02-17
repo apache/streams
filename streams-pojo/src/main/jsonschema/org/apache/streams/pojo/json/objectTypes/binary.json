@@ -14,37 +14,6 @@
         "objectType": {
             "type": "string",
             "default": "binary"
-        },
-        "attachments": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "compression": {
-                "type": "string",
-                "enumeration": [
-                  "deflate",
-                  "gzip"
-                ]
-              },
-              "data": {
-                "type": "string"
-              },
-              "fileUrl": {
-                "type": "string"
-              },
-              "length": {
-                "type": "integer"
-              },
-              "md5": {
-                "type": "string"
-              },
-              "mimeType": {
-                "type": "string"
-              }
-            }
-          }
         }
-
     }
 }
