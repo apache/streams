@@ -16,54 +16,62 @@
  * under the License.
  */
 
-package org.apache.streams.twitter.provider;
+package org.apache.streams.twitter.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.apache.commons.lang.StringUtils;
+import org.apache.streams.data.DocumentClassifier;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.json.Follow;
 import org.apache.streams.twitter.pojo.*;
-import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.util.List;
 
 /**
- * TwitterEventClassifier classifies twitter events
- *
- * @Deprecated - replaced by TwitterDocumentClassifier - use ActivityConverterProcessor
+ * Ensures twitter documents can be converted to Activity
  */
-public class TwitterEventClassifier implements Serializable {
+public class TwitterDocumentClassifier implements DocumentClassifier {
 
-    private static ObjectMapper mapper = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+    private static ObjectMapper mapper;
 
-    public static Class detectClass( String json ) {
-        Preconditions.checkNotNull(json);
-        Preconditions.checkArgument(StringUtils.isNotEmpty(json));
+    public List<Class> detectClasses(Object document) {
+
+        Preconditions.checkNotNull(document);
+        Preconditions.checkArgument(document instanceof String || document instanceof ObjectNode);
+
+        mapper = new StreamsJacksonMapper(Lists.newArrayList(StreamsTwitterMapper.TWITTER_FORMAT));
 
         ObjectNode objectNode;
         try {
-            objectNode = (ObjectNode) mapper.readTree(json);
+            if( document instanceof String )
+                objectNode = mapper.readValue((String)document, ObjectNode.class);
+            else
+                objectNode = (ObjectNode) document;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
 
+        List<Class> classList = Lists.newArrayList();
+
         if( objectNode.findValue("retweeted_status") != null && objectNode.get("retweeted_status") != null)
-            return Retweet.class;
+            classList.add(Retweet.class);
         else if( objectNode.findValue("delete") != null )
-            return Delete.class;
+            classList.add(Delete.class);
         else if( objectNode.findValue("friends") != null ||
                 objectNode.findValue("friends_str") != null )
-            return FriendList.class;
+            classList.add(FriendList.class);
         else if( objectNode.findValue("target_object") != null )
-            return UserstreamEvent.class;
+            classList.add(UserstreamEvent.class);
         else if ( objectNode.findValue("location") != null && objectNode.findValue("user") == null)
-            return User.class;
+            classList.add(User.class);
         else
-            return Tweet.class;
+            classList.add(Tweet.class);
+
+        return classList;
     }
 
 }

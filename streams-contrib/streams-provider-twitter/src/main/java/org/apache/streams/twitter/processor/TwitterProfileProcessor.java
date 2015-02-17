@@ -27,7 +27,7 @@ import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
-import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
+import org.apache.streams.twitter.converter.StreamsTwitterMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
