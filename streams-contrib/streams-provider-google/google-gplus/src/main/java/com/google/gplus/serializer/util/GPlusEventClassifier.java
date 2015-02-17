@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 public class GPlusEventClassifier implements Serializable {
-    private static ObjectMapper mapper = new StreamsJacksonMapper();
+    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
     private static final String ACTIVITY_IDENTIFIER = "\"plus#activity\"";
     private static final String PERSON_IDENTIFIER = "\"plus#person\"";
 

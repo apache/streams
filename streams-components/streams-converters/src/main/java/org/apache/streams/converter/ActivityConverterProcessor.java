@@ -214,7 +214,9 @@ public class ActivityConverterProcessor implements StreamsProcessor {
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage("org.apache.streams"))
                 .setScanners(new SubTypesScanner()));
-        if (configuration.getClassifiers().size() > 0) {
+        if ( configuration != null &&
+                configuration.getClassifiers() != null &&
+                configuration.getClassifiers().size() > 0) {
             for( DocumentClassifier classifier : configuration.getClassifiers()) {
                 try {
                     this.classifiers.add(classifier);
@@ -233,7 +235,9 @@ public class ActivityConverterProcessor implements StreamsProcessor {
             }
         }
         Preconditions.checkArgument(this.classifiers.size() > 0);
-        if (configuration.getConverters().size() > 0) {
+        if (configuration != null &&
+                configuration.getConverters() != null &&
+                configuration.getConverters().size() > 0) {
             for( ActivityConverter converter : configuration.getConverters()) {
                 try {
                     this.converters.add(converter);

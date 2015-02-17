@@ -19,11 +19,15 @@
     <parent>
         <artifactId>streams-project</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.1.8-W2O-SNAPSHOT</version>
+        <version>0.2.2-W2O-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>streams-util</artifactId>
+    <name>${project.artifactId}</name>
+
+    <description>Apache Streams Utilities</description>
+
     <packaging>jar</packaging>
 
     <dependencies>

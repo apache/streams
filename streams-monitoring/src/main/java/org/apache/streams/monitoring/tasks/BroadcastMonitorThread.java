@@ -24,12 +24,15 @@ import com.google.common.collect.Lists;
 import org.apache.streams.jackson.*;
 import org.apache.streams.monitoring.persist.MessagePersister;
 import org.apache.streams.monitoring.persist.impl.BroadcastMessagePersister;
+import org.apache.streams.monitoring.persist.impl.LogstashUdpMessagePersister;
 import org.apache.streams.monitoring.persist.impl.SLF4JMessagePersister;
 import org.apache.streams.pojo.json.*;
 import org.slf4j.Logger;
 
 import javax.management.*;
 import java.lang.management.ManagementFactory;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +49,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     private long waitTime;
     private ObjectMapper objectMapper;
     private Map<String, Object> streamConfig;
-    private String broadcastURI = null;
+    private URI broadcastURI = null;
     private MessagePersister messagePersister;
     private volatile boolean keepRunning;
 
@@ -58,11 +61,16 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
 
         server = ManagementFactory.getPlatformMBeanServer();
 
-
         setBroadcastURI();
         setWaitTime();
 
-        messagePersister = new SLF4JMessagePersister();
+        if( broadcastURI != null )
+            if( broadcastURI.getScheme().equals("http"))
+                messagePersister = new BroadcastMessagePersister(broadcastURI.toString());
+            else if( broadcastURI.getScheme().equals("udp"))
+                messagePersister = new LogstashUdpMessagePersister(broadcastURI.toString());
+        else
+            messagePersister = new SLF4JMessagePersister();
 
         initializeObjectMapper();
 
@@ -75,7 +83,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
      * POJOs which are generated from JSON schemas
      */
     private void initializeObjectMapper() {
-        objectMapper = new StreamsJacksonMapper();
+        objectMapper = StreamsJacksonMapper.getInstance();
         SimpleModule simpleModule = new SimpleModule();
 
         simpleModule.addDeserializer(MemoryUsageBroadcast.class, new MemoryUsageDeserializer());
@@ -140,7 +148,11 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                 streamConfig.containsKey("broadcastURI") &&
                 streamConfig.get("broadcastURI") != null &&
                 streamConfig.get("broadcastURI") instanceof String) {
-            broadcastURI = streamConfig.get("broadcastURI").toString();
+            try {
+                broadcastURI = new URI(streamConfig.get("broadcastURI").toString());
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -174,7 +186,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     }
 
     public String getBroadcastURI() {
-        return broadcastURI;
+        return broadcastURI.toString();
     }
 
     public long getWaitTime() {

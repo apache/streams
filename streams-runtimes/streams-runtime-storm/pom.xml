@@ -16,13 +16,15 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>streams-runtimes</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.1.6-W2O-SNAPSHOT</version>
+        <version>0.2.2-W2O-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>streams-runtime-storm</artifactId>
+    <name>${project.artifactId}</name>
+    <description>Apache Streams Runtimes</description>
 
     <properties>
         <storm.version>0.9.1-incubating</storm.version>
@@ -34,17 +36,17 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-config</artifactId>
-            <version>0.1.6-W2O-SNAPSHOT</version>
+            <version>0.2.2-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-core</artifactId>
-            <version>0.1.6-W2O-SNAPSHOT</version>
+            <version>0.2.2-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-util</artifactId>
-            <version>0.1.6-W2O-SNAPSHOT</version>
+            <version>0.2.2-W2O-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

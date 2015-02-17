@@ -22,14 +22,16 @@
   <parent>
     <groupId>org.apache.streams</groupId>
     <artifactId>streams-runtimes</artifactId>
-    <version>0.1.8-W2O-SNAPSHOT</version>
+    <version>0.2.2-W2O-SNAPSHOT</version>
   </parent>
 
   <artifactId>streams-runtime-webapp</artifactId>
 
   <name>${bundle.symbolicName} [${bundle.namespace}]</name>
 
-  <properties>
+    <description>Apache Streams Runtimes</description>
+
+    <properties>
         <bundle.symbolicName>streams-eip-routes</bundle.symbolicName>
         <bundle.namespace>org.apache.streams</bundle.namespace>
         <jackson.old.version>1.9.11</jackson.old.version>
@@ -157,25 +159,25 @@
         <dependency>
             <groupId>org.apache.streams.osgi.components</groupId>
             <artifactId>activity-registration</artifactId>
-            <version>0.1.8-W2O-SNAPSHOT</version>
+            <version>0.2.2-W2O-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.streams.osgi.components</groupId>
             <artifactId>activity-consumer</artifactId>
-            <version>0.1.8-W2O-SNAPSHOT</version>
+            <version>0.2.2-W2O-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.streams.osgi.components</groupId>
             <artifactId>activity-subscriber</artifactId>
-            <version>0.1.8-W2O-SNAPSHOT</version>
+            <version>0.2.2-W2O-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-persist-cassandra</artifactId>
-            <version>0.1.8-W2O-SNAPSHOT</version>
+            <version>0.2.2-W2O-SNAPSHOT</version>
         </dependency>
 
         <dependency>

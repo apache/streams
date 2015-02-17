@@ -41,7 +41,7 @@ public class BaseObjectNodeActivityConverter implements ActivityConverter<Object
 
     public static Class requiredClass = ObjectNode.class;
 
-    private ObjectMapper mapper = new StreamsJacksonMapper();
+    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Override
     public Class requiredClass() {

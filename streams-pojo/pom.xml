@@ -21,13 +21,15 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-project</artifactId>
-        <version>0.1.8-W2O-SNAPSHOT</version>
+        <version>0.2.2-W2O-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>streams-pojo</artifactId>
 
     <name>streams-pojo</name>
+
+    <description>Activity json schemas and POJOs, and supporting classes.</description>
 
     <dependencies>
 

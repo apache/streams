@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-project</artifactId>
-        <version>0.1.8-W2O-SNAPSHOT</version>
+        <version>0.2.2-W2O-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -29,12 +29,14 @@
 
     <name>streams-pojo-extensions</name>
 
+    <description>Support for adding and modifying extension properties</description>
+
     <dependencies>
 
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-pojo</artifactId>
-            <version>0.1.8-W2O-SNAPSHOT</version>
+            <version>0.2.2-W2O-SNAPSHOT</version>
         </dependency>
 
         <dependency>

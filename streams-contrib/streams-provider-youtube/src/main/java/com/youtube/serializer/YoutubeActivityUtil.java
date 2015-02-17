@@ -47,7 +47,7 @@ public class YoutubeActivityUtil {
      * @throws org.apache.streams.exceptions.ActivitySerializerException
      */
     public static void updateActivity(Video video, Activity activity, String channelId) throws ActivitySerializerException {
-        activity.setActor(buildActor(video, channelId));
+        activity.setActor(buildActor(video, video.getSnippet().getChannelId()));
         activity.setVerb("post");
 
         activity.setId(formatId(activity.getVerb(),
@@ -57,7 +57,7 @@ public class YoutubeActivityUtil {
 
         activity.setPublished(new DateTime(video.getSnippet().getPublishedAt().getValue()));
         activity.setTitle(video.getSnippet().getTitle());
-        activity.setContent(video.getSnippet().getTitle());
+        activity.setContent(video.getSnippet().getDescription());
         activity.setUrl("https://www.youtube.com/watch?v=" + video.getId());
 
         activity.setProvider(getProvider());
@@ -123,6 +123,7 @@ public class YoutubeActivityUtil {
         actor.setId("id:youtube:" + id);
         actor.setDisplayName(video.getSnippet().getChannelTitle());
         actor.setSummary(video.getSnippet().getDescription());
+        actor.setAdditionalProperty("handle", video.getSnippet().getChannelTitle());
 
         return actor;
     }

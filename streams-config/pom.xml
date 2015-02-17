@@ -21,10 +21,13 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-project</artifactId>
-        <version>0.1.8-W2O-SNAPSHOT</version>
+        <version>0.2.2-W2O-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-config</artifactId>
+    <name>${project.artifactId}</name>
+
+    <description>Stream and Stream Component General Configuration Objects and Utilities</description>
 
     <dependencies>
         <dependency>

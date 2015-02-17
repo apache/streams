@@ -71,8 +71,7 @@ public class YoutubeTypeConverter implements StreamsProcessor {
                 count++;
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("Exception while converting Video to Activity: {}", e.getMessage());
+            LOGGER.error("Exception while converting Video to Activity: {}", e);
         }
 
         if( result != null )
@@ -98,7 +97,7 @@ public class YoutubeTypeConverter implements StreamsProcessor {
     @Override
     public void prepare(Object o) {
         youtubeActivityUtil = new YoutubeActivityUtil();
-        mapper = new StreamsJacksonMapper();
+        mapper = StreamsJacksonMapper.getInstance();
 
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(Video.class, new YoutubeVideoDeserializer());
