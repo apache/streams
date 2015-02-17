@@ -58,7 +58,13 @@ public class StreamsJacksonMapper extends ObjectMapper {
 
     }
 
-    public StreamsJacksonMapper() {
+    /*
+      Use getInstance to get a globally shared thread-safe ObjectMapper,
+      rather than call this constructor.  Reflection-based resolution of
+      date-time formats across all modules can be slow and should only happen
+      once per JVM.
+     */
+    protected StreamsJacksonMapper() {
         super();
         registerModule(new StreamsJacksonModule());
         configure();
