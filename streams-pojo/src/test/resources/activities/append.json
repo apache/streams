@@ -8,7 +8,7 @@
     "displayName": "Joe"
   },
   "verb": "append",
-  "object": {"content": "This is some text"}
+  "object": {"content": "This is some text"},
   "target": {
     "objectType": "file",
     "displayName": "log.txt"
