@@ -73,6 +73,8 @@ public class StreamsJacksonModule extends SimpleModule {
             }
 
             addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class, dateTimeFormats));
+        } else {
+            addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class));
         }
 
         addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
@@ -81,7 +83,7 @@ public class StreamsJacksonModule extends SimpleModule {
         addDeserializer(Period.class, new StreamsPeriodDeserializer(Period.class));
     }
 
-    public StreamsJacksonModule(List<String> formats) {
+    public StreamsJacksonModule(List < String > formats) {
         super();
 
         addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
