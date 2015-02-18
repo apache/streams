@@ -6,19 +6,19 @@
     ],
     "id": "#",
     "type": "object",
-    "title": "Save",
-    "description": "Indicates that the actor has called out the object as being of interest primarily to him- or herself. Though this action MAY be shared publicly, the implication is that the object has been saved primarily for the actor's own benefit rather than to show it to others as would be indicated by the \"share\" verb.",
+    "title": "Flag-As-Inappropriate",
+    "description": "Indicates that the actor has flagged the object as being inappropriate for some reason. When using this verb, the context property can be used to provide additional detail about why the object has been flagged.",
     "extends": {
         "$ref": "../activity.json"
     },
     "properties": {
         "verb": {
             "type": "string",
-            "default": "save"
+            "default": "flag-as-inappropriate"
         },
         "title": {
             "type": "string",
-            "default": "{actor.displayName} saved {object.displayName}"
+            "default": "{actor.displayName} flagged {object.displayName} as inappropriate."
         }
     }
 }

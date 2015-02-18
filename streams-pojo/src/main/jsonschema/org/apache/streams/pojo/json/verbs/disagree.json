@@ -6,19 +6,19 @@
     ],
     "id": "#",
     "type": "object",
-    "title": "Save",
-    "description": "Indicates that the actor has called out the object as being of interest primarily to him- or herself. Though this action MAY be shared publicly, the implication is that the object has been saved primarily for the actor's own benefit rather than to show it to others as would be indicated by the \"share\" verb.",
+    "title": "Disagree",
+    "description": "Indicates that the actor disagrees with the object.",
     "extends": {
         "$ref": "../activity.json"
     },
     "properties": {
         "verb": {
             "type": "string",
-            "default": "save"
+            "default": "disagree"
         },
         "title": {
             "type": "string",
-            "default": "{actor.displayName} saved {object.displayName}"
+            "default": "{actor.displayName} disagrees with {object.displayName}"
         }
     }
 }
