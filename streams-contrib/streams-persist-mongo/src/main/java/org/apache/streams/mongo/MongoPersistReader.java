@@ -59,9 +59,9 @@ public class MongoPersistReader implements StreamsPersistReader {
     private ExecutorService executor;
 
     private MongoConfiguration config;
+    private MongoPersistReaderTask readerTask;
 
     protected DB client;
-    protected DBAddress dbaddress;
     protected DBCollection collection;
 
     protected DBCursor cursor;
@@ -110,7 +110,6 @@ public class MongoPersistReader implements StreamsPersistReader {
         connectToMongo();
 
         if( client == null ||
-                dbaddress == null ||
                 collection == null )
             throw new RuntimeException("Unable to connect!");
 
@@ -133,7 +132,18 @@ public class MongoPersistReader implements StreamsPersistReader {
 
     protected StreamsDatum prepareDatum(DBObject dbObject) {
 
-        StreamsDatum datum = new StreamsDatum(dbObject.toString());
+        ObjectNode objectNode;
+        String id;
+
+        try {
+            objectNode = mapper.readValue(dbObject.toString(), ObjectNode.class);
+            id = objectNode.get("_id").get("$oid").asText();
+            objectNode.remove("_id");
+        } catch (IOException e) {
+            LOGGER.warn("document isn't valid JSON.");
+            return null;
+        }
+        StreamsDatum datum = new StreamsDatum(objectNode, id);
 
         return datum;
     }
@@ -141,13 +151,11 @@ public class MongoPersistReader implements StreamsPersistReader {
     private synchronized void connectToMongo() {
 
         try {
-            dbaddress = new DBAddress(config.getHost(), config.getPort().intValue(), config.getDb());
+            client = new MongoClient(config.getHost(), config.getPort().intValue()).getDB(config.getDb());
         } catch (UnknownHostException e) {
             e.printStackTrace();
             return;
         }
-
-        client = MongoClient.connect(dbaddress);
 
         if (!Strings.isNullOrEmpty(config.getUser()) && !Strings.isNullOrEmpty(config.getPassword()))
             client.authenticate(config.getUser(), config.getPassword().toCharArray());
@@ -181,8 +189,16 @@ public class MongoPersistReader implements StreamsPersistReader {
     public void startStream() {
 
         LOGGER.debug("startStream");
-        MongoPersistReaderTask readerTask = new MongoPersistReaderTask(this);
-        executor.submit(readerTask);
+        readerTask = new MongoPersistReaderTask(this);
+        Thread readerTaskThread = new Thread(readerTask);
+        Future future = executor.submit(readerTaskThread);
+
+        while( !future.isDone() && !future.isCancelled()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {}
+        }
+
         executor.shutdown();
 
     }
@@ -236,7 +252,7 @@ public class MongoPersistReader implements StreamsPersistReader {
 
     @Override
     public boolean isRunning() {
-        return !executor.isTerminated();
+        return !executor.isTerminated() || !executor.isShutdown();
     }
 
     private Queue<StreamsDatum> constructQueue() {
