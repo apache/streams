@@ -27,9 +27,19 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
-import org.apache.streams.pojo.json.*;
+import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
+import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.pojo.json.Image;
+import org.apache.streams.pojo.json.Provider;
 import org.apache.streams.twitter.Url;
-import org.apache.streams.twitter.pojo.*;
+import org.apache.streams.twitter.pojo.Delete;
+import org.apache.streams.twitter.pojo.Entities;
+import org.apache.streams.twitter.pojo.Hashtag;
+import org.apache.streams.twitter.pojo.Retweet;
+import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.twitter.pojo.User;
+import org.apache.streams.twitter.pojo.UserMentions;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 
 import java.util.ArrayList;
@@ -112,7 +122,7 @@ public class TwitterActivityUtil {
      * @param delete the delete event
      * @return a valid Actor
      */
-    public static  Actor buildActor(Delete delete) {
+    public static Actor buildActor(Delete delete) {
         Actor actor = new Actor();
         actor.setId(formatId(delete.getDelete().getStatus().getUserIdStr()));
         return actor;

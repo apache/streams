@@ -6,20 +6,14 @@
     ],
     "id": "#",
     "type": "object",
-    "title": "product",
+    "title": "page",
     "extends": {
         "$ref": "../object.json"
     },
     "properties": {
         "objectType": {
             "type": "string",
-            "default": "product"
-        },
-        "fullImage": {
-            "type": "object",
-            "extends": {
-              "$ref": "../media_link.json"
-            }
+            "default": "page"
         }
     }
 }
