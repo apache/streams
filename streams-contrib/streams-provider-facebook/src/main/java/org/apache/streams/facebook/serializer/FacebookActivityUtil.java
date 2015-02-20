@@ -34,7 +34,11 @@ import org.apache.streams.facebook.Post;
 import org.apache.streams.facebook.To;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
-import org.apache.streams.pojo.json.*;
+import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
+import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.pojo.json.Image;
+import org.apache.streams.pojo.json.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
