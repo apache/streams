@@ -1,0 +1,15 @@
+{
+  "$license": [
+    "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "actor": {
+    "objectType": "person",
+    "displayName": "Mark"
+  },
+  "verb": "leave",
+  "object": {
+    "objectType": "organization",
+    "displayName": "Other, Co"
+  }
+}

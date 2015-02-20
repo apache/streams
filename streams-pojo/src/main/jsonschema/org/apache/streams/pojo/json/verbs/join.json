@@ -7,7 +7,7 @@
     "id": "#",
     "type": "object",
     "title": "Join",
-    "description": "To join an object. Usually a group",
+    "description": "Indicates that the actor has become a member of the object.",
     "extends": {
         "$ref": "../activity.json"
     },
