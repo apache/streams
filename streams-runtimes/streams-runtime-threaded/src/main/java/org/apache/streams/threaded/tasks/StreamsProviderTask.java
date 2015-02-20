@@ -70,9 +70,10 @@ public class StreamsProviderTask extends BaseStreamsTask implements Runnable {
         try {
             // TODO allow for configuration objects
             StreamsResultSet resultSet = null;
+            provider.startStream();
             switch (this.type) {
                 case PERPETUAL:
-                    provider.startStream();
+                    LOGGER.info("Provider is running: {}", provider.isRunning());
                     int zeros = 0;
                     while (this.keepRunning.get()) {
                         resultSet = provider.readCurrent();
@@ -105,6 +106,12 @@ public class StreamsProviderTask extends BaseStreamsTask implements Runnable {
                 while(provider.isRunning() || resultSet.getQueue().size() > 0) {
                     // Is there anything to do?
                     if (resultSet.getQueue().isEmpty()) {
+                        // Check to see if they are going to give us a new streams result-set.
+                        StreamsResultSet streamsResultSet = this.provider.readCurrent();
+                        // They decided to give us a new result set... nifty!
+                        if(resultSet!= streamsResultSet) {
+                            resultSet = streamsResultSet;
+                        }
                         safeQuickRest(1);
                     } else {
                         flushResults(resultSet);    // then work

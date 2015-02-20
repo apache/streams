@@ -16,6 +16,7 @@ public class PreDefinedProvider implements StreamsProvider {
 
     private final List<StreamsDatum> datums;
     private final AtomicBoolean running = new AtomicBoolean(true);
+    private StreamsResultSet streamsResultSet;
 
     public PreDefinedProvider(List<StreamsDatum> datums) {
         this.datums = datums;
@@ -23,11 +24,15 @@ public class PreDefinedProvider implements StreamsProvider {
 
     @Override
     public void startStream() {
-
+        this.streamsResultSet = createStream();
     }
 
     @Override
     public StreamsResultSet readCurrent() {
+        return this.streamsResultSet;
+    }
+
+    private StreamsResultSet createStream() {
         final Queue<StreamsDatum> q = new ArrayBlockingQueue<StreamsDatum>(10);
         final StreamsResultSet streamsResultSet = new StreamsResultSet(q);
 

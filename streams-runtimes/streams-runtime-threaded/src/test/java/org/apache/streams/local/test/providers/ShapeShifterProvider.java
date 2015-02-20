@@ -16,6 +16,7 @@ public class ShapeShifterProvider implements StreamsProvider {
     protected final int shiftEvery;
 
     private final AtomicBoolean running = new AtomicBoolean(true);
+    private StreamsResultSet resultSet;
 
     public ShapeShifterProvider() {
         this(0,0,0);
@@ -31,20 +32,22 @@ public class ShapeShifterProvider implements StreamsProvider {
         this.shiftEvery = shiftEvery;
     }
 
+
     public void startStream() {
         // no op
+        resultSet = new ResultSet();
     }
 
     public StreamsResultSet readCurrent() {
-        return new ResultSet();
+        return this.resultSet;
     }
 
     public StreamsResultSet readNew(BigInteger sequence) {
-        return new ResultSet();
+        return this.resultSet;
     }
 
     public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return new ResultSet();
+        return this.resultSet;
     }
 
     @Override

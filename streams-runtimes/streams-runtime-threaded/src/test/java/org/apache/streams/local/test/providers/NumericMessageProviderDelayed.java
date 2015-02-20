@@ -41,6 +41,8 @@ public class NumericMessageProviderDelayed implements StreamsProvider {
     private final int threadCount;
     protected final Queue<StreamsDatum> queue = new ArrayBlockingQueue<StreamsDatum>(500);
     private final AtomicBoolean running = new AtomicBoolean(true);
+    private StreamsResultSet streamsResultSet = new StreamsResultSet(this.queue);
+
 
     public NumericMessageProviderDelayed(int numMessages) {
         this(numMessages, 0);
@@ -58,23 +60,19 @@ public class NumericMessageProviderDelayed implements StreamsProvider {
 
     public void startStream() {
         // no op
+        new Thread(new LeakNumbers(streamsResultSet)).start();
     }
 
     public StreamsResultSet readCurrent() {
-        StreamsResultSet streamsResultSet = new StreamsResultSet(this.queue);
-        new Thread(new LeakNumbers(streamsResultSet)).start();
         return streamsResultSet;
+
     }
 
     public StreamsResultSet readNew(BigInteger sequence) {
-        StreamsResultSet streamsResultSet = new StreamsResultSet(this.queue);
-        new Thread(new LeakNumbers(streamsResultSet)).start();
         return streamsResultSet;
     }
 
     public StreamsResultSet readRange(DateTime start, DateTime end) {
-        StreamsResultSet streamsResultSet = new StreamsResultSet(this.queue);
-        new Thread(new LeakNumbers(streamsResultSet)).start();
         return streamsResultSet;
     }
 

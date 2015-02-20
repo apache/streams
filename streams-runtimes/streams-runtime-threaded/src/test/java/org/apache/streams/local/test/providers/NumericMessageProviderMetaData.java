@@ -16,6 +16,7 @@ public class NumericMessageProviderMetaData implements StreamsProvider {
     protected int numMessages;
 
     private final AtomicBoolean running = new AtomicBoolean(true);
+    private ResultSet resultSet;
 
     public NumericMessageProviderMetaData() {
         this.numMessages = 0;
@@ -32,18 +33,19 @@ public class NumericMessageProviderMetaData implements StreamsProvider {
 
     public void startStream() {
         // no op
+        resultSet = new ResultSet();
     }
 
     public StreamsResultSet readCurrent() {
-        return new ResultSet();
+        return this.resultSet;
     }
 
     public StreamsResultSet readNew(BigInteger sequence) {
-        return new ResultSet();
+        return this.resultSet;
     }
 
     public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return new ResultSet();
+        return this.resultSet;
     }
 
     @Override

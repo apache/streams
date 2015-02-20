@@ -29,6 +29,7 @@ public class NumericMessageThrowExceptionProvider extends NumericMessageProvider
 
     private final int numErrorsToThrow;
     private int numErrorsThrown;
+    private StreamsResultSet resultSet;
 
     public NumericMessageThrowExceptionProvider(int numMessages, int numErrorsToThrow) {
         super(numMessages);
@@ -39,18 +40,23 @@ public class NumericMessageThrowExceptionProvider extends NumericMessageProvider
     }
 
     @Override
+    public void startStream() {
+        this.resultSet = new ResultSet(this.numMessages);
+    }
+
+    @Override
     public StreamsResultSet readCurrent() {
-        return new ResultSet(this.numMessages);
+        return this.resultSet;
     }
 
     @Override
     public StreamsResultSet readNew(BigInteger sequence) {
-        return new ResultSet(this.numMessages);
+        return this.resultSet;
     }
 
     @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return new ResultSet(this.numMessages);
+        return this.resultSet;
     }
 
     private class ResultSet extends StreamsResultSet {
