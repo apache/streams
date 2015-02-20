@@ -98,7 +98,23 @@
             <version>${reflections.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -208,20 +224,94 @@
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/task.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/team.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/video.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/accept.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/access.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/acknowledge.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/add.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/agree.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/append.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/approve.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/archive.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/assign.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/at.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/attach.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/attend.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/author.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/authorize.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/borrow.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/build.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/cancel.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/checkin.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/close.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/complete.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/confirm.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/consume.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/create.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/delete.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/deliver.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/deny.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/disagree.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/dislike.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/experience.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/favorite.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/find.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/flag-as-inappropriate.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/follow.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/give.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/host.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/ignore.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/insert.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/install.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/interact.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/invite.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/join.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/leave.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/like.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/listen.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/lose.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/make-friend.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/open.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/play.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/post.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/present.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/purchase.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/qualify.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/read.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/receive.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/reject.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/remove.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/remove-friend.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/replace.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/request.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/request-friend.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/resolve.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/retract.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/return.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/rsvp-maybe.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/rsvp-no.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/rsvp-yes.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/satisfy.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/save.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/schedule.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/search.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/sell.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/share.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/sponsor.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/start.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/stop-following.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/submit.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/tag.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/terminate.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/tie.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/unfavorite.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/unlike.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/unsatisfy.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/unsave.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/unshare.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/update.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/use.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/watch.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/win.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.pojo.json</targetPackage>
@@ -254,6 +344,18 @@
                     <execution>
                         <goals>
                             <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
                         </goals>
                     </execution>
                 </executions>
