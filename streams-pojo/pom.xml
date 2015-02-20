@@ -167,27 +167,45 @@
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/collection.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/media_link.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/object.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/alert.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/application.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/article.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/audio.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/badge.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/binary.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/bookmark.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/comment.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/device.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/event.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/file.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/folder.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/game.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/group.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/image.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/issue.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/job.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/list.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/note.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/offer.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/organization.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/page.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/permission.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/person.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/photo-album.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/photo.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/place.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/playlist.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/process.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/product.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/property.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/question.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/review.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/role.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/service.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/song.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/status.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/task.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/team.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/objectTypes/video.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/favorite.json</sourcePath>
                         <sourcePath>src/main/jsonschema/org/apache/streams/pojo/json/verbs/follow.json</sourcePath>

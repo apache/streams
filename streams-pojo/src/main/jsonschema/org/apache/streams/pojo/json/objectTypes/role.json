@@ -6,19 +6,19 @@
     ],
     "id": "#",
     "type": "object",
-    "title": "product",
+    "title": "role",
     "extends": {
         "$ref": "../object.json"
     },
     "properties": {
         "objectType": {
             "type": "string",
-            "default": "product"
+            "default": "role"
         },
-        "fullImage": {
+        "members": {
             "type": "object",
             "extends": {
-              "$ref": "../media_link.json"
+              "$ref": "../collection.json"
             }
         }
     }

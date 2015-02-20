@@ -6,19 +6,30 @@
     ],
     "id": "#",
     "type": "object",
-    "title": "product",
+    "title": "permission",
     "extends": {
         "$ref": "../object.json"
     },
     "properties": {
         "objectType": {
             "type": "string",
-            "default": "product"
+            "default": "permission"
         },
-        "fullImage": {
+        "scope": {
             "type": "object",
             "extends": {
-              "$ref": "../media_link.json"
+              "$ref": "../object.json"
+            }
+        },
+        "actions": {
+            "type": "array",
+            "items": {
+               "type": "string",
+               "enumeration": [
+                  "create",
+                  "delete",
+                  "modify"
+               ]
             }
         }
     }
