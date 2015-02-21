@@ -8,7 +8,7 @@
     "type": "object",
     "title": "image",
     "extends": {
-        "$ref": "../object.json"
+        "$ref": "../media_link.json"
     },
     "properties": {
         "objectType": {
