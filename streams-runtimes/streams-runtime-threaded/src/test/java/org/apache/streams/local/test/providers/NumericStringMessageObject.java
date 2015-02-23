@@ -17,5 +17,4 @@ public class NumericStringMessageObject implements Serializable {
     public NumericStringMessageObject(int number) {
         this.number = "Number: " + number;
     }
-
 }

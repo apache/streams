@@ -23,7 +23,6 @@ import org.joda.time.DateTime;
 
 import java.math.BigInteger;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NumericMessageThrowExceptionProvider extends NumericMessageProvider {
 

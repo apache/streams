@@ -183,7 +183,6 @@ class StreamComponent {
         StreamsTask task;
 
         if(this.processor != null) {
-
             // create the task
             task = new StreamsProcessorTask(this.threadingController, this.id, config, this.processor);
 
@@ -198,11 +197,10 @@ class StreamComponent {
             task = new StreamsPersistWriterTask(this.threadingController, this.id, config, this.writer);
         }
         else if(this.provider != null) {
-
             task = new StreamsProviderTask(this.threadingController, this.id, config, this.provider, StreamsProviderTask.Type.READ_CURRENT);
-            for(StreamComponent c : this.outBound.keySet())
+            for(StreamComponent c : this.outBound.keySet()) {
                 task.addOutputQueue(c.getId());
-
+            }
         }
         else {
             throw new InvalidStreamException("Underlying StreamComponent was NULL.");

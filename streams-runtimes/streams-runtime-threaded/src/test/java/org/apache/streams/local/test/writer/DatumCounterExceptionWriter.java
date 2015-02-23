@@ -38,7 +38,6 @@ public class DatumCounterExceptionWriter extends DatumCounterWriter{
         if(numErrorsThrown.getAndIncrement() < numErrorsToThrow.get()) {
             throw new RuntimeException();
         } else {
-
             super.safeSleep();
             super.counter.incrementAndGet();
         }

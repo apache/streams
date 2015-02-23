@@ -59,8 +59,7 @@ public class PassThroughStaticCounterProcessor implements StreamsProcessor {
     protected void sleepSafely() {
         try {
             Thread.sleep(this.delay);
-        }
-        catch(InterruptedException ie) {
+        } catch(InterruptedException ie) {
             // no Operation
         }
     }
@@ -73,5 +72,4 @@ public class PassThroughStaticCounterProcessor implements StreamsProcessor {
     public void cleanUp() {
 
     }
-
 }

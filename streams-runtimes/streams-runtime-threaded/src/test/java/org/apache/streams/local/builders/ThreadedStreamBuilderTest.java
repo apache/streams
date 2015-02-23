@@ -210,9 +210,9 @@ public class ThreadedStreamBuilderTest {
             }
 
             shouldStop = true;
-            for(AtomicBoolean b : runningList)
+            for(AtomicBoolean b : runningList) {
                 shouldStop = b != null && b.get() && shouldStop;
-
+            }
         }
     }
 
@@ -249,8 +249,4 @@ public class ThreadedStreamBuilderTest {
         assertTrue("cleanup called", writer.wasCleanupCalled());
         assertTrue("cleanup called", writer.wasPrepeareCalled());
     }
-
-
-
-
 }

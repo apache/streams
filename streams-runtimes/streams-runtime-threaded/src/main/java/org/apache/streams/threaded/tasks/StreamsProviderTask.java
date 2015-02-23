@@ -77,15 +77,16 @@ public class StreamsProviderTask extends BaseStreamsTask implements Runnable {
                     int zeros = 0;
                     while (this.keepRunning.get()) {
                         resultSet = provider.readCurrent();
-                        if (resultSet.size() == 0)
+                        if (resultSet.size() == 0) {
                             zeros++;
-                        else {
+                        } else {
                             zeros = 0;
                         }
                         flushResults(resultSet);
                         // the way this works needs to change...
-                        if (zeros > TIMEOUT)
+                        if (zeros > TIMEOUT) {
                             this.keepRunning.set(false);
+                        }
                         safeQuickRest(10);
                     }
                     break;
@@ -138,8 +139,9 @@ public class StreamsProviderTask extends BaseStreamsTask implements Runnable {
                  * abandon anything that is in this queue. The remaining processors
                  * will shutdown gracefully once they have depleted their queue
                  */
-                if (!this.keepRunning.get())
+                if (!this.keepRunning.get()) {
                     break;
+                }
 
                 workMe(datum);
             }
@@ -196,5 +198,4 @@ public class StreamsProviderTask extends BaseStreamsTask implements Runnable {
         }
         Thread.yield();
     }
-
 }

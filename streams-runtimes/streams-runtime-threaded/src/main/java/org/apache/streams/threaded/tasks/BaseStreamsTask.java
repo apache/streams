@@ -58,20 +58,23 @@ public abstract class BaseStreamsTask implements StreamsTask {
         this.id = id;
         this.config = config;
         this.streamsOperation = streamsOperation;
-        if(this.getClass().equals(StreamsProviderTask.class))
+
+        if(this.getClass().equals(StreamsProviderTask.class)) {
             this.type = "provider";
-        else if(this.getClass().equals(StreamsProcessorTask.class))
+        } else if(this.getClass().equals(StreamsProcessorTask.class)) {
             this.type = "processor";
-        else if(this.getClass().equals(StreamsPersistWriterTask.class))
+        } else if(this.getClass().equals(StreamsPersistWriterTask.class)) {
             this.type = "writer";
-        else
+        } else {
             this.type = "unknown";
+        }
 
     }
 
     public void initialize(final Map<String, StreamsTask> ctx) {
-        for(String id : this.downStreamIds)
+        for(String id : this.downStreamIds) {
             this.downStreamTasks.add(ctx.get(id));
+        }
     }
 
     public Collection<StreamsTask> getChildren() {
@@ -156,18 +159,18 @@ public abstract class BaseStreamsTask implements StreamsTask {
         long startTime = new Date().getTime();
         Collection<StreamsDatum> toReturn = null;
         this.workingCounter.incrementAndGet();
+
         try {
             toReturn = this.processInternal(cloneStreamsDatum(datum));
             this.statusCounter.incrementStatus(DatumStatus.SUCCESS);
             this.timeSpentSuccess.addAndGet(new Date().getTime() - startTime);
-        }
-        catch(Throwable e) {
+        } catch(Throwable e) {
             this.statusCounter.incrementStatus(DatumStatus.FAIL);
             this.timeSpentFailure.addAndGet(new Date().getTime() - startTime);
-        }
-        finally  {
+        } finally  {
             this.workingCounter.decrementAndGet();
         }
+
         return toReturn;
     }
 
@@ -186,9 +189,9 @@ public abstract class BaseStreamsTask implements StreamsTask {
      */
     private StreamsDatum cloneStreamsDatum(StreamsDatum datum) throws SerializationException {
         // this is difficult to clone due to it's nature. To clone it we will use the "deepCopy" function available.
-        if (datum.document instanceof ObjectNode)
+        if (datum.document instanceof ObjectNode) {
             return copyMetaData(datum, new StreamsDatum(((ObjectNode) datum.getDocument()).deepCopy(), datum.getTimestamp(), datum.getSequenceid()));
-        else {
+        } else {
             try {
                 // Try to serialize the document using standard serialization methods
                 return (StreamsDatum) org.apache.commons.lang.SerializationUtils.clone(datum);
@@ -218,10 +221,11 @@ public abstract class BaseStreamsTask implements StreamsTask {
         Map<String, Object> toMeta = copyTo.getMetadata();
         for (String key : fromMeta.keySet()) {
             Object value = fromMeta.get(key);
-            if (value instanceof Serializable)
+            if (value instanceof Serializable) {
                 toMeta.put(key, SerializationUtil.cloneBySerialization(value));
-            else //hope for the best - should be serializable
+            } else {//hope for the best - should be serializable
                 toMeta.put(key, value);
+            }
         }
         return copyTo;
     }

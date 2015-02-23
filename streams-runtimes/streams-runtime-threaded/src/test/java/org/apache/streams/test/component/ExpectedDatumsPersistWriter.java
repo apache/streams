@@ -38,8 +38,6 @@ public class ExpectedDatumsPersistWriter implements StreamsPersistWriter{
         this.fileName = filePathInResources;
     }
 
-
-
     @Override
     public void write(StreamsDatum entry) {
         int index = this.expectedDatums.indexOf(entry);

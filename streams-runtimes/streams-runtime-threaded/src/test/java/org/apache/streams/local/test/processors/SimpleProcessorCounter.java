@@ -59,8 +59,7 @@ public class SimpleProcessorCounter implements StreamsProcessor {
     private void sleepSafely() {
         try {
             Thread.sleep(this.delay);
-        }
-        catch(InterruptedException ie) {
+        } catch(InterruptedException ie) {
             // no Operation
         }
     }
@@ -73,5 +72,4 @@ public class SimpleProcessorCounter implements StreamsProcessor {
     public void cleanUp() {
 
     }
-
 }

@@ -128,11 +128,9 @@ public class ThreadedStreamBuilderDelayTest {
                                 runningList.add(done);
                             }
                             dualDelayedMergedTest();
-                        }
-                        catch (Throwable e) {
+                        } catch (Throwable e) {
                             failureMarker.add(new AtomicBoolean(true));
-                        }
-                        finally {
+                        } finally {
                             done.set(true);
                         }
                     }
@@ -151,17 +149,18 @@ public class ThreadedStreamBuilderDelayTest {
         while(!shouldStop) {
             shouldStop = true;
             synchronized (ThreadedStreamBuilderDelayTest.class) {
-                for (AtomicBoolean b : runningList)
+                for (AtomicBoolean b : runningList) {
                     shouldStop = b != null && b.get() && shouldStop;
+                }
             }
         }
 
         // check to see if anything bubbled up.
-        for(AtomicBoolean failure : failureMarker)
-            if(failure.get())
+        for(AtomicBoolean failure : failureMarker) {
+            if (failure.get()) {
                 fail("this failed...");
-
-
+            }
+        }
     }
 
     @Test

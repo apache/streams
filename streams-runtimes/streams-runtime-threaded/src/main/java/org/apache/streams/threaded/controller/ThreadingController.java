@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.streams.threaded.controller;
 
 import com.google.common.util.concurrent.*;
@@ -68,7 +85,9 @@ public class ThreadingController {
      * @return
      * Integer representing the number of threads in the core pool.
      */
-    public Integer getNumThreads()              { return this.numThreads.get(); }
+    public Integer getNumThreads() {
+        return this.numThreads.get();
+    }
 
     /**
      * The current priority of this threaded pool.
@@ -84,42 +103,54 @@ public class ThreadingController {
      * @return
      * long in millis
      */
-    public Long getScaleCheck()                 { return SCALE_CHECK; }
+    public Long getScaleCheck() {
+        return SCALE_CHECK;
+    }
 
     /**
      * Whether or not the thread-pool is running or if all the threads are currently asleep.
      * @return
      * A boolean representing whether or not the thread-pool is running.
      */
-    public boolean isRunning()                  { return this.workingNow.get() > 0; }
+    public boolean isRunning() {
+        return this.workingNow.get() > 0;
+    }
 
     /**
      * The current CPU load measured for by the observer
      * @return
      * Double representing the current CPU load
      */
-    public Double getProcessCpuLoad()           { return this.threadingControllerCPUObserver.getCPUPercentUtilization(); }
+    public Double getProcessCpuLoad() {
+        return this.threadingControllerCPUObserver.getCPUPercentUtilization();
+    }
 
     /**
      * The last CPU usage that was used to calculate whether or not the thread pool should be adjusted
      * @return
      * Double representing that observation's CPU load
      */
-    public Double getLastCPUObservation()       { return this.lastCPUObservation; }
+    public Double getLastCPUObservation() {
+        return this.lastCPUObservation;
+    }
 
     /**
      * The number of items that are currently executing right now.
      * @return
      * An integer of the number of items executing at this very moment.
      */
-    public Integer getWorkingNow()              { return workingNow.get(); }
+    public Integer getWorkingNow() {
+        return workingNow.get();
+    }
 
     /**
      * The class that is being used to provide the CPU load
      * @return
      * The canonical class name that is calculating the CPU usage.
      */
-    public String getProcessCpuLoadClass()      { return this.threadingControllerCPUObserver.getClass().getCanonicalName(); }
+    public String getProcessCpuLoadClass() {
+        return this.threadingControllerCPUObserver.getClass().getCanonicalName();
+    }
 
     public void setThreadingControllerCPUObserver(ThreadingControllerCPUObserver threadingControllerCPUObserver) {
         this.threadingControllerCPUObserver = threadingControllerCPUObserver;
@@ -215,7 +246,7 @@ public class ThreadingController {
                 try {
                     this.lock.await();
                 } catch (InterruptedException e) {
-                    /* no operation */
+                    LOGGER.error("Exception while trying to get lock: {}", e);
                 }
             }
 
@@ -241,7 +272,7 @@ public class ThreadingController {
                 try {
                     this.lock.await();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LOGGER.error("Exception while trying to get lock: {}", e);
                 }
             }
         }

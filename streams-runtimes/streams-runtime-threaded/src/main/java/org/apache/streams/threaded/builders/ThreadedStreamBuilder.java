@@ -95,8 +95,10 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     }
 
     public List<StreamsGraphElement> getGraphElements() {
-        if(this.graphElements.size() == 0)
+        if(this.graphElements.size() == 0) {
             buildGraphElements();
+        }
+
         return this.graphElements;
     }
 
@@ -109,23 +111,25 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     private void buildGraphElements() {
         this.graphElements.clear();
         for(StreamsTask p : this.tasks.values()) {
-            if(p instanceof StreamsProviderTask)
+            if(p instanceof StreamsProviderTask) {
                 appendAndFollow(p, this.graphElements);
+            }
         }
     }
 
     private void appendAndFollow(StreamsTask t, List<StreamsGraphElement> elems) {
         for(StreamsTask c : t.getChildren()) {
-
             String type;
-            if(t.getClass().equals(StreamsProviderTask.class))
+
+            if(t.getClass().equals(StreamsProviderTask.class)) {
                 type = "provider";
-            else if(t.getClass().equals(StreamsProcessorTask.class))
+            } else if(t.getClass().equals(StreamsProcessorTask.class)) {
                 type = "processor";
-            else if(t.getClass().equals(StreamsPersistWriterTask.class))
+            } else if(t.getClass().equals(StreamsPersistWriterTask.class)) {
                 type = "writer";
-            else
+            } else {
                 type = "unknown";
+            }
 
             elems.add(new StreamsGraphElement(t.getId(), c.getId(), type, 0));
             appendAndFollow(c, elems);
@@ -193,16 +197,18 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     }
 
     public ThreadedStreamBuilder removeEventHandler(StreamBuilderEventHandler eventHandler) {
-        if(this.eventHandlers.contains(eventHandler))
+        if(this.eventHandlers.contains(eventHandler)) {
             this.eventHandlers.remove(eventHandler);
+        }
         return this;
     }
 
     public final Map<String, StatusCounts> getUpdateCounts() {
         final Map<String, StatusCounts> updateMap = new HashMap<String, StatusCounts>();
 
-        for (final String k : tasks.keySet())
+        for (final String k : tasks.keySet()) {
             updateMap.put(k, tasks.get(k).getCurrentStatus());
+        }
         return updateMap;
     }
 
@@ -222,11 +228,13 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
                 final Map<String, StatusCounts> updateMap = getUpdateCounts();
 
-                for(String k : updateMap.keySet())
-                    for(StreamsGraphElement g : getGraphElements())
-                        if(g.getTarget().equals(k))
-                            g.setValue((int)updateMap.get(k).getWorking());
-
+                for(String k : updateMap.keySet()) {
+                    for (StreamsGraphElement g : getGraphElements()) {
+                        if (g.getTarget().equals(k)) {
+                            g.setValue((int) updateMap.get(k).getWorking());
+                        }
+                    }
+                }
 
                 if (eventHandlers.size() > 0) {
                     for (final StreamBuilderEventHandler eventHandler : eventHandlers) {
@@ -234,11 +242,11 @@ public class ThreadedStreamBuilder implements StreamBuilder {
                             try {
                                 eventHandler.update(updateMap, getGraphElements());
                             } catch(Throwable e) {
-                                    /* */
+                                LOGGER.error("Exception while trying to update event handler: {}", e);
                             }
                         }
                         catch(Throwable e) {
-                                /* No Operation */
+                            LOGGER.error("Exception while trying to update event handler: {}", e);
                         }
                     }
                 }
@@ -251,24 +259,29 @@ public class ThreadedStreamBuilder implements StreamBuilder {
                 CURRENTLY_EXECUTING.add(this);
             }
 
-            if(updateTask != null)
+            if(updateTask != null) {
                 TIMER.schedule(updateTask, 0, 1500);
+            }
 
-            for(StreamsTask t : this.tasks.values())
+            for(StreamsTask t : this.tasks.values()) {
                 t.prepare(this.streamConfig);
+            }
 
             // Starting all the tasks
-            for(StreamsTask task : this.tasks.values())
-                if(task instanceof Runnable)
-                    PROVIDER_EXECUTOR.execute((Runnable)task);
+            for(StreamsTask task : this.tasks.values()) {
+                if (task instanceof Runnable) {
+                    PROVIDER_EXECUTOR.execute((Runnable) task);
+                }
+            }
 
             Condition condition = null;
             while((condition = getOffendingLock()) != null) {
                 condition.await();
             }
 
-            for(StreamsTask t : this.tasks.values())
+            for(StreamsTask t : this.tasks.values()) {
                 t.cleanup();
+            }
 
             for(final String k : tasks.keySet()) {
                 final StatusCounts counts = tasks.get(k).getCurrentStatus();
@@ -288,16 +301,19 @@ public class ThreadedStreamBuilder implements StreamBuilder {
                 CURRENTLY_EXECUTING.remove(this);
             }
             // kill the updateTask
-            if(updateTask != null)
+            if(updateTask != null) {
                 updateTask.cancel();
+            }
         }
     }
 
     private Condition getOffendingLock() {
         for(StreamsTask t : this.tasks.values()) {
-            if(t instanceof StreamsProviderTask)
-                if(((StreamsProviderTask)t).isRunning())
-                    return ((StreamsProviderTask)t).getLock();
+            if(t instanceof StreamsProviderTask) {
+                if (((StreamsProviderTask) t).isRunning()) {
+                    return ((StreamsProviderTask) t).getLock();
+                }
+            }
         }
         return null;
     }
@@ -310,14 +326,17 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     }
 
     protected void createTasks() {
-        for (StreamComponent prov : this.providers.values())
+        for (StreamComponent prov : this.providers.values()) {
             this.tasks.put(prov.getId(), prov.createConnectedTask(this.streamConfig));
+        }
 
-        for (StreamComponent comp : this.components.values())
+        for (StreamComponent comp : this.components.values()) {
             this.tasks.put(comp.getId(), comp.createConnectedTask(this.streamConfig));
+        }
 
-        for(StreamsTask t : this.tasks.values())
+        for(StreamsTask t : this.tasks.values()) {
             t.initialize(this.tasks);
+        }
     }
 
     public void stop() {
@@ -352,10 +371,11 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     @SuppressWarnings("unchecked")
     private Queue<StreamsDatum> cloneQueue() {
         Object toReturn = SerializationUtil.cloneBySerialization(this.queue);
-        if(toReturn instanceof Queue)
-            return (Queue<StreamsDatum>)toReturn;
-        else
+        if(toReturn instanceof Queue) {
+            return (Queue<StreamsDatum>) toReturn;
+        } else {
             throw new RuntimeException("Unable to clone the queue");
+        }
     }
 
     protected int getTimeout() {
