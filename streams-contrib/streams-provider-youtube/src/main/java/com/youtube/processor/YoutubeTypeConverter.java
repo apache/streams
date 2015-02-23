@@ -91,7 +91,6 @@ public class YoutubeTypeConverter implements StreamsProcessor {
     private Object deserializeItem(Object item) {
         try {
             Class klass = YoutubeEventClassifier.detectClass((String) item);
-            System.out.println(klass.getName());
             if (klass.equals(Video.class)) {
                 item = mapper.readValue((String) item, Video.class);
             } else if(klass.equals(Channel.class)) {

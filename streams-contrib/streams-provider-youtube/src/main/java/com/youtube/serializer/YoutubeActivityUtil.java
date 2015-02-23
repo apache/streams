@@ -82,26 +82,30 @@ public class YoutubeActivityUtil {
     public static void updateActivity(Channel channel, Activity activity, String channelId) throws ActivitySerializerException {
         try {
             activity.setProvider(getProvider());
-            Actor actor = new Actor();
             activity.setVerb("post");
-            actor.setId("id:youtube:"+channel.getId());
-            actor.setSummary(channel.getSnippet().getDescription());
-            actor.setDisplayName(channel.getSnippet().getTitle());
-            Image image = new Image();
-            image.setUrl(channel.getSnippet().getThumbnails().getHigh().getUrl());
-            actor.setImage(image);
-            actor.setUrl("https://youtube.com/user/" + channel.getId());
-            Map<String, Object> actorExtensions = Maps.newHashMap();
-            actorExtensions.put("followers", channel.getStatistics().getSubscriberCount());
-            actorExtensions.put("posts", channel.getStatistics().getVideoCount());
-            actor.setAdditionalProperty("extensions", actorExtensions);
-            activity.setActor(actor);
+            activity.setActor(createActorForChannel(channel));
             Map<String, Object> extensions = Maps.newHashMap();
             extensions.put("youtube", channel);
             activity.setAdditionalProperty("extensions", extensions);
         } catch (Throwable t) {
             throw new ActivitySerializerException(t);
         }
+    }
+
+    public static Actor createActorForChannel(Channel channel) {
+        Actor actor = new Actor();
+        actor.setId("id:youtube:"+channel.getId());
+        actor.setSummary(channel.getSnippet().getDescription());
+        actor.setDisplayName(channel.getSnippet().getTitle());
+        Image image = new Image();
+        image.setUrl(channel.getSnippet().getThumbnails().getHigh().getUrl());
+        actor.setImage(image);
+        actor.setUrl("https://youtube.com/user/" + channel.getId());
+        Map<String, Object> actorExtensions = Maps.newHashMap();
+        actorExtensions.put("followers", channel.getStatistics().getSubscriberCount());
+        actorExtensions.put("posts", channel.getStatistics().getVideoCount());
+        actor.setAdditionalProperty("extensions", actorExtensions);
+        return actor;
     }
 
     /**
