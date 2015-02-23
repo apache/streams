@@ -28,7 +28,13 @@ import org.apache.streams.datasift.interaction.Interaction;
 import org.apache.streams.datasift.links.Links;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
-import org.apache.streams.pojo.json.*;
+import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
+import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.pojo.json.Generator;
+import org.apache.streams.pojo.json.Icon;
+import org.apache.streams.pojo.json.Image;
+import org.apache.streams.pojo.json.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
