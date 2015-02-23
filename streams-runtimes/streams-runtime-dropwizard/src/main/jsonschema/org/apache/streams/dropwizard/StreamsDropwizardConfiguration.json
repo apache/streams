@@ -1,0 +1,8 @@
+{
+    "type": "object",
+    "javaType" : "org.apache.streams.dropwizard.StreamsDropwizardConfiguration",
+    "extends": {
+        "javaType": "io.dropwizard.Configuration",
+        "type": "object"
+    }
+}

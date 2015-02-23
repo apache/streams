@@ -34,6 +34,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>streams-runtime-dropwizard</module>
         <module>streams-runtime-local</module>
         <module>streams-runtime-pig</module>
         <module>streams-runtime-storm</module>

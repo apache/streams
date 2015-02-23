@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.lang.StringUtils;
-import org.apache.streams.pojo.json.*;
+import org.apache.streams.pojo.json.MemoryUsageBroadcast;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class MemoryUsageDeserializerTest {
 
     @Before
     public void setup() {
-        objectMapper = new StreamsJacksonMapper();
+        objectMapper = StreamsJacksonMapper.getInstance();
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(MemoryUsageBroadcast.class, new MemoryUsageDeserializer());
         objectMapper.registerModule(simpleModule);
