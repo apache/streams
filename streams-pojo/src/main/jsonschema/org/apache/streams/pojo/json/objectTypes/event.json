@@ -20,6 +20,32 @@
         "objectType": {
             "type": "string",
             "default": "event"
+        },
+        "attendedBy": {
+            "type": "../collection.json"
+        },
+        "attending": {
+          "type": "../collection.json"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "invited": {
+          "type": "../collection.json"
+        },
+        "maybeAttending": {
+          "type": "../collection.json"
+        },
+        "notAttendedBy": {
+          "type": "../collection.json"
+        },
+        "notAttending": {
+          "type": "../collection.json"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
         }
     }
 }

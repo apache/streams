@@ -24,9 +24,17 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
-import org.apache.streams.pojo.json.*;
+import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
+import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.pojo.json.Image;
+import org.apache.streams.pojo.json.Provider;
 import org.jinstagram.entity.comments.CommentData;
-import org.jinstagram.entity.common.*;
+import org.jinstagram.entity.common.Comments;
+import org.jinstagram.entity.common.ImageData;
+import org.jinstagram.entity.common.Images;
+import org.jinstagram.entity.common.VideoData;
+import org.jinstagram.entity.common.Videos;
 import org.jinstagram.entity.users.basicinfo.Counts;
 import org.jinstagram.entity.users.basicinfo.UserInfoData;
 import org.jinstagram.entity.users.feed.MediaFeedData;
@@ -166,13 +174,13 @@ public class InstagramActivityUtil {
         Image standardResolution = new Image();
         if(item.getType().equals("image") && item.getImages() != null) {
             ImageData standardResolutionData = item.getImages().getStandardResolution();
-            standardResolution.setHeight((double)standardResolutionData.getImageHeight());
-            standardResolution.setWidth((double)standardResolutionData.getImageWidth());
+            standardResolution.setHeight(new Double((double)standardResolutionData.getImageHeight()));
+            standardResolution.setWidth(new Double((double)standardResolutionData.getImageWidth()));
             standardResolution.setUrl(standardResolutionData.getImageUrl());
         } else if(item.getType().equals("video") && item.getVideos() != null) {
             VideoData standardResolutionData = item.getVideos().getStandardResolution();
-            standardResolution.setHeight((double)standardResolutionData.getHeight());
-            standardResolution.setWidth((double)standardResolutionData.getWidth());
+            standardResolution.setHeight(new Double((double)standardResolutionData.getHeight()));
+            standardResolution.setWidth(new Double((double)standardResolutionData.getWidth()));
             standardResolution.setUrl(standardResolutionData.getUrl());
         }
 
@@ -212,16 +220,16 @@ public class InstagramActivityUtil {
                 ActivityObject thumbnailObject = new ActivityObject();
                 Image thumbnailImage = new Image();
                 thumbnailImage.setUrl(thumbnail.getImageUrl());
-                thumbnailImage.setHeight((double) thumbnail.getImageHeight());
-                thumbnailImage.setWidth((double) thumbnail.getImageWidth());
+                thumbnailImage.setHeight(new Double((double) thumbnail.getImageHeight()));
+                thumbnailImage.setWidth(new Double((double) thumbnail.getImageWidth()));
                 thumbnailObject.setImage(thumbnailImage);
                 thumbnailObject.setObjectType("image");
 
                 ActivityObject lowResolutionObject = new ActivityObject();
                 Image lowResolutionImage = new Image();
                 lowResolutionImage.setUrl(lowResolution.getImageUrl());
-                lowResolutionImage.setHeight((double) lowResolution.getImageHeight());
-                lowResolutionImage.setWidth((double) lowResolution.getImageWidth());
+                lowResolutionImage.setHeight(new Double((double) lowResolution.getImageHeight()));
+                lowResolutionImage.setWidth(new Double((double) lowResolution.getImageWidth()));
                 lowResolutionObject.setImage(lowResolutionImage);
                 lowResolutionObject.setObjectType("image");
 
@@ -248,8 +256,8 @@ public class InstagramActivityUtil {
                 ActivityObject lowResolutionVideoObject = new ActivityObject();
                 Image lowResolutionVideoImage = new Image();
                 lowResolutionVideoImage.setUrl(lowResolutionVideo.getUrl());
-                lowResolutionVideoImage.setHeight((double) lowResolutionVideo.getHeight());
-                lowResolutionVideoImage.setWidth((double) lowResolutionVideo.getWidth());
+                lowResolutionVideoImage.setHeight(new Double((double) lowResolutionVideo.getHeight()));
+                lowResolutionVideoImage.setWidth(new Double((double) lowResolutionVideo.getWidth()));
                 lowResolutionVideoObject.setImage(lowResolutionVideoImage);
                 lowResolutionVideoObject.setObjectType("video");
 

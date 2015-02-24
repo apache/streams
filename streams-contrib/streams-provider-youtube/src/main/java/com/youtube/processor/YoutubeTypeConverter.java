@@ -19,11 +19,14 @@
 package com.youtube.processor;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.Video;
 import com.google.common.collect.Lists;
 import com.youtube.serializer.YoutubeActivityUtil;
+import com.youtube.serializer.YoutubeChannelDeserializer;
 import com.youtube.serializer.YoutubeEventClassifier;
 import com.youtube.serializer.YoutubeVideoDeserializer;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -64,6 +67,11 @@ public class YoutubeTypeConverter implements StreamsProcessor {
             if(item instanceof Video) {
                 activity = new Activity();
                 youtubeActivityUtil.updateActivity((Video)item, activity, streamsDatum.getId());
+            } else if(item instanceof Channel) {
+                activity = new Activity();
+                this.youtubeActivityUtil.updateActivity((Channel)item, activity, null);
+            } else {
+                throw new NotImplementedException("Type conversion not implement for type : "+item.getClass().getName());
             }
 
             if(activity != null) {
@@ -83,9 +91,10 @@ public class YoutubeTypeConverter implements StreamsProcessor {
     private Object deserializeItem(Object item) {
         try {
             Class klass = YoutubeEventClassifier.detectClass((String) item);
-
             if (klass.equals(Video.class)) {
                 item = mapper.readValue((String) item, Video.class);
+            } else if(klass.equals(Channel.class)) {
+                item = mapper.readValue((String) item, Channel.class);
             }
         } catch (Exception e) {
             LOGGER.error("Exception while trying to deserializeItem: {}", e);
@@ -101,6 +110,9 @@ public class YoutubeTypeConverter implements StreamsProcessor {
 
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(Video.class, new YoutubeVideoDeserializer());
+        mapper.registerModule(simpleModule);
+        simpleModule = new SimpleModule();
+        simpleModule.addDeserializer(Channel.class, new YoutubeChannelDeserializer());
         mapper.registerModule(simpleModule);
     }
 
