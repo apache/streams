@@ -57,6 +57,11 @@
                 <artifactId>streams-pojo</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.streams</groupId>
+                <artifactId>streams-monitoring</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
