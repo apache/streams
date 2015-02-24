@@ -29,7 +29,13 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.*;
 import org.apache.streams.twitter.Url;
-import org.apache.streams.twitter.pojo.*;
+import org.apache.streams.twitter.pojo.Delete;
+import org.apache.streams.twitter.pojo.Retweet;
+import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.twitter.pojo.Hashtag;
+import org.apache.streams.twitter.pojo.User;
+import org.apache.streams.twitter.pojo.UserMentions;
+import org.apache.streams.twitter.pojo.Entities;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 
 import java.util.ArrayList;
