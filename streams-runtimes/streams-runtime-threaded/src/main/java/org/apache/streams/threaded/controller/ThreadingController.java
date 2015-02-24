@@ -54,9 +54,9 @@ public class ThreadingController {
 
     private static final Integer NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
-    public static final ThreadingController INSTANCE_LOW_PRIORITY = new ThreadingController("Apache Streams [low]", NUM_PROCESSORS, NUM_PROCESSORS * 2, Thread.NORM_PRIORITY - 2);
-    public static final ThreadingController INSTANCE = new ThreadingController("Apache Streams [default]", NUM_PROCESSORS, NUM_PROCESSORS * 5, Thread.NORM_PRIORITY);
-    public static final ThreadingController INSTANCE_HIGH_PRIORITY = new ThreadingController("Apache Streams [high]", NUM_PROCESSORS, NUM_PROCESSORS * 7, Thread.NORM_PRIORITY + 2);
+    private static final ThreadingController INSTANCE_LOW_PRIORITY = new ThreadingController("Apache Streams [low]", NUM_PROCESSORS, NUM_PROCESSORS * 2, Thread.NORM_PRIORITY - 2);
+    private static final ThreadingController INSTANCE = new ThreadingController("Apache Streams [default]", NUM_PROCESSORS, NUM_PROCESSORS * 5, Thread.NORM_PRIORITY);
+    private static final ThreadingController INSTANCE_HIGH_PRIORITY = new ThreadingController("Apache Streams [high]", NUM_PROCESSORS, NUM_PROCESSORS * 7, Thread.NORM_PRIORITY + 2);
 
     /**
      * Use for very low priority items... The thread-pool that runs this runs at priority
