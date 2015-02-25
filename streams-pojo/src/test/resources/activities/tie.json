@@ -1,0 +1,24 @@
+{
+  "$license": [
+    "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "actor": {
+    "objectType": "collection",
+    "items": [
+      {
+        "objectType": "organization",
+        "displayName": "New York Giants"
+      },
+      {
+        "objectType": "organization",
+        "displayName": "Oakland Raiders"
+      }
+    ]
+  },
+  "verb": "tie",
+  "object": {
+    "objectType": "game",
+    "displayName": "Super Bowl"
+  }
+}

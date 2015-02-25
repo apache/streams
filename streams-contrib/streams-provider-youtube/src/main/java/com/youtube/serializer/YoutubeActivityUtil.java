@@ -19,6 +19,8 @@
 
 package com.youtube.serializer;
 
+import com.google.api.client.util.Maps;
+import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.Thumbnail;
 import com.google.api.services.youtube.model.ThumbnailDetails;
 import com.google.api.services.youtube.model.Video;
@@ -27,7 +29,11 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
-import org.apache.streams.pojo.json.*;
+import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
+import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.pojo.json.Image;
+import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +71,44 @@ public class YoutubeActivityUtil {
         activity.setObject(buildActivityObject(video));
 
         addYoutubeExtensions(activity, video);
+    }
+
+
+    /**
+     * Given a {@link com.google.api.services.youtube.model.Channel} object and an
+     * {@link org.apache.streams.pojo.json.Activity} object, fill out the appropriate details
+     *
+     * @param channel
+     * @param activity
+     * @throws org.apache.streams.exceptions.ActivitySerializerException
+     */
+    public static void updateActivity(Channel channel, Activity activity, String channelId) throws ActivitySerializerException {
+        try {
+            activity.setProvider(getProvider());
+            activity.setVerb("post");
+            activity.setActor(createActorForChannel(channel));
+            Map<String, Object> extensions = Maps.newHashMap();
+            extensions.put("youtube", channel);
+            activity.setAdditionalProperty("extensions", extensions);
+        } catch (Throwable t) {
+            throw new ActivitySerializerException(t);
+        }
+    }
+
+    public static Actor createActorForChannel(Channel channel) {
+        Actor actor = new Actor();
+        actor.setId("id:youtube:"+channel.getId());
+        actor.setSummary(channel.getSnippet().getDescription());
+        actor.setDisplayName(channel.getSnippet().getTitle());
+        Image image = new Image();
+        image.setUrl(channel.getSnippet().getThumbnails().getHigh().getUrl());
+        actor.setImage(image);
+        actor.setUrl("https://youtube.com/user/" + channel.getId());
+        Map<String, Object> actorExtensions = Maps.newHashMap();
+        actorExtensions.put("followers", channel.getStatistics().getSubscriberCount());
+        actorExtensions.put("posts", channel.getStatistics().getVideoCount());
+        actor.setAdditionalProperty("extensions", actorExtensions);
+        return actor;
     }
 
     /**

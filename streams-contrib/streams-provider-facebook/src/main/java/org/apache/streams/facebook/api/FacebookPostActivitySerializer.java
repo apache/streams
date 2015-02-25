@@ -24,7 +24,7 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.facebook.Post;
 import org.apache.streams.facebook.serializer.FacebookActivityUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.*;
+import org.apache.streams.pojo.json.Activity;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;

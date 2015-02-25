@@ -18,7 +18,7 @@
         },
         "title": {
             "type": "string",
-            "default": "{actor.displayName} may be attending {object.displayName}"
+            "default": "{actor.displayName} might attend {object.displayName}"
         }
     }
 }

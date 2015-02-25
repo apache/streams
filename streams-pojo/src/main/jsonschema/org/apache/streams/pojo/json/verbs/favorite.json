@@ -7,7 +7,7 @@
     "id": "#",
     "type": "object",
     "title": "Favorite",
-    "description": "To mark an object as a favorite",
+    "description": "Indicates that the actor marked the object as an item of special interest.",
     "extends": {
         "$ref": "../activity.json"
     },
