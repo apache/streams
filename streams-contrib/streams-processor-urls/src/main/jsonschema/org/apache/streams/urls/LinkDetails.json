@@ -14,6 +14,7 @@
             "enum" : [
                 "SUCCESS",
                 "ERROR",
+                "TIME_OUT",
                 "MALFORMED_URL",
                 "NOT_FOUND",
                 "FORBIDDEN",
@@ -22,6 +23,8 @@
                 "LOOP",
                 "HTTP_ERROR_STATUS",
                 "EXCEPTION",
+                "EMPTY",
+                "TOO_LARGE",
                 "NONE"
             ]
         },
@@ -77,6 +80,9 @@
             "type": "integer"
         },
         "rawContent": {
+            "type": "string"
+        },
+        "contentType": {
             "type": "string"
         },
         "contentsType": {

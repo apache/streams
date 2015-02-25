@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.streams.elasticsearch;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +34,7 @@ import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.common.joda.time.DateTime;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.slf4j.Logger;
@@ -56,18 +56,15 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     private static final NumberFormat MEGABYTE_FORMAT = new DecimalFormat("#.##");
     private static final NumberFormat NUMBER_FORMAT = new DecimalFormat("###,###,###,###");
     private static final Long DEFAULT_BULK_FLUSH_THRESHOLD = 5l * 1024l * 1024l;
-    private static final int DEFAULT_BATCH_SIZE = 100;
-    //ES defaults its bulk index queue to 50 items.  We want to be under this on our backoff so set this to 1/2 ES default
-    //at a batch size as configured here.
-    private static final long WAITING_DOCS_LIMIT = DEFAULT_BATCH_SIZE * 25;
-    //A document should have to wait no more than 10s to get flushed
+    private static final long WAITING_DOCS_LIMIT = 10000;
     private static final long DEFAULT_MAX_WAIT = 10000;
+    private static final int DEFAULT_BATCH_SIZE = 100;
 
-    protected static final ObjectMapper OBJECT_MAPPER = StreamsJacksonMapper.getInstance();
+    protected final ObjectMapper OBJECT_MAPPER = StreamsJacksonMapper.getInstance();
 
-    protected final List<String> affectedIndexes = new ArrayList<String>();
+    private final List<String> affectedIndexes = new ArrayList<String>();
 
-    protected final ElasticsearchClientManager manager;
+    protected final Client client;
     protected final ElasticsearchWriterConfiguration config;
 
     protected BulkRequestBuilder bulkRequest;
@@ -102,10 +99,15 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     }
 
     public ElasticsearchPersistWriter(ElasticsearchWriterConfiguration config, ElasticsearchClientManager manager) {
-        this.config = config;
-        this.manager = manager;
-        this.bulkRequest = this.manager.getClient().prepareBulk();
+        this(config, manager.getClient());
     }
+
+    public ElasticsearchPersistWriter(ElasticsearchWriterConfiguration config, Client client) {
+        this.config = config;
+        this.client = client;
+        this.bulkRequest = this.client.prepareBulk();
+    }
+
 
     public long getBatchesSent()                            { return this.batchesSent.get(); }
     public long getBatchesResponded()                       { return batchesResponded.get(); }
@@ -130,7 +132,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     public long getTotalSeconds()                           { return this.totalSeconds.get(); }
     public List<String> getAffectedIndexes()                { return this.affectedIndexes; }
 
-    public boolean isConnected()                            { return (this.manager.getClient() != null); }
+    public boolean isConnected()                            { return (this.client != null); }
 
     @Override
     public void write(StreamsDatum streamsDatum) {
@@ -139,24 +141,15 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         checkForBackOff();
 
-        LOGGER.debug("Write Document: {}", streamsDatum.getDocument());
-
-        Map<String, Object> metadata = streamsDatum.getMetadata();
-
-        LOGGER.debug("Write Metadata: {}", metadata);
-
-        String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
-        String type = ElasticsearchMetadataUtil.getType(metadata, config);
-        String id = ElasticsearchMetadataUtil.getId(streamsDatum);
-
         try {
-            add(index, type, id,
+            add(config.getIndex(), config.getType(), streamsDatum.getId() == null ? null : (streamsDatum.getId().equalsIgnoreCase("null") ? null : streamsDatum.getId()),
                     streamsDatum.getTimestamp() == null ? Long.toString(DateTime.now().getMillis()) : Long.toString(streamsDatum.getTimestamp().getMillis()),
                     convertAndAppendMetadata(streamsDatum));
         } catch (Throwable e) {
             LOGGER.warn("Unable to Write Datum to ElasticSearch: {}", e.getMessage());
         }
     }
+
 
     private String convertAndAppendMetadata(StreamsDatum streamsDatum) throws IOException {
         Object object = streamsDatum.getDocument();
@@ -166,7 +159,12 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             return docAsJson;
         else {
             ObjectNode node = (ObjectNode)OBJECT_MAPPER.readTree(docAsJson);
-            node.put("_metadata", OBJECT_MAPPER.readTree(OBJECT_MAPPER.writeValueAsBytes(streamsDatum.getMetadata())));
+            try {
+                node.put("_metadata", OBJECT_MAPPER.readTree(OBJECT_MAPPER.writeValueAsBytes(streamsDatum.getMetadata())));
+            }
+            catch(Throwable e) {
+                LOGGER.warn("Unable to write metadata");
+            }
             return OBJECT_MAPPER.writeValueAsString(node);
         }
     }
@@ -181,11 +179,11 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             refreshIndexes();
 
             LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
-            timer.cancel();
 
         } catch (Throwable e) {
             // this line of code should be logically unreachable.
-            LOGGER.warn("This is unexpected: {}", e);
+            LOGGER.warn("This is unexpected: {}", e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -200,8 +198,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 updateSettingsRequest.settings(ImmutableSettings.settingsBuilder().put("refresh_interval", "5s"));
 
                 // submit to ElasticSearch
-                this.manager.getClient()
-                        .admin()
+                this.client.admin()
                         .indices()
                         .updateSettings(updateSettingsRequest)
                         .actionGet();
@@ -210,8 +207,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             checkIndexImplications(indexName);
 
             LOGGER.debug("Refreshing ElasticSearch index: {}", indexName);
-            this.manager.getClient()
-                    .admin()
+            this.client.admin()
                     .indices()
                     .prepareRefresh(indexName)
                     .execute()
@@ -243,7 +239,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         this.currentBatchBytes.set(0);
 
         // reset our bulk request builder
-        this.bulkRequest = this.manager.getClient().prepareBulk();
+        this.bulkRequest = this.client.prepareBulk();
     }
 
     private synchronized void waitToCatchUp(int batchThreshold, int timeOutThresholdInMS) {
@@ -253,10 +249,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             try {
                 Thread.yield();
                 Thread.sleep(1);
-                counter++;
+                timeOutThresholdInMS++;
             } catch(InterruptedException ie) {
-                LOGGER.warn("Catchup was interrupted.  Data may be lost");
-                return;
+                // No Operation
             }
         }
     }
@@ -307,7 +302,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         Preconditions.checkNotNull(type);
         Preconditions.checkNotNull(json);
 
-        IndexRequestBuilder indexRequestBuilder = manager.getClient()
+        IndexRequestBuilder indexRequestBuilder = this.client
                 .prepareIndex(indexName, type)
                 .setSource(json);
 
@@ -320,6 +315,27 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         add(indexRequestBuilder.request());
     }
+
+    /**
+     *  This function is trashed... needs to be fixed.
+     *
+     private synchronized void add(UpdateRequest request) {
+     Preconditions.checkNotNull(request);
+     checkAndCreateBulkRequest();
+
+     checkIndexImplications(request.index());
+
+     bulkRequest.add(request);
+     try {
+     Optional<Integer> size = Objects.firstNonNull(
+     Optional.fromNullable(request.doc().source().length()),
+     Optional.fromNullable(request.script().length()));
+     trackItemAndBytesWritten(size.get().longValue());
+     } catch (NullPointerException x) {
+     trackItemAndBytesWritten(1000);
+     }
+     }
+     */
 
     protected void add(IndexRequest request) {
 
@@ -375,8 +391,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 updateSettingsRequest.settings(ImmutableSettings.settingsBuilder().put("refresh_interval", -1));
 
                 // submit to ElasticSearch
-                this.manager.getClient()
-                        .admin()
+                this.client.admin()
                         .indices()
                         .updateSettings(updateSettingsRequest)
                         .actionGet();
@@ -386,8 +401,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
     public void createIndexIfMissing(String indexName) {
         // Synchronize this on a static class level
-        if (!this.manager.getClient()
-                .admin()
+        if (!this.client.admin()
                 .indices()
                 .exists(new IndicesExistsRequest(indexName))
                 .actionGet()
@@ -396,7 +410,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             // It does not exist... So we are going to need to create the index.
             // we are going to assume that the 'templates' that we have loaded into
             // elasticsearch are sufficient to ensure the index is being created properly.
-            CreateIndexResponse response = this.manager.getClient().admin().indices().create(new CreateIndexRequest(indexName)).actionGet();
+            CreateIndexResponse response = this.client.admin().indices().create(new CreateIndexRequest(indexName)).actionGet();
 
             if (response.isAcknowledged()) {
                 LOGGER.info("Index Created: {}", indexName);
@@ -407,6 +421,36 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             }
         }
     }
+
+    /**
+     *
+     private Set<String> checkIds(Set<String> input, String index, String type) {
+
+     IdsQueryBuilder idsFilterBuilder = new IdsQueryBuilder();
+
+     for (String s : input)
+     idsFilterBuilder.addIds(s);
+
+     SearchRequestBuilder searchRequestBuilder = this.manager.getClient()
+     .prepareSearch(index)
+     .setTypes(type)
+     .setQuery(idsFilterBuilder)
+     .addField("_id")
+     .setSize(input.size());
+
+     SearchHits hits = searchRequestBuilder.execute()
+     .actionGet()
+     .getHits();
+
+     Set<String> toReturn = new HashSet<String>();
+
+     for (SearchHit hit : hits) {
+     toReturn.add(hit.getId());
+     }
+
+     return toReturn;
+     }
+     */
 
     public void prepare(Object configurationObject) {
         this.veryLargeBulk = config.getBulk() == null ?
@@ -447,7 +491,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         this.batchesSent.incrementAndGet();
 
         try {
-            bulkRequest.execute().addListener(new ActionListener<BulkResponse>() {
+            bulkRequest.execute(new ActionListener<BulkResponse>() {
                 public void onResponse(BulkResponse bulkItemResponses) {
                     batchesResponded.incrementAndGet();
                     updateTotals(bulkItemResponses, sent, sizeInBytes);
@@ -492,5 +536,4 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 MEGABYTE_FORMAT.format(sizeInBytes / (double) (1024 * 1024)), NUMBER_FORMAT.format(passed), NUMBER_FORMAT.format(failed), NUMBER_FORMAT.format(millis),
                 MEGABYTE_FORMAT.format((double) totalSizeInBytes.get() / (double) (1024 * 1024)), NUMBER_FORMAT.format(totalOk), NUMBER_FORMAT.format(totalFailed), NUMBER_FORMAT.format(totalSeconds), NUMBER_FORMAT.format(getTotalOutstanding()));
     }
-
 }

@@ -1,40 +1,17 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 package org.apache.streams.elasticsearch;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Queues;
 import org.apache.streams.core.*;
-import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.util.ComponentUtils;
 import org.elasticsearch.search.SearchHit;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * ***********************************************************************************************************
@@ -49,35 +26,73 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistReader.class);
 
-    protected volatile Queue<StreamsDatum> persistQueue;
+    protected final Queue<StreamsDatum> persistQueue = new ArrayBlockingQueue<StreamsDatum>(100);
+    private final StreamsResultSet streamsResultSet = new StreamsResultSet(this.persistQueue);
 
     private ElasticsearchQuery elasticsearchQuery;
-    private ElasticsearchReaderConfiguration config;
-    private int threadPoolSize = 10;
-    private ExecutorService executor;
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
-    private Future<?> readerTask;
-
-    public ElasticsearchPersistReader() {
-    }
+    private final ElasticsearchReaderConfiguration config;
+    private final ElasticsearchClientManager elasticsearchClientManager;
+    private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
     public ElasticsearchPersistReader(ElasticsearchReaderConfiguration config) {
-        this.config = config;
+        this(config, new ElasticsearchClientManager(config));
     }
 
-    //PersistReader methods
+    public ElasticsearchPersistReader(ElasticsearchReaderConfiguration config, ElasticsearchClientManager escm) {
+        this.config = config;
+        this.elasticsearchClientManager = escm;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return this.isRunning.get();
+    }
+
     @Override
     public void startStream() {
         LOGGER.debug("startStream");
-        executor = Executors.newSingleThreadExecutor();
-        readerTask = executor.submit(new ElasticsearchPersistReaderTask(this, elasticsearchQuery));
+        this.isRunning.set(true);
+        final ElasticsearchQuery query = this.elasticsearchQuery;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (!query.isCompleted()) {
+                        if(query.hasNext()) {
+                            SearchHit hit = query.next();
+                            StreamsDatum item = new StreamsDatum(hit.getSourceAsString(), hit.getId());
+                            item.getMetadata().put("id", hit.getId());
+                            item.getMetadata().put("index", hit.getIndex());
+                            item.getMetadata().put("type", hit.getType());
+                            ComponentUtils.offerUntilSuccess(item, streamsResultSet.getQueue());
+                        }
+                        else {
+                            try {
+                                Thread.sleep(1);
+                            }
+                            catch(InterruptedException ioe) {
+                                LOGGER.error("sleep error: {}", ioe);
+                            }
+                        }
+                    }
+                }
+                catch(Throwable e) {
+                    LOGGER.error("Unexpected issue: {}", e.getMessage());
+                }
+                finally{
+                    isRunning.set(false);
+                }
+            }
+        }).start();
     }
 
     @Override
     public void prepare(Object o) {
-        elasticsearchQuery = this.config == null ? new ElasticsearchQuery() : new ElasticsearchQuery(config);
+        if(this.config == null)
+            throw new RuntimeException("Unable to run without configuration");
+        elasticsearchQuery = new ElasticsearchQuery(config, this.elasticsearchClientManager);
         elasticsearchQuery.execute(o);
-        persistQueue = constructQueue();
     }
 
     @Override
@@ -87,23 +102,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
 
     @Override
     public StreamsResultSet readCurrent() {
-
-        StreamsResultSet current;
-
-        try {
-            lock.writeLock().lock();
-            current = new StreamsResultSet(persistQueue);
-            current.setCounter(new DatumStatusCounter());
-//            current.getCounter().add(countersCurrent);
-//            countersTotal.add(countersCurrent);
-//            countersCurrent = new DatumStatusCounter();
-            persistQueue = constructQueue();
-        } finally {
-            lock.writeLock().unlock();
-        }
-
-        return current;
-
+        return this.streamsResultSet;
     }
 
     //TODO - This just reads current records and does not adjust any queries
@@ -118,103 +117,9 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
         return readCurrent();
     }
 
-    //If we still have data in the queue, we are still running
-    @Override
-    public boolean isRunning() {
-        return persistQueue.size() > 0 || (!readerTask.isDone() && !readerTask.isCancelled());
-    }
-
     @Override
     public void cleanUp() {
-        this.shutdownAndAwaitTermination(executor);
         LOGGER.info("PersistReader done");
-        if(elasticsearchQuery != null) {
-            elasticsearchQuery.cleanUp();
-        }
-    }
-
-    //The locking may appear to be counter intuitive but we really don't care if multiple threads offer to the queue
-    //as it is a synchronized queue.  What we do care about is that we don't want to be offering to the current reference
-    //if the queue is being replaced with a new instance
-    protected void write(StreamsDatum entry) {
-        boolean success;
-        do {
-            try {
-                lock.readLock().lock();
-                success = persistQueue.offer(entry);
-                Thread.yield();
-            }finally {
-                lock.readLock().unlock();
-            }
-        }
-        while (!success);
-    }
-
-    protected void shutdownAndAwaitTermination(ExecutorService pool) {
-        pool.shutdown(); // Disable new tasks from being submitted
-        try {
-            // Wait a while for existing tasks to terminate
-            if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
-                pool.shutdownNow(); // Cancel currently executing tasks
-                // Wait a while for tasks to respond to being cancelled
-                if (!pool.awaitTermination(10, TimeUnit.SECONDS))
-                    LOGGER.error("Pool did not terminate");
-            }
-        } catch (InterruptedException ie) {
-            // (Re-)Cancel if current thread also interrupted
-            pool.shutdownNow();
-            // Preserve interrupt status
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    private Queue<StreamsDatum> constructQueue() {
-        return Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(10000));
-    }
-
-    public static class ElasticsearchPersistReaderTask implements Runnable {
-
-        private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistReaderTask.class);
-
-        private ElasticsearchPersistReader reader;
-        private ElasticsearchQuery query;
-        private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
-
-        public ElasticsearchPersistReaderTask(ElasticsearchPersistReader reader, ElasticsearchQuery query) {
-            this.reader = reader;
-            this.query = query;
-        }
-
-        @Override
-        public void run() {
-
-            StreamsDatum item;
-            while (query.hasNext()) {
-                SearchHit hit = query.next();
-                ObjectNode jsonObject = null;
-                try {
-                    jsonObject = mapper.readValue(hit.getSourceAsString(), ObjectNode.class);
-                    item = new StreamsDatum(jsonObject, hit.getId());
-                    item.getMetadata().put("id", hit.getId());
-                    item.getMetadata().put("index", hit.getIndex());
-                    item.getMetadata().put("type", hit.getType());
-                    if( hit.fields().containsKey("_timestamp")) {
-                        DateTime timestamp = new DateTime(((Long) hit.field("_timestamp").getValue()).longValue());
-                        item.setTimestamp(timestamp);
-                    }
-                    reader.write(item);
-                } catch (IOException e) {
-                    LOGGER.warn("Unable to process json source: ", hit.getSourceAsString());
-                }
-
-            }
-            try {
-                Thread.sleep(new Random().nextInt(100));
-            } catch (InterruptedException e) {
-                LOGGER.warn("Thread interrupted", e);
-            }
-
-        }
     }
 }
 
