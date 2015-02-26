@@ -96,7 +96,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
                     }
                 }
                 catch(Throwable e) {
-                    LOGGER.error("Unexpected issue: {}", e.getMessage());
+                    LOGGER.error("Unexpected issue: {}", e);
                 }
                 finally{
                     isRunning.set(false);
@@ -108,7 +108,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
     @Override
     public void prepare(Object o) {
         if(this.config == null) {
-            throw new RuntimeException("Unable to run without configuration");
+            throw new IllegalStateException("Unable to run without configuration");
         }
 
         elasticsearchQuery = new ElasticsearchQuery(config, this.elasticsearchClientManager);
