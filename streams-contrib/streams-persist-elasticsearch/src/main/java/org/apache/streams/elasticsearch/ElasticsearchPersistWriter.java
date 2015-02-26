@@ -75,7 +75,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
     private long flushThresholdTime = DEFAULT_MAX_WAIT;
     private long lastFlush = new Date().getTime();
-    private Timer timer = new Timer();
+    private Timer timer;
 
 
     private final AtomicInteger batchesSent = new AtomicInteger(0);
@@ -179,7 +179,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             refreshIndexes();
 
             LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
-            timer.cancel();
+            if(timer != null) {
+                timer.cancel();
+            }
         } catch (Throwable e) {
             // this line of code should be logically unreachable.
             LOGGER.warn("This is unexpected: {}", e.getMessage());
@@ -423,6 +425,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 DEFAULT_BULK_FLUSH_THRESHOLD :
                 config.getBatchBytes();
 
+        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 checkForFlush();
