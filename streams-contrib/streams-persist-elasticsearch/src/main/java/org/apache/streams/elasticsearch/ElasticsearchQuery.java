@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.streams.elasticsearch;
 
 import com.google.common.collect.Lists;
@@ -109,19 +126,22 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
                     .setSize(Objects.firstNonNull(batchSize, DEFAULT_BATCH_SIZE).intValue())
                     .setScroll(Objects.firstNonNull(scrollTimeout, DEFAULT_SCROLL_TIMEOUT));
 
-            if (this.queryBuilder != null)
+            if (this.queryBuilder != null) {
                 search.setQuery(this.queryBuilder);
+            }
 
             // If the types are null, then don't specify a type
-            if (this.types != null && this.types.size() > 0)
+            if (this.types != null && this.types.size() > 0) {
                 search = search.setTypes(types.toArray(new String[0]));
+            }
 
             Integer clauses = 0;
             if (this.withfields != null || this.withoutfields != null) {
-                if (this.withfields != null)
+                if (this.withfields != null) {
                     clauses += this.withfields.length;
-                if (this.withoutfields != null)
+                } if (this.withoutfields != null) {
                     clauses += this.withoutfields.length;
+                }
             }
 
             List<FilterBuilder> filterList = buildFilterList();
@@ -134,8 +154,9 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
             }
 
             // TODO: Replace when all clusters are upgraded past 0.90.4 so we can implement a RANDOM scroll.
-            if (this.random)
+            if (this.random) {
                 search = search.addSort(SortBuilders.scriptSort("random()", "number"));
+            }
         }
 
         // We don't have a scroll, we need to create a scroll
@@ -182,9 +203,9 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
 
             // If this scroll has 0 items then we set the scroll position to -1
             // letting the iterator know that we are done.
-            if (scrollResp.getHits().getTotalHits() == 0 || scrollResp.getHits().getHits().length == 0)
+            if (scrollResp.getHits().getTotalHits() == 0 || scrollResp.getHits().getHits().length == 0) {
                 scrollPositionInScroll = -1;
-            else {
+            } else {
                 // get the next record
                 next = scrollResp.getHits().getAt(scrollPositionInScroll);
 
@@ -214,25 +235,29 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     // copied from elasticsearch
     // if we need this again we should factor it out into a utility
     private FilterBuilder andFilters(List<FilterBuilder> filters) {
-        if (filters == null || filters.size() == 0)
+        if (filters == null || filters.size() == 0) {
             return null;
+        }
 
         FilterBuilder toReturn = filters.get(0);
 
-        for (int i = 1; i < filters.size(); i++)
+        for (int i = 1; i < filters.size(); i++) {
             toReturn = FilterBuilders.andFilter(toReturn, filters.get(i));
+        }
 
         return toReturn;
     }
 
     private FilterBuilder orFilters(List<FilterBuilder> filters) {
-        if (filters == null || filters.size() == 0)
+        if (filters == null || filters.size() == 0) {
             return null;
+        }
 
         FilterBuilder toReturn = filters.get(0);
 
-        for (int i = 1; i < filters.size(); i++)
+        for (int i = 1; i < filters.size(); i++) {
             toReturn = FilterBuilders.orFilter(toReturn, filters.get(i));
+        }
 
         return toReturn;
     }

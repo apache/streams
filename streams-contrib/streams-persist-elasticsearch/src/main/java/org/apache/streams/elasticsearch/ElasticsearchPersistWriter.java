@@ -136,8 +136,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
     @Override
     public void write(StreamsDatum streamsDatum) {
-        if(streamsDatum == null || streamsDatum.getDocument() == null)
+        if(streamsDatum == null || streamsDatum.getDocument() == null) {
             return;
+        }
 
         checkForBackOff();
 
@@ -155,9 +156,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         Object object = streamsDatum.getDocument();
 
         String docAsJson = (object instanceof String) ? object.toString() : OBJECT_MAPPER.writeValueAsString(object);
-        if(streamsDatum.getMetadata() == null || streamsDatum.getMetadata().size() == 0)
+        if(streamsDatum.getMetadata() == null || streamsDatum.getMetadata().size() == 0) {
             return docAsJson;
-        else {
+        } else {
             ObjectNode node = (ObjectNode)OBJECT_MAPPER.readTree(docAsJson);
             try {
                 node.put("_metadata", OBJECT_MAPPER.readTree(OBJECT_MAPPER.writeValueAsBytes(streamsDatum.getMetadata())));
@@ -171,7 +172,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
     public void cleanUp() {
         try {
-
             // before they close, check to ensure that
             flushInternal();
 
@@ -189,7 +189,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
     private void refreshIndexes() {
         for (String indexName : this.affectedIndexes) {
-
             if (this.veryLargeBulk) {
                 LOGGER.debug("Resetting our Refresh Interval: {}", indexName);
                 // They are in 'very large bulk' mode and the process is finished. We now want to turn the
@@ -225,8 +224,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
     private synchronized void flushInternal() {
         // we do not have a working bulk request, we can just exit here.
-        if (this.bulkRequest == null || this.currentBatchItems.get() == 0)
+        if (this.bulkRequest == null || this.currentBatchItems.get() == 0) {
             return;
+        }
 
         // wait for one minute to catch up if it needs to
         waitToCatchUp(5, 1 * 60 * 1000);
@@ -251,7 +251,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 Thread.sleep(1);
                 timeOutThresholdInMS++;
             } catch(InterruptedException ie) {
-                // No Operation
+                LOGGER.error("Caught interrupted exception: {}", ie);
             }
         }
     }
@@ -284,14 +284,16 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
                 // wait for the flush to catch up. We are going to cap this at
                 int count = 0;
-                while (this.getTotalOutstanding() > WAITING_DOCS_LIMIT && count++ < 500)
+                while (this.getTotalOutstanding() > WAITING_DOCS_LIMIT && count++ < 500) {
                     Thread.sleep(10);
+                }
 
-                if (this.getTotalOutstanding() > WAITING_DOCS_LIMIT)
+                if (this.getTotalOutstanding() > WAITING_DOCS_LIMIT) {
                     LOGGER.warn("Even after back-off there are {} items still in queue.", this.getTotalOutstanding());
+                }
             }
         } catch (Exception e) {
-            LOGGER.warn("We were broken from our loop: {}", e.getMessage());
+            LOGGER.warn("We were broken from our loop: {}", e);
         }
     }
 
@@ -307,35 +309,16 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 .setSource(json);
 
         // / They didn't specify an ID, so we will create one for them.
-        if(id != null)
+        if(id != null) {
             indexRequestBuilder.setId(id);
+        }
 
-        if(ts != null)
+        if(ts != null) {
             indexRequestBuilder.setTimestamp(ts);
+        }
 
         add(indexRequestBuilder.request());
     }
-
-    /**
-     *  This function is trashed... needs to be fixed.
-     *
-     private synchronized void add(UpdateRequest request) {
-     Preconditions.checkNotNull(request);
-     checkAndCreateBulkRequest();
-
-     checkIndexImplications(request.index());
-
-     bulkRequest.add(request);
-     try {
-     Optional<Integer> size = Objects.firstNonNull(
-     Optional.fromNullable(request.doc().source().length()),
-     Optional.fromNullable(request.script().length()));
-     trackItemAndBytesWritten(size.get().longValue());
-     } catch (NullPointerException x) {
-     trackItemAndBytesWritten(1000);
-     }
-     }
-     */
 
     protected void add(IndexRequest request) {
 
@@ -422,36 +405,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         }
     }
 
-    /**
-     *
-     private Set<String> checkIds(Set<String> input, String index, String type) {
-
-     IdsQueryBuilder idsFilterBuilder = new IdsQueryBuilder();
-
-     for (String s : input)
-     idsFilterBuilder.addIds(s);
-
-     SearchRequestBuilder searchRequestBuilder = this.manager.getClient()
-     .prepareSearch(index)
-     .setTypes(type)
-     .setQuery(idsFilterBuilder)
-     .addField("_id")
-     .setSize(input.size());
-
-     SearchHits hits = searchRequestBuilder.execute()
-     .actionGet()
-     .getHits();
-
-     Set<String> toReturn = new HashSet<String>();
-
-     for (SearchHit hit : hits) {
-     toReturn.add(hit.getId());
-     }
-
-     return toReturn;
-     }
-     */
-
     public void prepare(Object configurationObject) {
         this.veryLargeBulk = config.getBulk() == null ?
                 Boolean.FALSE :
@@ -515,22 +468,25 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         // keep track of the number of totalFailed and items that we have totalOk.
         for (BulkItemResponse resp : bulkItemResponses.getItems()) {
-            if (resp == null || resp.isFailed())
+            if (resp == null || resp.isFailed()) {
                 failed++;
-            else
+            } else {
                 passed++;
+            }
         }
 
-        if (failed > 0)
+        if (failed > 0) {
             LOGGER.warn("Bulk Uploading had {} failures of {}", failed, sent);
+        }
 
         this.totalOk.addAndGet(passed);
         this.totalFailed.addAndGet(failed);
         this.totalSeconds.addAndGet(millis / 1000);
         this.totalSizeInBytes.addAndGet(sizeInBytes);
 
-        if (sent != (passed + failed))
+        if (sent != (passed + failed)) {
             LOGGER.error("Count MisMatch: Sent[{}] Passed[{}] Failed[{}]", sent, passed, failed);
+        }
 
         LOGGER.debug("Batch[{}mb {} items with {} failures in {}ms] - Total[{}mb {} items with {} failures in {}seconds] {} outstanding]",
                 MEGABYTE_FORMAT.format(sizeInBytes / (double) (1024 * 1024)), NUMBER_FORMAT.format(passed), NUMBER_FORMAT.format(failed), NUMBER_FORMAT.format(millis),

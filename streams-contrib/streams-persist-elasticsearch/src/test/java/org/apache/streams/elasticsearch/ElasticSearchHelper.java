@@ -38,6 +38,7 @@ public class ElasticSearchHelper {
     private ElasticSearchHelper () { /* Static Constructor */ }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchHelper.class);
+    private static final long DEFAULT_PORT = 9300l;
 
     private static final Map<String, Client> ALL_ES_SERVERS = new HashMap<String, Client>();
 
@@ -100,7 +101,7 @@ public class ElasticSearchHelper {
         config.setHosts(new ArrayList<String>() {{
             add("");
         }});
-        config.setPort(9300l);
+        config.setPort(DEFAULT_PORT);
         return config;
     }
 
@@ -115,7 +116,7 @@ public class ElasticSearchHelper {
         config.setHosts(new ArrayList<String>() {{
             add("");
         }});
-        config.setPort(9300l);
+        config.setPort(DEFAULT_PORT);
         config.setIndex(index);
         config.setType(type);
         config.setBatchSize(batchRecords);
@@ -140,5 +141,4 @@ public class ElasticSearchHelper {
     public static void createIndexWithMapping(ElasticsearchClientManager escm, String index, String type, String mappingAsJson) {
         assertTrue("Able to create mapping", escm.getClient().admin().indices().prepareCreate(index).addMapping(type, mappingAsJson).execute().actionGet().isAcknowledged());
     }
-
 }
