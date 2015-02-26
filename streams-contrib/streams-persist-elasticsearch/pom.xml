@@ -61,14 +61,12 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-runtime-threaded</artifactId>
-            <version>0.2.4-W2O-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-runtime-threaded</artifactId>
-            <version>0.2.4-W2O-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
