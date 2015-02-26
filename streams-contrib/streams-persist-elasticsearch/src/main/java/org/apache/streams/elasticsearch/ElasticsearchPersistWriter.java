@@ -179,7 +179,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             refreshIndexes();
 
             LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
-
+            timer.cancel();
         } catch (Throwable e) {
             // this line of code should be logically unreachable.
             LOGGER.warn("This is unexpected: {}", e.getMessage());
@@ -252,6 +252,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 timeOutThresholdInMS++;
             } catch(InterruptedException ie) {
                 LOGGER.error("Caught interrupted exception: {}", ie);
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -444,7 +445,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         this.batchesSent.incrementAndGet();
 
         try {
-            bulkRequest.execute(new ActionListener<BulkResponse>() {
+            bulkRequest.execute().addListener(new ActionListener<BulkResponse>() {
                 public void onResponse(BulkResponse bulkItemResponses) {
                     batchesResponded.incrementAndGet();
                     updateTotals(bulkItemResponses, sent, sizeInBytes);
