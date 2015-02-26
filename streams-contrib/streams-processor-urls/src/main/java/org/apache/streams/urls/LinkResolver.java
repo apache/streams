@@ -318,11 +318,11 @@ public class LinkResolver implements Serializable {
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.TIME_OUT);
             linkDetails.setRawContent(StringUtils.EMPTY);
         } catch (IOException e) {
-            LOGGER.warn("Socket Timeout: {} - {}", e, connection.getURL().toString());
+            LOGGER.warn("Socket Timeout: {}", connection.getURL().toString(), e);
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
             linkDetails.setRawContent(StringUtils.EMPTY);
         } catch(Throwable e)  {
-            LOGGER.warn("Unknown Error: {} - {}", e, connection.getURL().toString());
+            LOGGER.warn("Unknown Error: {}", connection.getURL().toString(), e);
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
             linkDetails.setRawContent(StringUtils.EMPTY);
         } finally {
