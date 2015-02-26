@@ -253,11 +253,11 @@ public class LinkResolver implements Serializable {
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.TIME_OUT);
             linkDetails.setRawContent(StringUtils.EMPTY);
         } catch (IOException e) {
-            LOGGER.warn("Socket Timeout: {} - {}", e, url);
+            LOGGER.warn("Socket Timeout: {}", url, e);
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
             linkDetails.setRawContent(StringUtils.EMPTY);
         } catch(Throwable e) {
-            LOGGER.warn("Unexpected Runtime Exception: {} - {}", e, url);
+            LOGGER.warn("Unexpected Runtime Exception: {}", url, e);
             linkDetails.setLinkStatus(LinkDetails.LinkStatus.ERROR);
             linkDetails.setRawContent(StringUtils.EMPTY);
         } finally {
@@ -327,8 +327,9 @@ public class LinkResolver implements Serializable {
             linkDetails.setRawContent(StringUtils.EMPTY);
         } finally {
             try {
-                if (inputStream != null)
+                if (inputStream != null) {
                     inputStream.close();
+                }
             } catch (IOException e) {
                 LOGGER.warn("Couldn't close the InputStream: {}", e);
             }

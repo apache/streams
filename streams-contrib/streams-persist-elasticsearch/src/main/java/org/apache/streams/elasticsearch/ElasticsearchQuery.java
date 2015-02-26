@@ -214,8 +214,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
                 totalRead += 1;
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("Unexpected scrolling error: {}", e.getMessage());
+            LOGGER.error("Unexpected scrolling error: {}", e);
             scrollPositionInScroll = -1;
             next = null;
         }
