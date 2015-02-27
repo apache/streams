@@ -1,5 +1,8 @@
 {
     "type": "object",
+    "$license": [
+         "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
     "$schema": "http://json-schema.org/draft-03/schema",
     "id": "#",
     "javaType" : "org.apache.streams.twitter.pojo.Tweet",
