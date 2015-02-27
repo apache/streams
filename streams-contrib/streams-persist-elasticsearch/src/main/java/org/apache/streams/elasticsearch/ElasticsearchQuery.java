@@ -73,6 +73,8 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
         this.config = config;
         this.indexes.addAll(config.getIndexes());
         this.types.addAll(config.getTypes());
+        this.scrollTimeout = config.getScrollTimeout();
+        this.batchSize = config.getBatchSize().intValue();
         this.elasticsearchClientManager = escm;
     }
 
