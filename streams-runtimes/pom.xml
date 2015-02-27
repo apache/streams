@@ -57,6 +57,11 @@
                 <artifactId>streams-pojo</artifactId>
                 <version>0.2.5-W2O-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.streams</groupId>
+                <artifactId>streams-monitoring</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

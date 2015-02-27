@@ -43,6 +43,8 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     private final ThreadingController threadingController;
 
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(ThreadedStreamBuilder.class);
+    public static final String DEFAULT_STREAM_IDENTIFIER = "Unknown_Stream";
+    public static final String STREAM_IDENTIFIER_KEY = "streamsID";
 
     private final List<StreamsGraphElement> graphElements = new ArrayList<StreamsGraphElement>();
 
@@ -217,7 +219,6 @@ public class ThreadedStreamBuilder implements StreamBuilder {
      */
     @Override
     public void start() {
-
         this.tasks.clear();
         createTasks();
 
@@ -236,20 +237,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
                     }
                 }
 
-                if (eventHandlers.size() > 0) {
-                    for (final StreamBuilderEventHandler eventHandler : eventHandlers) {
-                        try {
-                            try {
-                                eventHandler.update(updateMap, getGraphElements());
-                            } catch(Throwable e) {
-                                LOGGER.error("Exception while trying to update event handler: {}", e);
-                            }
-                        }
-                        catch(Throwable e) {
-                            LOGGER.error("Exception while trying to update event handler: {}", e);
-                        }
-                    }
-                }
+                updateEventHandlers(updateMap);
             }
         };
 
@@ -288,6 +276,8 @@ public class ThreadedStreamBuilder implements StreamBuilder {
                 LOGGER.debug("Finishing: {} - Working[{}] Success[{}] Failed[{}] TimeSpent[{}]", k,
                         counts.getWorking(), counts.getSuccess(), counts.getFailed(), counts.getAverageTimeSpent());
             }
+            updateEventHandlers(getUpdateCounts());
+
         } catch (Throwable e) {
             // No Operation
             try {
@@ -307,6 +297,23 @@ public class ThreadedStreamBuilder implements StreamBuilder {
         }
     }
 
+    private void updateEventHandlers(Map<String, StatusCounts> updateMap) {
+        if (eventHandlers.size() > 0) {
+            for (final StreamBuilderEventHandler eventHandler : eventHandlers) {
+                try {
+                    try {
+                        eventHandler.update(updateMap, getGraphElements());
+                    } catch(Throwable e) {
+                        LOGGER.error("Exception while trying to update event handler: {}", e);
+                    }
+                }
+                catch(Throwable e) {
+                    LOGGER.error("Exception while trying to update event handler: {}", e);
+                }
+            }
+        }
+    }
+
     private Condition getOffendingLock() {
         for(StreamsTask t : this.tasks.values()) {
             if(t instanceof StreamsProviderTask) {
@@ -322,6 +329,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     }
 
     protected void shutdown() throws InterruptedException {
+        shutdownExecutor();
         LOGGER.debug("Shutting down...");
     }
 
