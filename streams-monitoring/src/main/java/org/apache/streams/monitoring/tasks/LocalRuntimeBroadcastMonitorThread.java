@@ -127,7 +127,7 @@ public class LocalRuntimeBroadcastMonitorThread {
             try {
                 broadcastURI = new URI(streamConfig.get("broadcastURI").toString());
             } catch (URISyntaxException e) {
-                e.printStackTrace();
+                LOGGER.error("URISyntaxException while trying to set the Broadcast URI: {}", e);
             }
         }
     }
