@@ -14,11 +14,11 @@
     "description": "Snapshot of the DatumStatusCounter",
     "properties": {
         "passed": {
-            "type": "boolean",
+            "type": "long",
             "description": "Number of objects that have passed"
         },
         "failed": {
-            "type": "boolean",
+            "type": "long",
             "description": "Number of objects that have faile"
         },
         "name": {
