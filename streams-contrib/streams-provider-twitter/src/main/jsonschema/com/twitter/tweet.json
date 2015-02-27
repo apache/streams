@@ -1,10 +1,7 @@
 {
-    "$schema": "http://json-schema.org/draft-03/schema",
-    "$license": [
-        "http://www.apache.org/licenses/LICENSE-2.0"
-    ],
-    "id": "#",
     "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
     "javaType" : "org.apache.streams.twitter.pojo.Tweet",
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
@@ -30,11 +27,24 @@
             "type": "string"
         },
         "contributors": {
-            "ignore_malformed": false,
             "type": "array",
-            "items": [{
-                "type" : "number"
-            }]
+            "items": {
+                "type": "object",
+                "javaType" : "org.apache.streams.twitter.pojo.Contributor",
+                "javaInterfaces": ["java.io.Serializable"],
+                "properties": {
+                    "id": {
+                        "ignore_malformed": false,
+                        "type": "integer"
+                    },
+                    "id_str": {
+                        "type": "string"
+                    },
+                    "screen_name": {
+                        "type": "string"
+                    }
+                }
+            }
         },
         "coordinates": {
             "type": "object",
@@ -250,8 +260,8 @@
                             "indices": {
                                 "type": "array",
                                 "items": [{
-                                              "type" : "integer"
-                                          }]
+                                    "type" : "integer"
+                                }]
                             },
                             "screen_name": {
                                 "type": "string"
@@ -275,8 +285,8 @@
                             "indices": {
                                 "type": "array",
                                 "items": [{
-                                              "type": "integer"
-                                          }]
+                                    "type": "integer"
+                                }]
                             }
                         }
                     }
@@ -296,89 +306,6 @@
                                 "items": [
                                     {
                                         "type" : "integer"
-                                    }
-                                ]
-                            },
-                            "display_url": {
-                                "type": "string"
-                            },
-                            "url": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "entities": {
-            "type": "object",
-            "dynamic": "true",
-            "javaType" : "org.apache.streams.twitter.pojo.Entities",
-            "javaInterfaces": ["java.io.Serializable"],
-            "properties": {
-                "user_mentions": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "javaType" : "org.apache.streams.twitter.pojo.UserMentions",
-                        "javaInterfaces": ["java.io.Serializable"],
-                        "properties": {
-                            "id": {
-                                "ignore_malformed": false,
-                                "type": "integer"
-                            },
-                            "name": {
-                                "type": "string"
-                            },
-                            "indices": {
-                                "type": "array",
-                                "items": [{
-                                    "type" : "integer"
-                                }]
-                            },
-                            "screen_name": {
-                                "type": "string"
-                            },
-                            "id_str": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                },
-                "hashtags": {
-                    "type": "array",
-                    "items": {
-                         "type": "object",
-                         "javaType": "org.apache.streams.twitter.pojo.Hashtag",
-                         "javaInterfaces": ["java.io.Serializable"],
-                         "properties": {
-                             "text": {
-                                 "type": "string"
-                             },
-                             "indices": {
-                                 "type": "array",
-                                 "items": [{
-                                         "type": "integer"
-                                 }]
-                             }
-                          }
-                    }
-                },
-                "urls": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "javaType": "org.apache.streams.twitter.Url",
-                        "javaInterfaces": ["java.io.Serializable"],
-                        "properties": {
-                            "expanded_url": {
-                                "type": "string"
-                            },
-                            "indices": {
-                                "type": "array",
-                                "items": [
-                                    {
-                                    "type" : "integer"
                                     }
                                 ]
                             },
@@ -413,8 +340,8 @@
             "type": "boolean"
         },
         "favorite_count": {
-          "ignore_malformed": false,
-          "type": "integer"
+            "ignore_malformed": false,
+            "type": "integer"
         },
         "possibly_sensitive": {
             "type": "boolean"
@@ -463,6 +390,82 @@
                 },
                 "profile_link_color": {
                     "type": "string"
+                },
+                "entities": {
+                    "type": "object",
+                    "dynamic": "true",
+                    "javaInterfaces": ["java.io.Serializable"],
+                    "javaType" : "org.apache.streams.twitter.pojo.UserEntities",
+                    "properties": {
+                        "description" : {
+                            "type": "object",
+                            "javaInterfaces": ["java.io.Serializable"],
+                            "javaType" : "org.apache.streams.twitter.pojo.UserDescriptionEntity",
+                            "properties": {
+                                "urls": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "javaType": "org.apache.streams.twitter.Url",
+                                        "javaInterfaces": ["java.io.Serializable"],
+                                        "properties": {
+                                            "expanded_url": {
+                                                "type": "string"
+                                            },
+                                            "indices": {
+                                                "type": "array",
+                                                "items": [
+                                                    {
+                                                        "type": "integer"
+                                                    }
+                                                ]
+                                            },
+                                            "display_url": {
+                                                "type": "string"
+                                            },
+                                            "url": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "url" : {
+                            "type": "object",
+                            "javaInterfaces": ["java.io.Serializable"],
+                            "javaType" : "org.apache.streams.twitter.pojo.UserUrlEntity",
+                            "properties": {
+                                "urls": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "javaType": "org.apache.streams.twitter.Url",
+                                        "javaInterfaces": ["java.io.Serializable"],
+                                        "properties": {
+                                            "expanded_url": {
+                                                "type": "string"
+                                            },
+                                            "indices": {
+                                                "type": "array",
+                                                "items": [
+                                                    {
+                                                        "type": "integer"
+                                                    }
+                                                ]
+                                            },
+                                            "display_url": {
+                                                "type": "string"
+                                            },
+                                            "url": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 },
                 "id": {
                     "ignore_malformed": false,
