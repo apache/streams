@@ -20,6 +20,12 @@
         "truncated": {
             "type": "boolean"
         },
+        "retweeted_status": {
+            "type": "object",
+            "required" : false,
+            "description" : "Describes the tweet being retweeted.",
+            "$ref" : "tweet.json"
+        },
         "filter_level": {
             "type": "string"
         },
@@ -46,6 +52,260 @@
                                 "type": "integer"
                             }
                         ]
+                    }
+                }
+            }
+        },
+        "extended_entities" : {
+            "dynamic": "true",
+            "javaInterfaces": [
+                "java.io.Serializable"
+            ],
+            "javaType": "org.apache.streams.twitter.pojo.ExtendedEntities",
+            "properties": {
+                "media": {
+                    "items": {
+                        "javaInterfaces": [
+                            "java.io.Serializable"
+                        ],
+                        "javaType": "org.apache.streams.twitter.pojo.ExtendedEntitiesMedia",
+
+                        "properties": {
+                            "display_url": {
+                                "required": false,
+                                "type": "string"
+                            },
+                            "expanded_url": {
+                                "required": false,
+                                "type": "string"
+                            },
+                            "id": {
+                                "ignore_malformed": false,
+                                "type": "integer"
+                            },
+                            "id_str": {
+                                "required": false,
+                                "type": "string"
+                            },
+                            "indices": {
+                                "items": {
+                                    "required": false,
+                                    "type": "number"
+                                },
+                                "required": false,
+                                "type": "array"
+                            },
+                            "media_url": {
+                                "required": false,
+                                "type": "string"
+                            },
+                            "media_url_https": {
+                                "required": false,
+                                "type": "string"
+                            },
+                            "sizes": {
+                                "properties": {
+                                    "large": {
+                                        "javaInterfaces": [
+                                            "java.io.Serializable"
+                                        ],
+                                        "javaType": "org.apache.streams.twitter.pojo.ExtendedEntitiesMediaSize",
+
+                                        "properties": {
+                                            "h": {
+                                                "ignore_malformed": false,
+                                                "type": "integer"
+                                            },
+                                            "resize": {
+                                                "required": false,
+                                                "type": "string"
+                                            },
+                                            "w": {
+                                                "ignore_malformed": false,
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "required": false,
+                                        "type": "object"
+                                    },
+                                    "medium": {
+                                        "javaInterfaces": [
+                                            "java.io.Serializable"
+                                        ],
+                                        "javaType": "org.apache.streams.twitter.pojo.ExtendedEntitiesMediaSize",
+
+                                        "properties": {
+                                            "h": {
+                                                "ignore_malformed": false,
+                                                "type": "integer"
+                                            },
+                                            "resize": {
+                                                "required": false,
+                                                "type": "string"
+                                            },
+                                            "w": {
+                                                "ignore_malformed": false,
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "required": false,
+                                        "type": "object"
+                                    },
+                                    "small": {
+                                        "javaInterfaces": [
+                                            "java.io.Serializable"
+                                        ],
+                                        "javaType": "org.apache.streams.twitter.pojo.ExtendedEntitiesMediaSize",
+
+                                        "properties": {
+                                            "h": {
+                                                "ignore_malformed": false,
+                                                "type": "integer"
+                                            },
+                                            "resize": {
+                                                "required": false,
+                                                "type": "string"
+                                            },
+                                            "w": {
+                                                "ignore_malformed": false,
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "required": false,
+                                        "type": "object"
+                                    },
+                                    "thumb": {
+                                        "javaInterfaces": [
+                                            "java.io.Serializable"
+                                        ],
+                                        "javaType": "org.apache.streams.twitter.pojo.ExtendedEntitiesMediaSize",
+
+                                        "properties": {
+                                            "h": {
+                                                "ignore_malformed": false,
+                                                "type": "integer"
+                                            },
+                                            "resize": {
+                                                "required": false,
+                                                "type": "string"
+                                            },
+                                            "w": {
+                                                "ignore_malformed": false,
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "required": false,
+                                        "type": "object"
+                                    }
+                                },
+                                "required": false,
+                                "type": "object"
+                            },
+                            "source_status_id": {
+                                "required": false,
+                                "type": "number"
+                            },
+                            "source_status_id_str": {
+                                "required": false,
+                                "type": "string"
+                            },
+                            "type": {
+                                "required": false,
+                                "type": "string"
+                            },
+                            "url": {
+                                "required": false,
+                                "type": "string"
+                            }
+                        },
+                        "required": false,
+                        "type": "object"
+                    },
+                    "required": false,
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "entities": {
+            "type": "object",
+            "dynamic": "true",
+            "javaType" : "org.apache.streams.twitter.pojo.Entities",
+            "javaInterfaces": ["java.io.Serializable"],
+            "properties": {
+                "user_mentions": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "javaType" : "org.apache.streams.twitter.pojo.UserMentions",
+                        "javaInterfaces": ["java.io.Serializable"],
+                        "properties": {
+                            "id": {
+                                "ignore_malformed": false,
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "indices": {
+                                "type": "array",
+                                "items": [{
+                                              "type" : "integer"
+                                          }]
+                            },
+                            "screen_name": {
+                                "type": "string"
+                            },
+                            "id_str": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "hashtags": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "javaType": "org.apache.streams.twitter.pojo.Hashtag",
+                        "javaInterfaces": ["java.io.Serializable"],
+                        "properties": {
+                            "text": {
+                                "type": "string"
+                            },
+                            "indices": {
+                                "type": "array",
+                                "items": [{
+                                              "type": "integer"
+                                          }]
+                            }
+                        }
+                    }
+                },
+                "urls": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "javaType": "org.apache.streams.twitter.Url",
+                        "javaInterfaces": ["java.io.Serializable"],
+                        "properties": {
+                            "expanded_url": {
+                                "type": "string"
+                            },
+                            "indices": {
+                                "type": "array",
+                                "items": [
+                                    {
+                                        "type" : "integer"
+                                    }
+                                ]
+                            },
+                            "display_url": {
+                                "type": "string"
+                            },
+                            "url": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             }
@@ -151,6 +411,10 @@
         },
         "favorited": {
             "type": "boolean"
+        },
+        "favorite_count": {
+          "ignore_malformed": false,
+          "type": "integer"
         },
         "possibly_sensitive": {
             "type": "boolean"

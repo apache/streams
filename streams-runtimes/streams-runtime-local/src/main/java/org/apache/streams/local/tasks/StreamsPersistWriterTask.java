@@ -143,6 +143,11 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
         } catch(Exception e) {
             LOGGER.error("Failed to execute Persist Writer {}",this.writer.getClass().getSimpleName(), e);
         } finally {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                LOGGER.error("Sleep interrupted: {}", e);
+            }
             this.writer.cleanUp();
             this.isRunning.set(false);
         }
