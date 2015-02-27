@@ -31,11 +31,6 @@ import java.util.concurrent.BlockingQueue;
  */
 public class GPlusUserActivityProvider extends AbstractGPlusProvider{
 
-
-    public GPlusUserActivityProvider() {
-        super();
-    }
-
     public GPlusUserActivityProvider(GPlusConfiguration config) {
         super(config);
     }

@@ -120,12 +120,12 @@ public class RssStreamProviderTask implements Runnable {
     }
 
     /**
-     * RssStreamProviderTask that reads an rss feed url and queues the resulting articles as StreamsDatums with the documents
+     * RssStreamProviderTask that reads an rss feed urls and queues the resulting articles as StreamsDatums with the documents
      * being object nodes.
      * @param queue Queue to push data to
-     * @param rssFeed url of rss feed to read
+     * @param rssFeed urls of rss feed to read
      * @param publishedSince DateTime to filter articles by, will queue articles with published times after this
-     * @param timeOut url connection timeout in milliseconds
+     * @param timeOut urls connection timeout in milliseconds
      * @param perpetual true, if you want to run in perpetual mode. NOT RECOMMENDED
      */
     public RssStreamProviderTask(BlockingQueue<StreamsDatum> queue, String rssFeed, DateTime publishedSince, int timeOut, boolean perpetual) {
@@ -138,8 +138,8 @@ public class RssStreamProviderTask implements Runnable {
     }
 
     /**
-     * The rss feed url that this task is responsible for reading
-     * @return rss feed url
+     * The rss feed urls that this task is responsible for reading
+     * @return rss feed urls
      */
     public String getRssFeed() {
         return this.rssFeed;
@@ -157,10 +157,10 @@ public class RssStreamProviderTask implements Runnable {
     }
 
     /**
-     * Reads the url and queues the data
-     * @param feedUrl rss feed url
+     * Reads the urls and queues the data
+     * @param feedUrl rss feed urls
      * @return set of all article urls that were read from the feed
-     * @throws IOException when it cannot connect to the url or the url is malformed
+     * @throws IOException when it cannot connect to the urls or the urls is malformed
      * @throws FeedException when it cannot reed the feed.
      */
     @VisibleForTesting

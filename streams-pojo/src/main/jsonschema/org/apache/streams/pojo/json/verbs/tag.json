@@ -7,7 +7,7 @@
     "id": "#",
     "type": "object",
     "title": "Tag",
-    "description": "To tag an object. Ex: A person being tagged in a photo",
+    "description": "Indicates that the actor has associated the object with the target. For example, if the actor specifies that a particular user appears in a photo. the object is the user and the target is the photo.",
     "extends": {
         "$ref": "../activity.json"
     },
@@ -18,7 +18,7 @@
         },
         "title": {
             "type": "string",
-            "default": "{actor.displayName} tagged {object.displayName} in {target.displayName}"
+            "default": "{actor.displayName} tagged {object.displayName} as {target.displayName}"
         }
     }
 }

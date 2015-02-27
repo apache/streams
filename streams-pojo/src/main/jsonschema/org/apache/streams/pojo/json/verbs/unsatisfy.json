@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "title": "UnSatisfy",
+    "description": "Indicates that the actor has not satisfied the object. If a target is specified, it indicates the context within which the object was not satisfied. For instance, if a person fails to satisfy the requirements of some particular challenge, the person is the actor; the requirement is the object and the challenge is the target.",
+    "extends": {
+        "$ref": "../activity.json"
+    },
+    "properties": {
+        "verb": {
+            "type": "string",
+            "default": "unsatisfy"
+        },
+        "title": {
+            "type": "string",
+            "default": "{actor.displayName} has not satisfied {object.displayName}"
+        }
+    }
+}

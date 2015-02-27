@@ -155,7 +155,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                         DatumUtils.addErrorToMetadata(datum, t, this.processor.getClass());
                     }
                 } else {
-                    LOGGER.debug("Removed NULL datum from queue at processor : {}", this.processor.getClass().getName());
+                    //LOGGER.debug("Removed NULL datum from queue at processor : {}", this.processor.getClass().getName());
                 }
             }
         } finally {
