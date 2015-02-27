@@ -190,8 +190,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             }
         } catch (Throwable e) {
             // this line of code should be logically unreachable.
-            LOGGER.warn("This is unexpected: {}", e.getMessage());
-            e.printStackTrace();
+            LOGGER.warn("This is unexpected: {}", e);
         }
     }
 
