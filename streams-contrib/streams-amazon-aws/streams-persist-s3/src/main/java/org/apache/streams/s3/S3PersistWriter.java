@@ -254,7 +254,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
             try {
                 // if the user has chosen to not set the object mapper, then set a default object mapper for them.
                 if (this.objectMapper == null)
-                    this.objectMapper = new StreamsJacksonMapper();
+                    this.objectMapper = StreamsJacksonMapper.getInstance();
 
                 // Create the credentials Object
                 if (this.amazonS3Client == null) {

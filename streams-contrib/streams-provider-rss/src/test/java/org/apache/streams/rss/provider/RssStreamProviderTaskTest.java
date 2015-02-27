@@ -47,17 +47,17 @@ public class RssStreamProviderTaskTest {
     }
 
     /**
-     * Test that a task can read a valid rss from a url and queue the data
+     * Test that a task can read a valid rss from a urls and queue the data
      * @throws Exception
      */
     @Test
     public void testNonPerpetualNoTimeFramePull() throws Exception {
         com.healthmarketscience.common.util.resource.Handler.init();
         BlockingQueue<StreamsDatum> queue = new LinkedBlockingQueue<>();
-        RssStreamProviderTask task = new RssStreamProviderTask(queue, "fake url");
+        RssStreamProviderTask task = new RssStreamProviderTask(queue, "fake urls");
         Set<String> batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
         assertEquals("Expected batch size to be the same as amount of queued datums", batch.size(), queue.size());
-        RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake url", batch);
+        RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake urls", batch);
         //Test that  it will out previously seen articles
         queue.clear();
         batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
@@ -72,16 +72,16 @@ public class RssStreamProviderTaskTest {
     public void testPerpetualNoTimeFramePull() throws Exception {
         com.healthmarketscience.common.util.resource.Handler.init();
         BlockingQueue<StreamsDatum> queue = new LinkedBlockingQueue<>();
-        RssStreamProviderTask task = new RssStreamProviderTask(queue, "fake url", new DateTime().minusYears(1), 10000, true);
+        RssStreamProviderTask task = new RssStreamProviderTask(queue, "fake urls", new DateTime().minusYears(1), 10000, true);
         Set<String> batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
         assertEquals("Expected batch size to be the same as amount of queued datums", batch.size(), queue.size());
-        RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake url", batch);
+        RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake urls", batch);
         //Test that it will not out previously seen articles
         queue.clear();
         batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
         assertEquals("Expected queue size to be 0", 0, queue.size());
         assertEquals("Expected batch size to be 20", 20, batch.size());
-        RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake url", batch);
+        RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake urls", batch);
         //Test that not seen urls aren't blocked.
         queue.clear();
         batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist2.xml"));
@@ -99,12 +99,12 @@ public class RssStreamProviderTaskTest {
         com.healthmarketscience.common.util.resource.Handler.init();
         BlockingQueue<StreamsDatum> queue = new LinkedBlockingQueue<>();
         DateTime publishedSince = new DateTime().withYear(2014).withDayOfMonth(5).withMonthOfYear(9).withZone(DateTimeZone.UTC);
-        RssStreamProviderTask task = new RssStreamProviderTask(queue, "fake url", publishedSince, 10000, false);
+        RssStreamProviderTask task = new RssStreamProviderTask(queue, "fake urls", publishedSince, 10000, false);
         Set<String> batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
         assertEquals( 15, queue.size());
         assertEquals( 20 , batch.size());
         assertTrue( queue.size() < batch.size());
-        RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake url", batch);
+        RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake urls", batch);
         //Test that  it will out previously seen articles
         queue.clear();
         batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
@@ -122,19 +122,19 @@ public class RssStreamProviderTaskTest {
         com.healthmarketscience.common.util.resource.Handler.init();
         BlockingQueue<StreamsDatum> queue = new LinkedBlockingQueue<>();
         DateTime publishedSince = new DateTime().withYear(2014).withDayOfMonth(5).withMonthOfYear(9).withZone(DateTimeZone.UTC);
-        RssStreamProviderTask task = new RssStreamProviderTask(queue, "fake url", publishedSince, 10000, true);
+        RssStreamProviderTask task = new RssStreamProviderTask(queue, "fake urls", publishedSince, 10000, true);
         Set<String> batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
         assertEquals( 15, queue.size());
         assertEquals( 20 , batch.size());
         assertTrue( queue.size() < batch.size());
-        RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake url", batch);
+        RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake urls", batch);
         //Test that  it will not out put previously seen articles
         queue.clear();
         batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
         assertEquals( 0, queue.size());
         assertEquals( 20 , batch.size());
         assertTrue( queue.size() < batch.size());
-        RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake url", batch);
+        RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake urls", batch);
 
         batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist2.xml"));
         assertTrue( queue.size() < batch.size());

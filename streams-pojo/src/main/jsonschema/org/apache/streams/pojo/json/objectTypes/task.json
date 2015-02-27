@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "title": "task",
+    "extends": {
+        "$ref": "../activity.json"
+    },
+    "properties": {
+        "objectType": {
+            "type": "string",
+            "default": "task"
+        },
+        "by": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "extends": {
+              "$ref": "./task.json"
+            }
+          }
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "supersedes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "extends": {
+              "$ref": "./task.json"
+            }
+          }
+        }
+    }
+}

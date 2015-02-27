@@ -28,8 +28,9 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import java.io.IOException;
 
 public class YoutubeEventClassifier {
-    private static ObjectMapper mapper = new StreamsJacksonMapper();
+    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
     private static final String VIDEO_IDENTIFIER = "\"youtube#video\"";
+    private static final String CHANNEL_IDENTIFIER = "youtube#channel";
 
     public static Class detectClass(String json) {
         Preconditions.checkNotNull(json);
@@ -45,7 +46,9 @@ public class YoutubeEventClassifier {
 
         if (objectNode.findValue("kind") != null && objectNode.get("kind").toString().equals(VIDEO_IDENTIFIER)) {
             return Video.class;
-        }  else  {
+        }  else if (objectNode.findValue("kind") != null && objectNode.get("kind").toString().contains(CHANNEL_IDENTIFIER)){
+            return com.google.api.services.youtube.model.Channel.class;
+        }  else {
             return ObjectNode.class;
         }
     }

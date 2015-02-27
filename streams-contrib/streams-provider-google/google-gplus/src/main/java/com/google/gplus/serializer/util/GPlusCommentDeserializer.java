@@ -52,7 +52,7 @@ public class GPlusCommentDeserializer  extends JsonDeserializer<Comment> {
     public Comment deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
 
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        ObjectMapper objectMapper = new StreamsJacksonMapper();
+        ObjectMapper objectMapper = StreamsJacksonMapper.getInstance();
         Comment comment = new Comment();
 
         try {

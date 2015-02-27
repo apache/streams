@@ -97,7 +97,7 @@ public class YoutubeActivityUtil {
 
     public static Actor createActorForChannel(Channel channel) {
         Actor actor = new Actor();
-
+        
         actor.setId("id:youtube:" + channel.getId());
         actor.setSummary(channel.getSnippet().getDescription());
         actor.setDisplayName(channel.getSnippet().getTitle());
@@ -112,7 +112,6 @@ public class YoutubeActivityUtil {
         actorExtensions.put("followers", channel.getStatistics().getSubscriberCount());
         actorExtensions.put("posts", channel.getStatistics().getVideoCount());
         actor.setAdditionalProperty("extensions", actorExtensions);
-
         return actor;
     }
 

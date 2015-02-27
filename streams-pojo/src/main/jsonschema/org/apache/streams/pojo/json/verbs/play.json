@@ -7,7 +7,7 @@
     "id": "#",
     "type": "object",
     "title": "Play",
-    "description": "To play an object",
+    "description": "Indicates that the actor spent some time enjoying the object. For example, if the object is a video this indicates that the subject watched all or part of the video.",
     "extends": {
         "$ref": "../activity.json"
     },

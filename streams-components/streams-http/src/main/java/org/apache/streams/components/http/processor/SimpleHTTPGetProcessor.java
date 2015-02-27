@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Processor retrieves contents from an known url and stores the resulting object in an extension field
+ * Processor retrieves contents from an known urls and stores the resulting object in an extension field
  */
 public class SimpleHTTPGetProcessor implements StreamsProcessor {
 
@@ -70,11 +70,6 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
     protected HttpProcessorConfiguration configuration;
 
     protected String authHeader;
-//
-//    // authorized only
-//    //private PeoplePatternConfiguration peoplePatternConfiguration = null;
-//    //private String authHeader;
-//
     public SimpleHTTPGetProcessor() {
         this(HttpConfigurator.detectProcessorConfiguration(StreamsConfigurator.config.getConfig("http")));
     }
@@ -154,16 +149,7 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
 
         Map<String, String> params = prepareParams(entry);
 
-        URI uri;
-        for( Map.Entry<String,String> param : params.entrySet()) {
-            uriBuilder = uriBuilder.setParameter(param.getKey(), param.getValue());
-        }
-        try {
-            uri = uriBuilder.build();
-        } catch (URISyntaxException e) {
-            LOGGER.error("URI error {}", uriBuilder.toString());
-            return result;
-        }
+        URI uri = prepareURI(params);
 
         HttpGet httpget = prepareHttpGet(uri);
 
@@ -208,6 +194,23 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
     }
 
     /**
+     Override this to alter request URI
+     */
+    protected URI prepareURI(Map<String, String> params) {
+
+        URI uri = null;
+        for( Map.Entry<String,String> param : params.entrySet()) {
+            uriBuilder = uriBuilder.setParameter(param.getKey(), param.getValue());
+        }
+        try {
+            uri = uriBuilder.build();
+        } catch (URISyntaxException e) {
+            LOGGER.error("URI error {}", uriBuilder.toString());
+        }
+        return uri;
+    }
+
+    /**
      Override this to add parameters to the request
      */
     protected Map<String, String> prepareParams(StreamsDatum entry) {
@@ -215,6 +218,12 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
         return Maps.newHashMap();
     }
 
+    /**
+     Override this to set a payload on the request
+     */
+    protected ObjectNode preparePayload(StreamsDatum entry) {
+        return null;
+    }
 
     public HttpGet prepareHttpGet(URI uri) {
         HttpGet httpget = new HttpGet(uri);

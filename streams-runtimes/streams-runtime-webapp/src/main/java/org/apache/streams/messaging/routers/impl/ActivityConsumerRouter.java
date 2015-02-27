@@ -67,11 +67,11 @@ public class ActivityConsumerRouter extends RouteBuilder implements ActivityCons
 
                     if (configuration.getPublisherEndpointProtocol().equals(EipConfigurator.ENDPOINT_PROTOCOL_JETTY)){
                         activityConsumer.setInRoute(configuration.getConsumerInRouteHost()+ ":" + configuration.getConsumerInRoutePort() +"/" + configuration.getPublisherEndpointUrlResource() + "/" + UUID.randomUUID());
-                        //set the body to the url the producer should post to
+                        //set the body to the urls the producer should post to
                         exchange.getOut().setBody("http://" + activityConsumer.getInRoute());
                     }else if (configuration.getPublisherEndpointProtocol().equals(EipConfigurator.ENDPOINT_PROTOCOL_SERVLET)){
                         activityConsumer.setInRoute( configuration.getPublisherEndpointUrlResource() + "/" + UUID.randomUUID());
-                        //set the body to the url the producer should post to
+                        //set the body to the urls the producer should post to
                         exchange.getOut().setBody(configuration.getBaseUrlPath() + activityConsumer.getInRoute());
                     } else{
                         throw new Exception("No supported endpoint protocol is configured.");
