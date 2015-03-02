@@ -50,14 +50,14 @@ public class ThreadingController {
     private volatile double lastCPUObservation = 0.0;
 
     private static final long SCALE_CHECK = 2000;
+    private static final Integer NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
+
     private Double scaleThreshold = .85;
     private ThreadingControllerCPUObserver threadingControllerCPUObserver = new DefaultThreadingControllerCPUObserver();
 
-    private static final Integer NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
-
-    private static ThreadingController INSTANCE_LOW_PRIORITY;
-    private static ThreadingController INSTANCE;
-    private static ThreadingController INSTANCE_HIGH_PRIORITY;
+    private static ThreadingController instanceLowPriority;
+    private static ThreadingController instance;
+    private static ThreadingController instanceHighPriority;
 
     /**
      * Use for very low priority items... The thread-pool that runs this runs at priority
@@ -67,28 +67,28 @@ public class ThreadingController {
      */
     public static ThreadingController getInstanceLowPriority() {
         synchronized (ThreadingController.class) {
-            if(INSTANCE_LOW_PRIORITY == null) {
-                INSTANCE_LOW_PRIORITY = new ThreadingController("Apache Streams [low]", NUM_PROCESSORS, NUM_PROCESSORS * 2, Thread.NORM_PRIORITY - 2);
+            if(instanceLowPriority == null) {
+                instanceLowPriority = new ThreadingController("Apache Streams [low]", NUM_PROCESSORS, NUM_PROCESSORS * 2, Thread.NORM_PRIORITY - 2);
             }
-            return INSTANCE_LOW_PRIORITY;
+            return instanceLowPriority;
         }
     }
 
     public static ThreadingController getInstance() {
         synchronized (ThreadingController.class) {
-            if (INSTANCE == null) {
-                INSTANCE = new ThreadingController("Apache Streams [default]", NUM_PROCESSORS, NUM_PROCESSORS * 5, Thread.NORM_PRIORITY);
+            if (instance == null) {
+                instance = new ThreadingController("Apache Streams [default]", NUM_PROCESSORS, NUM_PROCESSORS * 5, Thread.NORM_PRIORITY);
             }
-            return INSTANCE;
+            return instance;
         }
     }
 
     public static ThreadingController getInstanceHighPriority() {
         synchronized (ThreadingController.class) {
-            if (INSTANCE_HIGH_PRIORITY == null) {
-                INSTANCE_HIGH_PRIORITY = new ThreadingController("Apache Streams [high]", NUM_PROCESSORS, NUM_PROCESSORS * 7, Thread.NORM_PRIORITY + 2);
+            if (instanceHighPriority == null) {
+                instanceHighPriority = new ThreadingController("Apache Streams [high]", NUM_PROCESSORS, NUM_PROCESSORS * 7, Thread.NORM_PRIORITY + 2);
             }
-            return INSTANCE_HIGH_PRIORITY;
+            return instanceHighPriority;
         }
     }
 
