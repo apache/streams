@@ -127,6 +127,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements Runnable {
             this.keepRunning.set(false);
             checkLockSignal();
         }
+        LOGGER.debug("Finished Provider: {}", this.getId());
     }
 
     public void flushResults(StreamsResultSet streamsResultSet) {
