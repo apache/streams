@@ -40,33 +40,23 @@ import java.util.concurrent.locks.Condition;
  */
 public class ThreadedStreamBuilder implements StreamBuilder {
 
-    private final ThreadingController threadingController;
-
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(ThreadedStreamBuilder.class);
     public static final String DEFAULT_STREAM_IDENTIFIER = "Unknown_Stream";
     public static final String STREAM_IDENTIFIER_KEY = "streamsID";
 
-    private final List<StreamsGraphElement> graphElements = new ArrayList<StreamsGraphElement>();
+    private final List<StreamsGraphElement> graphElements = new ArrayList<>();
 
     public static final String TIMEOUT_KEY = "TIMEOUT";
-    private static final Timer TIMER = new Timer(true);
     private static final List<ThreadedStreamBuilder> CURRENTLY_EXECUTING = Collections.synchronizedList(new ArrayList<ThreadedStreamBuilder>());
-    private static final ExecutorService PROVIDER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread t = new Thread(r);
-            t.setName("Apache Streams - Provider[" + DateTime.now().toString() + "]");
-            t.setPriority(Math.max(1,(int)(Thread.currentThread().getPriority() * .5)));
-            return t;
-        }
-    });
 
+    private ExecutorService providerExecutor;
+    private final ThreadingController threadingController;
     private final Queue<StreamsDatum> queue;
     private final Map<String, StreamComponent> providers;
     private final Map<String, StreamComponent> components;
     private final Map<String, Object> streamConfig;
-    private final Map<String, StreamsTask> tasks = new LinkedHashMap<String, StreamsTask>();
-    private final Collection<StreamBuilderEventHandler> eventHandlers = new ArrayList<StreamBuilderEventHandler>();
+    private final Map<String, StreamsTask> tasks = new LinkedHashMap<>();
+    private final Collection<StreamBuilderEventHandler> eventHandlers = new ArrayList<>();
 
     public ThreadedStreamBuilder() {
         this(new ArrayBlockingQueue<StreamsDatum>(2000), null, ThreadingController.getInstance());
@@ -219,7 +209,25 @@ public class ThreadedStreamBuilder implements StreamBuilder {
      */
     @Override
     public void start() {
+
         this.tasks.clear();
+
+        // Let the threading controller know that we will need this until we call release.
+        this.getThreadingController().lock();
+
+        // create a new timer to update the tasks
+        Timer timer = new Timer(true);
+
+        this.providerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setName("Apache Streams - Provider[" + DateTime.now().toString() + "]");
+                t.setPriority(Math.max(1,(int)(Thread.currentThread().getPriority() * .5)));
+                return t;
+            }
+        });
+
         createTasks();
 
         // if anyone would like to listen in to progress events
@@ -241,14 +249,13 @@ public class ThreadedStreamBuilder implements StreamBuilder {
             }
         };
 
-
         try {
             synchronized (ThreadedStreamBuilder.class) {
                 CURRENTLY_EXECUTING.add(this);
             }
 
             if(updateTask != null) {
-                TIMER.schedule(updateTask, 0, 1500);
+                timer.schedule(updateTask, 0, 1500);
             }
 
             for(StreamsTask t : this.tasks.values()) {
@@ -258,7 +265,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
             // Starting all the tasks
             for(StreamsTask task : this.tasks.values()) {
                 if (task instanceof Runnable) {
-                    PROVIDER_EXECUTOR.execute((Runnable) task);
+                    providerExecutor.execute((Runnable) task);
                 }
             }
 
@@ -278,6 +285,9 @@ public class ThreadedStreamBuilder implements StreamBuilder {
             }
             updateEventHandlers(getUpdateCounts());
 
+            // Call the shutdown procedure.
+            shutdown();
+
         } catch (Throwable e) {
             // No Operation
             try {
@@ -287,13 +297,22 @@ public class ThreadedStreamBuilder implements StreamBuilder {
                 LOGGER.error("Unexpected Error: {}", omgE);
             }
         } finally {
-            synchronized (ThreadedStreamBuilder.class) {
+
+            // cancel the timer
+            timer.cancel();
+
+            synchronized (CURRENTLY_EXECUTING) {
                 CURRENTLY_EXECUTING.remove(this);
             }
+
+            // Call the release on the threaded builder
+            this.getThreadingController().release();
+
             // kill the updateTask
             if(updateTask != null) {
                 updateTask.cancel();
             }
+
         }
     }
 
@@ -325,12 +344,20 @@ public class ThreadedStreamBuilder implements StreamBuilder {
         return null;
     }
 
-    private void shutdownExecutor() {
+    private void shutdownExecutor(ExecutorService executorService) throws InterruptedException {
+        executorService.shutdown();
+        if(!executorService.awaitTermination(10, TimeUnit.MINUTES)) {
+            executorService.shutdownNow();
+            if(!executorService.awaitTermination(10, TimeUnit.MINUTES)) {
+                LOGGER.debug("Unable to shutdown Provider Executor service");
+            }
+        }
     }
 
     protected void shutdown() throws InterruptedException {
-        shutdownExecutor();
         LOGGER.debug("Shutting down...");
+        shutdownExecutor(this.providerExecutor);
+        LOGGER.debug("Shut down");
     }
 
     protected void createTasks() {
@@ -379,11 +406,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     @SuppressWarnings("unchecked")
     private Queue<StreamsDatum> cloneQueue() {
         Object toReturn = SerializationUtil.cloneBySerialization(this.queue);
-        if(toReturn instanceof Queue) {
-            return (Queue<StreamsDatum>) toReturn;
-        } else {
-            throw new RuntimeException("Unable to clone the queue");
-        }
+        return (Queue<StreamsDatum>) toReturn;
     }
 
     protected int getTimeout() {

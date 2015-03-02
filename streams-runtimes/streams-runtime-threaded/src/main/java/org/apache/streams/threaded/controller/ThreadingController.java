@@ -37,9 +37,10 @@ public class ThreadingController {
     private final String name;
     private final int maxNumberOfThreads;
     private final int priority;
-    private final ThreadPoolExecutor threadPoolExecutor;
-    private final ListeningExecutorService listeningExecutorService;
+    private ThreadPoolExecutor threadPoolExecutor;
+    private ListeningExecutorService listeningExecutorService;
     private final Condition lock = new SimpleCondition();
+    private final AtomicInteger usingCount = new AtomicInteger(0);
     private final AtomicInteger numThreads;
     private final AtomicLong lastWorked = new AtomicLong(new Date().getTime());
     private final AtomicLong numberOfObservations = new AtomicLong(0);
@@ -49,14 +50,14 @@ public class ThreadingController {
     private volatile double lastCPUObservation = 0.0;
 
     private static final long SCALE_CHECK = 2000;
+    private static final Integer NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
+
     private Double scaleThreshold = .85;
     private ThreadingControllerCPUObserver threadingControllerCPUObserver = new DefaultThreadingControllerCPUObserver();
 
-    private static final Integer NUM_PROCESSORS = Runtime.getRuntime().availableProcessors();
-
-    private static final ThreadingController INSTANCE_LOW_PRIORITY = new ThreadingController("Apache Streams [low]", NUM_PROCESSORS, NUM_PROCESSORS * 2, Thread.NORM_PRIORITY - 2);
-    private static final ThreadingController INSTANCE = new ThreadingController("Apache Streams [default]", NUM_PROCESSORS, NUM_PROCESSORS * 5, Thread.NORM_PRIORITY);
-    private static final ThreadingController INSTANCE_HIGH_PRIORITY = new ThreadingController("Apache Streams [high]", NUM_PROCESSORS, NUM_PROCESSORS * 7, Thread.NORM_PRIORITY + 2);
+    private static ThreadingController instanceLowPriority;
+    private static ThreadingController instance;
+    private static ThreadingController instanceHighPriority;
 
     /**
      * Use for very low priority items... The thread-pool that runs this runs at priority
@@ -65,15 +66,37 @@ public class ThreadingController {
      * The threading controller
      */
     public static ThreadingController getInstanceLowPriority() {
-        return INSTANCE_LOW_PRIORITY;
+        synchronized (ThreadingController.class) {
+            if(instanceLowPriority == null) {
+                instanceLowPriority = new ThreadingController("Apache Streams [low]", NUM_PROCESSORS, NUM_PROCESSORS * 2, Thread.NORM_PRIORITY - 2);
+            }
+            return instanceLowPriority;
+        }
     }
 
     public static ThreadingController getInstance() {
-        return INSTANCE;
+        synchronized (ThreadingController.class) {
+            if (instance == null) {
+                instance = new ThreadingController("Apache Streams [default]", NUM_PROCESSORS, NUM_PROCESSORS * 5, Thread.NORM_PRIORITY);
+            }
+            return instance;
+        }
     }
 
     public static ThreadingController getInstanceHighPriority() {
-        return INSTANCE_HIGH_PRIORITY;
+        synchronized (ThreadingController.class) {
+            if (instanceHighPriority == null) {
+                instanceHighPriority = new ThreadingController("Apache Streams [high]", NUM_PROCESSORS, NUM_PROCESSORS * 7, Thread.NORM_PRIORITY + 2);
+            }
+            return instanceHighPriority;
+        }
+    }
+
+    private ThreadingController(final String name, final int startThreadCount, final int maxNumberOfThreads, final int priority) {
+        this.name = name;
+        this.numThreads = new AtomicInteger(startThreadCount);
+        this.maxNumberOfThreads = maxNumberOfThreads;
+        this.priority = priority;
     }
 
     public String getName() {
@@ -144,6 +167,33 @@ public class ThreadingController {
     }
 
     /**
+     * Lock the ThreadingController. If the threading controller has not
+     * yet been used the thread pool for this controller will be allocated
+     * at this time.
+     */
+    public void lock() {
+        synchronized (this) {
+            this.usingCount.incrementAndGet();
+            checkSetup();
+        }
+    }
+
+    /**
+     * Release the ThreadingController. If the number of instances
+     * that have a lock on this builder is == 0, then the threading pool
+     * will be shut down.
+     */
+    public void release() {
+        synchronized (this) {
+            if(this.usingCount.decrementAndGet() == 0) {
+                this.threadPoolExecutor.shutdown();
+                this.threadPoolExecutor = null;
+                this.listeningExecutorService = null;
+            }
+        }
+    }
+
+    /**
      * The class that is being used to provide the CPU load
      * @return
      * The canonical class name that is calculating the CPU usage.
@@ -152,6 +202,12 @@ public class ThreadingController {
         return this.threadingControllerCPUObserver.getClass().getCanonicalName();
     }
 
+    /**
+     * If you have a better way of tracking the CPU usage, you can set a different CPU Threaded controller
+     * that can report on the CPU's usage
+     * @param threadingControllerCPUObserver
+     * Your custom CPU observer
+     */
     public void setThreadingControllerCPUObserver(ThreadingControllerCPUObserver threadingControllerCPUObserver) {
         this.threadingControllerCPUObserver = threadingControllerCPUObserver;
     }
@@ -166,26 +222,24 @@ public class ThreadingController {
         return scaleThreshold;
     }
 
-    private ThreadingController(final String name, final int startThreadCount, final int maxNumberOfThreads, final int priority) {
+    private void checkSetup() {
+        synchronized (this) {
+            if (this.threadPoolExecutor == null) {
+                this.threadPoolExecutor = new ThreadPoolExecutor(
+                        this.numThreads.get(),
+                        this.numThreads.get(),
+                        0L,
+                        TimeUnit.MILLISECONDS,
+                        new LinkedBlockingQueue<Runnable>());
 
-        this.name = name;
-        this.numThreads = new AtomicInteger(startThreadCount);
-        this.maxNumberOfThreads = maxNumberOfThreads;
-        this.priority = priority;
+                this.threadPoolExecutor.setThreadFactory(new BasicThreadFactory.Builder()
+                        .priority(this.priority)
+                        .namingPattern(this.name + "- %d")
+                        .build());
 
-        this.threadPoolExecutor = new ThreadPoolExecutor(
-                this.numThreads.get(),
-                this.numThreads.get(),
-                0L,
-                TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>());
-
-        this.threadPoolExecutor.setThreadFactory(new BasicThreadFactory.Builder()
-                .priority(this.priority)
-                .namingPattern(this.name + "- %d")
-                .build());
-
-        this.listeningExecutorService = MoreExecutors.listeningDecorator(this.threadPoolExecutor);
+                this.listeningExecutorService = MoreExecutors.listeningDecorator(this.threadPoolExecutor);
+            }
+        }
     }
 
     private class ThreadedCallbackWrapper implements FutureCallback<Object> {
