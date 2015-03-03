@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,13 +62,14 @@ public class WebHdfsPersistReaderTask implements Runnable {
                         line = bufferedReader.readLine();
                         if( !Strings.isNullOrEmpty(line) ) {
                             reader.countersCurrent.incrementAttempt();
-                            String[] fields = line.split(Character.toString(reader.DELIMITER));
-                            // Temporarily disabling timestamp reads to make reader and writer compatible
-                            // This capability will be restore in PR for STREAMS-169
-                            //StreamsDatum entry = new StreamsDatum(fields[3], fields[0], new DateTime(Long.parseLong(fields[2])));
-                            StreamsDatum entry = new StreamsDatum(fields[3], fields[0]);
-                            write( entry );
-                            reader.countersCurrent.incrementStatus(DatumStatus.SUCCESS);
+                            StreamsDatum entry = processLine(line);
+                            if( entry != null ) {
+                                write(entry);
+                                reader.countersCurrent.incrementStatus(DatumStatus.SUCCESS);
+                            } else {
+                                LOGGER.warn("processLine failed");
+                                reader.countersCurrent.incrementStatus(DatumStatus.FAIL);
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -96,6 +98,38 @@ public class WebHdfsPersistReaderTask implements Runnable {
             Thread.yield();
         }
         while( !success );
+    }
+
+    private StreamsDatum processLine(String line) {
+
+        String[] fields = line.split(Character.toString(reader.DELIMITER));
+
+        if( fields.length == 0)
+            return null;
+        if( fields.length == 1)
+            return new StreamsDatum(fields[0]);
+        if( fields.length == 2)
+            return new StreamsDatum(fields[1], fields[0]);
+        if( fields.length == 3) {
+
+            DateTime timestamp = null;
+            try {
+                long longts = Long.parseLong(fields[1]);
+                timestamp = new DateTime(longts);
+            } catch ( Exception e ) {}
+            try {
+                timestamp = reader.mapper.readValue(fields[1], DateTime.class);
+            } catch ( Exception e ) {}
+
+            if( timestamp == null )
+                return new StreamsDatum(fields[0], fields[2]);
+            else
+                return new StreamsDatum(fields[0], fields[2], timestamp);
+
+        }
+
+        return new StreamsDatum(fields[3], fields[0]);
+
     }
 
 }
