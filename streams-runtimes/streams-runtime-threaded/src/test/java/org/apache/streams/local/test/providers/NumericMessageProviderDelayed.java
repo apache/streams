@@ -46,6 +46,12 @@ public class NumericMessageProviderDelayed implements StreamsProvider {
         this.delay = delay;
     }
 
+    @Deprecated
+    public NumericMessageProviderDelayed(int numMessages, int delay, int ignored) {
+        this.numMessages = numMessages;
+        this.delay = delay;
+    }
+
     /**
      * Start the stream
      */
