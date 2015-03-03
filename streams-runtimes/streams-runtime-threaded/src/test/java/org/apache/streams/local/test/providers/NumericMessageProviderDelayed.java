@@ -22,24 +22,19 @@ import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
-import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NumericMessageProviderDelayed implements StreamsProvider {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NumericMessageProviderDelayed.class);
-
     private final int numMessages;
     private final int delay;
-    private final int threadCount;
-    protected final Queue<StreamsDatum> queue = new ArrayBlockingQueue<StreamsDatum>(500);
-    private final AtomicBoolean running = new AtomicBoolean(true);
-    private StreamsResultSet streamsResultSet = new StreamsResultSet(this.queue);
+    private boolean prepareCalled = false;
+    private boolean cleanupCalled = false;
+    private final AtomicBoolean running = new AtomicBoolean(false);
+    private StreamsResultSet streamsResultSet = new StreamsResultSet(new ArrayBlockingQueue<StreamsDatum>(500));
 
 
     public NumericMessageProviderDelayed(int numMessages) {
@@ -47,17 +42,15 @@ public class NumericMessageProviderDelayed implements StreamsProvider {
     }
 
     public NumericMessageProviderDelayed(int numMessages, int delay) {
-        this(numMessages, delay, 3);
-    }
-
-    public NumericMessageProviderDelayed(int numMessages, int delay, int threadCount) {
         this.numMessages = numMessages;
         this.delay = delay;
-        this.threadCount = threadCount;
     }
 
+    /**
+     * Start the stream
+     */
     public void startStream() {
-        // no op
+        this.running.set(true);
         new Thread(new LeakNumbers(streamsResultSet)).start();
     }
 
@@ -80,10 +73,19 @@ public class NumericMessageProviderDelayed implements StreamsProvider {
     }
 
     public void prepare(Object configurationObject) {
-
+        this.prepareCalled = true;
     }
 
     public void cleanUp() {
+        this.cleanupCalled = true;
+    }
+
+    public boolean wasPrepareCalled() {
+        return prepareCalled;
+    }
+
+    public boolean wasCleanupCalled() {
+        return cleanupCalled;
     }
 
     class LeakNumbers implements Runnable {
@@ -95,48 +97,27 @@ public class NumericMessageProviderDelayed implements StreamsProvider {
         }
 
         public void run() {
-            collectIdsAndPlaceOnQueue();
-        }
+            for (int i = 0; i < numMessages && !Thread.currentThread().isInterrupted() ; i++) {
 
-        private void collectIdsAndPlaceOnQueue() {
-
-            ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
-
-            for (int i = 0; i < numMessages; i++) {
-                final int toOffer = i;
-                executorService.execute(new Runnable() {
-                    public void run() {
-                        safeSleep(delay);
-                        ComponentUtils.offerUntilSuccess(new StreamsDatum(new NumericMessageObject(toOffer)), queue);
-                    }
-                });
+                // if the thread is interrupted, then end this.
+                if(Thread.currentThread().isInterrupted()) {
+                    break;
+                }
+                StreamsDatum datum = new StreamsDatum(new NumericMessageObject(i));
+                ComponentUtils.offerUntilSuccess(datum, streamsResultSet.getQueue());
+                safeSleep(delay);
             }
-
-            try {
-                // Shut down our thread pool
-                executorService.shutdown();
-
-                // wait for the thread pool to finish executing
-                executorService.awaitTermination(10, TimeUnit.MINUTES);
-            } catch (InterruptedException e) {
-                // no operation
-            } finally {
-                // Shutdown the result set
-                running.set(false);
-            }
+            running.set(false);
         }
     }
 
 
     public static void safeSleep(int delay) {
-        Thread.yield();
         try {
             // wait one tenth of a millisecond
             Thread.sleep(delay);
-            Thread.yield();
         } catch (Exception e) {
             // no operation
         }
-        Thread.yield();
     }
 }

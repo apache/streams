@@ -133,7 +133,7 @@ public class ThreadedStreamBuilderParallelTest {
     @Test
     public void streamStressTest() {
 
-        int numConcurrentStreams = 100;
+        int numConcurrentStreams = 20;
 
         final List<AtomicBoolean> runningList = Collections.synchronizedList(new ArrayList<AtomicBoolean>());
         final List<AtomicBoolean> failureMarker = Collections.synchronizedList(new ArrayList<AtomicBoolean>());
@@ -270,7 +270,7 @@ public class ThreadedStreamBuilderParallelTest {
     public void testParallelProcessorsAndWritersSingleWithBigDelays() {
         int numDatums = 1;
 
-        NumericMessageProviderDelayed provider = new NumericMessageProviderDelayed(numDatums, 200);
+        NumericMessageProviderDelayed provider = new NumericMessageProviderDelayed(numDatums, 50);
         PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor(200);
         DatumCounterWriter writer = new DatumCounterWriter(200);
 

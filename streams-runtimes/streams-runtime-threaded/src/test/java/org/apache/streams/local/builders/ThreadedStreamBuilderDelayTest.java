@@ -18,16 +18,22 @@
 package org.apache.streams.local.builders;
 
 import org.apache.streams.core.StreamBuilder;
+import org.apache.streams.threaded.builders.StreamBuilderEventHandler;
+import org.apache.streams.threaded.builders.StreamsGraphElement;
 import org.apache.streams.threaded.builders.ThreadedStreamBuilder;
 import org.apache.streams.local.test.processors.PassThroughStaticCounterProcessor;
 import org.apache.streams.local.test.processors.SimpleProcessorCounter;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.providers.NumericMessageProviderDelayed;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
+import org.apache.streams.threaded.tasks.StatusCounts;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
@@ -39,12 +45,14 @@ import static org.junit.Assert.fail;
  */
 public class ThreadedStreamBuilderDelayTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThreadedStreamBuilderDelayTest.class);
+
     @Test
     public void delayedWriterTest() {
 
         int numDatums = 5;
         ThreadedStreamBuilder builder = new ThreadedStreamBuilder();
-        DatumCounterWriter writer = new DatumCounterWriter(500); // give the DatumCounter a 500ms delay
+        DatumCounterWriter writer = new DatumCounterWriter(50); // give the DatumCounter a 50ms delay
         SimpleProcessorCounter proc1 = new SimpleProcessorCounter();
         SimpleProcessorCounter proc2 = new SimpleProcessorCounter();
 
@@ -68,13 +76,46 @@ public class ThreadedStreamBuilderDelayTest {
         assertTrue("cleanup called", writer.wasPrepeareCalled());
     }
 
+    /**
+     * This test stops the stream after 2 datums have been written. There is a 3 second delay between
+     * datums ensuring that we have ample time to support that everything was cleaned up properly.
+     */
+    @Test
+    public void testStopStream() {
+
+        int numDatums = 5;
+        final ThreadedStreamBuilder builder = new ThreadedStreamBuilder();
+        NumericMessageProviderDelayed numericMessageProviderDelayed = new NumericMessageProviderDelayed(numDatums, 3000);
+        DatumCounterWriter writer = new DatumCounterWriter();
+
+        builder.newReadCurrentStream("prov1", numericMessageProviderDelayed)
+                .addStreamsPersistWriter("w1", writer, 1, "prov1")
+                .addEventHandler(new StreamBuilderEventHandler() {
+                    @Override
+                    public void update(Map<String, StatusCounts> counts, List<StreamsGraphElement> graph) {
+                        if (counts.get("w1").getSuccess() == 2) {
+                            builder.stop();
+                        }
+                    }
+                });
+
+        builder.start();
+        assertEquals("Number in should equal number out", 2, writer.getDatumsCounted());
+
+        assertTrue("Writer: Prepare called", writer.wasPrepeareCalled());
+        assertTrue("Provider: Prepare Called", numericMessageProviderDelayed.wasCleanupCalled());
+
+        assertTrue("Provider: CleanUp Called", numericMessageProviderDelayed.wasCleanupCalled());
+        assertTrue("Writer: CleanUp called", writer.wasCleanupCalled());
+    }
+
     @Test
     public void delayedProcessorTest() {
         int numDatums = 5;
         StreamBuilder builder = new ThreadedStreamBuilder();
         DatumCounterWriter writer = new DatumCounterWriter();
-        SimpleProcessorCounter proc1 = new SimpleProcessorCounter(500);
-        SimpleProcessorCounter proc2 = new SimpleProcessorCounter(250);
+        SimpleProcessorCounter proc1 = new SimpleProcessorCounter(50);
+        SimpleProcessorCounter proc2 = new SimpleProcessorCounter(25);
 
         builder.newReadCurrentStream("prov1", new NumericMessageProvider(numDatums))
                 .addStreamsProcessor("proc1", proc1, 1, "prov1")
@@ -97,8 +138,8 @@ public class ThreadedStreamBuilderDelayTest {
         int numDatums = 10;
         StreamBuilder builder = new ThreadedStreamBuilder();
 
-        NumericMessageProviderDelayed provider = new NumericMessageProviderDelayed(numDatums, 100);
-        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor(250);
+        NumericMessageProviderDelayed provider = new NumericMessageProviderDelayed(numDatums, 10);
+        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor(25);
         DatumCounterWriter writer = new DatumCounterWriter(125);
         builder.newReadCurrentStream("sp1", provider)
                 .addStreamsProcessor("proc1", processor, 1, "sp1")
@@ -167,9 +208,9 @@ public class ThreadedStreamBuilderDelayTest {
     public void noDataTest()  {
         int numDatums = 8;
         StreamBuilder builder = new ThreadedStreamBuilder();
-        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor(100);
-        DatumCounterWriter writer = new DatumCounterWriter(200);
-        builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums, 100))
+        PassThroughStaticCounterProcessor processor = new PassThroughStaticCounterProcessor(10);
+        DatumCounterWriter writer = new DatumCounterWriter(20);
+        builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums, 10))
                 .addStreamsProcessor("proc1", processor, 1, "sp1")
                 .addStreamsPersistWriter("writer1", writer, 1, "proc1");
         builder.start();
@@ -183,8 +224,8 @@ public class ThreadedStreamBuilderDelayTest {
         int numDatums = 12;
 
         StreamBuilder builder = new ThreadedStreamBuilder();
-        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(100);
-        PassThroughStaticCounterProcessor proc2 = new PassThroughStaticCounterProcessor(200);
+        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(10);
+        PassThroughStaticCounterProcessor proc2 = new PassThroughStaticCounterProcessor(20);
         DatumCounterWriter writer = new DatumCounterWriter();
 
         builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums))
@@ -206,8 +247,8 @@ public class ThreadedStreamBuilderDelayTest {
         int numDatums = 10;
 
         StreamBuilder builder = new ThreadedStreamBuilder();
-        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(100);
-        PassThroughStaticCounterProcessor proc2 = new PassThroughStaticCounterProcessor(200);
+        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(10);
+        PassThroughStaticCounterProcessor proc2 = new PassThroughStaticCounterProcessor(20);
         DatumCounterWriter writer = new DatumCounterWriter();
 
         builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums))
@@ -229,11 +270,11 @@ public class ThreadedStreamBuilderDelayTest {
         int numDatums = 4;
 
         StreamBuilder builder = new ThreadedStreamBuilder();
-        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(100);
+        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(20);
         DatumCounterWriter writer = new DatumCounterWriter();
 
-        builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums, 300))
-                .newReadCurrentStream("sp2", new NumericMessageProviderDelayed(numDatums, 200))
+        builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums, 30))
+                .newReadCurrentStream("sp2", new NumericMessageProviderDelayed(numDatums, 20))
                 .addStreamsProcessor("proc1", proc1, 1, "sp1", "sp2")
                 .addStreamsPersistWriter("writer1", writer, 1, "proc1");
 
@@ -250,12 +291,12 @@ public class ThreadedStreamBuilderDelayTest {
         int numDatums = 6;
 
         StreamBuilder builder = new ThreadedStreamBuilder();
-        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(100);
-        PassThroughStaticCounterProcessor proc2 = new PassThroughStaticCounterProcessor(150);
+        PassThroughStaticCounterProcessor proc1 = new PassThroughStaticCounterProcessor(20);
+        PassThroughStaticCounterProcessor proc2 = new PassThroughStaticCounterProcessor(50);
         DatumCounterWriter writer = new DatumCounterWriter(150);
 
-        builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums, 300))
-                .newReadCurrentStream("sp2", new NumericMessageProviderDelayed(numDatums, 350))
+        builder.newReadCurrentStream("sp1", new NumericMessageProviderDelayed(numDatums, 50))
+                .newReadCurrentStream("sp2", new NumericMessageProviderDelayed(numDatums, 20))
                 .addStreamsProcessor("proc1", proc1, 1, "sp1")
                 .addStreamsProcessor("proc2", proc2, 1, "sp2")
                 .addStreamsPersistWriter("writer1", writer, 1, "proc1", "proc2");

@@ -80,8 +80,8 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
     public ThreadedStreamBuilder(Queue<StreamsDatum> queue, Map<String, Object> streamConfig, ThreadingController threadingController) {
         this.queue = queue;
-        this.providers = new LinkedHashMap<String, StreamComponent>();
-        this.components = new LinkedHashMap<String, StreamComponent>();
+        this.providers = new LinkedHashMap<>();
+        this.components = new LinkedHashMap<>();
         this.streamConfig = streamConfig;
         this.threadingController = threadingController;
     }
@@ -196,7 +196,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     }
 
     public final Map<String, StatusCounts> getUpdateCounts() {
-        final Map<String, StatusCounts> updateMap = new HashMap<String, StatusCounts>();
+        final Map<String, StatusCounts> updateMap = new HashMap<>();
 
         for (final String k : tasks.keySet()) {
             updateMap.put(k, tasks.get(k).getCurrentStatus());
@@ -234,9 +234,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
         // let them do that
         final TimerTask updateTask = getUpdateCounts() == null || getUpdateCounts().keySet().size() == 0 ? null : new TimerTask() {
             public void run() {
-
                 final Map<String, StatusCounts> updateMap = getUpdateCounts();
-
                 for(String k : updateMap.keySet()) {
                     for (StreamsGraphElement g : getGraphElements()) {
                         if (g.getTarget().equals(k)) {
@@ -269,7 +267,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
                 }
             }
 
-            Condition condition = null;
+            Condition condition;
             while((condition = getOffendingLock()) != null) {
                 condition.await();
             }
@@ -280,8 +278,6 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
             for(final String k : tasks.keySet()) {
                 final StatusCounts counts = tasks.get(k).getCurrentStatus();
-                LOGGER.debug("Finishing: {} - Working[{}] Success[{}] Failed[{}] TimeSpent[{}]", k,
-                        counts.getWorking(), counts.getSuccess(), counts.getFailed(), counts.getAverageTimeSpent());
             }
             updateEventHandlers(getUpdateCounts());
 
@@ -345,19 +341,21 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     }
 
     private void shutdownExecutor(ExecutorService executorService) throws InterruptedException {
+        shutdownExecutor(executorService, 10, TimeUnit.MINUTES);
+    }
+
+    private void shutdownExecutor(ExecutorService executorService, int time, TimeUnit timeUnit) throws InterruptedException {
         executorService.shutdown();
-        if(!executorService.awaitTermination(10, TimeUnit.MINUTES)) {
+        if(!executorService.awaitTermination(time, timeUnit)) {
             executorService.shutdownNow();
-            if(!executorService.awaitTermination(10, TimeUnit.MINUTES)) {
-                LOGGER.debug("Unable to shutdown Provider Executor service");
+            if(!executorService.awaitTermination(time, timeUnit)) {
+                LOGGER.warn("Unable to shutdown Provider Executor service");
             }
         }
     }
 
     protected void shutdown() throws InterruptedException {
-        LOGGER.debug("Shutting down...");
         shutdownExecutor(this.providerExecutor);
-        LOGGER.debug("Shut down");
     }
 
     protected void createTasks() {
@@ -376,7 +374,19 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
     public void stop() {
         try {
-            shutdown();
+            LOGGER.debug("Stopping Stream...");
+
+            // Shutdown the streams provider
+            for(StreamsTask t : this.tasks.values()) {
+                if(t instanceof StreamsProviderTask) {
+                    if (((StreamsProviderTask) t).isRunning()) {
+                        ((StreamsProviderTask) t).shutDown();
+                    }
+                }
+            }
+
+            shutdownExecutor(this.providerExecutor, 1, TimeUnit.SECONDS);
+            LOGGER.debug("Stream Stopped");
         } catch (Exception e) {
             LOGGER.warn("Forcing Shutdown: There was an error stopping: {}", e.getMessage());
         }
