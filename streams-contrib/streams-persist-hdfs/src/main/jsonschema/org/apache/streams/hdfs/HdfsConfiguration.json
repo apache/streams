@@ -33,6 +33,26 @@
         "password": {
             "type": "string",
             "description": "Password"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "ID",
+            "TS",
+            "META",
+            "DOC"
+          ]
+        },
+        "field_delimiter": {
+          "type": "string",
+          "default": "\t"
+        },
+        "line_delimiter": {
+          "type": "string",
+          "default": "\n"
         }
     }
 }

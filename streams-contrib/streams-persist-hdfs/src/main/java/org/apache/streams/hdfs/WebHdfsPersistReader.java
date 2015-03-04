@@ -64,7 +64,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
 
     protected ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    private HdfsReaderConfiguration hdfsConfiguration;
+    protected HdfsReaderConfiguration hdfsConfiguration;
 
     private ExecutorService executor;
 
