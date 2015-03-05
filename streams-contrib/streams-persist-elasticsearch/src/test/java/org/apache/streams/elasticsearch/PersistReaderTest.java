@@ -18,9 +18,11 @@
 package org.apache.streams.elasticsearch;
 
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
+import org.apache.streams.local.test.processors.ObjectTypeEnforcerProcessor;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
 import org.apache.streams.threaded.builders.ThreadedStreamBuilder;
@@ -31,6 +33,7 @@ import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class PersistReaderTest {
 
@@ -78,12 +81,16 @@ public class PersistReaderTest {
         ElasticsearchPersistReader elasticsearchPersistReader = new ElasticsearchPersistReader(configRead, escm);
         DatumCounterWriter writerCounter = new DatumCounterWriter();
 
+        ObjectTypeEnforcerProcessor typeEnforcer = new ObjectTypeEnforcerProcessor(ObjectNode.class);
+
         builderRead.newPerpetualStream("es_reader", elasticsearchPersistReader);
-        builderRead.addStreamsPersistWriter("datum_writer", writerCounter, 1, "es_reader");
+        builderRead.addStreamsProcessor("ObjectTypeEnforcerProcessor", typeEnforcer, 1, "es_reader");
+        builderRead.addStreamsPersistWriter("datum_writer", writerCounter, 1, "ObjectTypeEnforcerProcessor");
 
         builderRead.start();
 
         assertEquals("Writer should read 10,000 items", count, writerCounter.getDatumsCounted());
+        assertFalse("Invalid type coming from ES Reader", typeEnforcer.getIncorrectClassPresent());
 
         ElasticSearchHelper.destroyElasticSearchClientManager(escm);
     }

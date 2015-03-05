@@ -18,7 +18,10 @@
 
 package org.apache.streams.elasticsearch;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.core.*;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.ComponentUtils;
 import org.elasticsearch.search.SearchHit;
 import org.joda.time.DateTime;
@@ -51,6 +54,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
     private final ElasticsearchReaderConfiguration config;
     private final ElasticsearchClientManager elasticsearchClientManager;
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
+    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     public ElasticsearchPersistReader(ElasticsearchReaderConfiguration config) {
         this(config, new ElasticsearchClientManager(config));
@@ -79,7 +83,8 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
                     while (!query.isCompleted()) {
                         if(query.hasNext()) {
                             SearchHit hit = query.next();
-                            StreamsDatum item = new StreamsDatum(hit.getSourceAsString(), hit.getId());
+                            ObjectNode jsonObject = mapper.readValue(hit.getSourceAsString(), ObjectNode.class);
+                            StreamsDatum item = new StreamsDatum(jsonObject, hit.getId());
                             item.getMetadata().put("id", hit.getId());
                             item.getMetadata().put("index", hit.getIndex());
                             item.getMetadata().put("type", hit.getType());
