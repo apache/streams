@@ -41,6 +41,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements Runnable {
     private final AtomicBoolean keepRunning = new AtomicBoolean(true);
     private final Condition lock = new SimpleCondition();
 
+
     public static enum Type {
         PERPETUAL,
         READ_CURRENT,
@@ -54,6 +55,10 @@ public class StreamsProviderTask extends BaseStreamsTask implements Runnable {
         super(threadingController, id, config, provider);
         this.provider = provider;
         this.type = type;
+    }
+
+    public void shutDown() {
+        this.keepRunning.set(false);
     }
 
     public boolean isRunning() {
@@ -104,7 +109,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements Runnable {
                     throw new RuntimeException("Unknown Error - Provider is equal to Null.");
                 }
 
-                while(provider.isRunning() || resultSet.getQueue().size() > 0) {
+                while((provider.isRunning() && this.keepRunning.get()) || resultSet.getQueue().size() > 0) {
                     // Is there anything to do?
                     if (resultSet.getQueue().isEmpty()) {
                         // Check to see if they are going to give us a new streams result-set.
@@ -127,6 +132,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements Runnable {
             this.keepRunning.set(false);
             checkLockSignal();
         }
+        LOGGER.debug("Finished Provider: {}", this.getId());
     }
 
     public void flushResults(StreamsResultSet streamsResultSet) {

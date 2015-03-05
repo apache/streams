@@ -105,6 +105,9 @@ public class LocalStreamBuilder implements StreamBuilder {
         this.totalTasks = 0;
         this.monitorTasks = 0;
         this.maxQueueCapacity = maxQueueCapacity;
+
+        setQueueCapacity(streamConfig);
+
         final LocalStreamBuilder self = this;
         this.shutdownHook = new Thread() {
             @Override
@@ -122,6 +125,16 @@ public class LocalStreamBuilder implements StreamBuilder {
         this.broadcastMonitor = new BroadcastMonitorThread(this.streamConfig);
 
         this.futures = new HashMap<>();
+    }
+
+    public void setQueueCapacity(Map<String, Object> streamConfig) {
+        try {
+            if (streamConfig.containsKey("maxQueueSize") && Integer.valueOf((Integer) streamConfig.get("maxQueueSize")) > 0) {
+                this.maxQueueCapacity = Integer.valueOf((Integer) streamConfig.get("maxQueueSize"));
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception while trying to parse the max queue size from the Stream configuration object: {}", e);
+        }
     }
 
     public void setUseDeprecatedMonitors(boolean useDeprecatedMonitors) {

@@ -40,31 +40,23 @@ import java.util.concurrent.locks.Condition;
  */
 public class ThreadedStreamBuilder implements StreamBuilder {
 
-    private final ThreadingController threadingController;
-
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(ThreadedStreamBuilder.class);
+    public static final String DEFAULT_STREAM_IDENTIFIER = "Unknown_Stream";
+    public static final String STREAM_IDENTIFIER_KEY = "streamsID";
 
-    private final List<StreamsGraphElement> graphElements = new ArrayList<StreamsGraphElement>();
+    private final List<StreamsGraphElement> graphElements = new ArrayList<>();
 
     public static final String TIMEOUT_KEY = "TIMEOUT";
-    private static final Timer TIMER = new Timer(true);
     private static final List<ThreadedStreamBuilder> CURRENTLY_EXECUTING = Collections.synchronizedList(new ArrayList<ThreadedStreamBuilder>());
-    private static final ExecutorService PROVIDER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread t = new Thread(r);
-            t.setName("Apache Streams - Provider[" + DateTime.now().toString() + "]");
-            t.setPriority(Math.max(1,(int)(Thread.currentThread().getPriority() * .5)));
-            return t;
-        }
-    });
 
+    private ExecutorService providerExecutor;
+    private final ThreadingController threadingController;
     private final Queue<StreamsDatum> queue;
     private final Map<String, StreamComponent> providers;
     private final Map<String, StreamComponent> components;
     private final Map<String, Object> streamConfig;
-    private final Map<String, StreamsTask> tasks = new LinkedHashMap<String, StreamsTask>();
-    private final Collection<StreamBuilderEventHandler> eventHandlers = new ArrayList<StreamBuilderEventHandler>();
+    private final Map<String, StreamsTask> tasks = new LinkedHashMap<>();
+    private final Collection<StreamBuilderEventHandler> eventHandlers = new ArrayList<>();
 
     public ThreadedStreamBuilder() {
         this(new ArrayBlockingQueue<StreamsDatum>(2000), null, ThreadingController.getInstance());
@@ -88,8 +80,8 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
     public ThreadedStreamBuilder(Queue<StreamsDatum> queue, Map<String, Object> streamConfig, ThreadingController threadingController) {
         this.queue = queue;
-        this.providers = new LinkedHashMap<String, StreamComponent>();
-        this.components = new LinkedHashMap<String, StreamComponent>();
+        this.providers = new LinkedHashMap<>();
+        this.components = new LinkedHashMap<>();
         this.streamConfig = streamConfig;
         this.threadingController = threadingController;
     }
@@ -204,7 +196,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     }
 
     public final Map<String, StatusCounts> getUpdateCounts() {
-        final Map<String, StatusCounts> updateMap = new HashMap<String, StatusCounts>();
+        final Map<String, StatusCounts> updateMap = new HashMap<>();
 
         for (final String k : tasks.keySet()) {
             updateMap.put(k, tasks.get(k).getCurrentStatus());
@@ -219,15 +211,30 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     public void start() {
 
         this.tasks.clear();
+
+        // Let the threading controller know that we will need this until we call release.
+        this.getThreadingController().lock();
+
+        // create a new timer to update the tasks
+        Timer timer = new Timer(true);
+
+        this.providerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setName("Apache Streams - Provider[" + DateTime.now().toString() + "]");
+                t.setPriority(Math.max(1,(int)(Thread.currentThread().getPriority() * .5)));
+                return t;
+            }
+        });
+
         createTasks();
 
         // if anyone would like to listen in to progress events
         // let them do that
         final TimerTask updateTask = getUpdateCounts() == null || getUpdateCounts().keySet().size() == 0 ? null : new TimerTask() {
             public void run() {
-
                 final Map<String, StatusCounts> updateMap = getUpdateCounts();
-
                 for(String k : updateMap.keySet()) {
                     for (StreamsGraphElement g : getGraphElements()) {
                         if (g.getTarget().equals(k)) {
@@ -236,23 +243,9 @@ public class ThreadedStreamBuilder implements StreamBuilder {
                     }
                 }
 
-                if (eventHandlers.size() > 0) {
-                    for (final StreamBuilderEventHandler eventHandler : eventHandlers) {
-                        try {
-                            try {
-                                eventHandler.update(updateMap, getGraphElements());
-                            } catch(Throwable e) {
-                                LOGGER.error("Exception while trying to update event handler: {}", e);
-                            }
-                        }
-                        catch(Throwable e) {
-                            LOGGER.error("Exception while trying to update event handler: {}", e);
-                        }
-                    }
-                }
+                updateEventHandlers(updateMap);
             }
         };
-
 
         try {
             synchronized (ThreadedStreamBuilder.class) {
@@ -260,7 +253,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
             }
 
             if(updateTask != null) {
-                TIMER.schedule(updateTask, 0, 1500);
+                timer.schedule(updateTask, 0, 1500);
             }
 
             for(StreamsTask t : this.tasks.values()) {
@@ -270,11 +263,11 @@ public class ThreadedStreamBuilder implements StreamBuilder {
             // Starting all the tasks
             for(StreamsTask task : this.tasks.values()) {
                 if (task instanceof Runnable) {
-                    PROVIDER_EXECUTOR.execute((Runnable) task);
+                    providerExecutor.execute((Runnable) task);
                 }
             }
 
-            Condition condition = null;
+            Condition condition;
             while((condition = getOffendingLock()) != null) {
                 condition.await();
             }
@@ -285,9 +278,12 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
             for(final String k : tasks.keySet()) {
                 final StatusCounts counts = tasks.get(k).getCurrentStatus();
-                LOGGER.debug("Finishing: {} - Working[{}] Success[{}] Failed[{}] TimeSpent[{}]", k,
-                        counts.getWorking(), counts.getSuccess(), counts.getFailed(), counts.getAverageTimeSpent());
             }
+            updateEventHandlers(getUpdateCounts());
+
+            // Call the shutdown procedure.
+            shutdown();
+
         } catch (Throwable e) {
             // No Operation
             try {
@@ -297,12 +293,38 @@ public class ThreadedStreamBuilder implements StreamBuilder {
                 LOGGER.error("Unexpected Error: {}", omgE);
             }
         } finally {
-            synchronized (ThreadedStreamBuilder.class) {
+
+            // cancel the timer
+            timer.cancel();
+
+            synchronized (CURRENTLY_EXECUTING) {
                 CURRENTLY_EXECUTING.remove(this);
             }
+
+            // Call the release on the threaded builder
+            this.getThreadingController().release();
+
             // kill the updateTask
             if(updateTask != null) {
                 updateTask.cancel();
+            }
+
+        }
+    }
+
+    private void updateEventHandlers(Map<String, StatusCounts> updateMap) {
+        if (eventHandlers.size() > 0) {
+            for (final StreamBuilderEventHandler eventHandler : eventHandlers) {
+                try {
+                    try {
+                        eventHandler.update(updateMap, getGraphElements());
+                    } catch(Throwable e) {
+                        LOGGER.error("Exception while trying to update event handler: {}", e);
+                    }
+                }
+                catch(Throwable e) {
+                    LOGGER.error("Exception while trying to update event handler: {}", e);
+                }
             }
         }
     }
@@ -318,11 +340,22 @@ public class ThreadedStreamBuilder implements StreamBuilder {
         return null;
     }
 
-    private void shutdownExecutor() {
+    private void shutdownExecutor(ExecutorService executorService) throws InterruptedException {
+        shutdownExecutor(executorService, 10, TimeUnit.MINUTES);
+    }
+
+    private void shutdownExecutor(ExecutorService executorService, int time, TimeUnit timeUnit) throws InterruptedException {
+        executorService.shutdown();
+        if(!executorService.awaitTermination(time, timeUnit)) {
+            executorService.shutdownNow();
+            if(!executorService.awaitTermination(time, timeUnit)) {
+                LOGGER.warn("Unable to shutdown Provider Executor service");
+            }
+        }
     }
 
     protected void shutdown() throws InterruptedException {
-        LOGGER.debug("Shutting down...");
+        shutdownExecutor(this.providerExecutor);
     }
 
     protected void createTasks() {
@@ -341,7 +374,19 @@ public class ThreadedStreamBuilder implements StreamBuilder {
 
     public void stop() {
         try {
-            shutdown();
+            LOGGER.debug("Stopping Stream...");
+
+            // Shutdown the streams provider
+            for(StreamsTask t : this.tasks.values()) {
+                if(t instanceof StreamsProviderTask) {
+                    if (((StreamsProviderTask) t).isRunning()) {
+                        ((StreamsProviderTask) t).shutDown();
+                    }
+                }
+            }
+
+            shutdownExecutor(this.providerExecutor, 1, TimeUnit.SECONDS);
+            LOGGER.debug("Stream Stopped");
         } catch (Exception e) {
             LOGGER.warn("Forcing Shutdown: There was an error stopping: {}", e.getMessage());
         }
@@ -371,11 +416,7 @@ public class ThreadedStreamBuilder implements StreamBuilder {
     @SuppressWarnings("unchecked")
     private Queue<StreamsDatum> cloneQueue() {
         Object toReturn = SerializationUtil.cloneBySerialization(this.queue);
-        if(toReturn instanceof Queue) {
-            return (Queue<StreamsDatum>) toReturn;
-        } else {
-            throw new RuntimeException("Unable to clone the queue");
-        }
+        return (Queue<StreamsDatum>) toReturn;
     }
 
     protected int getTimeout() {
