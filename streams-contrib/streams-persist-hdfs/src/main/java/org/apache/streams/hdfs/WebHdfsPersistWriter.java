@@ -30,6 +30,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.web.WebHdfsFileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.streams.core.*;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -274,7 +275,10 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
                 else if( field.equals(HdfsConstants.ID) )
                     fielddata.add(entry.getId());
                 else if( field.equals(HdfsConstants.TS) )
-                    fielddata.add(entry.getTimestamp().toString());
+                    if( entry.getTimestamp() != null )
+                        fielddata.add(entry.getTimestamp().toString());
+                    else
+                        fielddata.add(DateTime.now().toString());
                 else if( field.equals(HdfsConstants.META) )
                     fielddata.add(metadataJson);
                 else if( entry.getMetadata().containsKey(field)) {

@@ -106,37 +106,38 @@ public class WebHdfsPersistReaderTask implements Runnable {
 
     private StreamsDatum processLine(String line) {
 
-        StreamsDatum datum;
-
         String[] fields = line.split(reader.hdfsConfiguration.getFieldDelimiter());
 
         if( fields.length == 0)
             return null;
 
-        String id;
-        DateTime ts;
-        Map<String, Object> metadata;
-        String json;
+        String id = null;
+        DateTime ts = null;
+        Map<String, Object> metadata = null;
+        String json = null;
 
-        if( reader.hdfsConfiguration.getFields().contains( HdfsConstants.DOC )) {
+        if( reader.hdfsConfiguration.getFields().contains( HdfsConstants.DOC )
+            && fields.length > reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.DOC)) {
             json = fields[reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.DOC)];
-            datum = new StreamsDatum(json);
-        } else {
-            return null;
         }
 
-        if( reader.hdfsConfiguration.getFields().contains( HdfsConstants.ID ) ) {
+        if( reader.hdfsConfiguration.getFields().contains( HdfsConstants.ID )
+            && fields.length > reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.ID)) {
             id = fields[reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.ID)];
-            datum.setId(id);
         }
-        if( reader.hdfsConfiguration.getFields().contains( HdfsConstants.TS )) {
+        if( reader.hdfsConfiguration.getFields().contains( HdfsConstants.TS )
+            && fields.length > reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.TS)) {
             ts = parseTs(fields[reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.TS)]);
-            datum.setTimestamp(ts);
         }
-        if( reader.hdfsConfiguration.getFields().contains( HdfsConstants.META )) {
+        if( reader.hdfsConfiguration.getFields().contains( HdfsConstants.META )
+            && fields.length > reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.META)) {
             metadata = parseMap(fields[reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.META)]);
-            datum.setMetadata(metadata);
         }
+
+        StreamsDatum datum = new StreamsDatum(json);
+        datum.setId(id);
+        datum.setTimestamp(ts);
+        datum.setMetadata(metadata);
 
         return datum;
 

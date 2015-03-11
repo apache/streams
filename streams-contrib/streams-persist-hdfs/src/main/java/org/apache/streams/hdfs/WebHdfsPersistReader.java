@@ -172,7 +172,12 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
 
     @Override
     public StreamsResultSet readAll() {
-        startStream();
+        WebHdfsPersistReaderTask readerTask = new WebHdfsPersistReaderTask(this);
+        Thread readerThread = new Thread(readerTask);
+        readerThread.start();
+        try {
+            readerThread.join();
+        } catch (InterruptedException e) {}
         return new StreamsResultSet(persistQueue);
     }
 
