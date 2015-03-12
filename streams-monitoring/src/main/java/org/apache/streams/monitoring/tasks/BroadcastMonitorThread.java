@@ -68,13 +68,18 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
         setBroadcastURI();
         setWaitTime();
 
-        if( broadcastURI != null )
-            if( broadcastURI.getScheme().equals("http"))
+        if( broadcastURI != null ) {
+            if (broadcastURI.getScheme().equals("http")) {
                 messagePersister = new BroadcastMessagePersister(broadcastURI.toString());
-            else if( broadcastURI.getScheme().equals("udp"))
+            } else if (broadcastURI.getScheme().equals("udp")) {
                 messagePersister = new LogstashUdpMessagePersister(broadcastURI.toString());
-        else
+            } else {
+                LOGGER.error("You need to specify a broadcast URI with either a HTTP or UDP protocol defined.");
+                throw new RuntimeException();
+            }
+        } else {
             messagePersister = new SLF4JMessagePersister();
+        }
 
         initializeObjectMapper();
 
