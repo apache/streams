@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class RssProvider {
     private final static Logger LOGGER = LoggerFactory.getLogger(RssProvider.class);
-
+    private final int DEFAULT_TIMEOUT = 10000; //10 seconds in milliseconds
     protected Queue<ObjectNode> entries;
     protected boolean perpetual = true;
     protected SyndEntrySerializer serializer;
@@ -84,11 +84,7 @@ public abstract class RssProvider {
      * @throws com.sun.syndication.io.FeedException
      */
     public void pullData(URL feedUrl) throws IOException, FeedException {
-        SyndFeedInput input = new SyndFeedInput();
-        URLConnection connection = feedUrl.openConnection();
-        connection.setConnectTimeout(10000);
-        connection.setReadTimeout(10000);
-        SyndFeed feed = buildFeed(feedUrl);//input.build(new InputStreamReader(connection.getInputStream()));
+        SyndFeed feed = buildFeed(feedUrl);
 
         for(Object entryObj : feed.getEntries()) {
             SyndEntry entry = (SyndEntry) entryObj;
@@ -107,6 +103,11 @@ public abstract class RssProvider {
         }
     }
 
+    /**
+     * Given a url for an RSS feed, return a SyndFeed object containing all posts
+     * @param feedUrl
+     * @return
+     */
     protected SyndFeed buildFeed(URL feedUrl) {
         SyndFeed feed = null;
 
@@ -114,8 +115,8 @@ public abstract class RssProvider {
             SyndFeedInput input = new SyndFeedInput();
 
             URLConnection connection = feedUrl.openConnection();
-            connection.setConnectTimeout(10000);
-            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(DEFAULT_TIMEOUT);
+            connection.setReadTimeout(DEFAULT_TIMEOUT);
 
             feed = input.build(new InputStreamReader(connection.getInputStream()));
         } catch (Exception e) {
