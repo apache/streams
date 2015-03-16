@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-contrib</artifactId>
-        <version>0.2.10-W2O-SNAPSHOT</version>
+        <version>0.2.11-W2O-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-processor-jackson</artifactId>
