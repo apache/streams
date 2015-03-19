@@ -18,7 +18,6 @@
 
 package org.apache.streams.datasift.serializer;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
@@ -32,9 +31,7 @@ import org.apache.streams.util.files.StreamsScannerUtil;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.InputStream;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -80,7 +77,7 @@ public class DatasiftActivitySerializerTest {
         assertNotNull("activity.id", activity.getId());
         assertNotNull("activity.published", activity.getPublished());
         assertNotNull("activity.provider", activity.getProvider());
-        assertNotNull("activity.url", activity.getUrl());
+        assertNotNull("activity.urls", activity.getUrl());
         assertNotNull("activity.verb", activity.getVerb());
         Actor actor = activity.getActor();
         assertNotNull("activity.actor", actor);

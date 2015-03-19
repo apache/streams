@@ -55,11 +55,11 @@ public class DatumStatusCounterDeserializer extends JsonDeserializer<DatumStatus
             for (MBeanAttributeInfo attribute : Arrays.asList(info.getAttributes())) {
                 try {
                     switch(attribute.getName()) {
-                        case "Failed":
-                            datumStatusCounterBroadcast.setFailed((boolean) server.getAttribute(name, attribute.getName()));
+                        case "NumFailed":
+                            datumStatusCounterBroadcast.setFailed(server.getAttribute(name, attribute.getName()));
                             break;
-                        case "Passed":
-                            datumStatusCounterBroadcast.setPassed((boolean) server.getAttribute(name, attribute.getName()));
+                        case "NumPassed":
+                            datumStatusCounterBroadcast.setPassed(server.getAttribute(name, attribute.getName()));
                             break;
                     }
                 } catch (Exception e) {

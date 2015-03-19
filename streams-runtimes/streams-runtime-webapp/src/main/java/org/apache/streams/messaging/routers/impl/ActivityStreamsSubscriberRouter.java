@@ -66,11 +66,11 @@ public class ActivityStreamsSubscriberRouter extends RouteBuilder implements Act
 
                 if (configuration.getSubscriberEndpointProtocol().equals(EipConfigurator.ENDPOINT_PROTOCOL_JETTY)){
                     activityStreamsSubscriber.setInRoute(configuration.getSubscriberInRouteHost()+ ":" + configuration.getSubscriberInRoutePort() +"/" + configuration.getSubscriberEndpointUrlResource() + "/" + UUID.randomUUID());
-                    //set the body to the url the producer should post to
+                    //set the body to the urls the producer should post to
                     exchange.getOut().setBody("http://" + activityStreamsSubscriber.getInRoute());
                 }else if (configuration.getSubscriberEndpointProtocol().equals(EipConfigurator.ENDPOINT_PROTOCOL_SERVLET)){
                     activityStreamsSubscriber.setInRoute( configuration.getSubscriberEndpointUrlResource() + "/" + UUID.randomUUID());
-                    //set the body to the url the producer should post to
+                    //set the body to the urls the producer should post to
                     exchange.getOut().setBody(configuration.getBaseUrlPath() + activityStreamsSubscriber.getInRoute());
                 } else{
                     throw new Exception("No supported endpoint protocol is configured.");
