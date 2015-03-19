@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class MoreoverProviderTask implements Runnable {
 
-    public static final int LATENCY = 10;
+    public static final int LATENCY = 20; // required by moreover
     public static final int REQUIRED_LATENCY = LATENCY * 1000;
     private static final Logger LOGGER = LoggerFactory.getLogger(MoreoverProviderTask.class);
     private static final int MAX_ATTEMPTS = 5;
@@ -142,6 +142,7 @@ public class MoreoverProviderTask implements Runnable {
                 addMoreoverArticlesToOutputQueue(result);
                 resultSize = result.numArticles();
                 attempt = 0; //reset attempt
+                ensureTime(client);
             } catch (IOException ioe) {
                 ++attempt;
                 if(attempt >= MAX_ATTEMPTS) {
