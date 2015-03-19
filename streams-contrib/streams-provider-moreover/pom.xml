@@ -78,6 +78,11 @@
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-pojo-extensions</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
