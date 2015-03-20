@@ -87,7 +87,7 @@ public class MoreoverClient {
         long start = System.nanoTime();
         MoreoverResult result = new MoreoverResult(id, getArticles(new URL(urlString)), start, System.nanoTime());
         result.process();
-        if(!result.getMaxSequencedId().equals(BigInteger.ZERO) && !this.lastSequenceId.equals(result.getMaxSequencedId().toString())) {
+        if(!result.getMaxSequencedId().equals(BigInteger.ZERO) && (this.lastSequenceId == null || !this.lastSequenceId.equals(result.getMaxSequencedId().toString()))) {
             this.lastSequenceId = result.getMaxSequencedId().toString();
             logger.debug("Maximum sequence from last call {}", this.lastSequenceId);
         } else {

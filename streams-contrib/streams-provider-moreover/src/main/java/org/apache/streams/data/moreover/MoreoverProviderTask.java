@@ -110,6 +110,7 @@ public class MoreoverProviderTask implements Runnable {
             // have to poll once to ensure initial sequence id
             MoreoverClient moreoverClient = getMoreoverClient(this.apiId, this.apiKey, this.lastSequence);
             MoreoverResult initialResult = moreoverClient.getNextBatch();
+            LOGGER.debug("Adding {} articles to the output queue.", initialResult.numArticles());
             this.lastSequence = initialResult.getMaxSequencedId().toString();
             addMoreoverArticlesToOutputQueue(initialResult);
             pollTillClientReturnsLessThanMaxResults(moreoverClient);
@@ -137,12 +138,12 @@ public class MoreoverProviderTask implements Runnable {
         int attempt = 0;
         do {
             try {
+                ensureTime(client);
                 MoreoverResult result = client.getNextBatch();
                 LOGGER.debug("Adding {} articles to the output queue.", result.numArticles());
                 addMoreoverArticlesToOutputQueue(result);
                 resultSize = result.numArticles();
                 attempt = 0; //reset attempt
-                ensureTime(client);
             } catch (IOException ioe) {
                 ++attempt;
                 if(attempt >= MAX_ATTEMPTS) {
@@ -157,6 +158,7 @@ public class MoreoverProviderTask implements Runnable {
         }
         while (this.keepRunning.get() && resultSize == MoreoverClient.MAX_LIMIT &&
                 attempt < MAX_ATTEMPTS && !Thread.currentThread().isInterrupted());
+        LOGGER.debug("Exiting with after recieving result size of {}", resultSize);
     }
 
     protected void addMoreoverArticlesToOutputQueue(MoreoverResult result) throws InterruptedException {

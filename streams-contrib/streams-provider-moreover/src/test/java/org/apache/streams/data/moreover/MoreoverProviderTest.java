@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Basic Unit tests for {@link org.apache.streams.data.moreover.MoreoverProvider}
  */
-public class TestMoreoverProvider extends RandomizedTest {
+public class MoreoverProviderTest extends RandomizedTest {
 
     /**
      * Basic test to make sure provider terminates and isRunning gives the correct values.

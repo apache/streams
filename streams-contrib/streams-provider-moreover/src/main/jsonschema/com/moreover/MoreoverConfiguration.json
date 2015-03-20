@@ -24,7 +24,8 @@
                     },
                     "startingSequence": {
                         "type": "string",
-                        "description": "If this value is null or the empty string, the moreover provider will start consuming from the most recent article. If this value is '0' or an invalid sequence id, moreover will pull back as far as possible historically, which is typically approximately 3 days.  If this value is a valid sequence id moreover provider will pull since this id."
+                        "description": "If this value is null or the empty string, the moreover provider will start consuming from the most recent article. If this value is '0' or an invalid sequence id, moreover will pull back as far as possible historically, which is typically approximately 3 days.  If this value is a valid sequence id moreover provider will pull since this id.",
+                        "default": null
                     },
                     "perpetual": {
                       "type": "boolean",
