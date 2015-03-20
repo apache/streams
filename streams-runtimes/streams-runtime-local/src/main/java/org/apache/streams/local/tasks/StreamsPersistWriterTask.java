@@ -139,10 +139,19 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                     LOGGER.debug("Received null StreamsDatum @ writer : {}", this.writer.getClass().getName());
                 }
             }
-
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                LOGGER.error("Sleep interrupted: {}", e);
+            }
         } catch(Exception e) {
             LOGGER.error("Failed to execute Persist Writer {}",this.writer.getClass().getSimpleName(), e);
         } finally {
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                LOGGER.error("Sleep interrupted: {}", e);
+            }
             this.writer.cleanUp();
             this.isRunning.set(false);
         }

@@ -180,6 +180,11 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                             this.keepRunning.set(false);
                         }
                     }
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        LOGGER.error("Sleep interrupted: {}", e);
+                    }
                 }
                     break;
                 case READ_CURRENT:
@@ -202,6 +207,11 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         } catch( Exception e ) {
             LOGGER.error("Error in processing provider stream", e);
         } finally {
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                LOGGER.error("Sleep interrupted: {}", e);
+            }
             LOGGER.debug("Complete Provider Task execution for {}", this.provider.getClass().getSimpleName());
             this.provider.cleanUp();
             //Setting started to 'true' here will allow the isRunning() method to return false in the event of an exception

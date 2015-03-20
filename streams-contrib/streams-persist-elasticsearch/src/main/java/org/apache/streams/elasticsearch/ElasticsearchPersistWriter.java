@@ -175,18 +175,33 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     public void cleanUp() {
         try {
 
+            LOGGER.debug("cleanUp started");
+
             // before they close, check to ensure that
             flushInternal();
 
-            waitToCatchUp(0, 5 * 60 * 1000);
-            refreshIndexes();
+            // before they close, check to ensure that
+            flushInternal();
 
-            LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
-            timer.cancel();
+            LOGGER.debug("flushInternal completed");
+
+            waitToCatchUp(0, 5 * 60 * 1000);
+
+            LOGGER.debug("waitToCatchUp completed");
 
         } catch (Throwable e) {
             // this line of code should be logically unreachable.
             LOGGER.warn("This is unexpected: {}", e);
+        } finally {
+
+            refreshIndexes();
+
+            LOGGER.debug("refreshIndexes completed");
+
+            LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
+            timer.cancel();
+
+            LOGGER.debug("cleanUp completed");
         }
     }
 
