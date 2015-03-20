@@ -25,7 +25,7 @@ import com.squareup.tape.QueueFile;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
-import org.apache.streams.file.FileConfiguration;
+import org.apache.streams.filebuffer.FileBufferConfiguration;
 import org.apache.streams.util.GuidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class FileBufferPersistWriter implements StreamsPersistWriter, Serializab
 
     private ObjectMapper mapper;
 
-    private FileConfiguration config;
+    private FileBufferConfiguration config;
 
     private QueueFile queueFile;
 
@@ -55,7 +55,7 @@ public class FileBufferPersistWriter implements StreamsPersistWriter, Serializab
        this(FileBufferConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("filebuffer")));
     }
 
-    public FileBufferPersistWriter(FileConfiguration config) {
+    public FileBufferPersistWriter(FileBufferConfiguration config) {
         this.config = config;
     }
 

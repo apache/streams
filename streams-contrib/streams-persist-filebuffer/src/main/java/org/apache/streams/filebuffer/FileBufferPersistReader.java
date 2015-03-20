@@ -26,7 +26,7 @@ import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistReader;
 import org.apache.streams.core.StreamsResultSet;
-import org.apache.streams.file.FileConfiguration;
+import org.apache.streams.filebuffer.FileBufferConfiguration;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class FileBufferPersistReader implements StreamsPersistReader, Serializab
 
     private ObjectMapper mapper;
 
-    private FileConfiguration config;
+    private FileBufferConfiguration config;
 
     private QueueFile queueFile;
 
@@ -64,10 +64,10 @@ public class FileBufferPersistReader implements StreamsPersistReader, Serializab
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public FileBufferPersistReader() {
-        this(FileBufferConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("file")));
+        this(FileBufferConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("filebuffer")));
     }
 
-    public FileBufferPersistReader(FileConfiguration config) {
+    public FileBufferPersistReader(FileBufferConfiguration config) {
         this.config = config;
     }
 

@@ -20,7 +20,7 @@ package org.apache.streams.filebuffer.test;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
-import org.apache.streams.file.FileConfiguration;
+import org.apache.streams.filebuffer.FileBufferConfiguration;
 import org.apache.streams.filebuffer.FileBufferPersistReader;
 import org.apache.streams.filebuffer.FileBufferPersistWriter;
 import org.junit.Assert;
@@ -34,12 +34,12 @@ import java.io.File;
  */
 public class TestFileBufferPersist {
 
-    private FileConfiguration testConfiguration;
+    private FileBufferConfiguration testConfiguration;
 
     @Test
     public void testPersistWriterString() {
 
-        testConfiguration = new FileConfiguration();
+        testConfiguration = new FileBufferConfiguration();
         testConfiguration.setPath("target/TestFilePersist.txt");
 
         File file = new File( testConfiguration.getPath());

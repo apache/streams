@@ -21,7 +21,6 @@ package org.apache.streams.filebuffer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
-import org.apache.streams.file.FileConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +36,12 @@ public class FileBufferConfigurator {
 
     private final static ObjectMapper mapper = new ObjectMapper();
 
-    public static FileConfiguration detectConfiguration(Config kafka) {
+    public static FileBufferConfiguration detectConfiguration(Config kafka) {
 
-        FileConfiguration fileConfiguration = null;
+        FileBufferConfiguration fileConfiguration = null;
 
         try {
-            fileConfiguration = mapper.readValue(kafka.root().render(ConfigRenderOptions.concise()), FileConfiguration.class);
+            fileConfiguration = mapper.readValue(kafka.root().render(ConfigRenderOptions.concise()), FileBufferConfiguration.class);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.warn("Could not parse FileConfiguration");

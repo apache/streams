@@ -26,10 +26,10 @@ import org.apache.streams.console.ConsolePersistWriter;
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.filebuffer.FileBufferConfiguration;
 import org.apache.streams.filebuffer.FileBufferPersistReader;
 import org.apache.streams.filebuffer.FileBufferPersistWriter;
 import org.apache.streams.local.builders.LocalStreamBuilder;
-import org.apache.streams.file.FileConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.mock;
  */
 public class FileBufferPersistIT {
 
-    private FileConfiguration testConfiguration;
+    private FileBufferConfiguration testConfiguration;
 
     ConsolePersistReader reader = Mockito.mock(ConsolePersistReader.class);
     ConsolePersistWriter writer = Mockito.mock(ConsolePersistWriter.class);
@@ -62,7 +62,7 @@ public class FileBufferPersistIT {
     @Before
     public void prepareTest() {
 
-        testConfiguration = new FileConfiguration();
+        testConfiguration = new FileBufferConfiguration();
         testConfiguration.setPath("target/FilePersistIT.txt");
 
         File file = new File( testConfiguration.getPath());
