@@ -22,6 +22,7 @@ package org.apache.streams.elasticsearch;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -45,6 +46,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -173,12 +175,10 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     }
 
     public void cleanUp() {
+
         try {
 
             LOGGER.debug("cleanUp started");
-
-            // before they close, check to ensure that
-            flushInternal();
 
             // before they close, check to ensure that
             flushInternal();
