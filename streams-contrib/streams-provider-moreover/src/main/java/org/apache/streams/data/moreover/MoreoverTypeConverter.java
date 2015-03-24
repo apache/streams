@@ -135,6 +135,9 @@ public class MoreoverTypeConverter implements StreamsProcessor{
             LOGGER.warn("Unable to convert Moreover data : {}", t);
         }
         StreamsDatum datum = null;
+        if(output instanceof String) { //remove new lines for S3 file writing
+            output = ((String) output).replaceAll("(\r\n)|(\r)|(\n)|"+System.lineSeparator(), " ");
+        }
         if(output instanceof Activity) {
             datum = new StreamsDatum(output, ((Activity) output).getId());
         } else if( output instanceof Article) {
