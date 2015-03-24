@@ -68,7 +68,7 @@ public class ContentRequestBuilder extends AbstractRequestBuilder implements Req
     public URL getRequestUrl()  {
         StringBuilder url = new StringBuilder();
         url.append(this.baseUrl);
-        url.append("dev/v1/heartbeat/content?");
+        url.append("v1/heartbeat/content?");
         url.append("apiKey=");
         url.append(this.apiKey);
         url.append("&hid=");
