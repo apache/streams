@@ -5,6 +5,8 @@ import org.jinstagram.entity.common.Comments;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 public class InstagramActivityUtilTest {
 
     /**
@@ -22,6 +24,6 @@ public class InstagramActivityUtilTest {
 
         InstagramActivityUtil.addInstagramExtensions(activity, data);
 
-        assert(activity != null);
+        assertTrue(activity != null);
     }
 }
