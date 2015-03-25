@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 
 public class SyndEntryActivitySerizlizerTest {
 
-    private static ObjectMapper mapper = new StreamsJacksonMapper();
+    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Test
     public void testJsonData() throws Exception {

@@ -29,49 +29,7 @@ public class BroadcastMonitorThread extends LocalRuntimeBroadcastMonitorThread i
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(BroadcastMonitorThread.class);
 
     public BroadcastMonitorThread(Map<String, Object> streamConfig) {
-<<<<<<< HEAD
         super(streamConfig);
-=======
-        keepRunning = true;
-        this.streamConfig = streamConfig;
-
-        LOGGER.info("BroadcastMonitorThread starting" + streamConfig);
-
-        server = ManagementFactory.getPlatformMBeanServer();
-
-        setBroadcastURI();
-        setWaitTime();
-
-        if( broadcastURI != null )
-            if( broadcastURI.getScheme().equals("http"))
-                messagePersister = new BroadcastMessagePersister(broadcastURI.toString());
-            else if( broadcastURI.getScheme().equals("udp"))
-                messagePersister = new LogstashUdpMessagePersister(broadcastURI.toString());
-        else
-            messagePersister = new SLF4JMessagePersister();
-
-        initializeObjectMapper();
-
-        LOGGER.info("BroadcastMonitorThread started");
-    }
-
-    /**
-     * Initialize our object mapper with all of our bean's custom deserializers
-     * This way we can convert them to and from Strings dictated by our
-     * POJOs which are generated from JSON schemas
-     */
-    private void initializeObjectMapper() {
-        objectMapper = new StreamsJacksonMapper();
-        SimpleModule simpleModule = new SimpleModule();
-
-        simpleModule.addDeserializer(MemoryUsageBroadcast.class, new MemoryUsageDeserializer());
-        simpleModule.addDeserializer(ThroughputQueueBroadcast.class, new ThroughputQueueDeserializer());
-        simpleModule.addDeserializer(StreamsTaskCounterBroadcast.class, new StreamsTaskCounterDeserializer());
-        simpleModule.addDeserializer(DatumStatusCounterBroadcast.class, new DatumStatusCounterDeserializer());
-
-        objectMapper.registerModule(simpleModule);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
->>>>>>> parent of 2a16195... refactor uses of new StreamsJacksonMapper() to use singleton
     }
 
     /**

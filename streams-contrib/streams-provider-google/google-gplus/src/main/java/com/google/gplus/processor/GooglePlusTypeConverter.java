@@ -114,7 +114,7 @@ public class GooglePlusTypeConverter implements StreamsProcessor {
     @Override
     public void prepare(Object configurationObject) {
         googlePlusActivityUtil = new GooglePlusActivityUtil();
-        mapper = new StreamsJacksonMapper();
+        mapper = StreamsJacksonMapper.getInstance();
 
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(Person.class, new GPlusPersonDeserializer());

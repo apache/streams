@@ -196,7 +196,7 @@ public class FacebookTypeConverter implements StreamsProcessor {
 
     @Override
     public void prepare(Object o) {
-        mapper = new StreamsJacksonMapper();
+        mapper = StreamsJacksonMapper.getInstance();
 
         facebookPageActivitySerializer = new FacebookPageActivitySerializer();
         facebookPostActivitySerializer = new FacebookPostActivitySerializer();

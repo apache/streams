@@ -21,7 +21,6 @@ import com.google.common.collect.Lists;
 import com.google.common.base.Objects;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.data.util.RFC3339Utils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -165,7 +164,6 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
         // We don't have a scroll, we need to create a scroll
         if (scrollResp == null) {
             scrollResp = search.execute().actionGet();
-            LOGGER.debug("Scroll search executed @ {}", RFC3339Utils.format(DateTime.now()));
             LOGGER.trace(search.toString());
         }
     }
@@ -201,7 +199,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
                         .setScroll(Objects.firstNonNull(scrollTimeout, DEFAULT_SCROLL_TIMEOUT))
                         .execute()
                         .actionGet();
-                LOGGER.debug("Scroll search executed @ {}", RFC3339Utils.format(DateTime.now()));
+
                 this.totalHits = scrollResp.getHits().getTotalHits();
             }
 
@@ -209,7 +207,6 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
             // letting the iterator know that we are done.
             if (scrollResp.getHits().getTotalHits() == 0 || scrollResp.getHits().getHits().length == 0) {
                 scrollPositionInScroll = -1;
-                LOGGER.debug("Scroll returned 0 hits @ {}", RFC3339Utils.format(DateTime.now()));
             } else {
                 // get the next record
                 next = scrollResp.getHits().getAt(scrollPositionInScroll);
@@ -229,10 +226,6 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     }
 
     protected boolean isCompleted() {
-        if(totalRead >= this.limit || !hasRecords()) {
-            LOGGER.debug("Elasticsearch reader completed @ {}", RFC3339Utils.format(DateTime.now()));
-            LOGGER.debug("Total Read = {}\thasRecords() = {}", totalRead, hasRecords());
-        }
         return totalRead >= this.limit || !hasRecords();
     }
 

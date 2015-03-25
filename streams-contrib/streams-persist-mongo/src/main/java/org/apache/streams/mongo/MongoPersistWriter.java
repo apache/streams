@@ -48,7 +48,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
-
     private final static Logger LOGGER = LoggerFactory.getLogger(MongoPersistWriter.class);
     private final static long MAX_WRITE_LATENCY = 1000;
 
@@ -69,11 +68,15 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
     protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public MongoPersistWriter() {
-        this(MongoConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("mongo")));
+        Config config = StreamsConfigurator.config.getConfig("mongo");
+        this.config = MongoConfigurator.detectConfiguration(config);
+        this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
     }
 
-    public MongoPersistWriter(MongoConfiguration config) {
-        this.config = config;
+    public MongoPersistWriter(Queue<StreamsDatum> persistQueue) {
+        Config config = StreamsConfigurator.config.getConfig("mongo");
+        this.config = MongoConfigurator.detectConfiguration(config);
+        this.persistQueue = persistQueue;
     }
 
     public void setPersistQueue(Queue<StreamsDatum> persistQueue) {
@@ -175,7 +178,6 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
 
     @Override
     public void prepare(Object configurationObject) {
-        this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
         start();
     }
 
@@ -223,13 +225,14 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
     }
 
     private synchronized void connectToMongo() {
-
         try {
-            client = new MongoClient(config.getHost(), config.getPort().intValue()).getDB(config.getDb());
+            dbaddress = new DBAddress(config.getHost(), config.getPort().intValue(), config.getDb());
         } catch (UnknownHostException e) {
             e.printStackTrace();
             return;
         }
+
+        client = MongoClient.connect(dbaddress);
 
         if (!Strings.isNullOrEmpty(config.getUser()) && !Strings.isNullOrEmpty(config.getPassword()))
             client.authenticate(config.getUser(), config.getPassword().toCharArray());

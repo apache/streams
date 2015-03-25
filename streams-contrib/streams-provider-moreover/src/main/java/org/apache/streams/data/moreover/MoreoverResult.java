@@ -153,7 +153,6 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
             this.articleArray = articles.getArticle();
 
             for (Article article : articleArray) {
-                // Is sorting the sequenceIds necessary? Are sequence ids always increasing ?
                 BigInteger sequenceid = new BigInteger(article.getSequenceId());
                 list.add(new StreamsDatum(article, sequenceid));
                 logger.trace("Prior max sequence Id {} current candidate {}", this.maxSequencedId, sequenceid);
@@ -172,21 +171,6 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
 
     public BigInteger getMaxSequencedId() {
         return this.maxSequencedId;
-    }
-
-    public List<Article> getArticles() {
-        return articles.getArticle();
-    }
-
-    /**
-     * Returns the number of articles received.  If process has not been called to parse the result xml, -1 is returned.
-     * @return
-     */
-    public int numArticles() {
-        if(this.maxSequencedId.equals(BigInteger.ZERO)) {
-            return -1;
-        }
-        return this.articles.getArticle().size();
     }
 
     @Override

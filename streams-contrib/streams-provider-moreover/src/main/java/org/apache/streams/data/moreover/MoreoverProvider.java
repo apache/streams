@@ -39,12 +39,10 @@ public class MoreoverProvider implements StreamsProvider {
     public final static String STREAMS_ID = "MoreoverProvider";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(MoreoverProvider.class);
-    private final static int MAX_BATCH_SIZE = 1000;
 
-    protected  BlockingQueue<StreamsDatum> providerQueue = new LinkedBlockingQueue<>(MAX_BATCH_SIZE);
+    protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<StreamsDatum>();
 
     private List<MoreoverKeyData> keys;
-    private List<MoreoverProviderTask> providerTasks;
 
     private MoreoverConfiguration config;
 
@@ -56,22 +54,16 @@ public class MoreoverProvider implements StreamsProvider {
         for( MoreoverKeyData apiKey : config.getApiKeys()) {
             this.keys.add(apiKey);
         }
-        this.providerTasks = Lists.newLinkedList();
     }
 
     public void startStream() {
 
         for(MoreoverKeyData key : keys) {
-            MoreoverProviderTask task = getMoreoverProviderTask(key, this.providerQueue);
-            this.providerTasks.add(task);
-            executor.submit(task);
+            MoreoverProviderTask task = new MoreoverProviderTask(key.getId(), key.getKey(), this.providerQueue, key.getStartingSequence());
+            executor.submit(new Thread(task));
             LOGGER.info("Started producer for {}", key.getKey());
         }
-        this.executor.shutdown();
-    }
 
-    protected MoreoverProviderTask getMoreoverProviderTask(MoreoverKeyData keyData, BlockingQueue<StreamsDatum> queue) {
-        return new MoreoverProviderTask(keyData.getId(), keyData.getKey(), queue, keyData.getStartingSequence(), keyData.getPerpetual());
     }
 
     @Override
@@ -80,21 +72,13 @@ public class MoreoverProvider implements StreamsProvider {
         LOGGER.debug("readCurrent: {}", providerQueue.size());
 
         Collection<StreamsDatum> currentIterator = Lists.newArrayList();
-        int batchSize = 0;
-        BlockingQueue<StreamsDatum> batch = Queues.newLinkedBlockingQueue();
-        while(!this.providerQueue.isEmpty() && batchSize < MAX_BATCH_SIZE) {
-            StreamsDatum datum = this.providerQueue.poll();
-            if(datum != null) {
-                ++batchSize;
-                try {
-                    batch.put(datum);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException(ie);
-                }
-            }
-        }
-        return new StreamsResultSet(batch);
+        Iterators.addAll(currentIterator, providerQueue.iterator());
+
+        StreamsResultSet current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(currentIterator));
+
+        providerQueue.clear();
+
+        return current;
     }
 
     @Override
@@ -109,19 +93,17 @@ public class MoreoverProvider implements StreamsProvider {
 
     @Override
     public boolean isRunning() {
-        return !executor.isTerminated() || !this.providerQueue.isEmpty();
+        return !executor.isShutdown() && !executor.isTerminated();
     }
 
     @Override
     public void prepare(Object configurationObject) {
         LOGGER.debug("Prepare");
-        executor = Executors.newFixedThreadPool(this.keys.size());
+        executor = Executors.newSingleThreadExecutor();
     }
 
     @Override
     public void cleanUp() {
-        for(MoreoverProviderTask task : this.providerTasks) {
-            task.stopTask();
-        }
+
     }
 }
