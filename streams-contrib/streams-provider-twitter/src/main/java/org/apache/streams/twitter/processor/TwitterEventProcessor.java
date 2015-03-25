@@ -186,7 +186,7 @@ public class TwitterEventProcessor implements StreamsProcessor {
 
     @Override
     public void prepare(Object configurationObject) {
-        mapper = StreamsJacksonMapper.getInstance();
+        mapper = new StreamsJacksonMapper();
         twitterJsonActivitySerializer = new TwitterJsonActivitySerializer();
     }
 

@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
  */
 public class GenericWebhookResourceTest {
 
-    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private static ObjectMapper mapper = new StreamsJacksonMapper();
 
     private static final GenericWebhookResource genericWebhookResource = new GenericWebhookResource();
 

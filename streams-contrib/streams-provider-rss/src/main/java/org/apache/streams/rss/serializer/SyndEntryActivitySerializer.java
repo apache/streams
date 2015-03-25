@@ -223,7 +223,7 @@ public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNod
      * @return
      */
     private Activity addRomeExtension(Activity activity, ObjectNode entry) {
-        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+        ObjectMapper mapper = new StreamsJacksonMapper();
         ObjectNode activityRoot = mapper.convertValue(activity, ObjectNode.class);
         ObjectNode extensions = JsonNodeFactory.instance.objectNode();
 

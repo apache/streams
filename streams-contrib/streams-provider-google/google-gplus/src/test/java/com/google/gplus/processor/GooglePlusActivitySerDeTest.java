@@ -48,7 +48,7 @@ public class GooglePlusActivitySerDeTest {
 
     @Before
     public void setup() {
-        objectMapper = StreamsJacksonMapper.getInstance();
+        objectMapper = new StreamsJacksonMapper();
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(com.google.api.services.plus.model.Activity.class, new GPlusActivityDeserializer());
         objectMapper.registerModule(simpleModule);

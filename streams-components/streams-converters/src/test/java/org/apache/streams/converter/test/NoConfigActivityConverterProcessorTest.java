@@ -41,7 +41,7 @@ import static junit.framework.Assert.*;
  */
 public class NoConfigActivityConverterProcessorTest {
 
-    private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private static final ObjectMapper mapper = new StreamsJacksonMapper();
 
     private static final String ACTIVITY_JSON = "{\"id\":\"id\",\"published\":\"Tue Jan 17 21:21:46 Z 2012\",\"verb\":\"post\",\"provider\":{\"id\":\"providerid\"}}";
 

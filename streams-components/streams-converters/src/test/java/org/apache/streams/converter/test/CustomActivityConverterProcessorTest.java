@@ -41,7 +41,7 @@ import static junit.framework.Assert.*;
  */
 public class CustomActivityConverterProcessorTest {
 
-    private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private static final ObjectMapper mapper = new StreamsJacksonMapper();
 
     ActivityConverterProcessor processor;
 
