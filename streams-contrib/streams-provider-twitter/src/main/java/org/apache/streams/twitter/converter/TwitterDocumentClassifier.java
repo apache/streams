@@ -26,6 +26,7 @@ import org.apache.streams.data.DocumentClassifier;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Follow;
 import org.apache.streams.twitter.pojo.*;
+import sun.reflect.generics.reflectiveObjects.LazyReflectiveObjectGenerator;
 
 import java.io.IOException;
 import java.util.List;
@@ -48,11 +49,12 @@ public class TwitterDocumentClassifier implements DocumentClassifier {
         try {
             if( document instanceof String )
                 objectNode = mapper.readValue((String)document, ObjectNode.class);
-            else
+            else if( document instanceof ObjectNode )
                 objectNode = (ObjectNode) document;
+            else
+                return Lists.newArrayList();
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            return Lists.newArrayList();
         }
 
         List<Class> classList = Lists.newArrayList();

@@ -51,7 +51,7 @@ public class TwitterJsonUserActivityConverter implements ActivityConverter<User>
 
     @Override
     public User fromActivity(Activity deserialized) throws ActivityConversionException {
-        return null;
+        throw new NotImplementedException();
     }
 
     @Override

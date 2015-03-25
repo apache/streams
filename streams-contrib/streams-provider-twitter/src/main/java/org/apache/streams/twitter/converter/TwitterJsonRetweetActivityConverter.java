@@ -52,7 +52,7 @@ public class TwitterJsonRetweetActivityConverter implements ActivityConverter<Re
 
     @Override
     public Retweet fromActivity(Activity deserialized) throws ActivityConversionException {
-        return null;
+        throw new NotImplementedException();
     }
 
     @Override
