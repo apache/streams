@@ -48,7 +48,6 @@ public class MoreoverConfigurator {
                 apiKeys.add(new MoreoverKeyData()
                         .withId(apiKeyConfig.getString("key"))
                         .withKey(apiKeyConfig.getString("key"))
-//                        .withStartingSequence(apiKeyConfig.getString("startingSequence"))
                         );
             }
         moreoverConfiguration.setApiKeys(apiKeys);

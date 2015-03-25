@@ -51,7 +51,7 @@ public class GooglePlusTypeConverterTest {
 
     @Before
     public void setup() {
-        objectMapper = StreamsJacksonMapper.getInstance();
+        objectMapper = new StreamsJacksonMapper();
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(Person.class, new GPlusPersonDeserializer());
         simpleModule.addDeserializer(com.google.api.services.plus.model.Activity.class, new GPlusActivityDeserializer());

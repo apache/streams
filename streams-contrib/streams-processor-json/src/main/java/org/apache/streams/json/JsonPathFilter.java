@@ -51,7 +51,7 @@ public class JsonPathFilter implements StreamsProcessor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(JsonPathFilter.class);
 
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private ObjectMapper mapper = new StreamsJacksonMapper();
 
     private String pathExpression;
     private JsonPath jsonPath;

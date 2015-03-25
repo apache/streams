@@ -48,7 +48,7 @@ public class GooglePlusPersonSerDeTest {
 
     @Before
     public void setup() {
-        objectMapper = StreamsJacksonMapper.getInstance();
+        objectMapper = new StreamsJacksonMapper();
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(Person.class, new GPlusPersonDeserializer());
         objectMapper.registerModule(simpleModule);

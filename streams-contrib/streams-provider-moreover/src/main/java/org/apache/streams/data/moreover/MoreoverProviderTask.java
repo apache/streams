@@ -149,6 +149,7 @@ public class MoreoverProviderTask implements Runnable {
                 if(attempt >= MAX_ATTEMPTS) {
                     LOGGER.error("Unable to get api response after {} attempts. Shutting down", attempt);
                     LOGGER.error("Unable to connect to moreover api : {}", ioe);
+                    this.keepRunning.set(false);
                 } else {
                     LOGGER.warn("Unable to connect to moreover api: {}", ioe);
                     LOGGER.warn("Will retry in 1 second");

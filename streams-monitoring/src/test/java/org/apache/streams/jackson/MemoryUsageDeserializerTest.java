@@ -40,7 +40,7 @@ public class MemoryUsageDeserializerTest {
 
     @Before
     public void setup() {
-        objectMapper = StreamsJacksonMapper.getInstance();
+        objectMapper = new StreamsJacksonMapper();
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(MemoryUsageBroadcast.class, new MemoryUsageDeserializer());
         objectMapper.registerModule(simpleModule);

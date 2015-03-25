@@ -53,7 +53,7 @@ public class GPlusPersonDeserializer extends JsonDeserializer<Person> {
      */
     @Override
     public Person deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-        ObjectMapper m = StreamsJacksonMapper.getInstance();
+        ObjectMapper m = new StreamsJacksonMapper();
 
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
         Person person = new Person();

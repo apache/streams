@@ -46,7 +46,7 @@ public class JsonPathExtractor implements StreamsProcessor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(JsonPathExtractor.class);
 
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private ObjectMapper mapper = new StreamsJacksonMapper();
 
     private String pathExpression;
     private JsonPath jsonPath;
