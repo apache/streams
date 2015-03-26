@@ -100,18 +100,6 @@ public class ElasticsearchMetadataUtil {
         return id;
     }
 
-    public static String getParent(StreamsDatum datum) {
-
-        String parent = null;
-
-        Map<String, Object> metadata = datum.getMetadata();
-
-        if( parent == null && metadata != null && metadata.containsKey("parent"))
-            parent = (String) datum.getMetadata().get("parent");
-
-        return parent;
-    }
-
     public static String getId(Map<String, Object> metadata) {
 
         return (String) metadata.get("id");

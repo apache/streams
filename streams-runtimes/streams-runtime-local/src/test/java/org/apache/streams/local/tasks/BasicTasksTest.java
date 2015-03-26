@@ -176,7 +176,7 @@ public class BasicTasksTest {
         task.stopTask();
         service.shutdown();
         try {
-            if(!service.awaitTermination(5, TimeUnit.SECONDS)){
+            if(!service.awaitTermination(5, TimeUnit.MINUTES)){
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }

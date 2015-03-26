@@ -97,13 +97,17 @@ public class YoutubeActivityUtil {
 
     public static Actor createActorForChannel(Channel channel) {
         Actor actor = new Actor();
-        actor.setId("id:youtube:"+channel.getId());
+        
+        actor.setId("id:youtube:" + channel.getId());
         actor.setSummary(channel.getSnippet().getDescription());
         actor.setDisplayName(channel.getSnippet().getTitle());
+
         Image image = new Image();
         image.setUrl(channel.getSnippet().getThumbnails().getHigh().getUrl());
+
         actor.setImage(image);
-        actor.setUrl("https://youtube.com/user/" + channel.getId());
+        actor.setUrl("https://youtube.com/channel/" + channel.getId());
+
         Map<String, Object> actorExtensions = Maps.newHashMap();
         actorExtensions.put("followers", channel.getStatistics().getSubscriberCount());
         actorExtensions.put("posts", channel.getStatistics().getVideoCount());
