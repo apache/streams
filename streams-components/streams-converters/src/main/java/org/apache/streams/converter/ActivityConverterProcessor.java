@@ -33,17 +33,11 @@ import java.util.List;
  * ActivityConverterProcessor is a utility processor for converting any datum document
  * to an Activity.
  *
- * By default it will handle string json and objectnode representation of existing Activities.
+ * By default it will handle string json and objectnode representation of existing Activities,
+ * translating them into the POJO representation(s) preferred by each registered/detected
+ * ActivityConverter.
  *
- * Implementations can add DocumentClassifiers and ActivityConverterResolvers to the processor
- * to ensure additional ActivityConverters will be resolved and applied.
- *
- * A DocumentClassifier's reponsibility is to recognize document formats and label them, using
- * a jackson-compatible POJO class.
- *
- * An ActivityConverterResolver's reponsibility is to identify ActivityConverter implementations
- * capable of converting a raw document associated with that POJO class into an activity.
- *
+ * To use this capability without a dedicated stream processor, just use ActivityConverterUtil.
  */
 public class ActivityConverterProcessor implements StreamsProcessor {
 
