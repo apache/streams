@@ -28,11 +28,6 @@
             "description": "Scroll Timeout (JodaTime)",
             "default": "5m"
         },
-        "batchSize": {
-          "type": "integer",
-          "descripton" : "The batch size",
-          "default": 100
-        },
         "_search": {
             "type": "object",
             "javaType" : "java.util.Map",
