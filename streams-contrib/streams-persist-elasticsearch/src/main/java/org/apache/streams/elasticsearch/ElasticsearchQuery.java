@@ -19,14 +19,11 @@ package org.apache.streams.elasticsearch;
 
 import com.google.common.collect.Lists;
 import com.google.common.base.Objects;
-import com.typesafe.config.Config;
-import org.apache.streams.config.StreamsConfigurator;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.joda.time.DateTime;
@@ -43,10 +40,8 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchQuery.class);
     private static final int SCROLL_POSITION_NOT_INITIALIZED = -3;
     private static final Integer DEFAULT_BATCH_SIZE = 500;
-    private static final String DEFAULT_SCROLL_TIMEOUT = "5m";
 
     private final ElasticsearchClientManager elasticsearchClientManager;
-    private final ElasticsearchConfiguration config;
     private List<String> indexes = Lists.newArrayList();
     private List<String> types = Lists.newArrayList();
     private String[] withfields;
@@ -56,7 +51,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     private int limit = 1000 * 1000 * 1000; // we are going to set the default limit very high to 1bil
     private boolean random = false;
     private int batchSize = 100;
-    private String scrollTimeout = null;
+    private TimeValue scrollTimeout = null;
     private org.elasticsearch.index.query.QueryBuilder queryBuilder;
     private org.elasticsearch.index.query.FilterBuilder filterBuilder;// These are private to help us manage the scroll
     private SearchRequestBuilder search;
@@ -70,10 +65,10 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
         this(config, new ElasticsearchClientManager(config));
     }
     public ElasticsearchQuery(ElasticsearchReaderConfiguration config, ElasticsearchClientManager escm) {
-        this.config = config;
         this.indexes.addAll(config.getIndexes());
         this.types.addAll(config.getTypes());
-        this.scrollTimeout = config.getScrollTimeout();
+        this.limit = config.getSize().intValue();
+        setScrollTimeout(config.getScrollTimeout());
         this.batchSize = config.getBatchSize().intValue();
         this.elasticsearchClientManager = escm;
     }
@@ -99,6 +94,10 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     }
 
     public void setScrollTimeout(String scrollTimeout) {
+        this.scrollTimeout = TimeValue.parseTimeValue(scrollTimeout, TimeValue.timeValueMillis(5 * 1000 * 60));
+    }
+
+    public void setScrollTimeout(TimeValue scrollTimeout) {
         this.scrollTimeout = scrollTimeout;
     }
 
@@ -118,15 +117,79 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
         this.withoutfields = withoutfields;
     }
 
+    public List<String> getIndexes() {
+        return indexes;
+    }
+
+    public List<String> getTypes() {
+        return types;
+    }
+
+    public DateTime getStartDate() {
+        return startDate;
+    }
+
+    public DateTime getEndDate() {
+        return endDate;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public boolean isRandom() {
+        return random;
+    }
+
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    public String getScrollTimeout() {
+        return scrollTimeout.toString();
+    }
+
+    public QueryBuilder getQueryBuilder() {
+        return queryBuilder;
+    }
+
+    public FilterBuilder getFilterBuilder() {
+        return filterBuilder;
+    }
+
+    public SearchRequestBuilder getSearch() {
+        return search;
+    }
+
+    public SearchResponse getScrollResp() {
+        return scrollResp;
+    }
+
+    public int getScrollPositionInScroll() {
+        return scrollPositionInScroll;
+    }
+
+    public SearchHit getNext() {
+        return next;
+    }
+
+    public long getTotalHits() {
+        return totalHits;
+    }
+
+    public long getTotalRead() {
+        return totalRead;
+    }
+
     public void execute(Object o) {
 
         // If we haven't already set up the search, then set up the search.
         if (search == null) {
             search = elasticsearchClientManager.getClient()
-                    .prepareSearch(indexes.toArray(new String[0]))
+                    .prepareSearch(indexes.toArray(new String[]{}))
                     .setSearchType(SearchType.SCAN)
-                    .setSize(Objects.firstNonNull(batchSize, DEFAULT_BATCH_SIZE).intValue())
-                    .setScroll(Objects.firstNonNull(scrollTimeout, DEFAULT_SCROLL_TIMEOUT));
+                    .setSize(Objects.firstNonNull(batchSize, DEFAULT_BATCH_SIZE))
+                    .setScroll(this.scrollTimeout);
 
             if (this.queryBuilder != null) {
                 search.setQuery(this.queryBuilder);
@@ -151,7 +214,6 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
             FilterBuilder allFilters = andFilters(filterList);
 
             if (clauses > 0) {
-                //    search.setPostFilter(allFilters);
                 search.setPostFilter(allFilters);
             }
 
@@ -177,17 +239,18 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     //Iterator methods
     @Override
     public SearchHit next() {
+        totalRead += 1;
         return this.next;
     }
 
     @Override
     public boolean hasNext() {
-        calcNext();
-        return hasRecords();
+        return calcNext();
     }
 
-    public void calcNext() {
+    public synchronized boolean calcNext() {
         try {
+            next = null;
             // We have exhausted our scroll create another scroll.
             if (scrollPositionInScroll == SCROLL_POSITION_NOT_INITIALIZED || scrollPositionInScroll >= scrollResp.getHits().getHits().length) {
                 // reset the scroll position
@@ -195,8 +258,8 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
 
                 // get the next hits of the scroll
                 scrollResp = elasticsearchClientManager.getClient()
-                        .prepareSearchScroll(scrollResp.getScrollId())
-                        .setScroll(Objects.firstNonNull(scrollTimeout, DEFAULT_SCROLL_TIMEOUT))
+                        .prepareSearchScroll(this.scrollResp.getScrollId())
+                        .setScroll(this.scrollTimeout)
                         .execute()
                         .actionGet();
 
@@ -213,13 +276,14 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
 
                 // Increment our counters
                 scrollPositionInScroll += 1;
-                totalRead += 1;
+                return true;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOGGER.error("Unexpected scrolling error: {}", e);
             scrollPositionInScroll = -1;
             next = null;
         }
+        return false;
     }
 
     public void remove() {
@@ -239,28 +303,18 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
         if (filters == null || filters.size() == 0) {
             return null;
         }
-
-        FilterBuilder toReturn = filters.get(0);
-
-        for (int i = 1; i < filters.size(); i++) {
-            toReturn = FilterBuilders.andFilter(toReturn, filters.get(i));
+        else {
+            return new AndFilterBuilder(filters.toArray(new FilterBuilder[] {}));
         }
-
-        return toReturn;
     }
 
     private FilterBuilder orFilters(List<FilterBuilder> filters) {
         if (filters == null || filters.size() == 0) {
             return null;
         }
-
-        FilterBuilder toReturn = filters.get(0);
-
-        for (int i = 1; i < filters.size(); i++) {
-            toReturn = FilterBuilders.orFilter(toReturn, filters.get(i));
+        else {
+            return new OrFilterBuilder(filters.toArray(new FilterBuilder[]{}));
         }
-
-        return toReturn;
     }
 
     private List<FilterBuilder> buildFilterList() {
