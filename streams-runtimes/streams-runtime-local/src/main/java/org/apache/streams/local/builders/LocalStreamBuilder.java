@@ -131,6 +131,8 @@ public class LocalStreamBuilder implements StreamBuilder {
         try {
             if (streamConfig.containsKey("maxQueueSize") && Integer.valueOf((Integer) streamConfig.get("maxQueueSize")) > 0) {
                 this.maxQueueCapacity = Integer.valueOf((Integer) streamConfig.get("maxQueueSize"));
+            } else {
+                this.maxQueueCapacity = DEFAULT_QUEUE_SIZE;
             }
         } catch (Exception e) {
             LOGGER.error("Exception while trying to parse the max queue size from the Stream configuration object: {}", e);
