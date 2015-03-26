@@ -26,13 +26,11 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Follow;
 import org.apache.streams.twitter.pojo.User;
-import org.apache.streams.twitter.serializer.util.TwitterActivityUtil;
+import org.apache.streams.twitter.converter.util.TwitterActivityUtil;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
-
-import static org.apache.streams.twitter.serializer.util.TwitterActivityUtil.updateActivity;
 
 public class TwitterFollowActivitySerializer implements ActivitySerializer<Follow>, Serializable {
 

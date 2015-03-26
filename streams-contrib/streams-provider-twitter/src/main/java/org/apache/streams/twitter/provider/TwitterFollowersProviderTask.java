@@ -26,7 +26,6 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.pojo.Follow;
 import org.apache.streams.twitter.pojo.User;
-import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +42,7 @@ public class TwitterFollowersProviderTask implements Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterFollowersProviderTask.class);
 
-    private final static ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsTwitterMapper.TWITTER_FORMAT));
+    private final static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     protected TwitterFollowingProvider provider;
     protected Twitter client;
