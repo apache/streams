@@ -23,6 +23,11 @@
             },
             "description": "Types to read from"
         },
+        "size" : {
+            "type": "integer",
+            "descripton" : "The default ",
+            "default": 100000000000
+        },
         "scrollTimeout": {
             "type": "string",
             "description": "Scroll Timeout (JodaTime)",

@@ -47,8 +47,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistReader.class);
 
-    protected final Queue<StreamsDatum> persistQueue = new ArrayBlockingQueue<StreamsDatum>(100);
-    private final StreamsResultSet streamsResultSet = new StreamsResultSet(this.persistQueue);
+    private final StreamsResultSet streamsResultSet;
 
     private ElasticsearchQuery elasticsearchQuery;
     private final ElasticsearchReaderConfiguration config;
@@ -63,6 +62,8 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
     public ElasticsearchPersistReader(ElasticsearchReaderConfiguration config, ElasticsearchClientManager escm) {
         this.config = config;
         this.elasticsearchClientManager = escm;
+        int batchSize = config.getBatchSize().intValue() <= 0 ? 10 : config.getBatchSize().intValue();
+        this.streamsResultSet = new StreamsResultSet(new ArrayBlockingQueue<StreamsDatum>(batchSize));
     }
 
     @Override
@@ -80,23 +81,15 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
             @Override
             public void run() {
                 try {
-                    while (!query.isCompleted()) {
-                        if(query.hasNext()) {
-                            SearchHit hit = query.next();
+                    while (query.hasNext() && !query.isCompleted()) {
+                        SearchHit hit = query.next();
+                        if(hit != null) {
                             ObjectNode jsonObject = mapper.readValue(hit.getSourceAsString(), ObjectNode.class);
                             StreamsDatum item = new StreamsDatum(jsonObject, hit.getId());
                             item.getMetadata().put("id", hit.getId());
                             item.getMetadata().put("index", hit.getIndex());
                             item.getMetadata().put("type", hit.getType());
                             ComponentUtils.offerUntilSuccess(item, streamsResultSet.getQueue());
-                        }
-                        else {
-                            try {
-                                Thread.sleep(1);
-                            }
-                            catch(InterruptedException ioe) {
-                                LOGGER.error("sleep error: {}", ioe);
-                            }
                         }
                     }
                 }
@@ -115,7 +108,6 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
         if(this.config == null) {
             throw new IllegalStateException("Unable to run without configuration");
         }
-
         elasticsearchQuery = new ElasticsearchQuery(config, this.elasticsearchClientManager);
         elasticsearchQuery.execute(o);
     }
