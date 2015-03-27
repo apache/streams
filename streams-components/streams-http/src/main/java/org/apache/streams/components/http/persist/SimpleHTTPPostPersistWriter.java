@@ -113,13 +113,14 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
     public HttpPost prepareHttpPost(URI uri, ObjectNode payload) {
         HttpPost httppost = new HttpPost(uri);
         httppost.addHeader("content-type", this.configuration.getContentType());
+        httppost.addHeader("accept-charset", "UTF-8");
         try {
             String entity = mapper.writeValueAsString(payload);
             httppost.setEntity(new StringEntity(entity));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LOGGER.warn(e.getMessage());
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            LOGGER.warn(e.getMessage());
         }
         return httppost;
     }
@@ -173,12 +174,12 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
         try {
             httpclient.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         } finally {
             try {
                 httpclient.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage());
             } finally {
                 httpclient = null;
             }

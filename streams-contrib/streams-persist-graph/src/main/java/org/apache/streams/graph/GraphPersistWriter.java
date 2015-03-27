@@ -65,7 +65,7 @@ public class GraphPersistWriter extends SimpleHTTPPostPersistWriter {
     }
 
     public GraphPersistWriter(GraphWriterConfiguration configuration) {
-        super(mapper.convertValue(configuration, HttpPersistWriterConfiguration.class));
+        super(StreamsJacksonMapper.getInstance().convertValue(configuration, HttpPersistWriterConfiguration.class));
         if( configuration.getType().equals(GraphConfiguration.Type.NEO_4_J)) {
             super.configuration.setResourcePath("/db/" + configuration.getGraph() + "/transaction/commit");
         }
@@ -170,8 +170,21 @@ public class GraphPersistWriter extends SimpleHTTPPostPersistWriter {
                 result = mapper.readValue(entityString, ObjectNode.class);
             }
             LOGGER.debug("Writer response:\n{}\n{}\n{}", httpPost.toString(), response.getStatusLine().getStatusCode(), entityString);
+            if( result == null ||
+                    (
+                        result.get("errors") != null &&
+                        result.get("errors").isArray() &&
+                        result.get("errors").iterator().hasNext()
+                    )
+                ) {
+                LOGGER.error("Write Error: " + result.get("errors"));
+            } else {
+                LOGGER.info("Write Success");
+            }
         } catch (IOException e) {
             LOGGER.error("IO error:\n{}\n{}\n{}", httpPost.toString(), response, e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Write Exception:\n{}\n{}\n{}", httpPost.toString(), response, e.getMessage());
         } finally {
             try {
                 if( response != null) response.close();
