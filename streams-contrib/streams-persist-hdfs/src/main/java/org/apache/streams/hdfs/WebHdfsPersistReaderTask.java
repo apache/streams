@@ -21,6 +21,7 @@ package org.apache.streams.hdfs;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.StreamsDatum;
@@ -33,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class WebHdfsPersistReaderTask implements Runnable {
 
@@ -91,6 +93,7 @@ public class WebHdfsPersistReaderTask implements Runnable {
             }
         }
 
+        Uninterruptibles.sleepUninterruptibly(15, TimeUnit.SECONDS);
     }
 
     private void write( StreamsDatum entry ) {

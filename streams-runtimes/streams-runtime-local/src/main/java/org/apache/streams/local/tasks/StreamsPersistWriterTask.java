@@ -18,6 +18,7 @@
 
 package org.apache.streams.local.tasks;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.streams.core.*;
 import org.apache.streams.core.util.DatumUtils;
 import org.apache.streams.local.counters.StreamsTaskCounter;
@@ -37,7 +38,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPersistWriterTask.class);
 
     private StreamsPersistWriter writer;
-    private long sleepTime;
+    private long sleepTime = DEFAULT_SLEEP_TIME_MS * 10;
     private AtomicBoolean keepRunning;
     private Map<String, Object> streamConfig;
     private BlockingQueue<StreamsDatum> inQueue;
@@ -139,10 +140,11 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                     LOGGER.debug("Received null StreamsDatum @ writer : {}", this.writer.getClass().getName());
                 }
             }
-
+            Uninterruptibles.sleepUninterruptibly(sleepTime, TimeUnit.MILLISECONDS);
         } catch(Exception e) {
             LOGGER.error("Failed to execute Persist Writer {}",this.writer.getClass().getSimpleName(), e);
         } finally {
+            Uninterruptibles.sleepUninterruptibly(sleepTime, TimeUnit.MILLISECONDS);
             this.writer.cleanUp();
             this.isRunning.set(false);
         }
