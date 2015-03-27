@@ -1,0 +1,197 @@
+{
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "columns": [
+        "v"
+    ],
+    "data": [
+        [
+            {
+                "data": {
+                    "summary": "Building products at RelateIQ - http://www.relateiq.com",
+                    "extensions.screenName": "dpatil",
+                    "extensions.location": "Silicon Valley",
+                    "extensions.posts": 10134,
+                    "displayName": "dj patil",
+                    "handle": "dpatil",
+                    "extensions.favorites": 5468,
+                    "image.url": "https://pbs.twimg.com/profile_images/2827560897/e76b7577f7d9545362b9fb65c9db3bb3_normal.png",
+                    "url": "http://www.linkedin.com/in/dpatil",
+                    "objectType": "page",
+                    "@timestamp": 1417557531005,
+                    "id": "id:twitter:14839109",
+                    "extensions.followers": 20062
+                }
+            }
+        ],
+        [
+            {
+                "data": {
+                    "summary": "I am pretty awesome. Check out this simple guide to my tweets: http://bit.ly/r1GnK // former CTO @ Obama for America  // founder of Modest",
+                    "extensions.screenName": "harper",
+                    "extensions.location": "Chicago",
+                    "extensions.posts": 44728,
+                    "displayName": "harper",
+                    "handle": "harper",
+                    "extensions.favorites": 7759,
+                    "image.url": "https://pbs.twimg.com/profile_images/539089638669819905/7F_DiiQE_normal.jpeg",
+                    "url": "http://harperreed.com",
+                    "objectType": "page",
+                    "@timestamp": 1417555923917,
+                    "id": "id:twitter:1497",
+                    "extensions.followers": 28551
+                }
+            }
+        ],
+        [
+            {
+                "data": {
+                    "summary": "CTO at @sustranatalks & @last2left, owner of @structuredquery.  Interested in IA, UX, sustainability, equality, travel, cities, semtech, books...",
+                    "extensions.screenName": "ronmichael",
+                    "extensions.location": "Philadelphia",
+                    "extensions.posts": 12725,
+                    "displayName": "Ron M Zettlemoyer",
+                    "handle": "ronmichael",
+                    "extensions.favorites": 782,
+                    "image.url": "https://pbs.twimg.com/profile_images/533457797024063489/NXLJqfhm_normal.jpeg",
+                    "url": "http://zettlemoyer.com",
+                    "objectType": "page",
+                    "@timestamp": 1417558717717,
+                    "id": "id:twitter:807851",
+                    "extensions.followers": 457
+                }
+            }
+        ],
+        [
+            {
+                "data": {
+                    "summary": "Creating intelligent systems to automate tasks & improve decisions. Entrepreneur, ex Principal Data Scientist @LinkedIn. Machine Learning, Product, Networks",
+                    "extensions.screenName": "peteskomoroch",
+                    "extensions.location": "San Francisco",
+                    "extensions.posts": 14847,
+                    "displayName": "Peter Skomoroch",
+                    "handle": "peteskomoroch",
+                    "extensions.favorites": 7168,
+                    "image.url": "https://pbs.twimg.com/profile_images/3276454686/8f8493dfc040e56ef7ff8f59f9474774_normal.jpeg",
+                    "url": "http://datawrangling.com",
+                    "objectType": "page",
+                    "@timestamp": 1417566210626,
+                    "id": "id:twitter:14344469",
+                    "extensions.followers": 20349
+                }
+            }
+        ],
+        [
+            {
+                "data": {
+                    "summary": "TV Business Expert as seen on @BBC, Channel4 & more, CEO&Founder, Legacy Leaver, #Investor #Traveller, ?AUTHOR OF #1 BESTSELLING BOOK http://t.co/mexaUgNcwk?",
+                    "extensions.screenName": "marshawright",
+                    "extensions.location": "London|Spain|USA|Asia|GLOBAL",
+                    "extensions.posts": 82955,
+                    "displayName": "Real Marsha Wright",
+                    "handle": "marshawright",
+                    "extensions.favorites": 2882,
+                    "image.url": "https://pbs.twimg.com/profile_images/526068997440020480/rXNQhagV_normal.jpeg",
+                    "url": "http://www.MarshaWright.com",
+                    "objectType": "page",
+                    "@timestamp": 1417566667586,
+                    "id": "id:twitter:61608747",
+                    "extensions.followers": 120109
+                }
+            }
+        ],
+        [
+            {
+                "data": {
+                    "summary": "Married to @crystale, dad to @CCEleven & @CircaLuna, investor in @Twitter, @Uber, @Instagram, @kickstarter & other startups. Learn more: http://t.co/nJWB60dIUL.",
+                    "extensions.screenName": "sacca",
+                    "extensions.location": "",
+                    "extensions.posts": 34941,
+                    "displayName": "Chris Sacca",
+                    "handle": "sacca",
+                    "extensions.favorites": 87987,
+                    "image.url": "https://pbs.twimg.com/profile_images/1771648774/Sacca_profile_normal.jpg",
+                    "url": "http://lowercasellc.com/proprietor/",
+                    "objectType": "page",
+                    "@timestamp": 1417559518689,
+                    "id": "id:twitter:586",
+                    "extensions.followers": 1503801
+                }
+            }
+        ],
+        [
+            {
+                "data": {
+                    "extensions.screenName": "AustinTXDaily",
+                    "@timestamp": 1417561360464,
+                    "extensions.location": "Austin, TX",
+                    "extensions.posts": 27400,
+                    "displayName": "Austin Daily",
+                    "handle": "AustinTXDaily",
+                    "extensions.favorites": 0,
+                    "id": "id:twitter:200145841",
+                    "image.url": "https://pbs.twimg.com/profile_images/1175142789/Austin__TX_normal.jpg",
+                    "extensions.followers": 16695,
+                    "objectType": "page"
+                }
+            }
+        ],
+        [
+            {
+                "data": {
+                    "summary": "Leading Social Strategy for @WCGWorld. Hustler. Lakers. Niners. US Marine. Author.",
+                    "extensions.screenName": "Britopian",
+                    "extensions.location": "Silicon Valley, Ca.",
+                    "extensions.posts": 50558,
+                    "displayName": "Michael Brito",
+                    "handle": "Britopian",
+                    "extensions.favorites": 2408,
+                    "image.url": "https://pbs.twimg.com/profile_images/378800000388239413/59a5f995014ddf639b4827b6e3f403eb_normal.jpeg",
+                    "url": "http://linkd.in/britopian",
+                    "objectType": "page",
+                    "@timestamp": 1417564730230,
+                    "id": "id:twitter:844631",
+                    "extensions.followers": 115395
+                }
+            }
+        ],
+        [
+            {
+                "data": {
+                    "summary": "Real journalism for the Internet age",
+                    "extensions.screenName": "dailydot",
+                    "extensions.location": "Online/IRL",
+                    "extensions.posts": 97369,
+                    "displayName": "The Daily Dot",
+                    "handle": "dailydot",
+                    "extensions.favorites": 13677,
+                    "image.url": "https://pbs.twimg.com/profile_images/481571907888615425/R2TXfCgx_normal.png",
+                    "url": "http://dailydot.com/",
+                    "objectType": "page",
+                    "@timestamp": 1417566787760,
+                    "id": "id:twitter:211620426",
+                    "extensions.followers": 210024
+                }
+            }
+        ],
+        [
+            {
+                "data": {
+                    "summary": "Music Lover, Global Citizen, Digital Native, #FutureofWork, #Vegan, @PwCAdvisory on loan to @PwC_UK, Former @IBMSoftware Exec, OPINIONS=OWN",
+                    "extensions.screenName": "katmandelstein",
+                    "extensions.location": "Austinite Abroad in London",
+                    "extensions.posts": 32414,
+                    "displayName": "Kat Mandelstein",
+                    "handle": "katmandelstein",
+                    "extensions.favorites": 1305,
+                    "image.url": "https://pbs.twimg.com/profile_images/378800000674683761/e57c9b3033a246e9b7ef09fea6fedee2_normal.jpeg",
+                    "url": "http://about.me/katmandelstein",
+                    "objectType": "page",
+                    "@timestamp": 1417554091482,
+                    "id": "id:twitter:14529289",
+                    "extensions.followers": 6997
+                }}
+        ]
+    ]
+}

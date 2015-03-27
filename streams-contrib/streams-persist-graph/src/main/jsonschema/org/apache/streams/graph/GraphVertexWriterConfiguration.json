@@ -1,0 +1,33 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "javaType" : "org.apache.streams.graph.GraphVertexWriterConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "objects": {
+            "type": "array",
+            "required": false,
+            "items": {
+                "type": "string"
+            }
+        },
+        "verbs": {
+            "type": "array",
+            "required": false,
+            "items": {
+                "type": "string"
+            }
+        },
+        "objectTypes": {
+            "type": "array",
+            "required": false,
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}
