@@ -112,7 +112,7 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
     @Override
     public StreamsResultSet readCurrent() {
 
-        LOGGER.info("Providing {} docs", providerQueue.size());
+        LOGGER.debug("Providing {} docs", providerQueue.size());
 
         StreamsResultSet result;
 

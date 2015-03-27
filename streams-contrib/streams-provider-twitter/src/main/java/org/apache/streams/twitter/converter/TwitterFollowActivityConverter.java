@@ -23,6 +23,8 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
+import org.apache.streams.pojo.json.Provider;
 import org.apache.streams.twitter.pojo.Follow;
 import org.apache.streams.twitter.converter.util.TwitterActivityUtil;
 
@@ -64,7 +66,8 @@ public class TwitterFollowActivityConverter implements ActivityConverter<Follow>
         activity.setVerb("follow");
         activity.setActor(TwitterActivityUtil.buildActor(event.getFollower()));
         activity.setObject(TwitterActivityUtil.buildActor(event.getFollowee()));
-
+        activity.setId(activity.getActor().getId() + "-follow->" + activity.getObject().getId());
+        activity.setProvider((Provider) new Provider().withId("twitter"));
         return Lists.newArrayList(activity);
     }
 
