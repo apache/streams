@@ -68,6 +68,8 @@ public class TwitterDocumentClassifier implements DocumentClassifier {
             classList.add(FriendList.class);
         else if( objectNode.findValue("target_object") != null )
             classList.add(UserstreamEvent.class);
+        else if( objectNode.findValue("follower") != null && objectNode.findValue("followee") != null)
+            classList.add(Follow.class);
         else if ( objectNode.findValue("location") != null && objectNode.findValue("user") == null)
             classList.add(User.class);
         else
