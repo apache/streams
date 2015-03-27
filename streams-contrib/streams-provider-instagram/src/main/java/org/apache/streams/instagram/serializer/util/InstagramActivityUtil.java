@@ -347,5 +347,6 @@ public class InstagramActivityUtil {
         }
 
         extensions.put("keywords", commentsConcat);
+        extensions.put("instagram", item);
     }
 }
