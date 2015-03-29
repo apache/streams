@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class VerbDefinitionResolverTest {
 
-    ObjectMapper mapper = new StreamsJacksonMapper();
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     /**
      * Test of matchingVerbDefinitions

@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class VerbDefinitionFilterTest {
 
-    ObjectMapper mapper = new StreamsJacksonMapper();
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     /**
      * Test verb match filter alone

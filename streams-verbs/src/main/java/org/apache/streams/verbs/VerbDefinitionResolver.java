@@ -18,15 +18,10 @@
 
 package org.apache.streams.verbs;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.verbs.ObjectCombination;
-import org.apache.streams.verbs.VerbDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +79,7 @@ public class VerbDefinitionResolver {
             }
         }
 
-        results.sort(new ObjectCombinationSpecificOrdering(activity));
+        Collections.sort(results, new ObjectCombinationSpecificOrdering(activity));
 
         return results;
     }

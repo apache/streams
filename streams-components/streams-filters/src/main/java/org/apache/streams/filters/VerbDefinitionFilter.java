@@ -36,9 +36,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/**
+ * Checks one or more verb definitions against a stream of Activity documents, and drops any activities
+ * which do not match the filter criteria.
+ */
 public class VerbDefinitionFilter implements StreamsProcessor {
 
-    private static final String STREAMS_ID = "LinkResolverProcessor";
+    private static final String STREAMS_ID = "VerbDefinitionFilter";
     private static final Logger LOGGER = LoggerFactory.getLogger(VerbDefinitionFilter.class);
 
     protected Set<VerbDefinition> verbDefinitionSet;
