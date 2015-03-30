@@ -18,41 +18,37 @@
 
 package org.apache.streams.filters;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.verbs.ObjectCombination;
 import org.apache.streams.verbs.VerbDefinition;
 import org.apache.streams.verbs.VerbDefinitionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Checks one or more verb definitions against a stream of Activity documents, and drops any activities
- * which do not match the filter criteria.
+ * which match the filter criteria.
  */
-public class VerbDefinitionFilter implements StreamsProcessor {
+public class VerbDefinitionDropFilter implements StreamsProcessor {
 
-    private static final String STREAMS_ID = "VerbDefinitionFilter";
-    private static final Logger LOGGER = LoggerFactory.getLogger(VerbDefinitionFilter.class);
+    private static final String STREAMS_ID = "VerbDefinitionDropFilter";
+    private static final Logger LOGGER = LoggerFactory.getLogger(VerbDefinitionDropFilter.class);
 
     protected Set<VerbDefinition> verbDefinitionSet;
     protected VerbDefinitionResolver resolver;
 
-    public VerbDefinitionFilter() {
+    public VerbDefinitionDropFilter() {
         // get with reflection
     }
 
-    public VerbDefinitionFilter(Set<VerbDefinition> verbDefinitionSet) {
+    public VerbDefinitionDropFilter(Set<VerbDefinition> verbDefinitionSet) {
         this();
         this.verbDefinitionSet = verbDefinitionSet;
     }
@@ -78,7 +74,7 @@ public class VerbDefinitionFilter implements StreamsProcessor {
                     if (VerbDefinitionResolver.filter(activity, objectCombination) == true)
                         match = true;
 
-        if( match == true )
+        if( match == false )
             result.add(entry);
 
         return result;
