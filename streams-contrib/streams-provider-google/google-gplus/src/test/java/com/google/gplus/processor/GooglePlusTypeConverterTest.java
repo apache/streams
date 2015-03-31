@@ -83,6 +83,8 @@ public class GooglePlusTypeConverterTest {
                 GooglePlusActivityUtil.updateActivity(person, activity);
 
                 assertEquals(retList.size(), 1);
+
+                activity.setPublished(((Activity)retList.get(0).getDocument()).getPublished());
                 assert(retList.get(0).getDocument() instanceof Activity);
                 assertEquals(activity, retList.get(0).getDocument());
             }
