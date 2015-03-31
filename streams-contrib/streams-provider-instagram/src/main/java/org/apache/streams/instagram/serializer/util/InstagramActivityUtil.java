@@ -19,6 +19,7 @@
 
 package org.apache.streams.instagram.serializer.util;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -30,7 +31,6 @@ import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
-import org.codehaus.jackson.node.ObjectNode;
 import org.jinstagram.entity.comments.CommentData;
 import org.jinstagram.entity.common.Comments;
 import org.jinstagram.entity.common.ImageData;
