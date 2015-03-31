@@ -72,7 +72,7 @@ public class S3PersistReaderTask implements Runnable {
                         if(publishedDate != null) {
                             entry = new StreamsDatum(fields[3], fields[0], publishedDate);
                         } else {
-                            new StreamsDatum(fields[3], fields[0]);
+                            entry = new StreamsDatum(fields[3], fields[0]);
                         }
 
                         ComponentUtils.offerUntilSuccess(entry, reader.persistQueue);
