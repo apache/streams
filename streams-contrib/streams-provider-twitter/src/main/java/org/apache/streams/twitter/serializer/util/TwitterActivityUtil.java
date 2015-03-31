@@ -97,9 +97,13 @@ public class TwitterActivityUtil {
      * @throws ActivitySerializerException
      */
     public static void updateActivity(User user, Activity activity) throws ActivitySerializerException {
+        ObjectMapper mapper = StreamsTwitterMapper.getInstance();
+
         activity.setActor(buildActor(user));
         activity.setId(null);
         activity.setPublished(new DateTime());
+        activity.setProvider(getProvider());
+        addTwitterExtension(activity, mapper.convertValue(user, ObjectNode.class));
     }
 
     /**

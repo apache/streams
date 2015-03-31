@@ -128,6 +128,9 @@ public class YoutubeVideoSerDeTest {
             Provider provider = activity.getProvider();
             assertNotNull(provider.getDisplayName());
             assertEquals("id:providers:youtube", provider.getId());
+
+            Map<String, Object> extensions = ((Map<String, Object>)activity.getAdditionalProperties().get("extensions"));
+            assertNotNull(extensions.get("youtube"));
         } catch (Exception e) {
             LOGGER.error("Exception while testing the Ser/De functionality of the Channel deserializer: {}", e);
         }

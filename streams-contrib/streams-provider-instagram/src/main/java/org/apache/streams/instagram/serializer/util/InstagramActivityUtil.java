@@ -93,6 +93,9 @@ public class InstagramActivityUtil {
         activity.setId(null);
         activity.setProvider(getProvider());
         activity.setPublished(new DateTime());
+
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        extensions.put("instagram", item);
     }
 
     /**

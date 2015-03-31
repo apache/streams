@@ -203,8 +203,8 @@ public class FacebookActivityUtil {
         if(location != null)
             extensions.put("location", page.getLocation().toString());
 
-        extensions.put("favorites", page.getLikes());
-        extensions.put("followers", page.getTalkingAboutCount());
+        extensions.put("followers", page.getLikes());
+        extensions.put("mentions", page.getTalkingAboutCount());
 
         extensions.put("screenName", page.getUsername());
 

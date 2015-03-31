@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -32,6 +34,9 @@ public class UserActivitySerDeTest {
 
             assertEquals("post", activity.getVerb());
             assertNotNull(activity.getPublished());
+            assertNotNull(activity.getProvider());
+
+            assertNotNull(((Map<String, Object>)activity.getAdditionalProperties().get("extensions")).get("twitter"));
         } catch (Exception e) {
             LOGGER.error("Exception while testing Twitter User object deserialization: {}", e);
         }
