@@ -20,8 +20,10 @@ package org.apache.streams.verbs;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
+import org.apache.streams.util.SerializationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,24 +46,22 @@ public class VerbDefinitionResolver {
 
     public List<VerbDefinition> matchingVerbDefinitions(Activity activity) {
 
-        Set<VerbDefinition> candidates = Sets.newConcurrentHashSet(verbDefinitionSet);
+        Set<VerbDefinition> matches = Sets.newConcurrentHashSet();
 
-        for( VerbDefinition verbDefinition : candidates ) {
+        for( VerbDefinition verbDefinition : verbDefinitionSet ) {
+            VerbDefinition verbDefinitionCopy = SerializationUtil.cloneBySerialization(verbDefinition);
             if( activity.getVerb().equals(verbDefinition.getValue())) {
-                for( ObjectCombination criteria : verbDefinition.getObjects()) {
+                for( ObjectCombination criteria : verbDefinitionCopy.getObjects()) {
                     if( filter(activity, criteria) == false ) {
-                        verbDefinition.getObjects().remove(criteria);
+                        verbDefinitionCopy.getObjects().remove(criteria);
                     }
                 }
-            } else {
-                candidates.remove(verbDefinition);
+                if( verbDefinitionCopy.getObjects().size() > 0)
+                    matches.add(verbDefinitionCopy);
             }
-            if( verbDefinition.getObjects().size() == 0)
-                candidates.remove(verbDefinition);
-
         }
 
-        return Lists.newArrayList(candidates);
+        return Lists.newArrayList(matches);
 
     }
 

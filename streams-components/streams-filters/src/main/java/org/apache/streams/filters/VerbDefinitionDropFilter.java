@@ -25,6 +25,7 @@ import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.verbs.ObjectCombination;
 import org.apache.streams.verbs.VerbDefinition;
+import org.apache.streams.verbs.VerbDefinitionMatchUtil;
 import org.apache.streams.verbs.VerbDefinitionResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,8 @@ import java.util.Set;
  */
 public class VerbDefinitionDropFilter implements StreamsProcessor {
 
-    private static final String STREAMS_ID = "VerbDefinitionDropFilter";
+    public static final String STREAMS_ID = "VerbDefinitionDropFilter";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(VerbDefinitionDropFilter.class);
 
     protected Set<VerbDefinition> verbDefinitionSet;
@@ -66,15 +68,7 @@ public class VerbDefinitionDropFilter implements StreamsProcessor {
 
         activity = (Activity) entry.getDocument();
 
-        boolean match = false;
-        for( VerbDefinition verbDefinition : verbDefinitionSet)
-            if( verbDefinition.getValue() != null &&
-                verbDefinition.getValue().equals(activity.getVerb()))
-                for (ObjectCombination objectCombination : verbDefinition.getObjects())
-                    if (VerbDefinitionResolver.filter(activity, objectCombination) == true)
-                        match = true;
-
-        if( match == false )
+        if( VerbDefinitionMatchUtil.match(activity, this.verbDefinitionSet) == false )
             result.add(entry);
 
         return result;
