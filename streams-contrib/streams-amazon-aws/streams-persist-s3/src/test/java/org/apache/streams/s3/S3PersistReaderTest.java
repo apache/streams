@@ -1,5 +1,6 @@
 package org.apache.streams.s3;
 
+import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -17,8 +18,10 @@ public class S3PersistReaderTest {
         S3PersistReaderTask s3PersistReaderTask = new S3PersistReaderTask(s3PersistReader);
 
         DateTime publishedDate = s3PersistReaderTask.getPublishedDate(new String[]{"id", "2015-01-14T13:58:08.100-06:00", ""});
+        DateTime actual = RFC3339Utils.parseToUTC(publishedDate.toString());
+        DateTime expected = RFC3339Utils.parseToUTC("2015-01-14T13:58:08.100-06:00");
 
-        assertNotNull(publishedDate.toString());
+        assertEquals(expected, actual);
     }
 
     @Test
