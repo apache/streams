@@ -90,7 +90,7 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
         try {
             return mapper.readValue(entityString, ObjectNode.class);
         } catch (IOException e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.warn("IOException", e);
             return null;
         }
     }
@@ -106,10 +106,10 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
                     mapper.writeValueAsString(datum.getDocument());
             return mapper.readValue(json, ObjectNode.class);
         } catch (JsonProcessingException e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.warn("JsonProcessingException", e);
             return null;
         } catch (IOException e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.warn("IOException", e);
             return null;
         }
 
@@ -157,7 +157,7 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
         try {
             uri = uriBuilder.build();
         } catch (URISyntaxException e) {
-            LOGGER.error("URI error {}", uriBuilder.toString());
+            LOGGER.error("URI error {}", uriBuilder.toString(), e);
             return result;
         }
 
@@ -176,7 +176,7 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
                 entityString = EntityUtils.toString(entity);
             }
         } catch (IOException e) {
-            LOGGER.error("IO error:\n{}\n{}\n{}", uri.toString(), response, e.getMessage());
+            LOGGER.error("IO error:\n{}\n{}\n{}", uri.toString(), response, e);
             return result;
         } finally {
             try {
@@ -269,7 +269,7 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
             try {
                 httpclient.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("IOException", e);
             } finally {
                 httpclient = null;
             }
