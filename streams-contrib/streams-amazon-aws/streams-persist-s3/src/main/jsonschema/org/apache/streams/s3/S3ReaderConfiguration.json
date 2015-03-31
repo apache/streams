@@ -12,6 +12,11 @@
         "readerPath": {
             "type": "string",
             "description": "Path below root path"
+        },
+        "useTimestampAsPublished": {
+            "type": "boolean",
+            "description": "Whether or not we want to use the timestamp stored in S3 (if it exists) as the document's published time",
+            "default": false
         }
     }
 }
