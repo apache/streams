@@ -41,6 +41,7 @@ import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.pojo.UserMentions;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,6 +99,7 @@ public class TwitterActivityUtil {
     public static void updateActivity(User user, Activity activity) throws ActivitySerializerException {
         activity.setActor(buildActor(user));
         activity.setId(null);
+        activity.setPublished(new DateTime());
     }
 
     /**

@@ -85,6 +85,7 @@ public class YoutubeActivityUtil {
     public static void updateActivity(Channel channel, Activity activity, String channelId) throws ActivitySerializerException {
         try {
             activity.setProvider(getProvider());
+            activity.setPublished(new DateTime());
             activity.setVerb("post");
             activity.setActor(createActorForChannel(channel));
             Map<String, Object> extensions = Maps.newHashMap();
