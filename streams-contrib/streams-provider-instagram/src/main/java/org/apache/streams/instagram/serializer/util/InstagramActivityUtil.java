@@ -92,6 +92,7 @@ public class InstagramActivityUtil {
         activity.setActor(buildActor(item));
         activity.setId(null);
         activity.setProvider(getProvider());
+        activity.setPublished(new DateTime());
     }
 
     /**

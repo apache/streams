@@ -20,6 +20,7 @@ package com.youtube.serializer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.Video;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
@@ -41,6 +42,8 @@ import static org.junit.Assert.assertTrue;
 public class YoutubeVideoSerDeTest {
     private final static Logger LOGGER = LoggerFactory.getLogger(YoutubeVideoSerDeTest.class);
     private final String testVideo = "{\"etag\":\"\\\"4FSIjSQU83ZJMYAO0IqRYMvZX98/V0q3OIauZ3ZAkszLUDbHL45yEGM\\\"\",\"id\":\"sUOepRctwVE\",\"kind\":\"youtube#video\",\"snippet\":{\"channelId\":\"UCNENOn2nmwguQYkejKhJGPQ\",\"channelTitle\":\"Carilion Clinic\",\"description\":\"Join Carilion Clinic's Heart Failure experts for a LIVE Google+ Hangout on Feb. 23, 12:30-1 p.m. to learn more about heart failure, treatment options, and lifestyle changes. Learn more: https://plus.google.com/u/0/events/cj074q9r6csgv6i2kqhi2isc6k0\",\"publishedAt\":{\"value\":1422977409000,\"dateOnly\":false,\"timeZoneShift\":-360},\"thumbnails\":{\"default\":{\"height\":480,\"url\":\"https://i.ytimg.com/vi/sUOepRctwVE/sddefault.jpg\",\"width\":640}},\"title\":\"Be Heart Smart: Congestive Heart Failure LIVE Event\"},\"statistics\":{\"commentCount\":1,\"dislikeCount\":0,\"favoriteCount\":0,\"likeCount\":0,\"viewCount\":9}}";
+    private final String testChannel = "{\"contentDetails\":{\"googlePlusUserId\":\"108001237223335779531\",\"relatedPlaylists\":{\"favorites\":\"FLMZ0YEMQIZbJ8SOC8pm1Bqw\",\"likes\":\"LLMZ0YEMQIZbJ8SOC8pm1Bqw\",\"uploads\":\"UUMZ0YEMQIZbJ8SOC8pm1Bqw\"}},\"etag\":\"\\\"JcMoTLb1iDZi7UYDRZDsYNLPWNA/3ZdGe35tot5YLA4vX_FReXyoZME\\\"\",\"id\":\"UCMZ0YEMQIZbJ8SOC8pm1Bqw\",\"kind\":\"youtube#channel\",\"snippet\":{\"description\":\"\",\"localized\":{\"description\":\"\",\"title\":\"McKay Dee\"},\"publishedAt\":{\"value\":1265143254000,\"dateOnly\":false,\"timeZoneShift\":-360},\"thumbnails\":{\"default\":{\"url\":\"https://yt3.ggpht.com/-XWwSoag6SLQ/AAAAAAAAAAI/AAAAAAAAAAA/y5CYubsCQjM/s88-c-k-no/photo.jpg\"},\"high\":{\"url\":\"https://yt3.ggpht.com/-XWwSoag6SLQ/AAAAAAAAAAI/AAAAAAAAAAA/y5CYubsCQjM/s240-c-k-no/photo.jpg\"},\"medium\":{\"url\":\"https://yt3.ggpht.com/-XWwSoag6SLQ/AAAAAAAAAAI/AAAAAAAAAAA/y5CYubsCQjM/s240-c-k-no/photo.jpg\"}},\"title\":\"McKay Dee\"},\"statistics\":{\"commentCount\":1,\"hiddenSubscriberCount\":false,\"subscriberCount\":40,\"videoCount\":26,\"viewCount\":25041},\"topicDetails\":{\"topicIds\":[\"/m/03csgk4\",\"/m/0kt51\"]}}";
+
     private ObjectMapper objectMapper;
     private YoutubeActivityUtil youtubeActivityUtil;
 
@@ -49,6 +52,7 @@ public class YoutubeVideoSerDeTest {
         objectMapper = StreamsJacksonMapper.getInstance();
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(Video.class, new YoutubeVideoDeserializer());
+        simpleModule.addDeserializer(Channel.class, new YoutubeChannelDeserializer());
         objectMapper.registerModule(simpleModule);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -96,6 +100,36 @@ public class YoutubeVideoSerDeTest {
             assertTrue(testActivityObject(activity));
         } catch (Exception e) {
             LOGGER.error("Exception while testing the Ser/De functionality of the Video deserializer: {}", e);
+        }
+    }
+
+    @Test
+    public void testChannelObject() {
+        LOGGER.info("raw: {}", testChannel);
+
+        try {
+            Activity activity = new Activity();
+
+            Channel channel = objectMapper.readValue(testChannel, Channel.class);
+
+            youtubeActivityUtil.updateActivity(channel, activity, "testChannelId");
+            LOGGER.info("activity: {}", activity);
+
+            assertNotNull(activity);
+
+            Actor actor = activity.getActor();
+            assertTrue(actor.getId().contains("id:youtube:"));
+            assertNotNull(actor.getDisplayName());
+            assertNotNull(actor.getUrl());
+
+            assertEquals("post", activity.getVerb());
+            assertNotNull(activity.getPublished());
+
+            Provider provider = activity.getProvider();
+            assertNotNull(provider.getDisplayName());
+            assertEquals("id:providers:youtube", provider.getId());
+        } catch (Exception e) {
+            LOGGER.error("Exception while testing the Ser/De functionality of the Channel deserializer: {}", e);
         }
     }
 
