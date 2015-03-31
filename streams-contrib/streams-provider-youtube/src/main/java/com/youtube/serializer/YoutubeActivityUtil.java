@@ -112,7 +112,10 @@ public class YoutubeActivityUtil {
         Map<String, Object> actorExtensions = Maps.newHashMap();
         actorExtensions.put("followers", channel.getStatistics().getSubscriberCount());
         actorExtensions.put("posts", channel.getStatistics().getVideoCount());
+        actorExtensions.put("commentCount", channel.getStatistics().getCommentCount());
+        actorExtensions.put("viewCount", channel.getStatistics().getViewCount());
         actor.setAdditionalProperty("extensions", actorExtensions);
+
         return actor;
     }
 

@@ -19,10 +19,12 @@
 
 package org.apache.streams.instagram.serializer.util;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
@@ -54,6 +56,8 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
  */
 public class InstagramActivityUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(InstagramActivityUtil.class);
+    private static final StreamsJacksonMapper MAPPER = StreamsJacksonMapper.getInstance();
+
     /**
      * Updates the given Activity object with the values from the item
      * @param item the object to use as the source
@@ -93,6 +97,9 @@ public class InstagramActivityUtil {
         activity.setId(null);
         activity.setProvider(getProvider());
         activity.setPublished(new DateTime());
+
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        extensions.put("instagram", MAPPER.convertValue(item, ObjectNode.class));
     }
 
     /**
@@ -348,6 +355,6 @@ public class InstagramActivityUtil {
         }
 
         extensions.put("keywords", commentsConcat);
-        extensions.put("instagram", item);
+        extensions.put("instagram", MAPPER.convertValue(item, ObjectNode.class));
     }
 }

@@ -59,10 +59,15 @@ public class FacebookActivityUtil {
      * @throws org.apache.streams.exceptions.ActivitySerializerException
      */
     public static void updateActivity(Page page, Activity activity) throws ActivitySerializerException {
+        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+
         activity.setActor(buildActor(page));
         activity.setId(null);
         activity.setProvider(getProvider());
         activity.setPublished(new DateTime());
+
+        extensions.put("facebook", mapper.convertValue(page, ObjectNode.class));
     }
 
     /**
@@ -203,8 +208,8 @@ public class FacebookActivityUtil {
         if(location != null)
             extensions.put("location", page.getLocation().toString());
 
-        extensions.put("favorites", page.getLikes());
-        extensions.put("followers", page.getTalkingAboutCount());
+        extensions.put("followers", page.getLikes());
+        extensions.put("mentions", page.getTalkingAboutCount());
 
         extensions.put("screenName", page.getUsername());
 
