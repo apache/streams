@@ -119,6 +119,7 @@ public class InstagramActivitySerDeTest {
                     assertThat(activity.getActor().getUrl(), is(not(nullValue())));
                     assertThat(activity.getVerb(), is(not(nullValue())));
                     assertThat(activity.getProvider(), is(not(nullValue())));
+                    assertThat(activity.getPublished(), is(not(nullValue())));
                 }
             }
         } catch( Exception e ) {

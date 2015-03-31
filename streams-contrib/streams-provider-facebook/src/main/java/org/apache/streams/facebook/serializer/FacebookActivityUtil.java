@@ -39,6 +39,7 @@ import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +62,7 @@ public class FacebookActivityUtil {
         activity.setActor(buildActor(page));
         activity.setId(null);
         activity.setProvider(getProvider());
+        activity.setPublished(new DateTime());
     }
 
     /**

@@ -89,6 +89,7 @@ public class SimplePageTest {
         assertThat(activity.getActor().getId(), is(not(nullValue())));
         assertThat(activity.getVerb(), is(not(nullValue())));
         assertThat(activity.getProvider(), is(not(nullValue())));
+        assertThat(activity.getPublished(), is(not(nullValue())));
     }
 
     @Test
