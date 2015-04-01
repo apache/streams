@@ -204,7 +204,7 @@ public class SimpleHttpProvider implements StreamsProvider {
         StreamsResultSet current;
 
         uriBuilder = uriBuilder.setPath(
-            Joiner.on("/").skipNulls().join(uriBuilder.getPath(), configuration.getResource(), configuration.getResourcePostfix())
+                Joiner.on("/").skipNulls().join(uriBuilder.getPath(), configuration.getResource(), configuration.getResourcePostfix())
         );
 
         URI uri;
@@ -286,7 +286,23 @@ public class SimpleHttpProvider implements StreamsProvider {
      Override this to change how metadata is derived from object
      */
     protected StreamsDatum newDatum(ObjectNode item) {
-        return new StreamsDatum(item, item.get("id").asText(), new DateTime(item.get("timestamp").asText()));
+        try {
+            String id = null;
+            if( item.get("id") != null )
+                id = item.get("id").asText();
+            DateTime timestamp = null;
+            if( item.get("timestamp") != null )
+                timestamp = new DateTime(item.get("timestamp").asText());
+            if( id != null && timestamp != null )
+                return new StreamsDatum(item, id, timestamp);
+            else if( id != null )
+                return new StreamsDatum(item, id);
+            else if( timestamp != null )
+                return new StreamsDatum(item, null, timestamp);
+            else return new StreamsDatum(item);
+        } catch( Exception e ) {
+            return new StreamsDatum(item);
+        }
     }
 
     @Override

@@ -28,7 +28,9 @@ import org.apache.streams.pojo.json.ActivityObject;
  */
 public interface GraphHelper {
 
-    public ObjectNode getVertexRequest(String id);
+    public ObjectNode getVertexRequest(String streamsId);
+
+    public ObjectNode getVertexRequest(Long vertexId);
 
     public ObjectNode createVertexRequest(ActivityObject activityObject);
 

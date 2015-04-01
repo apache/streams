@@ -43,7 +43,8 @@ public class CypherGraphHelper implements org.apache.streams.graph.GraphHelper {
     public final static String paramsKey = "parameters";
     public final static String propsKey = "props";
 
-    public final static String getVertexStatementTemplate = "MATCH (v {id: '<id>'} ) RETURN v";
+    public final static String getVertexLongIdStatementTemplate = "MATCH (v) WHERE ID(v) = <id> RETURN v";
+    public final static String getVertexStringIdStatementTemplate = "MATCH (v {id: '<id>'} ) RETURN v";
 
     public final static String createVertexStatementTemplate = "MATCH (x {id: '<id>'}) "+
                                                                 "CREATE UNIQUE (n:<type> { props }) "+
@@ -58,12 +59,24 @@ public class CypherGraphHelper implements org.apache.streams.graph.GraphHelper {
                                                             "CREATE UNIQUE (s)-[r:<r_type> <r_props>]->(d) "+
                                                             "RETURN r";
 
-    public ObjectNode getVertexRequest(String id) {
+    public ObjectNode getVertexRequest(String streamsId) {
 
         ObjectNode request = mapper.createObjectNode();
 
-        ST getVertex = new ST(getVertexStatementTemplate);
-        getVertex.add("id", id);
+        ST getVertex = new ST(getVertexStringIdStatementTemplate);
+        getVertex.add("id", streamsId);
+        request.put(statementKey, getVertex.render());
+
+        return request;
+    }
+
+    @Override
+    public ObjectNode getVertexRequest(Long vertexId) {
+
+        ObjectNode request = mapper.createObjectNode();
+
+        ST getVertex = new ST(getVertexLongIdStatementTemplate);
+        getVertex.add("id", vertexId);
         request.put(statementKey, getVertex.render());
 
         return request;
