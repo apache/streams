@@ -18,11 +18,13 @@
 package org.apache.streams.elasticsearch;
 
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.core.StreamsProvider;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.local.test.processors.ObjectTypeEnforcerProcessor;
 import org.apache.streams.local.test.providers.NumericMessageProvider;
 import org.apache.streams.local.test.writer.DatumCounterWriter;
@@ -34,10 +36,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -116,6 +116,49 @@ public class PersistReaderTest {
         assertFalse(typeEnforcer.getIncorrectClassPresent());
     }
 
+    @Test
+    public void testSearchFunctionality() throws IOException {
+        DatumCounterWriter writerCounter = new DatumCounterWriter();
+        ObjectTypeEnforcerProcessor typeEnforcer = new ObjectTypeEnforcerProcessor(ObjectNode.class);
+
+        ElasticsearchReaderConfiguration configRead = ElasticSearchHelper.createReadConfiguration(clusterName,
+                new ArrayList<String>() {{ add(index); }},
+                new ArrayList<String>() {{ add(type); }});
+
+        configRead.setBatchSize(1l);
+        configRead.setSize(100l);
+        StreamsJacksonMapper mapper = StreamsJacksonMapper.getInstance();
+
+        int startId = 1005;
+        int stopId = 1008;
+
+        String searchString = "{\"query\": {\n" +
+                "                \"bool\": {\n" +
+                "                  \"must\": [\n" +
+                "                    {\"range\": {\n" +
+                "                      \"number\": {\n" +
+                "                       \"from\": \"" + startId + "\"," +
+                "                       \"to\":\"" + stopId + "\"" +
+                "                      }\n" +
+                "                    }\n" +
+                "                  }\n" +
+                "                ]\n" +
+                "              }\n" +
+                "            }}";
+        configRead.setSearch(mapper.readValue(searchString, Map.class));
+
+        ElasticsearchPersistReader elasticsearchPersistReader = new ElasticsearchPersistReader(configRead, escm);
+
+        // Create the builder then execute
+        new ThreadedStreamBuilder()
+                .newPerpetualStream("es_reader", elasticsearchPersistReader)
+                .addStreamsProcessor("ObjectTypeEnforcerProcessor", typeEnforcer, 1, "es_reader")
+                .addStreamsPersistWriter("datum_writer", writerCounter, 1, "ObjectTypeEnforcerProcessor")
+                .start();
+
+        assertEquals(stopId - startId + 1, writerCounter.getDatumsCounted());
+        assertFalse(typeEnforcer.getIncorrectClassPresent());
+    }
 
     /**
      * This test passes... // TODO: Re-Write ElasticSearchPersistReader
