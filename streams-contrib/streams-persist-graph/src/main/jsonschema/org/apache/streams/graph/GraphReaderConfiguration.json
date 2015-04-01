@@ -1,0 +1,20 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "javaType" : "org.apache.streams.graph.GraphReaderConfiguration",
+    "extends" : {"$ref":"GraphConfiguration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "query": {
+            "type": "string",
+            "required": "true"
+        },
+        "params": {
+            "type": "object"
+        }
+    }
+}
