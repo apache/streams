@@ -18,11 +18,14 @@
 
 package org.apache.streams.elasticsearch;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.core.*;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.ComponentUtils;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -108,6 +111,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
         if(this.config == null) {
             throw new IllegalStateException("Unable to run without configuration");
         }
+
         elasticsearchQuery = new ElasticsearchQuery(config, this.elasticsearchClientManager);
         elasticsearchQuery.execute(o);
     }
