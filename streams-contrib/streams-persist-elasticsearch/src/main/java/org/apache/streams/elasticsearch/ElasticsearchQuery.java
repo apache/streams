@@ -17,8 +17,10 @@
  */
 package org.apache.streams.elasticsearch;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import com.google.common.base.Objects;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -40,6 +42,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchQuery.class);
     private static final int SCROLL_POSITION_NOT_INITIALIZED = -3;
     private static final Integer DEFAULT_BATCH_SIZE = 500;
+    private static StreamsJacksonMapper MAPPER = StreamsJacksonMapper.getInstance();
 
     private final ElasticsearchClientManager elasticsearchClientManager;
     private List<String> indexes = Lists.newArrayList();
@@ -60,11 +63,13 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     private SearchHit next = null;
     private long totalHits = 0;
     private long totalRead = 0;
+    private ElasticsearchReaderConfiguration config;
 
     public ElasticsearchQuery(ElasticsearchReaderConfiguration config) {
         this(config, new ElasticsearchClientManager(config));
     }
     public ElasticsearchQuery(ElasticsearchReaderConfiguration config, ElasticsearchClientManager escm) {
+        this.config = config;
         this.indexes.addAll(config.getIndexes());
         this.types.addAll(config.getTypes());
         this.limit = config.getSize().intValue();
@@ -182,7 +187,6 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     }
 
     public void execute(Object o) {
-
         // If we haven't already set up the search, then set up the search.
         if (search == null) {
             search = elasticsearchClientManager.getClient()
@@ -190,6 +194,23 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
                     .setSearchType(SearchType.SCAN)
                     .setSize(Objects.firstNonNull(batchSize, DEFAULT_BATCH_SIZE))
                     .setScroll(this.scrollTimeout);
+
+            String searchJson;
+            if(config.getSearch() != null) {
+                LOGGER.debug("Have config in Reader: " + config.getSearch().toString());
+
+                try {
+                    searchJson = MAPPER.writeValueAsString(config.getSearch());
+                    LOGGER.debug("Setting source: " + searchJson);
+                    search = search.setExtraSource(searchJson);
+
+                } catch (JsonProcessingException e) {
+                    LOGGER.warn("Could not apply _search supplied by config: {}", e);
+                }
+
+                LOGGER.debug("Search Source is now " + search.toString());
+
+            }
 
             if (this.queryBuilder != null) {
                 search.setQuery(this.queryBuilder);
