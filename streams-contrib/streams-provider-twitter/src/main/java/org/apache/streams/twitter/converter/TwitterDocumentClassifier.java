@@ -24,9 +24,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.streams.data.DocumentClassifier;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Follow;
-import org.apache.streams.twitter.pojo.*;
-import sun.reflect.generics.reflectiveObjects.LazyReflectiveObjectGenerator;
+import org.apache.streams.twitter.pojo.Delete;
+import org.apache.streams.twitter.pojo.Follow;
+import org.apache.streams.twitter.pojo.FriendList;
+import org.apache.streams.twitter.pojo.Retweet;
+import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.twitter.pojo.User;
+import org.apache.streams.twitter.pojo.UserstreamEvent;
 
 import java.io.IOException;
 import java.util.List;
@@ -68,6 +72,8 @@ public class TwitterDocumentClassifier implements DocumentClassifier {
             classList.add(FriendList.class);
         else if( objectNode.findValue("target_object") != null )
             classList.add(UserstreamEvent.class);
+        else if( objectNode.findValue("follower") != null && objectNode.findValue("followee") != null)
+            classList.add(Follow.class);
         else if ( objectNode.findValue("location") != null && objectNode.findValue("user") == null)
             classList.add(User.class);
         else
