@@ -20,7 +20,6 @@ package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Queues;
-import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
@@ -80,33 +79,20 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
     protected void submitFollowingThreads(Long[] ids) {
         Twitter client = getTwitterClient();
 
-        if( getConfig().getEndpoint().equals("friends") ) {
-            for (int i = 0; i < ids.length; i++) {
-                TwitterFriendsProviderTask providerTask = new TwitterFriendsProviderTask(this, client, ids[i]);
-                executor.submit(providerTask);
-            }
-        } else if( getConfig().getEndpoint().equals("followers") ) {
-            for (int i = 0; i < ids.length; i++) {
-                TwitterFollowersProviderTask providerTask = new TwitterFollowersProviderTask(this, client, ids[i]);
-                executor.submit(providerTask);
-            }
+        for (int i = 0; i < ids.length; i++) {
+            TwitterFollowingProviderTask providerTask = new TwitterFollowingProviderTask(this, client, ids[i], getConfig().getEndpoint());
+            executor.submit(providerTask);
         }
     }
 
     protected void submitFollowingThreads(String[] screenNames) {
         Twitter client = getTwitterClient();
 
-        if( getConfig().getEndpoint().equals("friends") ) {
-            for (int i = 0; i < screenNames.length; i++) {
-                TwitterFriendsProviderTask providerTask = new TwitterFriendsProviderTask(this, client, screenNames[i]);
-                executor.submit(providerTask);
-            }
-        } else if( getConfig().getEndpoint().equals("followers") ) {
-            for (int i = 0; i < screenNames.length; i++) {
-                TwitterFollowersProviderTask providerTask = new TwitterFollowersProviderTask(this, client, screenNames[i]);
-                executor.submit(providerTask);
-            }
+        for (int i = 0; i < screenNames.length; i++) {
+            TwitterFollowingProviderTask providerTask = new TwitterFollowingProviderTask(this, client, screenNames[i], getConfig().getEndpoint());
+            executor.submit(providerTask);
         }
+
     }
 
     @Override
