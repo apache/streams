@@ -21,7 +21,7 @@ package org.apache.streams.graph.test;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.streams.graph.GraphConfiguration;
 import org.apache.streams.graph.GraphVertexReader;
 import org.apache.streams.graph.GraphReaderConfiguration;
@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
@@ -60,11 +61,10 @@ public class TestNeo4jVertexReader {
         testConfiguration = new GraphReaderConfiguration();
         testConfiguration.setType(GraphConfiguration.Type.NEO_4_J);
 
-        URL url = this.getClass().getResource("/sampleReaderResult.json");
-
         graphPersistReader = new GraphVertexReader(testConfiguration);
-        File sampleFile = new File(url.getFile());
-        String sampleText = FileUtils.readFileToString(sampleFile, "utf-8");
+        InputStream testActivityFileStream = TestNeo4jVertexReader.class.getClassLoader()
+                .getResourceAsStream("sampleReaderResult.json");
+        String sampleText = IOUtils.toString(testActivityFileStream, "utf-8");
         sampleReaderResult = mapper.readValue(sampleText, JsonNode.class);
 
     }
