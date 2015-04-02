@@ -231,15 +231,15 @@ public class LocalStreamBuilder implements StreamBuilder {
                 if(isRunning) {
                     Uninterruptibles.sleepUninterruptibly(2500, TimeUnit.MILLISECONDS);
                 }
-                LOGGER.info("Stream has completed successfully, shutting down @ {}", System.currentTimeMillis());
             }
-            LOGGER.debug("Components are no longer running or timed out");
+            LOGGER.info("Components are no longer running or timed out");
         } catch (Exception e){
             LOGGER.warn("Runtime exception.  Beginning shutdown");
             forcedShutDown = true;
         } finally{
             LOGGER.info("Stream has completed, pausing @ {}", System.currentTimeMillis());
             Uninterruptibles.sleepUninterruptibly(5000, TimeUnit.MILLISECONDS);
+            LOGGER.info("Stream has completed, shutting down @ {}", System.currentTimeMillis());
             stopInternal(forcedShutDown);
         }
 
