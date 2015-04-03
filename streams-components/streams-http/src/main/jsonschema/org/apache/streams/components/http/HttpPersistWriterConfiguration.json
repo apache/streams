@@ -2,6 +2,9 @@
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
     "id": "#",
+    "$license": [
+      "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
     "javaType" : "org.apache.streams.components.http.HttpPersistWriterConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
     "extends": { "$ref": "HttpConfiguration.json" },

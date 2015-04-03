@@ -706,6 +706,8 @@
                         </executions>
                         <configuration>
                             <excludes>
+                                <exclude>.git</exclude>
+                                <exclude>.gitignore</exclude>
                                 <exclude>.git/**</exclude>
                                 <exclude>.idea/**</exclude>
                                 <exclude>**/DEPENDENCIES</exclude>

@@ -1,7 +1,11 @@
 {
     "type": "object",
     "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+      "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
     "javaType": "org.apache.streams.datasift.DatasiftWebhookData",
+    "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "id": {
             "type": "string"
@@ -23,7 +27,8 @@
             "type": "array",
             "items": {
                 "type": "object",
-                "javaType": "org.apache.streams.datasift.Datasift"
+                "javaType": "org.apache.streams.datasift.Datasift",
+                "javaInterfaces": ["java.io.Serializable"]
             }
         }
     }

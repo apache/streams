@@ -1,5 +1,8 @@
 {
     "type" : "object",
+    "$license": [
+      "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
     "title" : "activity",
     "javaType": "org.apache.streams.verbs.VerbDefinition",
     "javaInterfaces": ["java.io.Serializable"],
