@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.streams.jackson.*;
 import org.apache.streams.monitoring.persist.MessagePersister;
 import org.apache.streams.monitoring.persist.impl.BroadcastMessagePersister;
@@ -40,6 +41,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This thread runs inside of a Streams runtime and periodically persists information
@@ -137,11 +139,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                 }
 
                 messagePersister.persistMessages(messages);
-                Thread.sleep(waitTime);
-            } catch (InterruptedException e) {
-                LOGGER.error("Interrupted!: {}", e);
-                Thread.currentThread().interrupt();
-                this.keepRunning = false;
+                Uninterruptibles.sleepUninterruptibly(waitTime, TimeUnit.MILLISECONDS);
             } catch (Exception e) {
                 LOGGER.error("Exception: {}", e);
                 this.keepRunning = false;

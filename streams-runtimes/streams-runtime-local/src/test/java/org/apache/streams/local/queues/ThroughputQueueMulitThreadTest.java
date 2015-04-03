@@ -19,6 +19,7 @@ package org.apache.streams.local.queues;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.Repeat;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -171,11 +172,7 @@ public class ThroughputQueueMulitThreadTest extends RandomizedTest {
 
 
     private void safeSleep(long sleep) {
-        try {
-            Thread.sleep(sleep);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
+        Uninterruptibles.sleepUninterruptibly(sleep, TimeUnit.MILLISECONDS);
     }
 
 

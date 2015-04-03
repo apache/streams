@@ -19,6 +19,7 @@ package org.apache.streams.local.queues;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.Repeat;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -27,10 +28,8 @@ import org.junit.Test;
 import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
-
 import java.lang.management.ManagementFactory;
-
-import static org.junit.Assert.assertEquals;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Single thread unit tests for {@link org.apache.streams.local.queues.ThroughputQueue}
@@ -161,13 +160,13 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
             queue.put(1);
             safeSleep(wait);
             queue.take();
-            assertTrue(queue.getMaxWait() >= wait && queue.getMaxWait() <= (wait * 1.2));//can't calculate exactly, making sure its close.
-            assertTrue(queue.getAvgWait() >= wait && queue.getAvgWait() <= (wait * 1.2));
+            assertTrue(queue.getMaxWait() >= wait && queue.getMaxWait() <= (wait * 2));//can't calculate exactly, making sure its close.
+            assertTrue(queue.getAvgWait() >= wait && queue.getAvgWait() <= (wait * 2));
         }
         queue.put(1);
         queue.take();
-        assertTrue(queue.getMaxWait() >= wait && queue.getMaxWait() <= (wait * 1.2));//can't calculate exactly, making sure its close.
-        assertTrue(queue.getAvgWait() <= 1000 );
+        assertTrue(queue.getMaxWait() >= wait && queue.getMaxWait() <= (wait + 5000));//can't calculate exactly, making sure its close.
+        assertTrue(queue.getAvgWait() <= wait * 2 );
         assertTrue(queue.getAvgWait() >= 750);
     }
 
@@ -242,11 +241,7 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
 
 
     private void safeSleep(long sleep) {
-        try {
-            Thread.sleep(sleep);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
+        Uninterruptibles.sleepUninterruptibly(sleep, TimeUnit.MILLISECONDS);
     }
 
 
