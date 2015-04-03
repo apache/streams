@@ -139,7 +139,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                 messagePersister.persistMessages(messages);
                 Thread.sleep(waitTime);
             } catch (InterruptedException e) {
-                LOGGER.error("Interrupted!: {}", e);
+                LOGGER.debug("Broadcast Monitor Interrupted!");
                 Thread.currentThread().interrupt();
                 this.keepRunning = false;
             } catch (Exception e) {

@@ -18,27 +18,11 @@
 
 package org.apache.streams.local.builders;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.lang.management.ManagementFactory;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.Repeat;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
@@ -57,13 +41,24 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import com.google.common.collect.Maps;
-import com.google.common.collect.Queues;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import javax.management.*;
+import java.lang.management.ManagementFactory;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * Basic Tests for the LocalStreamBuilder.
@@ -209,7 +204,9 @@ public class LocalStreamBuilderTest extends RandomizedTest {
             }
             builder.addStreamsPersistWriter("writer", new DatumCounterWriter("writer"), 1, processorId+(numProcessors-1));
             builder.start();
-
+            Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+            builder.stop();
+            Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
             assertEquals(numDatums, DatumCounterWriter.RECEIVED.get("writer").size());
             for(int i=0; i < numDatums; ++i) {
                 assertTrue("Expected Writer to receive datum : " + i, DatumCounterWriter.RECEIVED.get("writer").contains(i));

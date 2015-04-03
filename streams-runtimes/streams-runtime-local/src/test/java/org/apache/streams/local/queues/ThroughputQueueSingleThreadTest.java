@@ -27,10 +27,7 @@ import org.junit.Test;
 import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
-
 import java.lang.management.ManagementFactory;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Single thread unit tests for {@link org.apache.streams.local.queues.ThroughputQueue}
@@ -161,14 +158,14 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
             queue.put(1);
             safeSleep(wait);
             queue.take();
-            assertTrue(queue.getMaxWait() >= wait && queue.getMaxWait() <= (wait * 1.2));//can't calculate exactly, making sure its close.
-            assertTrue(queue.getAvgWait() >= wait && queue.getAvgWait() <= (wait * 1.2));
+            assertTrue(queue.getMaxWait() >= wait && queue.getMaxWait() <= (wait * 2));//can't calculate exactly, making sure its close.
+            assertTrue(queue.getAvgWait() >= wait && queue.getAvgWait() <= (wait * 2));
         }
         queue.put(1);
         queue.take();
-        assertTrue(queue.getMaxWait() >= wait && queue.getMaxWait() <= (wait * 1.2));//can't calculate exactly, making sure its close.
-        assertTrue(queue.getAvgWait() <= 1000 );
-        assertTrue(queue.getAvgWait() >= 750);
+        assertTrue(queue.getMaxWait() >= wait && queue.getMaxWait() <= (wait * 2));//can't calculate exactly, making sure its close.
+        assertTrue(queue.getAvgWait() <= 5000 );
+        assertTrue(queue.getAvgWait() >= 500);
     }
 
     /**
@@ -185,8 +182,8 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
             queue.take();
         }
         double throughput = queue.getThroughput();
-        assertTrue(throughput <= 10 ); //can't calculate exactly, making sure its close.
-        assertTrue(throughput >= 9.5);
+        assertTrue(throughput <= 15 ); //can't calculate exactly, making sure its close.
+        assertTrue(throughput >= 5);
 
         queue = new ThroughputQueue();
         wait = 1000;
@@ -198,8 +195,8 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
         }
         safeSleep(wait);
         throughput = queue.getThroughput();
-        assertTrue(throughput <= 10 ); //can't calculate exactly, making sure its close.
-        assertTrue(throughput >= 9.5);
+        assertTrue(throughput <= 15 ); //can't calculate exactly, making sure its close.
+        assertTrue(throughput >= 5);
     }
 
 
