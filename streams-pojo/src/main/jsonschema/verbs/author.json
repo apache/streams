@@ -7,7 +7,6 @@
     "id": "#",
     "type": "object",
     "title": "Author",
-    "javaType": "org.apache.streams.pojo.json.verb.Author",
     "description": "Indicates that the actor has authored the object. Note that this is a more specific form of the verb \"create\".",
     "extends": {
         "$ref": "./create.json"

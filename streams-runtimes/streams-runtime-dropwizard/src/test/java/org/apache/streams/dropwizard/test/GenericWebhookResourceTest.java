@@ -29,7 +29,6 @@ import io.dropwizard.testing.junit.ResourceTestRule;
 import org.apache.streams.dropwizard.GenericWebhookData;
 import org.apache.streams.dropwizard.GenericWebhookResource;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Person;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.AfterClass;
