@@ -165,6 +165,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
             this.statusCounter.incrementStatus(DatumStatus.SUCCESS);
             this.timeSpentSuccess.addAndGet(new Date().getTime() - startTime);
         } catch(Throwable e) {
+            LOGGER.warn("Datum failed", e);
             this.statusCounter.incrementStatus(DatumStatus.FAIL);
             this.timeSpentFailure.addAndGet(new Date().getTime() - startTime);
         } finally  {
