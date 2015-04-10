@@ -1,0 +1,292 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<response xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://metabase.moreover.com/schema/articles10.xsd">
+    <status>SUCCESS</status>
+    <messageCode></messageCode>
+    <userMessage></userMessage>
+    <developerMessage></developerMessage>
+    <articles>
+        <article>
+            <sequenceId>444200930169</sequenceId>
+            <id>20989276812</id>
+            <language>English</language>
+            <title>Professional networking site LinkedIn to acquire Lynda.com for $1.5 bn</title>
+            <content>Britain News.Net Thursday 9th April, 2015
+
+                NEW YORK - LinkedIn Corp, a leading professional social network operator, entered into an agreement to acquire privately held online education company Lynda.com in a cash-and-stock deal valued at about $1.5 billion.
+
+                Under the terms of the deal, LinkedIn will pay approximately 52 percent of the transaction value in cash and remaining 48 percent in stock. Subject to regulatory clearances, the acquisition is expected to close during the second quarter of 2015, LinkedIn announced Thursday.
+
+                Founded in 1995 by Lynda Weinman and Bruce Heavin,Lynda.com offers a range of courses both for individuals and for corporate.
+
+                For individuals on subscription fees ranging between $250 and $375 per year, Lynda.com offers a number of courses in English, German, French, Spanish, and Japanese aimed at improving business, technology and creative skills.
+
+                For corporate, government and educational organizations, Lynda.com through its specialized courses like LyndaEnterprise, LyndaPro, LyndaCampus, LyndaLibrary and LyndaKiosk offers a massive library of high-quality courses.
+
+                "The mission of LinkedIn and the mission of Lynda.com are highly aligned. Both companies seek to help professionals be better at what they do," said Jeff Weiner, CEO of LinkedIn.
+
+                "Lynda.com's extensive library of premium video content helps empower people to develop the skills needed to accelerate their careers. When integrated with the hundreds of millions of members and millions of jobs on LinkedIn, Lynda.com can change the way in which people connect to opportunity."
+
+                LinkedIn, which helps companies hire, market and sell, feels the acquisition will help it offer guidance to users who want to know what skills are needed for the available jobs in their desired city, Ryan Roslansky, LinkedIn's head of content, wrote in a blog.
+
+                The deal will bolster LinkedIn's hiring business, which has clocked revenue growth of nearly 50 percent in each of the last three quarters, helped by rapid expansion in international markets including China.
+
+                "In LinkedIn, we have found an incredible partner who shares our vision and passion for empowering people around the world to make real change in their lives through access to information, learning and professional development," said Eric Robison, CEO of lynda.com.</content>
+            <tags/>
+            <publishedDate>2015-04-10T02:18:50Z</publishedDate>
+            <harvestDate>2015-04-10T04:17:33Z</harvestDate>
+            <embargoDate></embargoDate>
+            <licenseEndDate></licenseEndDate>
+            <url>http://ct.moreover.com/?a=20989276812&amp;p=1d0&amp;v=1&amp;x=RUTmIGDopbl4SaxW8b5vKA</url>
+            <commentsUrl></commentsUrl>
+            <outboundUrls/>
+            <dataFormat>text</dataFormat>
+            <copyright></copyright>
+            <loginStatus></loginStatus>
+            <duplicateGroupId>20988984761</duplicateGroupId>
+            <media/>
+            <publishingPlatform>
+                <itemId></itemId>
+                <statusId></statusId>
+                <itemType></itemType>
+                <inReplyToUserId></inReplyToUserId>
+                <inReplyToStatusId></inReplyToStatusId>
+                <userMentions/>
+                <totalViews></totalViews>
+            </publishingPlatform>
+            <adultLanguage>false</adultLanguage>
+            <topics/>
+            <companies>
+                <company>
+                    <name>LinkedIn Corp</name>
+                    <symbol>LKI</symbol>
+                    <exchange>MUN</exchange>
+                    <isin>US53578A1088</isin>
+                    <titleCount>0</titleCount>
+                    <contentCount>1</contentCount>
+                    <primary>true</primary>
+                </company>
+                <company>
+                    <name>LinkedIn Corp</name>
+                    <symbol>LKI</symbol>
+                    <exchange>FRA</exchange>
+                    <isin>US53578A1088</isin>
+                    <titleCount>0</titleCount>
+                    <contentCount>1</contentCount>
+                    <primary>true</primary>
+                </company>
+                <company>
+                    <name>LinkedIn Corp</name>
+                    <symbol>LKI</symbol>
+                    <exchange>BER</exchange>
+                    <isin>US53578A1088</isin>
+                    <titleCount>0</titleCount>
+                    <contentCount>1</contentCount>
+                    <primary>true</primary>
+                </company>
+                <company>
+                    <name>LinkedIn Corp</name>
+                    <symbol>LNKD</symbol>
+                    <exchange>MEX</exchange>
+                    <isin>US53578A1088</isin>
+                    <titleCount>0</titleCount>
+                    <contentCount>1</contentCount>
+                    <primary>true</primary>
+                </company>
+                <company>
+                    <name>LinkedIn Corp</name>
+                    <symbol>LNKD</symbol>
+                    <exchange>SWX</exchange>
+                    <isin>US53578A1088</isin>
+                    <titleCount>0</titleCount>
+                    <contentCount>1</contentCount>
+                    <primary>true</primary>
+                </company>
+                <company>
+                    <name>LinkedIn Corp</name>
+                    <symbol>LNKD</symbol>
+                    <exchange>SGO</exchange>
+                    <isin>US53578A1088</isin>
+                    <titleCount>0</titleCount>
+                    <contentCount>1</contentCount>
+                    <primary>true</primary>
+                </company>
+                <company>
+                    <name>LinkedIn Corp</name>
+                    <symbol>LNKD</symbol>
+                    <exchange>NYS</exchange>
+                    <isin>US53578A1088</isin>
+                    <titleCount>0</titleCount>
+                    <contentCount>1</contentCount>
+                    <primary>true</primary>
+                </company>
+                <company>
+                    <name>LinkedIn Corp</name>
+                    <symbol>0QZJ</symbol>
+                    <exchange>LTS</exchange>
+                    <isin>US53578A1088</isin>
+                    <titleCount>0</titleCount>
+                    <contentCount>1</contentCount>
+                    <primary>true</primary>
+                </company>
+                <company>
+                    <name>People Co., Ltd.</name>
+                    <symbol>7865</symbol>
+                    <exchange>TKS</exchange>
+                    <isin>JP3801560008</isin>
+                    <titleCount>0</titleCount>
+                    <contentCount>1</contentCount>
+                    <primary>true</primary>
+                </company>
+            </companies>
+            <semantics>
+                <events/>
+                <entities/>
+            </semantics>
+            <sentiment>
+                <score>0.3977014</score>
+                <entities>
+                    <entity>
+                        <type>Company</type>
+                        <value>LinkedIn Corp</value>
+                        <mentions>8</mentions>
+                        <score>5.16333</score>
+                        <evidence>7</evidence>
+                        <confident>true</confident>
+                    </entity>
+                    <entity>
+                        <type>Company</type>
+                        <value>Lynda.com</value>
+                        <mentions>6</mentions>
+                        <score>3.345</score>
+                        <evidence>7</evidence>
+                        <confident>true</confident>
+                    </entity>
+                    <entity>
+                        <type>Person</type>
+                        <value>Lynda Weinman</value>
+                        <mentions>1</mentions>
+                        <score>0.0</score>
+                        <evidence>1</evidence>
+                        <confident>true</confident>
+                    </entity>
+                    <entity>
+                        <type>Person</type>
+                        <value>Bruce Heavin</value>
+                        <mentions>1</mentions>
+                        <score>0.0</score>
+                        <evidence>1</evidence>
+                        <confident>true</confident>
+                    </entity>
+                    <entity>
+                        <type>Product</type>
+                        <value>LyndaLibrary</value>
+                        <mentions>1</mentions>
+                        <score>1.04325</score>
+                        <evidence>5</evidence>
+                        <confident>true</confident>
+                    </entity>
+                    <entity>
+                        <type>Product</type>
+                        <value>LyndaKiosk</value>
+                        <mentions>1</mentions>
+                        <score>1.04325</score>
+                        <evidence>5</evidence>
+                        <confident>true</confident>
+                    </entity>
+                    <entity>
+                        <type>Person</type>
+                        <value>Jeff Weiner</value>
+                        <mentions>1</mentions>
+                        <score>0.399667</score>
+                        <evidence>5</evidence>
+                        <confident>true</confident>
+                    </entity>
+                    <entity>
+                        <type>Person</type>
+                        <value>Ryan Roslansky</value>
+                        <mentions>1</mentions>
+                        <score>2.18284</score>
+                        <evidence>5</evidence>
+                        <confident>true</confident>
+                    </entity>
+                    <entity>
+                        <type>Location</type>
+                        <value>China</value>
+                        <mentions>2</mentions>
+                        <score>2.45932</score>
+                        <evidence>7</evidence>
+                        <confident>true</confident>
+                    </entity>
+                    <entity>
+                        <type>Person</type>
+                        <value>Eric Robison</value>
+                        <mentions>1</mentions>
+                        <score>1.80835</score>
+                        <evidence>4</evidence>
+                        <confident>true</confident>
+                    </entity>
+                </entities>
+            </sentiment>
+            <author>
+                <name></name>
+                <homeUrl></homeUrl>
+                <email></email>
+                <description></description>
+                <dateLastActive></dateLastActive>
+                <publishingPlatform>
+                    <userName></userName>
+                    <userId></userId>
+                    <statusesCount></statusesCount>
+                    <totalViews></totalViews>
+                    <followingCount></followingCount>
+                    <followersCount></followersCount>
+                    <kloutScore></kloutScore>
+                </publishingPlatform>
+            </author>
+            <source>
+                <name>Britain News.Net</name>
+                <homeUrl>http://www.britainnews.net</homeUrl>
+                <publisher></publisher>
+                <primaryLanguage></primaryLanguage>
+                <primaryMediaType></primaryMediaType>
+                <category>National</category>
+                <editorialRank>5</editorialRank>
+                <location>
+                    <country>United Kingdom</country>
+                    <countryCode>GB</countryCode>
+                    <region>Europe</region>
+                    <subregion>Northern Europe</subregion>
+                    <state></state>
+                    <zipArea></zipArea>
+                    <zipCode></zipCode>
+                </location>
+                <feed>
+                    <id>169658989</id>
+                    <name>Britain News.Net</name>
+                    <mediaType>News</mediaType>
+                    <publishingPlatform></publishingPlatform>
+                    <idFromPublisher></idFromPublisher>
+                    <generator></generator>
+                    <description></description>
+                    <tags/>
+                    <imageUrl></imageUrl>
+                    <copyright></copyright>
+                    <language>Unassigned</language>
+                    <dataFormat>text</dataFormat>
+                    <rank>
+                        <autoRank></autoRank>
+                        <autoRankOrder></autoRankOrder>
+                        <inboundLinkCount>0</inboundLinkCount>
+                    </rank>
+                    <inWhiteList>true</inWhiteList>
+                    <autoTopics/>
+                    <editorialTopics>
+                        <editorialTopic>Standard</editorialTopic>
+                        <editorialTopic>News</editorialTopic>
+                    </editorialTopics>
+                    <genre>General</genre>
+                </feed>
+            </source>
+        </article>
+    </articles>
+</response>
