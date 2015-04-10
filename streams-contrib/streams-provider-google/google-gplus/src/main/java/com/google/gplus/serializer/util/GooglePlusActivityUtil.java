@@ -62,6 +62,7 @@ public class GooglePlusActivityUtil {
                         .orNull()));
 
         activity.setProvider(getProvider());
+        activity.setPublished(new DateTime());
     }
 
     /**

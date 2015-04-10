@@ -88,6 +88,7 @@ public class GooglePlusPersonSerDeTest {
                     assert(actor.getId().contains("id:googleplus:"));
                     assertNotNull(actor.getUrl());
 
+                    assertNotNull(activity.getPublished());
                 }
             }
         } catch (Exception e) {

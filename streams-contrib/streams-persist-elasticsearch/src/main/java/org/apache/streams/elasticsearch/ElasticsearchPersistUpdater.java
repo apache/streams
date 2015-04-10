@@ -45,11 +45,11 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
         if(streamsDatum == null || streamsDatum.getDocument() == null)
             return;
 
-        LOGGER.debug("Update Document: {}", streamsDatum.getDocument());
+        LOGGER.trace("Update Document: {}", streamsDatum.getDocument());
 
         Map<String, Object> metadata = streamsDatum.getMetadata();
 
-        LOGGER.debug("Update Metadata: {}", metadata);
+        LOGGER.trace("Update Metadata: {}", metadata);
 
         String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
         String type = ElasticsearchMetadataUtil.getType(metadata, config);
@@ -60,7 +60,7 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
 
             json = OBJECT_MAPPER.writeValueAsString(streamsDatum.getDocument());
 
-            LOGGER.debug("Attempt Update: ({},{},{}) {}", index, type, id, json);
+            LOGGER.trace("Attempt Update: ({},{},{}) {}", index, type, id, json);
 
             update(index, type, id, json);
 

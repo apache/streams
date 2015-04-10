@@ -85,6 +85,7 @@ public class YoutubeActivityUtil {
     public static void updateActivity(Channel channel, Activity activity, String channelId) throws ActivitySerializerException {
         try {
             activity.setProvider(getProvider());
+            activity.setPublished(new DateTime());
             activity.setVerb("post");
             activity.setActor(createActorForChannel(channel));
             Map<String, Object> extensions = Maps.newHashMap();
@@ -111,7 +112,10 @@ public class YoutubeActivityUtil {
         Map<String, Object> actorExtensions = Maps.newHashMap();
         actorExtensions.put("followers", channel.getStatistics().getSubscriberCount());
         actorExtensions.put("posts", channel.getStatistics().getVideoCount());
+        actorExtensions.put("commentCount", channel.getStatistics().getCommentCount());
+        actorExtensions.put("viewCount", channel.getStatistics().getViewCount());
         actor.setAdditionalProperty("extensions", actorExtensions);
+
         return actor;
     }
 

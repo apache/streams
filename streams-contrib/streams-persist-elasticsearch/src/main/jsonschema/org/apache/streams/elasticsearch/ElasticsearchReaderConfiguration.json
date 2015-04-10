@@ -23,15 +23,15 @@
             },
             "description": "Types to read from"
         },
+        "size" : {
+            "type": "integer",
+            "descripton" : "The default ",
+            "default": 100000000000
+        },
         "scrollTimeout": {
             "type": "string",
             "description": "Scroll Timeout (JodaTime)",
             "default": "5m"
-        },
-        "batchSize": {
-          "type": "integer",
-          "descripton" : "The batch size",
-          "default": 100
         },
         "_search": {
             "type": "object",

@@ -35,10 +35,13 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class SimplePageTest {
@@ -89,6 +92,14 @@ public class SimplePageTest {
         assertThat(activity.getActor().getId(), is(not(nullValue())));
         assertThat(activity.getVerb(), is(not(nullValue())));
         assertThat(activity.getProvider(), is(not(nullValue())));
+        assertThat(activity.getPublished(), is(not(nullValue())));
+
+        Map<String, Objects> extensions = (Map<String, Objects>)activity.getActor().getAdditionalProperties().get("extensions");
+        assertThat(extensions.get("mentions"), is(not(nullValue())));
+        assertThat(extensions.get("followers"), is(not(nullValue())));
+
+        extensions = (Map<String, Objects>)activity.getAdditionalProperties().get("extensions");
+        assertNotNull(extensions.get("facebook"));
     }
 
     @Test

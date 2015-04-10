@@ -113,12 +113,14 @@ public class InstagramActivitySerDeTest {
                     assertThat(extensions.get("followers"), is(not(nullValue())));
                     assertThat(extensions.get("screenName"), is(not(nullValue())));
                     assertThat(extensions.get("posts"), is(not(nullValue())));
+                    assertThat(((Map<String, Object>)activity.getAdditionalProperties().get("extensions")).get("instagram"), is(not(nullValue())));
 
                     assertThat(activity.getActor().getAdditionalProperties().get("handle"), is(not(nullValue())));
                     assertThat(activity.getActor().getId(), is(not(nullValue())));
                     assertThat(activity.getActor().getUrl(), is(not(nullValue())));
                     assertThat(activity.getVerb(), is(not(nullValue())));
                     assertThat(activity.getProvider(), is(not(nullValue())));
+                    assertThat(activity.getPublished(), is(not(nullValue())));
                 }
             }
         } catch( Exception e ) {

@@ -18,11 +18,14 @@
 
 package org.apache.streams.elasticsearch;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.core.*;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.ComponentUtils;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -47,8 +50,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistReader.class);
 
-    protected final Queue<StreamsDatum> persistQueue = new ArrayBlockingQueue<StreamsDatum>(100);
-    private final StreamsResultSet streamsResultSet = new StreamsResultSet(this.persistQueue);
+    private final StreamsResultSet streamsResultSet;
 
     private ElasticsearchQuery elasticsearchQuery;
     private final ElasticsearchReaderConfiguration config;
@@ -63,6 +65,8 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
     public ElasticsearchPersistReader(ElasticsearchReaderConfiguration config, ElasticsearchClientManager escm) {
         this.config = config;
         this.elasticsearchClientManager = escm;
+        int batchSize = config.getBatchSize().intValue() <= 0 ? 10 : config.getBatchSize().intValue();
+        this.streamsResultSet = new StreamsResultSet(new ArrayBlockingQueue<StreamsDatum>(batchSize));
     }
 
     @Override
@@ -80,23 +84,15 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
             @Override
             public void run() {
                 try {
-                    while (!query.isCompleted()) {
-                        if(query.hasNext()) {
-                            SearchHit hit = query.next();
+                    while (query.hasNext() && !query.isCompleted()) {
+                        SearchHit hit = query.next();
+                        if(hit != null) {
                             ObjectNode jsonObject = mapper.readValue(hit.getSourceAsString(), ObjectNode.class);
                             StreamsDatum item = new StreamsDatum(jsonObject, hit.getId());
                             item.getMetadata().put("id", hit.getId());
                             item.getMetadata().put("index", hit.getIndex());
                             item.getMetadata().put("type", hit.getType());
                             ComponentUtils.offerUntilSuccess(item, streamsResultSet.getQueue());
-                        }
-                        else {
-                            try {
-                                Thread.sleep(1);
-                            }
-                            catch(InterruptedException ioe) {
-                                LOGGER.error("sleep error: {}", ioe);
-                            }
                         }
                     }
                 }

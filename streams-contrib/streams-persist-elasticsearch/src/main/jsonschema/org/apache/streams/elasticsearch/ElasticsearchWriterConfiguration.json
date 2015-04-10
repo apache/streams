@@ -22,11 +22,6 @@
             "description": "Index in large or small batches",
             "default": "false"
         },
-        "batchSize": {
-            "type": "integer",
-            "description": "Item Count before flush",
-            "default": 100
-        },
         "batchBytes": {
             "type": "integer",
             "description": "Number of bytes before flush",
