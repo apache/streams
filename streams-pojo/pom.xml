@@ -178,9 +178,9 @@
                 <artifactId>jsonschema2pojo-maven-plugin</artifactId>
                 <configuration>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema</sourcePath>
-                        <sourcePath>src/main/jsonschema/verbs</sourcePath>
-                        <sourcePath>src/main/jsonschema/objectTypes</sourcePath>
+                        <sourcePath>${basedir}/src/main/jsonschema</sourcePath>
+                        <sourcePath>${basedir}/src/main/jsonschema/verbs</sourcePath>
+                        <sourcePath>${basedir}/src/main/jsonschema/objectTypes</sourcePath>
                     </sourcePaths>
                     <targetPackage>org.apache.streams.pojo.json</targetPackage>
                 </configuration>
