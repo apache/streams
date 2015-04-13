@@ -22,6 +22,9 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.streams.rss.processor.RssTypeConverter;
 import org.junit.Test;
 
+/**
+ * Tests Serializability of {@link org.apache.streams.rss.processor.RssTypeConverter}
+ */
 public class RssTypeConverterTest {
     @Test
     public void testSerializability() {

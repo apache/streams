@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sysomos.json.Sysomos;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +32,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * Created with IntelliJ IDEA.
- * User: sblackmon
- * Date: 8/20/13
- * Time: 5:57 PM
- * To change this template use File | Settings | File Templates.
+ * Tests ability to convert String json form to {@link com.sysomos.json.Sysomos} form
  */
+@Ignore("ignore until test resources are available.")
 public class SysomosJsonSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SysomosJsonSerDeTest.class);

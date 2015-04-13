@@ -26,15 +26,15 @@ import org.apache.streams.datasift.twitter.Twitter;
 import org.apache.streams.datasift.util.StreamsDatasiftMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.files.StreamsScannerUtil;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.InputStream;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 /**
- * Created by sblackmon on 12/13/13.
+ * Tests serialization and conversion of Datasift inputs
  */
+@Ignore("ignore until test resources are available.")
 public class DatasiftEventClassifierTest {
 
     private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsDatasiftMapper.DATASIFT_FORMAT));

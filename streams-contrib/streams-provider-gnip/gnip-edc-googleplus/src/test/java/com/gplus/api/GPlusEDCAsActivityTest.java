@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +33,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * Created with IntelliJ IDEA.
- * User: mdelaet
- * Date: 8/28/13
- * Time: 2:53 PM
- * To change this template use File | Settings | File Templates.
+ * Tests conversion of YoutubeEDC inputs to Activity
  */
+@Ignore("ignore until test resources are available.")
 public class GPlusEDCAsActivityTest {
     private final static Logger LOGGER = LoggerFactory.getLogger(GPlusEDCAsActivityTest.class);
 

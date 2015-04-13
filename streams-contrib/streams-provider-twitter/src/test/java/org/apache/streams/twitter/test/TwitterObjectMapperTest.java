@@ -25,11 +25,13 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.twitter.converter.StreamsTwitterMapper;
+import org.apache.streams.twitter.converter.TwitterDocumentClassifier;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.converter.*;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +42,6 @@ import java.io.InputStreamReader;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -50,6 +51,7 @@ import static org.junit.Assert.assertThat;
 * Time: 5:57 PM
 * To change this template use File | Settings | File Templates.
 */
+@Ignore("ignore until test resources are available.")
 public class TwitterObjectMapperTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterObjectMapperTest.class);

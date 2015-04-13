@@ -18,8 +18,6 @@
 
 package com.gnip.test;
 
-//import org.codehaus.jackson.map.ObjectMapper;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -36,16 +34,10 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-//import com.fasterxml.jackson.xml.XmlMapper;
-//import com.gnip.xmlpojo.generated.FacebookEDC;
-
 /**
- * Created with IntelliJ IDEA.
- * User: rebanks
- * Date: 8/21/13
- * Time: 11:53 AM
- * To change this template use File | Settings | File Templates.
+ * Tests conversion of YoutubeEDC inputs to Activity
  */
+@Ignore("ignore until test resources are available.")
 public class YoutubeEDCAsActivityTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(YoutubeEDCAsActivityTest.class);
@@ -86,7 +78,6 @@ public class YoutubeEDCAsActivityTest {
 
                 Activity activity = jsonMapper.readValue(fixedObject.toString(), Activity.class);
 
-                //LOGGER.debug(des);
             }
         } catch( Exception e ) {
             e.printStackTrace();

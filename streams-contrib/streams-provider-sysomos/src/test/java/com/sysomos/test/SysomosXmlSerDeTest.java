@@ -27,6 +27,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.sysomos.xml.BeatApi;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +37,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * Created with IntelliJ IDEA.
- * User: sblackmon
- * Date: 8/20/13
- * Time: 5:57 PM
- * To change this template use File | Settings | File Templates.
+ * Tests ability to convert String xml form to {@link com.sysomos.xml.BeatApi} form
  */
+@Ignore("ignore until test resources are available.")
 public class SysomosXmlSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SysomosXmlSerDeTest.class);

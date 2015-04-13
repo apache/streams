@@ -31,6 +31,7 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,10 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * Tests conversion of gplus inputs to Activity
+ */
+@Ignore("ignore until test resources are available.")
 public class GooglePlusTypeConverterTest {
     private final static Logger LOGGER = LoggerFactory.getLogger(GooglePlusTypeConverterTest.class);
     private GooglePlusTypeConverter googlePlusTypeConverter;

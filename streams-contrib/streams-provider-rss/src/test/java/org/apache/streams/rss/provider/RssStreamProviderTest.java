@@ -19,25 +19,20 @@
 package org.apache.streams.rss.provider;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
-import org.apache.streams.rss.FeedDetails;
 import org.apache.streams.rss.RssStreamConfiguration;
 import org.apache.streams.rss.provider.perpetual.RssFeedScheduler;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 
 /**
- * Created by rebanks on 9/25/14.
+ * Unit tests for {@link org.apache.streams.rss.provider.RssStreamProvider}
  */
 public class RssStreamProviderTest extends RandomizedTest {
 

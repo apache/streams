@@ -23,18 +23,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.io.IOUtils;
 import org.apache.streams.graph.GraphConfiguration;
-import org.apache.streams.graph.GraphVertexReader;
 import org.apache.streams.graph.GraphReaderConfiguration;
+import org.apache.streams.graph.GraphVertexReader;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -76,9 +74,8 @@ public class TestNeo4jVertexReader {
 
         assert( result.size() == 10);
 
-        assert( result.get(0).get("summary").asText().startsWith("Building"));
-
-        assert( result.get(1).get("extensions").size() == 5);
+        for( int i = 0 ; i < 10; i++ )
+            assert( result.get(i).get("extensions").size() == 5);
 
     }
 }

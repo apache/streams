@@ -18,12 +18,11 @@
 
 package org.apache.streams.gnip.flickr.test;
 
-//import org.codehaus.jackson.map.ObjectMapper;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,22 +31,15 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-//import com.fasterxml.jackson.xml.XmlMapper;
-//import com.gnip.xmlpojo.generated.FacebookEDC;
-
 /**
- * Created with IntelliJ IDEA.
- * User: rebanks
- * Date: 8/21/13
- * Time: 11:53 AM
- * To change this template use File | Settings | File Templates.
+ * Tests serialization of FlickrEDC inputs
  */
+@Ignore("ignore until test resources are available.")
 public class FlickrEDCSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FlickrEDCSerDeTest.class);
 
     private ObjectMapper mapper = new ObjectMapper();
-//    XmlMapper mapper = new XmlMapper();
 
     @Test
     public void Tests()   throws Exception
@@ -71,13 +63,10 @@ public class FlickrEDCSerDeTest {
         try {
             while (br.ready()) {
                 String line = br.readLine();
-                //LOGGER.debug(line);
 
                 Object activityObject = xmlMapper.readValue(line, Object.class);
 
                 String jsonObject = jsonMapper.writeValueAsString(activityObject);
-
-                //LOGGER.debug(jsonObject);
             }
         } catch( Exception e ) {
             e.printStackTrace();

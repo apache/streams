@@ -21,6 +21,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URL;
@@ -34,6 +35,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Unit tests for {@link org.apache.streams.rss.provider.RssStreamProviderTask}
  */
+@Ignore("ignore until test resources are available.")
 public class RssStreamProviderTaskTest {
 
 
