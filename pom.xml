@@ -30,11 +30,10 @@
     <artifactId>streams-project</artifactId>
     <version>0.2-incubating-SNAPSHOT</version>
 
-    <name>Apache Streams Project Parent POM</name>
-
+    <name>Apache Streams Project</name>
     <description>Apache Streams Project</description>
 
-    <url>http://streams.incubator.apache.org/${project.version}/${project.name}</url>
+    <url>http://streams.incubator.apache.org/${project.version}/${project.artifactId}</url>
 
     <licenses>
         <license>
@@ -347,9 +346,6 @@
                                     </resource>
                                     <resource>
                                         <directory>src/main/resources</directory>
-                                    </resource>
-                                    <resource>
-                                        <directory>src/test/resources</directory>
                                     </resource>
                                 </resources>
                             </configuration>
