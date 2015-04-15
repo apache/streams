@@ -129,7 +129,9 @@ public class GPlusActivityDeserializer extends JsonDeserializer<Activity> {
             resharers.setSelfLink(resharersNode.get("selfLink").asText());
             object.setResharers(resharers);
 
-            object.setAttachments(buildAttachments(objectNode));//attachments);
+            if (objectNode.get("attachments") != null) {
+                object.setAttachments(buildAttachments(objectNode));//attachments);
+            }
         } catch (Throwable e) {
             LOGGER.error("Failed to build plus object : {}", e);
         }

@@ -189,27 +189,28 @@ public class GooglePlusActivityUtil {
             activityObject.setObjectType(object.getObjectType());
 
             java.util.List<ActivityObject> attachmentsList = Lists.newArrayList();
-            for (com.google.api.services.plus.model.Activity.PlusObject.Attachments attachments : object.getAttachments()) {
-                ActivityObject attach = new ActivityObject();
+            if (object.getAttachments() != null) {
+                for (com.google.api.services.plus.model.Activity.PlusObject.Attachments attachments : object.getAttachments()) {
+                    ActivityObject attach = new ActivityObject();
 
-                attach.setContent(attachments.getContent());
-                attach.setDisplayName(attachments.getDisplayName());
-                attach.setObjectType(attachments.getObjectType());
-                attach.setUrl(attachments.getUrl());
+                    attach.setContent(attachments.getContent());
+                    attach.setDisplayName(attachments.getDisplayName());
+                    attach.setObjectType(attachments.getObjectType());
+                    attach.setUrl(attachments.getUrl());
 
-                Image image = new Image();
-                com.google.api.services.plus.model.Activity.PlusObject.Attachments.Image image1 = attachments.getImage();
+                    Image image = new Image();
+                    com.google.api.services.plus.model.Activity.PlusObject.Attachments.Image image1 = attachments.getImage();
 
-                if (image1 != null) {
-                    image.setUrl(image1.getUrl());
-                    attach.setImage(image);
+                    if (image1 != null) {
+                        image.setUrl(image1.getUrl());
+                        attach.setImage(image);
+                    }
+
+                    attachmentsList.add(attach);
                 }
 
-                attachmentsList.add(attach);
+                activityObject.setAttachments(attachmentsList);
             }
-
-            activityObject.setAttachments(attachmentsList);
-
             activity.setObject(activityObject);
         }
     }
