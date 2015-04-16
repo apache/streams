@@ -105,31 +105,36 @@ public class GPlusActivityDeserializer extends JsonDeserializer<Activity> {
      */
     private Activity.PlusObject buildPlusObject(JsonNode node) {
         Activity.PlusObject object = new Activity.PlusObject();
-        JsonNode objectNode = node.get("object");
-        object.setObjectType(objectNode.get("objectType").asText());
-        object.setContent(objectNode.get("content").asText());
-        object.setUrl(objectNode.get("url").asText());
+        try {
+            JsonNode objectNode = node.get("object");
+            object.setObjectType(objectNode.get("objectType").asText());
+            object.setContent(objectNode.get("content").asText());
+            object.setUrl(objectNode.get("url").asText());
 
-        Activity.PlusObject.Replies replies = new Activity.PlusObject.Replies();
-        JsonNode repliesNode = objectNode.get("replies");
-        replies.setTotalItems(repliesNode.get("totalItems").asLong());
-        replies.setSelfLink(repliesNode.get("selfLink").asText());
-        object.setReplies(replies);
+            Activity.PlusObject.Replies replies = new Activity.PlusObject.Replies();
+            JsonNode repliesNode = objectNode.get("replies");
+            replies.setTotalItems(repliesNode.get("totalItems").asLong());
+            replies.setSelfLink(repliesNode.get("selfLink").asText());
+            object.setReplies(replies);
 
-        Activity.PlusObject.Plusoners plusoners = new Activity.PlusObject.Plusoners();
-        JsonNode plusonersNode = objectNode.get("plusoners");
-        plusoners.setTotalItems(plusonersNode.get("totalItems").asLong());
-        plusoners.setSelfLink(plusonersNode.get("selfLink").asText());
-        object.setPlusoners(plusoners);
+            Activity.PlusObject.Plusoners plusoners = new Activity.PlusObject.Plusoners();
+            JsonNode plusonersNode = objectNode.get("plusoners");
+            plusoners.setTotalItems(plusonersNode.get("totalItems").asLong());
+            plusoners.setSelfLink(plusonersNode.get("selfLink").asText());
+            object.setPlusoners(plusoners);
 
-        Activity.PlusObject.Resharers resharers = new Activity.PlusObject.Resharers();
-        JsonNode resharersNode = objectNode.get("resharers");
-        resharers.setTotalItems(resharersNode.get("totalItems").asLong());
-        resharers.setSelfLink(resharersNode.get("selfLink").asText());
-        object.setResharers(resharers);
+            Activity.PlusObject.Resharers resharers = new Activity.PlusObject.Resharers();
+            JsonNode resharersNode = objectNode.get("resharers");
+            resharers.setTotalItems(resharersNode.get("totalItems").asLong());
+            resharers.setSelfLink(resharersNode.get("selfLink").asText());
+            object.setResharers(resharers);
 
-        object.setAttachments(buildAttachments(objectNode));//attachments);
-
+            if (objectNode.get("attachments") != null) {
+                object.setAttachments(buildAttachments(objectNode));//attachments);
+            }
+        } catch (Throwable e) {
+            LOGGER.error("Failed to build plus object : {}", e);
+        }
         return object;
     }
 
