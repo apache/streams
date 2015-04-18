@@ -36,6 +36,7 @@ public class RegexUtils {
 
     private static final Map<String, Pattern> patternCache = Maps.newConcurrentMap();
     private final static Logger LOGGER = LoggerFactory.getLogger(RegexUtils.class);
+    private final static long REGEX_MATCH_THREAD_KEEP_ALIVE_DEFAULT_TIMEOUT = 10000L; //10 seconds
 
     private RegexUtils() {}
 
@@ -62,26 +63,21 @@ public class RegexUtils {
 
     protected static Map<String, List<Integer>> getMatches(String pattern, String content, int capture) {
         try {
-            Map<String, List<Integer>> matches = Maps.newHashMap();
-            if(content == null) {
-                return matches;
+            //Since certain regex patterns can be susceptible to catastrophic backtracking
+            //We need to be able to isolate this operation in a separate thread and kill
+            //it if it ends up taking too long
+            RegexRunnable regexRunnable = new RegexRunnable(pattern, content, capture);
+
+            Thread thread = new Thread(regexRunnable);
+            thread.start();
+
+            thread.join(REGEX_MATCH_THREAD_KEEP_ALIVE_DEFAULT_TIMEOUT);
+
+            if(thread.isAlive()) {
+                thread.interrupt();
             }
 
-            Matcher m = getPattern(pattern).matcher(content);
-            while (m.find()) {
-                String group = capture > 0 ? m.group(capture) : m.group();
-                if (group != null && !group.equals("")) {
-                    List<Integer> indices;
-                    if (matches.containsKey(group)) {
-                        indices = matches.get(group);
-                    } else {
-                        indices = Lists.newArrayList();
-                        matches.put(group, indices);
-                    }
-                    indices.add(m.start());
-                }
-            }
-            return matches;
+            return regexRunnable.getMatches();
         } catch (Throwable e) {
             LOGGER.error("Throwable process {}", e);
             e.printStackTrace();
@@ -98,5 +94,43 @@ public class RegexUtils {
             patternCache.put(pattern, p);
         }
         return p;
+    }
+
+    static class RegexRunnable implements Runnable {
+        private String pattern;
+        private InterruptableCharSequence content;
+        private int capture;
+
+        private Map<String, List<Integer>> matches = Maps.newHashMap();
+
+        public RegexRunnable(String pattern, String content, int capture) {
+            this.pattern = pattern;
+            this.content = new InterruptableCharSequence(content);
+            this.capture = capture;
+        }
+
+        @Override
+        public void run() {
+            if(content != null) {
+                Matcher m = getPattern(pattern).matcher(content);
+                while (m.find()) {
+                    String group = capture > 0 ? m.group(capture) : m.group();
+                    if (group != null && !group.equals("")) {
+                        List<Integer> indices;
+                        if (matches.containsKey(group)) {
+                            indices = matches.get(group);
+                        } else {
+                            indices = Lists.newArrayList();
+                            matches.put(group, indices);
+                        }
+                        indices.add(m.start());
+                    }
+                }
+            }
+        }
+
+        public Map<String, List<Integer>> getMatches() {
+            return this.matches;
+        }
     }
 }
