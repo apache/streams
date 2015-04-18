@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-runtimes</artifactId>
-        <version>0.2-incubating</version>
+        <version>0.3-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-runtime-local</artifactId>

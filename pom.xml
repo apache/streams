@@ -28,7 +28,7 @@
 
     <groupId>org.apache.streams</groupId>
     <artifactId>streams-project</artifactId>
-    <version>0.2-incubating</version>
+    <version>0.3-incubating-SNAPSHOT</version>
 
     <name>Apache Streams Project</name>
     <description>Apache Streams Project</description>
@@ -48,7 +48,7 @@
         <connection>scm:git:git@github.com:apache/incubator-streams.git</connection>
         <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/incubator-streams.git</developerConnection>
         <url>scm:git:git@github.com:apache/incubator-streams.git</url>
-      <tag>streams-project-0.2-incubating-rc3</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <developers>

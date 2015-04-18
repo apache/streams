@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.apache.streams.osgi.components</groupId>
     <artifactId>streams-osgi-components</artifactId>
-    <version>0.2-incubating</version>
+    <version>0.3-incubating-SNAPSHOT</version>
   </parent>
 
   <artifactId>activity-registration</artifactId>

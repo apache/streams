@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-contrib</artifactId>
-        <version>0.2-incubating</version>
+        <version>0.3-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-persist-cassandra</artifactId>

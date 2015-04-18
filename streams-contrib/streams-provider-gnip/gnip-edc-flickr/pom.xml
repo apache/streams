@@ -21,7 +21,7 @@
     <parent>
         <artifactId>streams-provider-gnip</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.2-incubating</version>
+        <version>0.3-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>gnip-edc-flickr</artifactId>
