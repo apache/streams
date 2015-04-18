@@ -1,8 +1,0 @@
-{
-    "mongo": {
-        "host": "localhost",
-        "port": 27017,
-        "db": "local",
-        "collection": "startup_log"
-    }
-}
