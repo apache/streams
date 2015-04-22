@@ -26,6 +26,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,7 +39,10 @@ public class RegexUtils {
 
     private static final Map<String, Pattern> patternCache = Maps.newConcurrentMap();
     private final static Logger LOGGER = LoggerFactory.getLogger(RegexUtils.class);
-    private final static long REGEX_MATCH_THREAD_KEEP_ALIVE_DEFAULT_TIMEOUT = 10000L; //10 seconds
+    final static long REGEX_MATCH_THREAD_KEEP_ALIVE_DEFAULT_TIMEOUT = 1000L; //1 second
+    private static final int MAX_THREADS = 64; //Must be multiple of two
+
+    private static ForkJoinPool threadPool = new ForkJoinPool(MAX_THREADS);
 
     private RegexUtils() {}
 
@@ -68,17 +74,11 @@ public class RegexUtils {
             //it if it ends up taking too long
             RegexRunnable regexRunnable = new RegexRunnable(pattern, content, capture);
 
-            Thread thread = new Thread(regexRunnable);
-            thread.start();
-
-            thread.join(REGEX_MATCH_THREAD_KEEP_ALIVE_DEFAULT_TIMEOUT);
-
-            if(thread.isAlive()) {
-                thread.interrupt();
-            }
+            threadPool.submit(regexRunnable);
+            threadPool.awaitTermination(REGEX_MATCH_THREAD_KEEP_ALIVE_DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
 
             return regexRunnable.getMatches();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             LOGGER.error("Throwable process {}", e);
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -96,7 +96,7 @@ public class RegexUtils {
         return p;
     }
 
-    static class RegexRunnable implements Runnable {
+    static class RegexRunnable extends RecursiveAction {
         private String pattern;
         private InterruptableCharSequence content;
         private int capture;
@@ -110,7 +110,7 @@ public class RegexUtils {
         }
 
         @Override
-        public void run() {
+        public void compute() {
             if(content != null) {
                 Matcher m = getPattern(pattern).matcher(content);
                 while (m.find()) {
