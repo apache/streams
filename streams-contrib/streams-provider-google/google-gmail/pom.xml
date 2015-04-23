@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-provider-google</artifactId>
-        <version>0.2.17-W2O-SNAPSHOT</version>
+        <version>0.2.17-W2O</version>
     </parent>
 
     <artifactId>google-gmail</artifactId>

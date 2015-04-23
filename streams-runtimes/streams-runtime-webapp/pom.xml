@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.streams</groupId>
     <artifactId>streams-runtimes</artifactId>
-    <version>0.2.17-W2O-SNAPSHOT</version>
+    <version>0.2.17-W2O</version>
   </parent>
 
   <artifactId>streams-runtime-webapp</artifactId>
@@ -159,25 +159,25 @@
         <dependency>
             <groupId>org.apache.streams.osgi.components</groupId>
             <artifactId>activity-registration</artifactId>
-            <version>0.2.17-W2O-SNAPSHOT</version>
+            <version>0.2.17-W2O</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.streams.osgi.components</groupId>
             <artifactId>activity-consumer</artifactId>
-            <version>0.2.17-W2O-SNAPSHOT</version>
+            <version>0.2.17-W2O</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.streams.osgi.components</groupId>
             <artifactId>activity-subscriber</artifactId>
-            <version>0.2.17-W2O-SNAPSHOT</version>
+            <version>0.2.17-W2O</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-persist-cassandra</artifactId>
-            <version>0.2.17-W2O-SNAPSHOT</version>
+            <version>0.2.17-W2O</version>
         </dependency>
 
         <dependency>

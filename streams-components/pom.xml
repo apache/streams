@@ -19,7 +19,7 @@
     <parent>
         <artifactId>streams-project</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.2.17-W2O-SNAPSHOT</version>
+        <version>0.2.17-W2O</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -42,17 +42,17 @@
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-config</artifactId>
-                <version>0.2.17-W2O-SNAPSHOT</version>
+                <version>0.2.17-W2O</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-core</artifactId>
-                <version>0.2.17-W2O-SNAPSHOT</version>
+                <version>0.2.17-W2O</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-pojo</artifactId>
-                <version>0.2.17-W2O-SNAPSHOT</version>
+                <version>0.2.17-W2O</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

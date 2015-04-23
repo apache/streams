@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-project</artifactId>
-        <version>0.2.17-W2O-SNAPSHOT</version>
+        <version>0.2.17-W2O</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-pojo</artifactId>
-            <version>0.2.17-W2O-SNAPSHOT</version>
+            <version>0.2.17-W2O</version>
         </dependency>
 
         <dependency>

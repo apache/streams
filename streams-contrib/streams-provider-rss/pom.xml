@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-contrib</artifactId>
-        <version>0.2.17-W2O-SNAPSHOT</version>
+        <version>0.2.17-W2O</version>
     </parent>
 
     <artifactId>streams-provider-rss</artifactId>
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-persist-console</artifactId>
-            <version>0.2.17-W2O-SNAPSHOT</version>
+            <version>0.2.17-W2O</version>
             <scope>test</scope>
         </dependency>
         <dependency>

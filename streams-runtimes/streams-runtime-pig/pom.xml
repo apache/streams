@@ -20,7 +20,7 @@
     <parent>
         <artifactId>streams-runtimes</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.2.17-W2O-SNAPSHOT</version>
+        <version>0.2.17-W2O</version>
     </parent>
     <artifactId>streams-runtime-pig</artifactId>
     <name>${project.artifactId}</name>
@@ -35,23 +35,23 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-config</artifactId>
-            <version>0.2.17-W2O-SNAPSHOT</version>
+            <version>0.2.17-W2O</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-core</artifactId>
-            <version>0.2.17-W2O-SNAPSHOT</version>
+            <version>0.2.17-W2O</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-provider-twitter</artifactId>
-            <version>0.2.17-W2O-SNAPSHOT</version>
+            <version>0.2.17-W2O</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-util</artifactId>
-            <version>0.2.17-W2O-SNAPSHOT</version>
+            <version>0.2.17-W2O</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

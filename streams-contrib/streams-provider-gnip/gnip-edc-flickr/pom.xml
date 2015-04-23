@@ -20,7 +20,7 @@
     <parent>
         <artifactId>streams-provider-gnip</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.2.17-W2O-SNAPSHOT</version>
+        <version>0.2.17-W2O</version>
     </parent>
 
     <artifactId>gnip-edc-flickr</artifactId>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>gnip-powertrack</artifactId>
-            <version>0.2.17-W2O-SNAPSHOT</version>
+            <version>0.2.17-W2O</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml</groupId>

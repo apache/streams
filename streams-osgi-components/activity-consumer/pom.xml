@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.streams.osgi.components</groupId>
     <artifactId>streams-osgi-components</artifactId>
-    <version>0.2.17-W2O-SNAPSHOT</version>
+    <version>0.2.17-W2O</version>
   </parent>
 
   <artifactId>activity-consumer</artifactId>
@@ -139,7 +139,7 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-persist-cassandra</artifactId>
-            <version>0.2.17-W2O-SNAPSHOT</version>
+            <version>0.2.17-W2O</version>
         </dependency>
 
     </dependencies>

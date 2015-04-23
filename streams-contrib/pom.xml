@@ -20,7 +20,7 @@
     <parent>
         <artifactId>streams-project</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.2.17-W2O-SNAPSHOT</version>
+        <version>0.2.17-W2O</version>
     </parent>
 
     <artifactId>streams-contrib</artifactId>
@@ -67,34 +67,34 @@
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-config</artifactId>
-                <version>0.2.17-W2O-SNAPSHOT</version>
+                <version>0.2.17-W2O</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-core</artifactId>
-                <version>0.2.17-W2O-SNAPSHOT</version>
+                <version>0.2.17-W2O</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-pojo</artifactId>
-                <version>0.2.17-W2O-SNAPSHOT</version>
+                <version>0.2.17-W2O</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-pojo-extensions</artifactId>
-                <version>0.2.17-W2O-SNAPSHOT</version>
+                <version>0.2.17-W2O</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-runtime-threaded</artifactId>
-                <version>0.2.17-W2O-SNAPSHOT</version>
+                <version>0.2.17-W2O</version>
                 <scope>test</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.streams</groupId>
                 <artifactId>streams-runtime-threaded</artifactId>
-                <version>0.2.17-W2O-SNAPSHOT</version>
+                <version>0.2.17-W2O</version>
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
