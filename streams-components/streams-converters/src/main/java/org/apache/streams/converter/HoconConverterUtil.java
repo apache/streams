@@ -42,21 +42,32 @@ public class HoconConverterUtil {
 
     private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    public static Object convert(Object object, Class outClass, String hoconResource) {
-        Config hocon = ConfigFactory.parseResources(hoconResource);
-        return convert(object, outClass, hocon);
+    private static final HoconConverterUtil INSTANCE = new HoconConverterUtil();
+
+    public static HoconConverterUtil getInstance(){
+        return INSTANCE;
     }
 
-    public static Object convert(Object object, Class outClass, String hoconResource, String outPath) {
+    public Object convert(Object object, Class outClass, String hoconResource) {
+        Config hocon = ConfigFactory.parseResources(hoconResource);
+        return convert(object, outClass, hocon, null);
+    }
+
+    public Object convert(Object object, Class outClass, String hoconResource, String outPath) {
         Config hocon = ConfigFactory.parseResources(hoconResource);
         return convert(object, outClass, hocon, outPath);
     }
 
-    public static Object convert(Object object, Class outClass, Config hocon) {
-        return convert(object, outClass, hocon, null);
+    public Object convert(Object object, Class outClass, String hoconResource, String inPath, String outPath) {
+        Config hocon = ConfigFactory.parseResources(hoconResource);
+        return convert(object, outClass, hocon, inPath, outPath);
     }
 
-    public static Object convert(Object object, Class outClass, Config hocon, String outPath) {
+    public Object convert(Object object, Class outClass, Config hocon, String outPath) {
+        return convert(object, outClass, hocon, null, outPath);
+    }
+
+    public Object convert(Object object, Class outClass, Config hocon, String inPath, String outPath) {
         String json = null;
         Object outDoc = null;
         if( object instanceof String ) {
@@ -70,7 +81,23 @@ public class HoconConverterUtil {
             }
         }
 
-        Config base = ConfigFactory.parseString(json);
+        Config base;
+        if( inPath == null)
+            base = ConfigFactory.parseString(json);
+        else {
+            ObjectNode node;
+            try {
+                node = mapper.readValue(json, ObjectNode.class);
+                ObjectNode root = mapper.createObjectNode();
+                root.set(inPath, node);
+                json = mapper.writeValueAsString(root);
+                base = ConfigFactory.parseString(json);
+            } catch (Exception e) {
+                LOGGER.warn("Failed to process input:", object);
+                return outDoc;
+            }
+        }
+
         Config converted = hocon.withFallback(base);
 
         String outJson = null;

@@ -49,7 +49,7 @@ public class HoconConverterTest {
 
         final String TEST_JSON_1 = "{\"race\":\"klingon\",\"gender\":\"male\"}";
 
-        String result1 = (String) HoconConverterUtil.convert(TEST_JSON_1, String.class, "test1.conf");
+        String result1 = (String) HoconConverterUtil.getInstance().convert(TEST_JSON_1, String.class, "test1.conf");
 
         assertNotNull(result1);
         assertTrue(result1.contains("race"));
@@ -65,7 +65,7 @@ public class HoconConverterTest {
 
         final String TEST_JSON_2 = "{\"race\":\"klingon\",\"gender\":\"male\",\"age\":18}";
 
-        ObjectNode result2 = (ObjectNode) HoconConverterUtil.convert(TEST_JSON_2, ObjectNode.class, "test2.conf", "demographics");
+        ObjectNode result2 = (ObjectNode) HoconConverterUtil.getInstance().convert(TEST_JSON_2, ObjectNode.class, "test2.conf", "demographics");
 
         assertNotNull(result2);
         assertTrue(result2.get("race") != null);
@@ -81,13 +81,31 @@ public class HoconConverterTest {
 
         final String TEST_JSON_3 = "{\"id\":\"123\",\"text\":\"buncha stuff\",\"user\":{\"name\":\"guy\"}}";
 
-        Activity result3 = (Activity) HoconConverterUtil.convert(TEST_JSON_3, Activity.class, "test3a.conf", "activity");
+        Activity result3 = (Activity) HoconConverterUtil.getInstance().convert(TEST_JSON_3, Activity.class, "test3a.conf", null, "activity");
 
         assertNotNull(result3);
         assertTrue(result3.getProvider() != null);
         assertTrue(result3.getId().equals("id:123"));
         assertTrue(result3.getContent().endsWith("stuff"));
         assertTrue(result3.getActor().getDisplayName().equals("Jorge"));
+
+    }
+
+    /**
+     * Tests derived object import conversion from String to Activity
+     */
+    @Test
+    public void testHoconConverter4() {
+
+        final String TEST_JSON_4 = "{\"id\":\"123\",\"name\":\"nahme\",\"screenName\":\"screeny\",\"summary\":\"sumar\"}";
+
+        String result4 = (String) HoconConverterUtil.getInstance().convert(TEST_JSON_4, String.class, "test4.conf", "actor", "profile");
+
+        assertNotNull(result4);
+        assertTrue(result4.contains("123"));
+        assertTrue(result4.contains("\"nahme\""));
+        assertTrue(result4.contains("\"screeny\""));
+        assertTrue(result4.contains("\"sumar\""));
 
     }
 

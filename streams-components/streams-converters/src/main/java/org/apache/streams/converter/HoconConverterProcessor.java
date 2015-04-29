@@ -41,11 +41,13 @@ public class HoconConverterProcessor implements StreamsProcessor {
 
     protected Class outClass;
     protected String hocon;
+    protected String inPath;
     protected String outPath;
 
-    public HoconConverterProcessor(Class outClass, String hocon, String outPath) {
+    public HoconConverterProcessor(Class outClass, String hocon, String inPath, String outPath) {
         this.outClass = outClass;
         this.hocon = hocon;
+        this.inPath = inPath;
         this.outPath = outPath;
     }
 
@@ -55,7 +57,7 @@ public class HoconConverterProcessor implements StreamsProcessor {
         List<StreamsDatum> result = Lists.newLinkedList();
         Object document = entry.getDocument();
 
-        Object outDoc = HoconConverterUtil.convert(document, outClass, hocon, outPath);
+        Object outDoc = HoconConverterUtil.getInstance().convert(document, outClass, hocon, inPath, outPath);
 
         StreamsDatum datum = DatumUtils.cloneDatum(entry);
         datum.setDocument(outDoc);

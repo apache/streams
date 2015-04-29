@@ -194,7 +194,7 @@ public class ActivityConverterUtil {
             if (detectedClass.isInstance(document))
                 typedDoc = document;
             else
-                typedDoc = TypeConverterUtil.convert(document, detectedClass);
+                typedDoc = TypeConverterUtil.getInstance().convert(document, detectedClass);
 
             if( typedDoc != null )
                 convertedDocuments.put(detectedClass, typedDoc);

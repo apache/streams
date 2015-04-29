@@ -32,13 +32,19 @@ import java.io.IOException;
  */
 public class TypeConverterUtil {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TypeConverterUtil.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(ActivityConverterUtil.class);
 
-    public static Object convert(Object object, Class outClass) {
-        return TypeConverterUtil.convert(object, outClass, StreamsJacksonMapper.getInstance());
+    private static final TypeConverterUtil INSTANCE = new TypeConverterUtil();
+
+    public static TypeConverterUtil getInstance(){
+        return INSTANCE;
     }
 
-    public static Object convert(Object object, Class outClass, ObjectMapper mapper) {
+    public Object convert(Object object, Class outClass) {
+        return TypeConverterUtil.getInstance().convert(object, outClass, StreamsJacksonMapper.getInstance());
+    }
+
+    public Object convert(Object object, Class outClass, ObjectMapper mapper) {
         ObjectNode node = null;
         Object outDoc = null;
         if( object instanceof String ) {

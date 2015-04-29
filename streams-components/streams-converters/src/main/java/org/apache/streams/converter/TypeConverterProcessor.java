@@ -63,7 +63,7 @@ public class TypeConverterProcessor implements StreamsProcessor, Serializable {
         List<StreamsDatum> result = Lists.newLinkedList();
         Object inDoc = entry.getDocument();
 
-        Object outDoc = TypeConverterUtil.convert(inDoc, outClass, mapper);
+        Object outDoc = TypeConverterUtil.getInstance().convert(inDoc, outClass, mapper);
 
         if( outDoc != null ) {
             entry.setDocument(outDoc);

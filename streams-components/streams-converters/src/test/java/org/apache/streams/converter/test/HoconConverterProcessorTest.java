@@ -50,7 +50,7 @@ public class HoconConverterProcessorTest {
 
         final String TEST_JSON_1 = "{\"race\":\"klingon\",\"gender\":\"male\"}";
 
-        StreamsProcessor processor = new HoconConverterProcessor(String.class, "test1.conf", null);
+        StreamsProcessor processor = new HoconConverterProcessor(String.class, "test1.conf", null, null);
         processor.prepare(null);
         StreamsDatum datum = new StreamsDatum(TEST_JSON_1, "1");
         List<StreamsDatum> result = processor.process(datum);
@@ -73,7 +73,7 @@ public class HoconConverterProcessorTest {
         final String TEST_ID_2 = "2";
         final String TEST_JSON_2 = "{\"race\":\"klingon\",\"gender\":\"male\",\"age\":18}";
 
-        StreamsProcessor processor = new HoconConverterProcessor(ObjectNode.class, "test2.conf", "demographics");
+        StreamsProcessor processor = new HoconConverterProcessor(ObjectNode.class, "test2.conf", null, "demographics");
         processor.prepare(null);
         StreamsDatum datum = new StreamsDatum(TEST_JSON_2, TEST_ID_2);
         List<StreamsDatum> result2 = processor.process(datum);
@@ -97,7 +97,7 @@ public class HoconConverterProcessorTest {
 
         final String TEST_JSON_3 = "{\"id\":\"123\",\"text\":\"buncha stuff\",\"user\":{\"name\":\"guy\"}}";
 
-        StreamsProcessor processor = new HoconConverterProcessor(Activity.class, "test3a.conf", "activity");
+        StreamsProcessor processor = new HoconConverterProcessor(Activity.class, "test3a.conf", null, "activity");
         processor.prepare(null);
         StreamsDatum datum = new StreamsDatum(TEST_JSON_3, "3");
         List<StreamsDatum> result = processor.process(datum);
