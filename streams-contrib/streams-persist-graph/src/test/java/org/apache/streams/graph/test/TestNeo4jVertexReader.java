@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.io.IOUtils;
-import org.apache.streams.graph.GraphConfiguration;
+import org.apache.streams.graph.GraphHttpConfiguration;
 import org.apache.streams.graph.GraphReaderConfiguration;
 import org.apache.streams.graph.GraphVertexReader;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -57,7 +57,7 @@ public class TestNeo4jVertexReader {
     public void prepareTest() throws IOException {
 
         testConfiguration = new GraphReaderConfiguration();
-        testConfiguration.setType(GraphConfiguration.Type.NEO_4_J);
+        testConfiguration.setType(GraphHttpConfiguration.Type.NEO_4_J);
 
         graphPersistReader = new GraphVertexReader(testConfiguration);
         InputStream testActivityFileStream = TestNeo4jVertexReader.class.getClassLoader()

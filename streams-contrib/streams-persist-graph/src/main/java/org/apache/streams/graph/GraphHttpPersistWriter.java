@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -31,13 +33,15 @@ import org.apache.streams.components.http.persist.SimpleHTTPPostPersistWriter;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.graph.neo4j.CypherGraphHelper;
+import org.apache.streams.graph.neo4j.CypherQueryGraphHelper;
+import org.apache.streams.graph.neo4j.Neo4jHttpGraphHelper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -45,31 +49,32 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Adds activityobjects as vertices and activities as edges to a graph database with
  * an http rest endpoint (such as neo4j)
  */
-public class GraphPersistWriter extends SimpleHTTPPostPersistWriter {
+public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
 
-    public static final String STREAMS_ID = GraphPersistWriter.class.getCanonicalName();
+    public static final String STREAMS_ID = GraphHttpPersistWriter.class.getCanonicalName();
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(GraphPersistWriter.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(GraphHttpPersistWriter.class);
     private final static long MAX_WRITE_LATENCY = 1000;
 
-    protected GraphWriterConfiguration configuration;
+    protected GraphHttpConfiguration configuration;
 
-    protected GraphHelper graphHelper;
+    protected QueryGraphHelper queryGraphHelper;
+    protected HttpGraphHelper httpGraphHelper;
 
     private static ObjectMapper mapper;
 
     protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public GraphPersistWriter() {
-        this(new ComponentConfigurator<GraphWriterConfiguration>(GraphWriterConfiguration.class).detectConfiguration(StreamsConfigurator.config.getConfig("graph")));
+    public GraphHttpPersistWriter() {
+        this(new ComponentConfigurator<GraphHttpConfiguration>(GraphHttpConfiguration.class).detectConfiguration(StreamsConfigurator.config.getConfig("graph")));
     }
 
-    public GraphPersistWriter(GraphWriterConfiguration configuration) {
+    public GraphHttpPersistWriter(GraphHttpConfiguration configuration) {
         super(StreamsJacksonMapper.getInstance().convertValue(configuration, HttpPersistWriterConfiguration.class));
-        if( configuration.getType().equals(GraphConfiguration.Type.NEO_4_J)) {
+        if( configuration.getType().equals(GraphHttpConfiguration.Type.NEO_4_J)) {
             super.configuration.setResourcePath("/db/" + configuration.getGraph() + "/transaction/commit");
         }
-        else if( configuration.getType().equals(GraphConfiguration.Type.REXSTER)) {
+        else if( configuration.getType().equals(GraphHttpConfiguration.Type.REXSTER)) {
             super.configuration.setResourcePath("/graphs/" + configuration.getGraph());
         }
         this.configuration = configuration;
@@ -100,52 +105,34 @@ public class GraphPersistWriter extends SimpleHTTPPostPersistWriter {
         activity.getActor().setObjectType("page");
 
         // always add vertices first
-        // what types of verbs are relevant for adding vertices?
-        if( configuration.getVertices().getVerbs().contains(activity.getVerb())) {
 
-            // what objects and objectTypes are relevant for adding vertices?
-            if( configuration.getVertices().getObjects().contains("actor") &&
-                configuration.getVertices().getObjectTypes().contains(activity.getActor().getObjectType())) {
-                statements.add(graphHelper.mergeVertexRequest(activity.getActor()));
-            }
-            if( configuration.getVertices().getObjects().contains("object") &&
-                configuration.getVertices().getObjectTypes().contains(activity.getObject().getObjectType())) {
-                statements.add(graphHelper.mergeVertexRequest(activity.getObject()));
-            }
-            if( configuration.getVertices().getObjects().contains("provider") &&
-                configuration.getVertices().getObjectTypes().contains(activity.getProvider().getObjectType())) {
-                statements.add(graphHelper.mergeVertexRequest(activity.getProvider()));
-            }
-            if( configuration.getVertices().getObjects().contains("target") &&
-                configuration.getVertices().getObjectTypes().contains(activity.getTarget().getObjectType())) {
-                statements.add(graphHelper.mergeVertexRequest(activity.getProvider()));
-            }
-
+        List<String> labels = Lists.newArrayList();
+        if( activity.getProvider() != null &&
+                !Strings.isNullOrEmpty(activity.getProvider().getId()) ) {
+            labels.add(activity.getProvider().getId());
         }
 
-        // what types of verbs are relevant for adding edges?
-        if( configuration.getEdges().getVerbs().contains(activity.getVerb())) {
-
-            // what objects and objectTypes are relevant for adding edges?
-            if( configuration.getEdges().getObjects().contains("actor") &&
-                configuration.getEdges().getObjects().contains("object") &&
-                configuration.getEdges().getObjectTypes().contains(activity.getActor().getObjectType()) &&
-                configuration.getEdges().getObjectTypes().contains(activity.getObject().getObjectType())) {
-                statements.add(graphHelper.createEdgeRequest(activity, activity.getActor(), activity.getObject()));
-            }
-            if( configuration.getEdges().getObjects().contains("actor") &&
-                    configuration.getEdges().getObjects().contains("target") &&
-                    configuration.getEdges().getObjectTypes().contains(activity.getActor().getObjectType()) &&
-                    configuration.getEdges().getObjectTypes().contains(activity.getTarget().getObjectType())) {
-                statements.add(graphHelper.createEdgeRequest(activity, activity.getActor(), activity.getTarget()));
-            }
-            if( configuration.getEdges().getObjects().contains("provider") &&
-                configuration.getEdges().getObjects().contains("actor") &&
-                configuration.getEdges().getObjectTypes().contains(activity.getProvider().getObjectType()) &&
-                configuration.getEdges().getObjectTypes().contains(activity.getActor().getObjectType())) {
-                statements.add(graphHelper.createEdgeRequest(activity, activity.getProvider(), activity.getActor()));
-            }
+        if( activity.getActor() != null &&
+                !Strings.isNullOrEmpty(activity.getActor().getId()) ) {
+            if( activity.getActor().getObjectType() != null )
+                labels.add(activity.getActor().getObjectType());
+            statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(activity.getActor())));
         }
+
+        if( activity.getObject() != null &&
+                !Strings.isNullOrEmpty(activity.getObject().getId()) ) {
+            if( activity.getObject().getObjectType() != null )
+                labels.add(activity.getObject().getObjectType());
+            statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(activity.getObject())));
+        }
+
+        // then add edge
+
+        if( !Strings.isNullOrEmpty(activity.getVerb()) ) {
+            statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.createEdgeRequest(activity)));
+        }
+
+
 
         request.put("statements", statements);
         return request;
@@ -199,11 +186,13 @@ public class GraphPersistWriter extends SimpleHTTPPostPersistWriter {
         super.prepare(configurationObject);
         mapper = StreamsJacksonMapper.getInstance();
 
-        if( configuration.getType().equals(GraphConfiguration.Type.NEO_4_J)) {
-            graphHelper = new CypherGraphHelper();
+        if( configuration.getType().equals(GraphHttpConfiguration.Type.NEO_4_J)) {
+            queryGraphHelper = new CypherQueryGraphHelper();
+            httpGraphHelper = new Neo4jHttpGraphHelper();
         }
 
-        Preconditions.checkNotNull(graphHelper);
+        Preconditions.checkNotNull(queryGraphHelper);
+        Preconditions.checkNotNull(httpGraphHelper);
     }
 
     @Override
