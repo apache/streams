@@ -18,37 +18,23 @@
 
 package org.apache.streams.gnip.facebook.test;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.gnip.api.Entry;
-import org.joda.time.DateTime;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * Created with IntelliJ IDEA.
- * User: rebanks
- * Date: 8/21/13
- * Time: 11:53 AM
- * To change this template use File | Settings | File Templates.
+ * Tests serialization of FacebookEDC inputs
  */
+@Ignore("ignore until test resources are available.")
 public class FacebookEDCSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FacebookEDCSerDeTest.class);

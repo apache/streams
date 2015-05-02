@@ -33,6 +33,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 
+/**
+ * Tests serialization of Facebook Page inputs
+ */
+@Ignore("ignore until test resources are available.")
 public class FacebookPageSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FacebookPostSerDeTest.class);

@@ -22,6 +22,7 @@ package org.apache.streams.elasticsearch;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -45,6 +46,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -148,9 +150,10 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
         String type = ElasticsearchMetadataUtil.getType(metadata, config);
         String id = ElasticsearchMetadataUtil.getId(streamsDatum);
+        String parent = ElasticsearchMetadataUtil.getParent(streamsDatum);
 
         try {
-            add(index, type, id,
+            add(index, type, id, parent,
                     streamsDatum.getTimestamp() == null ? Long.toString(DateTime.now().getMillis()) : Long.toString(streamsDatum.getTimestamp().getMillis()),
                     convertAndAppendMetadata(streamsDatum));
         } catch (Throwable e) {
@@ -172,20 +175,33 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     }
 
     public void cleanUp() {
+
         try {
+
+            LOGGER.debug("cleanUp started");
 
             // before they close, check to ensure that
             flushInternal();
 
-            waitToCatchUp(0, 5 * 60 * 1000);
-            refreshIndexes();
+            LOGGER.debug("flushInternal completed");
 
-            LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
-            timer.cancel();
+            waitToCatchUp(0, 5 * 60 * 1000);
+
+            LOGGER.debug("waitToCatchUp completed");
 
         } catch (Throwable e) {
             // this line of code should be logically unreachable.
             LOGGER.warn("This is unexpected: {}", e);
+        } finally {
+
+            refreshIndexes();
+
+            LOGGER.debug("refreshIndexes completed");
+
+            LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
+            timer.cancel();
+
+            LOGGER.debug("cleanUp completed");
         }
     }
 
@@ -301,6 +317,10 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     }
 
     public void add(String indexName, String type, String id, String ts, String json) {
+        add(indexName, type, id, null, ts, json);
+    }
+
+    public void add(String indexName, String type, String id, String parent, String ts, String json) {
 
         // make sure that these are not null
         Preconditions.checkNotNull(indexName);
@@ -317,6 +337,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         if(ts != null)
             indexRequestBuilder.setTimestamp(ts);
+
+        if(parent != null)
+            indexRequestBuilder.setParent(parent);
 
         add(indexRequestBuilder.request());
     }

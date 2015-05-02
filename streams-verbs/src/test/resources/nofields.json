@@ -1,0 +1,15 @@
+{
+    "id": "http://incubator.streams.apache.org/verbs/test/post",
+    "value": "nofields",
+    "objects": [
+        {
+            "actor": "*",
+            "object": "*",
+            "provider": "*",
+            "target": "*",
+            "templates": {
+                "*": "something did something to something"
+            }
+        }
+    ]
+}

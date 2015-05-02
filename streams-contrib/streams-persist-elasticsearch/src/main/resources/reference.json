@@ -1,9 +1,0 @@
-{
-    "elasticsearch": {
-        "hosts": [
-            "localhost"
-        ],
-        "port": 9300,
-        "clusterName": "elasticsearch"
-    }
-}

@@ -1,0 +1,43 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "javaType" : "org.apache.streams.graph.neo4j.CypherQueryResponse",
+    "properties": {
+        "columns": {
+            "type": "array",
+            "id": "http://jsonschema.net/columns",
+            "required": false,
+            "items": {
+                "type": "string",
+                "id": "http://jsonschema.net/columns/0",
+                "required": false
+            }
+        },
+        "data": {
+            "type": "array",
+            "required": false,
+            "items": {
+                "type": "array",
+                "required": false,
+                "items": {
+                    "type": "array",
+                    "required": false,
+                    "items": {
+                        "type": "object",
+                        "javaType" : "org.apache.streams.graph.neo4j.ItemMetadata",
+                        "properties": {
+                            "data": {
+                                "type": "object",
+                                "javaType" : "org.apache.streams.graph.neo4j.ItemData"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

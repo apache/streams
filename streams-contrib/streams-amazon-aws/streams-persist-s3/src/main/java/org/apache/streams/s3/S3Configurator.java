@@ -37,8 +37,7 @@ public class S3Configurator {
         try {
             s3Configuration = mapper.readValue(s3.root().render(ConfigRenderOptions.concise()), S3Configuration.class);
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.warn("Could not parse S3Configuration");
+            LOGGER.warn("Could not parse S3Configuration", e);
         }
 
         return s3Configuration;
@@ -51,8 +50,7 @@ public class S3Configurator {
         try {
             s3Configuration = mapper.readValue(s3.root().render(ConfigRenderOptions.concise()), S3ReaderConfiguration.class);
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.warn("Could not parse S3Configuration");
+            LOGGER.warn("Could not parse S3Configuration", e);
         }
 
         return s3Configuration;
@@ -64,13 +62,12 @@ public class S3Configurator {
 
         try {
             s3Configuration = mapper.readValue(s3.root().render(ConfigRenderOptions.concise()), S3WriterConfiguration.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.warn("Could not parse S3Configuration");
-        }
 
-        if(!s3Configuration.getWriterPath().endsWith("/")) {
-            s3Configuration.setWriterPath(s3Configuration.getWriterPath() + "/");
+            if(!s3Configuration.getWriterPath().endsWith("/")) {
+                s3Configuration.setWriterPath(s3Configuration.getWriterPath() + "/");
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Could not parse S3Configuration", e);
         }
 
         return s3Configuration;

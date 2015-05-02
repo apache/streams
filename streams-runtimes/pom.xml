@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-project</artifactId>
-        <version>0.2-incubating-SNAPSHOT</version>
+        <version>0.3-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-runtimes</artifactId>
@@ -34,6 +34,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>streams-runtime-dropwizard</module>
         <module>streams-runtime-local</module>
         <module>streams-runtime-pig</module>
         <module>streams-runtime-storm</module>

@@ -18,16 +18,23 @@
 
 package org.apache.streams.hdfs;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class WebHdfsPersistReaderTask implements Runnable {
 
@@ -61,13 +68,14 @@ public class WebHdfsPersistReaderTask implements Runnable {
                         line = bufferedReader.readLine();
                         if( !Strings.isNullOrEmpty(line) ) {
                             reader.countersCurrent.incrementAttempt();
-                            String[] fields = line.split(Character.toString(reader.DELIMITER));
-                            // Temporarily disabling timestamp reads to make reader and writer compatible
-                            // This capability will be restore in PR for STREAMS-169
-                            //StreamsDatum entry = new StreamsDatum(fields[3], fields[0], new DateTime(Long.parseLong(fields[2])));
-                            StreamsDatum entry = new StreamsDatum(fields[3], fields[0]);
-                            write( entry );
-                            reader.countersCurrent.incrementStatus(DatumStatus.SUCCESS);
+                            StreamsDatum entry = processLine(line);
+                            if( entry != null ) {
+                                write(entry);
+                                reader.countersCurrent.incrementStatus(DatumStatus.SUCCESS);
+                            } else {
+                                LOGGER.warn("processLine failed");
+                                reader.countersCurrent.incrementStatus(DatumStatus.FAIL);
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -85,6 +93,7 @@ public class WebHdfsPersistReaderTask implements Runnable {
             }
         }
 
+        Uninterruptibles.sleepUninterruptibly(15, TimeUnit.SECONDS);
     }
 
     private void write( StreamsDatum entry ) {
@@ -98,4 +107,69 @@ public class WebHdfsPersistReaderTask implements Runnable {
         while( !success );
     }
 
+    private StreamsDatum processLine(String line) {
+
+        String[] fields = line.split(reader.hdfsConfiguration.getFieldDelimiter());
+
+        if( fields.length == 0)
+            return null;
+
+        String id = null;
+        DateTime ts = null;
+        Map<String, Object> metadata = null;
+        String json = null;
+
+        if( reader.hdfsConfiguration.getFields().contains( HdfsConstants.DOC )
+            && fields.length > reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.DOC)) {
+            json = fields[reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.DOC)];
+        }
+
+        if( reader.hdfsConfiguration.getFields().contains( HdfsConstants.ID )
+            && fields.length > reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.ID)) {
+            id = fields[reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.ID)];
+        }
+        if( reader.hdfsConfiguration.getFields().contains( HdfsConstants.TS )
+            && fields.length > reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.TS)) {
+            ts = parseTs(fields[reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.TS)]);
+        }
+        if( reader.hdfsConfiguration.getFields().contains( HdfsConstants.META )
+            && fields.length > reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.META)) {
+            metadata = parseMap(fields[reader.hdfsConfiguration.getFields().indexOf(HdfsConstants.META)]);
+        }
+
+        StreamsDatum datum = new StreamsDatum(json);
+        datum.setId(id);
+        datum.setTimestamp(ts);
+        datum.setMetadata(metadata);
+
+        return datum;
+
+    }
+
+    private DateTime parseTs(String field) {
+
+        DateTime timestamp = null;
+        try {
+            long longts = Long.parseLong(field);
+            timestamp = new DateTime(longts);
+        } catch ( Exception e ) {}
+        try {
+            timestamp = reader.mapper.readValue(field, DateTime.class);
+        } catch ( Exception e ) {}
+
+        return timestamp;
+    }
+
+    private Map<String, Object> parseMap(String field) {
+
+        Map<String, Object> metadata = null;
+
+        try {
+            JsonNode jsonNode = reader.mapper.readValue(field, JsonNode.class);
+            metadata = reader.mapper.convertValue(jsonNode, Map.class);
+        } catch (IOException e) {
+            LOGGER.warn("failed in parseMap: " + e.getMessage());
+        }
+        return metadata;
+    }
 }

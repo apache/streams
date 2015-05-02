@@ -22,7 +22,7 @@
     <parent>
         <artifactId>streams-project</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.2-incubating-SNAPSHOT</version>
+        <version>0.3-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-contrib</artifactId>
@@ -40,8 +40,10 @@
         <module>streams-persist-cassandra</module>
         <module>streams-persist-console</module>
         <module>streams-persist-elasticsearch</module>
+        <module>streams-persist-filebuffer</module>
         <module>streams-persist-hbase</module>
         <module>streams-persist-hdfs</module>
+        <module>streams-persist-graph</module>
         <module>streams-persist-kafka</module>
         <module>streams-persist-mongo</module>
         <module>streams-amazon-aws</module>

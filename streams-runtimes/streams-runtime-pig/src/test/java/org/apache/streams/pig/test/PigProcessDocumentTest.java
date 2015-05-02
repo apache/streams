@@ -21,9 +21,6 @@ package org.apache.streams.pig.test;
 
 import org.apache.pig.pigunit.PigTest;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonTweetActivitySerializer;
 import org.apache.tools.ant.util.StringUtils;
 import org.junit.Test;
 

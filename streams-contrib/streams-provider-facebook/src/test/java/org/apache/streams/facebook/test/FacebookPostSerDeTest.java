@@ -38,6 +38,10 @@ import java.io.InputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * Tests serialization of Facebook Post inputs
+ */
+@Ignore("ignore until test resources are available.")
 public class FacebookPostSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(FacebookPostSerDeTest.class);

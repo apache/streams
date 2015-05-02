@@ -20,7 +20,9 @@ package org.apache.streams.hdfs;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
 import org.apache.hadoop.fs.FileSystem;
@@ -28,6 +30,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.web.WebHdfsFileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.streams.core.*;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +43,7 @@ import java.net.URISyntaxException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 
@@ -71,7 +75,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private HdfsWriterConfiguration hdfsConfiguration;
+    protected HdfsWriterConfiguration hdfsConfiguration;
 
     public WebHdfsPersistWriter(HdfsWriterConfiguration hdfsConfiguration) {
         this.hdfsConfiguration = hdfsConfiguration;
@@ -243,9 +247,9 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
     }
 
     private String convertResultToString(StreamsDatum entry) {
-        String metadata = null;
+        String metadataJson = null;
         try {
-            metadata = mapper.writeValueAsString(entry.getMetadata());
+            metadataJson = mapper.writeValueAsString(entry.getMetadata());
         } catch (JsonProcessingException e) {
             LOGGER.warn("Error converting metadata to a string", e);
         }
@@ -259,17 +263,34 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
 
         if (Strings.isNullOrEmpty(documentJson))
             return null;
-        else
-            return new StringBuilder()
-                    .append(entry.getId())
-                    .append(DELIMITER)
-                    .append(entry.getTimestamp())
-                    .append(DELIMITER)
-                    .append(metadata)
-                    .append(DELIMITER)
-                    .append(documentJson)
-                    .append("\n")
-                    .toString();
+        else {
+            StringBuilder stringBuilder = new StringBuilder();
+            Iterator<String> fields = hdfsConfiguration.getFields().iterator();
+            List<String> fielddata = Lists.newArrayList();
+            Joiner joiner = Joiner.on(hdfsConfiguration.getFieldDelimiter()).useForNull("");
+            while( fields.hasNext() ) {
+                String field = fields.next();
+                if( field.equals(HdfsConstants.DOC) )
+                    fielddata.add(documentJson);
+                else if( field.equals(HdfsConstants.ID) )
+                    fielddata.add(entry.getId());
+                else if( field.equals(HdfsConstants.TS) )
+                    if( entry.getTimestamp() != null )
+                        fielddata.add(entry.getTimestamp().toString());
+                    else
+                        fielddata.add(DateTime.now().toString());
+                else if( field.equals(HdfsConstants.META) )
+                    fielddata.add(metadataJson);
+                else if( entry.getMetadata().containsKey(field)) {
+                    fielddata.add(entry.getMetadata().get(field).toString());
+                } else {
+                    fielddata.add(null);
+                }
+
+            }
+            joiner.appendTo(stringBuilder, fielddata);
+            return stringBuilder.append(hdfsConfiguration.getLineDelimiter()).toString();
+        }
     }
 
     @Override

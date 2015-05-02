@@ -17,17 +17,14 @@
   ~ under the License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-contrib</artifactId>
-        <version>0.2-incubating-SNAPSHOT</version>
+        <version>0.3-incubating-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>streams-provider-twitter</artifactId>
-    <name>${project.artifactId}</name>
-
-    <description>Twitter Provider</description>
 
     <dependencies>
         <dependency>
@@ -68,9 +65,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-processor-jackson</artifactId>
+            <artifactId>streams-converters</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
@@ -99,11 +95,15 @@
             <artifactId>hbc-core</artifactId>
             <version>2.1.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
         <dependency>
             <groupId>org.twitter4j</groupId>
             <artifactId>twitter4j-core</artifactId>
-            <version>4.0.1</version>
+            <version>4.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -157,9 +157,11 @@
                         <sourcePath>src/main/jsonschema/com/twitter/TwitterUserInformationConfiguration.json</sourcePath>
                         <sourcePath>src/main/jsonschema/com/twitter/Delete.json</sourcePath>
                         <sourcePath>src/main/jsonschema/com/twitter/UserstreamEvent.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/com/twitter/Follow.json</sourcePath>
                         <sourcePath>src/main/jsonschema/com/twitter/FriendList.json</sourcePath>
                         <sourcePath>src/main/jsonschema/com/twitter/Retweet.json</sourcePath>
                         <sourcePath>src/main/jsonschema/com/twitter/tweet.json</sourcePath>
+                        <sourcePath>src/main/jsonschema/com/twitter/User.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.twitter.pojo</targetPackage>

@@ -27,7 +27,11 @@ import com.google.common.collect.Lists;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.data.util.RFC3339Utils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.*;
+import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
+import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.pojo.json.Author;
+import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
@@ -219,7 +223,7 @@ public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNod
      * @return
      */
     private Activity addRomeExtension(Activity activity, ObjectNode entry) {
-        ObjectMapper mapper = new StreamsJacksonMapper();
+        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
         ObjectNode activityRoot = mapper.convertValue(activity, ObjectNode.class);
         ObjectNode extensions = JsonNodeFactory.instance.objectNode();
 

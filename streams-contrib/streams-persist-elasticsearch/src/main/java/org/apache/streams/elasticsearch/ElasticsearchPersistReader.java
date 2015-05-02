@@ -202,6 +202,9 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
                         DateTime timestamp = new DateTime(((Long) hit.field("_timestamp").getValue()).longValue());
                         item.setTimestamp(timestamp);
                     }
+                    if( hit.fields().containsKey("_parent")) {
+                        item.getMetadata().put("parent", hit.fields().get("_parent").value());
+                    }
                     reader.write(item);
                 } catch (IOException e) {
                     LOGGER.warn("Unable to process json source: ", hit.getSourceAsString());

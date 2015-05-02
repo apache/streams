@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
+import org.apache.streams.twitter.converter.StreamsTwitterMapper;
 import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

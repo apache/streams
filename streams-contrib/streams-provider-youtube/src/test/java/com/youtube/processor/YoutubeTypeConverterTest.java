@@ -45,7 +45,7 @@ public class YoutubeTypeConverterTest {
 
     @Before
     public void setup() {
-        objectMapper = new StreamsJacksonMapper();
+        objectMapper = StreamsJacksonMapper.getInstance();
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addDeserializer(Video.class, new YoutubeVideoDeserializer());
         objectMapper.registerModule(simpleModule);

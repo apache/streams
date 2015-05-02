@@ -1,0 +1,12 @@
+{
+    "id": "http://incubator.streams.apache.org/verbs/test/targetrequired",
+    "value": "follow",
+    "objects": [
+        {
+            "actorRequired": "true",
+            "actor": "page",
+            "object": "page",
+            "objectRequired": "true"
+        }
+    ]
+}

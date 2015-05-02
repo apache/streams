@@ -1,0 +1,99 @@
+{
+    "type" : "object",
+    "$license": [
+      "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "title" : "activity",
+    "javaType": "org.apache.streams.verbs.VerbDefinition",
+    "javaInterfaces": ["java.io.Serializable"],
+    "description" : "A verb definition declares what objectTypes should accompany a specific verb in an activity",
+    "additionalProperties": false,
+    "properties": {
+        "objectType" : {
+            "title" : "objectType",
+            "type" : "string",
+            "required" : true,
+            "default" : "verb",
+            "description" :"verb"
+        },
+        "id" :{
+            "type" : "string",
+            "description" : "The unique identifier for the verb object",
+            "required" : true
+        },
+        "value" : {
+            "title" : "value",
+            "type" : "string",
+            "required": true,
+            "description" :"The specific String that is to be used for the 'verb' property within an Activity object."
+        },
+        "displayName" : {
+            "title" : "displayName",
+            "type" : "string",
+            "description" :"A natural-language, human-readable and plain-text display name for the verb."
+        },
+        "synonyms" : {
+            "type" : "array",
+            "description" :"An array of zero or more other Strings known verbs for which this verb can be considered to be a synonym or alias.",
+            "note": "Tell JSON schema team to not put links inside http://json-schema.org/hyper-schema#properties",
+            "items": {
+                "type" : "string"
+            }
+        },
+        "hypernyms" : {
+            "type" : "array",
+            "description" :"An array of zero or more other Strings known verbs for which this verb can be considered to be a synonym or alias.",
+            "items": {
+                "type" : "string"
+            }
+        },
+        "objects" : {
+            "type" : "array",
+            "description" :"An array of Object Combinations.",
+            "items": {
+                "type" : "object",
+                "javaType" : "org.apache.streams.verbs.ObjectCombination",
+                "javaInterfaces": ["java.io.Serializable"],
+                "properties": {
+                    "actor": {
+                        "type" : "string",
+                        "default": "*"
+                    },
+                    "actorRequired": {
+                        "type" : "boolean",
+                        "default": "false"
+                    },
+                    "object": {
+                        "type" : "string",
+                        "default": "*"
+                    },
+                    "objectRequired": {
+                        "type" : "boolean",
+                        "default": "false"
+                    },
+                    "provider": {
+                        "type" : "string",
+                        "default": "*"
+                    },
+                    "providerRequired": {
+                        "type" : "boolean",
+                        "default": "false"
+                    },
+                    "target": {
+                        "type" : "string",
+                        "default": "*"
+                    },
+                    "targetRequired": {
+                        "type" : "boolean",
+                        "default": "false"
+                    },
+                    "templates" : {
+                        "type": "object",
+                        "javaInterfaces": ["java.io.Serializable"],
+                        "additionalProperties": true
+                    }
+                }
+            }
+        }
+    }
+}

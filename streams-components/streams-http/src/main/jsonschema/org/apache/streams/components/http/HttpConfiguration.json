@@ -1,10 +1,10 @@
 {
-    "$schema": "http://json-schema.org/draft-03/schema",
-    "$license": [
-        "http://www.apache.org/licenses/LICENSE-2.0"
-    ],
-    "id": "#",
     "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "id": "#",
+    "$license": [
+      "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
     "javaType" : "org.apache.streams.components.http.HttpConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
@@ -27,6 +27,14 @@
             "type": "string",
             "description": "Resource Path",
             "required" : true
+        },
+        "requestMethod": {
+            "type": "string",
+            "enum": [
+                "GET",
+                "POST"
+            ],
+            "default": "GET"
         },
         "content-type": {
             "type": "string",

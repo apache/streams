@@ -18,6 +18,7 @@
 
 package org.apache.streams.local.tasks;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.streams.core.*;
 import org.apache.streams.core.util.DatumUtils;
 import org.apache.streams.local.counters.StreamsTaskCounter;
@@ -30,6 +31,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -173,13 +175,14 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
                             if(zeros > maxZeros)
                                 this.keepRunning.set(false);
                             if(zeros > 0)
-                                Thread.sleep(sleepTime);
-                        } catch (InterruptedException e) {
+                                Uninterruptibles.sleepUninterruptibly(sleepTime, TimeUnit.MILLISECONDS);
+                        } catch (Exception e) {
                             this.counter.incrementErrorCount();
-                            LOGGER.warn("Thread interrupted");
+                            LOGGER.warn("Thread exception");
                             this.keepRunning.set(false);
                         }
                     }
+                    Uninterruptibles.sleepUninterruptibly(sleepTime, TimeUnit.MILLISECONDS);
                 }
                     break;
                 case READ_CURRENT:
@@ -202,6 +205,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         } catch( Exception e ) {
             LOGGER.error("Error in processing provider stream", e);
         } finally {
+            Uninterruptibles.sleepUninterruptibly(sleepTime, TimeUnit.MILLISECONDS);
             LOGGER.debug("Complete Provider Task execution for {}", this.provider.getClass().getSimpleName());
             this.provider.cleanUp();
             //Setting started to 'true' here will allow the isRunning() method to return false in the event of an exception

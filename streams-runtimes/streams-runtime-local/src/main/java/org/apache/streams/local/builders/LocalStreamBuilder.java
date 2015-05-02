@@ -18,6 +18,7 @@
 
 package org.apache.streams.local.builders;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.streams.core.*;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.executors.ShutdownStreamOnUnhandleThrowableThreadPoolExecutor;
@@ -228,16 +229,17 @@ public class LocalStreamBuilder implements StreamBuilder {
                     isRunning = isRunning || (tasksRunning && task.getInBoundQueue().size() > 0);
                 }
                 if(isRunning) {
-                    Thread.sleep(3000);
-                } else {
-                    LOGGER.info("Stream has completed successfully, shutting down @ {}", System.currentTimeMillis());
+                    Uninterruptibles.sleepUninterruptibly(2500, TimeUnit.MILLISECONDS);
                 }
             }
-            LOGGER.debug("Components are no longer running or timed out");
-        } catch (InterruptedException e){
-            LOGGER.warn("Runtime interrupted.  Beginning shutdown");
+            LOGGER.info("Components are no longer running or timed out");
+        } catch (Exception e){
+            LOGGER.warn("Runtime exception.  Beginning shutdown");
             forcedShutDown = true;
         } finally{
+            LOGGER.info("Stream has completed, pausing @ {}", System.currentTimeMillis());
+            Uninterruptibles.sleepUninterruptibly(5000, TimeUnit.MILLISECONDS);
+            LOGGER.info("Stream has completed, shutting down @ {}", System.currentTimeMillis());
             stopInternal(forcedShutDown);
         }
 

@@ -23,25 +23,21 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.pojo.*;
-import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
-import org.apache.streams.twitter.serializer.TwitterJsonDeleteActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonRetweetActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonTweetActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonUserActivitySerializer;
-import org.apache.streams.twitter.serializer.TwitterJsonUserstreameventActivitySerializer;
+import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 
 import java.io.IOException;
 import java.io.Serializable;
 
 /**
  * TwitterEventClassifier classifies twitter events
+ *
+ * @Deprecated - replaced by TwitterDocumentClassifier - use ActivityConverterProcessor
  */
 public class TwitterEventClassifier implements Serializable {
 
-    private static ObjectMapper mapper = new StreamsJacksonMapper(Lists.newArrayList(StreamsTwitterMapper.TWITTER_FORMAT));
+    private static ObjectMapper mapper = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
 
     public static Class detectClass( String json ) {
         Preconditions.checkNotNull(json);
@@ -69,31 +65,5 @@ public class TwitterEventClassifier implements Serializable {
         else
             return Tweet.class;
     }
-    public static ActivitySerializer bestSerializer( String json ) {
 
-        Preconditions.checkNotNull(json);
-        Preconditions.checkArgument(StringUtils.isNotEmpty(json));
-
-        ObjectNode objectNode;
-        try {
-            objectNode = (ObjectNode) mapper.readTree(json);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        if( objectNode.findValue("retweeted_status") != null && objectNode.get("retweeted_status") != null)
-            return TwitterJsonRetweetActivitySerializer.getInstance();
-        else if( objectNode.findValue("delete") != null )
-            return TwitterJsonDeleteActivitySerializer.getInstance();
-//        else if( objectNode.findValue("friends") != null ||
-//                objectNode.findValue("friends_str") != null )
-//            return FriendList.class;
-        else if( objectNode.findValue("target_object") != null )
-            return TwitterJsonUserstreameventActivitySerializer.getInstance();
-        else if ( objectNode.findValue("location") != null && objectNode.findValue("user") == null)
-            return TwitterJsonUserActivitySerializer.getInstance();
-        else
-            return TwitterJsonTweetActivitySerializer.getInstance();
-    }
 }

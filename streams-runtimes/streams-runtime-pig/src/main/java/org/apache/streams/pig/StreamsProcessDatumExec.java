@@ -19,6 +19,7 @@
 
 package org.apache.streams.pig;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import datafu.pig.util.AliasableEvalFunc;
@@ -32,6 +33,7 @@ import org.apache.pig.impl.util.UDFContext;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.data.util.RFC3339Utils;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 
@@ -52,6 +54,8 @@ public class StreamsProcessDatumExec extends AliasableEvalFunc<DataBag> {
     BagFactory mBagFactory = BagFactory.getInstance();
 
     StreamsProcessor streamsProcessor;
+
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     public StreamsProcessDatumExec(String... execArgs) throws ClassNotFoundException{
         Preconditions.checkNotNull(execArgs);
@@ -111,7 +115,11 @@ public class StreamsProcessDatumExec extends AliasableEvalFunc<DataBag> {
             tuple.append(id);
             tuple.append(source);
             tuple.append(timestamp);
-            tuple.append(resultDatum.getDocument());
+
+            if( resultDatum.getDocument() instanceof String )
+                tuple.append(resultDatum.getDocument());
+            else
+                tuple.append(mapper.writeValueAsString(resultDatum.getDocument()));
             resultTupleList.add(tuple);
         }
 

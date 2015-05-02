@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.instagram.pojo.Instagram;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,10 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+/**
+ * Tests serialization of instagram inputs
+ */
+@Ignore("ignore until test resources are available.")
 public class InstagramSerDeTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(InstagramSerDeTest.class);
