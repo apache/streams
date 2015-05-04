@@ -27,8 +27,6 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.jackson.TypeConverterProcessor;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.twitter.pojo.Delete;
-import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.serializer.StreamsTwitterMapper;
 import org.apache.streams.twitter.serializer.TwitterJsonActivitySerializer;
@@ -41,9 +39,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -117,6 +115,8 @@ public class SimpleTweetTest {
         assertThat(activity.getVerb(), is(not(nullValue())));
         assertThat(activity.getProvider(), is(not(nullValue())));
 
+        Map<String, Object> extensions = ((Map<String, Object>)activity.getAdditionalProperties().get("extensions"));
+        assertEquals(((Map<String, Object>)extensions.get("likes")).get("count"), tweet.getFavoriteCount());
     }
 
     @Test
