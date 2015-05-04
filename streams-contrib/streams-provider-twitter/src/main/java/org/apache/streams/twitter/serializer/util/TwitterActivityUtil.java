@@ -322,7 +322,7 @@ public class TwitterActivityUtil {
 
         Map<String, Object> likes = new HashMap<String, Object>();
         likes.put("perspectival", tweet.getFavorited());
-        likes.put("count", tweet.getAdditionalProperties().get("favorite_count"));
+        likes.put("count", tweet.getFavoriteCount());
 
         extensions.put("likes", likes);
 
