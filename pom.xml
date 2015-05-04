@@ -27,7 +27,7 @@
     
     <groupId>org.apache.streams</groupId>
     <artifactId>streams-project</artifactId>
-    <version>0.2.20-W2O-SNAPSHOT</version>
+    <version>0.2.21-W2O-SNAPSHOT</version>
 
     <name>Apache Streams Project Parent POM</name>
 
