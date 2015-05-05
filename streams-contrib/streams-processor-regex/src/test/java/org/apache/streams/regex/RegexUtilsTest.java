@@ -91,7 +91,7 @@ public class RegexUtilsTest {
         Map<String, List<Integer>> regularResults = RegexUtils.extractMatches(pattern, content);
         long endTime = System.currentTimeMillis();
 
-        long executionTime = ((endTime - startTime) / 1000);
+        long executionTime = (endTime - startTime);
 
         //We are asserting that the time it took to run is less than 1.5 times the timeout value
         //This is to account for any sort of (small) overhead that could occur
