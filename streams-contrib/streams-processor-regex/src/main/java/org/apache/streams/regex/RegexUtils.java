@@ -81,7 +81,7 @@ public class RegexUtils {
             } catch (Exception e) {
                 LOGGER.error("Timed out while trying to find matches for content: {} and pattern: {} Possible catastrophic backtracking!: {}", content, pattern, e);
             } finally {
-                while(!task.isDone()) {
+                if(!task.isDone()) {
                     task.cancel(true);
                 }
             }
