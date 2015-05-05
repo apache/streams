@@ -26,9 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveAction;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,10 +72,21 @@ public class RegexUtils {
             //it if it ends up taking too long
             RegexRunnable regexRunnable = new RegexRunnable(pattern, content, capture);
 
-            threadPool.submit(regexRunnable);
-            threadPool.awaitTermination(REGEX_MATCH_THREAD_KEEP_ALIVE_DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+            ForkJoinTask<Map<String, List<Integer>>> task = threadPool.submit(regexRunnable);
 
-            return regexRunnable.getMatches();
+            Map<String, List<Integer>> matches = Maps.newHashMap();
+
+            try {
+                matches = task.get(REGEX_MATCH_THREAD_KEEP_ALIVE_DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+            } catch (Exception e) {
+                LOGGER.error("Timed out while trying to find matches for content: {} and pattern: {} Possible catastrophic backtracking!: {}", content, pattern, e);
+            } finally {
+                if(!task.isDone()) {
+                    task.cancel(true);
+                }
+            }
+
+            return matches;
         } catch (Exception e) {
             LOGGER.error("Throwable process {}", e);
             e.printStackTrace();
@@ -96,7 +105,7 @@ public class RegexUtils {
         return p;
     }
 
-    static class RegexRunnable extends RecursiveAction {
+    static class RegexRunnable implements Callable<Map<String, List<Integer>>> {
         private String pattern;
         private InterruptableCharSequence content;
         private int capture;
@@ -110,7 +119,7 @@ public class RegexUtils {
         }
 
         @Override
-        public void compute() {
+        public Map<String, List<Integer>> call() throws Exception {
             if(content != null) {
                 Matcher m = getPattern(pattern).matcher(content);
                 while (m.find()) {
@@ -127,10 +136,8 @@ public class RegexUtils {
                     }
                 }
             }
-        }
 
-        public Map<String, List<Integer>> getMatches() {
-            return this.matches;
+            return matches;
         }
     }
 }
