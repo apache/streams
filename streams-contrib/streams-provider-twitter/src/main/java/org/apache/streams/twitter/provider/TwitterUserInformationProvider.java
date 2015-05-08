@@ -229,8 +229,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     @Override
     public void prepare(Object o) {
 
-        executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
-
         Preconditions.checkNotNull(providerQueue);
         Preconditions.checkNotNull(twitterUserInformationConfiguration.getOauth().getConsumerKey());
         Preconditions.checkNotNull(twitterUserInformationConfiguration.getOauth().getConsumerSecret());
@@ -281,6 +279,8 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
         if(screenNames.size() > 0)
             screenNameBatches.add(screenNames.toArray(new String[ids.size()]));
+
+        executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, (ids.size() + screenNames.size())));
 
         this.idsBatches = idsBatches.iterator();
         this.screenNameBatches = screenNameBatches.iterator();
