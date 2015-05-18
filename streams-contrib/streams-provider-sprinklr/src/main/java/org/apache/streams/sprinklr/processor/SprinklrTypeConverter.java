@@ -73,7 +73,6 @@ public class SprinklrTypeConverter implements StreamsProcessor {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.error("Exception while converting SprinklrData to Activity: {}", e.getMessage());
         }
         return streams;

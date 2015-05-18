@@ -111,6 +111,31 @@ public class SprinklrDataToActivityConverter {
                 extensions.put(LANGUAGE_EXTENSION, item.get("language"));
             }
         }
+        // set likes etc
+        extensions.put("parentMsgType", item.has("parentMsgType") ? item.get("parentMsgType").asInt() : 0);
+        extensions.put("deleted", item.has("deleted") && item.get("deleted").asBoolean());
+        extensions.put("archived", item.has("archived") && item.get("archived").asBoolean());
+        extensions.put("brandPost", item.has("brandPost") && item.get("brandPost").asBoolean());
+        extensions.put("parentBrandPost", item.has("parentBrandPost") && item.get("parentBrandPost").asBoolean());
+        extensions.put("hasBrandComment", item.has("hasBrandComment") && item.get("hasBrandComment").asBoolean());
+        extensions.put("hasScheduledComment", item.has("hasScheduledComment") && item.get("hasScheduledComment").asBoolean());
+        extensions.put("hasParentPost", item.has("hasParentPost") && item.get("hasParentPost").asBoolean());
+        extensions.put("hasApplicationConversation", item.has("hasApplicationConversation") && item.get("hasApplicationConversation").asBoolean());
+        extensions.put("hasConversation", item.has("hasConversation") && item.get("hasConversation").asBoolean());
+        extensions.put("apiStatus", item.has("apiStatus") ? item.get("apiStatus").asText() : "");
+        extensions.put("likeFlag", item.has("likeFlag") && item.get("likeFlag").asBoolean());
+        extensions.put("hidden", item.has("hidden") && item.get("hidden").asBoolean());
+        extensions.put("like", item.has("like") && item.get("like").asBoolean());
+        extensions.put("isUserLikes", item.has("isUserLikes") && item.get("isUserLikes").asBoolean());
+        extensions.put("numberOfLikes", item.has("numberOfLikes") ? item.get("numberOfLikes").asInt() : 0);
+        extensions.put("numberOfShares", item.has("numberOfShares") ? item.get("numberOfShares").asInt() : 0);
+        extensions.put("numberOfViews", item.has("numberOfViews") ? item.get("numberOfViews").asInt() : 0);
+        extensions.put("numOfComments", item.has("numOfComments") ? item.get("numOfComments").asInt() : 0);
+        extensions.put("numOfPlusOned", item.has("numOfPlusOned") ? item.get("numOfPlusOned").asInt() : 0);
+        extensions.put("numOfShares", item.has("numOfShares") ? item.get("numOfShares").asInt() : 0);
+        extensions.put("actualNumOfComments", item.has("actualNumOfComments") ? item.get("actualNumOfComments").asInt() : 0);
+        extensions.put("category", item.has("category") ? item.get("category").asText() : "");
+
     }
 
     /**
@@ -207,13 +232,28 @@ public class SprinklrDataToActivityConverter {
         JsonNode senderProfile = item.get("senderProfile");
         image.setUrl(senderProfile.has("profileImgUrl") ? senderProfile.get("profileImgUrl").asText() : "");
 
-        Map<String, Object> extensions = new HashMap<String, Object>();
-        extensions.put("screenName", senderProfile.has("screenName") ? senderProfile.get("screenName").asText() : "");
-
         actor.setDisplayName(senderProfile.has("name") ? senderProfile.get("name").asText() : "");
         actor.setId(formatId(senderProfile.get("snId").asText()));
         actor.setImage(image);
         actor.setUrl(senderProfile.has("permalink") ? senderProfile.get("permalink").asText() : "");
+
+        Map<String, Object> extensions = new HashMap<String, Object>();
+
+        extensions.put("screenName", senderProfile.has("screenName") ? senderProfile.get("screenName").asText() : "");
+        extensions.put("followers", senderProfile.has("followers") ? senderProfile.get("followers").asInt() : -1);
+        extensions.put("follows", senderProfile.has("follows") ? senderProfile.get("follows").asInt() : -1);
+        extensions.put("age", senderProfile.has("age") ? senderProfile.get("age").asInt() : -1);
+        extensions.put("favCount", senderProfile.has("favCount") ? senderProfile.get("favCount").asInt() : -1);
+        extensions.put("statusCount", senderProfile.has("statusCount") ? senderProfile.get("statusCount").asInt() : -1);
+        extensions.put("snId", senderProfile.has("snId") ? senderProfile.get("snId").asText() : "");
+        extensions.put("participationIndex", senderProfile.has("participationIndex") ? senderProfile.get("participationIndex").asInt() : -1);
+        extensions.put("influencerIndex", senderProfile.has("influencerIndex") ? senderProfile.get("influencerIndex").asInt() : -1);
+        extensions.put("spamIndex", senderProfile.has("spamIndex") ? senderProfile.get("spamIndex").asInt() : -1);
+        extensions.put("profileWorkflowProperties", senderProfile.has("profileWorkflowProperties") ? senderProfile.get("profileWorkflowProperties") : "");
+        extensions.put("universalProfileId", senderProfile.has("universalProfileId") ? senderProfile.get("universalProfileId").asText() : "");
+        extensions.put("accountsBlockingUser", senderProfile.has("accountsBlockingUser") ? senderProfile.get("accountsBlockingUser") : "");
+        extensions.put("posts", senderProfile.has("name") ? senderProfile.get("name").asText() : "");
+        extensions.put("senderProfile", senderProfile);
 
         actor.setAdditionalProperty("extensions", extensions);
         actor.setAdditionalProperty("handle", extensions.get("screenName"));
