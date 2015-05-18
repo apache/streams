@@ -112,29 +112,31 @@ public class SprinklrDataToActivityConverter {
             }
         }
         // set likes etc
-        extensions.put("parentMsgType", item.has("parentMsgType") ? item.get("parentMsgType").asInt() : 0);
-        extensions.put("deleted", item.has("deleted") && item.get("deleted").asBoolean());
-        extensions.put("archived", item.has("archived") && item.get("archived").asBoolean());
-        extensions.put("brandPost", item.has("brandPost") && item.get("brandPost").asBoolean());
-        extensions.put("parentBrandPost", item.has("parentBrandPost") && item.get("parentBrandPost").asBoolean());
-        extensions.put("hasBrandComment", item.has("hasBrandComment") && item.get("hasBrandComment").asBoolean());
-        extensions.put("hasScheduledComment", item.has("hasScheduledComment") && item.get("hasScheduledComment").asBoolean());
-        extensions.put("hasParentPost", item.has("hasParentPost") && item.get("hasParentPost").asBoolean());
-        extensions.put("hasApplicationConversation", item.has("hasApplicationConversation") && item.get("hasApplicationConversation").asBoolean());
-        extensions.put("hasConversation", item.has("hasConversation") && item.get("hasConversation").asBoolean());
-        extensions.put("apiStatus", item.has("apiStatus") ? item.get("apiStatus").asText() : "");
-        extensions.put("likeFlag", item.has("likeFlag") && item.get("likeFlag").asBoolean());
-        extensions.put("hidden", item.has("hidden") && item.get("hidden").asBoolean());
-        extensions.put("like", item.has("like") && item.get("like").asBoolean());
-        extensions.put("isUserLikes", item.has("isUserLikes") && item.get("isUserLikes").asBoolean());
-        extensions.put("numberOfLikes", item.has("numberOfLikes") ? item.get("numberOfLikes").asInt() : 0);
-        extensions.put("numberOfShares", item.has("numberOfShares") ? item.get("numberOfShares").asInt() : 0);
-        extensions.put("numberOfViews", item.has("numberOfViews") ? item.get("numberOfViews").asInt() : 0);
-        extensions.put("numOfComments", item.has("numOfComments") ? item.get("numOfComments").asInt() : 0);
-        extensions.put("numOfPlusOned", item.has("numOfPlusOned") ? item.get("numOfPlusOned").asInt() : 0);
-        extensions.put("numOfShares", item.has("numOfShares") ? item.get("numOfShares").asInt() : 0);
-        extensions.put("actualNumOfComments", item.has("actualNumOfComments") ? item.get("actualNumOfComments").asInt() : 0);
-        extensions.put("category", item.has("category") ? item.get("category").asText() : "");
+        // sprinklr returns different data objects for each social media network.
+        // add to extensions if the key exists in the data object
+        if (item.has("parentMsgType")) extensions.put("parentMsgType", item.get("parentMsgType").asInt());
+        if (item.has("deleted")) extensions.put("deleted", item.get("deleted").asBoolean());
+        if (item.has("archived")) extensions.put("archived", item.get("archived").asBoolean());
+        if (item.has("brandPost")) extensions.put("brandPost", item.get("brandPost").asBoolean());
+        if (item.has("parentBrandPost")) extensions.put("parentBrandPost", item.get("parentBrandPost").asBoolean());
+        if (item.has("hasBrandComment")) extensions.put("hasBrandComment", item.get("hasBrandComment").asBoolean());
+        if (item.has("hasScheduledComment")) extensions.put("hasScheduledComment", item.get("hasScheduledComment").asBoolean());
+        if (item.has("hasParentPost")) extensions.put("hasParentPost", item.get("hasParentPost").asBoolean());
+        if (item.has("hasApplicationConversation")) extensions.put("hasApplicationConversation", item.get("hasApplicationConversation").asBoolean());
+        if (item.has("hasConversation")) extensions.put("hasConversation", item.get("hasConversation").asBoolean());
+        if (item.has("apiStatus")) extensions.put("apiStatus", item.get("apiStatus").asText());
+        if (item.has("likeFlag")) extensions.put("likeFlag", item.get("likeFlag").asBoolean());
+        if (item.has("hidden")) extensions.put("hidden", item.get("hidden").asBoolean());
+        if (item.has("like")) extensions.put("like", item.get("like").asBoolean());
+        if (item.has("isUserLikes")) extensions.put("isUserLikes", item.get("isUserLikes").asBoolean());
+        if (item.has("numberOfLikes")) extensions.put("numberOfLikes", item.get("numberOfLikes").asInt());
+        if (item.has("numberOfShares")) extensions.put("numberOfShares", item.get("numberOfShares").asInt());
+        if (item.has("numberOfViews")) extensions.put("numberOfViews", item.get("numberOfViews").asInt());
+        if (item.has("numOfComments")) extensions.put("numOfComments", item.get("numOfComments").asInt());
+        if (item.has("numOfPlusOned")) extensions.put("numOfPlusOned", item.get("numOfPlusOned").asInt());
+        if (item.has("numOfShares")) extensions.put("numOfShares", item.get("numOfShares").asInt());
+        if (item.has("actualNumOfComments")) extensions.put("actualNumOfComments", item.get("actualNumOfComments").asInt());
+        if (item.has("category")) extensions.put("category", item.get("category").asText());
 
     }
 
@@ -239,20 +241,20 @@ public class SprinklrDataToActivityConverter {
 
         Map<String, Object> extensions = new HashMap<String, Object>();
 
-        extensions.put("screenName", senderProfile.has("screenName") ? senderProfile.get("screenName").asText() : "");
-        extensions.put("followers", senderProfile.has("followers") ? senderProfile.get("followers").asInt() : -1);
-        extensions.put("follows", senderProfile.has("follows") ? senderProfile.get("follows").asInt() : -1);
-        extensions.put("age", senderProfile.has("age") ? senderProfile.get("age").asInt() : -1);
-        extensions.put("favCount", senderProfile.has("favCount") ? senderProfile.get("favCount").asInt() : -1);
-        extensions.put("statusCount", senderProfile.has("statusCount") ? senderProfile.get("statusCount").asInt() : -1);
-        extensions.put("snId", senderProfile.has("snId") ? senderProfile.get("snId").asText() : "");
-        extensions.put("participationIndex", senderProfile.has("participationIndex") ? senderProfile.get("participationIndex").asInt() : -1);
-        extensions.put("influencerIndex", senderProfile.has("influencerIndex") ? senderProfile.get("influencerIndex").asInt() : -1);
-        extensions.put("spamIndex", senderProfile.has("spamIndex") ? senderProfile.get("spamIndex").asInt() : -1);
-        extensions.put("profileWorkflowProperties", senderProfile.has("profileWorkflowProperties") ? senderProfile.get("profileWorkflowProperties") : "");
-        extensions.put("universalProfileId", senderProfile.has("universalProfileId") ? senderProfile.get("universalProfileId").asText() : "");
-        extensions.put("accountsBlockingUser", senderProfile.has("accountsBlockingUser") ? senderProfile.get("accountsBlockingUser") : "");
-        extensions.put("posts", senderProfile.has("name") ? senderProfile.get("name").asText() : "");
+        if (senderProfile.has("screenName")) extensions.put("screenName", senderProfile.get("screenName").asText());
+        if ( senderProfile.has("followers")) extensions.put("followers",senderProfile.get("followers").asInt());
+        if (senderProfile.has("follows")) extensions.put("follows", senderProfile.get("follows").asInt());
+        if (senderProfile.has("age")) extensions.put("age", senderProfile.get("age").asInt());
+        if (senderProfile.has("favCount")) extensions.put("favCount", senderProfile.get("favCount").asInt());
+        if (senderProfile.has("statusCount")) extensions.put("statusCount", senderProfile.get("statusCount").asInt());
+        if (senderProfile.has("snId")) extensions.put("snId", senderProfile.get("snId").asText());
+        if (senderProfile.has("participationIndex")) extensions.put("participationIndex", senderProfile.get("participationIndex").asInt());
+        if (senderProfile.has("influencerIndex")) extensions.put("influencerIndex", senderProfile.get("influencerIndex").asInt());
+        if (senderProfile.has("spamIndex")) extensions.put("spamIndex", senderProfile.get("spamIndex").asInt());
+        if (senderProfile.has("profileWorkflowProperties")) extensions.put("profileWorkflowProperties", senderProfile.get("profileWorkflowProperties"));
+        if (senderProfile.has("universalProfileId")) extensions.put("universalProfileId", senderProfile.get("universalProfileId").asText());
+        if (senderProfile.has("accountsBlockingUser")) extensions.put("accountsBlockingUser", senderProfile.get("accountsBlockingUser"));
+        if (senderProfile.has("name")) extensions.put("posts", senderProfile.get("name").asText());
         extensions.put("senderProfile", senderProfile);
 
         actor.setAdditionalProperty("extensions", extensions);
