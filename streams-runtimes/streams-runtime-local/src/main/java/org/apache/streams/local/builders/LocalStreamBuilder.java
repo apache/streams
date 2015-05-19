@@ -19,9 +19,12 @@
 package org.apache.streams.local.builders;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.executors.ShutdownStreamOnUnhandleThrowableThreadPoolExecutor;
+import org.apache.streams.local.monitoring.MonitoringConfiguration;
 import org.apache.streams.local.queues.ThroughputQueue;
 import org.apache.streams.local.tasks.*;
 import org.apache.streams.monitoring.tasks.BroadcastMonitorThread;
@@ -120,7 +123,21 @@ public class LocalStreamBuilder implements StreamBuilder {
             this.streamConfig.put(DEFAULT_STARTED_AT_KEY, startedAt.getMillis());
         }
         this.useDeprecatedMonitors = false;
-        this.broadcastMonitor = new BroadcastMonitorThread(this.streamConfig);
+
+        /* for backward-compatibility with streamConfig */
+        MonitoringConfiguration monitoringConfiguration;
+        if( StreamsConfigurator.getConfig().hasPath("monitoring") ) {
+            monitoringConfiguration = new ComponentConfigurator<>(MonitoringConfiguration.class).detectConfiguration("monitoring");
+        } else {
+            monitoringConfiguration = new MonitoringConfiguration();
+        }
+        if( this.streamConfig != null &&
+            this.streamConfig.containsKey(BROADCAST_KEY)) {
+            monitoringConfiguration.setBroadcastURI(this.streamConfig.get(BROADCAST_KEY).toString());
+            if( this.streamConfig.containsKey(BROADCAST_INTERVAL_KEY))
+                monitoringConfiguration.setMonitoringBroadcastIntervalMs(Long.parseLong(this.streamConfig.get(BROADCAST_INTERVAL_KEY).toString()));
+        }
+        this.broadcastMonitor = new BroadcastMonitorThread(monitoringConfiguration);
 
         this.futures = new HashMap<>();
     }
