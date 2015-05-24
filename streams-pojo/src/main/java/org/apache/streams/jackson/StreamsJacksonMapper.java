@@ -19,10 +19,12 @@
 package org.apache.streams.jackson;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.Lists;
 
@@ -95,6 +97,7 @@ public class StreamsJacksonMapper extends ObjectMapper {
         configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, Boolean.FALSE);
         configure(SerializationFeature.WRITE_NULL_MAP_VALUES, Boolean.FALSE);
         setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.DEFAULT);
+        setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     }
 
 }

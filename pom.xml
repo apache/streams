@@ -186,7 +186,7 @@
         <!-- Library Dependency Versions -->
         <org.osgi.service.http.port>8080</org.osgi.service.http.port>
         <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
-        <jackson.version>2.3.2</jackson.version>
+        <jackson.version>2.5.3</jackson.version>
         <jackson-xml-databind.version>0.6.2</jackson-xml-databind.version>
         <aalto.version>0.9.9</aalto.version>
         <joda-time.version>2.2</joda-time.version>
