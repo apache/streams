@@ -21,7 +21,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.jackson.*;
+import org.apache.streams.local.monitoring.MonitoringConfiguration;
 import org.apache.streams.monitoring.persist.MessagePersister;
 import org.apache.streams.monitoring.persist.impl.BroadcastMessagePersister;
 import org.apache.streams.monitoring.persist.impl.LogstashUdpMessagePersister;
@@ -52,38 +55,33 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     private long DEFAULT_WAIT_TIME = 30000;
     private long waitTime;
     private ObjectMapper objectMapper;
-    private StreamsCon streamConfig;
+    private MonitoringConfiguration configuration;
     private URI broadcastURI = null;
     private MessagePersister messagePersister;
     private volatile boolean keepRunning;
 
+    /**
+     * DEPRECATED
+     * Please initialize logging with monitoring object via typesafe
+     * @param streamConfig
+     */
+    @Deprecated
     public BroadcastMonitorThread(Map<String, Object> streamConfig) {
-        keepRunning = true;
-        this.streamConfig = streamConfig;
+        this(new ObjectMapper().convertValue(streamConfig, MonitoringConfiguration.class));
+    }
 
-        LOGGER.info("BroadcastMonitorThread starting" + streamConfig);
+    public BroadcastMonitorThread(MonitoringConfiguration configuration) {
 
-        server = ManagementFactory.getPlatformMBeanServer();
+        this.configuration = configuration;
 
-        setBroadcastURI();
-        setWaitTime();
+        LOGGER.info("BroadcastMonitorThread created");
 
-        if( broadcastURI != null ) {
-            if (broadcastURI.getScheme().equals("http")) {
-                messagePersister = new BroadcastMessagePersister(broadcastURI.toString());
-            } else if (broadcastURI.getScheme().equals("udp")) {
-                messagePersister = new LogstashUdpMessagePersister(broadcastURI.toString());
-            } else {
-                LOGGER.error("You need to specify a broadcast URI with either a HTTP or UDP protocol defined.");
-                throw new RuntimeException();
-            }
-        } else {
-            messagePersister = new SLF4JMessagePersister();
-        }
+        prepare();
 
         initializeObjectMapper();
 
-        LOGGER.info("BroadcastMonitorThread started");
+        LOGGER.info("BroadcastMonitorThread initialized");
+
     }
 
     /**
@@ -153,12 +151,10 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
      * Go through streams config and set the broadcastURI (if present)
      */
     private void setBroadcastURI() {
-        if(streamConfig != null &&
-                streamConfig.containsKey("broadcastURI") &&
-                streamConfig.get("broadcastURI") != null &&
-                streamConfig.get("broadcastURI") instanceof String) {
+        if(configuration != null &&
+            configuration.getBroadcastURI() != null) {
             try {
-                broadcastURI = new URI(streamConfig.get("broadcastURI").toString());
+                broadcastURI = new URI(configuration.getBroadcastURI());
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
@@ -170,12 +166,9 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
      */
     private void setWaitTime() {
         try {
-            if (streamConfig != null &&
-                    streamConfig.containsKey("monitoring_broadcast_interval_ms") &&
-                    streamConfig.get("monitoring_broadcast_interval_ms") != null &&
-                    (streamConfig.get("monitoring_broadcast_interval_ms") instanceof Long ||
-                    streamConfig.get("monitoring_broadcast_interval_ms") instanceof Integer)) {
-                waitTime = Long.parseLong(streamConfig.get("monitoring_broadcast_interval_ms").toString());
+            if (configuration != null &&
+                configuration.getMonitoringBroadcastIntervalMs() != null ) {
+                waitTime = configuration.getMonitoringBroadcastIntervalMs();
             } else {
                 waitTime = DEFAULT_WAIT_TIME;
             }
@@ -187,6 +180,32 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
         } catch (Exception e) {
             LOGGER.error("Exception while trying to set default broadcast thread wait time: {}", e);
         }
+    }
+
+    public void prepare() {
+
+        keepRunning = true;
+
+        LOGGER.info("BroadcastMonitorThread setup " + configuration);
+
+        server = ManagementFactory.getPlatformMBeanServer();
+
+        setBroadcastURI();
+        setWaitTime();
+
+        if( broadcastURI != null ) {
+            if (broadcastURI.getScheme().equals("http")) {
+                messagePersister = new BroadcastMessagePersister(broadcastURI.toString());
+            } else if (broadcastURI.getScheme().equals("udp")) {
+                messagePersister = new LogstashUdpMessagePersister(broadcastURI.toString());
+            } else {
+                LOGGER.error("You need to specify a broadcast URI with either a HTTP or UDP protocol defined.");
+                throw new RuntimeException();
+            }
+        } else {
+            messagePersister = new SLF4JMessagePersister();
+        }
+
     }
 
     public void shutdown() {
