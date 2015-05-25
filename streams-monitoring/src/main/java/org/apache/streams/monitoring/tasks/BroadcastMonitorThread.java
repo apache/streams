@@ -52,7 +52,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     private long DEFAULT_WAIT_TIME = 30000;
     private long waitTime;
     private ObjectMapper objectMapper;
-    private Map<String, Object> streamConfig;
+    private StreamsCon streamConfig;
     private URI broadcastURI = null;
     private MessagePersister messagePersister;
     private volatile boolean keepRunning;

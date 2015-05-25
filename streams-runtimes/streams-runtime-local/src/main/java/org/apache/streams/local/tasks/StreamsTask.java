@@ -18,6 +18,7 @@
 
 package org.apache.streams.local.tasks;
 
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 
@@ -68,7 +69,7 @@ public interface StreamsTask extends Runnable{
      * Set the configuration object that will shared and passed to all instances of StreamsTask.
      * @param config optional configuration information
      */
-    public void setStreamConfig(Map<String, Object> config);
+    public void setStreamConfig(StreamsConfiguration config);
 
     /**
      * Returns true when the task has not completed. Returns false otherwise

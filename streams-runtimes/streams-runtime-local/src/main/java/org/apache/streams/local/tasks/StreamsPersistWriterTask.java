@@ -19,6 +19,7 @@
 package org.apache.streams.local.tasks;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.core.*;
 import org.apache.streams.core.util.DatumUtils;
 import org.apache.streams.local.counters.StreamsTaskCounter;
@@ -40,7 +41,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     private StreamsPersistWriter writer;
     private long sleepTime = DEFAULT_SLEEP_TIME_MS * 10;
     private AtomicBoolean keepRunning;
-    private Map<String, Object> streamConfig;
+    private StreamsConfiguration streamConfig;
     private BlockingQueue<StreamsDatum> inQueue;
     private AtomicBoolean isRunning;
     private AtomicBoolean blocked;
@@ -62,7 +63,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
         this(writer, DEFAULT_SLEEP_TIME_MS, null);
     }
 
-    public StreamsPersistWriterTask(StreamsPersistWriter writer, Map<String, Object> streamConfig) {
+    public StreamsPersistWriterTask(StreamsPersistWriter writer, StreamsConfiguration streamConfig) {
         this(writer, DEFAULT_SLEEP_TIME_MS, streamConfig);
     }
 
@@ -71,7 +72,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
      * @param writer writer to execute in task
      * @param sleepTime time to sleep when inbound queue is empty.
      */
-    public StreamsPersistWriterTask(StreamsPersistWriter writer, long sleepTime, Map<String, Object> streamConfig) {
+    public StreamsPersistWriterTask(StreamsPersistWriter writer, long sleepTime, StreamsConfiguration streamConfig) {
         super(streamConfig);
         this.writer = writer;
         this.sleepTime = sleepTime;
@@ -86,7 +87,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     }
 
     @Override
-    public void setStreamConfig(Map<String, Object> config) {
+    public void setStreamConfig(StreamsConfiguration config) {
         this.streamConfig = config;
     }
 

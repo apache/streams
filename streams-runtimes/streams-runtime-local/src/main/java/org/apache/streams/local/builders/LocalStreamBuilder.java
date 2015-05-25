@@ -20,6 +20,7 @@ package org.apache.streams.local.builders;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.streams.core.*;
+import org.apache.streams.local.LocalRuntimeConfiguration;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.executors.ShutdownStreamOnUnhandleThrowableThreadPoolExecutor;
 import org.apache.streams.local.queues.ThroughputQueue;
@@ -54,7 +55,7 @@ public class LocalStreamBuilder implements StreamBuilder {
 
     private Map<String, StreamComponent> providers;
     private Map<String, StreamComponent> components;
-    private Map<String, Object> streamConfig;
+    private LocalRuntimeConfiguration streamConfig;
     private Map<StreamsTask, Future> futures;
     private ExecutorService executor;
     private ExecutorService monitor;
@@ -79,7 +80,9 @@ public class LocalStreamBuilder implements StreamBuilder {
     /**
      * Creates a local stream builder with a config object and default maximum internal queue size of 500
      * @param streamConfig
+     * @deprecated use LocalRuntimeConfiguration constructor instread
      */
+    @Deprecated
     public LocalStreamBuilder(Map<String, Object> streamConfig) {
         this(DEFAULT_QUEUE_SIZE, streamConfig);
     }
@@ -100,12 +103,19 @@ public class LocalStreamBuilder implements StreamBuilder {
      * @param streamConfig
      */
     public LocalStreamBuilder(int maxQueueCapacity, Map<String, Object> streamConfig) {
+        LocalRuntimeConfiguration config = new LocalRuntimeConfiguration();
+        for( Map.Entry<String, Object> item : streamConfig.entrySet() ) {
+            config.setAdditionalProperty(item.getKey(), item.getValue());
+        }
+        config.setBatchSize(new Long(maxQueueCapacity));
+    }
+
+    public LocalStreamBuilder(LocalRuntimeConfiguration streamConfig) {
         this.providers = new HashMap<String, StreamComponent>();
         this.components = new HashMap<String, StreamComponent>();
         this.streamConfig = streamConfig;
         this.totalTasks = 0;
         this.monitorTasks = 0;
-        this.maxQueueCapacity = maxQueueCapacity;
         final LocalStreamBuilder self = this;
         this.shutdownHook = new Thread() {
             @Override
@@ -117,7 +127,7 @@ public class LocalStreamBuilder implements StreamBuilder {
 
         setStreamIdentifier();
         if(this.streamConfig != null) {
-            this.streamConfig.put(DEFAULT_STARTED_AT_KEY, startedAt.getMillis());
+            this.streamConfig.setAdditionalProperty(DEFAULT_STARTED_AT_KEY, startedAt.getMillis());
         }
         this.useDeprecatedMonitors = false;
         this.broadcastMonitor = new BroadcastMonitorThread(this.streamConfig);
@@ -435,18 +445,11 @@ public class LocalStreamBuilder implements StreamBuilder {
 
     protected int getTimeout() {
         //Set the timeout of it is configured, otherwise signal downstream components to use their default
-        return streamConfig != null && streamConfig.containsKey(TIMEOUT_KEY) ? (Integer)streamConfig.get(TIMEOUT_KEY) : -1;
+        return streamConfig.getProviderTimeoutMs().intValue();
     }
 
     private void setStreamIdentifier() {
-        if(streamConfig != null &&
-                streamConfig.containsKey(STREAM_IDENTIFIER_KEY) &&
-                streamConfig.get(STREAM_IDENTIFIER_KEY) != null &&
-                streamConfig.get(STREAM_IDENTIFIER_KEY).toString().length() > 0) {
-            this.streamIdentifier = streamConfig.get(STREAM_IDENTIFIER_KEY).toString();
-        } else {
-            this.streamIdentifier = DEFAULT_STREAM_IDENTIFIER;
-        }
+        this.streamIdentifier = streamConfig.getIdentifier();
     }
 
 }

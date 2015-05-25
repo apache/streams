@@ -18,6 +18,7 @@
 
 package org.apache.streams.local.tasks;
 
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.commons.lang.NotImplementedException;
@@ -44,7 +45,7 @@ public class StreamsMergeTask extends BaseStreamsTask {
         this(sleepTime, null);
     }
 
-    public StreamsMergeTask(long sleepTime, Map<String, Object> streamConfig) {
+    public StreamsMergeTask(long sleepTime, StreamsConfiguration streamConfig) {
         super(streamConfig);
         this.sleepTime = sleepTime;
         this.keepRunning = new AtomicBoolean(true);
@@ -56,7 +57,7 @@ public class StreamsMergeTask extends BaseStreamsTask {
     }
 
     @Override
-    public void setStreamConfig(Map<String, Object> config) {
+    public void setStreamConfig(StreamsConfiguration config) {
 
     }
 
