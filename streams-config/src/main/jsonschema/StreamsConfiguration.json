@@ -8,6 +8,11 @@
     "javaType" : "org.apache.streams.config.StreamsConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
+        "batchFrequencyMs": {
+            "type": "integer",
+            "description": "Frequency of messaging between components",
+            "default": 5000
+        },
         "batchSize": {
             "type" : "integer",
             "description" : "Default max batch size for batch-based persist readers and writers",
@@ -23,20 +28,15 @@
             "description" : "Default parallelism for processors",
             "default": 1
         },
-        "queueSize": {
-            "type" : "integer",
-            "description" : "Size of inter-component buffers",
-            "default": 1000
-        },
-        "batchFrequencyMs": {
-            "type": "integer",
-            "description": "Frequency of messaging between components",
-            "default": 5000
-        },
         "providerTimeoutMs": {
             "type": "integer",
             "description": "Kill the stream if all providers supply nothing for this long.",
             "default": 1440000
+        },
+        "queueSize": {
+            "type" : "integer",
+            "description" : "Size of inter-component buffers",
+            "default": 1000
         },
         "startedAt": {
             "type": "integer",

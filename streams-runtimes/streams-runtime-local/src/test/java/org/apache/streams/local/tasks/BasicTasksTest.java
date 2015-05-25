@@ -18,6 +18,7 @@
 
 package org.apache.streams.local.tasks;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.local.counters.DatumStatusCounter;
 import org.apache.streams.local.counters.StreamsTaskCounter;
@@ -74,12 +75,7 @@ public class BasicTasksTest {
         service.submit(task);
         int attempts = 0;
         while(outQueue.size() != numMessages) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            ++attempts;
+            Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
             if(attempts == 10) {
                 fail("Provider task failed to output "+numMessages+" in a timely fashion.");
             }
@@ -90,7 +86,7 @@ public class BasicTasksTest {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }
-            assertTrue("Task should have completed running in aloted time.", service.isTerminated());
+            assertTrue("Task should have completed running in allotted time.", service.isTerminated());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -112,11 +108,7 @@ public class BasicTasksTest {
         service.submit(task);
         int attempts = 0;
         while(inQueue.size() != 0 && outQueue.size() != numMessages) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                //Ignore
-            }
+            Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
             ++attempts;
             if(attempts == 10) {
                 fail("Processor task failed to output "+numMessages+" in a timely fashion.");
@@ -129,9 +121,9 @@ public class BasicTasksTest {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }
-            assertTrue("Task should have completed running in aloted time.", service.isTerminated());
+            assertTrue("Task should have completed running in allotted time.", service.isTerminated());
         } catch (InterruptedException e) {
-            fail("Test Interupted.");
+            fail("Test Interrupted.");
         }
         assertEquals(numMessages, processor.getMessageCount());
         assertEquals(numMessages, counter.getNumReceived());
@@ -163,11 +155,7 @@ public class BasicTasksTest {
         service.submit(task);
         int attempts = 0;
         while(inQueue.size() != 0 ) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                //Ignore
-            }
+            Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
             ++attempts;
             if(attempts == 10) {
                 fail("Processor task failed to output "+numMessages+" in a timely fashion.");
@@ -180,9 +168,9 @@ public class BasicTasksTest {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }
-            assertTrue("Task should have completed running in aloted time.", service.isTerminated());
+            assertTrue("Task should have completed running in allotted time.", service.isTerminated());
         } catch (InterruptedException e) {
-            fail("Test Interupted.");
+            fail("Test Interrupted.");
         }
         assertEquals(numMessages, writer.getDatumsCounted());
         assertEquals(numMessages, counter.getNumReceived());
@@ -205,11 +193,7 @@ public class BasicTasksTest {
         service.submit(task);
         int attempts = 0;
         while(outQueue.size() != incoming * numMessages ) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                //Ignore
-            }
+            Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
             ++attempts;
             if(attempts == 10) {
                 assertEquals("Processor task failed to output " + (numMessages * incoming) + " in a timely fashion.", (numMessages * incoming), outQueue.size());
@@ -222,9 +206,9 @@ public class BasicTasksTest {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }
-            assertTrue("Task should have completed running in aloted time.", service.isTerminated());
+            assertTrue("Task should have completed running in allotted time.", service.isTerminated());
         } catch (InterruptedException e) {
-            fail("Test Interupted.");
+            fail("Test Interrupted.");
         }
     }
 
@@ -244,11 +228,7 @@ public class BasicTasksTest {
         service.submit(task);
         int attempts = 0;
         while(inQueue.size() != 0 ) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                //Ignore
-            }
+            Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
             ++attempts;
             if(attempts == 10) {
                 assertEquals("Processor task failed to output "+(numMessages)+" in a timely fashion.", 0, inQueue.size());
@@ -262,9 +242,9 @@ public class BasicTasksTest {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }
-            assertTrue("Task should have completed running in aloted time.", service.isTerminated());
+            assertTrue("Task should have completed running in allotted time.", service.isTerminated());
         } catch (InterruptedException e) {
-            fail("Test Interupted.");
+            fail("Test Interrupted.");
         }
         assertEquals(numMessages, processor.getMessageCount());
         assertEquals(numMessages, outQueue1.size());
@@ -286,11 +266,7 @@ public class BasicTasksTest {
         service.submit(task);
         int attempts = 0;
         while(inQueue.size() != 0 ) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                //Ignore
-            }
+            Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
             ++attempts;
             if(attempts == 10) {
                 assertEquals("Processor task failed to output "+(numMessages)+" in a timely fashion.", 0, inQueue.size());
@@ -304,9 +280,9 @@ public class BasicTasksTest {
                 service.shutdownNow();
                 fail("Service did not terminate.");
             }
-            assertTrue("Task should have completed running in aloted time.", service.isTerminated());
+            assertTrue("Task should have completed running in allotted time.", service.isTerminated());
         } catch (InterruptedException e) {
-            fail("Test Interupted.");
+            fail("Test Interrupted.");
         }
         assertEquals(numMessages, processor.getMessageCount());
         assertEquals(numMessages, outQueue1.size());

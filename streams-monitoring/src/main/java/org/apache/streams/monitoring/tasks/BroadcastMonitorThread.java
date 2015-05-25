@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.jackson.*;
 import org.apache.streams.local.monitoring.MonitoringConfiguration;
 import org.apache.streams.monitoring.persist.MessagePersister;
@@ -55,6 +56,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     private long DEFAULT_WAIT_TIME = 30000;
     private long waitTime;
     private ObjectMapper objectMapper;
+    private StreamsConfiguration streamConfig;
     private MonitoringConfiguration configuration;
     private URI broadcastURI = null;
     private MessagePersister messagePersister;
@@ -67,11 +69,16 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
      */
     @Deprecated
     public BroadcastMonitorThread(Map<String, Object> streamConfig) {
-        this(new ObjectMapper().convertValue(streamConfig, MonitoringConfiguration.class));
+        this(new ObjectMapper().convertValue(streamConfig, StreamsConfiguration.class));
     }
 
-    public BroadcastMonitorThread(MonitoringConfiguration configuration) {
+    public BroadcastMonitorThread(StreamsConfiguration streamConfig) {
+        this(streamConfig, new ObjectMapper().convertValue(streamConfig.getAdditionalProperties().get("monitoring"), MonitoringConfiguration.class));
+    }
 
+    public BroadcastMonitorThread(StreamsConfiguration streamConfig, MonitoringConfiguration configuration) {
+
+        this.streamConfig = streamConfig;
         this.configuration = configuration;
 
         LOGGER.info("BroadcastMonitorThread created");

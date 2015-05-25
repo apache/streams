@@ -22,12 +22,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.apache.streams.config.StreamsConfiguration;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.SerializationUtil;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,15 +51,14 @@ public abstract class BaseStreamsTask implements StreamsTask {
     private ObjectMapper mapper;
     protected StreamsConfiguration streamConfig;
 
-    private long startedAt;
-    private String streamIdentifier;
-
     public BaseStreamsTask(StreamsConfiguration config) {
         this.mapper = StreamsJacksonMapper.getInstance();
         this.mapper.registerSubtypes(Activity.class);
-        this.streamConfig = config;
+        if( config != null )
+            this.streamConfig = config;
+        else
+            this.streamConfig = StreamsConfigurator.detectConfiguration();
 
-        setStreamIdentifier();
         setStartedAt();
     }
 
@@ -202,20 +203,15 @@ public abstract class BaseStreamsTask implements StreamsTask {
     }
 
     public long getStartedAt() {
-        return startedAt;
+        return streamConfig.getStartedAt();
     }
 
     public void setStartedAt() {
-        this.startedAt = streamConfig.getStartedAt();
+        streamConfig.setStartedAt(DateTime.now().getMillis());
     }
 
     public String getStreamIdentifier() {
-        return streamIdentifier;
+        return streamConfig.getIdentifier();
     }
-
-    public void setStreamIdentifier() {
-        this.streamIdentifier = streamConfig.getIdentifier();
-    }
-
 
 }

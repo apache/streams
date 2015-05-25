@@ -40,7 +40,6 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
 
 
     private StreamsProcessor processor;
-    private long sleepTime;
     private AtomicBoolean keepRunning;
     private StreamsConfiguration streamConfig;
     private BlockingQueue<StreamsDatum> inQueue;
@@ -60,25 +59,17 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
      * @param processor process to run in task
      */
     public StreamsProcessorTask(StreamsProcessor processor) {
-        this(processor, DEFAULT_SLEEP_TIME_MS, null);
+        this(processor, new StreamsConfiguration());
     }
 
     /**
-     *
      * @param processor
      * @param streamConfig
      */
-    public StreamsProcessorTask(StreamsProcessor processor, StreamsConfiguration streamConfig) { this(processor, DEFAULT_SLEEP_TIME_MS, streamConfig); }
-
-    /**
-     *
-     * @param processor processor to run in task
-     * @param sleepTime time to sleep when incoming queue is empty
-     */
-    public StreamsProcessorTask(StreamsProcessor processor, long sleepTime, StreamsConfiguration streamConfig) {
+    public StreamsProcessorTask(StreamsProcessor processor, StreamsConfiguration streamConfig) {
         super(streamConfig);
+        this.streamConfig = super.streamConfig;
         this.processor = processor;
-        this.sleepTime = sleepTime;
         this.keepRunning = new AtomicBoolean(true);
         this.isRunning = new AtomicBoolean(true);
         this.blocked = new AtomicBoolean(true);

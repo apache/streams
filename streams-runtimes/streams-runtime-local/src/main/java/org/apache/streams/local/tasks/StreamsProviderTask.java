@@ -77,13 +77,14 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
      */
     public StreamsProviderTask(StreamsProvider provider, boolean perpetual, StreamsConfiguration streamConfig) {
         super(streamConfig);
+        streamConfig = super.streamConfig;
         this.provider = provider;
         if( perpetual )
             this.type = Type.PERPETUAL;
         else
             this.type = Type.READ_CURRENT;
-        this.timeout = DEFAULT_TIMEOUT_MS;
-        this.sleepTime = DEFAULT_SLEEP_TIME_MS;
+        this.timeout = super.streamConfig.getProviderTimeoutMs().intValue();
+        this.sleepTime = streamConfig.getBatchFrequencyMs();
     }
 
     /**
@@ -96,8 +97,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         this.provider = provider;
         this.type = Type.READ_NEW;
         this.sequence = sequence;
-        this.timeout = DEFAULT_TIMEOUT_MS;
-        this.sleepTime = DEFAULT_SLEEP_TIME_MS;
+        this.timeout = streamConfig.getProviderTimeoutMs().intValue();
+        this.sleepTime = streamConfig.getBatchFrequencyMs();
     }
 
     /**
@@ -113,8 +114,8 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
         this.dateRange = new DateTime[2];
         this.dateRange[START] = start;
         this.dateRange[END] = end;
-        this.timeout = DEFAULT_TIMEOUT_MS;
-        this.sleepTime = DEFAULT_SLEEP_TIME_MS;
+        this.timeout = streamConfig.getProviderTimeoutMs().intValue();
+        this.sleepTime = streamConfig.getBatchFrequencyMs();
     }
 
     public void setTimeout(int timeout) {
