@@ -141,7 +141,7 @@ public class TwitterFollowingProviderTask implements Runnable {
             catch(Exception e) {
                 keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
             }
-        } while (curser != 0 && keepTrying < 50);
+        } while (curser != 0 && keepTrying < 10);
     }
 
     protected void getFollowing(String screenName) {
