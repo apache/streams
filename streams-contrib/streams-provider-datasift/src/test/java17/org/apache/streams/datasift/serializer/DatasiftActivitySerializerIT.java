@@ -40,8 +40,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Tests serialization and conversion of Datasift inputs
  */
-@Ignore("ignore until test resources are available.")
-public class DatasiftActivitySerializerTest {
+public class DatasiftActivitySerializerIT {
 
     protected ActivitySerializer SERIALIZER;
 

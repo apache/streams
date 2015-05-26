@@ -41,15 +41,14 @@ import static org.junit.Assert.assertThat;
 /**
  * Tests conversion of instagram inputs to Activity
  */
-@Ignore("ignore until test resources are available.")
-public class InstagramActivitySerDeTest {
+public class InstagramActivitySerDeIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(InstagramActivitySerDeTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(InstagramActivitySerDeIT.class);
 
     @Test
     public void TestMediaFeedObjects() {
         InstagramDeserializer instagramDeserializer = new InstagramDeserializer("");
-        InputStream is = InstagramActivitySerDeTest.class.getResourceAsStream("/testMediaFeedObjects.txt");
+        InputStream is = InstagramActivitySerDeIT.class.getResourceAsStream("/testMediaFeedObjects.txt");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 
@@ -86,7 +85,7 @@ public class InstagramActivitySerDeTest {
     @Test
     public void TestUserInfoData() {
         InstagramDeserializer instagramDeserializer = new InstagramDeserializer("");
-        InputStream is = InstagramActivitySerDeTest.class.getResourceAsStream("/testUserInfoData.txt");
+        InputStream is = InstagramActivitySerDeIT.class.getResourceAsStream("/testUserInfoData.txt");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 

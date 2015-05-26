@@ -41,10 +41,9 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Tests serialization of Facebook Post inputs
  */
-@Ignore("ignore until test resources are available.")
-public class FacebookPostSerDeTest {
+public class FacebookPostSerDeIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FacebookPostSerDeTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(FacebookPostSerDeIT.class);
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Test
@@ -54,7 +53,7 @@ public class FacebookPostSerDeTest {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-        InputStream is = FacebookPostSerDeTest.class.getResourceAsStream("/testpost.json");
+        InputStream is = FacebookPostSerDeIT.class.getResourceAsStream("/testpost.json");
         Joiner joiner = Joiner.on(" ").skipNulls();
         is = new BoundedInputStream(is, 10000);
         String json;

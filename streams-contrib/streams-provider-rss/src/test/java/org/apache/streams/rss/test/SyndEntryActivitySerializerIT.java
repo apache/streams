@@ -43,8 +43,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests ability to convert SyndEntry ObjectNode form to {@link org.apache.streams.rss.processor.RssTypeConverter} form
  */
-@Ignore("ignore until test resources are available.")
-public class SyndEntryActivitySerizlizerTest {
+public class SyndEntryActivitySerializerIT {
 
     private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 

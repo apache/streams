@@ -29,8 +29,7 @@ import java.util.Scanner;
 /**
  * Tests serialization and conversion of Datasift inputs
  */
-@Ignore("ignore until test resources are available.")
-public class DatasiftInstagramActivitySerializerTest extends DatasiftActivitySerializerTest {
+public class DatasiftInstagramActivitySerializerIT extends DatasiftActivitySerializerIT {
 
     @Before
     @Override

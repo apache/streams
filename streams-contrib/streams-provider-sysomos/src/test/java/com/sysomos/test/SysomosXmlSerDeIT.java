@@ -39,10 +39,9 @@ import java.io.InputStreamReader;
 /**
  * Tests ability to convert String xml form to {@link com.sysomos.xml.BeatApi} form
  */
-@Ignore("ignore until test resources are available.")
-public class SysomosXmlSerDeTest {
+public class SysomosXmlSerDeIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(SysomosXmlSerDeTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(SysomosXmlSerDeIT.class);
 
     private XmlMapper xmlMapper;
 
@@ -79,7 +78,7 @@ public class SysomosXmlSerDeTest {
     @Test
     public void Test()
     {
-        InputStream is = SysomosXmlSerDeTest.class.getResourceAsStream("/sysomos_xmls.txt");
+        InputStream is = SysomosXmlSerDeIT.class.getResourceAsStream("/sysomos_xmls.txt");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 
