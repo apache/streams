@@ -17,25 +17,32 @@ Getting Started
 Please visit the project website for the latest information:
     http://streams.incubator.apache.org/
 
+Check out the following repository for ready-to-run examples:
+    https://git-wip-us.apache.org/repos/asf/incubator-streams-examples.git
+
 Along with the developer mailing list archive:
     http://mail-archives.apache.org/mod_mbox/streams-dev/
 
+Auto-generated documentation and resources are located here:
+    http://streams.incubator.apache.org/site/0.2-incubating/streams-project/
 
 System Requirements
 ===================
 You need a platform that supports Java SE 7 or later.
 
-Building and running
+  - Sources compilation require Java SE 7 or higher.
+
+  - Streams currently requires Java 1.7.0u72+, or Java 1.8.0u25+ during build phase.
+    
+  - The project is built with Apache Maven 3+ (suggested is 3.2.5).
+
+Building
 ====================
 To build from source code:
-
-  - Requirements:
-    Sources compilation require Java SE 7 or higher.
-    The project is built with Apache Maven 3+ (suggested is 3.2.5).
-    You need to download and install Maven 3 from: http://maven.apache.org/
-
-  - To build the Streams project, configure and invoke maven in the root directory.
+    
+  - Invoke maven in the root directory.
 
       `export MAVEN_OPTS="-Xmx2G"`
 
       `mvn install`
+
