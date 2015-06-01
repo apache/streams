@@ -153,24 +153,34 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         String parent = ElasticsearchMetadataUtil.getParent(streamsDatum);
 
         try {
+            streamsDatum = appendMetadata(streamsDatum);
+            String docAsJson = docAsJson(streamsDatum.getDocument());
             add(index, type, id, parent,
                     streamsDatum.getTimestamp() == null ? Long.toString(DateTime.now().getMillis()) : Long.toString(streamsDatum.getTimestamp().getMillis()),
-                    convertAndAppendMetadata(streamsDatum));
+                    docAsJson);
         } catch (Throwable e) {
             LOGGER.warn("Unable to Write Datum to ElasticSearch: {}", e.getMessage());
         }
     }
 
-    private String convertAndAppendMetadata(StreamsDatum streamsDatum) throws IOException {
-        Object object = streamsDatum.getDocument();
+    protected String docAsJson(Object streamsDocument) throws IOException {
 
-        String docAsJson = (object instanceof String) ? object.toString() : OBJECT_MAPPER.writeValueAsString(object);
+        String docAsJson = (streamsDocument instanceof String) ? streamsDocument.toString() : OBJECT_MAPPER.writeValueAsString(streamsDocument);
+
+        return docAsJson;
+    }
+
+    protected StreamsDatum appendMetadata(StreamsDatum streamsDatum) throws IOException {
+
+        String docAsJson = (streamsDatum.getDocument() instanceof String) ? streamsDatum.getDocument().toString() : OBJECT_MAPPER.writeValueAsString(streamsDatum.getDocument());
+
         if(streamsDatum.getMetadata() == null || streamsDatum.getMetadata().size() == 0)
-            return docAsJson;
+            return streamsDatum;
         else {
             ObjectNode node = (ObjectNode)OBJECT_MAPPER.readTree(docAsJson);
             node.put("_metadata", OBJECT_MAPPER.readTree(OBJECT_MAPPER.writeValueAsBytes(streamsDatum.getMetadata())));
-            return OBJECT_MAPPER.writeValueAsString(node);
+            streamsDatum.setDocument(OBJECT_MAPPER.writeValueAsString(node));
+            return streamsDatum;
         }
     }
 
@@ -494,8 +504,10 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         // keep track of the number of totalFailed and items that we have totalOk.
         for (BulkItemResponse resp : bulkItemResponses.getItems()) {
-            if (resp == null || resp.isFailed())
+            if (resp == null || resp.isFailed()) {
                 failed++;
+                LOGGER.debug("{} ({},{},{}) failed: {}", resp.getOpType(), resp.getIndex(), resp.getType(), resp.getId(), resp.getFailureMessage());
+            }
             else
                 passed++;
         }

@@ -19,6 +19,7 @@
 package org.apache.streams.elasticsearch;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.elasticsearch.action.update.UpdateRequest;
@@ -54,22 +55,22 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
         String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
         String type = ElasticsearchMetadataUtil.getType(metadata, config);
         String id = ElasticsearchMetadataUtil.getId(streamsDatum);
+        String parent = ElasticsearchMetadataUtil.getParent(streamsDatum);
 
-        String json;
         try {
 
-            json = OBJECT_MAPPER.writeValueAsString(streamsDatum.getDocument());
+            String docAsJson = docAsJson(streamsDatum.getDocument());
 
-            LOGGER.debug("Attempt Update: ({},{},{}) {}", index, type, id, json);
+            LOGGER.debug("Attempt Update: ({},{},{},{}) {}", index, type, id, parent, docAsJson);
 
-            update(index, type, id, json);
+            update(index, type, id, parent, docAsJson);
 
         } catch (Throwable e) {
             LOGGER.warn("Unable to Update Document in ElasticSearch: {}", e.getMessage());
         }
     }
 
-    public void update(String indexName, String type, String id, String json) {
+    public void update(String indexName, String type, String id, String parent, String json) {
         UpdateRequest updateRequest;
 
         Preconditions.checkNotNull(id);
@@ -82,8 +83,13 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
                 .id(id)
                 .doc(json);
 
+        if(!Strings.isNullOrEmpty(parent)) {
+            updateRequest = updateRequest.parent(parent);
+            updateRequest = updateRequest.routing(parent);
+        }
+
         // add fields
-        updateRequest.docAsUpsert(true);
+        //updateRequest.docAsUpsert(true);
 
         add(updateRequest);
 
