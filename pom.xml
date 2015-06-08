@@ -173,7 +173,9 @@
         </release.repository.url>
 
         <!-- Plugin and Plugin Dependency Versions -->
+        <build-helper.plugin.version>1.8</build-helper.plugin.version>
         <compiler.plugin.version>3.0</compiler.plugin.version>
+        <clean.plugin.version>2.6</clean.plugin.version>
         <failsafe.plugin.version>2.17</failsafe.plugin.version>
         <surefire.plugin.version>2.17</surefire.plugin.version>
         <jar.plugin.version>2.6</jar.plugin.version>
@@ -315,14 +317,76 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
+                    <version>${clean.plugin.version}</version>
                     <configuration>
                         <filesets>
                             <fileset>
                                 <directory>src/site/resources</directory>
                                 <followSymlinks>false</followSymlinks>
                             </fileset>
+                            <!-- this is here because elasticsearch integration tests don't have a setting to change directory where temp index files get created -->
+                            <fileset>
+                                <directory>data</directory>
+                                <followSymlinks>false</followSymlinks>
+                            </fileset>
+                            <fileset>
+                                <directory>dist</directory>
+                            </fileset>
                         </filesets>
                     </configuration>
+                </plugin>
+            <plugin>
+                    <groupId>org.jvnet.jaxb2.maven2</groupId>
+                    <artifactId>maven-jaxb2-plugin</artifactId>
+                    <version>${jaxb2.version}</version>
+                    <configuration>
+                        <schemaDirectory>src/main/xmlschema</schemaDirectory>
+                        <generateDirectory>target/generated-sources/jaxb2</generateDirectory>
+                        <verbose>true</verbose>
+                        <debug>true</debug>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <forceRegenerate>true</forceRegenerate>
+                        <removeOldOutput>false</removeOldOutput>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${war.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jsonschema2pojo</groupId>
+                    <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                    <version>${jsonschema2pojo.version}</version>
+                    <configuration>
+                        <addCompileSourceRoot>true</addCompileSourceRoot>
+                        <generateBuilders>true</generateBuilders>
+                        <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
+                        <sourcePaths>
+                            <sourcePath>src/main/jsonschema</sourcePath>
+                        </sourcePaths>
+                        <useLongIntegers>true</useLongIntegers>
+                        <useJodaDates>true</useJodaDates>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build-helper.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
@@ -354,74 +418,19 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    <groupId>org.jsonschema2pojo</groupId>
-                    <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-                    <version>${jsonschema2pojo.version}</version>
-                    <configuration>
-                        <addCompileSourceRoot>true</addCompileSourceRoot>
-                        <generateBuilders>true</generateBuilders>
-                        <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
-                        <useLongIntegers>true</useLongIntegers>
-                        <useJodaDates>true</useJodaDates>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>generate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.jvnet.jaxb2.maven2</groupId>
-                    <artifactId>maven-jaxb2-plugin</artifactId>
-                    <version>${jaxb2.version}</version>
-                    <configuration>
-                        <schemaDirectory>src/main/xmlschema</schemaDirectory>
-                        <generateDirectory>target/generated-sources/jaxb2</generateDirectory>
-                        <verbose>true</verbose>
-                        <debug>true</debug>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                        <forceRegenerate>true</forceRegenerate>
-                        <removeOldOutput>false</removeOldOutput>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>generate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>${build-helper.version}</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${jar.plugin.version}</version>
                     <configuration>
                         <skipIfEmpty>true</skipIfEmpty>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>${war.plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>${site.plugin.version}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.maven.doxia</groupId>
-                            <artifactId>doxia-module-markdown</artifactId>
-                            <version>1.6</version>
-                        </dependency>
-                    </dependencies>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>test-jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -477,6 +486,11 @@
                     <version>3.4</version>
                     <dependencies>
                         <dependency>
+                            <groupId>org.apache.maven.doxia</groupId>
+                            <artifactId>doxia-module-markdown</artifactId>
+                            <version>1.6</version>
+                        </dependency>
+						<dependency>
                             <groupId>org.apache.maven.wagon</groupId>
                             <artifactId>wagon-scm</artifactId>
                             <version>2.8</version>
