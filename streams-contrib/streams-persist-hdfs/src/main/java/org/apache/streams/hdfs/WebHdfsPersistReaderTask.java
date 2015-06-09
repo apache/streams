@@ -55,7 +55,7 @@ public class WebHdfsPersistReaderTask implements Runnable {
             if( fileStatus.isFile() && !fileStatus.getPath().getName().startsWith("_")) {
                 LOGGER.info("Started Processing " + fileStatus.getPath().getName());
                 try {
-                    bufferedReader = new BufferedReader(new InputStreamReader(reader.client.open(fileStatus.getPath())));
+                    bufferedReader = new BufferedReader(new InputStreamReader(reader.client.open(fileStatus.getPath()), reader.hdfsConfiguration.getEncoding()));
                 } catch (Exception e) {
                     e.printStackTrace();
                     LOGGER.error(e.getMessage());
