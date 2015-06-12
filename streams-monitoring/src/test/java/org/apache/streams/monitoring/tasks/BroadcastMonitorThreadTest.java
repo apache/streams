@@ -52,9 +52,20 @@ public class BroadcastMonitorThreadTest {
         testThread(thread);
     }
 
+    @Test
+    public void testThreadStreamsConfig() {
+
+        StreamsConfiguration streams = new StreamsConfiguration();
+        MonitoringConfiguration monitoring = new MonitoringConfiguration();
+        monitoring.setBroadcastURI("http://fakeurl.com/fake");
+        monitoring.setMonitoringBroadcastIntervalMs(30000L);
+        streams.setAdditionalProperty("monitoring", monitoring);
+        BroadcastMonitorThread thread = new BroadcastMonitorThread(streams);
+        testThread(thread);
+    }
+
     public void testThread(BroadcastMonitorThread thread) {
-        thread.setDefaultWaitTime(3000L);
-        long testRunLength = thread.getDefaultWaitTime() * 1;
+        long testRunLength = thread.getWaitTime() * 1;
         executor = Executors.newFixedThreadPool(1);
         executor.submit(thread);
 

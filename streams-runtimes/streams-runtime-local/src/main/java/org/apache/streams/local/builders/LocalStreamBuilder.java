@@ -151,7 +151,7 @@ public class LocalStreamBuilder implements StreamBuilder {
             }
         };
         this.useDeprecatedMonitors = false;
-        this.broadcastMonitor = new BroadcastMonitorThread(this.streamConfig);
+        this.broadcastMonitor = new BroadcastMonitorThread(this.streamConfig.getMonitoring());
     }
 
     public void setUseDeprecatedMonitors(boolean useDeprecatedMonitors) {

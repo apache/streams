@@ -53,14 +53,12 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(BroadcastMonitorThread.class);
     private static MBeanServer server;
 
-    private long DEFAULT_WAIT_TIME = 30000;
-    private long waitTime;
-    private ObjectMapper objectMapper;
-    private StreamsConfiguration streamConfig;
     private MonitoringConfiguration configuration;
     private URI broadcastURI = null;
     private MessagePersister messagePersister;
     private volatile boolean keepRunning;
+
+    private static ObjectMapper objectMapper = StreamsJacksonMapper.getInstance();
 
     /**
      * DEPRECATED
@@ -69,23 +67,24 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
      */
     @Deprecated
     public BroadcastMonitorThread(Map<String, Object> streamConfig) {
-        this(new ObjectMapper().convertValue(streamConfig, StreamsConfiguration.class));
+        this(objectMapper.convertValue(streamConfig, MonitoringConfiguration.class));
     }
 
     public BroadcastMonitorThread(StreamsConfiguration streamConfig) {
-        this(streamConfig, new ObjectMapper().convertValue(streamConfig.getAdditionalProperties().get("monitoring"), MonitoringConfiguration.class));
+        this(objectMapper.convertValue(streamConfig.getAdditionalProperties().get("monitoring"), MonitoringConfiguration.class));
     }
 
-    public BroadcastMonitorThread(StreamsConfiguration streamConfig, MonitoringConfiguration configuration) {
+    public BroadcastMonitorThread(MonitoringConfiguration configuration) {
 
-        this.streamConfig = streamConfig;
         this.configuration = configuration;
+        if( this.configuration == null )
+            this.configuration = new ComponentConfigurator<>(MonitoringConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().atPath("monitoring"));
 
         LOGGER.info("BroadcastMonitorThread created");
 
-        prepare();
-
         initializeObjectMapper();
+
+        prepare();
 
         LOGGER.info("BroadcastMonitorThread initialized");
 
@@ -97,7 +96,6 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
      * POJOs which are generated from JSON schemas
      */
     private void initializeObjectMapper() {
-        objectMapper = StreamsJacksonMapper.getInstance();
         SimpleModule simpleModule = new SimpleModule();
 
         simpleModule.addDeserializer(MemoryUsageBroadcast.class, new MemoryUsageDeserializer());
@@ -142,7 +140,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
                 }
 
                 messagePersister.persistMessages(messages);
-                Thread.sleep(waitTime);
+                Thread.sleep(configuration.getMonitoringBroadcastIntervalMs());
             } catch (InterruptedException e) {
                 LOGGER.debug("Broadcast Monitor Interrupted!");
                 Thread.currentThread().interrupt();
@@ -154,60 +152,33 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
         }
     }
 
-    /**
-     * Go through streams config and set the broadcastURI (if present)
-     */
-    private void setBroadcastURI() {
-        if(configuration != null &&
-            configuration.getBroadcastURI() != null) {
-            try {
-                broadcastURI = new URI(configuration.getBroadcastURI());
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Go through streams config and set the thread's wait time (if present)
-     */
-    private void setWaitTime() {
-        try {
-            if (configuration != null &&
-                configuration.getMonitoringBroadcastIntervalMs() != null ) {
-                waitTime = configuration.getMonitoringBroadcastIntervalMs();
-            } else {
-                waitTime = DEFAULT_WAIT_TIME;
-            }
-
-            //Shutdown
-            if(waitTime == -1) {
-                this.keepRunning = false;
-            }
-        } catch (Exception e) {
-            LOGGER.error("Exception while trying to set default broadcast thread wait time: {}", e);
-        }
-    }
-
     public void prepare() {
 
         keepRunning = true;
 
-        LOGGER.info("BroadcastMonitorThread setup " + configuration);
+        LOGGER.info("BroadcastMonitorThread setup " + this.configuration);
 
         server = ManagementFactory.getPlatformMBeanServer();
 
-        setBroadcastURI();
-        setWaitTime();
+        if (this.configuration != null) {
 
-        if( broadcastURI != null ) {
-            if (broadcastURI.getScheme().equals("http")) {
-                messagePersister = new BroadcastMessagePersister(broadcastURI.toString());
-            } else if (broadcastURI.getScheme().equals("udp")) {
-                messagePersister = new LogstashUdpMessagePersister(broadcastURI.toString());
+            try {
+                broadcastURI = new URI(configuration.getBroadcastURI());
+            } catch (Exception e) {
+                LOGGER.error("invalid URI: ", e);
+            }
+
+            if (broadcastURI != null) {
+                if (broadcastURI.getScheme().equals("http")) {
+                    messagePersister = new BroadcastMessagePersister(broadcastURI.toString());
+                } else if (broadcastURI.getScheme().equals("udp")) {
+                    messagePersister = new LogstashUdpMessagePersister(broadcastURI.toString());
+                } else {
+                    LOGGER.error("You need to specify a broadcast URI with either a HTTP or UDP protocol defined.");
+                    throw new RuntimeException();
+                }
             } else {
-                LOGGER.error("You need to specify a broadcast URI with either a HTTP or UDP protocol defined.");
-                throw new RuntimeException();
+                messagePersister = new SLF4JMessagePersister();
             }
         } else {
             messagePersister = new SLF4JMessagePersister();
@@ -221,18 +192,11 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     }
 
     public String getBroadcastURI() {
-        return broadcastURI.toString();
+        return configuration.getBroadcastURI();
     }
 
     public long getWaitTime() {
-        return waitTime;
+        return configuration.getMonitoringBroadcastIntervalMs();
     }
 
-    public long getDefaultWaitTime() {
-        return DEFAULT_WAIT_TIME;
-    }
-
-    public void setDefaultWaitTime(long defaultWaitTime) {
-        this.DEFAULT_WAIT_TIME = defaultWaitTime;
-    }
 }
