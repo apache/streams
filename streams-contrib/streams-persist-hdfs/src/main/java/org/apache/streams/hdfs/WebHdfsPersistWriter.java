@@ -46,6 +46,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
+import java.util.zip.GZIPOutputStream;
 
 public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Closeable, DatumStatusCountable {
     public final static String STREAMS_ID = "WebHdfsPersistWriter";
@@ -208,7 +209,12 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
             return;
 
         // Create the path for where the file is going to live.
-        Path filePath = this.path.suffix("/" + hdfsConfiguration.getWriterFilePrefix() + "-" + new Date().getTime() + ".tsv");
+        Path filePath = this.path.suffix("/" + hdfsConfiguration.getWriterFilePrefix() + "-" + new Date().getTime());
+
+        if( hdfsConfiguration.getCompression().equals(HdfsWriterConfiguration.Compression.GZIP))
+            filePath = filePath.suffix(".gz");
+        else
+            filePath = filePath.suffix(".tsv");
 
         try {
 
@@ -224,7 +230,10 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
             if (client.exists(filePath))
                 throw new RuntimeException("Unable to create file: " + filePath);
 
-            this.currentWriter = new OutputStreamWriter(client.create(filePath));
+            if( hdfsConfiguration.getCompression().equals(HdfsWriterConfiguration.Compression.GZIP))
+                this.currentWriter = new OutputStreamWriter(new GZIPOutputStream(client.create(filePath)));
+            else
+                this.currentWriter = new OutputStreamWriter(client.create(filePath));
 
             // Add another file to the list of written files.
             writtenFiles.add(filePath);

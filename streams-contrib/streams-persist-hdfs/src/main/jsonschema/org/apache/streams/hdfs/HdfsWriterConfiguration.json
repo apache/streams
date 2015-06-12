@@ -21,6 +21,12 @@
             "type": "integer",
             "description": "Lines Per File",
             "default": 1000
+        },
+        "compression": {
+            "type": "string",
+            "description": "compression",
+            "enum" : ["none", "gzip"],
+            "default": "none"
         }
     }
 }
