@@ -151,11 +151,12 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         String type = ElasticsearchMetadataUtil.getType(metadata, config);
         String id = ElasticsearchMetadataUtil.getId(streamsDatum);
         String parent = ElasticsearchMetadataUtil.getParent(streamsDatum);
+        String routing = ElasticsearchMetadataUtil.getRouting(streamsDatum);
 
         try {
             streamsDatum = appendMetadata(streamsDatum);
             String docAsJson = docAsJson(streamsDatum.getDocument());
-            add(index, type, id, parent,
+            add(index, type, id, parent, routing,
                     streamsDatum.getTimestamp() == null ? Long.toString(DateTime.now().getMillis()) : Long.toString(streamsDatum.getTimestamp().getMillis()),
                     docAsJson);
         } catch (Throwable e) {
@@ -327,10 +328,10 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     }
 
     public void add(String indexName, String type, String id, String ts, String json) {
-        add(indexName, type, id, null, ts, json);
+        add(indexName, type, id, null, null, ts, json);
     }
 
-    public void add(String indexName, String type, String id, String parent, String ts, String json) {
+    public void add(String indexName, String type, String id, String parent, String routing, String ts, String json) {
 
         // make sure that these are not null
         Preconditions.checkNotNull(indexName);
@@ -350,6 +351,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
         if(parent != null)
             indexRequestBuilder.setParent(parent);
+
+        if(routing != null)
+            indexRequestBuilder.setRouting(routing);
 
         add(indexRequestBuilder.request());
     }

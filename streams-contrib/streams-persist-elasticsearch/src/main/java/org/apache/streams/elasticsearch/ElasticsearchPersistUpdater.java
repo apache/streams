@@ -56,21 +56,22 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
         String type = ElasticsearchMetadataUtil.getType(metadata, config);
         String id = ElasticsearchMetadataUtil.getId(streamsDatum);
         String parent = ElasticsearchMetadataUtil.getParent(streamsDatum);
+        String routing = ElasticsearchMetadataUtil.getRouting(streamsDatum);
 
         try {
 
             String docAsJson = docAsJson(streamsDatum.getDocument());
 
-            LOGGER.debug("Attempt Update: ({},{},{},{}) {}", index, type, id, parent, docAsJson);
+            LOGGER.debug("Attempt Update: ({},{},{},{},{}) {}", index, type, id, parent, routing, docAsJson);
 
-            update(index, type, id, parent, docAsJson);
+            update(index, type, id, parent, routing, docAsJson);
 
         } catch (Throwable e) {
             LOGGER.warn("Unable to Update Document in ElasticSearch: {}", e.getMessage());
         }
     }
 
-    public void update(String indexName, String type, String id, String parent, String json) {
+    public void update(String indexName, String type, String id, String parent, String routing, String json) {
         UpdateRequest updateRequest;
 
         Preconditions.checkNotNull(id);
@@ -85,6 +86,9 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
 
         if(!Strings.isNullOrEmpty(parent)) {
             updateRequest = updateRequest.parent(parent);
+        }
+
+        if(!Strings.isNullOrEmpty(routing)) {
             updateRequest = updateRequest.routing(parent);
         }
 

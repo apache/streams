@@ -112,6 +112,18 @@ public class ElasticsearchMetadataUtil {
         return parent;
     }
 
+    public static String getRouting(StreamsDatum datum) {
+
+        String routing = null;
+
+        Map<String, Object> metadata = datum.getMetadata();
+
+        if( routing == null && metadata != null && metadata.containsKey("routing"))
+            routing = (String) datum.getMetadata().get("routing");
+
+        return routing;
+    }
+
     public static String getId(Map<String, Object> metadata) {
 
         return (String) metadata.get("id");
