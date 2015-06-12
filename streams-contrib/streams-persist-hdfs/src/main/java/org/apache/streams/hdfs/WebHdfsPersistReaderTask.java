@@ -53,12 +53,11 @@ public class WebHdfsPersistReaderTask implements Runnable {
             BufferedReader bufferedReader;
             LOGGER.info("Found " + fileStatus.getPath().getName());
             if( fileStatus.isFile() && !fileStatus.getPath().getName().startsWith("_")) {
-                LOGGER.info("Started Processing " + fileStatus.getPath().getName());
+                LOGGER.info("Started Processing " + fileStatus.getPath().getName() + " expecting " + reader.hdfsConfiguration.getEncoding());
                 try {
                     bufferedReader = new BufferedReader(new InputStreamReader(reader.client.open(fileStatus.getPath()), reader.hdfsConfiguration.getEncoding()));
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    LOGGER.error(e.getMessage());
+                    LOGGER.error("Exception Opening " + fileStatus.getPath(), e.getMessage());
                     return;
                 }
 

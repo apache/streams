@@ -158,7 +158,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
                 LOGGER.error("Neither file nor directory, wtf");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("IOException", e);
         }
         persistQueue = Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(10000));
         //persistQueue = Queues.synchronizedQueue(new ConcurrentLinkedQueue());
@@ -216,7 +216,9 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
 
     @Override
     public boolean isRunning() {
-        return !task.isDone() && !task.isCancelled();
+        if( task != null)
+            return !task.isDone() && !task.isCancelled();
+        else return true;
     }
 
     @Override
