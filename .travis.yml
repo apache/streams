@@ -1,0 +1,7 @@
+sudo: false
+language: java
+jdk:
+  - oraclejdk7
+install: mvn -Dmaven.test.skip.exec=true clean -q
+# tests take too long to run and produce too much output to enable at this time
+script: mvn -Dmaven.test.skip.exec=true install -q
