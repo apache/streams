@@ -77,12 +77,6 @@
             <artifactId>streams-monitoring</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- This ensures slf4j-log4j12 is not packaged in implementations -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
