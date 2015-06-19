@@ -853,7 +853,7 @@
                                 <configuration>
                                     <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
                                     <descriptorRefs>
-                                        <descriptorRef>source-release</descriptorRef>
+                                        <descriptorRef>source-release-zip-tar</descriptorRef>
                                     </descriptorRefs>
                                     <tarLongFileMode>gnu</tarLongFileMode>
                                 </configuration>
