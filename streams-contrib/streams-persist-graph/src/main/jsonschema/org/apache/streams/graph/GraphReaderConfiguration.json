@@ -6,7 +6,7 @@
     ],
     "id": "#",
     "javaType" : "org.apache.streams.graph.GraphReaderConfiguration",
-    "extends" : {"$ref":"GraphConfiguration.json"},
+    "extends" : {"$ref":"GraphHttpConfiguration.json"},
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "query": {

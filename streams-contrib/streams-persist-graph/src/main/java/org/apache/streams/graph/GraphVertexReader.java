@@ -58,9 +58,9 @@ public class GraphVertexReader extends SimpleHttpProvider implements StreamsPers
 
     public GraphVertexReader(GraphReaderConfiguration configuration) {
         super(mapper.convertValue(configuration, HttpProviderConfiguration.class));
-        if( configuration.getType().equals(GraphConfiguration.Type.NEO_4_J))
+        if( configuration.getType().equals(GraphHttpConfiguration.Type.NEO_4_J))
             super.configuration.setResourcePath("/db/" + configuration.getGraph() + "/transaction/commit");
-        else if( configuration.getType().equals(GraphConfiguration.Type.REXSTER))
+        else if( configuration.getType().equals(GraphHttpConfiguration.Type.REXSTER))
             super.configuration.setResourcePath("/graphs/" + configuration.getGraph());
         this.configuration = configuration;
     }

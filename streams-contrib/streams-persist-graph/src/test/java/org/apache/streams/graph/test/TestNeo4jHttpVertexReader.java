@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.io.IOUtils;
-import org.apache.streams.graph.GraphConfiguration;
+import org.apache.streams.graph.GraphHttpConfiguration;
 import org.apache.streams.graph.GraphReaderConfiguration;
 import org.apache.streams.graph.GraphVertexReader;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -41,9 +41,9 @@ import java.util.List;
  *
  * Test that graph db responses can be converted to streams data
  */
-public class TestNeo4jVertexReader {
+public class TestNeo4jHttpVertexReader {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TestNeo4jVertexReader.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(TestNeo4jHttpVertexReader.class);
 
     private final static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
@@ -57,10 +57,10 @@ public class TestNeo4jVertexReader {
     public void prepareTest() throws IOException {
 
         testConfiguration = new GraphReaderConfiguration();
-        testConfiguration.setType(GraphConfiguration.Type.NEO_4_J);
+        testConfiguration.setType(GraphHttpConfiguration.Type.NEO_4_J);
 
         graphPersistReader = new GraphVertexReader(testConfiguration);
-        InputStream testActivityFileStream = TestNeo4jVertexReader.class.getClassLoader()
+        InputStream testActivityFileStream = TestNeo4jHttpVertexReader.class.getClassLoader()
                 .getResourceAsStream("sampleReaderResult.json");
         String sampleText = IOUtils.toString(testActivityFileStream, "utf-8");
         sampleReaderResult = mapper.readValue(sampleText, JsonNode.class);
