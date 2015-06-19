@@ -18,71 +18,82 @@
 
 package org.apache.streams.elasticsearch.test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.elasticsearch.ElasticsearchConfiguration;
 import org.apache.streams.elasticsearch.ElasticsearchPersistWriter;
 import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration;
+import org.apache.streams.elasticsearch.processor.DatumFromMetadataProcessor;
+import org.apache.streams.elasticsearch.processor.DocumentToMetadataProcessor;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.test.ElasticsearchIntegrationTest;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by sblackmon on 10/20/14.
  */
 @ElasticsearchIntegrationTest.ClusterScope(scope= ElasticsearchIntegrationTest.Scope.TEST, numNodes=1)
-public class TestElasticsearchPersistWriter extends ElasticsearchIntegrationTest {
+public class TestDatumFromMetadataProcessorIT extends ElasticsearchIntegrationTest {
 
-    private final String TEST_INDEX = "TestElasticsearchPersistWriter".toLowerCase();
+    private final String TEST_INDEX = "TestDatumFromMetadataProcessor".toLowerCase();
 
-    private ElasticsearchWriterConfiguration testConfiguration;
+    private ElasticsearchReaderConfiguration testConfiguration;
 
-    public void prepareTest() {
+    @Test
+    public void testSerializability() {
+        DatumFromMetadataProcessor processor = new DatumFromMetadataProcessor(testConfiguration);
 
-        testConfiguration = new ElasticsearchWriterConfiguration();
-        testConfiguration.setHosts(Lists.newArrayList("localhost"));
-        testConfiguration.setClusterName(cluster().getClusterName());
-
+        DatumFromMetadataProcessor clone = (DatumFromMetadataProcessor) SerializationUtils.clone(processor);
     }
 
-   @Test
-    public void testPersistWriterString() {
+    @Before
+    public void prepareTest() {
 
-        ElasticsearchWriterConfiguration testConfiguration = new ElasticsearchWriterConfiguration();
+        testConfiguration = new ElasticsearchReaderConfiguration();
         testConfiguration.setHosts(Lists.newArrayList("localhost"));
         testConfiguration.setClusterName(cluster().getClusterName());
-        testConfiguration.setBatchSize(1l);
-        testConfiguration.setIndex(TEST_INDEX);
-        testConfiguration.setType("string");
-        ElasticsearchPersistWriter testPersistWriter = new ElasticsearchPersistWriter(testConfiguration);
-        testPersistWriter.prepare(null);
 
         String testJsonString = "{\"dummy\":\"true\"}";
 
-        assert(!indexExists(TEST_INDEX));
+        client().index(client().prepareIndex(TEST_INDEX, "activity", "id").setSource(testJsonString).request()).actionGet(5, TimeUnit.SECONDS);
 
-        testPersistWriter.write(new StreamsDatum(testJsonString, "test"));
+    }
 
-        testPersistWriter.cleanUp();
+    @Test
+    public void testDatumFromMetadataProcessor() {
 
-        flushAndRefresh();
+        Map<String, Object> metadata = Maps.newHashMap();
 
-        assert(indexExists(TEST_INDEX));
+        metadata.put("index", TEST_INDEX);
+        metadata.put("type", "activity");
+        metadata.put("id", "id");
 
-        long count = client().count(client().prepareCount().request()).actionGet().getCount();
+        DatumFromMetadataProcessor processor = new DatumFromMetadataProcessor(testConfiguration);
 
-        assert(count > 0);
+        StreamsDatum testInput = new StreamsDatum(null);
+
+        testInput.setMetadata(metadata);
+
+        Assert.assertNull(testInput.document);
+
+        processor.prepare(null);
+
+        StreamsDatum testOutput = processor.process(testInput).get(0);
+
+        processor.cleanUp();
+
+        Assert.assertNotNull(testOutput.document);
 
     }
 }

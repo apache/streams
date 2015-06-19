@@ -173,6 +173,8 @@
         </release.repository.url>
 
         <!-- Plugin and Plugin Dependency Versions -->
+
+        <clean.plugin.version>2.6</clean.plugin.version>
         <compiler.plugin.version>3.0</compiler.plugin.version>
         <failsafe.plugin.version>2.17</failsafe.plugin.version>
         <surefire.plugin.version>2.17</surefire.plugin.version>
