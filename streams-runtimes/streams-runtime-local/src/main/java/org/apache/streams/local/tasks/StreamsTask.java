@@ -18,6 +18,7 @@
 
 package org.apache.streams.local.tasks;
 
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 
@@ -31,16 +32,6 @@ import java.util.concurrent.BlockingQueue;
  * in local mode.
  */
 public interface StreamsTask extends Runnable{
-    /**
-     * Represents the default time to sleep a task before polling for the next set of work items
-     */
-    static final long DEFAULT_SLEEP_TIME_MS = 5000;
-
-    /**
-     * Represents the default amount of time to wait for new data to flow through the system before assuming it should
-     * shut down
-     */
-    static final int DEFAULT_TIMEOUT_MS = 100000; //Will result in a default timeout of 1 minute if used
 
     /**
      * Informs the task to stop. Tasks may or may not try to empty its inbound queue before halting.
@@ -68,7 +59,7 @@ public interface StreamsTask extends Runnable{
      * Set the configuration object that will shared and passed to all instances of StreamsTask.
      * @param config optional configuration information
      */
-    public void setStreamConfig(Map<String, Object> config);
+    public void setStreamConfig(StreamsConfiguration config);
 
     /**
      * Returns true when the task has not completed. Returns false otherwise

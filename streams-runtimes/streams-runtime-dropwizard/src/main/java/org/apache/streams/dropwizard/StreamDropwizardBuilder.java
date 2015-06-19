@@ -18,8 +18,12 @@
 
 package org.apache.streams.dropwizard;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.streams.config.StreamsConfiguration;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsProvider;
+import org.apache.streams.local.LocalRuntimeConfiguration;
 import org.apache.streams.local.builders.LocalStreamBuilder;
 
 import java.util.Map;
@@ -33,6 +37,10 @@ public class StreamDropwizardBuilder extends LocalStreamBuilder implements Strea
 
     public StreamDropwizardBuilder() {
         super();
+    }
+
+    public StreamDropwizardBuilder(StreamsConfiguration streamConfig) {
+        super(new ObjectMapper().convertValue(streamConfig, LocalRuntimeConfiguration.class));
     }
 
     public StreamDropwizardBuilder(Map<String, Object> streamConfig) {

@@ -19,6 +19,7 @@
 package org.apache.streams.local.builders;
 
 import com.google.common.collect.Lists;
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.core.*;
 import org.apache.streams.local.tasks.StreamsPersistWriterTask;
 import org.apache.streams.local.tasks.StreamsProcessorTask;
@@ -54,14 +55,14 @@ public class StreamComponent {
 
     private List<StreamsTask> tasks;
 
-    private Map<String, Object> streamConfig;
+    private StreamsConfiguration streamConfig;
 
     /**
      *
      * @param id
      * @param provider
      */
-    public StreamComponent(String id, StreamsProvider provider, boolean perpetual, Map<String, Object> streamConfig) {
+    public StreamComponent(String id, StreamsProvider provider, boolean perpetual, StreamsConfiguration streamConfig) {
         this.id = id;
         this.provider = provider;
         this.perpetual = perpetual;
@@ -76,7 +77,7 @@ public class StreamComponent {
      * @param start
      * @param end
      */
-    public StreamComponent(String id, StreamsProvider provider, DateTime start, DateTime end, Map<String, Object> streamConfig) {
+    public StreamComponent(String id, StreamsProvider provider, DateTime start, DateTime end, StreamsConfiguration streamConfig) {
         this.id = id;
         this.provider = provider;
         this.dateRange = new DateTime[2];
@@ -93,7 +94,7 @@ public class StreamComponent {
      * @param provider
      * @param sequence
      */
-    public StreamComponent(String id, StreamsProvider provider, BigInteger sequence, Map<String, Object> streamConfig) {
+    public StreamComponent(String id, StreamsProvider provider, BigInteger sequence, StreamsConfiguration streamConfig) {
         this.id = id;
         this.provider = provider;
         this.sequence = sequence;
@@ -107,7 +108,7 @@ public class StreamComponent {
      * @param inQueue
      * @param numTasks
      */
-    public StreamComponent(String id, StreamsProcessor processor, BlockingQueue<StreamsDatum> inQueue, int numTasks, Map<String, Object> streamConfig) {
+    public StreamComponent(String id, StreamsProcessor processor, BlockingQueue<StreamsDatum> inQueue, int numTasks, StreamsConfiguration streamConfig) {
         this.id = id;
         this.processor = processor;
         this.inQueue = inQueue;
@@ -123,7 +124,7 @@ public class StreamComponent {
      * @param inQueue
      * @param numTasks
      */
-    public StreamComponent(String id, StreamsPersistWriter writer, BlockingQueue<StreamsDatum> inQueue, int numTasks, Map<String, Object> streamConfig) {
+    public StreamComponent(String id, StreamsPersistWriter writer, BlockingQueue<StreamsDatum> inQueue, int numTasks, StreamsConfiguration streamConfig) {
         this.id = id;
         this.writer = writer;
         this.inQueue = inQueue;

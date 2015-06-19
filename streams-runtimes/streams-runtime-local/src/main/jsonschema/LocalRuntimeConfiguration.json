@@ -6,10 +6,14 @@
     "id": "#",
     "type": "object",
     "javaType" : "org.apache.streams.local.LocalRuntimeConfiguration",
+    "extends": {
+        "$ref": "../../../../../streams-config/src/main/jsonschema/StreamsConfiguration.json"
+    },
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
-        "providerTimeoutMs": {
-            "type" : "integer"
+        "monitoring": {
+            "type" : "object",
+            "javaType" : "org.apache.streams.local.monitoring.MonitoringConfiguration"
         }
     }
 }

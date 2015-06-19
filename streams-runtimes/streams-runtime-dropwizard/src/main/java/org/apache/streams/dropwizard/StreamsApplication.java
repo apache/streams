@@ -145,11 +145,7 @@ public class StreamsApplication extends Application<StreamsDropwizardConfigurati
 
     public StreamBuilder setup(StreamsConfiguration streamsConfiguration, Set<StreamsProvider> resourceProviders) {
 
-        Map<String, Object> streamConfig = Maps.newHashMap();
-        streamConfig.put(LocalStreamBuilder.TIMEOUT_KEY, streamsConfiguration.getTimeoutMs().intValue());
-        if(! Strings.isNullOrEmpty(streamsConfiguration.getBroadcastURI()) ) streamConfig.put("broadcastURI", streamsConfiguration.getBroadcastURI());
-        if(streamsConfiguration.getBroadcastIntervalMs() != null ) streamConfig.put("monitoring_broadcast_interval_ms", streamsConfiguration.getBroadcastIntervalMs().intValue());
-        StreamBuilder builder = new StreamDropwizardBuilder(1000, streamConfig);
+        StreamBuilder builder = new StreamDropwizardBuilder(streamsConfiguration);
 
         List<String> providers = new ArrayList<>();
         for( StreamsProvider provider: resourceProviders) {

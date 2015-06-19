@@ -19,6 +19,7 @@
 package org.apache.streams.local.tasks;
 
 import com.google.common.collect.Maps;
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.core.*;
 import org.apache.streams.core.util.DatumUtils;
 import org.apache.streams.local.counters.StreamsTaskCounter;
@@ -39,9 +40,8 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
 
 
     private StreamsProcessor processor;
-    private long sleepTime;
     private AtomicBoolean keepRunning;
-    private Map<String, Object> streamConfig;
+    private StreamsConfiguration streamConfig;
     private BlockingQueue<StreamsDatum> inQueue;
     private AtomicBoolean isRunning;
     private AtomicBoolean blocked;
@@ -59,25 +59,17 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
      * @param processor process to run in task
      */
     public StreamsProcessorTask(StreamsProcessor processor) {
-        this(processor, DEFAULT_SLEEP_TIME_MS, null);
+        this(processor, new StreamsConfiguration());
     }
 
     /**
-     *
      * @param processor
      * @param streamConfig
      */
-    public StreamsProcessorTask(StreamsProcessor processor, Map<String, Object> streamConfig) { this(processor, DEFAULT_SLEEP_TIME_MS, streamConfig); }
-
-    /**
-     *
-     * @param processor processor to run in task
-     * @param sleepTime time to sleep when incoming queue is empty
-     */
-    public StreamsProcessorTask(StreamsProcessor processor, long sleepTime, Map<String, Object> streamConfig) {
+    public StreamsProcessorTask(StreamsProcessor processor, StreamsConfiguration streamConfig) {
         super(streamConfig);
+        this.streamConfig = super.streamConfig;
         this.processor = processor;
-        this.sleepTime = sleepTime;
         this.keepRunning = new AtomicBoolean(true);
         this.isRunning = new AtomicBoolean(true);
         this.blocked = new AtomicBoolean(true);
@@ -94,7 +86,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
     }
 
     @Override
-    public void setStreamConfig(Map<String, Object> config) {
+    public void setStreamConfig(StreamsConfiguration config) {
         this.streamConfig = config;
     }
 
@@ -119,7 +111,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                 StreamsDatum datum = null;
                 try {
                     this.blocked.set(true);
-                    datum = this.inQueue.poll(5, TimeUnit.SECONDS);
+                    datum = this.inQueue.poll(streamConfig.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
                 } catch (InterruptedException ie) {
                     LOGGER.debug("Received InteruptedException, shutting down and re-applying interrupt status.");
                     this.keepRunning.set(false);

@@ -19,6 +19,7 @@
 package org.apache.streams.local.tasks;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.core.*;
 import org.apache.streams.core.util.DatumUtils;
 import org.apache.streams.local.counters.StreamsTaskCounter;
@@ -38,9 +39,8 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPersistWriterTask.class);
 
     private StreamsPersistWriter writer;
-    private long sleepTime = DEFAULT_SLEEP_TIME_MS * 10;
     private AtomicBoolean keepRunning;
-    private Map<String, Object> streamConfig;
+    private StreamsConfiguration streamConfig;
     private BlockingQueue<StreamsDatum> inQueue;
     private AtomicBoolean isRunning;
     private AtomicBoolean blocked;
@@ -59,22 +59,18 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
      * @param writer writer to execute in task
      */
     public StreamsPersistWriterTask(StreamsPersistWriter writer) {
-        this(writer, DEFAULT_SLEEP_TIME_MS, null);
-    }
-
-    public StreamsPersistWriterTask(StreamsPersistWriter writer, Map<String, Object> streamConfig) {
-        this(writer, DEFAULT_SLEEP_TIME_MS, streamConfig);
+        this(writer, null);
     }
 
     /**
      *
      * @param writer writer to execute in task
-     * @param sleepTime time to sleep when inbound queue is empty.
+     * @param streamConfig stream config
      */
-    public StreamsPersistWriterTask(StreamsPersistWriter writer, long sleepTime, Map<String, Object> streamConfig) {
+    public StreamsPersistWriterTask(StreamsPersistWriter writer, StreamsConfiguration streamConfig) {
         super(streamConfig);
+        this.streamConfig = super.streamConfig;
         this.writer = writer;
-        this.sleepTime = sleepTime;
         this.keepRunning = new AtomicBoolean(true);
         this.isRunning = new AtomicBoolean(true);
         this.blocked = new AtomicBoolean(false);
@@ -86,7 +82,7 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
     }
 
     @Override
-    public void setStreamConfig(Map<String, Object> config) {
+    public void setStreamConfig(StreamsConfiguration config) {
         this.streamConfig = config;
     }
 
@@ -140,11 +136,11 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                     LOGGER.debug("Received null StreamsDatum @ writer : {}", this.writer.getClass().getName());
                 }
             }
-            Uninterruptibles.sleepUninterruptibly(sleepTime, TimeUnit.MILLISECONDS);
+            Uninterruptibles.sleepUninterruptibly(streamConfig.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
         } catch(Exception e) {
             LOGGER.error("Failed to execute Persist Writer {}",this.writer.getClass().getSimpleName(), e);
         } finally {
-            Uninterruptibles.sleepUninterruptibly(sleepTime, TimeUnit.MILLISECONDS);
+            Uninterruptibles.sleepUninterruptibly(streamConfig.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
             this.writer.cleanUp();
             this.isRunning.set(false);
         }

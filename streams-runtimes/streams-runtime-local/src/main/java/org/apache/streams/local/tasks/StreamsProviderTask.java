@@ -19,6 +19,7 @@
 package org.apache.streams.local.tasks;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.core.*;
 import org.apache.streams.core.util.DatumUtils;
 import org.apache.streams.local.counters.StreamsTaskCounter;
@@ -62,7 +63,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     private Type type;
     private BigInteger sequence;
     private DateTime[] dateRange;
-    private Map<String, Object> config;
+    private StreamsConfiguration config;
 
     private int timeout;
     private long sleepTime;
@@ -74,15 +75,16 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
      * Constructor for a StreamsProvider to execute {@link org.apache.streams.core.StreamsProvider:readCurrent()}
      * @param provider
      */
-    public StreamsProviderTask(StreamsProvider provider, boolean perpetual, Map<String, Object> streamConfig) {
+    public StreamsProviderTask(StreamsProvider provider, boolean perpetual, StreamsConfiguration streamConfig) {
         super(streamConfig);
+        streamConfig = super.streamConfig;
         this.provider = provider;
         if( perpetual )
             this.type = Type.PERPETUAL;
         else
             this.type = Type.READ_CURRENT;
-        this.timeout = DEFAULT_TIMEOUT_MS;
-        this.sleepTime = DEFAULT_SLEEP_TIME_MS;
+        this.timeout = super.streamConfig.getProviderTimeoutMs().intValue();
+        this.sleepTime = streamConfig.getBatchFrequencyMs();
     }
 
     /**
@@ -90,13 +92,13 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
      * @param provider
      * @param sequence
      */
-    public StreamsProviderTask(StreamsProvider provider, BigInteger sequence, Map<String, Object> streamConfig) {
+    public StreamsProviderTask(StreamsProvider provider, BigInteger sequence, StreamsConfiguration streamConfig) {
         super(streamConfig);
         this.provider = provider;
         this.type = Type.READ_NEW;
         this.sequence = sequence;
-        this.timeout = DEFAULT_TIMEOUT_MS;
-        this.sleepTime = DEFAULT_SLEEP_TIME_MS;
+        this.timeout = streamConfig.getProviderTimeoutMs().intValue();
+        this.sleepTime = streamConfig.getBatchFrequencyMs();
     }
 
     /**
@@ -105,15 +107,15 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
      * @param start
      * @param end
      */
-    public StreamsProviderTask(StreamsProvider provider, DateTime start, DateTime end, Map<String, Object> streamConfig) {
+    public StreamsProviderTask(StreamsProvider provider, DateTime start, DateTime end, StreamsConfiguration streamConfig) {
         super(streamConfig);
         this.provider = provider;
         this.type = Type.READ_RANGE;
         this.dateRange = new DateTime[2];
         this.dateRange[START] = start;
         this.dateRange[END] = end;
-        this.timeout = DEFAULT_TIMEOUT_MS;
-        this.sleepTime = DEFAULT_SLEEP_TIME_MS;
+        this.timeout = streamConfig.getProviderTimeoutMs().intValue();
+        this.sleepTime = streamConfig.getBatchFrequencyMs();
     }
 
     public void setTimeout(int timeout) {
@@ -141,7 +143,7 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
     }
 
     @Override
-    public void setStreamConfig(Map<String, Object> config) {
+    public void setStreamConfig(StreamsConfiguration config) {
         this.config = config;
     }
 

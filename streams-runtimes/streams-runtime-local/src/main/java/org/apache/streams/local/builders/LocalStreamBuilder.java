@@ -18,10 +18,16 @@
 
 package org.apache.streams.local.builders;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfiguration;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
+import org.apache.streams.local.LocalRuntimeConfiguration;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.executors.ShutdownStreamOnUnhandleThrowableThreadPoolExecutor;
+import org.apache.streams.local.monitoring.MonitoringConfiguration;
 import org.apache.streams.local.queues.ThroughputQueue;
 import org.apache.streams.local.tasks.*;
 import org.apache.streams.monitoring.tasks.BroadcastMonitorThread;
@@ -54,7 +60,7 @@ public class LocalStreamBuilder implements StreamBuilder {
 
     private Map<String, StreamComponent> providers;
     private Map<String, StreamComponent> components;
-    private Map<String, Object> streamConfig;
+    private LocalRuntimeConfiguration streamConfig;
     private Map<StreamsTask, Future> futures;
     private ExecutorService executor;
     private ExecutorService monitor;
@@ -70,16 +76,18 @@ public class LocalStreamBuilder implements StreamBuilder {
     private boolean useDeprecatedMonitors;
 
     /**
-     * Creates a local stream builder with no config object and default maximum internal queue size of 500
+     * Creates a local stream builder with all configuration resolved by typesafe
      */
-    public LocalStreamBuilder(){
-        this(DEFAULT_QUEUE_SIZE, null);
+    public LocalStreamBuilder() {
+        this(new ObjectMapper().convertValue(StreamsConfigurator.detectConfiguration(), LocalRuntimeConfiguration.class));
     }
 
     /**
      * Creates a local stream builder with a config object and default maximum internal queue size of 500
      * @param streamConfig
+     * @deprecated use LocalRuntimeConfiguration constructor instead
      */
+    @Deprecated
     public LocalStreamBuilder(Map<String, Object> streamConfig) {
         this(DEFAULT_QUEUE_SIZE, streamConfig);
     }
@@ -88,7 +96,10 @@ public class LocalStreamBuilder implements StreamBuilder {
      * Creates a local stream builder with no config object. If maxQueueCapacity is less than 1 the queue is
      * unbounded.
      * @param maxQueueCapacity
+     *
+     * @deprecated use LocalRuntimeConfiguration constructor instead
      */
+    @Deprecated
     public LocalStreamBuilder(int maxQueueCapacity) {
         this(maxQueueCapacity, null);
     }
@@ -96,16 +107,41 @@ public class LocalStreamBuilder implements StreamBuilder {
     /**
      * Creates a local stream builder with a config object. If maxQueueCapacity is less than 1 the queue is
      * unbounded.
+     *
      * @param maxQueueCapacity
      * @param streamConfig
+     *
+     * @deprecated use LocalRuntimeConfiguration constructor instead
      */
+    @Deprecated
     public LocalStreamBuilder(int maxQueueCapacity, Map<String, Object> streamConfig) {
+        this(new LocalRuntimeConfiguration());
+        this.streamConfig.setQueueSize(new Long(maxQueueCapacity));
+        if( streamConfig != null && streamConfig.get(LocalStreamBuilder.TIMEOUT_KEY) != null )
+            this.streamConfig.setProviderTimeoutMs(new Long((Integer) (streamConfig.get(LocalStreamBuilder.TIMEOUT_KEY))));
+        if( streamConfig != null && streamConfig.get(LocalStreamBuilder.STREAM_IDENTIFIER_KEY) != null )
+            this.streamConfig.setIdentifier((String)streamConfig.get(LocalStreamBuilder.STREAM_IDENTIFIER_KEY));
+        if( streamConfig != null && streamConfig.get(LocalStreamBuilder.BROADCAST_KEY) != null ) {
+            MonitoringConfiguration monitoringConfiguration = new MonitoringConfiguration();
+            monitoringConfiguration.setBroadcastURI((String)streamConfig.get(LocalStreamBuilder.BROADCAST_KEY));
+            if(streamConfig.get(LocalStreamBuilder.BROADCAST_INTERVAL_KEY) != null)
+                monitoringConfiguration.setMonitoringBroadcastIntervalMs(Long.parseLong((String)streamConfig.get(LocalStreamBuilder.BROADCAST_INTERVAL_KEY)));
+            this.streamConfig.setMonitoring(monitoringConfiguration);
+        }
+    }
+
+    public LocalStreamBuilder(LocalRuntimeConfiguration streamConfig) {
+        this.streamConfig = streamConfig;
         this.providers = new HashMap<String, StreamComponent>();
         this.components = new HashMap<String, StreamComponent>();
-        this.streamConfig = streamConfig;
         this.totalTasks = 0;
         this.monitorTasks = 0;
-        this.maxQueueCapacity = maxQueueCapacity;
+        this.futures = new HashMap<>();
+    }
+
+    public void prepare() {
+        this.streamIdentifier = streamConfig.getIdentifier();
+        this.streamConfig.setStartedAt(startedAt.getMillis());
         final LocalStreamBuilder self = this;
         this.shutdownHook = new Thread() {
             @Override
@@ -114,15 +150,8 @@ public class LocalStreamBuilder implements StreamBuilder {
                 self.stopInternal(true);
             }
         };
-
-        setStreamIdentifier();
-        if(this.streamConfig != null) {
-            this.streamConfig.put(DEFAULT_STARTED_AT_KEY, startedAt.getMillis());
-        }
         this.useDeprecatedMonitors = false;
-        this.broadcastMonitor = new BroadcastMonitorThread(this.streamConfig);
-
-        this.futures = new HashMap<>();
+        this.broadcastMonitor = new BroadcastMonitorThread(this.streamConfig.getMonitoring());
     }
 
     public void setUseDeprecatedMonitors(boolean useDeprecatedMonitors) {
@@ -198,6 +227,7 @@ public class LocalStreamBuilder implements StreamBuilder {
      */
     @Override
     public void start() {
+        prepare();
         attachShutdownHandler();
         boolean isRunning = true;
         this.executor = new ShutdownStreamOnUnhandleThrowableThreadPoolExecutor(this.totalTasks, this);
@@ -435,18 +465,17 @@ public class LocalStreamBuilder implements StreamBuilder {
 
     protected int getTimeout() {
         //Set the timeout of it is configured, otherwise signal downstream components to use their default
-        return streamConfig != null && streamConfig.containsKey(TIMEOUT_KEY) ? (Integer)streamConfig.get(TIMEOUT_KEY) : -1;
+        return streamConfig.getProviderTimeoutMs().intValue();
     }
 
-    private void setStreamIdentifier() {
-        if(streamConfig != null &&
-                streamConfig.containsKey(STREAM_IDENTIFIER_KEY) &&
-                streamConfig.get(STREAM_IDENTIFIER_KEY) != null &&
-                streamConfig.get(STREAM_IDENTIFIER_KEY).toString().length() > 0) {
-            this.streamIdentifier = streamConfig.get(STREAM_IDENTIFIER_KEY).toString();
-        } else {
-            this.streamIdentifier = DEFAULT_STREAM_IDENTIFIER;
+    private LocalRuntimeConfiguration convertConfiguration(Map<String, Object> streamConfig) {
+        LocalRuntimeConfiguration config = new LocalRuntimeConfiguration();
+        if( streamConfig != null ) {
+            for( Map.Entry<String, Object> item : streamConfig.entrySet() ) {
+                config.setAdditionalProperty(item.getKey(), item.getValue());
+            }
         }
+        return config;
     }
 
 }

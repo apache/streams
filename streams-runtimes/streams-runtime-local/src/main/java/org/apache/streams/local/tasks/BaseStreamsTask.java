@@ -21,12 +21,15 @@ package org.apache.streams.local.tasks;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
+import org.apache.streams.config.StreamsConfiguration;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.SerializationUtil;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,17 +49,16 @@ public abstract class BaseStreamsTask implements StreamsTask {
     private List<BlockingQueue<StreamsDatum>> outQueues = new LinkedList<BlockingQueue<StreamsDatum>>();
     private int inIndex = 0;
     private ObjectMapper mapper;
-    protected Map<String, Object> streamConfig;
+    protected StreamsConfiguration streamConfig;
 
-    private long startedAt;
-    private String streamIdentifier;
-
-    public BaseStreamsTask(Map<String, Object> config) {
+    public BaseStreamsTask(StreamsConfiguration config) {
         this.mapper = StreamsJacksonMapper.getInstance();
         this.mapper.registerSubtypes(Activity.class);
-        this.streamConfig = config;
+        if( config != null )
+            this.streamConfig = config;
+        else
+            this.streamConfig = StreamsConfigurator.detectConfiguration();
 
-        setStreamIdentifier();
         setStartedAt();
     }
 
@@ -201,34 +203,15 @@ public abstract class BaseStreamsTask implements StreamsTask {
     }
 
     public long getStartedAt() {
-        return startedAt;
+        return streamConfig.getStartedAt();
     }
 
     public void setStartedAt() {
-        if(streamConfig != null &&
-                streamConfig.containsKey(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY) &&
-                streamConfig.get(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY) != null &&
-                streamConfig.get(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY) instanceof Long) {
-            this.startedAt = Long.parseLong(streamConfig.get(LocalStreamBuilder.DEFAULT_STARTED_AT_KEY).toString());
-        } else {
-            this.startedAt = -1;
-        }
+        streamConfig.setStartedAt(DateTime.now().getMillis());
     }
 
     public String getStreamIdentifier() {
-        return streamIdentifier;
+        return streamConfig.getIdentifier();
     }
-
-    public void setStreamIdentifier() {
-        if(streamConfig != null &&
-                streamConfig.containsKey(LocalStreamBuilder.STREAM_IDENTIFIER_KEY) &&
-                streamConfig.get(LocalStreamBuilder.STREAM_IDENTIFIER_KEY) != null &&
-                streamConfig.get(LocalStreamBuilder.STREAM_IDENTIFIER_KEY).toString().length() > 0) {
-            this.streamIdentifier = streamConfig.get(LocalStreamBuilder.STREAM_IDENTIFIER_KEY).toString();
-        } else {
-            this.streamIdentifier = LocalStreamBuilder.DEFAULT_STREAM_IDENTIFIER;
-        }
-    }
-
 
 }
