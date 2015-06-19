@@ -35,8 +35,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Unit tests for {@link org.apache.streams.rss.provider.RssStreamProviderTask}
  */
-@Ignore("ignore until test resources are available.")
-public class RssStreamProviderTaskTest {
+public class RssStreamProviderTaskIT {
 
 
     @Before

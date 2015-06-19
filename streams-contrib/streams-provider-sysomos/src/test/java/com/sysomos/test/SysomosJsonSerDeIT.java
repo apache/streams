@@ -34,10 +34,9 @@ import java.io.InputStreamReader;
 /**
  * Tests ability to convert String json form to {@link com.sysomos.json.Sysomos} form
  */
-@Ignore("ignore until test resources are available.")
-public class SysomosJsonSerDeTest {
+public class SysomosJsonSerDeIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(SysomosJsonSerDeTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(SysomosJsonSerDeIT.class);
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -48,7 +47,7 @@ public class SysomosJsonSerDeTest {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-        InputStream is = SysomosJsonSerDeTest.class.getResourceAsStream("/sysomos_jsons.txt");
+        InputStream is = SysomosJsonSerDeIT.class.getResourceAsStream("/sysomos_jsons.txt");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 

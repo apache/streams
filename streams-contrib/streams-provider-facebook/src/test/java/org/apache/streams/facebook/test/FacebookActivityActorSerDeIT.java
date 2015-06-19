@@ -18,16 +18,15 @@
 
 package org.apache.streams.facebook.test;
 
-import org.apache.streams.facebook.api.FacebookPostActivitySerializer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
-import org.apache.streams.facebook.Post;
+import org.apache.streams.facebook.Page;
+import org.apache.streams.facebook.api.FacebookPageActivitySerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -36,41 +35,33 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 
 /**
- * Tests conversion of Facebook Post inputs to Activity
+ * Tests conversion of Facebook Page inputs to Actor
  */
-@Ignore("ignore until test resources are available.")
-public class FacebookActivitySerDeTest {
+public class FacebookActivityActorSerDeIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FacebookActivitySerDeTest.class);
-    private FacebookPostActivitySerializer serializer = new FacebookPostActivitySerializer();
+    private final static Logger LOGGER = LoggerFactory.getLogger(FacebookActivityActorSerDeIT.class);
+    private FacebookPageActivitySerializer serializer = new FacebookPageActivitySerializer();
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Test
-    public void Tests()
+    public void Tests() throws Exception
     {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-        InputStream is = FacebookActivitySerDeTest.class.getResourceAsStream("/testpost.json");
+        InputStream is = FacebookActivityActorSerDeIT.class.getResourceAsStream("/testpage.json");
         Joiner joiner = Joiner.on(" ").skipNulls();
         is = new BoundedInputStream(is, 10000);
         String json;
 
-        try {
-            json = joiner.join(IOUtils.readLines(is));
-            LOGGER.debug(json);
+        json = joiner.join(IOUtils.readLines(is));
+        LOGGER.debug(json);
 
-            Post post = mapper.readValue(json, Post.class);
+        Page page = mapper.readValue(json, Page.class);
 
-            Activity activity = serializer.deserialize(post);
+        Activity activity = serializer.deserialize(page);
 
-            LOGGER.debug(mapper.writeValueAsString(activity));
-
-        } catch( Exception e ) {
-            System.out.println(e);
-            e.printStackTrace();
-            Assert.fail();
-        }
+        LOGGER.debug(mapper.writeValueAsString(activity));
     }
 }

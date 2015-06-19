@@ -46,9 +46,8 @@ import static org.junit.Assert.assertNull;
 /**
  * Tests conversion of gplus inputs to Activity
  */
-@Ignore("ignore until test resources are available.")
-public class GooglePlusCommentSerDeTest {
-    private final static Logger LOGGER = LoggerFactory.getLogger(GooglePlusCommentSerDeTest.class);
+public class GooglePlusCommentSerDeIT {
+    private final static Logger LOGGER = LoggerFactory.getLogger(GooglePlusCommentSerDeIT.class);
     private ObjectMapper objectMapper;
     private GooglePlusActivityUtil googlePlusActivityUtil;
 
@@ -65,7 +64,7 @@ public class GooglePlusCommentSerDeTest {
 
     @org.junit.Test
     public void testCommentObjects() {
-        InputStream is = GooglePlusPersonSerDeTest.class.getResourceAsStream("/google_plus_comments_jsons.txt");
+        InputStream is = GooglePlusCommentSerDeIT.class.getResourceAsStream("/google_plus_comments_jsons.txt");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 
