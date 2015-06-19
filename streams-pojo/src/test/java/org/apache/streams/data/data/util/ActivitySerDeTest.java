@@ -23,7 +23,6 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.ActivityObject;
 import org.junit.Test;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -33,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -62,8 +62,12 @@ public class ActivitySerDeTest {
             InputStream testActivityFileStream = ActivitySerDeTest.class.getClassLoader()
                     .getResourceAsStream("activities/" + file);
             Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
+            activity.setGenerator(null);
+            activity.setLinks(new LinkedList<String>());
             String activityString = MAPPER.writeValueAsString(activity);
             LOGGER.info("Deserialized: " + activityString );
+            assert( !activityString.contains("null") );
+            assert( !activityString.contains("[]") );
         }
     }
 
@@ -93,6 +97,8 @@ public class ActivitySerDeTest {
             activity = MAPPER.convertValue(MAPPER.readValue(testActivityFileStream, verbClass), Activity.class);
             String activityString = MAPPER.writeValueAsString(activity);
             LOGGER.info("Deserialized: " + activityString );
+            assert( !activityString.contains("null") );
+            assert( !activityString.contains("[]") );
         }
     }
 }
