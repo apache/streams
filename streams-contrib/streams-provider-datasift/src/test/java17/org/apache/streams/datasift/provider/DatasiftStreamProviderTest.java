@@ -19,8 +19,8 @@
 package org.apache.streams.datasift.provider;
 
 import com.datasift.client.DataSiftClient;
+import com.datasift.client.stream.ConnectionManager;
 import com.datasift.client.stream.StreamEventListener;
-import com.datasift.client.stream.StreamingData;
 import com.google.common.collect.Lists;
 import org.apache.streams.datasift.DatasiftConfiguration;
 import org.junit.Test;
@@ -117,8 +117,8 @@ public class DatasiftStreamProviderTest {
             @Override
             protected DataSiftClient getNewClient(String userName, String apiKey) {
                 DataSiftClient client = Mockito.mock(DataSiftClient.class);
-                StreamingData mockData = Mockito.mock(StreamingData.class);
-                Mockito.when(client.liveStream()).thenReturn(mockData);
+                ConnectionManager mockConnection = Mockito.mock(ConnectionManager.class);
+                Mockito.when(client.liveStream()).thenReturn(mockConnection);
                 clientList.add(client);
                 return client;
             }
