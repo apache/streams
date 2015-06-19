@@ -32,9 +32,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
 
 public class WebHdfsPersistReaderTask implements Runnable {
 
@@ -50,15 +52,23 @@ public class WebHdfsPersistReaderTask implements Runnable {
     public void run() {
 
         for( FileStatus fileStatus : reader.status ) {
+            InputStream inputStream;
+            InputStreamReader inputStreamReader;
             BufferedReader bufferedReader;
             LOGGER.info("Found " + fileStatus.getPath().getName());
             if( fileStatus.isFile() && !fileStatus.getPath().getName().startsWith("_")) {
-                LOGGER.info("Started Processing " + fileStatus.getPath().getName());
+                HdfsWriterConfiguration.Compression compression = HdfsWriterConfiguration.Compression.NONE;
+                if( fileStatus.getPath().getName().endsWith(".gz"))
+                    compression = HdfsWriterConfiguration.Compression.GZIP;
+                LOGGER.info("Started Processing: {} Encoding: {} Compression: {}", fileStatus.getPath().getName(), reader.hdfsConfiguration.getEncoding(), compression.toString());
                 try {
-                    bufferedReader = new BufferedReader(new InputStreamReader(reader.client.open(fileStatus.getPath())));
+                    inputStream = reader.client.open(fileStatus.getPath());
+                    if( compression.equals(HdfsWriterConfiguration.Compression.GZIP))
+                        inputStream = new GZIPInputStream(inputStream);
+                    inputStreamReader = new InputStreamReader(inputStream, reader.hdfsConfiguration.getEncoding());
+                    bufferedReader = new BufferedReader(inputStreamReader);
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    LOGGER.error(e.getMessage());
+                    LOGGER.error("Exception Opening " + fileStatus.getPath(), e.getMessage());
                     return;
                 }
 

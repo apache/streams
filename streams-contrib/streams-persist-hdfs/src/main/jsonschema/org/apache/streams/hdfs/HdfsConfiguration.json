@@ -53,6 +53,10 @@
         "line_delimiter": {
           "type": "string",
           "default": "\n"
+        },
+        "encoding": {
+          "type": "string",
+          "default": "UTF-8"
         }
     }
 }

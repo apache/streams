@@ -75,11 +75,12 @@ public class TestHdfsPersist {
     public void TestHdfsPersistCase(List<String> fields) throws Exception {
 
         HdfsConfiguration hdfsConfiguration = new HdfsConfiguration().withScheme(HdfsConfiguration.Scheme.FILE).withHost("localhost").withUser("cloudera").withPath("target/TestHdfsPersist");
-        if( fields.size() > 0 )
-            hdfsConfiguration.setFields(fields);
+        hdfsConfiguration.setFields(fields);
         HdfsWriterConfiguration hdfsWriterConfiguration = MAPPER.convertValue(hdfsConfiguration, HdfsWriterConfiguration.class);
-        hdfsWriterConfiguration.setWriterPath(new Integer(fields.size()).toString());
+        if( fields.size() % 2 == 1 )
+            hdfsWriterConfiguration.setCompression(HdfsWriterConfiguration.Compression.GZIP);
         hdfsWriterConfiguration.setWriterFilePrefix("activities");
+        hdfsWriterConfiguration.setWriterPath(Integer.toString(fields.size()));
         WebHdfsPersistWriter writer = new WebHdfsPersistWriter(hdfsWriterConfiguration);
 
         writer.prepare(null);
