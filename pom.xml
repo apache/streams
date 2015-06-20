@@ -21,14 +21,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache</groupId>
-        <artifactId>apache</artifactId>
-        <version>16</version>
+        <groupId>org.apache.streams</groupId>
+        <artifactId>streams-master</artifactId>
+        <version>0.3-incubating-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.streams</groupId>
     <artifactId>streams-project</artifactId>
-    <version>0.3-incubating-SNAPSHOT</version>
 
     <name>Apache Streams Project</name>
     <description>Apache Streams Project</description>
@@ -48,8 +47,7 @@
         <connection>scm:git:git@github.com:apache/incubator-streams.git</connection>
         <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/incubator-streams.git</developerConnection>
         <url>scm:git:git@github.com:apache/incubator-streams.git</url>
-      <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <developers>
         <developer>
@@ -159,70 +157,11 @@
 
     <properties>
 
-        <!-- Build Properties -->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.7</java.version>
-
-        <!-- Release Properties -->
-        <snapshot.repository.url>
-            https://repository.apache.org/content/repositories/snapshots
-        </snapshot.repository.url>
-        <release.repository.url>
-            https://repository.apache.org/service/local/staging/deploy/maven2
-        </release.repository.url>
-
-        <!-- Plugin and Plugin Dependency Versions -->
-        <build-helper.plugin.version>1.8</build-helper.plugin.version>
-        <compiler.plugin.version>3.0</compiler.plugin.version>
-        <clean.plugin.version>2.6</clean.plugin.version>
-        <failsafe.plugin.version>2.17</failsafe.plugin.version>
-        <surefire.plugin.version>2.17</surefire.plugin.version>
-        <jar.plugin.version>2.6</jar.plugin.version>
-        <war.plugin.version>2.5</war.plugin.version>
-        <site.plugin.version>3.4</site.plugin.version>
-        <maven.enforcer.plugin.version>1.3.1</maven.enforcer.plugin.version>
-        <javadoc.plugin.version>2.10.2</javadoc.plugin.version>
-        <resources.plugin.version>2.7</resources.plugin.version>
-
-        <!-- Library Dependency Versions -->
-        <org.osgi.service.http.port>8080</org.osgi.service.http.port>
-        <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
-        <jackson.version>2.5.3</jackson.version>
-        <jackson-xml-databind.version>0.6.2</jackson-xml-databind.version>
-        <aalto.version>0.9.9</aalto.version>
-        <joda-time.version>2.2</joda-time.version>
-        <rave.version>0.22</rave.version>
         <datastax.version>1.0.3</datastax.version>
-        <jsonschema2pojo.version>0.4.6</jsonschema2pojo.version>
-        <jaxb2.version>0.8.3</jaxb2.version>
-        <jaxb2-basics.version>0.8.4</jaxb2-basics.version>
-        <jaxbutil.version>1.2.6</jaxbutil.version>
-        <junit.version>4.11</junit.version>
-        <slf4j.version>1.7.6</slf4j.version>
-        <log4j.version>1.2.16</log4j.version>
-        <logback.version>1.1.1</logback.version>
-        <hamcrest.version>1.3</hamcrest.version>
-        <commons-io.version>2.4</commons-io.version>
-        <commons-codec.version>1.10</commons-codec.version>
-        <commons-validator.version>1.4.0</commons-validator.version>
-        <commons-lang3.version>3.1</commons-lang3.version>
-        <typesafe.config.version>1.2.0</typesafe.config.version>
-        <reflections.version>0.9.9</reflections.version>
-        <orgjson.version>20140107</orgjson.version>
-        <guava.version>17.0</guava.version>
-        <scala.version>2.8.0</scala.version>
-        <clojure.version>1.4.0</clojure.version>
         <zookeeper.version>3.4.5</zookeeper.version>
-        <netty.version>3.8.0.Final</netty.version>
         <json-path.version>0.9.1</json-path.version>
-        <build-helper.version>1.8</build-helper.version>
         <facebook4j.version>2.1.0</facebook4j.version>
-        <mockito.version>1.9.5</mockito.version>
-        <powermock.version>1.5.6</powermock.version>
-        <httpcomponents.core.version>4.3.3</httpcomponents.core.version>
-        <httpcomponents.client.version>4.3.5</httpcomponents.client.version>
-        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+
     </properties>
 
     <modules>
@@ -245,72 +184,18 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${compiler.plugin.version}</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>${site.plugin.version}</version>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${maven.enforcer.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>enforce-no-snapshots</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireReleaseDeps>
-                                    <message>No Snapshots Allowed!</message>
-                                    <!-- Don't fail for modules within this project's groupId or sub-groupIds -->
-                                    <excludes>
-                                        <exclude>org.apache.streams:*</exclude>
-                                        <exclude>org.apache.streams.*:*</exclude>
-                                    </excludes>
-                                    <!-- Don't fail for parents being snapshots as the only parent modules are within this project -->
-                                    <failWhenParentIsSnapshot>false</failWhenParentIsSnapshot>
-                                </requireReleaseDeps>
-                            </rules>
-                            <fail>true</fail>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-remote-resources-plugin</artifactId>
-                <version>1.4</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <configuration>
-                            <resourceBundles>
-                                <!-- Will generate META-INF/DEPENDENCIES META-INF/LICENSE META-INF/NOTICE -->
-                                <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
-                                <!-- Will generate META-INF/DISCLAIMER  -->
-                                <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
-                            </resourceBundles>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
         <pluginManagement>
@@ -324,193 +209,8 @@
                                 <directory>src/site/resources</directory>
                                 <followSymlinks>false</followSymlinks>
                             </fileset>
-                            <!-- this is here because elasticsearch integration tests don't have a setting to change directory where temp index files get created -->
-                            <fileset>
-                                <directory>data</directory>
-                                <followSymlinks>false</followSymlinks>
-                            </fileset>
-                            <fileset>
-                                <directory>dist</directory>
-                            </fileset>
                         </filesets>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.jvnet.jaxb2.maven2</groupId>
-                    <artifactId>maven-jaxb2-plugin</artifactId>
-                    <version>${jaxb2.version}</version>
-                    <configuration>
-                        <schemaDirectory>src/main/xmlschema</schemaDirectory>
-                        <generateDirectory>target/generated-sources/jaxb2</generateDirectory>
-                        <verbose>true</verbose>
-                        <debug>true</debug>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                        <forceRegenerate>true</forceRegenerate>
-                        <removeOldOutput>false</removeOldOutput>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>generate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>${war.plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.jsonschema2pojo</groupId>
-                    <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-                    <version>${jsonschema2pojo.version}</version>
-                    <configuration>
-                        <addCompileSourceRoot>true</addCompileSourceRoot>
-                        <generateBuilders>true</generateBuilders>
-                        <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
-                        <sourcePaths>
-                            <sourcePath>src/main/jsonschema</sourcePath>
-                        </sourcePaths>
-                        <useLongIntegers>true</useLongIntegers>
-                        <useJodaDates>true</useJodaDates>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>generate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>${build-helper.plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.7</version>
-                    <executions>
-                        <execution>
-                            <id>copy-resources</id>
-                            <!-- validate is first to run-->
-                            <!-- copy these files to src/site/resources -->
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>copy-resources</goal>
-                            </goals>
-                            <configuration>
-                                <outputDirectory>${basedir}/src/site/resources</outputDirectory>
-                                <resources>
-                                    <resource>
-                                        <directory>src/main/jsonschema</directory>
-                                    </resource>
-                                    <resource>
-                                        <directory>src/main/xmlschema</directory>
-                                    </resource>
-                                    <resource>
-                                        <directory>src/main/resources</directory>
-                                    </resource>
-                                </resources>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>${jar.plugin.version}</version>
-                    <configuration>
-                        <skipIfEmpty>true</skipIfEmpty>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>test-jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>${failsafe.plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>integration-test</id>
-                            <goals>
-                                <goal>integration-test</goal>
-                                <goal>verify</goal>
-                            </goals>
-                            <configuration>
-                                <!-- Sets the VM argument line used when integration tests are run. -->
-                                <argLine>${failsafeArgLine}</argLine>
-                                <!-- Skips integration tests if the value of skip.integration.tests property is true -->
-                                <skipTests>${skip.integration.tests}</skipTests>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${surefire.plugin.version}</version>
-                    <configuration>
-                        <!-- Sets the VM argument line used when unit tests are run. -->
-                        <argLine>${surefireArgLine}</argLine>
-                        <!-- Skips unit tests if the value of skip.unit.tests property is true -->
-                        <skipTests>${skip.unit.tests}</skipTests>
-                        <!-- Excludes integration tests when unit tests are run. -->
-                        <excludes>
-                            <exclude>**/IT*.java</exclude>
-                        </excludes>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.reflections</groupId>
-                    <artifactId>reflections-maven</artifactId>
-                    <version>${reflections.version}-RC2</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>reflections</goal>
-                            </goals>
-                            <phase>process-classes</phase>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.4</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.maven.doxia</groupId>
-                            <artifactId>doxia-module-markdown</artifactId>
-                            <version>1.6</version>
-                        </dependency>
-						<dependency>
-                            <groupId>org.apache.maven.wagon</groupId>
-                            <artifactId>wagon-scm</artifactId>
-                            <version>2.8</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.apache.maven.scm</groupId>
-                            <artifactId>maven-scm-api</artifactId>
-                            <version>1.9.4</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.apache.maven.scm</groupId>
-                            <artifactId>maven-scm-provider-svn-commons</artifactId>
-                            <version>1.9.4</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.apache.maven.scm</groupId>
-                            <artifactId>maven-scm-provider-svnexe</artifactId>
-                            <version>1.9.4</version>
-                        </dependency>
-                    </dependencies>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -520,42 +220,12 @@
         <plugins>
             <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <configuration>
-                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${javadoc.plugin.version}</version>
-                <configuration>
-                    <failOnError>false</failOnError>
-                    <minmemory>128m</minmemory>
-                    <maxmemory>1g</maxmemory>
-                </configuration>
-                <reportSets>
-                    <reportSet>
-                        <id>aggregate</id>
-                        <reports>
-                            <report>javadoc-no-fork</report>
-                            <report>test-javadoc-no-fork</report>
-                            <report>aggregate</report>
-                        </reports>
-                        <configuration>
-                             <aggregate>true</aggregate>
-                        </configuration>
-                    </reportSet>
-                    <reportSet>
-                        <id>html</id>
-                        <reports>
-                            <report>javadoc</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
             </plugin>
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>${site.plugin.version}</version>
             </plugin>
         </plugins>
     </reporting>
@@ -662,6 +332,11 @@
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
                 <version>${log4j.version}</version>
@@ -762,12 +437,6 @@
                 <version>${storm.version}</version>
                 <scope>provided</scope>
             </dependency>
-            <!--<dependency>-->
-            <!--<groupId>storm</groupId>-->
-            <!--<artifactId>storm-netty</artifactId>-->
-            <!--<version>${storm.version}</version>-->
-            <!--<scope>provided</scope>-->
-            <!--</dependency>-->
             <!-- JsonPath -->
             <dependency>
                 <groupId>com.jayway.jsonpath</groupId>
@@ -792,191 +461,5 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <profiles>
-        <profile>
-            <id>apache-release</id>
-            <properties>
-                <skipTests>false</skipTests>
-                <maven.test.skip>false</maven.test.skip>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>2.4</version>
-                        <configuration>
-                            <skipSource>true</skipSource>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>aggregate</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <configuration>
-                            <skip>false</skip>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>test-jar</id>
-                                <goals>
-                                    <goal>test-jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.apache.apache.resources</groupId>
-                                <artifactId>apache-source-release-assembly-descriptor</artifactId>
-                                <version>1.0.5</version>
-                            </dependency>
-                        </dependencies>
-                        <executions>
-                            <execution>
-                                <id>source-release-assembly</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
-                                    <descriptorRefs>
-                                        <descriptorRef>source-release-zip-tar</descriptorRef>
-                                    </descriptorRefs>
-                                    <tarLongFileMode>gnu</tarLongFileMode>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-release-plugin</artifactId>
-                        <configuration>
-                            <releaseProfiles>apache-release</releaseProfiles>
-                            <preparationGoals>clean install</preparationGoals>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.rat</groupId>
-                        <artifactId>apache-rat-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <excludes>
-                                <exclude>.git</exclude>
-                                <exclude>.gitignore</exclude>
-                                <exclude>.git/**</exclude>
-                                <exclude>.idea/**</exclude>
-                                <exclude>**/DEPENDENCIES</exclude>
-                                <exclude>**/LICENSE</exclude>
-                                <exclude>**/MANIFEST.MF</exclude>
-                                <exclude>**/NOTICE</exclude>
-                                <exclude>**/README.*</exclude>
-                                <exclude>**/target/**</exclude>
-                                <exclude>**/overlays/**</exclude>
-                                <exclude>**/src/main/resources/**</exclude>
-                                <exclude>**/src/test/resources/**</exclude>
-                                <exclude>**/.gitignore</exclude>
-                                <exclude>**/*.properties</exclude>
-                                <exclude>**/*.iml</exclude>
-                                <exclude>**/*.ini</exclude>
-                                <exclude>**/*.jar</exclude>
-                                <exclude>dependency-reduced-pom.xml</exclude>
-                                <exclude>rat.txt</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <skipTests>false</skipTests>
-                            <skipExec>true</skipExec>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <reporting>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-project-info-reports-plugin</artifactId>
-                        <configuration>
-                            <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${javadoc.plugin.version}</version>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                            <aggregate>true</aggregate>
-                            <failOnError>false</failOnError>
-                            <minmemory>128m</minmemory>
-                            <maxmemory>1g</maxmemory>
-                        </configuration>
-                        <reportSets>
-                            <reportSet>
-                                <id>aggregate</id>
-                                <reports>
-                                    <report>javadoc-no-fork</report>
-                                    <report>test-javadoc-no-fork</report>
-                                    <report>aggregate</report>
-                                </reports>
-                            </reportSet>
-                        </reportSets>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-site-plugin</artifactId>
-                        <version>${site.plugin.version}</version>
-                    </plugin>
-                </plugins>
-            </reporting>
-        </profile>
-    </profiles>
 
 </project>
