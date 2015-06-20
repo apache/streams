@@ -77,6 +77,10 @@
                     <groupId>log4j</groupId>
                 </exclusion>
                 <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+                <exclusion>
                     <groupId>com.boundary</groupId>
                     <artifactId>high-scale-lib</artifactId>
                 </exclusion>
@@ -86,6 +90,10 @@
             <groupId>com.boundary</groupId>
             <artifactId>high-scale-lib</artifactId>
             <version>1.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
