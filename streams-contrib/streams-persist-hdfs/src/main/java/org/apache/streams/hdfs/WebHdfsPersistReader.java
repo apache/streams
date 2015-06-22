@@ -18,6 +18,7 @@
 
 package org.apache.streams.hdfs;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Queues;
@@ -28,6 +29,8 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.web.WebHdfsFileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.joda.time.DateTime;
@@ -39,6 +42,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.PrivilegedExceptionAction;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -71,6 +75,10 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
     protected DatumStatusCounter countersTotal = new DatumStatusCounter();
     protected DatumStatusCounter countersCurrent = new DatumStatusCounter();
     private Future<?> task;
+
+    public WebHdfsPersistReader() {
+        this(new ComponentConfigurator<>(HdfsReaderConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("hdfs")));
+    }
 
     public WebHdfsPersistReader(HdfsReaderConfiguration hdfsConfiguration) {
         this.hdfsConfiguration = hdfsConfiguration;
@@ -202,6 +210,83 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
         }
 
         return current;
+    }
+
+    public StreamsDatum processLine(String line) {
+
+        String[] fields = line.split(hdfsConfiguration.getFieldDelimiter());
+
+        if( fields.length == 0)
+            return null;
+
+        String id = null;
+        DateTime ts = null;
+        Map<String, Object> metadata = null;
+        String json = null;
+
+        if( hdfsConfiguration.getFields().contains( HdfsConstants.DOC )
+                && fields.length > hdfsConfiguration.getFields().indexOf(HdfsConstants.DOC)) {
+            json = fields[hdfsConfiguration.getFields().indexOf(HdfsConstants.DOC)];
+        }
+
+        if( hdfsConfiguration.getFields().contains( HdfsConstants.ID )
+                && fields.length > hdfsConfiguration.getFields().indexOf(HdfsConstants.ID)) {
+            id = fields[hdfsConfiguration.getFields().indexOf(HdfsConstants.ID)];
+        }
+        if( hdfsConfiguration.getFields().contains( HdfsConstants.TS )
+                && fields.length > hdfsConfiguration.getFields().indexOf(HdfsConstants.TS)) {
+            ts = parseTs(fields[hdfsConfiguration.getFields().indexOf(HdfsConstants.TS)]);
+        }
+        if( hdfsConfiguration.getFields().contains( HdfsConstants.META )
+                && fields.length > hdfsConfiguration.getFields().indexOf(HdfsConstants.META)) {
+            metadata = parseMap(fields[hdfsConfiguration.getFields().indexOf(HdfsConstants.META)]);
+        }
+
+        StreamsDatum datum = new StreamsDatum(json);
+        datum.setId(id);
+        datum.setTimestamp(ts);
+        datum.setMetadata(metadata);
+
+        return datum;
+
+    }
+
+    public DateTime parseTs(String field) {
+
+        DateTime timestamp = null;
+        try {
+            long longts = Long.parseLong(field);
+            timestamp = new DateTime(longts);
+        } catch ( Exception e ) {}
+        try {
+            timestamp = mapper.readValue(field, DateTime.class);
+        } catch ( Exception e ) {}
+
+        return timestamp;
+    }
+
+    public Map<String, Object> parseMap(String field) {
+
+        Map<String, Object> metadata = null;
+
+        try {
+            JsonNode jsonNode = mapper.readValue(field, JsonNode.class);
+            metadata = mapper.convertValue(jsonNode, Map.class);
+        } catch (IOException e) {
+            LOGGER.warn("failed in parseMap: " + e.getMessage());
+        }
+        return metadata;
+    }
+
+    protected void write( StreamsDatum entry ) {
+        boolean success;
+        do {
+            synchronized( WebHdfsPersistReader.class ) {
+                success = persistQueue.offer(entry);
+            }
+            Thread.yield();
+        }
+        while( !success );
     }
 
     @Override
