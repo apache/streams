@@ -29,6 +29,8 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.web.WebHdfsFileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -77,6 +79,10 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
     private ObjectMapper mapper = new ObjectMapper();
 
     protected HdfsWriterConfiguration hdfsConfiguration;
+
+    public WebHdfsPersistWriter() {
+        this(new ComponentConfigurator<>(HdfsWriterConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("hdfs")));
+    }
 
     public WebHdfsPersistWriter(HdfsWriterConfiguration hdfsConfiguration) {
         this.hdfsConfiguration = hdfsConfiguration;
@@ -255,7 +261,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
         }
     }
 
-    private String convertResultToString(StreamsDatum entry) {
+    public String convertResultToString(StreamsDatum entry) {
         String metadataJson = null;
         try {
             metadataJson = mapper.writeValueAsString(entry.getMetadata());
