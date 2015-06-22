@@ -214,7 +214,8 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
 
     public StreamsDatum processLine(String line) {
 
-        String[] fields = line.split(hdfsConfiguration.getFieldDelimiter());
+        String[] expectedFields = hdfsConfiguration.getFields();
+        String[] parsedFields = line.split(hdfsConfiguration.getFieldDelimiter());
 
         if( fields.length == 0)
             return null;
@@ -224,22 +225,22 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
         Map<String, Object> metadata = null;
         String json = null;
 
-        if( hdfsConfiguration.getFields().contains( HdfsConstants.DOC )
-                && fields.length > hdfsConfiguration.getFields().indexOf(HdfsConstants.DOC)) {
-            json = fields[hdfsConfiguration.getFields().indexOf(HdfsConstants.DOC)];
+        if( expectedFields.contains( HdfsConstants.DOC )
+                && parsedFields.length > expectedFields.indexOf(HdfsConstants.DOC)) {
+            json = parsedFields[expectedFields.indexOf(HdfsConstants.DOC)];
         }
 
-        if( hdfsConfiguration.getFields().contains( HdfsConstants.ID )
-                && fields.length > hdfsConfiguration.getFields().indexOf(HdfsConstants.ID)) {
-            id = fields[hdfsConfiguration.getFields().indexOf(HdfsConstants.ID)];
+        if( expectedFields.contains( HdfsConstants.ID )
+                && parsedFields.length > expectedFields.indexOf(HdfsConstants.ID)) {
+            id = parsedFields[expectedFields.indexOf(HdfsConstants.ID)];
         }
-        if( hdfsConfiguration.getFields().contains( HdfsConstants.TS )
-                && fields.length > hdfsConfiguration.getFields().indexOf(HdfsConstants.TS)) {
-            ts = parseTs(fields[hdfsConfiguration.getFields().indexOf(HdfsConstants.TS)]);
+        if( expectedFields.contains( HdfsConstants.TS )
+                && parsedFields.length > expectedFields.indexOf(HdfsConstants.TS)) {
+            ts = parseTs(parsedFields[expectedFields.indexOf(HdfsConstants.TS)]);
         }
-        if( hdfsConfiguration.getFields().contains( HdfsConstants.META )
-                && fields.length > hdfsConfiguration.getFields().indexOf(HdfsConstants.META)) {
-            metadata = parseMap(fields[hdfsConfiguration.getFields().indexOf(HdfsConstants.META)]);
+        if( expectedFields.contains( HdfsConstants.META )
+                && parsedFields.length > expectedFields.indexOf(HdfsConstants.META)) {
+            metadata = parseMap(parsedFields[expectedFields.indexOf(HdfsConstants.META)]);
         }
 
         StreamsDatum datum = new StreamsDatum(json);
