@@ -71,11 +71,13 @@ public final class LinkResolverHelperFunctions {
     public static final String SET_COOKIE_IDENTIFIER = "set-cookie";
 
     private static final Set<String> UNPROTECTED_DOMAINS = new HashSet<String>() {{
-        add("t.co");        // Twitter link shortener
-        add("bit.ly");      // Bitly link shortener
-        add("x.co");        // x.co link shortener
-        add("goo.gl");      // Google's link shortener
-        add("ow.ly");       // Owly's link shortener
+        add("t.co");            // Twitter link shortener
+        add("twitter.com");     // Frequently links to other statuses
+        add("instagram.com");   // Frequently behind t.co links
+        add("bit.ly");          // Bitly link shortener
+        add("x.co");            // x.co link shortener
+        add("goo.gl");          // Google's link shortener
+        add("ow.ly");           // Owly's link shortener
     }};
 
     // if Bots are not 'ok' this is the spoof settings that we'll use
