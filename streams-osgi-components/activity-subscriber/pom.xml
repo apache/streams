@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.streams.osgi.components</groupId>
     <artifactId>streams-osgi-components</artifactId>
-    <version>0.2.21-W2O-SNAPSHOT</version>
+    <version>0.2.23-W2O-SNAPSHOT</version>
   </parent>
 
   <artifactId>activity-subscriber</artifactId>
