@@ -49,7 +49,7 @@ public class SerializationUtil {
      * @param serialized
      * @return
      */
-    public static Object deserialize(byte[] serialized, Class clazz) {
+    public static Object deserialize(byte[] serialized) {
         try {
             ByteArrayInputStream bis = new ByteArrayInputStream(serialized);
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -66,6 +66,8 @@ public class SerializationUtil {
 
 
     public static <T> T cloneBySerialization(T obj) {
-        return (T) deserialize(serialize(obj), obj.getClass());
+        if( obj != null )
+            return (T) deserialize(serialize(obj));
+        else return null;
     }
 }
