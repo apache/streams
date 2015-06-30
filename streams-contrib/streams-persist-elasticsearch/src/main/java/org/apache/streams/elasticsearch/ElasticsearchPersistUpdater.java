@@ -89,7 +89,7 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
         }
 
         if(!Strings.isNullOrEmpty(routing)) {
-            updateRequest = updateRequest.routing(parent);
+            updateRequest = updateRequest.routing(routing);
         }
 
         // add fields
