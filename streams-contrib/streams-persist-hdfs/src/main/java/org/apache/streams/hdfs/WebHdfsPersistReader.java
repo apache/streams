@@ -44,6 +44,7 @@ import java.net.URISyntaxException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Map;
 import java.util.Queue;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -166,7 +167,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
                 LOGGER.error("Neither file nor directory, wtf");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("IOException", e);
         }
         persistQueue = Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(10000));
         //persistQueue = Queues.synchronizedQueue(new ConcurrentLinkedQueue());
@@ -214,10 +215,10 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
 
     public StreamsDatum processLine(String line) {
 
-        String[] expectedFields = hdfsConfiguration.getFields();
+        List<String> expectedFields = hdfsConfiguration.getFields();
         String[] parsedFields = line.split(hdfsConfiguration.getFieldDelimiter());
 
-        if( fields.length == 0)
+        if( parsedFields.length == 0)
             return null;
 
         String id = null;
@@ -302,7 +303,9 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
 
     @Override
     public boolean isRunning() {
-        return !task.isDone() && !task.isCancelled();
+        if( task != null)
+            return !task.isDone() && !task.isCancelled();
+        else return true;
     }
 
     @Override
