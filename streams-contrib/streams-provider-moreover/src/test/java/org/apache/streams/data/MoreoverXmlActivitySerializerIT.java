@@ -37,8 +37,7 @@ import static org.apache.streams.data.util.MoreoverTestUtil.test;
 /**
  * Tests ability to serialize moreover xml Strings
  */
-@Ignore("ignore until test resources are available.")
-public class MoreoverXmlActivitySerializerTest {
+public class MoreoverXmlActivitySerializerIT {
     ActivitySerializer serializer;
     private String xml;
 
@@ -58,7 +57,7 @@ public class MoreoverXmlActivitySerializerTest {
 
     private String loadXml() throws IOException {
         StringWriter writer = new StringWriter();
-        InputStream resourceAsStream = this.getClass().getResourceAsStream("moreover.xml");
+        InputStream resourceAsStream = this.getClass().getResourceAsStream("/moreover.xml");
         IOUtils.copy(resourceAsStream, writer, Charset.forName("UTF-8"));
         return writer.toString();
     }

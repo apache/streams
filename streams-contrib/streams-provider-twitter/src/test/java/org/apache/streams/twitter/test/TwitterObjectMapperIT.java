@@ -45,16 +45,11 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 
 /**
-* Created with IntelliJ IDEA.
-* User: sblackmon
-* Date: 8/20/13
-* Time: 5:57 PM
-* To change this template use File | Settings | File Templates.
+* Tests serialization / deserialization of twitter jsons
 */
-@Ignore("ignore until test resources are available.")
-public class TwitterObjectMapperTest {
+public class TwitterObjectMapperIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TwitterObjectMapperTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(TwitterObjectMapperIT.class);
 
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(StreamsTwitterMapper.TWITTER_FORMAT));
 
@@ -65,7 +60,7 @@ public class TwitterObjectMapperTest {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-        InputStream is = TwitterObjectMapperTest.class.getResourceAsStream("/testtweets.txt");
+        InputStream is = TwitterObjectMapperIT.class.getResourceAsStream("/testtweets.txt");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 

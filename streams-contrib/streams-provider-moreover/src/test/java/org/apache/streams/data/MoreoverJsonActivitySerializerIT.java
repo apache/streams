@@ -22,32 +22,42 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.apache.streams.data.util.JsonUtil;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.net.URL;
+import java.nio.charset.Charset;
 
 import static org.apache.streams.data.util.MoreoverTestUtil.test;
 
 /**
  * Tests ability to serialize moreover json Strings
  */
-@Ignore("ignore until test resources are available.")
-public class MoreoverJsonActivitySerializerTest {
+public class MoreoverJsonActivitySerializerIT {
     JsonNode json;
     ActivitySerializer serializer = new MoreoverJsonActivitySerializer();
     ObjectMapper mapper;
 
     @Before
-    public void setup() throws IOException {
-        json = JsonUtil.getFromFile("classpath:org/apache/streams/data/moreover.json");
+    public void setup() throws Exception {
+
+        StringWriter writer = new StringWriter();
+        InputStream resourceAsStream = this.getClass().getResourceAsStream("/moreover.json");
+        IOUtils.copy(resourceAsStream, writer, Charset.forName("UTF-8"));
 
         mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
+
+        json = mapper.readValue(writer.toString(), JsonNode.class);
     }
 
     @Test

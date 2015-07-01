@@ -29,6 +29,11 @@
 
     <description>Google+ Provider</description>
 
+    <properties>
+        <skipITs>true</skipITs>
+        <testDataBaseURl>http://streams.peoplepattern.com.s3.amazonaws.com/test-data/</testDataBaseURl>
+    </properties>
+
     <repositories>
         <repository>
             <id>typesafe</id>
@@ -200,9 +205,36 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <id>download-it-data</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${testDataBaseURl}/${artifactId}.zip</url>
+                            <unpack>true</unpack>
+                            <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+                            <!--<md5>df65b5642f33676313ebe4d5b69a3fff</md5>-->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <skipTests>${skipITs}</skipTests>
+                </configuration>
+            </plugin>
+<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-            </plugin>
+</plugin>
         </plugins>
     </build>
 </project>

@@ -29,34 +29,28 @@ import java.util.Scanner;
 /**
  * Tests serialization and conversion of Datasift inputs
  */
-@Ignore("ignore until test resources are available.")
-public class DatasiftInteractionActivitySerializerTest extends DatasiftActivitySerializerTest {
+public class DatasiftTwitterActivitySerializerIT extends DatasiftActivitySerializerIT {
 
     @Before
     @Override
     public void initSerializer() {
-        SERIALIZER = new DatasiftInteractionActivitySerializer();
+        SERIALIZER = new DatasiftTwitterActivitySerializer();
     }
 
     @Test
     @Override
     public void testConversion() throws Exception {
 
-        Scanner scanner = StreamsScannerUtil.getInstance("/rand_sample_datasift_json.txt");
+        Scanner scanner = StreamsScannerUtil.getInstance("/twitter_datasift_json.txt");
 
         String line = null;
         while(scanner.hasNextLine()) {
-            try {
-                line = scanner.nextLine();
-                Datasift item = MAPPER.readValue(line, Datasift.class);
-                testConversion(item);
-                String json = MAPPER.writeValueAsString(item);
-                testDeserNoNull(json);
-                testDeserNoAddProps(json);
-            } catch (Exception e) {
-                System.err.println(line);
-                throw e;
-            }
+            line = scanner.nextLine();
+            Datasift item = MAPPER.readValue(line, Datasift.class);
+            testConversion(item);
+            String json = MAPPER.writeValueAsString(item);
+            testDeserNoNull(json);
+            testDeserNoAddProps(json);
         }
     }
 
