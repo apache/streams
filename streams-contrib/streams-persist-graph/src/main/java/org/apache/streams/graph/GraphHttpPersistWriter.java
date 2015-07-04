@@ -32,11 +32,13 @@ import org.apache.streams.components.http.HttpPersistWriterConfiguration;
 import org.apache.streams.components.http.persist.SimpleHTTPPostPersistWriter;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.converter.TypeConverterUtil;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.graph.neo4j.CypherQueryGraphHelper;
 import org.apache.streams.graph.neo4j.Neo4jHttpGraphHelper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,54 +86,79 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
     protected ObjectNode preparePayload(StreamsDatum entry) {
 
         Activity activity = null;
+        ActivityObject activityObject = null;
 
         if (entry.getDocument() instanceof Activity) {
             activity = (Activity) entry.getDocument();
-        } else if (entry.getDocument() instanceof ObjectNode) {
-            activity = mapper.convertValue(entry.getDocument(), Activity.class);
-        } else if (entry.getDocument() instanceof String) {
-            try {
-                activity = mapper.readValue((String) entry.getDocument(), Activity.class);
-            } catch (Throwable e) {
-                LOGGER.warn(e.getMessage());
+        } else if (entry.getDocument() instanceof ActivityObject) {
+            activityObject = (ActivityObject) entry.getDocument();
+        } else {
+            ObjectNode objectNode;
+            if (entry.getDocument() instanceof ObjectNode) {
+                objectNode = (ObjectNode) entry.getDocument();
+            } else if( entry.getDocument() instanceof String) {
+                try {
+                    objectNode = mapper.readValue((String) entry.getDocument(), ObjectNode.class);
+                } catch (IOException e) {
+                    LOGGER.error("Can't handle input: ", entry);
+                    return mapper.createObjectNode();
+                }
+            } else {
+                LOGGER.error("Can't handle input: ", entry);
+                return mapper.createObjectNode();
+            }
+
+            if( objectNode.get("verb") != null ) {
+                try {
+                    activity = mapper.convertValue(objectNode, Activity.class);
+                } catch (Exception e) {
+                    activityObject = mapper.convertValue(objectNode, ActivityObject.class);
+                }
+            } else {
+                activityObject = mapper.convertValue(objectNode, ActivityObject.class);
             }
         }
 
-        Preconditions.checkNotNull(activity);
+        Preconditions.checkArgument(activity != null || activityObject != null);
 
         ObjectNode request = mapper.createObjectNode();
         ArrayNode statements = mapper.createArrayNode();
 
-        activity.getActor().setObjectType("page");
-
         // always add vertices first
 
-        List<String> labels = Lists.newArrayList();
-        if( activity.getProvider() != null &&
-                !Strings.isNullOrEmpty(activity.getProvider().getId()) ) {
-            labels.add(activity.getProvider().getId());
+        List<String> labels = Lists.newArrayList("streams");
+
+        if( activityObject != null ) {
+            if (activityObject.getObjectType() != null)
+                labels.add(activityObject.getObjectType());
+            statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(activityObject)));
         }
 
-        if( activity.getActor() != null &&
-                !Strings.isNullOrEmpty(activity.getActor().getId()) ) {
-            if( activity.getActor().getObjectType() != null )
-                labels.add(activity.getActor().getObjectType());
-            statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(activity.getActor())));
+        if( activity != null ) {
+            if( activity.getProvider() != null &&
+                    !Strings.isNullOrEmpty(activity.getProvider().getId()) ) {
+                labels.add(activity.getProvider().getId());
+            }
+            if (activity.getActor() != null &&
+                    !Strings.isNullOrEmpty(activity.getActor().getId())) {
+                if (activity.getActor().getObjectType() != null)
+                    labels.add(activity.getActor().getObjectType());
+                statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(activity.getActor())));
+            }
+
+            if (activity.getObject() != null &&
+                    !Strings.isNullOrEmpty(activity.getObject().getId())) {
+                if (activity.getObject().getObjectType() != null)
+                    labels.add(activity.getObject().getObjectType());
+                statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(activity.getObject())));
+            }
+
+            // then add edge
+
+            if (!Strings.isNullOrEmpty(activity.getVerb())) {
+                statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.createEdgeRequest(activity)));
+            }
         }
-
-        if( activity.getObject() != null &&
-                !Strings.isNullOrEmpty(activity.getObject().getId()) ) {
-            if( activity.getObject().getObjectType() != null )
-                labels.add(activity.getObject().getObjectType());
-            statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(activity.getObject())));
-        }
-
-        // then add edge
-
-        if( !Strings.isNullOrEmpty(activity.getVerb()) ) {
-            statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.createEdgeRequest(activity)));
-        }
-
 
 
         request.put("statements", statements);
@@ -166,7 +193,7 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
                 ) {
                 LOGGER.error("Write Error: " + result.get("errors"));
             } else {
-                LOGGER.info("Write Success");
+                LOGGER.debug("Write Success");
             }
         } catch (IOException e) {
             LOGGER.error("IO error:\n{}\n{}\n{}", httpPost.toString(), response, e.getMessage());
