@@ -137,8 +137,8 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                 }
             }
             Uninterruptibles.sleepUninterruptibly(streamConfig.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-        } catch(Exception e) {
-            LOGGER.error("Failed to execute Persist Writer {}",this.writer.getClass().getSimpleName(), e);
+        } catch(Throwable e) {
+            LOGGER.error("Caught Throwable in Persist Writer {}", this.writer.getClass().getSimpleName(), e);
         } finally {
             Uninterruptibles.sleepUninterruptibly(streamConfig.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
             this.writer.cleanUp();

@@ -204,9 +204,9 @@ public class StreamsProviderTask extends BaseStreamsTask implements DatumStatusC
             if( resultSet != null )
                 flushResults(resultSet);
 
-        } catch( Exception e ) {
-            LOGGER.error("Error in processing provider stream", e);
-        } finally {
+        } catch(Throwable e) {
+            LOGGER.error("Caught Throwable in Provider {}", this.provider.getClass().getSimpleName(), e);
+        }  finally {
             Uninterruptibles.sleepUninterruptibly(sleepTime, TimeUnit.MILLISECONDS);
             LOGGER.debug("Complete Provider Task execution for {}", this.provider.getClass().getSimpleName());
             this.provider.cleanUp();

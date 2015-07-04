@@ -150,6 +150,8 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                     LOGGER.debug("Removed NULL datum from queue at processor : {}", this.processor.getClass().getName());
                 }
             }
+        } catch(Throwable e) {
+            LOGGER.error("Caught Throwable in Processor {}", this.processor.getClass().getSimpleName(), e);
         } finally {
             this.isRunning.set(false);
             this.processor.cleanUp();
