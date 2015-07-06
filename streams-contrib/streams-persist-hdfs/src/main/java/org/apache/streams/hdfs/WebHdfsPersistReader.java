@@ -30,6 +30,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.web.WebHdfsFileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -70,6 +71,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
     protected ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     protected HdfsReaderConfiguration hdfsConfiguration;
+    protected StreamsConfiguration streamsConfiguration;
 
     private ExecutorService executor;
 
@@ -118,6 +120,8 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
                 public Void run() throws Exception {
                     Configuration conf = new Configuration();
                     conf.set(CommonConfigurationKeysPublic.HADOOP_SECURITY_AUTHENTICATION, "kerberos");
+                    conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+                    conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
                     LOGGER.info("WebURI : {}", getURI().toString());
                     client = FileSystem.get(getURI(), conf);
                     LOGGER.info("Connected to WebHDFS");
@@ -169,7 +173,8 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
         } catch (IOException e) {
             LOGGER.error("IOException", e);
         }
-        persistQueue = Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(10000));
+        streamsConfiguration = StreamsConfigurator.detectConfiguration();
+        persistQueue = Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(streamsConfiguration.getBatchSize().intValue()));
         //persistQueue = Queues.synchronizedQueue(new ConcurrentLinkedQueue());
         executor = Executors.newSingleThreadExecutor();
     }
