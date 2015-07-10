@@ -72,7 +72,7 @@ public class RssStreamProviderTaskTest {
     public void testPerpetualNoTimeFramePull() throws Exception {
         com.healthmarketscience.common.util.resource.Handler.init();
         BlockingQueue<StreamsDatum> queue = new LinkedBlockingQueue<>();
-        RssStreamProviderTask task = new RssStreamProviderTask(queue, "fake urls", new DateTime().minusYears(1), 10000, true);
+        RssStreamProviderTask task = new RssStreamProviderTask(queue, "fake urls", DateTime.parse("2014-06-10T12:22:52.131-04:00"), 10000, true);
         Set<String> batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
         assertEquals("Expected batch size to be the same as amount of queued datums", batch.size(), queue.size());
         RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake urls", batch);
