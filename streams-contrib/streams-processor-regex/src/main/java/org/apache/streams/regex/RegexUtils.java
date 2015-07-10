@@ -66,6 +66,11 @@ public class RegexUtils {
     }
 
     protected static Map<String, List<Integer>> getMatches(String pattern, String content, int capture) {
+        Map<String, List<Integer>> matches = Maps.newHashMap();
+        if (content == null) {
+            LOGGER.info("Ignoring request to find regex matches for null content and pattern: ", pattern);
+            return matches;
+        }
         try {
             //Since certain regex patterns can be susceptible to catastrophic backtracking
             //We need to be able to isolate this operation in a separate thread and kill
@@ -73,8 +78,6 @@ public class RegexUtils {
             RegexRunnable regexRunnable = new RegexRunnable(pattern, content, capture);
 
             ForkJoinTask<Map<String, List<Integer>>> task = threadPool.submit(regexRunnable);
-
-            Map<String, List<Integer>> matches = Maps.newHashMap();
 
             try {
                 matches = task.get(REGEX_MATCH_THREAD_KEEP_ALIVE_DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
