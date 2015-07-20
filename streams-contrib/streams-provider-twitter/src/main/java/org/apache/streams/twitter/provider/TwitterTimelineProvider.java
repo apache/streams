@@ -37,10 +37,7 @@ import twitter4j.conf.ConfigurationBuilder;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -176,7 +173,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     }
 
     protected Queue<StreamsDatum> constructQueue() {
-        return Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(MAX_NUMBER_WAITING));
+        return new LinkedBlockingQueue<StreamsDatum>(MAX_NUMBER_WAITING);
     }
 
     public StreamsResultSet readNew(BigInteger sequence) {
@@ -297,11 +294,32 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     }
 
     public void addDatum(StreamsDatum datum) {
+        if (this.lock.writeLock().tryLock()) {
+            try {
+                if (this.providerQueue instanceof BlockingQueue) {
+                    if (((BlockingQueue) this.providerQueue).remainingCapacity() > 0) {
+                        ComponentUtils.offerUntilSuccess(datum, this.providerQueue);
+                        return;
+                    } else {
+                        LOGGER.warn("Queue was at capacity, will yield and try again");
+                    }
+                } else {
+                    LOGGER.warn("Queue was not a blocking queue, will unconditionally offer data");
+                    ComponentUtils.offerUntilSuccess(datum, this.providerQueue);
+                    return;
+                }
+            } finally {
+                this.lock.writeLock().unlock();
+            }
+        } else {
+            LOGGER.warn("Lock was in use, will yield and try again");
+        }
         try {
-            lock.readLock().lock();
-            ComponentUtils.offerUntilSuccess(datum, providerQueue);
-        } finally {
-            lock.readLock().unlock();
+            Thread.sleep(5000);
+            addDatum(datum);
+        } catch (InterruptedException e) {
+            LOGGER.error("Interrupted while trying to add a datum.  Datum may be lost. {}", datum.getId());
+            Thread.currentThread().interrupt();
         }
     }
 }
