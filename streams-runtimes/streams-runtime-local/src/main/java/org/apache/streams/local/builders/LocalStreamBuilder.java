@@ -62,7 +62,7 @@ public class LocalStreamBuilder implements StreamBuilder {
     private LocalStreamProcessMonitorThread monitorThread;
     private Map<String, List<StreamsTask>> tasks;
     private Thread shutdownHook;
-    private BroadcastMonitorThread broadcastMonitor;
+    private final BroadcastMonitorThread broadcastMonitor;
     private int maxQueueCapacity;
     private String streamIdentifier = DEFAULT_STREAM_IDENTIFIER;
     private DateTime startedAt = new DateTime();
@@ -300,15 +300,19 @@ public class LocalStreamBuilder implements StreamBuilder {
             this.monitorThread.shutdown();
         }
         this.executor.shutdown();
-        //complete stream shut down gracfully
+        //complete stream shut down gracefully
         for(StreamComponent prov : this.providers.values()) {
             shutDownTask(prov, streamsTasks);
         }
+
         //need to make this configurable
         if(!this.executor.awaitTermination(10, TimeUnit.SECONDS)) { // all threads should have terminated already.
             this.executor.shutdownNow();
             this.executor.awaitTermination(10, TimeUnit.SECONDS);
         }
+
+        this.monitor.shutdown();
+        this.broadcastMonitor.shutdown();
         if(!this.monitor.awaitTermination(5, TimeUnit.SECONDS)) { // all threads should have terminated already.
             this.monitor.shutdownNow();
             this.monitor.awaitTermination(5, TimeUnit.SECONDS);
