@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-contrib</artifactId>
-        <version>0.2.24-W2O-SNAPSHOT</version>
+        <version>0.2.25-W2O-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-processor-urls</artifactId>
