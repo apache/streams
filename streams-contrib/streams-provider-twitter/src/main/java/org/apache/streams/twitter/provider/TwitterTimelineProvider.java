@@ -294,7 +294,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     }
 
     public void addDatum(StreamsDatum datum) {
-        if (this.lock.readLock().tryLock()) {
+        if (this.lock.writeLock().tryLock()) {
             try {
                 if (this.providerQueue instanceof BlockingQueue) {
                     if (((BlockingQueue) this.providerQueue).remainingCapacity() > 0) {
@@ -309,7 +309,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
                     return;
                 }
             } finally {
-                this.lock.readLock().unlock();
+                this.lock.writeLock().unlock();
             }
         } else {
             LOGGER.warn("Lock was in use, will yield and try again");
