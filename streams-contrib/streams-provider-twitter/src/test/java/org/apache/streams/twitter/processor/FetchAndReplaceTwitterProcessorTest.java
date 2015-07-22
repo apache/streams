@@ -30,7 +30,7 @@ public class FetchAndReplaceTwitterProcessorTest {
         fetchAndReplaceTwitterProcessor.replace(activity, json);
 
         String country = getCountry(activity);
-        Assert.assertEquals(country, "us");
+        Assert.assertEquals("us", country);
     }
 
     private String getCountry(Activity activity) {
