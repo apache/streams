@@ -266,7 +266,14 @@ public class TwitterActivityUtil {
      */
     public static void addLocationExtension(Activity activity, Tweet tweet) {
         Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
-        Map<String, Object> location = new HashMap<String, Object>();
+        Map<String, Object> location;
+
+        if(extensions.containsKey("location")) {
+            location = (Map<String, Object>)extensions.get("location");
+        } else {
+            location = new HashMap<String, Object>();
+        }
+
         location.put("id", formatId(
                 Optional.fromNullable(
                         tweet.getIdStr())
