@@ -43,9 +43,13 @@ public class BroadcastMonitorThread extends LocalRuntimeBroadcastMonitorThread i
                 persistMessages();
                 Thread.sleep(getWaitTime());
             } catch (InterruptedException e) {
-                LOGGER.error("Interrupted!: {}", e);
+                if (this.keepRunning) {
+                    LOGGER.error("Interrupted before a proper shutdown: {}", e);
+                    this.keepRunning = false;
+                } else {
+                    LOGGER.debug("Interrupted after a proper shutdown.  Continuing to shutdown.");
+                }
                 Thread.currentThread().interrupt();
-                this.keepRunning = false;
             }
         }
     }
