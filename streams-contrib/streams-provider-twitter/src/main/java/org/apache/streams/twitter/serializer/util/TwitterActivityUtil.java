@@ -225,7 +225,17 @@ public class TwitterActivityUtil {
 
         Image profileImage = new Image();
         String normalImageUrl = user.getProfileImageUrlHttps();
-        profileImage.setUrl(normalImageUrl.replace("_normal.jpg", ".jpg"));
+        String largeImageUrl = "";
+
+        if(normalImageUrl.contains(".jpg")) {
+            largeImageUrl = normalImageUrl.replace("_normal.jpg", ".jpg");
+        } else if(normalImageUrl.contains(".jpeg")) {
+            largeImageUrl = normalImageUrl.replace("_normal.jpeg", ".jpeg");
+        } else {
+            largeImageUrl = normalImageUrl;
+        }
+
+        profileImage.setUrl(largeImageUrl);
         actor.setImage(profileImage);
 
         extensions.put("screenName", user.getScreenName());

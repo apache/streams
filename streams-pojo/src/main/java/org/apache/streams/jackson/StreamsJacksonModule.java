@@ -47,8 +47,8 @@ public class StreamsJacksonModule extends SimpleModule {
         super();
 
         Reflections reflections = new Reflections(new ConfigurationBuilder()
-                                                  .setUrls(ClasspathHelper.forPackage("org.apache.streams.jackson"))
-                                                  .setScanners(new SubTypesScanner()));
+                .setUrls(ClasspathHelper.forPackage("org.apache.streams.jackson"))
+                .setScanners(new SubTypesScanner()));
 
         Set<Class<? extends StreamsDateTimeFormat>> dateTimeFormatClasses = reflections.getSubTypesOf(StreamsDateTimeFormat.class);
 
