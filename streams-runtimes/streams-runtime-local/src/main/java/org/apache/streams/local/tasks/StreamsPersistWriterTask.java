@@ -146,7 +146,8 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
-                LOGGER.error("Sleep interrupted: {}", e);
+                //This is the expected behavior when this thread is killed
+                LOGGER.info("Streams Persist Writer Task interrupted while shutting down components: {}", e);
             }
             this.writer.cleanUp();
             this.isRunning.set(false);
