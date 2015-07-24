@@ -224,7 +224,8 @@ public class TwitterActivityUtil {
         extensions.put("followers", user.getFollowersCount());
 
         Image profileImage = new Image();
-        profileImage.setUrl(user.getProfileImageUrlHttps());
+        String normalImageUrl = user.getProfileImageUrlHttps();
+        profileImage.setUrl(normalImageUrl.replace("_normal.jpg", ".jpg"));
         actor.setImage(profileImage);
 
         extensions.put("screenName", user.getScreenName());
