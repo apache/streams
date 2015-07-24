@@ -27,7 +27,7 @@
     
     <groupId>org.apache.streams</groupId>
     <artifactId>streams-project</artifactId>
-    <version>0.2.27-W2O-SNAPSHOT</version>
+    <version>0.2.28-W2O-SNAPSHOT</version>
 
     <name>Apache Streams Project Parent POM</name>
 
@@ -219,6 +219,7 @@
         <httpcomponents.client.version>4.3.5</httpcomponents.client.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <tika.version>1.5</tika.version>
+        <twitter4j.version>4.0.4</twitter4j.version>
     </properties>
 
     <modules>
@@ -396,6 +397,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.twitter4j</groupId>
+                <artifactId>twitter4j-core</artifactId>
+                <version>${twitter4j.version}</version>
+            </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
