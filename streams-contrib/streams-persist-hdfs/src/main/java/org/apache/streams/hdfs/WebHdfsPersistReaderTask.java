@@ -51,11 +51,16 @@ public class WebHdfsPersistReaderTask implements Runnable {
     @Override
     public void run() {
 
+        LOGGER.info("WebHdfsPersistReaderTask: files to process");
+
+        for( FileStatus fileStatus : reader.status ) {
+            LOGGER.info("    " + fileStatus.getPath().getName());
+        }
+
         for( FileStatus fileStatus : reader.status ) {
             InputStream inputStream;
             InputStreamReader inputStreamReader;
             BufferedReader bufferedReader;
-            LOGGER.info("Found " + fileStatus.getPath().getName());
             if( fileStatus.isFile() && !fileStatus.getPath().getName().startsWith("_")) {
                 HdfsWriterConfiguration.Compression compression = HdfsWriterConfiguration.Compression.NONE;
                 if( fileStatus.getPath().getName().endsWith(".gz"))
@@ -88,8 +93,7 @@ public class WebHdfsPersistReaderTask implements Runnable {
                             }
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        LOGGER.warn(e.getMessage());
+                        LOGGER.warn("WebHdfsPersistReader readLine Exception: {}", e);
                         reader.countersCurrent.incrementStatus(DatumStatus.FAIL);
                     }
                 } while( !Strings.isNullOrEmpty(line) );
@@ -97,11 +101,12 @@ public class WebHdfsPersistReaderTask implements Runnable {
                 try {
                     bufferedReader.close();
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    LOGGER.error(e.getMessage());
+                    LOGGER.error("WebHdfsPersistReader Exception: {}", e);
                 }
             }
         }
+
+        LOGGER.info("WebHdfsPersistReaderTask Finished");
 
         Uninterruptibles.sleepUninterruptibly(15, TimeUnit.SECONDS);
     }
