@@ -19,6 +19,7 @@
 
 package org.apache.streams.pig;
 
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.core.StreamsProcessor;
@@ -34,6 +35,17 @@ import java.math.BigInteger;
  * Currently implementers must write own pig scripts to use this module
  */
 public class StreamsPigBuilder implements StreamBuilder {
+
+    @Override
+    public StreamBuilder setStreamsConfiguration(StreamsConfiguration configuration) {
+        return null;
+    }
+
+    @Override
+    public StreamsConfiguration getStreamsConfiguration() {
+        return null;
+    }
+
     @Override
     public StreamBuilder addStreamsProcessor(String s, StreamsProcessor streamsProcessor, int i, String... strings) {
         return null;

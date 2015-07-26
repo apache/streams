@@ -28,6 +28,7 @@ import org.apache.streams.local.tasks.StreamsTask;
 import org.apache.streams.util.SerializationUtil;
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -36,7 +37,7 @@ import java.util.concurrent.BlockingQueue;
  * Stores the implementations of {@link org.apache.streams.core.StreamsOperation}, the StreamsOperations it is connected
  * to and the necessary metadata to construct a data stream.
  */
-public class StreamComponent {
+public class StreamComponent implements Serializable {
 
     private static final int START = 1;
     private static final int END = 2;

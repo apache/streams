@@ -18,8 +18,10 @@
 
 package org.apache.streams.core;
 
+import org.apache.streams.config.StreamsConfiguration;
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
@@ -35,8 +37,11 @@ import java.math.BigInteger;
  * </pre>
  *
  */
-public interface StreamBuilder {
+public interface StreamBuilder extends Serializable {
 
+    public StreamBuilder setStreamsConfiguration(StreamsConfiguration configuration);
+
+    public StreamsConfiguration getStreamsConfiguration();
 
     /**
      * Add a {@link org.apache.streams.core.StreamsProcessor} to the data processing stream.
