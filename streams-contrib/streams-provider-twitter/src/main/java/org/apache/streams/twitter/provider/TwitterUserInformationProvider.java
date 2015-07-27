@@ -288,7 +288,16 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     protected Twitter getTwitterClient()
     {
-        String baseUrl = "https://api.twitter.com:443/1.1/";
+        String baseUrl = new StringBuilder()
+            .append(twitterUserInformationConfiguration.getProtocol())
+            .append("://")
+            .append(twitterUserInformationConfiguration.getHost())
+            .append(":")
+            .append(twitterUserInformationConfiguration.getPort())
+            .append("/")
+            .append(twitterUserInformationConfiguration.getVersion())
+            .append("/")
+            .toString();
 
         ConfigurationBuilder builder = new ConfigurationBuilder()
                 .setOAuthConsumerKey(twitterUserInformationConfiguration.getOauth().getConsumerKey())

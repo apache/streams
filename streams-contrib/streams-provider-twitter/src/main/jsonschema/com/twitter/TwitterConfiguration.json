@@ -10,19 +10,23 @@
     "properties": {
         "protocol": {
             "type": "string",
-            "description": "The protocol"
+            "description": "The protocol",
+            "default": "https"
         },
         "host": {
             "type": "string",
-            "description": "The host"
+            "description": "The host",
+            "default": "api.twitter.com"
         },
         "port": {
             "type": "integer",
-            "description": "The port"
+            "description": "The port",
+            "default": 443
         },
         "version": {
             "type": "string",
-            "description": "The version"
+            "description": "The version",
+            "default": "1.1"
         },
         "endpoint": {
             "type": "string",

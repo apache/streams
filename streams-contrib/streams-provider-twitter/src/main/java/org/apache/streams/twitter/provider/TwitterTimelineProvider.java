@@ -274,7 +274,17 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     }
 
     public Twitter getTwitterClient() {
-        String baseUrl = "https://api.twitter.com:443/1.1/";
+
+        String baseUrl = new StringBuilder()
+                .append(config.getProtocol())
+                .append("://")
+                .append(config.getHost())
+                .append(":")
+                .append(config.getPort())
+                .append("/")
+                .append(config.getVersion())
+                .append("/")
+                .toString();
 
         ConfigurationBuilder builder = new ConfigurationBuilder()
                 .setOAuthConsumerKey(config.getOauth().getConsumerKey())
