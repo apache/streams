@@ -22,7 +22,7 @@
     <parent>
         <artifactId>streams-contrib</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.2.28-W2O-SNAPSHOT</version>
+        <version>0.2.29-W2O-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-provider-facebook</artifactId>
