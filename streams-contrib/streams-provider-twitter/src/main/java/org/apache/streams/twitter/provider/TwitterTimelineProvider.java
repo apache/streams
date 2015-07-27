@@ -275,16 +275,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     public Twitter getTwitterClient() {
 
-        String baseUrl = new StringBuilder()
-                .append(config.getProtocol())
-                .append("://")
-                .append(config.getHost())
-                .append(":")
-                .append(config.getPort())
-                .append("/")
-                .append(config.getVersion())
-                .append("/")
-                .toString();
+        String baseUrl = TwitterProviderUtil.baseUrl(twitterUserInformationConfiguration);
 
         ConfigurationBuilder builder = new ConfigurationBuilder()
                 .setOAuthConsumerKey(config.getOauth().getConsumerKey())
