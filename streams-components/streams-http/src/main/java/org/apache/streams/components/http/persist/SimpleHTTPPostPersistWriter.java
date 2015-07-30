@@ -76,7 +76,14 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
     @Override
     public void write(StreamsDatum entry) {
 
-        ObjectNode payload = preparePayload(entry);
+        ObjectNode payload;
+        try {
+            payload = preparePayload(entry);
+        } catch( Exception e ) {
+            LOGGER.warn("Exception preparing payload, using empty payload");
+            payload = mapper.createObjectNode();
+        }
+
 
         Map<String, String> params = prepareParams(entry);
 
@@ -120,7 +127,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
     /**
      Override this to alter json payload on to the request
      */
-    protected ObjectNode preparePayload(StreamsDatum entry) {
+    protected ObjectNode preparePayload(StreamsDatum entry) throws Exception {
 
         return (ObjectNode) entry.getDocument();
     }

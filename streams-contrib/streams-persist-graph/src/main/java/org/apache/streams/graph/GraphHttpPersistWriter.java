@@ -39,6 +39,8 @@ import org.apache.streams.graph.neo4j.Neo4jHttpGraphHelper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
+import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.pojo.json.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,34 +85,37 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
     }
 
     @Override
-    protected ObjectNode preparePayload(StreamsDatum entry) {
+    protected ObjectNode preparePayload(StreamsDatum entry) throws Exception {
 
         Activity activity = null;
         ActivityObject activityObject = null;
+        Object document = entry.getDocument();
 
-        if (entry.getDocument() instanceof Activity) {
-            activity = (Activity) entry.getDocument();
-        } else if (entry.getDocument() instanceof ActivityObject) {
-            activityObject = (ActivityObject) entry.getDocument();
+        if (document instanceof Activity) {
+            activity = (Activity) document;
+            activityObject = activity.getObject();
+        } else if (document instanceof ActivityObject) {
+            activityObject = (ActivityObject) document;
         } else {
             ObjectNode objectNode;
-            if (entry.getDocument() instanceof ObjectNode) {
-                objectNode = (ObjectNode) entry.getDocument();
-            } else if( entry.getDocument() instanceof String) {
+            if (document instanceof ObjectNode) {
+                objectNode = (ObjectNode) document;
+            } else if( document instanceof String) {
                 try {
-                    objectNode = mapper.readValue((String) entry.getDocument(), ObjectNode.class);
+                    objectNode = mapper.readValue((String) document, ObjectNode.class);
                 } catch (IOException e) {
                     LOGGER.error("Can't handle input: ", entry);
-                    return mapper.createObjectNode();
+                    throw e;
                 }
             } else {
                 LOGGER.error("Can't handle input: ", entry);
-                return mapper.createObjectNode();
+                throw new Exception("Can't create payload from datum.");
             }
 
             if( objectNode.get("verb") != null ) {
                 try {
                     activity = mapper.convertValue(objectNode, Activity.class);
+                    activityObject = activity.getObject();
                 } catch (Exception e) {
                     activityObject = mapper.convertValue(objectNode, ActivityObject.class);
                 }
@@ -134,23 +139,26 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
             statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(activityObject)));
         }
 
+        Actor actor = activity.getActor();
+        Provider provider = activity.getProvider();
+
         if( activity != null ) {
-            if( activity.getProvider() != null &&
-                    !Strings.isNullOrEmpty(activity.getProvider().getId()) ) {
-                labels.add(activity.getProvider().getId());
+            if( provider != null &&
+                    !Strings.isNullOrEmpty(provider.getId()) ) {
+                labels.add(provider.getId());
             }
-            if (activity.getActor() != null &&
-                    !Strings.isNullOrEmpty(activity.getActor().getId())) {
-                if (activity.getActor().getObjectType() != null)
-                    labels.add(activity.getActor().getObjectType());
-                statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(activity.getActor())));
+            if (actor != null &&
+                    !Strings.isNullOrEmpty(actor.getId())) {
+                if (actor.getObjectType() != null)
+                    labels.add(actor.getObjectType());
+                statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(actor)));
             }
 
-            if (activity.getObject() != null &&
-                    !Strings.isNullOrEmpty(activity.getObject().getId())) {
-                if (activity.getObject().getObjectType() != null)
-                    labels.add(activity.getObject().getObjectType());
-                statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(activity.getObject())));
+            if (activityObject != null &&
+                    !Strings.isNullOrEmpty(activityObject.getId())) {
+                if (activityObject.getObjectType() != null)
+                    labels.add(activityObject.getObjectType());
+                statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(activityObject)));
             }
 
             // then add edge
