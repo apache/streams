@@ -29,6 +29,8 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.javatuples.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.ST;
 
 import java.util.List;
@@ -39,7 +41,9 @@ import java.util.Map;
  */
 public class Neo4jHttpGraphHelper implements HttpGraphHelper {
 
-    private final static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private final static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(Neo4jHttpGraphHelper.class);
 
     public final static String statementKey = "statement";
     public final static String paramsKey = "parameters";
@@ -47,19 +51,23 @@ public class Neo4jHttpGraphHelper implements HttpGraphHelper {
 
     public ObjectNode createHttpRequest(Pair<String, Map<String, Object>> queryPlusParameters) {
 
+        LOGGER.debug("createHttpRequest: ", queryPlusParameters);
+
         Preconditions.checkNotNull(queryPlusParameters);
         Preconditions.checkNotNull(queryPlusParameters.getValue0());
         Preconditions.checkNotNull(queryPlusParameters.getValue1());
 
-        ObjectNode request = mapper.createObjectNode();
+        ObjectNode request = MAPPER.createObjectNode();
 
         request.put(statementKey, queryPlusParameters.getValue0());
 
-        ObjectNode params = mapper.createObjectNode();
-        ObjectNode props = mapper.convertValue(queryPlusParameters.getValue1(), ObjectNode.class);
+        ObjectNode params = MAPPER.createObjectNode();
+        ObjectNode props = MAPPER.convertValue(queryPlusParameters.getValue1(), ObjectNode.class);
 
         params.put(propsKey, props);
         request.put(paramsKey, params);
+
+        LOGGER.debug("createHttpRequest: ", request);
 
         return request;
     }

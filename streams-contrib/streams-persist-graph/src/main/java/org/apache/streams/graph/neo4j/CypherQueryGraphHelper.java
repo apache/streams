@@ -30,6 +30,8 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.javatuples.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.ST;
 
 import java.util.List;
@@ -40,7 +42,9 @@ import java.util.Map;
  */
 public class CypherQueryGraphHelper implements QueryGraphHelper {
 
-    private final static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private final static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(Neo4jHttpGraphHelper.class);
 
     public final static String getVertexLongIdStatementTemplate = "MATCH (v) WHERE ID(v) = <id> RETURN v";
     public final static String getVertexStringIdStatementTemplate = "MATCH (v {id: '<id>'} ) RETURN v";
@@ -65,6 +69,8 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
 
         Pair<String, Map<String, Object>> queryPlusParameters = new Pair(getVertex.render(), null);
 
+        LOGGER.debug("getVertexRequest", queryPlusParameters.toString());
+
         return queryPlusParameters;
     }
 
@@ -75,6 +81,8 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
         getVertex.add("id", vertexId);
 
         Pair<String, Map<String, Object>> queryPlusParameters = new Pair(getVertex.render(), null);
+
+        LOGGER.debug("getVertexRequest", queryPlusParameters.toString());
 
         return queryPlusParameters;
 
@@ -88,10 +96,12 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
         createVertex.add("id", activityObject.getId());
         createVertex.add("type", activityObject.getObjectType());
 
-        ObjectNode object = mapper.convertValue(activityObject, ObjectNode.class);
+        ObjectNode object = MAPPER.convertValue(activityObject, ObjectNode.class);
         Map<String, Object> props = PropertyUtil.flattenToMap(object, '.');
 
         Pair<String, Map<String, Object>> queryPlusParameters = new Pair(createVertex.render(), props);
+
+        LOGGER.debug("createVertexRequest", queryPlusParameters.toString());
 
         return queryPlusParameters;
     }
@@ -105,11 +115,13 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
         ST mergeVertex = new ST(mergeVertexStatementTemplate);
         mergeVertex.add("id", activityObject.getId());
         mergeVertex.add("type", activityObject.getObjectType());
-        queryPlusParameters.setAt0(mergeVertex.render());
+        queryPlusParameters = queryPlusParameters.setAt0(mergeVertex.render());
 
-        ObjectNode object = mapper.convertValue(activityObject, ObjectNode.class);
+        ObjectNode object = MAPPER.convertValue(activityObject, ObjectNode.class);
         Map<String, Object> props = PropertyUtil.flattenToMap(object, '.');
-        queryPlusParameters.setAt1(props);
+        queryPlusParameters = queryPlusParameters.setAt1(props);
+
+        LOGGER.debug("mergeVertexRequest", queryPlusParameters.toString());
 
         return queryPlusParameters;
     }
@@ -118,7 +130,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
 
         Pair queryPlusParameters = new Pair(null, Maps.newHashMap());
 
-        ObjectNode object = mapper.convertValue(activity, ObjectNode.class);
+        ObjectNode object = MAPPER.convertValue(activity, ObjectNode.class);
         Map<String, Object> props = PropertyUtil.flattenToMap(object, '.');
 
         ST mergeEdge = new ST(createEdgeStatementTemplate);
@@ -137,8 +149,10 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
         activity.getAdditionalProperties().put("extensions", null);
 
         String statement = mergeEdge.render();
-        queryPlusParameters.setAt0(statement);
-        queryPlusParameters.setAt1(props);
+        queryPlusParameters = queryPlusParameters.setAt0(statement);
+        queryPlusParameters = queryPlusParameters.setAt1(props);
+
+        LOGGER.debug("createEdgeRequest", queryPlusParameters);
 
         return queryPlusParameters;
     }
