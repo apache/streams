@@ -26,6 +26,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.twitter.TwitterConfiguration;
 import org.apache.streams.twitter.TwitterStreamConfiguration;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
@@ -33,6 +34,7 @@ import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.provider.TwitterConfigurator;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
 import org.apache.streams.twitter.converter.StreamsTwitterMapper;
+import org.apache.streams.twitter.provider.TwitterProviderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.*;
@@ -56,7 +58,7 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     //Start the backoff at 4 minutes.  This results in a wait period of 4, 8, 12, 16 & 20 min with an attempt of 5
     public static final int BACKOFF = 1000 * 60 * 4;
 
-    private final TwitterStreamConfiguration config;
+    private final TwitterConfiguration config;
     private Twitter client;
     private ObjectMapper mapper;
     private int retryCount;
@@ -135,7 +137,8 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     protected Twitter getTwitterClient()
     {
         if(this.client == null) {
-            String baseUrl = "https://api.twitter.com:443/1.1/";
+
+            String baseUrl = TwitterProviderUtil.baseUrl(config);
 
             ConfigurationBuilder builder = new ConfigurationBuilder()
                     .setOAuthConsumerKey(config.getOauth().getConsumerKey())

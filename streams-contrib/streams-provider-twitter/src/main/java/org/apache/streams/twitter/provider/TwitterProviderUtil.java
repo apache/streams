@@ -1,13 +1,13 @@
 package org.apache.streams.twitter.provider;
 
-import org.apache.streams.twitter.TwitterUserInformationConfiguration;
+import org.apache.streams.twitter.TwitterConfiguration;
 
 /**
  * Created by sblackmon on 7/26/15.
  */
 public class TwitterProviderUtil {
 
-    public static String baseUrl(TwitterUserInformationConfiguration config) {
+    public static String baseUrl(TwitterConfiguration config) {
 
         String baseUrl = new StringBuilder()
                 .append(config.getProtocol())
