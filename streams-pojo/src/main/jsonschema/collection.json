@@ -15,7 +15,7 @@
             "description": "An IRI [RFC3987] referencing a JSON document containing the full listing of objects in the collection."
         },
         "totalItems": {
-            "type": "number",
+            "type": "integer",
             "description": "Non-negative integer specifying the total number of activities within the stream. The Stream serialization MAY contain a count property."
         },
         "items": {
