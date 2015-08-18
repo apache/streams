@@ -288,7 +288,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     protected Twitter getTwitterClient()
     {
-        String baseUrl = "https://api.twitter.com:443/1.1/";
+        String baseUrl = TwitterProviderUtil.baseUrl(twitterUserInformationConfiguration);
 
         ConfigurationBuilder builder = new ConfigurationBuilder()
                 .setOAuthConsumerKey(twitterUserInformationConfiguration.getOauth().getConsumerKey())
