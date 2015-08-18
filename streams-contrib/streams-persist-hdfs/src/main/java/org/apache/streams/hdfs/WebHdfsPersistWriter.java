@@ -271,7 +271,10 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
 
         String documentJson = null;
         try {
-            documentJson = mapper.writeValueAsString(entry.getDocument());
+            if( entry.getDocument() instanceof String )
+                documentJson = (String)entry.getDocument();
+            else
+                documentJson = mapper.writeValueAsString(entry.getDocument());
         } catch (JsonProcessingException e) {
             LOGGER.warn("Error converting document to string", e);
         }
