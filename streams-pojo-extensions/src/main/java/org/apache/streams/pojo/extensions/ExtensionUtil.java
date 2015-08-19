@@ -67,6 +67,15 @@ public class ExtensionUtil {
         extensions.remove(key);
     };
 
+    public static void promoteExtensions(Activity activity) {
+        Map<String,Object> extensions = ensureExtensions(activity);
+        for( String key : extensions.keySet() ) {
+            activity.getAdditionalProperties().put(key, extensions.get(key));
+            removeExtension(activity, key);
+        }
+        activity.getAdditionalProperties().remove("extensions");
+    };
+
     public static Map<String, Object> getExtensions(ActivityObject object) {
         ActivityObject activityObject = mapper.convertValue(object, ActivityObject.class);
         Map<String,Object> extensions = ensureExtensions(object);
@@ -95,6 +104,15 @@ public class ExtensionUtil {
     public static void removeExtension(ActivityObject object, String key) {
         Map<String,Object> extensions = ensureExtensions(object);
         extensions.remove(key);
+    };
+
+    public static void promoteExtensions(ActivityObject object) {
+        Map<String,Object> extensions = ensureExtensions(object);
+        for( String key : extensions.keySet() ) {
+            object.getAdditionalProperties().put(key, extensions.get(key));
+            removeExtension(object, key);
+        }
+        object.getAdditionalProperties().remove("extensions");
     };
 
     /**
