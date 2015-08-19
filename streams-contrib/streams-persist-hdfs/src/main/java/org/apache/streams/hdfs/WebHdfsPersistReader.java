@@ -68,7 +68,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
-    protected ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    protected ObjectMapper mapper;
 
     protected HdfsReaderConfiguration hdfsConfiguration;
     protected StreamsConfiguration streamsConfiguration;
@@ -177,6 +177,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
         persistQueue = Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(streamsConfiguration.getBatchSize().intValue()));
         //persistQueue = Queues.synchronizedQueue(new ConcurrentLinkedQueue());
         executor = Executors.newSingleThreadExecutor();
+        mapper = StreamsJacksonMapper.getInstance();
     }
 
     @Override

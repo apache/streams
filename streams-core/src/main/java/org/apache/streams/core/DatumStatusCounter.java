@@ -17,8 +17,11 @@
  */
 
 package org.apache.streams.core;
+
+import java.io.Serializable;
+
 @Deprecated
-public class DatumStatusCounter
+public class DatumStatusCounter implements Serializable
 {
     private volatile int attempted = 0;
     private volatile int success = 0;
