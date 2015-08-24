@@ -51,8 +51,20 @@ public class StreamsDatum implements Serializable {
         this(document, null, timestamp, sequenceid);
     }
 
+    public StreamsDatum(Object document, DateTime timestamp, Map<String, Object> metadata) {
+        this(document, null, timestamp, null, metadata);
+    }
+
     public StreamsDatum(Object document, String id, DateTime timestamp) {
         this(document, id, timestamp, null);
+    }
+
+    public StreamsDatum(Object document, String id, Map<String, Object> metadata) {
+        this(document, id, null, null, metadata);
+    }
+
+    public StreamsDatum(Object document, String id, BigInteger sequenceid, Map<String, Object> metadata) {
+        this(document, id, null, sequenceid, metadata);
     }
 
     public StreamsDatum(Object document, String id, BigInteger sequenceid) {
@@ -65,6 +77,14 @@ public class StreamsDatum implements Serializable {
         this.timestamp = timestamp;
         this.sequenceid = sequenceid;
         this.metadata = new HashMap<String, Object>();
+    }
+
+    public StreamsDatum(Object document, String id, DateTime timestamp, BigInteger sequenceid, Map<String, Object> metadata) {
+        this.document = document;
+        this.id = id;
+        this.timestamp = timestamp;
+        this.sequenceid = sequenceid;
+        this.metadata = metadata;
     }
 
     public DateTime timestamp;
@@ -140,7 +160,7 @@ public class StreamsDatum implements Serializable {
 
     @Override
     public String toString() {
-        return this.id+"\tDocument="+this.document+"\ttimestamp="+this.timestamp+"\tsequence="+this.sequenceid;
+        return this.id+"\tMetadata="+this.metadata+"\tTimestamp="+this.timestamp+"\tSequence="+this.sequenceid+"\tDocument="+this.document;
     }
 
 }
