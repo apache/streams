@@ -66,4 +66,20 @@ public class StreamsConfigurator {
 
         return pojoConfig;
     }
+
+    public static StreamsConfiguration mergeConfigurations(Config base, Config delta) {
+
+        Config merged = delta.withFallback(base);
+
+        StreamsConfiguration pojoConfig = null;
+
+        try {
+            pojoConfig = mapper.readValue(merged.root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.warn("Failed to merge.");
+        }
+
+        return pojoConfig;
+    }
 }

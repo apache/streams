@@ -24,6 +24,7 @@ import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.*;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.local.LocalRuntimeConfiguration;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.executors.ShutdownStreamOnUnhandleThrowableThreadPoolExecutor;
@@ -196,6 +197,17 @@ public class LocalStreamBuilder implements StreamBuilder {
         if(this.useDeprecatedMonitors && provider instanceof DatumStatusCountable )
             ++this.monitorTasks;
         return this;
+    }
+
+    @Override
+    public StreamBuilder setStreamsConfiguration(StreamsConfiguration configuration) {
+        streamConfig = StreamsJacksonMapper.getInstance().convertValue(configuration, LocalRuntimeConfiguration.class);
+        return this;
+    }
+
+    @Override
+    public StreamsConfiguration getStreamsConfiguration() {
+        return StreamsJacksonMapper.getInstance().convertValue(streamConfig, StreamsConfiguration.class);
     }
 
     @Override
