@@ -21,6 +21,7 @@ package org.apache.streams.hdfs;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
@@ -43,6 +44,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.PrivilegedExceptionAction;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Queue;
 import java.util.List;
@@ -91,10 +93,13 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
         StringBuilder uriBuilder = new StringBuilder();
         uriBuilder.append(hdfsConfiguration.getScheme());
         uriBuilder.append("://");
-        if( !Strings.isNullOrEmpty(hdfsConfiguration.getHost()))
-            uriBuilder.append(hdfsConfiguration.getHost() + ":" + hdfsConfiguration.getPort());
-        else
+        if( !Strings.isNullOrEmpty(hdfsConfiguration.getHost())) {
+            uriBuilder.append(hdfsConfiguration.getHost());
+            if (hdfsConfiguration.getPort() != null)
+                uriBuilder.append(":" + hdfsConfiguration.getPort());
+        } else {
             uriBuilder.append("/");
+        }
         return new URI(uriBuilder.toString());
     }
 
@@ -159,14 +164,21 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
     public void prepare(Object configurationObject) {
         LOGGER.debug("Prepare");
         connectToWebHDFS();
-        path = new Path(hdfsConfiguration.getPath() + "/" + hdfsConfiguration.getReaderPath());
+        String pathString = hdfsConfiguration.getPath() + "/" + hdfsConfiguration.getReaderPath();
+        LOGGER.info("Path : {}", pathString);
+        path = new Path(pathString);
         try {
             if( client.isFile(path)) {
+                LOGGER.info("Found File");
                 FileStatus fileStatus = client.getFileStatus(path);
                 status = new FileStatus[1];
                 status[0] = fileStatus;
             } else if( client.isDirectory(path)){
                 status = client.listStatus(path);
+                List<FileStatus> statusList = Lists.newArrayList(status);
+                Collections.sort(statusList);
+                status = statusList.toArray(new FileStatus[0]);
+                LOGGER.info("Found Directory : {} files", status.length);
             } else {
                 LOGGER.error("Neither file nor directory, wtf");
             }
