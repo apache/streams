@@ -216,9 +216,9 @@ public class SprinklrDataToActivityConverter {
      */
     private Provider getProvider(JsonNode item) {
         Provider provider = new Provider();
-        String mediaType = item.get("snType").asText();
+        String mediaType = item.get("snType").asText().toLowerCase();
         provider.setId(getProviderId(mediaType));
-        provider.setDisplayName(mediaType.toUpperCase());
+        provider.setDisplayName(StringUtils.capitalize(mediaType));
         return provider;
     }
 
