@@ -45,7 +45,7 @@ public class PromoteExtensionsProcessor implements StreamsProcessor, Serializabl
 
     private final static Logger LOGGER = LoggerFactory.getLogger(PromoteExtensionsProcessor.class);
 
-    private List<String> formats = Lists.newArrayList();
+    private ExtensionUtil extensionUtil;
 
     protected ObjectMapper mapper;
 
@@ -58,9 +58,9 @@ public class PromoteExtensionsProcessor implements StreamsProcessor, Serializabl
         Object doc = entry.getDocument();
 
         if( doc instanceof Activity) {
-            ExtensionUtil.promoteExtensions((Activity)doc);
+            extensionUtil.promoteExtensions((Activity)doc);
         } else if( doc instanceof ActivityObject) {
-            ExtensionUtil.promoteExtensions((ActivityObject)doc);
+            extensionUtil.promoteExtensions((ActivityObject)doc);
         } else {
             LOGGER.warn("document wrong type: " + doc.getClass());
         }
@@ -73,7 +73,7 @@ public class PromoteExtensionsProcessor implements StreamsProcessor, Serializabl
 
     @Override
     public void prepare(Object configurationObject) {
-
+        extensionUtil = ExtensionUtil.getInstance();
     }
 
     @Override
