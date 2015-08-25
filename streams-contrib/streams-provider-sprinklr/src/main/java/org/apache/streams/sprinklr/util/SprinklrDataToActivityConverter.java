@@ -229,36 +229,38 @@ public class SprinklrDataToActivityConverter {
      */
     private Actor buildActor(JsonNode item) {
         Actor actor = new Actor();
+        if (item.has("senderProfile")) {
+            JsonNode senderProfile = item.get("senderProfile");
+            Image image = new Image();
+            image.setUrl(senderProfile.has("profileImgUrl") ? senderProfile.get("profileImgUrl").asText() : "");
 
-        Image image = new Image();
-        JsonNode senderProfile = item.get("senderProfile");
-        image.setUrl(senderProfile.has("profileImgUrl") ? senderProfile.get("profileImgUrl").asText() : "");
+            actor.setDisplayName(senderProfile.has("name") ? senderProfile.get("name").asText() : "");
+            actor.setId(formatId(senderProfile.get("snId").asText()));
+            actor.setImage(image);
+            actor.setUrl(senderProfile.has("permalink") ? senderProfile.get("permalink").asText() : "");
 
-        actor.setDisplayName(senderProfile.has("name") ? senderProfile.get("name").asText() : "");
-        actor.setId(formatId(senderProfile.get("snId").asText()));
-        actor.setImage(image);
-        actor.setUrl(senderProfile.has("permalink") ? senderProfile.get("permalink").asText() : "");
+            Map<String, Object> extensions = new HashMap<String, Object>();
 
-        Map<String, Object> extensions = new HashMap<String, Object>();
+            if (senderProfile.has("screenName")) extensions.put("screenName", senderProfile.get("screenName").asText());
+            if (senderProfile.has("followers")) extensions.put("followers", senderProfile.get("followers").asInt());
+            if (senderProfile.has("follows")) extensions.put("follows", senderProfile.get("follows").asInt());
+            if (senderProfile.has("age")) extensions.put("age", senderProfile.get("age").asInt());
+            if (senderProfile.has("favCount")) extensions.put("favCount", senderProfile.get("favCount").asInt());
+            if (senderProfile.has("statusCount")) extensions.put("statusCount", senderProfile.get("statusCount").asInt());
+            if (senderProfile.has("snId")) extensions.put("snId", senderProfile.get("snId").asText());
+            if (senderProfile.has("participationIndex")) extensions.put("participationIndex", senderProfile.get("participationIndex").asInt());
+            if (senderProfile.has("influencerIndex")) extensions.put("influencerIndex", senderProfile.get("influencerIndex").asInt());
+            if (senderProfile.has("spamIndex")) extensions.put("spamIndex", senderProfile.get("spamIndex").asInt());
+            if (senderProfile.has("profileWorkflowProperties")) extensions.put("profileWorkflowProperties", senderProfile.get("profileWorkflowProperties"));
+            if (senderProfile.has("universalProfileId")) extensions.put("universalProfileId", senderProfile.get("universalProfileId").asText());
+            if (senderProfile.has("accountsBlockingUser")) extensions.put("accountsBlockingUser", senderProfile.get("accountsBlockingUser"));
+            if (senderProfile.has("name")) extensions.put("posts", senderProfile.get("name").asText());
 
-        if (senderProfile.has("screenName")) extensions.put("screenName", senderProfile.get("screenName").asText());
-        if ( senderProfile.has("followers")) extensions.put("followers",senderProfile.get("followers").asInt());
-        if (senderProfile.has("follows")) extensions.put("follows", senderProfile.get("follows").asInt());
-        if (senderProfile.has("age")) extensions.put("age", senderProfile.get("age").asInt());
-        if (senderProfile.has("favCount")) extensions.put("favCount", senderProfile.get("favCount").asInt());
-        if (senderProfile.has("statusCount")) extensions.put("statusCount", senderProfile.get("statusCount").asInt());
-        if (senderProfile.has("snId")) extensions.put("snId", senderProfile.get("snId").asText());
-        if (senderProfile.has("participationIndex")) extensions.put("participationIndex", senderProfile.get("participationIndex").asInt());
-        if (senderProfile.has("influencerIndex")) extensions.put("influencerIndex", senderProfile.get("influencerIndex").asInt());
-        if (senderProfile.has("spamIndex")) extensions.put("spamIndex", senderProfile.get("spamIndex").asInt());
-        if (senderProfile.has("profileWorkflowProperties")) extensions.put("profileWorkflowProperties", senderProfile.get("profileWorkflowProperties"));
-        if (senderProfile.has("universalProfileId")) extensions.put("universalProfileId", senderProfile.get("universalProfileId").asText());
-        if (senderProfile.has("accountsBlockingUser")) extensions.put("accountsBlockingUser", senderProfile.get("accountsBlockingUser"));
-        if (senderProfile.has("name")) extensions.put("posts", senderProfile.get("name").asText());
-        extensions.put("senderProfile", senderProfile);
+            extensions.put("senderProfile", senderProfile);
 
-        actor.setAdditionalProperty("extensions", extensions);
-        actor.setAdditionalProperty("handle", extensions.get("screenName"));
+            actor.setAdditionalProperty("extensions", extensions);
+            actor.setAdditionalProperty("handle", extensions.get("screenName"));
+        }
         return actor;
     }
 
