@@ -63,7 +63,7 @@ public class SprinklrDataToActivityConverter {
             activity.setProvider(getProvider(item));
 
             Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
-            extensions.put("sprinkler", item);
+            extensions.put("sprinklr", item);
 
             // set location, set language
             setActivityExtensions(item, extensions);
