@@ -67,7 +67,7 @@ public class RegexHashtagExtractorTest {
         List<StreamsDatum> result = new RegexHashtagExtractor().process(datum);
         assertThat(result.size(), is(equalTo(1)));
         Activity output = (Activity)result.get(0).getDocument();
-        Set<String> extracted = (Set) ExtensionUtil.ensureExtensions(output).get(RegexHashtagExtractor.EXTENSION_KEY);
+        Set<String> extracted = (Set) ExtensionUtil.getInstance().ensureExtensions(output).get(RegexHashtagExtractor.EXTENSION_KEY);
         Sets.SetView<String> diff = Sets.difference(extracted, hashtags);
         assertThat(diff.size(), is(equalTo(0)));
     }

@@ -117,7 +117,7 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
 
     @SuppressWarnings("unchecked")
     protected Collection<T> ensureTargetObject(Activity activity) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
         Set<T> hashtags;
         if(extensions.containsKey(extensionKey) && extensions.get(extensionKey) != null) {
             hashtags = Sets.newHashSet((Iterable<T>) extensions.get(extensionKey));

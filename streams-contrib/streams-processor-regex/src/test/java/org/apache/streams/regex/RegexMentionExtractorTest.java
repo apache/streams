@@ -76,7 +76,7 @@ public class RegexMentionExtractorTest {
         List<StreamsDatum> result = new RegexMentionsExtractor().process(datum);
         assertThat(result.size(), is(equalTo(1)));
         Activity output = (Activity)result.get(0).getDocument();
-        Set<String> extracted = (Set) ExtensionUtil.ensureExtensions(output).get(RegexMentionsExtractor.EXTENSION_KEY);
+        Set<String> extracted = (Set) ExtensionUtil.getInstance().ensureExtensions(output).get(RegexMentionsExtractor.EXTENSION_KEY);
         Sets.SetView<String> diff = Sets.difference(extracted, mentions);
         assertThat(diff.size(), is(equalTo(0)));
     }

@@ -50,7 +50,7 @@ public class SysomosBeatActivityConverter {
         converted.setUrl(beat.getLink());
         converted.setActor(new Actor());
         Map<String, BeatApi.BeatResponse.Beat.Tag> mappedTags = mapTags(beat);
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(converted);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(converted);
         extensions.put("keywords", beat.getContent());
         setLocation(beat, extensions);
         setObject(beat, converted);

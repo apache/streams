@@ -144,7 +144,7 @@ public class YoutubeActivityUtil {
      * @param video
      */
     private static void addYoutubeExtensions(Activity activity, Video video) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
 
         extensions.put("youtube", video);
 

@@ -127,7 +127,7 @@ public class DatasiftInteractionActivitySerializer implements ActivitySerializer
     }
 
     public static void addDatasiftExtension(Activity activity, Datasift datasift) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
         extensions.put("datasift", datasift);
     }
 
@@ -230,7 +230,7 @@ public class DatasiftInteractionActivitySerializer implements ActivitySerializer
     }
 
     public static void addLocationExtension(Activity activity, Interaction interaction) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
         Map<String, Object> location = new HashMap<String, Object>();
         Map<String, Double> coordinates = new HashMap<String, Double>();
         coordinates.put("latitude", interaction.getGeo().getLatitude());

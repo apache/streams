@@ -284,7 +284,7 @@ public class InstagramActivityUtil {
      * @param item the object to use as the source
      */
     public static void addLocationExtension(Activity activity, MediaFeedData item) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
 
         if(item.getLocation() != null) {
             Map<String, Object> coordinates = new HashMap<String, Object>();
@@ -322,7 +322,7 @@ public class InstagramActivityUtil {
      * @param item
      */
     public static void addInstagramExtensions(Activity activity, MediaFeedData item) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
 
         addLocationExtension(activity, item);
 

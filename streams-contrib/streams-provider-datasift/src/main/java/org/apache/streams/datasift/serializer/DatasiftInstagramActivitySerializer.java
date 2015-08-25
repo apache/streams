@@ -98,7 +98,7 @@ public class DatasiftInstagramActivitySerializer extends DatasiftInteractionActi
     }
 
     public void addInstagramExtensions(Activity activity, Instagram instagram) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
         List<String> hashTags;
         if(instagram.getMedia() != null) {
             hashTags = instagram.getMedia().getTags();

@@ -182,11 +182,9 @@ public class PercolateTagProcessor implements StreamsProcessor {
     }
 
     protected void appendMatches(ArrayNode tagArray, Activity activity) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
 
-        extensions.put(TAGS_EXTENSION, tagArray);
+        ExtensionUtil.getInstance().addExtension(activity, TAGS_EXTENSION, tagArray);
 
-        activity.setAdditionalProperty(ActivityUtil.EXTENSION_PROPERTY, extensions);
     }
 
     @Override

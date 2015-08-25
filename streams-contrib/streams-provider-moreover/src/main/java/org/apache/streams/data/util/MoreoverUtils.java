@@ -119,7 +119,7 @@ public class MoreoverUtils {
     }
 
     public static void addLocationExtension(Activity activity, Source value) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
         String country = value.getLocation().getCountryCode() == null ? value.getLocation().getCountry() : value.getLocation().getCountryCode();
         if (country != null) {
             Map<String, Object> location = new HashMap<String, Object>();
@@ -129,7 +129,7 @@ public class MoreoverUtils {
     }
 
     public static void addLanguageExtension(Activity activity, Article value) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
         String language = value.getLanguage();
         if (language != null) {
             extensions.put(LANGUAGE_EXTENSION, language);
