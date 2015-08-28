@@ -32,11 +32,11 @@ import java.util.Map;
 public class StreamsDatum implements Serializable {
 
     public StreamsDatum(Object document) {
-        this(document, null, null, null, null);
+        this(document, null, null, null, new HashMap<String, Object>());
     }
 
     public StreamsDatum(Object document, String id) {
-        this(document, id, null, null, null);
+        this(document, id, null, null, new HashMap<String, Object>());
     }
 
     public StreamsDatum(Object document, BigInteger sequenceid) {
