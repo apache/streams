@@ -24,6 +24,7 @@
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-master</artifactId>
         <version>0.3-incubating-SNAPSHOT</version>
+	<relativePath>incubator-streams-master-pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.streams</groupId>
