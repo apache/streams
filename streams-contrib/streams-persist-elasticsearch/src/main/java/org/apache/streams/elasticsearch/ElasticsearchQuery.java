@@ -126,23 +126,25 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
                     .setScroll(scrollTimeout)
                     .addField("_timestamp");
 
+            LOGGER.debug("Search source: " + search.toString());
+
             String searchJson;
             if( config.getSearch() != null ) {
                 LOGGER.debug("Have config in Reader: " + config.getSearch().toString());
 
                 try {
                     searchJson = mapper.writeValueAsString(config.getSearch());
-                    LOGGER.debug("Setting source: " + searchJson);
+                    LOGGER.debug("Extra source: " + searchJson);
                     search = search.setExtraSource(searchJson);
 
                 } catch (JsonProcessingException e) {
                     LOGGER.warn("Could not apply _search supplied by config", e.getMessage());
                 }
 
-                LOGGER.debug("Search Source is now " + search.toString());
 
             }
 
+            LOGGER.debug("Final Search: " + search.internalBuilder().toString());
 
             if (this.queryBuilder != null)
                 search = search.setQuery(this.queryBuilder);
