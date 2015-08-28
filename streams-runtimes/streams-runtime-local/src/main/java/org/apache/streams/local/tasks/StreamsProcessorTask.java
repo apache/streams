@@ -147,12 +147,12 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
                         LOGGER.warn("Received InteruptedException, shutting down and re-applying interrupt status.");
                         this.keepRunning.set(false);
                         Thread.currentThread().interrupt();
-                    } catch (Throwable t) {
+                    } catch (Exception e) {
                         this.counter.incrementErrorCount();
-                        LOGGER.warn("Caught Throwable in processor, {} : {}", this.processor.getClass().getName(), t.getMessage());
+                        LOGGER.warn("Caught Throwable in processor, {} : {}", this.processor.getClass().getName(), e);
                         statusCounter.incrementStatus(DatumStatus.FAIL);
                         //Add the error to the metadata, but keep processing
-                        DatumUtils.addErrorToMetadata(datum, t, this.processor.getClass());
+                        DatumUtils.addErrorToMetadata(datum, e, this.processor.getClass());
                     }
                 } else {
                     //LOGGER.debug("Removed NULL datum from queue at processor : {}", this.processor.getClass().getName());

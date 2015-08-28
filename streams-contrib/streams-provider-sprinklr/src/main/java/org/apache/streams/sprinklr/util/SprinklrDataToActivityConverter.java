@@ -54,7 +54,7 @@ public class SprinklrDataToActivityConverter {
             activity.setId(formatId(activity.getVerb(), item.get("universalMessageId").asText()));
             activity.setContent(item.has("message") ? item.get("message").asText() : "");
             activity.setTitle(item.has("title") ? item.get("title").asText() : "");
-            activity.setPublished(item.has("createdTime") ? new DateTime(item.get("createdTime").asLong()) : new DateTime());
+            activity.setPublished(item.has("snCreatedTime") ? new DateTime(item.get("snCreatedTime").asLong()) : new DateTime());
             activity.setUrl(item.has("permalink") ? item.get("permalink").asText() : "");
             activity.setActor(buildActor(item));
 
@@ -172,8 +172,7 @@ public class SprinklrDataToActivityConverter {
     private List<ActivityObject> buildActivityObjectAttachments(JsonNode item) {
         List<ActivityObject> attachments = Lists.newArrayList();
         if (item.has("mediaList")) {
-            while (item.elements().hasNext()){
-                JsonNode mediaItem = item.elements().next();
+            for(JsonNode mediaItem : item.get("mediaList")) {
                 if (mediaItem.has("type")) {
                     String mediaType = mediaItem.get("type").asText();
                     addMediaObject(mediaItem, attachments, mediaType.toLowerCase());
@@ -246,7 +245,7 @@ public class SprinklrDataToActivityConverter {
             if (senderProfile.has("follows")) extensions.put("follows", senderProfile.get("follows").asInt());
             if (senderProfile.has("age")) extensions.put("age", senderProfile.get("age").asInt());
             if (senderProfile.has("favCount")) extensions.put("favCount", senderProfile.get("favCount").asInt());
-            if (senderProfile.has("statusCount")) extensions.put("statusCount", senderProfile.get("statusCount").asInt());
+            if (senderProfile.has("statusCount")) extensions.put("posts", senderProfile.get("statusCount").asInt());
             if (senderProfile.has("snId")) extensions.put("snId", senderProfile.get("snId").asText());
             if (senderProfile.has("participationIndex")) extensions.put("participationIndex", senderProfile.get("participationIndex").asInt());
             if (senderProfile.has("influencerIndex")) extensions.put("influencerIndex", senderProfile.get("influencerIndex").asInt());
@@ -254,7 +253,6 @@ public class SprinklrDataToActivityConverter {
             if (senderProfile.has("profileWorkflowProperties")) extensions.put("profileWorkflowProperties", senderProfile.get("profileWorkflowProperties"));
             if (senderProfile.has("universalProfileId")) extensions.put("universalProfileId", senderProfile.get("universalProfileId").asText());
             if (senderProfile.has("accountsBlockingUser")) extensions.put("accountsBlockingUser", senderProfile.get("accountsBlockingUser"));
-            if (senderProfile.has("name")) extensions.put("posts", senderProfile.get("name").asText());
 
             extensions.put("senderProfile", senderProfile);
 
