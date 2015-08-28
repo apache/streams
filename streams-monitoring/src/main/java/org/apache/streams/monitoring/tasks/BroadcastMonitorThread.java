@@ -160,7 +160,8 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
 
         server = ManagementFactory.getPlatformMBeanServer();
 
-        if (this.configuration != null) {
+        if (this.configuration != null &&
+            this.configuration.getBroadcastURI() != null) {
 
             try {
                 broadcastURI = new URI(configuration.getBroadcastURI());
