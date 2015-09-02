@@ -37,6 +37,7 @@
     </properties>
 
     <modules>
+        <module>streams-persist-kinesis</module>
         <module>streams-persist-s3</module>
     </modules>
 
