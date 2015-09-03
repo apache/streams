@@ -79,9 +79,12 @@ public class KinesisPersistReaderTask implements Runnable {
 
             GetRecordsResult recordsResult = reader.client.getRecords(recordsRequest);
 
+            LOGGER.info("{} records {} millis behind {}:{}:{} ", recordsResult.getRecords().size(), recordsResult.getMillisBehindLatest(), streamName, shardId, shardIteratorId);
+
             shardIteratorId = recordsResult.getNextShardIterator();
 
             List<Record> recordList = recordsResult.getRecords();
+
             for (Record record : recordList) {
                 try {
                     byte[] byteArray = record.getData().array();
