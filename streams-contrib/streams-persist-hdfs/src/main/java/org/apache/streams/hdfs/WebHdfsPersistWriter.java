@@ -30,8 +30,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.converter.LineReaderUtil;
-import org.apache.streams.converter.LineWriterUtil;
+import org.apache.streams.converter.LineReadWriteUtil;
 import org.apache.streams.core.*;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.joda.time.DateTime;
@@ -76,7 +75,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
     protected volatile Queue<StreamsDatum> persistQueue;
 
     private ObjectMapper mapper;
-    private LineWriterUtil lineWriterUtil;
+    private LineReadWriteUtil lineWriterUtil;
 
     protected HdfsWriterConfiguration hdfsConfiguration;
 
@@ -264,7 +263,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
     @Override
     public void prepare(Object configurationObject) {
         mapper = StreamsJacksonMapper.getInstance();
-        lineWriterUtil = LineWriterUtil.getInstance(hdfsConfiguration.getFields(), hdfsConfiguration.getFieldDelimiter(), hdfsConfiguration.getLineDelimiter());
+        lineWriterUtil = LineReadWriteUtil.getInstance(hdfsConfiguration.getFields(), hdfsConfiguration.getFieldDelimiter(), hdfsConfiguration.getLineDelimiter());
         connectToWebHDFS();
         path = new Path(hdfsConfiguration.getPath() + "/" + hdfsConfiguration.getWriterPath());
     }

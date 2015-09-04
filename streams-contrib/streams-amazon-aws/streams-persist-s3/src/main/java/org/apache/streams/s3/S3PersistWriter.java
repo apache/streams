@@ -31,8 +31,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.converter.LineReaderUtil;
-import org.apache.streams.converter.LineWriterUtil;
+import org.apache.streams.converter.LineReadWriteUtil;
 import org.apache.streams.core.*;
 import org.apache.streams.hdfs.WebHdfsPersistWriter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -56,7 +55,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
     private AmazonS3Client amazonS3Client;
     private S3WriterConfiguration s3WriterConfiguration;
     private final List<String> writtenFiles = new ArrayList<String>();
-    protected LineWriterUtil lineWriterUtil;
+    protected LineReadWriteUtil lineWriterUtil;
 
     private final AtomicLong totalBytesWritten = new AtomicLong();
     private AtomicLong bytesWrittenThisFile = new AtomicLong();
@@ -230,7 +229,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
 
     public void prepare(Object configurationObject) {
 
-        lineWriterUtil = LineWriterUtil.getInstance(s3WriterConfiguration.getFields(), s3WriterConfiguration.getFieldDelimiter(), s3WriterConfiguration.getLineDelimiter());
+        lineWriterUtil = LineReadWriteUtil.getInstance(s3WriterConfiguration.getFields(), s3WriterConfiguration.getFieldDelimiter(), s3WriterConfiguration.getLineDelimiter());
 
         // Connect to S3
         synchronized (this) {

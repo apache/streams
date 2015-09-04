@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.hadoop.fs.FileStatus;
-import org.apache.streams.converter.LineReaderUtil;
+import org.apache.streams.converter.LineReadWriteUtil;
 import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;

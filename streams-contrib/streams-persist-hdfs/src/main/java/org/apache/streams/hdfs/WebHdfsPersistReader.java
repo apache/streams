@@ -33,8 +33,7 @@ import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.converter.LineReaderUtil;
-import org.apache.streams.converter.LineWriterUtil;
+import org.apache.streams.converter.LineReadWriteUtil;
 import org.apache.streams.core.*;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.joda.time.DateTime;
@@ -73,7 +72,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
     protected volatile Queue<StreamsDatum> persistQueue;
 
     protected ObjectMapper mapper;
-    protected LineReaderUtil lineReaderUtil;
+    protected LineReadWriteUtil lineReaderUtil;
 
     protected HdfsReaderConfiguration hdfsConfiguration;
     protected StreamsConfiguration streamsConfiguration;
@@ -166,7 +165,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
     @Override
     public void prepare(Object configurationObject) {
         LOGGER.debug("Prepare");
-        lineReaderUtil = LineReaderUtil.getInstance(hdfsConfiguration.getFields(), hdfsConfiguration.getFieldDelimiter(), hdfsConfiguration.getLineDelimiter());
+        lineReaderUtil = LineReadWriteUtil.getInstance(hdfsConfiguration.getFields(), hdfsConfiguration.getFieldDelimiter(), hdfsConfiguration.getLineDelimiter());
         connectToWebHDFS();
         String pathString = hdfsConfiguration.getPath() + "/" + hdfsConfiguration.getReaderPath();
         LOGGER.info("Path : {}", pathString);
