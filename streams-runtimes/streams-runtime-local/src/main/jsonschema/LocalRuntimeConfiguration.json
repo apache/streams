@@ -14,6 +14,36 @@
         "monitoring": {
             "type" : "object",
             "javaType" : "org.apache.streams.local.monitoring.MonitoringConfiguration"
+        },
+        "executorShutdownPauseMs": {
+            "type": "integer",
+            "description": "Duration of pause before shutting down",
+            "default": 3000
+        },
+        "monitorShutdownPauseMs": {
+            "type": "integer",
+            "description": "Duration of pause before shutting down",
+            "default": 3000
+        },
+        "executorShutdownWaitMs": {
+            "type": "integer",
+            "description": "Duration of wait for shut down",
+            "default": 10000
+        },
+        "monitorShutdownWaitMs": {
+            "type": "integer",
+            "description": "Duration of wait for shut down",
+            "default": 5000
+        },
+        "shutdownPauseMs": {
+            "type": "integer",
+            "description": "Duration of pause before shutting down",
+            "default": 1000
+        },
+        "taskTimeoutMs": {
+            "type": "integer",
+            "description": "Max duration to allow tasks to terminate",
+            "default": 1000
         }
     }
 }

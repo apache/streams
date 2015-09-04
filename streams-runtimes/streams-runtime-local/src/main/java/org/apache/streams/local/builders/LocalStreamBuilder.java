@@ -280,7 +280,7 @@ public class LocalStreamBuilder implements StreamBuilder {
             forcedShutDown = true;
         } finally{
             LOGGER.info("Stream has completed, pausing @ {}", System.currentTimeMillis());
-            Uninterruptibles.sleepUninterruptibly(5000, TimeUnit.MILLISECONDS);
+            Uninterruptibles.sleepUninterruptibly(streamConfig.getShutdownPauseMs(), TimeUnit.MILLISECONDS);
             LOGGER.info("Stream has completed, shutting down @ {}", System.currentTimeMillis());
             stopInternal(forcedShutDown);
         }
@@ -310,10 +310,10 @@ public class LocalStreamBuilder implements StreamBuilder {
         this.executor.shutdown();
         this.monitor.shutdown();
         try {
-            if(!this.executor.awaitTermination(3, TimeUnit.SECONDS)){
+            if(!this.executor.awaitTermination(streamConfig.getExecutorShutdownPauseMs(), TimeUnit.MILLISECONDS)){
                 this.executor.shutdownNow();
             }
-            if(!this.monitor.awaitTermination(3, TimeUnit.SECONDS)){
+            if(!this.monitor.awaitTermination(streamConfig.getMonitorShutdownPauseMs(), TimeUnit.MILLISECONDS)){
                 this.monitor.shutdownNow();
             }
         }catch (InterruptedException ie) {
@@ -334,13 +334,13 @@ public class LocalStreamBuilder implements StreamBuilder {
             shutDownTask(prov, streamsTasks);
         }
         //need to make this configurable
-        if(!this.executor.awaitTermination(10, TimeUnit.SECONDS)) { // all threads should have terminated already.
+        if(!this.executor.awaitTermination(streamConfig.getExecutorShutdownWaitMs(), TimeUnit.MILLISECONDS)) { // all threads should have terminated already.
             this.executor.shutdownNow();
-            this.executor.awaitTermination(10, TimeUnit.SECONDS);
+            this.executor.awaitTermination(streamConfig.getExecutorShutdownWaitMs(), TimeUnit.MILLISECONDS);
         }
-        if(!this.monitor.awaitTermination(5, TimeUnit.SECONDS)) { // all threads should have terminated already.
+        if(!this.monitor.awaitTermination(streamConfig.getMonitorShutdownWaitMs(), TimeUnit.MILLISECONDS)) { // all threads should have terminated already.
             this.monitor.shutdownNow();
-            this.monitor.awaitTermination(5, TimeUnit.SECONDS);
+            this.monitor.awaitTermination(streamConfig.getMonitorShutdownWaitMs(), TimeUnit.MILLISECONDS);
         }
     }
 
