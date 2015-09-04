@@ -29,7 +29,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.converter.LineReaderUtil;
+import org.apache.streams.converter.LineWriterUtil;
 import org.apache.streams.core.*;
+import org.apache.streams.hdfs.WebHdfsPersistWriter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +56,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
     private AmazonS3Client amazonS3Client;
     private S3WriterConfiguration s3WriterConfiguration;
     private final List<String> writtenFiles = new ArrayList<String>();
+    protected LineWriterUtil lineWriterUtil;
 
     private final AtomicLong totalBytesWritten = new AtomicLong();
     private AtomicLong bytesWrittenThisFile = new AtomicLong();
@@ -95,6 +101,14 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
         this.objectMetaData = val;
     }
 
+    public S3PersistWriter() {
+        this(new ComponentConfigurator<>(S3WriterConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("s3")));
+    }
+
+    public S3PersistWriter(S3WriterConfiguration s3WriterConfiguration) {
+        this.s3WriterConfiguration = s3WriterConfiguration;
+    }
+
     /**
      * Instantiator with a pre-existing amazonS3Client, this is used to help with re-use.
      * @param amazonS3Client
@@ -104,10 +118,6 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
      */
     public S3PersistWriter(AmazonS3Client amazonS3Client, S3WriterConfiguration s3WriterConfiguration) {
         this.amazonS3Client = amazonS3Client;
-        this.s3WriterConfiguration = s3WriterConfiguration;
-    }
-
-    public S3PersistWriter(S3WriterConfiguration s3WriterConfiguration) {
         this.s3WriterConfiguration = s3WriterConfiguration;
     }
 
@@ -125,7 +135,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
                 }
             }
 
-            String line = convertResultToString(streamsDatum);
+            String line = lineWriterUtil.convertResultToString(streamsDatum);
 
             try {
                 this.currentWriter.write(line);
@@ -145,7 +155,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
 
     }
 
-    private synchronized OutputStreamWriter resetFile() throws Exception {
+    public synchronized OutputStreamWriter resetFile() throws Exception {
         // this will keep it thread safe, so we don't create too many files
         if(this.fileLineCounter.get() == 0 && this.currentWriter != null)
             return this.currentWriter;
@@ -218,36 +228,10 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
         }
     }
 
-    private String convertResultToString(StreamsDatum entry)
-    {
-        String metadata = null;
-
-        try {
-            metadata = objectMapper.writeValueAsString(entry.getMetadata());
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        String documentJson = null;
-        try {
-            documentJson = objectMapper.writeValueAsString(entry.getDocument());
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        // Save the class name that it came from
-        entry.metadata.put("class", entry.getDocument().getClass().getName());
-
-        if(Strings.isNullOrEmpty(documentJson))
-            return null;
-        else
-            return  entry.getId()           + DELIMITER +   // [0] = Unique id of the verbatim
-                    entry.getTimestamp()    + DELIMITER +   // [1] = Timestamp of the item
-                    metadata                + DELIMITER +   // [2] = Metadata of the item
-                    documentJson            + "\n";         // [3] = The actual object
-    }
-
     public void prepare(Object configurationObject) {
+
+        lineWriterUtil = LineWriterUtil.getInstance(s3WriterConfiguration.getFields(), s3WriterConfiguration.getFieldDelimiter(), s3WriterConfiguration.getLineDelimiter());
+
         // Connect to S3
         synchronized (this) {
 

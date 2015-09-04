@@ -53,8 +53,7 @@ public class S3PersistReaderTask implements Runnable {
                 while((line = bufferedReader.readLine()) != null) {
                     if( !Strings.isNullOrEmpty(line) ) {
                         reader.countersCurrent.incrementAttempt();
-                        String[] fields = line.split(Character.toString(reader.DELIMITER));
-                        StreamsDatum entry = new StreamsDatum(fields[3], fields[0]);
+                        StreamsDatum entry = reader.lineReaderUtil.processLine(line);
                         ComponentUtils.offerUntilSuccess(entry, reader.persistQueue);
                         reader.countersCurrent.incrementStatus(DatumStatus.SUCCESS);
                     }

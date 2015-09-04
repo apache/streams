@@ -31,6 +31,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Queues;
+import org.apache.streams.converter.LineReaderUtil;
 import org.apache.streams.core.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -54,6 +55,7 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
     private S3ReaderConfiguration s3ReaderConfiguration;
     private AmazonS3Client amazonS3Client;
     private ObjectMapper mapper = new ObjectMapper();
+    protected LineReaderUtil lineReaderUtil;
     private Collection<String> files;
     private ExecutorService executor;
     protected volatile Queue<StreamsDatum> persistQueue;
@@ -100,6 +102,8 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
     }
 
     public void prepare(Object configurationObject) {
+
+        lineReaderUtil = LineReaderUtil.getInstance(s3ReaderConfiguration.getFields(), s3ReaderConfiguration.getFieldDelimiter(), s3ReaderConfiguration.getLineDelimiter());
         // Connect to S3
         synchronized (this)
         {

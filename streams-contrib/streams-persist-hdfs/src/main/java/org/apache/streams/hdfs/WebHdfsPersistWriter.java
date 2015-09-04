@@ -27,11 +27,13 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.web.WebHdfsFileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.converter.LineReaderUtil;
+import org.apache.streams.converter.LineWriterUtil;
 import org.apache.streams.core.*;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,16 +53,13 @@ import java.util.Queue;
 import java.util.zip.GZIPOutputStream;
 
 public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Closeable, DatumStatusCountable {
+
     public final static String STREAMS_ID = "WebHdfsPersistWriter";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(WebHdfsPersistWriter.class);
 
-    private final static char DELIMITER = '\t';
-    private final static int DEFAULT_LINES_PER_FILE = 50000;
-
     private FileSystem client;
     private Path path;
-    private String filePart = "default";
     private int linesPerFile;
     private int totalRecordsWritten = 0;
     private final List<Path> writtenFiles = new ArrayList<Path>();
@@ -76,7 +75,8 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
+    private LineWriterUtil lineWriterUtil;
 
     protected HdfsWriterConfiguration hdfsConfiguration;
 
@@ -160,7 +160,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
             if (this.currentWriter == null || (this.fileLineCounter > this.linesPerFile))
                 resetFile();
 
-            String line = convertResultToString(streamsDatum);
+            String line = lineWriterUtil.convertResultToString(streamsDatum);
             writeInternal(line);
             int bytesInLine = line.getBytes().length;
 
@@ -261,58 +261,10 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
         }
     }
 
-    public String convertResultToString(StreamsDatum entry) {
-        String metadataJson = null;
-        try {
-            metadataJson = mapper.writeValueAsString(entry.getMetadata());
-        } catch (JsonProcessingException e) {
-            LOGGER.warn("Error converting metadata to a string", e);
-        }
-
-        String documentJson = null;
-        try {
-            if( entry.getDocument() instanceof String )
-                documentJson = (String)entry.getDocument();
-            else
-                documentJson = mapper.writeValueAsString(entry.getDocument());
-        } catch (JsonProcessingException e) {
-            LOGGER.warn("Error converting document to string", e);
-        }
-
-        if (Strings.isNullOrEmpty(documentJson))
-            return null;
-        else {
-            StringBuilder stringBuilder = new StringBuilder();
-            Iterator<String> fields = hdfsConfiguration.getFields().iterator();
-            List<String> fielddata = Lists.newArrayList();
-            Joiner joiner = Joiner.on(hdfsConfiguration.getFieldDelimiter()).useForNull("");
-            while( fields.hasNext() ) {
-                String field = fields.next();
-                if( field.equals(HdfsConstants.DOC) )
-                    fielddata.add(documentJson);
-                else if( field.equals(HdfsConstants.ID) )
-                    fielddata.add(entry.getId());
-                else if( field.equals(HdfsConstants.TS) )
-                    if( entry.getTimestamp() != null )
-                        fielddata.add(entry.getTimestamp().toString());
-                    else
-                        fielddata.add(DateTime.now().toString());
-                else if( field.equals(HdfsConstants.META) )
-                    fielddata.add(metadataJson);
-                else if( entry.getMetadata().containsKey(field)) {
-                    fielddata.add(entry.getMetadata().get(field).toString());
-                } else {
-                    fielddata.add(null);
-                }
-
-            }
-            joiner.appendTo(stringBuilder, fielddata);
-            return stringBuilder.append(hdfsConfiguration.getLineDelimiter()).toString();
-        }
-    }
-
     @Override
     public void prepare(Object configurationObject) {
+        mapper = StreamsJacksonMapper.getInstance();
+        lineWriterUtil = LineWriterUtil.getInstance(hdfsConfiguration.getFields(), hdfsConfiguration.getFieldDelimiter(), hdfsConfiguration.getLineDelimiter());
         connectToWebHDFS();
         path = new Path(hdfsConfiguration.getPath() + "/" + hdfsConfiguration.getWriterPath());
     }

@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.hadoop.fs.FileStatus;
+import org.apache.streams.converter.LineReaderUtil;
 import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -83,7 +84,7 @@ public class WebHdfsPersistReaderTask implements Runnable {
                         line = bufferedReader.readLine();
                         if( !Strings.isNullOrEmpty(line) ) {
                             reader.countersCurrent.incrementAttempt();
-                            StreamsDatum entry = reader.processLine(line);
+                            StreamsDatum entry = reader.lineReaderUtil.processLine(line);
                             if( entry != null ) {
                                 reader.write(entry);
                                 reader.countersCurrent.incrementStatus(DatumStatus.SUCCESS);
