@@ -56,7 +56,7 @@ public class StreamsDatum implements Serializable {
     }
 
     public StreamsDatum(Object document, String id, DateTime timestamp) {
-        this(document, id, timestamp, null);
+        this(document, id, timestamp, null, new HashMap<String, Object>());
     }
 
     public StreamsDatum(Object document, String id, Map<String, Object> metadata) {
@@ -68,7 +68,7 @@ public class StreamsDatum implements Serializable {
     }
 
     public StreamsDatum(Object document, String id, BigInteger sequenceid) {
-        this(document, id, null, sequenceid);
+        this(document, id, sequenceid, new HashMap<String, Object>());
     }
 
     public StreamsDatum(Object document, String id, DateTime timestamp, BigInteger sequenceid) {
