@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * StreamsConfigurator supplies the entire typesafe tree to runtimes and modules.
@@ -48,6 +50,16 @@ public class StreamsConfigurator {
     public static Config getConfig() {
         return config;
     }
+
+    public static Config resolveConfig(String configUrl) throws MalformedURLException {
+        URL url = new URL(configUrl);
+        Config urlConfig = ConfigFactory.parseURL(url);
+        urlConfig.resolve();
+        config = urlConfig;
+        return config;
+    }
+
+
 
     public static StreamsConfiguration detectConfiguration() {
         return detectConfiguration(config);
