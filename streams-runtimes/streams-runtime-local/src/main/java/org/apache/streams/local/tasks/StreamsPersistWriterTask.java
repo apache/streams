@@ -133,12 +133,12 @@ public class StreamsPersistWriterTask extends BaseStreamsTask implements DatumSt
                         this.counter.incrementErrorCount();
                     }
                 } else { //datums should never be null
-                    LOGGER.debug("Received null StreamsDatum @ writer : {}", this.writer.getClass().getName());
+                    LOGGER.trace("Received null StreamsDatum @ writer : {}", this.writer.getClass().getName());
                 }
             }
             Uninterruptibles.sleepUninterruptibly(streamConfig.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
         } catch(Throwable e) {
-            LOGGER.error("Caught Throwable in Persist Writer {}", this.writer.getClass().getSimpleName(), e);
+            LOGGER.error("Caught Throwable in Persist Writer {} : {}", this.writer.getClass().getSimpleName(), e);
         } finally {
             Uninterruptibles.sleepUninterruptibly(streamConfig.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
             this.writer.cleanUp();

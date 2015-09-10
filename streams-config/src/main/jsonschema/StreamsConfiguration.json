@@ -38,6 +38,16 @@
             "description" : "Size of inter-component buffers",
             "default": 1000
         },
+        "shutdownCheckDelay": {
+            "type": "integer",
+            "description": "Initial delay before checking for shutdown",
+            "default": 1000
+        },
+        "shutdownCheckInterval": {
+            "type": "integer",
+            "description": "Recurring delay between checking for shutdown",
+            "default": 1000
+        },
         "startedAt": {
             "type": "integer",
             "description": "Timestamp of beginning of stream execution",

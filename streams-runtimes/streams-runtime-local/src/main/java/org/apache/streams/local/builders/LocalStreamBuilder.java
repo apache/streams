@@ -257,6 +257,7 @@ public class LocalStreamBuilder implements StreamBuilder {
             setupProviderTasks(provTasks);
             LOGGER.info("Started stream with {} components", tasks.size());
             while(isRunning) {
+                Uninterruptibles.sleepUninterruptibly(streamConfig.getShutdownCheckDelay(), TimeUnit.MILLISECONDS);
                 isRunning = false;
                 for(StreamsProviderTask task : provTasks.values()) {
                     isRunning = isRunning || task.isRunning();
@@ -271,7 +272,7 @@ public class LocalStreamBuilder implements StreamBuilder {
                     isRunning = isRunning || (tasksRunning && task.getInBoundQueue().size() > 0);
                 }
                 if(isRunning) {
-                    Uninterruptibles.sleepUninterruptibly(2500, TimeUnit.MILLISECONDS);
+                    Uninterruptibles.sleepUninterruptibly(streamConfig.getShutdownCheckInterval(), TimeUnit.MILLISECONDS);
                 }
             }
             LOGGER.info("Components are no longer running or timed out");
