@@ -19,6 +19,7 @@
 package org.apache.streams.pojo.extensions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
@@ -31,70 +32,108 @@ import java.util.Map;
  */
 public class ExtensionUtil {
 
+    public static final String DEFAULT_EXTENSION_PROPERTY = "extensions";
+
+    private static final ExtensionUtil INSTANCE = new ExtensionUtil(DEFAULT_EXTENSION_PROPERTY);
+
+    private String extensionProperty;
+
+    public static ExtensionUtil getInstance(){
+        return INSTANCE;
+    }
+
+    public static ExtensionUtil getInstance(String property){
+        return new ExtensionUtil(property);
+    }
+
+    private ExtensionUtil(String extensionProperty) {
+        if( !Strings.isNullOrEmpty(extensionProperty) )
+            this.extensionProperty = extensionProperty;
+        else
+            this.extensionProperty = DEFAULT_EXTENSION_PROPERTY;
+    }
+
     /**
      * Property on the activity object to use for extensions
      */
-    public static final String EXTENSION_PROPERTY = "extensions";
 
     private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    public static Map<String, Object> getExtensions(Activity activity) {
+    public Map<String, Object> getExtensions(Activity activity) {
         Map<String,Object> extensions = ensureExtensions(activity);
         return extensions;
     }
 
-    public static Object getExtension(Activity activity, String key) {
+    public Object getExtension(Activity activity, String key) {
         Map<String,Object> extensions = ensureExtensions(activity);
         return extensions.get(key);
     }
 
-    public static void setExtensions(Activity activity, Map<String, Object> extensions) {
-        activity.setAdditionalProperty(EXTENSION_PROPERTY, extensions);
+    public void setExtensions(Activity activity, Map<String, Object> extensions) {
+        activity.setAdditionalProperty(extensionProperty, extensions);
     };
 
-    public static void addExtension(Activity activity, String key, Object extension) {
+    public void addExtension(Activity activity, String key, Object extension) {
         Map<String,Object> extensions = ensureExtensions(activity);
         extensions.put(key, extension);
     };
 
-    public static void addExtensions(Activity activity, Map<String, Object> extensions) {
+    public void addExtensions(Activity activity, Map<String, Object> extensions) {
         for( Map.Entry<String, Object> item : extensions.entrySet())
             addExtension(activity, item.getKey(), item.getValue());
     };
 
-    public static void removeExtension(Activity activity, String key) {
+    public void removeExtension(Activity activity, String key) {
         Map<String,Object> extensions = ensureExtensions(activity);
         extensions.remove(key);
     };
 
-    public static Map<String, Object> getExtensions(ActivityObject object) {
+    public void promoteExtensions(Activity activity) {
+        Map<String,Object> extensions = ensureExtensions(activity);
+        for( String key : extensions.keySet() ) {
+            activity.getAdditionalProperties().put(key, extensions.get(key));
+            removeExtension(activity, key);
+        }
+        activity.getAdditionalProperties().remove("extensions");
+    };
+
+    public Map<String, Object> getExtensions(ActivityObject object) {
         ActivityObject activityObject = mapper.convertValue(object, ActivityObject.class);
         Map<String,Object> extensions = ensureExtensions(object);
         return extensions;
     }
 
-    public static Object getExtension(ActivityObject object, String key) {
+    public Object getExtension(ActivityObject object, String key) {
         Map<String,Object> extensions = ensureExtensions(object);
         return extensions.get(key);
     }
 
-    public static void setExtensions(ActivityObject object, Map<String, Object> extensions) {
-        object.setAdditionalProperty(EXTENSION_PROPERTY, extensions);
+    public void setExtensions(ActivityObject object, Map<String, Object> extensions) {
+        object.setAdditionalProperty(extensionProperty, extensions);
     };
 
-    public static void addExtension(ActivityObject object, String key, Object extension) {
+    public void addExtension(ActivityObject object, String key, Object extension) {
         Map<String,Object> extensions = ensureExtensions(object);
         extensions.put(key, extension);
     };
 
-    public static void addExtensions(ActivityObject object, Map<String, Object> extensions) {
+    public void addExtensions(ActivityObject object, Map<String, Object> extensions) {
         for( Map.Entry<String, Object> item : extensions.entrySet())
             addExtension(object, item.getKey(), item.getValue());
     };
 
-    public static void removeExtension(ActivityObject object, String key) {
+    public void removeExtension(ActivityObject object, String key) {
         Map<String,Object> extensions = ensureExtensions(object);
         extensions.remove(key);
+    };
+
+    public void promoteExtensions(ActivityObject object) {
+        Map<String,Object> extensions = ensureExtensions(object);
+        for( String key : extensions.keySet() ) {
+            object.getAdditionalProperties().put(key, extensions.get(key));
+            removeExtension(object, key);
+        }
+        object.getAdditionalProperties().remove(extensionProperty);
     };
 
     /**
@@ -103,8 +142,8 @@ public class ExtensionUtil {
      * @return the Map representing the extensions property
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> ensureExtensions(Activity activity) {
-        Map<String,Object> extensions = (Map<String,Object>) activity.getAdditionalProperties().get(EXTENSION_PROPERTY);
+    public Map<String, Object> ensureExtensions(Activity activity) {
+        Map<String,Object> extensions = (Map<String,Object>) activity.getAdditionalProperties().get(extensionProperty);
         if(extensions == null) {
             extensions = Maps.newHashMap();
             setExtensions(activity, extensions);
@@ -118,8 +157,8 @@ public class ExtensionUtil {
      * @return the Map representing the extensions property
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> ensureExtensions(ActivityObject object) {
-        Map<String,Object> extensions = (Map<String,Object>) object.getAdditionalProperties().get(EXTENSION_PROPERTY);
+    public Map<String, Object> ensureExtensions(ActivityObject object) {
+        Map<String,Object> extensions = (Map<String,Object>) object.getAdditionalProperties().get(extensionProperty);
         if(extensions == null) {
             extensions = Maps.newHashMap();
             setExtensions(object, extensions);

@@ -74,7 +74,7 @@ public class GPlusActivitySerializer implements ActivitySerializer<String> {
         Activity activity = new Activity();
         try {
             activity = jsonMapper.readValue(fixedObject.toString(), Activity.class);
-            Map<String, Object> extension = ExtensionUtil.ensureExtensions(activity);
+            Map<String, Object> extension = ExtensionUtil.getInstance().ensureExtensions(activity);
             extension.put("likes", fixedObject.getJSONObject("object").getJSONObject("plusoners").get("totalItems"));
             extension.put("rebroadcast", fixedObject.getJSONObject("object").getJSONObject("resharers").get("totalItems"));
         } catch( Exception e ) {

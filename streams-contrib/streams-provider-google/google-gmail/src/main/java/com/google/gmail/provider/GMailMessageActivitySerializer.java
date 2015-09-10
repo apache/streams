@@ -170,7 +170,7 @@ public class GMailMessageActivitySerializer implements ActivitySerializer<GmailM
     }
 
     public static void addGMailExtension(Activity activity, GmailMessage gmailMessage) {
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
         extensions.put("gmail", gmailMessage);
     }
 

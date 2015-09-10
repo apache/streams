@@ -64,7 +64,7 @@ public class AccountTypeProcessor extends SimpleHTTPGetProcessor {
         Activity activity = mapper.convertValue(entry.getDocument(), Activity.class);
         Actor actor = activity.getActor();
         ActivityObject actorObject = mapper.convertValue(actor, ActivityObject.class);
-        String username = (String) ExtensionUtil.getExtension(actorObject, "screenName");
+        String username = (String) ExtensionUtil.getInstance().getExtension(actorObject, "screenName");
         Map<String, String> params = Maps.newHashMap();
         params.put("id", actor.getId());
         params.put("name", actor.getDisplayName());

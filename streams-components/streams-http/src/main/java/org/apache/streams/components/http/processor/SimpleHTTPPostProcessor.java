@@ -193,7 +193,7 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
 
         ActivityObject extensionEntity = getEntityToExtend(rootDocument);
 
-        ExtensionUtil.addExtension(extensionEntity, this.configuration.getExtension(), extensionFragment);
+        ExtensionUtil.getInstance().addExtension(extensionEntity, this.configuration.getExtension(), extensionFragment);
 
         rootDocument = setEntityToExtend(rootDocument, extensionEntity);
 

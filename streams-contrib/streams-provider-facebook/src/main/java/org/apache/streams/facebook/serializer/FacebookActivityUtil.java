@@ -216,7 +216,7 @@ public class FacebookActivityUtil {
      */
     public static void buildExtensions(Activity activity, Post post) {
         ObjectMapper mapper = StreamsJacksonMapper.getInstance();
-        Map<String, Object> extensions = ExtensionUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
 
         if(post.getLikes() != null && post.getLikes().size() > 0) {
             Map<String, Object> likes = Maps.newHashMap();

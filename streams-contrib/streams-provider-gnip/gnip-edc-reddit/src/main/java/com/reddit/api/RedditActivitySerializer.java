@@ -82,7 +82,7 @@ public class RedditActivitySerializer implements ActivitySerializer<String> {
         Activity activity = new Activity();
         try {
             activity = jsonMapper.readValue(fixedObject.toString(), Activity.class);
-            Map<String, Object> extension = ExtensionUtil.ensureExtensions(activity);
+            Map<String, Object> extension = ExtensionUtil.getInstance().ensureExtensions(activity);
             if (fixedObject.names().toString().contains("object")){
                 if (fixedObject.getJSONObject("object").names().toString().contains("statistics")){
                     if (fixedObject.getJSONObject("object").getJSONObject("statistics").names().toString().contains("upVotes")){
