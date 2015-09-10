@@ -205,9 +205,14 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             LOGGER.warn("This is unexpected: {}", e);
         } finally {
 
-            refreshIndexes();
+            if( veryLargeBulk == true ) {
+                resetRefreshInterval();
+            }
 
-            LOGGER.debug("refreshIndexes completed");
+            if( config.getRefresh() ) {
+                refreshIndexes();
+                LOGGER.debug("refreshIndexes completed");
+            }
 
             LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
             timer.cancel();
@@ -216,7 +221,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
         }
     }
 
-    private void refreshIndexes() {
+    private void resetRefreshInterval() {
         for (String indexName : this.affectedIndexes) {
 
             if (this.veryLargeBulk) {
@@ -233,16 +238,21 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                         .updateSettings(updateSettingsRequest)
                         .actionGet();
             }
+        }
+    }
 
-            checkIndexImplications(indexName);
+    private void refreshIndexes() {
+        for (String indexName : this.affectedIndexes) {
 
-            LOGGER.debug("Refreshing ElasticSearch index: {}", indexName);
-            this.manager.getClient()
-                    .admin()
-                    .indices()
-                    .prepareRefresh(indexName)
-                    .execute()
-                    .actionGet();
+            if (config.getRefresh()) {
+                LOGGER.debug("Refreshing ElasticSearch index: {}", indexName);
+                this.manager.getClient()
+                        .admin()
+                        .indices()
+                        .prepareRefresh(indexName)
+                        .execute()
+                        .actionGet();
+            }
         }
     }
 
@@ -402,22 +412,23 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             // we haven't log this index.
             this.affectedIndexes.add(indexName);
 
-            // Check to see if we are in 'veryLargeBulk' mode
-            // if we aren't, exit early
-            if (this.veryLargeBulk) {
+        }
+    }
 
-                // They are in 'very large bulk' mode we want to turn off refreshing the index.
-                // Create a request then add the setting to tell it to stop refreshing the interval
-                UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(indexName);
-                updateSettingsRequest.settings(ImmutableSettings.settingsBuilder().put("refresh_interval", -1));
+    protected void disableRefresh() {
 
-                // submit to ElasticSearch
-                this.manager.getClient()
-                        .admin()
-                        .indices()
-                        .updateSettings(updateSettingsRequest)
-                        .actionGet();
-            }
+        for (String indexName : this.affectedIndexes) {
+            // They are in 'very large bulk' mode we want to turn off refreshing the index.
+            // Create a request then add the setting to tell it to stop refreshing the interval
+            UpdateSettingsRequest updateSettingsRequest = new UpdateSettingsRequest(indexName);
+            updateSettingsRequest.settings(ImmutableSettings.settingsBuilder().put("refresh_interval", -1));
+
+            // submit to ElasticSearch
+            this.manager.getClient()
+                    .admin()
+                    .indices()
+                    .updateSettings(updateSettingsRequest)
+                    .actionGet();
         }
     }
 
@@ -468,6 +479,8 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             }
         }, this.flushThresholdTime, this.flushThresholdTime);
 
+        if( veryLargeBulk )
+            disableRefresh();
     }
 
     private void flush(final BulkRequestBuilder bulkRequest, final Long sent, final Long sizeInBytes) {
