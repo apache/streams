@@ -409,10 +409,11 @@ public class LocalStreamBuilder implements StreamBuilder {
                 }
                 for(StreamsTask task : tasks) {
                     int count = 0;
-                    while(count < 20 && task.isRunning()) {
-                        Thread.sleep(500);
+                    while(count < streamConfig.getTaskTimeoutMs() / 1000 && task.isRunning()) {
+                        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
                         count++;
                     }
+
                     if(task.isRunning()) {
                         LOGGER.warn("Task {} failed to terminate in allotted timeframe", task.toString());
                     }
@@ -444,8 +445,13 @@ public class LocalStreamBuilder implements StreamBuilder {
             LOGGER.error("Exception while trying to shutdown Stream: {}", e);
             forceShutdown(tasks);
         } finally {
-            if(!systemExiting) {
-                detachShutdownHandler();
+            try {
+                 if(!systemExiting) {
+                      detachShutdownHandler();
+                  }
+               } catch( Throwable e3 ) {
+                 LOGGER.error("StopInternal caught Throwable: {}", e3);
+                       System.exit(1);
             }
         }
     }
