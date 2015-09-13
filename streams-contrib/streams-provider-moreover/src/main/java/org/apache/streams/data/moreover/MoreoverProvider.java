@@ -56,6 +56,11 @@ public class MoreoverProvider implements StreamsProvider {
         }
     }
 
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
     public void startStream() {
 
         for(MoreoverKeyData key : keys) {

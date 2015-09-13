@@ -153,6 +153,11 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
     }
 
     @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
+    @Override
     public void write(StreamsDatum streamsDatum) {
 
         synchronized (this) {

@@ -31,6 +31,8 @@ import java.util.concurrent.BlockingQueue;
  */
 public class GPlusUserDataProvider extends AbstractGPlusProvider{
 
+    public final static String STREAMS_ID = "GPlusUserDataProvider";
+
     public GPlusUserDataProvider() {
         super();
     }
@@ -39,6 +41,10 @@ public class GPlusUserDataProvider extends AbstractGPlusProvider{
         super(config);
     }
 
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
 
     @Override
     protected Runnable getDataCollector(BackOffStrategy strategy, BlockingQueue<StreamsDatum> queue, Plus plus, UserInfo userInfo) {

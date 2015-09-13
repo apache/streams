@@ -60,6 +60,11 @@ public class InstagramTypeConverter implements StreamsProcessor {
     }
 
     @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
+    @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
 
         StreamsDatum result = null;

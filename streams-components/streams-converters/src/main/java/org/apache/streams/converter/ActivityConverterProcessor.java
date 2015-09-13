@@ -41,6 +41,8 @@ import java.util.List;
  */
 public class ActivityConverterProcessor implements StreamsProcessor {
 
+    public static final String STREAMS_ID = "ActivityConverterProcessor";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(ActivityConverterProcessor.class);
 
     private ActivityConverterUtil converterUtil;
@@ -52,6 +54,11 @@ public class ActivityConverterProcessor implements StreamsProcessor {
 
     public ActivityConverterProcessor(ActivityConverterProcessorConfiguration configuration) {
         this.configuration = configuration;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

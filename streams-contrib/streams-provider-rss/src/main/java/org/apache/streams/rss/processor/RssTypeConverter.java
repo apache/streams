@@ -37,11 +37,18 @@ import java.util.List;
  */
 public class RssTypeConverter implements StreamsProcessor{
 
+    public final static String STREAMS_ID = "RssTypeConverter";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(RssTypeConverter.class);
 
     private SyndEntryActivitySerializer serializer;
     private int successCount = 0;
     private int failCount = 0;
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
 
     @Override
     public List<StreamsDatum> process(StreamsDatum datum) {

@@ -30,6 +30,8 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class PassthroughDatumCounterProcessor implements StreamsProcessor {
 
+    public final static String STREAMS_ID = "PassthroughDatumCounterProcessor";
+
     /**
      * Set of all ids that have been claimed.  Ensures all instances are assigned unique ids
      */
@@ -53,6 +55,11 @@ public class PassthroughDatumCounterProcessor implements StreamsProcessor {
 
     public PassthroughDatumCounterProcessor(String procId) {
         this.procId = procId;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

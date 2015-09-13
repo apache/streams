@@ -36,6 +36,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class NumericMessageProvider implements StreamsProvider {
 
+    @Override
+    public String getId() {
+        return "NumericMessageProvider";
+    }
+
     private static final int DEFAULT_BATCH_SIZE = 100;
 
     private int numMessages;

@@ -40,6 +40,8 @@ import java.util.List;
  */
 public class TypeConverterProcessor implements StreamsProcessor, Serializable {
 
+    public static final String STREAMS_ID = "TypeConverterProcessor";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(TypeConverterProcessor.class);
 
     private List<String> formats = Lists.newArrayList();
@@ -55,6 +57,11 @@ public class TypeConverterProcessor implements StreamsProcessor, Serializable {
     public TypeConverterProcessor(Class outClass, List<String> formats) {
         this(outClass);
         this.formats = formats;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

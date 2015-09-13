@@ -48,6 +48,8 @@ import java.util.concurrent.Executors;
  */
 public class FileBufferPersistReader implements StreamsPersistReader, Serializable {
 
+    public final static String STREAMS_ID = "FileBufferPersistReader";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(FileBufferPersistReader.class);
 
     protected volatile Queue<StreamsDatum> persistQueue;
@@ -69,6 +71,11 @@ public class FileBufferPersistReader implements StreamsPersistReader, Serializab
 
     public FileBufferPersistReader(FileBufferConfiguration config) {
         this.config = config;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

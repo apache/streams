@@ -51,6 +51,7 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
 {
 
     public static final String STREAMS_ID = "FacebookUserInformationProvider";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(FacebookUserInformationProvider.class);
 
     private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
@@ -114,6 +115,11 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
 
     public Queue<StreamsDatum> getProviderQueue() {
         return this.providerQueue;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

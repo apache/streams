@@ -25,6 +25,12 @@ import org.apache.streams.core.StreamsPersistWriter;
  * Created by rebanks on 2/20/14.
  */
 public class DoNothingWriter implements StreamsPersistWriter {
+
+    @Override
+    public String getId() {
+        return "DoNothingWriter";
+    }
+
     @Override
     public void write(StreamsDatum entry) {
 

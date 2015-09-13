@@ -60,6 +60,8 @@ import java.util.regex.Pattern;
 @Consumes(MediaType.APPLICATION_JSON)
 public class GenericWebhookResource implements StreamsProvider {
 
+    public static final String STREAMS_ID = "GenericWebhookResource";
+
     public GenericWebhookResource() {
     }
 
@@ -73,6 +75,11 @@ public class GenericWebhookResource implements StreamsProvider {
     protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private static Pattern newLinePattern = Pattern.compile("(\\r\\n?|\\n)", Pattern.MULTILINE);
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
 
     @POST
     @Path("json")

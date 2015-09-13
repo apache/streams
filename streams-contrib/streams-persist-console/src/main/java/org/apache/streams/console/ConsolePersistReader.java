@@ -55,6 +55,12 @@ public class ConsolePersistReader implements StreamsPersistReader {
         this();
         this.inputStream = inputStream;
     }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
     public void prepare(Object o) {
 
     }

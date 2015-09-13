@@ -59,6 +59,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     public final static String STREAMS_ID = "TwitterStreamProvider";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterStreamProvider.class);
+
     public static final int MAX_BATCH = 1000;
 
     private TwitterStreamConfiguration config;
@@ -95,6 +96,11 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
     public TwitterStreamProvider(TwitterStreamConfiguration config) {
         this.config = config;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

@@ -38,6 +38,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, Runnable {
 
+    public final static String STREAMS_ID = "KafkaPersistWriter";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPersistWriter.class);
 
     protected volatile Queue<StreamsDatum> persistQueue;
@@ -89,6 +91,11 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
 
     public Queue<StreamsDatum> getPersistQueue() {
         return this.persistQueue;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

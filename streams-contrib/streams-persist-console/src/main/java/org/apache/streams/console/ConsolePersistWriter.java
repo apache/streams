@@ -33,6 +33,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ConsolePersistWriter implements StreamsPersistWriter {
 
+    private final static String STREAMS_ID = "ConsolePersistWriter";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ConsolePersistWriter.class);
 
     protected PrintStream printStream = System.out;
@@ -48,6 +50,11 @@ public class ConsolePersistWriter implements StreamsPersistWriter {
     public ConsolePersistWriter(PrintStream printStream) {
         this();
         this.printStream = printStream;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     public void prepare(Object o) {

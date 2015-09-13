@@ -34,6 +34,11 @@ import java.util.Scanner;
  */
 public class ExpectedDatumsPersistWriter implements StreamsPersistWriter{
 
+    @Override
+    public String getId() {
+        return "ExpectedDatumsPersistWriter";
+    }
+
     private StreamsDatumConverter converter;
     private String fileName;
     private List<StreamsDatum> expectedDatums;

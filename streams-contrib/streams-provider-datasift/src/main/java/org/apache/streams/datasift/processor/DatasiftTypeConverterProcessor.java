@@ -40,6 +40,8 @@ import java.util.List;
  */
 public class DatasiftTypeConverterProcessor implements StreamsProcessor {
 
+    private final static String STREAMS_ID = "RegexUrlExtractor";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftTypeConverterProcessor.class);
 
     private ObjectMapper mapper;
@@ -51,6 +53,11 @@ public class DatasiftTypeConverterProcessor implements StreamsProcessor {
 
     public DatasiftTypeConverterProcessor(Class outClass) {
         this.outClass = outClass;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

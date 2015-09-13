@@ -90,6 +90,11 @@ public class KinesisPersistReader implements StreamsPersistReader, Serializable 
     }
 
     @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
+    @Override
     public void startStream() {
 
         this.streamNames = this.config.getStreams();

@@ -32,7 +32,14 @@ import java.util.List;
  */
 public class SysomosTypeConverter implements StreamsProcessor {
 
+    public final static String STREAMS_ID = "SysomosTypeConverter";
+
     private SysomosBeatActivityConverter converter;
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {

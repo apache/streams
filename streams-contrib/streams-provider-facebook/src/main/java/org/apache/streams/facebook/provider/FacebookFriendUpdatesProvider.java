@@ -56,6 +56,7 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
 {
 
     public static final String STREAMS_ID = "FacebookFriendPostsProvider";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(FacebookFriendUpdatesProvider.class);
 
     private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
@@ -124,6 +125,11 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
 
     public Queue<StreamsDatum> getProviderQueue() {
         return this.providerQueue;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

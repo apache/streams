@@ -39,6 +39,11 @@ public class GooglePlusCommentProcessor implements StreamsProcessor {
     private int count;
 
     @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
+    @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
         StreamsDatum result = null;
 

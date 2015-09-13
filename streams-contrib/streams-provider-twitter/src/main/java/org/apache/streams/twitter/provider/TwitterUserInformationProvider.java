@@ -52,6 +52,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 {
 
     public static final String STREAMS_ID = "TwitterUserInformationProvider";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitterUserInformationProvider.class);
 
     private TwitterUserInformationConfiguration twitterUserInformationConfiguration;
@@ -102,6 +103,11 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     public Queue<StreamsDatum> getProviderQueue() {
         return this.providerQueue;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

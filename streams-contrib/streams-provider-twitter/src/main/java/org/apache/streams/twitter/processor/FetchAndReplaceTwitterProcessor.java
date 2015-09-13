@@ -72,6 +72,11 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     }
 
     @Override
+    public String getId() {
+        return getProvider().getId();
+    }
+
+    @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
         if(entry.getDocument() instanceof Activity) {
             Activity doc = (Activity)entry.getDocument();

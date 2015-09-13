@@ -59,6 +59,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class FacebookUserstreamProvider implements StreamsProvider, Serializable {
 
     public static final String STREAMS_ID = "FacebookUserstreamProvider";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(FacebookUserstreamProvider.class);
 
     private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
@@ -131,6 +132,11 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
 
     public Queue<StreamsDatum> getProviderQueue() {
         return this.providerQueue;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

@@ -28,6 +28,14 @@ import java.util.List;
 /**
  */
 public class SlowProcessor  implements StreamsProcessor {
+
+    public final static String STREAMS_ID = "DoNothingProcessor";
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
         try {

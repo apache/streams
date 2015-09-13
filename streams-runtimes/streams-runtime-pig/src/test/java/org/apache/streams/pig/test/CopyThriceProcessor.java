@@ -31,11 +31,18 @@ import java.util.List;
  */
 public class CopyThriceProcessor implements StreamsProcessor {
 
+    public final static String STREAMS_ID = "CopyThriceProcessor";
+
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(CopyThriceProcessor.class);
 
     List<StreamsDatum> result;
 
     public CopyThriceProcessor() {
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

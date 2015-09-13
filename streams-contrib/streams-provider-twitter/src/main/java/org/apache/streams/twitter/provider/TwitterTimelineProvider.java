@@ -53,6 +53,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     public final static String STREAMS_ID = "TwitterTimelineProvider";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProvider.class);
+
     public static final int MAX_NUMBER_WAITING = 10000;
 
     private TwitterUserInformationConfiguration config;
@@ -101,6 +102,11 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     public Queue<StreamsDatum> getProviderQueue() {
         return this.providerQueue;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

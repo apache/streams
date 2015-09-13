@@ -31,6 +31,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public class GPlusUserActivityProvider extends AbstractGPlusProvider{
 
+    public final static String STREAMS_ID = "GPlusUserActivityProvider";
 
     public GPlusUserActivityProvider() {
         super();
@@ -38,6 +39,11 @@ public class GPlusUserActivityProvider extends AbstractGPlusProvider{
 
     public GPlusUserActivityProvider(GPlusConfiguration config) {
         super(config);
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

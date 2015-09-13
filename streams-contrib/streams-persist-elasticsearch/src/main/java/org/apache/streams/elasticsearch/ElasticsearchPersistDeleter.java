@@ -29,6 +29,8 @@ import java.util.Map;
 
 public class ElasticsearchPersistDeleter extends ElasticsearchPersistWriter implements StreamsPersistWriter {
 
+    public static final String STREAMS_ID = ElasticsearchPersistDeleter.class.getCanonicalName();
+
     private final static Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistDeleter.class);
 
     public ElasticsearchPersistDeleter() {
@@ -37,6 +39,11 @@ public class ElasticsearchPersistDeleter extends ElasticsearchPersistWriter impl
 
     public ElasticsearchPersistDeleter(ElasticsearchWriterConfiguration config) {
         super(config);
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

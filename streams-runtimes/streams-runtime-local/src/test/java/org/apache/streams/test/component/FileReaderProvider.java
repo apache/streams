@@ -47,6 +47,11 @@ public class FileReaderProvider implements StreamsProvider {
     }
 
     @Override
+    public String getId() {
+        return "FileReaderProvider";
+    }
+
+    @Override
     public void startStream() {
 
     }

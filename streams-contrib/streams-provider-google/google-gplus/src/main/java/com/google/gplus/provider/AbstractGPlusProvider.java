@@ -63,6 +63,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class AbstractGPlusProvider implements StreamsProvider {
 
+    public final static String STREAMS_ID = "AbstractGPlusProvider";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractGPlusProvider.class);
     private final static Set<String> SCOPE = new HashSet<String>() {{ add("https://www.googleapis.com/auth/plus.login");}};
     private final static int MAX_BATCH_SIZE = 1000;
@@ -81,8 +83,6 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
     protected GoogleClientSecrets clientSecrets;
     protected GoogleCredential credential;
     protected Plus plus;
-
-
 
     public AbstractGPlusProvider() {
         Config config = StreamsConfigurator.config.getConfig("gplus");
@@ -110,6 +110,11 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
     }
 
     protected abstract Runnable getDataCollector(BackOffStrategy strategy, BlockingQueue<StreamsDatum> queue, Plus plus, UserInfo userInfo);
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
 
     @Override
     public StreamsResultSet readCurrent() {

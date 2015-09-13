@@ -31,6 +31,12 @@ import java.math.BigInteger;
  * Provides new, empty instances of result set.
  */
 public class EmptyResultSetProvider implements StreamsProvider {
+
+    @Override
+    public String getId() {
+        return "EmptyResultSetProvider";
+    }
+
     @Override
     public void startStream() {
         //NOP

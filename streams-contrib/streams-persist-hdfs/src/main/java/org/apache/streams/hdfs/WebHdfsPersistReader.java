@@ -161,6 +161,11 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
     }
 
     @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
+    @Override
     public void prepare(Object configurationObject) {
         LOGGER.debug("Prepare");
         connectToWebHDFS();

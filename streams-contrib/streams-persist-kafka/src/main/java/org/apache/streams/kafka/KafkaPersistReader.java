@@ -49,6 +49,8 @@ import java.util.concurrent.TimeUnit;
 
 public class KafkaPersistReader implements StreamsPersistReader, Serializable {
 
+    public final static String STREAMS_ID = "KafkaPersistReader";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPersistReader.class);
 
     protected volatile Queue<StreamsDatum> persistQueue;
@@ -78,6 +80,11 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable {
 
     public void setConfig(KafkaConfiguration config) {
         this.config = config;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

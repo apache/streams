@@ -135,6 +135,11 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     public boolean isConnected()                            { return (this.manager.getClient() != null); }
 
     @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
+    @Override
     public void write(StreamsDatum streamsDatum) {
         if(streamsDatum == null || streamsDatum.getDocument() == null)
             return;

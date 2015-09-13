@@ -37,6 +37,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Closeable
 {
+    public final static String STREAMS_ID = "HbasePersistWriter";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(HbasePersistWriter.class);
 
     protected HConnection connection;
@@ -111,7 +113,12 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
             return;
         }
     }
-    
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
     @Override
     public void write(StreamsDatum streamsDatum) {
 
