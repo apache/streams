@@ -83,18 +83,24 @@ public class LineReadWriteUtil {
     public static LineReadWriteUtil getInstance(List<String> fields){
         if( INSTANCE == null )
             INSTANCE = new LineReadWriteUtil(fields);
+        else if( !INSTANCE.fields.equals(fields))
+            return new LineReadWriteUtil(fields);
         return INSTANCE;
     }
 
     public static LineReadWriteUtil getInstance(List<String> fields, String fieldDelimiter){
         if( INSTANCE == null )
             INSTANCE = new LineReadWriteUtil(fields, fieldDelimiter);
+        else if( !INSTANCE.fields.equals(fields) || !INSTANCE.fieldDelimiter.equals(fieldDelimiter))
+            return new LineReadWriteUtil(fields, fieldDelimiter);
         return INSTANCE;
     }
 
     public static LineReadWriteUtil getInstance(List<String> fields, String fieldDelimiter, String lineDelimiter){
         if( INSTANCE == null )
             INSTANCE = new LineReadWriteUtil(fields, fieldDelimiter, lineDelimiter);
+        else if( !INSTANCE.fields.equals(fields) || !INSTANCE.fieldDelimiter.equals(fieldDelimiter) || !INSTANCE.fieldDelimiter.equals(lineDelimiter))
+            return new LineReadWriteUtil(fields, fieldDelimiter, lineDelimiter);
         return INSTANCE;
     }
 
@@ -123,7 +129,10 @@ public class LineReadWriteUtil {
         }
         if( expectedFields.contains( FieldConstants.SEQ )
                 && parsedFields.length > expectedFields.indexOf(FieldConstants.SEQ)) {
-            seq = new BigInteger(parsedFields[expectedFields.indexOf(FieldConstants.SEQ)]);
+            try {
+                seq = new BigInteger(parsedFields[expectedFields.indexOf(FieldConstants.SEQ)]);
+            } catch( NumberFormatException nfe )
+            { LOGGER.warn("invalid sequence number {}", nfe); }
         }
         if( expectedFields.contains( FieldConstants.TS )
                 && parsedFields.length > expectedFields.indexOf(FieldConstants.TS)) {
