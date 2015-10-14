@@ -32,7 +32,6 @@ import org.apache.streams.components.http.HttpPersistWriterConfiguration;
 import org.apache.streams.components.http.persist.SimpleHTTPPostPersistWriter;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.converter.TypeConverterUtil;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.graph.neo4j.CypherQueryGraphHelper;
 import org.apache.streams.graph.neo4j.Neo4jHttpGraphHelper;
@@ -76,7 +75,7 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
     public GraphHttpPersistWriter(GraphHttpConfiguration configuration) {
         super(StreamsJacksonMapper.getInstance().convertValue(configuration, HttpPersistWriterConfiguration.class));
         if( configuration.getType().equals(GraphHttpConfiguration.Type.NEO_4_J)) {
-            super.configuration.setResourcePath("/db/" + configuration.getGraph() + "/transaction/commit");
+            super.configuration.setResourcePath("/db/" + configuration.getGraph() + "/transaction/commit/");
         }
         else if( configuration.getType().equals(GraphHttpConfiguration.Type.REXSTER)) {
             super.configuration.setResourcePath("/graphs/" + configuration.getGraph());
@@ -139,10 +138,11 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
             statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(activityObject)));
         }
 
-        Actor actor = activity.getActor();
-        Provider provider = activity.getProvider();
-
         if( activity != null ) {
+
+            Actor actor = activity.getActor();
+            Provider provider = activity.getProvider();
+
             if( provider != null &&
                     !Strings.isNullOrEmpty(provider.getId()) ) {
                 labels.add(provider.getId());
@@ -167,7 +167,6 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
                 statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.createEdgeRequest(activity)));
             }
         }
-
 
         request.put("statements", statements);
         return request;
@@ -218,7 +217,7 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
     @Override
     public void prepare(Object configurationObject) {
 
-        super.prepare(configurationObject);
+        super.prepare(configuration);
         mapper = StreamsJacksonMapper.getInstance();
 
         if( configuration.getType().equals(GraphHttpConfiguration.Type.NEO_4_J)) {

@@ -50,17 +50,18 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
     public final static String getVertexStringIdStatementTemplate = "MATCH (v {id: '<id>'} ) RETURN v";
 
     public final static String createVertexStatementTemplate = "MATCH (x {id: '<id>'}) "+
-                                                                "CREATE UNIQUE (n:<type> { props }) "+
-                                                                "RETURN n";
+            "CREATE UNIQUE (v:<type> { props }) "+
+            "ON CREATE SET v <labels> "+
+            "RETURN v";
 
     public final static String mergeVertexStatementTemplate = "MERGE (v:<type> {id: '<id>'}) "+
-                                                               "ON CREATE SET v:<type>, v = { props }, v.`@timestamp` = timestamp() "+
-                                                               "ON MATCH SET v = { props }, v.`@timestamp` = timestamp() "+
-                                                               "RETURN v";
+            "ON CREATE SET v <labels>, v = { props }, v.`@timestamp` = timestamp() "+
+            "ON MATCH SET v <labels>, v = { props }, v.`@timestamp` = timestamp() "+
+            "RETURN v";
 
     public final static String createEdgeStatementTemplate = "MATCH (s:<s_type> {id: '<s_id>'}),(d:<d_type> {id: '<d_id>'}) "+
-                                                            "CREATE UNIQUE (s)-[r:<r_type> <r_props>]->(d) "+
-                                                            "RETURN r";
+            "CREATE UNIQUE (s)-[r:<r_type> <r_props>]->(d) "+
+            "RETURN r";
 
     public Pair<String, Map<String, Object>> getVertexRequest(String streamsId) {
 
@@ -92,16 +93,21 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
 
         Preconditions.checkNotNull(activityObject.getObjectType());
 
+        List<String> labels = getLabels(activityObject);
+
         ST createVertex = new ST(createVertexStatementTemplate);
         createVertex.add("id", activityObject.getId());
         createVertex.add("type", activityObject.getObjectType());
+        if( labels.size() > 0)
+            createVertex.add("labels", Joiner.on(' ').join(labels));
+        String query = createVertex.render();
 
         ObjectNode object = MAPPER.convertValue(activityObject, ObjectNode.class);
         Map<String, Object> props = PropertyUtil.flattenToMap(object, '.');
 
         Pair<String, Map<String, Object>> queryPlusParameters = new Pair(createVertex.render(), props);
 
-        LOGGER.debug("createVertexRequest", queryPlusParameters.toString());
+        LOGGER.debug("createVertexRequest: ({},{})", query, props);
 
         return queryPlusParameters;
     }
@@ -112,16 +118,22 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
 
         Pair queryPlusParameters = new Pair(null, Maps.newHashMap());
 
+        List<String> labels = getLabels(activityObject);
+
         ST mergeVertex = new ST(mergeVertexStatementTemplate);
         mergeVertex.add("id", activityObject.getId());
         mergeVertex.add("type", activityObject.getObjectType());
-        queryPlusParameters = queryPlusParameters.setAt0(mergeVertex.render());
+        if( labels.size() > 0)
+            mergeVertex.add("labels", Joiner.on(' ').join(labels));
+        String query = mergeVertex.render();
 
         ObjectNode object = MAPPER.convertValue(activityObject, ObjectNode.class);
         Map<String, Object> props = PropertyUtil.flattenToMap(object, '.');
-        queryPlusParameters = queryPlusParameters.setAt1(props);
 
-        LOGGER.debug("mergeVertexRequest", queryPlusParameters.toString());
+        LOGGER.debug("mergeVertexRequest: ({},{})", query, props);
+
+        queryPlusParameters = queryPlusParameters.setAt0(query);
+        queryPlusParameters = queryPlusParameters.setAt1(props);
 
         return queryPlusParameters;
     }
@@ -152,7 +164,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
         queryPlusParameters = queryPlusParameters.setAt0(statement);
         queryPlusParameters = queryPlusParameters.setAt1(props);
 
-        LOGGER.debug("createEdgeRequest", queryPlusParameters);
+        LOGGER.debug("createEdgeRequest: ({},{})", statement, props);
 
         return queryPlusParameters;
     }
@@ -192,6 +204,16 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
         builder.append(Joiner.on(",").join(parts));
         builder.append("}");
         return builder.toString();
+    }
+
+    private List<String> getLabels(ActivityObject activityObject) {
+        List<String> labels = Lists.newArrayList(":streams");
+        if( activityObject.getAdditionalProperties().containsKey("labels") ) {
+            List<String> extraLabels = (List<String>)activityObject.getAdditionalProperties().get("labels");
+            for( String extraLabel : extraLabels )
+                labels.add(":"+extraLabel);
+        }
+        return labels;
     }
 
 }

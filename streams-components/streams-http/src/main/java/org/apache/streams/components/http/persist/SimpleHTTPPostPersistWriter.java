@@ -22,7 +22,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -63,6 +65,8 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
     protected CloseableHttpClient httpclient;
 
     protected HttpPersistWriterConfiguration configuration;
+
+    protected String authHeader;
 
     public SimpleHTTPPostPersistWriter() {
         this(HttpConfigurator.detectPersistWriterConfiguration(StreamsConfigurator.config.getConfig("http")));
@@ -129,7 +133,12 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
      */
     protected ObjectNode preparePayload(StreamsDatum entry) throws Exception {
 
-        return (ObjectNode) entry.getDocument();
+        if( entry.getDocument() != null ) {
+            if( entry.getDocument() instanceof ObjectNode )
+                return (ObjectNode) entry.getDocument();
+            else return mapper.convertValue(entry.getDocument(), ObjectNode.class);
+        }
+        else return null;
     }
 
     /**
@@ -139,6 +148,8 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
         HttpPost httppost = new HttpPost(uri);
         httppost.addHeader("content-type", this.configuration.getContentType());
         httppost.addHeader("accept-charset", "UTF-8");
+        if( !Strings.isNullOrEmpty(authHeader))
+            httppost.addHeader("Authorization", "Basic " + authHeader);
         try {
             String entity = mapper.writeValueAsString(payload);
             httppost.setEntity(new StringEntity(entity));
@@ -187,6 +198,18 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
                 .setHost(this.configuration.getHostname())
                 .setPort(this.configuration.getPort().intValue())
                 .setPath(this.configuration.getResourcePath());
+
+        if( !Strings.isNullOrEmpty(configuration.getAccessToken()) )
+            uriBuilder = uriBuilder.addParameter("access_token", configuration.getAccessToken());
+        if( !Strings.isNullOrEmpty(configuration.getUsername())
+                && !Strings.isNullOrEmpty(configuration.getPassword())) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(configuration.getUsername());
+            stringBuilder.append(":");
+            stringBuilder.append(configuration.getPassword());
+            String string = stringBuilder.toString();
+            authHeader = Base64.encodeBase64String(string.getBytes());
+        }
 
         httpclient = HttpClients.createDefault();
 
