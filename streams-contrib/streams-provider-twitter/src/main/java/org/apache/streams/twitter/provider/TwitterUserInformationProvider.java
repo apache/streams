@@ -21,17 +21,18 @@ package org.apache.streams.twitter.provider;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.typesafe.config.Config;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.twitter.TwitterFollowingConfiguration;
 import org.apache.streams.twitter.TwitterUserInformationConfiguration;
 import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.lang.NotImplementedException;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -54,14 +55,13 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     public static final String STREAMS_ID = "TwitterUserInformationProvider";
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitterUserInformationProvider.class);
 
-    private TwitterUserInformationConfiguration twitterUserInformationConfiguration;
+    private TwitterUserInformationConfiguration config;
 
-    private Class klass;
     protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
 
-    public TwitterUserInformationConfiguration getConfig()              { return twitterUserInformationConfiguration; }
+    public TwitterUserInformationConfiguration getConfig()              { return config; }
 
-    public void setConfig(TwitterUserInformationConfiguration config)   { this.twitterUserInformationConfiguration = config; }
+    public void setConfig(TwitterUserInformationConfiguration config)   { this.config = config; }
 
     protected Iterator<Long[]> idsBatches;
     protected Iterator<String[]> screenNameBatches;
@@ -80,24 +80,11 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     }
 
     public TwitterUserInformationProvider() {
-        Config config = StreamsConfigurator.config.getConfig("twitter");
-        this.twitterUserInformationConfiguration = TwitterConfigurator.detectTwitterUserInformationConfiguration(config);
-
+        this.config = new ComponentConfigurator<>(TwitterFollowingConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
     }
 
     public TwitterUserInformationProvider(TwitterUserInformationConfiguration config) {
-        this.twitterUserInformationConfiguration = config;
-    }
-
-    public TwitterUserInformationProvider(Class klass) {
-        Config config = StreamsConfigurator.config.getConfig("twitter");
-        this.twitterUserInformationConfiguration = TwitterConfigurator.detectTwitterUserInformationConfiguration(config);
-        this.klass = klass;
-    }
-
-    public TwitterUserInformationProvider(TwitterUserInformationConfiguration config, Class klass) {
-        this.twitterUserInformationConfiguration = config;
-        this.klass = klass;
+        this.config = config;
     }
 
     public Queue<StreamsDatum> getProviderQueue() {
@@ -229,12 +216,15 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     @Override
     public void prepare(Object o) {
 
+        if( o instanceof TwitterFollowingConfiguration )
+            config = (TwitterUserInformationConfiguration) o;
+
         Preconditions.checkNotNull(providerQueue);
-        Preconditions.checkNotNull(twitterUserInformationConfiguration.getOauth().getConsumerKey());
-        Preconditions.checkNotNull(twitterUserInformationConfiguration.getOauth().getConsumerSecret());
-        Preconditions.checkNotNull(twitterUserInformationConfiguration.getOauth().getAccessToken());
-        Preconditions.checkNotNull(twitterUserInformationConfiguration.getOauth().getAccessTokenSecret());
-        Preconditions.checkNotNull(twitterUserInformationConfiguration.getInfo());
+        Preconditions.checkNotNull(config.getOauth().getConsumerKey());
+        Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
+        Preconditions.checkNotNull(config.getOauth().getAccessToken());
+        Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
+        Preconditions.checkNotNull(config.getInfo());
 
         List<String> screenNames = new ArrayList<String>();
         List<String[]> screenNameBatches = new ArrayList<String[]>();
@@ -242,7 +232,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
         List<Long> ids = new ArrayList<Long>();
         List<Long[]> idsBatches = new ArrayList<Long[]>();
 
-        for(String s : twitterUserInformationConfiguration.getInfo()) {
+        for(String s : config.getInfo()) {
             if(s != null)
             {
                 String potentialScreenName = s.replaceAll("@", "").trim().toLowerCase();
@@ -288,13 +278,13 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     protected Twitter getTwitterClient()
     {
-        String baseUrl = TwitterProviderUtil.baseUrl(twitterUserInformationConfiguration);
+        String baseUrl = TwitterProviderUtil.baseUrl(config);
 
         ConfigurationBuilder builder = new ConfigurationBuilder()
-                .setOAuthConsumerKey(twitterUserInformationConfiguration.getOauth().getConsumerKey())
-                .setOAuthConsumerSecret(twitterUserInformationConfiguration.getOauth().getConsumerSecret())
-                .setOAuthAccessToken(twitterUserInformationConfiguration.getOauth().getAccessToken())
-                .setOAuthAccessTokenSecret(twitterUserInformationConfiguration.getOauth().getAccessTokenSecret())
+                .setOAuthConsumerKey(config.getOauth().getConsumerKey())
+                .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
+                .setOAuthAccessToken(config.getOauth().getAccessToken())
+                .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
                 .setIncludeEntitiesEnabled(true)
                 .setJSONStoreEnabled(true)
                 .setAsyncNumThreads(3)

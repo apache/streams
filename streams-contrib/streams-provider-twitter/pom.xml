@@ -37,6 +37,10 @@
             <artifactId>config</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-config</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
@@ -156,16 +160,7 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/twitter/TwitterConfiguration.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/twitter/TwitterStreamConfiguration.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/twitter/TwitterUserInformationConfiguration.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/twitter/Delete.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/twitter/UserstreamEvent.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/twitter/Follow.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/twitter/FriendList.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/twitter/Retweet.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/twitter/tweet.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/twitter/User.json</sourcePath>
+                        <sourcePath>src/main/jsonschema</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.twitter.pojo</targetPackage>

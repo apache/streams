@@ -57,7 +57,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     private TwitterUserInformationConfiguration config;
 
-    private Class klass;
     protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public TwitterUserInformationConfiguration getConfig() {
@@ -92,11 +91,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     public TwitterTimelineProvider(TwitterUserInformationConfiguration config) {
         this.config = config;
-    }
-
-    public TwitterTimelineProvider(TwitterUserInformationConfiguration config, Class klass) {
-        this.config = config;
-        this.klass = klass;
     }
 
     public Queue<StreamsDatum> getProviderQueue() {
@@ -225,7 +219,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         }
 
         Preconditions.checkNotNull(providerQueue);
-        Preconditions.checkNotNull(this.klass);
         Preconditions.checkNotNull(config.getOauth().getConsumerKey());
         Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
         Preconditions.checkNotNull(config.getOauth().getAccessToken());

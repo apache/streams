@@ -20,11 +20,12 @@ package org.apache.streams.twitter.provider;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Queues;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
-import org.apache.streams.twitter.TwitterUserInformationConfiguration;
+import org.apache.streams.twitter.TwitterFollowingConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Twitter;
@@ -44,14 +45,18 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
 
     protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
+    private TwitterFollowingConfiguration config;
+
+    public TwitterFollowingConfiguration getConfig()              { return config; }
+
     public static final int MAX_NUMBER_WAITING = 10000;
 
     public TwitterFollowingProvider() {
-        super(TwitterConfigurator.detectTwitterUserInformationConfiguration(StreamsConfigurator.config.getConfig("twitter")));
+        this.config = new ComponentConfigurator<>(TwitterFollowingConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
     }
 
-    public TwitterFollowingProvider(TwitterUserInformationConfiguration config) {
-        super(config);
+    public TwitterFollowingProvider(TwitterFollowingConfiguration config) {
+        this.config = config;
     }
 
     @Override
@@ -80,7 +85,7 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
         Twitter client = getTwitterClient();
 
         for (int i = 0; i < ids.length; i++) {
-            TwitterFollowingProviderTask providerTask = new TwitterFollowingProviderTask(this, client, ids[i], getConfig().getEndpoint());
+            TwitterFollowingProviderTask providerTask = new TwitterFollowingProviderTask(this, client, ids[i], getConfig().getEndpoint(), getConfig().getIdsOnly());
             executor.submit(providerTask);
         }
     }
@@ -89,7 +94,7 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
         Twitter client = getTwitterClient();
 
         for (int i = 0; i < screenNames.length; i++) {
-            TwitterFollowingProviderTask providerTask = new TwitterFollowingProviderTask(this, client, screenNames[i], getConfig().getEndpoint());
+            TwitterFollowingProviderTask providerTask = new TwitterFollowingProviderTask(this, client, screenNames[i], getConfig().getEndpoint(), getConfig().getIdsOnly());
             executor.submit(providerTask);
         }
 
@@ -129,7 +134,7 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
 
     @Override
     public void prepare(Object o) {
-        super.prepare(o);
+        super.prepare(config);
         Preconditions.checkNotNull(getConfig().getEndpoint());
         Preconditions.checkArgument(getConfig().getEndpoint().equals("friends") || getConfig().getEndpoint().equals("followers"));
         return;

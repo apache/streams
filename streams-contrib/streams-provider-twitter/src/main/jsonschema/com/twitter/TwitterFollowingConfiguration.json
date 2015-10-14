@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.twitter.TwitterFollowingConfiguration",
+    "extends": {"$ref":"TwitterUserInformationConfiguration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "ids_only": {
+            "type": "boolean",
+            "description": "Whether to collect ids only, or full profiles",
+            "value": "true"
+        }
+    }
+}
