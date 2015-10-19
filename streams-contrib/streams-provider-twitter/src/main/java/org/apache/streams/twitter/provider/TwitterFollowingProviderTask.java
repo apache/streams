@@ -37,7 +37,7 @@ import twitter4j.TwitterObjectFactory;
 import java.io.IOException;
 
 /**
- *  Retrieve recent posts for a single user id.
+ *  Retrieve friend or follower connections for a single user id.
  */
 public class TwitterFollowingProviderTask implements Runnable {
 
@@ -48,26 +48,26 @@ public class TwitterFollowingProviderTask implements Runnable {
     protected TwitterFollowingProvider provider;
     protected Twitter client;
     protected Long id;
-    protected Boolean ids_only;
+    protected Boolean idsOnly;
     protected String screenName;
     protected String endpoint;
 
     private int max_per_page = 200;
 
-    public TwitterFollowingProviderTask(TwitterFollowingProvider provider, Twitter twitter, Long id, String endpoint, Boolean ids_only) {
+    public TwitterFollowingProviderTask(TwitterFollowingProvider provider, Twitter twitter, Long id, String endpoint, Boolean idsOnly) {
         this.provider = provider;
         this.client = twitter;
         this.id = id;
         this.endpoint = endpoint;
-        this.ids_only = ids_only;
+        this.idsOnly = idsOnly;
     }
 
-    public TwitterFollowingProviderTask(TwitterFollowingProvider provider, Twitter twitter, String screenName, String endpoint, Boolean ids_only) {
+    public TwitterFollowingProviderTask(TwitterFollowingProvider provider, Twitter twitter, String screenName, String endpoint, Boolean idsOnly) {
         this.provider = provider;
         this.client = twitter;
         this.screenName = screenName;
         this.endpoint = endpoint;
-        this.ids_only = ids_only;
+        this.idsOnly = idsOnly;
     }
 
 
@@ -89,7 +89,7 @@ public class TwitterFollowingProviderTask implements Runnable {
 
         Preconditions.checkArgument(endpoint.equals("friends") || endpoint.equals("followers"));
 
-        if( ids_only == true )
+        if( idsOnly )
             collectIds(id);
         else
             collectUsers(id);
@@ -128,7 +128,7 @@ public class TwitterFollowingProviderTask implements Runnable {
                     String otherJson = TwitterObjectFactory.getRawJSON(other);
 
                     try {
-                        Follow follow;
+                        Follow follow = null;
                         if( endpoint.equals("followers") ) {
                             follow = new Follow()
                                     .withFollowee(mapper.readValue(userJson, User.class))
@@ -137,10 +137,12 @@ public class TwitterFollowingProviderTask implements Runnable {
                             follow = new Follow()
                                     .withFollowee(mapper.readValue(otherJson, User.class))
                                     .withFollower(mapper.readValue(userJson, User.class));
-                        } else {
-                            throw new Exception("endpoint must be set to 'friends' or 'followers'");
                         }
                         ComponentUtils.offerUntilSuccess(new StreamsDatum(follow), provider.providerQueue);
+
+                        Preconditions.checkNotNull(follow);
+
+
                     } catch (JsonParseException e) {
                         LOGGER.warn(e.getMessage());
                     } catch (JsonMappingException e) {
@@ -186,7 +188,7 @@ public class TwitterFollowingProviderTask implements Runnable {
                 for (long otherId : ids.getIDs()) {
 
                     try {
-                        Follow follow;
+                        Follow follow = null;
                         if( endpoint.equals("followers") ) {
                             follow = new Follow()
                                     .withFollowee(new User().withId(id))
@@ -195,12 +197,13 @@ public class TwitterFollowingProviderTask implements Runnable {
                             follow = new Follow()
                                     .withFollowee(new User().withId(otherId))
                                     .withFollower(new User().withId(id));
-                        } else {
-                            throw new Exception("endpoint must be set to 'friends' or 'followers'");
                         }
                         ComponentUtils.offerUntilSuccess(new StreamsDatum(follow), provider.providerQueue);
+
+                        Preconditions.checkNotNull(follow);
+
                     } catch (Exception e) {
-                        LOGGER.warn(e.getMessage());
+                        LOGGER.warn("Exception: {}", e);
                     }
                 }
                 if( ids.hasNext() )
