@@ -19,7 +19,6 @@
 package org.apache.streams.twitter.provider;
 
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.*;
@@ -48,6 +47,7 @@ public class TwitterTimelineProviderTask implements Runnable {
 
         Paging paging = new Paging(1, 200);
         List<Status> statuses = null;
+        int count = 0;
 
         do
         {
@@ -66,11 +66,13 @@ public class TwitterTimelineProviderTask implements Runnable {
 
                     statuses = client.getUserTimeline(id, paging);
 
-                    for (Status tStat : statuses)
-                    {
+                    for (Status tStat : statuses) {
                         String json = TwitterObjectFactory.getRawJSON(tStat);
 
-                        provider.addDatum(new StreamsDatum(json));
+                        if( count < provider.getConfig().getMaxItems() ) {
+                            provider.addDatum(new StreamsDatum(json));
+                            count++;
+                        }
 
                     }
 
@@ -86,7 +88,7 @@ public class TwitterTimelineProviderTask implements Runnable {
                 }
             }
         }
-        while (provider.shouldContinuePulling(statuses));
+        while (provider.shouldContinuePulling(statuses) && count < provider.getConfig().getMaxItems());
 
         LOGGER.info(id + " Thread Finished");
 

@@ -18,8 +18,6 @@
 
 package org.apache.streams.twitter.provider;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import org.apache.streams.core.StreamsDatum;
@@ -33,8 +31,6 @@ import twitter4j.PagableResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
-
-import java.io.IOException;
 
 /**
  *  Retrieve friend or follower connections for a single user id.
@@ -143,15 +139,8 @@ public class TwitterFollowingProviderTask implements Runnable {
                         Preconditions.checkNotNull(follow);
 
 
-                    } catch (JsonParseException e) {
-                        LOGGER.warn(e.getMessage());
-                    } catch (JsonMappingException e) {
-                        LOGGER.warn(e.getMessage());
-                    } catch (IOException e) {
-                        LOGGER.warn(e.getMessage());
-                    }
-                    catch (Exception e) {
-                        LOGGER.warn(e.getMessage());
+                    } catch (Exception e) {
+                        LOGGER.warn("Exception: {}", e);
                     }
                 }
                 if( list.size() == max_per_page )

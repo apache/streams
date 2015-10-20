@@ -26,6 +26,7 @@ import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.twitter.TwitterFollowingConfiguration;
+import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Twitter;
@@ -138,5 +139,14 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
         Preconditions.checkNotNull(getConfig().getEndpoint());
         Preconditions.checkArgument(getConfig().getEndpoint().equals("friends") || getConfig().getEndpoint().equals("followers"));
         return;
+    }
+
+    public void addDatum(StreamsDatum datum) {
+        try {
+            lock.readLock().lock();
+            ComponentUtils.offerUntilSuccess(datum, providerQueue);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 }

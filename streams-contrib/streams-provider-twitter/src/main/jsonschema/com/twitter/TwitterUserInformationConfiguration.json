@@ -15,6 +15,11 @@
             "items": {
                 "type": "string"
             }
+        },
+        "max_items": {
+            "type": "integer",
+            "description": "Max items per user to collect",
+            "default": 5000
         }
     }
 }
