@@ -49,6 +49,7 @@ public class TwitterFollowingProviderTask implements Runnable {
     protected String endpoint;
 
     private int max_per_page = 200;
+    int count = 0;
 
     public TwitterFollowingProviderTask(TwitterFollowingProvider provider, Twitter twitter, Long id, String endpoint, Boolean idsOnly) {
         this.provider = provider;
@@ -134,10 +135,13 @@ public class TwitterFollowingProviderTask implements Runnable {
                                     .withFollowee(mapper.readValue(otherJson, User.class))
                                     .withFollower(mapper.readValue(userJson, User.class));
                         }
-                        ComponentUtils.offerUntilSuccess(new StreamsDatum(follow), provider.providerQueue);
 
                         Preconditions.checkNotNull(follow);
 
+                        if( count < provider.getConfig().getMaxItems()) {
+                            provider.addDatum(new StreamsDatum(follow));
+                            count++;
+                        }
 
                     } catch (Exception e) {
                         LOGGER.warn("Exception: {}", e);
@@ -153,7 +157,7 @@ public class TwitterFollowingProviderTask implements Runnable {
             catch(Exception e) {
                 keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
             }
-        } while (curser != 0 && keepTrying < 10);
+        } while (curser != 0 && keepTrying < 10 && count < provider.getConfig().getMaxItems());
     }
 
     private void collectIds(Long id) {
@@ -191,6 +195,10 @@ public class TwitterFollowingProviderTask implements Runnable {
 
                         Preconditions.checkNotNull(follow);
 
+                        if( count < provider.getConfig().getMaxItems()) {
+                            provider.addDatum(new StreamsDatum(follow));
+                            count++;
+                        }
                     } catch (Exception e) {
                         LOGGER.warn("Exception: {}", e);
                     }
@@ -205,7 +213,7 @@ public class TwitterFollowingProviderTask implements Runnable {
             catch(Exception e) {
                 keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
             }
-        } while (curser != 0 && keepTrying < 10);
+        } while (curser != 0 && keepTrying < 10 && count < provider.getConfig().getMaxItems());
     }
 
     protected void getFollowing(String screenName) {
