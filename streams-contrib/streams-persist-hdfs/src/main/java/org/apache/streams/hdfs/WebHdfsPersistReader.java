@@ -33,6 +33,7 @@ import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.converter.LineReadWriteUtil;
 import org.apache.streams.core.*;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.joda.time.DateTime;
@@ -71,6 +72,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
     protected volatile Queue<StreamsDatum> persistQueue;
 
     protected ObjectMapper mapper;
+    protected LineReadWriteUtil lineReaderUtil;
 
     protected HdfsReaderConfiguration hdfsConfiguration;
     protected StreamsConfiguration streamsConfiguration;
@@ -163,6 +165,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
     @Override
     public void prepare(Object configurationObject) {
         LOGGER.debug("Prepare");
+        lineReaderUtil = LineReadWriteUtil.getInstance(hdfsConfiguration.getFields(), hdfsConfiguration.getFieldDelimiter(), hdfsConfiguration.getLineDelimiter());
         connectToWebHDFS();
         String pathString = hdfsConfiguration.getPath() + "/" + hdfsConfiguration.getReaderPath();
         LOGGER.info("Path : {}", pathString);
@@ -229,73 +232,6 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
         }
 
         return current;
-    }
-
-    public StreamsDatum processLine(String line) {
-
-        List<String> expectedFields = hdfsConfiguration.getFields();
-        String[] parsedFields = line.split(hdfsConfiguration.getFieldDelimiter());
-
-        if( parsedFields.length == 0)
-            return null;
-
-        String id = null;
-        DateTime ts = null;
-        Map<String, Object> metadata = null;
-        String json = null;
-
-        if( expectedFields.contains( HdfsConstants.DOC )
-                && parsedFields.length > expectedFields.indexOf(HdfsConstants.DOC)) {
-            json = parsedFields[expectedFields.indexOf(HdfsConstants.DOC)];
-        }
-
-        if( expectedFields.contains( HdfsConstants.ID )
-                && parsedFields.length > expectedFields.indexOf(HdfsConstants.ID)) {
-            id = parsedFields[expectedFields.indexOf(HdfsConstants.ID)];
-        }
-        if( expectedFields.contains( HdfsConstants.TS )
-                && parsedFields.length > expectedFields.indexOf(HdfsConstants.TS)) {
-            ts = parseTs(parsedFields[expectedFields.indexOf(HdfsConstants.TS)]);
-        }
-        if( expectedFields.contains( HdfsConstants.META )
-                && parsedFields.length > expectedFields.indexOf(HdfsConstants.META)) {
-            metadata = parseMap(parsedFields[expectedFields.indexOf(HdfsConstants.META)]);
-        }
-
-        StreamsDatum datum = new StreamsDatum(json);
-        datum.setId(id);
-        datum.setTimestamp(ts);
-        datum.setMetadata(metadata);
-
-        return datum;
-
-    }
-
-    public DateTime parseTs(String field) {
-
-        DateTime timestamp = null;
-        try {
-            long longts = Long.parseLong(field);
-            timestamp = new DateTime(longts);
-        } catch ( Exception e ) {}
-        try {
-            timestamp = mapper.readValue(field, DateTime.class);
-        } catch ( Exception e ) {}
-
-        return timestamp;
-    }
-
-    public Map<String, Object> parseMap(String field) {
-
-        Map<String, Object> metadata = null;
-
-        try {
-            JsonNode jsonNode = mapper.readValue(field, JsonNode.class);
-            metadata = mapper.convertValue(jsonNode, Map.class);
-        } catch (IOException e) {
-            LOGGER.warn("failed in parseMap: " + e.getMessage());
-        }
-        return metadata;
     }
 
     protected void write( StreamsDatum entry ) {

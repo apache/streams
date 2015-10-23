@@ -32,7 +32,7 @@ import java.io.IOException;
  */
 public class TypeConverterUtil {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ActivityConverterUtil.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(TypeConverterUtil.class);
 
     private static final TypeConverterUtil INSTANCE = new TypeConverterUtil();
 
