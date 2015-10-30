@@ -56,9 +56,11 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -86,7 +88,10 @@ public class StreamsApplication extends Application<StreamsDropwizardConfigurati
 
     private static StreamsConfiguration streamsConfiguration;
 
-    private Set<StreamsProvider> resourceProviders = Sets.newConcurrentHashSet();
+    // ConcurrentHashSet is preferable, but it's only in guava 15+
+    // spark 1.5.0 uses guava 14 so for the moment this is the workaround
+    // Set<StreamsProvider> resourceProviders = Sets.newConcurrentHashSet();
+    private Set<StreamsProvider> resourceProviders = Collections.newSetFromMap(new ConcurrentHashMap<StreamsProvider, Boolean>());
 
     private Executor executor = Executors.newSingleThreadExecutor();
 

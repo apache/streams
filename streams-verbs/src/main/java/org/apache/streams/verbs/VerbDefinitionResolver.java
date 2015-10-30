@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class VerbDefinitionResolver {
 
@@ -46,7 +47,10 @@ public class VerbDefinitionResolver {
 
     public List<VerbDefinition> matchingVerbDefinitions(Activity activity) {
 
-        Set<VerbDefinition> matches = Sets.newConcurrentHashSet();
+        // ConcurrentHashSet is preferable, but it's only in guava 15+
+        // spark 1.5.0 uses guava 14 so for the moment this is the workaround
+        // Set<VerbDefinition> matches = Sets.newConcurrentHashSet();
+        Set<VerbDefinition> matches = Collections.newSetFromMap(new ConcurrentHashMap<VerbDefinition, Boolean>());
 
         for( VerbDefinition verbDefinition : verbDefinitionSet ) {
             VerbDefinition verbDefinitionCopy = SerializationUtil.cloneBySerialization(verbDefinition);

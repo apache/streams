@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.node.ValueNode;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 
@@ -100,7 +101,8 @@ public class PropertyUtil {
                 root.put(item.getKey(), item.getValue());
             } else {
                 ObjectNode currentNode = root;
-                List<String> keyParts = Splitter.on(seperator).splitToList(item.getKey());
+                List<String> keyParts = Lists.newArrayList();
+                Iterables.addAll(keyParts, Splitter.on(seperator).split(item.getKey()));
                 Iterator<String> keyPartIterator = Iterables.limit(Splitter.on(seperator).split(item.getKey()), keyParts.size()-1).iterator();
                 while( keyPartIterator.hasNext()) {
                     String part = keyPartIterator.next();
