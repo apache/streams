@@ -47,12 +47,13 @@ public class CypherGraphHelper implements org.apache.streams.graph.GraphHelper {
     public final static String getVertexStringIdStatementTemplate = "MATCH (v {id: '<id>'} ) RETURN v";
 
     public final static String createVertexStatementTemplate = "MATCH (x {id: '<id>'}) "+
-                                                                "CREATE UNIQUE (n:<type> { props }) "+
-                                                                "RETURN n";
+                                                                "CREATE UNIQUE (v:<type> { props }) "+
+                                                                "ON CREATE SET v <labels> "+
+                                                                "RETURN v";
 
     public final static String mergeVertexStatementTemplate = "MERGE (v:<type> {id: '<id>'}) "+
-                                                               "ON CREATE SET v:<type>, v = { props }, v.`@timestamp` = timestamp() "+
-                                                               "ON MATCH SET v = { props }, v.`@timestamp` = timestamp() "+
+                                                               "ON CREATE SET v <labels>, v = { props }, v.`@timestamp` = timestamp() "+
+                                                               "ON MATCH SET v <labels>, v = { props }, v.`@timestamp` = timestamp() "+
                                                                "RETURN v";
 
     public final static String createEdgeStatementTemplate = "MATCH (s:<s_type> {id: '<s_id>'}),(d:<d_type> {id: '<d_id>'}) "+
@@ -88,9 +89,17 @@ public class CypherGraphHelper implements org.apache.streams.graph.GraphHelper {
 
         ObjectNode request = mapper.createObjectNode();
 
+        List<String> labels = Lists.newArrayList();
+        if( activityObject.getAdditionalProperties().containsKey("labels") ) {
+            List<String> extraLabels = (List<String>)activityObject.getAdditionalProperties().get("labels");
+            for( String extraLabel : extraLabels )
+                labels.add(":"+extraLabel);
+        }
+
         ST createVertex = new ST(createVertexStatementTemplate);
         createVertex.add("id", activityObject.getId());
         createVertex.add("type", activityObject.getObjectType());
+        createVertex.add("labels", Joiner.on(' ').join(labels));
         request.put(statementKey, createVertex.render());
 
         ObjectNode params = mapper.createObjectNode();
@@ -108,9 +117,17 @@ public class CypherGraphHelper implements org.apache.streams.graph.GraphHelper {
 
         ObjectNode request = mapper.createObjectNode();
 
+        List<String> labels = Lists.newArrayList();
+        if( activityObject.getAdditionalProperties().containsKey("labels") ) {
+            List<String> extraLabels = (List<String>)activityObject.getAdditionalProperties().get("labels");
+            for( String extraLabel : extraLabels )
+                labels.add(":"+extraLabel);
+        }
+
         ST mergeVertex = new ST(mergeVertexStatementTemplate);
         mergeVertex.add("id", activityObject.getId());
         mergeVertex.add("type", activityObject.getObjectType());
+        mergeVertex.add("labels", Joiner.on(' ').join(labels));
 
         ObjectNode params = mapper.createObjectNode();
         ObjectNode object = mapper.convertValue(activityObject, ObjectNode.class);
