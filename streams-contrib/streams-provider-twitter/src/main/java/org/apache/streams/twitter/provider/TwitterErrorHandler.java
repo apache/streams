@@ -68,7 +68,10 @@ public class TwitterErrorHandler
             {
                 if(e.getMessage().toLowerCase().contains("does not exist"))
                 {
-                    LOGGER.warn("User does not exist...");
+                    if( id != null )
+                        LOGGER.warn("User does not exist: {}", id);
+                    else
+                        LOGGER.warn("User does not exist");
                     return 100;
                 }
                 else
