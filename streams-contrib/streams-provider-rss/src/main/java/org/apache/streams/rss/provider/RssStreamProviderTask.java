@@ -41,6 +41,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -165,7 +166,10 @@ public class RssStreamProviderTask implements Runnable {
      */
     @VisibleForTesting
     protected Set<String> queueFeedEntries(URL feedUrl) throws IOException, FeedException {
-        Set<String> batch = Sets.newConcurrentHashSet();
+
+        // ConcurrentHashSet is preferable, but it's only in guava 15+
+        // spark 1.5.0 uses guava 14 so for the moment this is the workaround
+        Set<String> batch = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
         URLConnection connection = feedUrl.openConnection();
         connection.setConnectTimeout(this.timeOut);
         connection.setConnectTimeout(this.timeOut);

@@ -35,9 +35,11 @@ import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ActivityConverterUtil converts document into all possible Activity
@@ -175,7 +177,11 @@ public class ActivityConverterUtil {
 
     protected List<Class> detectClasses(Object document) {
 
-        Set<Class> detectedClasses = Sets.newConcurrentHashSet();
+        // ConcurrentHashSet is preferable, but it's only in guava 15+
+		// spark 1.5.0 uses guava 14 so for the moment this is the workaround
+		// Set<Class> detectedClasses = new ConcurrentHashSet();
+		Set<Class> detectedClasses = Collections.newSetFromMap(new ConcurrentHashMap<Class, Boolean>());
+
         for( DocumentClassifier classifier : classifiers ) {
             List<Class> detected = classifier.detectClasses(document);
             if( detected != null && detected.size() > 0)
