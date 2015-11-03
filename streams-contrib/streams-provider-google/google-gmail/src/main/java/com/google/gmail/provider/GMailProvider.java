@@ -46,6 +46,8 @@ import java.util.concurrent.*;
  */
 public class GMailProvider implements StreamsProvider, DatumStatusCountable {
 
+    public final static String STREAMS_ID = "GMailProvider";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(GMailProvider.class);
 
     private GMailConfiguration config;
@@ -102,6 +104,11 @@ public class GMailProvider implements StreamsProvider, DatumStatusCountable {
 
     protected DatumStatusCounter countersTotal = new DatumStatusCounter();
     protected DatumStatusCounter countersCurrent = new DatumStatusCounter();
+
+    @Override
+    public String getId() {
+        return "GMailProvider";
+    }
 
     @Override
     public void startStream() {

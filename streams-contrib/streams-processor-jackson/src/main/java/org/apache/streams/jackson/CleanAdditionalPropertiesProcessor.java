@@ -42,9 +42,16 @@ import java.util.Map;
  */
 public class CleanAdditionalPropertiesProcessor implements StreamsProcessor {
 
+    public static final String STREAMS_ID = "CleanAdditionalPropertiesProcessor";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CleanAdditionalPropertiesProcessor.class);
 
     private ObjectMapper mapper;
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
 
     @Override
     public List<StreamsDatum> process(StreamsDatum datum) {

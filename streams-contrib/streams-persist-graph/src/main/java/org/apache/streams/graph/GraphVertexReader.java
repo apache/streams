@@ -97,6 +97,11 @@ public class GraphVertexReader extends SimpleHttpProvider implements StreamsPers
     }
 
     @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
+    @Override
     public void prepare(Object configurationObject) {
 
         super.prepare(configurationObject);

@@ -26,6 +26,11 @@ import java.io.Serializable;
 public interface StreamsOperation extends Serializable {
 
     /**
+     * Each operation must publish an identifier.
+     */
+    public String getId();
+
+    /**
      * This method will be called after initialization/serialization. Initialize any non-serializable objects here.
      * @param configurationObject Any object to help intialize the operation. ie. Map, JobContext, Properties, etc. The type
      *                            will be based on where the operation is being run (ie. hadoop, storm, locally, etc.)

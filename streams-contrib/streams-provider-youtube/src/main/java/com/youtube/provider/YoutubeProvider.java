@@ -54,6 +54,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class YoutubeProvider implements StreamsProvider {
+
+    public static final String STREAMS_ID = "YoutubeProvider";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(YoutubeProvider.class);
     private final static int MAX_BATCH_SIZE = 1000;
 
@@ -88,6 +91,11 @@ public abstract class YoutubeProvider implements StreamsProvider {
         this.config = config;
 
         Preconditions.checkNotNull(this.config.getApiKey());
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

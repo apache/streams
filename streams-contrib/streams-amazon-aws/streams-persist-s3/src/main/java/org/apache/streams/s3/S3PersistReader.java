@@ -101,6 +101,11 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
         this.s3ReaderConfiguration = s3ReaderConfiguration;
     }
 
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
     public void prepare(Object configurationObject) {
 
         lineReaderUtil = LineReadWriteUtil.getInstance(s3ReaderConfiguration.getFields(), s3ReaderConfiguration.getFieldDelimiter(), s3ReaderConfiguration.getLineDelimiter());

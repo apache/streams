@@ -38,9 +38,11 @@ import java.util.List;
 import java.util.Queue;
 
 public class YoutubeTypeConverter implements StreamsProcessor {
+
     public final static String STREAMS_ID = "YoutubeTypeConverter";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(YoutubeTypeConverter.class);
+
     private StreamsJacksonMapper mapper;
     private Queue<Video> inQueue;
     private Queue<StreamsDatum> outQueue;
@@ -49,6 +51,10 @@ public class YoutubeTypeConverter implements StreamsProcessor {
 
     public YoutubeTypeConverter() {}
 
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
 
     @Override
     public List<StreamsDatum> process(StreamsDatum streamsDatum) {

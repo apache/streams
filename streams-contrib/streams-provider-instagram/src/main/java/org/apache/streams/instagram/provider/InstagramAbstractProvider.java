@@ -27,6 +27,8 @@ import org.apache.streams.instagram.UsersInfo;
 import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.SerializationUtil;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.util.Collection;
@@ -43,6 +45,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class InstagramAbstractProvider implements StreamsProvider {
 
+    public static final String STREAMS_ID = "InstagramAbstractProvider";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(InstagramAbstractProvider.class);
+
     private static final int MAX_BATCH_SIZE = 2000;
 
     protected InstagramConfiguration config;
@@ -57,6 +63,11 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
 
     public InstagramAbstractProvider(InstagramConfiguration config) {
         this.config = SerializationUtil.cloneBySerialization(config);
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

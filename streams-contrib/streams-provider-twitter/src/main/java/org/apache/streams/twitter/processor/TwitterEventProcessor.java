@@ -67,6 +67,11 @@ public class TwitterEventProcessor implements StreamsProcessor {
     }
 
     @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
+    @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
 
         LOGGER.error("You are calling a deprecated / defunct class.  Modify your stream to use ActivityConverterProcessor.");

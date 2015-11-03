@@ -107,6 +107,11 @@ public class SimpleHttpProvider implements StreamsProvider {
         this.configuration = providerConfiguration;
     }
 
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
     /**
       Override this to add parameters to the request
      */

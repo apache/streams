@@ -37,6 +37,8 @@ import java.util.List;
  */
 public class HoconConverterProcessor implements StreamsProcessor {
 
+    public static final String STREAMS_ID = "HoconConverterProcessor";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(HoconConverterProcessor.class);
 
     protected Class outClass;
@@ -49,6 +51,11 @@ public class HoconConverterProcessor implements StreamsProcessor {
         this.hocon = hocon;
         this.inPath = inPath;
         this.outPath = outPath;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

@@ -25,6 +25,12 @@ import org.apache.streams.core.StreamsPersistWriter;
  * Created by rebanks on 2/20/14.
  */
 public class SystemOutWriter implements StreamsPersistWriter {
+
+    @Override
+    public String getId() {
+        return "SystemOutWriter";
+    }
+
     @Override
     public void write(StreamsDatum entry) {
         System.out.println(entry.document);

@@ -71,6 +71,8 @@ import java.util.regex.Pattern;
 @Consumes(MediaType.APPLICATION_JSON)
 public class DatasiftPushProvider implements StreamsProvider {
 
+    private final static String STREAMS_ID = "DatasiftPushProvider";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftPushProvider.class);
 
     private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
@@ -80,6 +82,11 @@ public class DatasiftPushProvider implements StreamsProvider {
     protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private static Pattern newLinePattern = Pattern.compile("(\\r\\n?|\\n)", Pattern.MULTILINE);
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
 
     @POST
     @Path("json")

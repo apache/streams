@@ -121,6 +121,11 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
     }
 
     @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
+    @Override
     public void write(StreamsDatum streamsDatum) {
 
         synchronized (this) {

@@ -43,6 +43,8 @@ import java.util.List;
  */
 public class PromoteExtensionsProcessor implements StreamsProcessor, Serializable {
 
+    public static final String STREAMS_ID = "PromoteExtensionsProcessor";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(PromoteExtensionsProcessor.class);
 
     private ExtensionUtil extensionUtil;
@@ -50,6 +52,11 @@ public class PromoteExtensionsProcessor implements StreamsProcessor, Serializabl
     protected ObjectMapper mapper;
 
     protected Class outClass;
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {

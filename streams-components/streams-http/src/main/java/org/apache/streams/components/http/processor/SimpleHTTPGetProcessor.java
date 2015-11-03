@@ -80,6 +80,10 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
         this.configuration = processorConfiguration;
     }
 
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
 
     /**
      Override this to store a result other than exact json representation of response

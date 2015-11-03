@@ -37,6 +37,8 @@ import java.util.Random;
 
 public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
 
+    private final static String STREAMS_ID = "TwitterProfileProcessor";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterProfileProcessor.class);
 
     private ObjectMapper mapper = new StreamsTwitterMapper();
@@ -74,6 +76,11 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
 
     public StreamsDatum createStreamsDatum(User user) {
         return new StreamsDatum(user, user.getIdStr());
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

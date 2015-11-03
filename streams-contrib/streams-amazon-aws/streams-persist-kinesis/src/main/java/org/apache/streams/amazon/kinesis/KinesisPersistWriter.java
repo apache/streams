@@ -66,6 +66,11 @@ public class KinesisPersistWriter implements StreamsPersistWriter {
     }
 
     @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
+    @Override
     public void write(StreamsDatum entry) {
 
         String document = (String) TypeConverterUtil.getInstance().convert(entry.getDocument(), String.class);

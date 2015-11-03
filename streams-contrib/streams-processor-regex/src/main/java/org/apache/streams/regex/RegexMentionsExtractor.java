@@ -29,6 +29,9 @@ import java.util.Map;
  * them to the appropriate extensions object
  */
 public class RegexMentionsExtractor extends AbstractRegexExtensionExtractor<Map<String, Object>> implements StreamsProcessor {
+
+    private final static String STREAMS_ID = "RegexMentionsExtractor";
+
     public static final String DEFAULT_PATTERN = "@\\w+";
     public static final String PATTERN_CONFIG_KEY = "MentionPattern";
     public static final String EXTENSION_KEY = "user_mentions";
@@ -36,6 +39,11 @@ public class RegexMentionsExtractor extends AbstractRegexExtensionExtractor<Map<
 
     public RegexMentionsExtractor() {
         super(PATTERN_CONFIG_KEY, EXTENSION_KEY, DEFAULT_PATTERN);
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

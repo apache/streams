@@ -39,6 +39,8 @@ import java.util.List;
  */
 public class DatasiftActivitySerializerProcessor implements StreamsProcessor {
 
+    private final static String STREAMS_ID = "DatasiftActivitySerializerProcessor";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftActivitySerializerProcessor.class);
 
     private ObjectMapper mapper;
@@ -49,6 +51,11 @@ public class DatasiftActivitySerializerProcessor implements StreamsProcessor {
 
     public DatasiftActivitySerializerProcessor(Class outClass) {
         this.outClass = outClass;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

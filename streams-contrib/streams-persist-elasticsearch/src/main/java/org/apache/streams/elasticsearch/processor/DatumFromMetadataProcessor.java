@@ -59,6 +59,11 @@ public class DatumFromMetadataProcessor implements StreamsProcessor, Serializabl
     }
 
     @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
+    @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
         List<StreamsDatum> result = Lists.newArrayList();
 

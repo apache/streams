@@ -30,6 +30,13 @@ import java.util.Collection;
  */
 public class RegexUrlExtractor extends AbstractRegexExtensionExtractor<String> implements StreamsProcessor {
 
+    private final static String STREAMS_ID = "RegexUrlExtractor";
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
     //Temporarily copied from streams-processor-urls so as not to force a dependency on that provider.  This should
     //be moved to a common utility package
     public final static String DEFAULT_PATTERN =

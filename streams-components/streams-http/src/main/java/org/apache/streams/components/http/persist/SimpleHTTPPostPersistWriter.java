@@ -76,6 +76,10 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
         this.configuration = configuration;
     }
 
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
 
     @Override
     public void write(StreamsDatum entry) {

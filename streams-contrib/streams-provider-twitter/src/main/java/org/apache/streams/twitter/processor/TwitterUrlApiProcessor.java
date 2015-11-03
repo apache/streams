@@ -35,6 +35,8 @@ import java.util.Map;
  */
 public class TwitterUrlApiProcessor extends SimpleHTTPGetProcessor implements StreamsProcessor {
 
+    private final static String STREAMS_ID = "TwitterUrlApiProcessor";
+
     public TwitterUrlApiProcessor() {
         super();
         this.configuration.setHostname("urls.api.twitter.com");
@@ -49,6 +51,11 @@ public class TwitterUrlApiProcessor extends SimpleHTTPGetProcessor implements St
         this.configuration.setResourcePath("/1/urls/count.json");
         this.configuration.setEntity(HttpProcessorConfiguration.Entity.ACTIVITY);
         this.configuration.setExtension("twitter_url_count");
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

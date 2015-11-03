@@ -31,11 +31,18 @@ import java.util.List;
  */
 public class AppendStringProcessor implements StreamsProcessor {
 
+    public final static String STREAMS_ID = "AppendStringProcessor";
+
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(AppendStringProcessor.class);
 
     String append;
 
     public AppendStringProcessor() {
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

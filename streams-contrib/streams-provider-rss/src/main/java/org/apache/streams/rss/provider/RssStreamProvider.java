@@ -56,7 +56,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class RssStreamProvider implements StreamsProvider {
 
+    public static final String STREAMS_ID = "RssStreamProvider";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(RssStreamProvider.class);
+
     private final static int MAX_SIZE = 1000;
 
     private RssStreamConfiguration config;
@@ -85,6 +88,11 @@ public class RssStreamProvider implements StreamsProvider {
     public RssStreamProvider(RssStreamConfiguration config, boolean perpetual) {
         this.perpetual = perpetual;
         this.config = config;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     public void setConfig(RssStreamConfiguration config) {

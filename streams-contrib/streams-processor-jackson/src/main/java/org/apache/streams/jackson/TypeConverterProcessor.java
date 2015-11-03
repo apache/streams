@@ -36,6 +36,8 @@ import java.util.List;
  */
 public class TypeConverterProcessor implements StreamsProcessor {
 
+    public static final String STREAMS_ID = "TypeConverterProcessor";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(TypeConverterProcessor.class);
 
     private List<String> formats = Lists.newArrayList();
@@ -60,6 +62,11 @@ public class TypeConverterProcessor implements StreamsProcessor {
     public TypeConverterProcessor(Class inClass, Class outClass) {
         this.inClass = inClass;
         this.outClass = outClass;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

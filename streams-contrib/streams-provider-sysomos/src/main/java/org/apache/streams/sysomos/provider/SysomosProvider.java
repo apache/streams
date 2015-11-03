@@ -53,6 +53,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class SysomosProvider implements StreamsProvider {
 
+    public static final String STREAMS_ID = "SysomosProvider";
 
     public static enum Mode { CONTINUOUS, BACKFILL_AND_TERMINATE }
 
@@ -60,7 +61,6 @@ public class SysomosProvider implements StreamsProvider {
 
     public static final String ENDING_TIME_KEY = "addedBefore";
     public static final String STARTING_TIME_KEY = "addedAfter";
-    public static final String STREAMS_ID = "SysomosProvider";
     public static final String MODE_KEY = "mode";
     public static final String STARTING_DOCS_KEY = "startingDocs";
     public static final int LATENCY = 10000;  //Default minLatency for querying the Sysomos API in milliseconds
@@ -118,6 +118,11 @@ public class SysomosProvider implements StreamsProvider {
 
     public SysomosClient getClient() {
         return client;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

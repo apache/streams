@@ -30,6 +30,8 @@ import java.util.Map;
 
 public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter implements StreamsPersistWriter {
 
+    public static final String STREAMS_ID = ElasticsearchPersistUpdater.class.getCanonicalName();
+
     private final static Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistUpdater.class);
 
     public ElasticsearchPersistUpdater() {
@@ -38,6 +40,11 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
 
     public ElasticsearchPersistUpdater(ElasticsearchWriterConfiguration config) {
         super(config);
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

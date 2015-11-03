@@ -31,11 +31,18 @@ import java.util.List;
  */
 public class DoNothingProcessor implements StreamsProcessor {
 
+    public final static String STREAMS_ID = "DoNothingProcessor";
+
     private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(DoNothingProcessor.class);
 
     List<StreamsDatum> result;
 
     public DoNothingProcessor() {
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

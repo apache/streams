@@ -49,7 +49,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
 
+    public final static String STREAMS_ID = "MongoPersistWriter";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(MongoPersistWriter.class);
+
     private final static long MAX_WRITE_LATENCY = 1000;
 
     protected volatile Queue<StreamsDatum> persistQueue;
@@ -82,6 +85,11 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
 
     public Queue<StreamsDatum> getPersistQueue() {
         return persistQueue;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

@@ -53,6 +53,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class DatasiftStreamProvider implements StreamsProvider {
 
+    private final static String STREAMS_ID = "DatasiftStreamProvider";
+
     private final static Logger LOGGER = LoggerFactory.getLogger(DatasiftStreamProvider.class);
 
     private DatasiftConfiguration config;
@@ -87,6 +89,11 @@ public class DatasiftStreamProvider implements StreamsProvider {
             this.config = config;
         }
         this.eventListener = listener;
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override

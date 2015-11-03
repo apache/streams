@@ -112,6 +112,11 @@ public class PercolateTagProcessor implements StreamsProcessor {
     }
 
     @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
+
+    @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
 
         List<StreamsDatum> result = Lists.newArrayList();

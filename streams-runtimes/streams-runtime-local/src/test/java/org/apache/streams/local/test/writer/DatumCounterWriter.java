@@ -31,6 +31,11 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class DatumCounterWriter implements StreamsPersistWriter{
 
+    @Override
+    public String getId() {
+        return "DatumCounterWriter";
+    }
+
     /**
      * Set of all ids that have been claimed.  Ensures all instances are assigned unique ids
      */

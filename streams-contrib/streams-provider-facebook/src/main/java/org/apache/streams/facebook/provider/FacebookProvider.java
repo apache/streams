@@ -46,6 +46,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class FacebookProvider implements StreamsProvider {
 
+    private final static String STREAMS_ID = "FacebookProvider";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(FacebookProvider.class);
     private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
     private static final int MAX_BATCH_SIZE = 2000;
@@ -56,7 +58,6 @@ public abstract class FacebookProvider implements StreamsProvider {
     private AtomicBoolean isComplete;
     private ExecutorService executor;
     private FacebookDataCollector dataCollector;
-
 
     public FacebookProvider() {
         try {
@@ -70,6 +71,10 @@ public abstract class FacebookProvider implements StreamsProvider {
         this.configuration = (FacebookConfiguration) SerializationUtil.cloneBySerialization(configuration);
     }
 
+    @Override
+    public String getId() {
+        return STREAMS_ID;
+    }
 
     @Override
     public void startStream() {

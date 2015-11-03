@@ -29,9 +29,16 @@ import java.util.List;
  */
 public class DoNothingProcessor implements StreamsProcessor {
 
+    public final static String STREAMS_ID = "DoNothingProcessor";
+
     List<StreamsDatum> result;
 
     public DoNothingProcessor() {
+    }
+
+    @Override
+    public String getId() {
+        return STREAMS_ID;
     }
 
     @Override
