@@ -8,6 +8,7 @@
     "type": "object",
     "title": "media_link",
     "javaType": "org.apache.streams.pojo.json.MediaLink",
+    "javaInterfaces": ["java.io.Serializable"],
     "description": "Visual representation of an object in the form of an image, video or embedded HTML fragments",
     "properties": {
         "duration": {
