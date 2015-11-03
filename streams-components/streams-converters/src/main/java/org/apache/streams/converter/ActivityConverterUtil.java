@@ -183,9 +183,13 @@ public class ActivityConverterUtil {
 		Set<Class> detectedClasses = Collections.newSetFromMap(new ConcurrentHashMap<Class, Boolean>());
 
         for( DocumentClassifier classifier : classifiers ) {
-            List<Class> detected = classifier.detectClasses(document);
-            if( detected != null && detected.size() > 0)
-                detectedClasses.addAll(detected);
+            try {
+                List<Class> detected = classifier.detectClasses(document);
+                if (detected != null && detected.size() > 0)
+                    detectedClasses.addAll(detected);
+            } catch( Exception e) {
+                LOGGER.warn("{} failed in method detectClasses - ()", classifier.getClass().getCanonicalName(), e);
+            }
         }
 
         return Lists.newArrayList(detectedClasses);
