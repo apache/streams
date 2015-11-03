@@ -33,7 +33,12 @@ public class TwitterErrorHandler
     // selected because 3 * 5 + n >= 15 for positive n
     protected static final long retry = 3*60*1000;
 
-    public static int handleTwitterError(Twitter twitter, Exception exception)
+    @Deprecated
+    public static int handleTwitterError(Twitter twitter, Exception exception) {
+        return handleTwitterError( twitter, null, exception);
+    }
+
+    public static int handleTwitterError(Twitter twitter, Long id, Exception exception)
     {
         if(exception instanceof TwitterException)
         {
@@ -63,7 +68,10 @@ public class TwitterErrorHandler
             {
                 if(e.getMessage().toLowerCase().contains("does not exist"))
                 {
-                    LOGGER.warn("User does not exist...");
+                    if( id != null )
+                        LOGGER.warn("User does not exist: {}", id);
+                    else
+                        LOGGER.warn("User does not exist");
                     return 100;
                 }
                 else
@@ -76,6 +84,14 @@ public class TwitterErrorHandler
                 if(e.getExceptionCode().equals("ced778ef-0c669ac0"))
                 {
                     // This is a known weird issue, not exactly sure the cause, but you'll never be able to get the data.
+                    return 5;
+                }
+                else if(e.getExceptionCode().equals("4be80492-0a7bf7c7")) {
+                    // This is a 401 reflecting credentials don't have access to the requested resource.
+                    if( id != null )
+                        LOGGER.warn("Authentication Exception accessing id: {}", id);
+                    else
+                        LOGGER.warn("Authentication Exception");
                     return 5;
                 }
                 else

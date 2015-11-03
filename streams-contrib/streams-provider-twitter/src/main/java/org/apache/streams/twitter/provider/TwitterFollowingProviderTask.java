@@ -208,7 +208,7 @@ public class TwitterFollowingProviderTask implements Runnable {
                 else break;
             }
             catch(TwitterException twitterException) {
-                keepTrying += TwitterErrorHandler.handleTwitterError(client, twitterException);
+                keepTrying += TwitterErrorHandler.handleTwitterError(client, id, twitterException);
             }
             catch(Exception e) {
                 keepTrying += TwitterErrorHandler.handleTwitterError(client, e);

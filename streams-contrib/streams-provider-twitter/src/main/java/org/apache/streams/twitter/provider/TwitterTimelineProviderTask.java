@@ -81,10 +81,10 @@ public class TwitterTimelineProviderTask implements Runnable {
                     keepTrying = 10;
                 }
                 catch(TwitterException twitterException) {
-                    keepTrying += TwitterErrorHandler.handleTwitterError(client, twitterException);
+                    keepTrying += TwitterErrorHandler.handleTwitterError(client, id, twitterException);
                 }
                 catch(Exception e) {
-                    keepTrying += TwitterErrorHandler.handleTwitterError(client, e);
+                    keepTrying += TwitterErrorHandler.handleTwitterError(client, id, e);
                 }
             }
         }
