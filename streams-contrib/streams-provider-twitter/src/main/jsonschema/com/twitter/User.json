@@ -120,6 +120,9 @@
         "listed_count": {
             "ignore_malformed": false,
             "type": "integer"
+        },
+        "status": {
+            "$ref": "tweet.json"
         }
     }
 
