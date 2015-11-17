@@ -174,13 +174,13 @@ public class InstagramActivityUtil {
         Image standardResolution = new Image();
         if(item.getType().equals("image") && item.getImages() != null) {
             ImageData standardResolutionData = item.getImages().getStandardResolution();
-            standardResolution.setHeight(new Double((double)standardResolutionData.getImageHeight()));
-            standardResolution.setWidth(new Double((double)standardResolutionData.getImageWidth()));
+            standardResolution.setHeight(new Long(standardResolutionData.getImageHeight()));
+            standardResolution.setWidth(new Long(standardResolutionData.getImageWidth()));
             standardResolution.setUrl(standardResolutionData.getImageUrl());
         } else if(item.getType().equals("video") && item.getVideos() != null) {
             VideoData standardResolutionData = item.getVideos().getStandardResolution();
-            standardResolution.setHeight(new Double((double)standardResolutionData.getHeight()));
-            standardResolution.setWidth(new Double((double)standardResolutionData.getWidth()));
+            standardResolution.setHeight(new Long(standardResolutionData.getHeight()));
+            standardResolution.setWidth(new Long(standardResolutionData.getWidth()));
             standardResolution.setUrl(standardResolutionData.getUrl());
         }
 
@@ -220,16 +220,16 @@ public class InstagramActivityUtil {
                 ActivityObject thumbnailObject = new ActivityObject();
                 Image thumbnailImage = new Image();
                 thumbnailImage.setUrl(thumbnail.getImageUrl());
-                thumbnailImage.setHeight(new Double((double) thumbnail.getImageHeight()));
-                thumbnailImage.setWidth(new Double((double) thumbnail.getImageWidth()));
+                thumbnailImage.setHeight(new Long(thumbnail.getImageHeight()));
+                thumbnailImage.setWidth(new Long(thumbnail.getImageWidth()));
                 thumbnailObject.setImage(thumbnailImage);
                 thumbnailObject.setObjectType("image");
 
                 ActivityObject lowResolutionObject = new ActivityObject();
                 Image lowResolutionImage = new Image();
                 lowResolutionImage.setUrl(lowResolution.getImageUrl());
-                lowResolutionImage.setHeight(new Double((double) lowResolution.getImageHeight()));
-                lowResolutionImage.setWidth(new Double((double) lowResolution.getImageWidth()));
+                lowResolutionImage.setHeight(new Long(lowResolution.getImageHeight()));
+                lowResolutionImage.setWidth(new Long(lowResolution.getImageWidth()));
                 lowResolutionObject.setImage(lowResolutionImage);
                 lowResolutionObject.setObjectType("image");
 
@@ -256,8 +256,8 @@ public class InstagramActivityUtil {
                 ActivityObject lowResolutionVideoObject = new ActivityObject();
                 Image lowResolutionVideoImage = new Image();
                 lowResolutionVideoImage.setUrl(lowResolutionVideo.getUrl());
-                lowResolutionVideoImage.setHeight(new Double((double) lowResolutionVideo.getHeight()));
-                lowResolutionVideoImage.setWidth(new Double((double) lowResolutionVideo.getWidth()));
+                lowResolutionVideoImage.setHeight(new Long(lowResolutionVideo.getHeight()));
+                lowResolutionVideoImage.setWidth(new Long(lowResolutionVideo.getWidth()));
                 lowResolutionVideoObject.setImage(lowResolutionVideoImage);
                 lowResolutionVideoObject.setObjectType("video");
 
