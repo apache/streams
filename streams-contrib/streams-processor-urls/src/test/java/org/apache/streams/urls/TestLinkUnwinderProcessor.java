@@ -55,6 +55,7 @@ public class TestLinkUnwinderProcessor {
         LinkResolver clone = SerializationUtils.clone(resolver);
     }
 
+    @Ignore
     @Test
     public void test404Link() {
         LinkResolver resolver = new LinkResolver("http://www.kneesupmotherbrown.me/2013/05/26/well-its-fair-to-say-may-has-been-a-crappy-month");
