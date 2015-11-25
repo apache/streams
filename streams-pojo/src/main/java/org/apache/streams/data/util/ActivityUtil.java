@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -129,5 +130,11 @@ public class ActivityUtil {
                 && activity.getVerb() != null
                 && activity.getProvider() != null
                 && activity.getProvider().getId() != null;
+    }
+
+    public static boolean isValid(ActivityObject activityObject) {
+        return activityObject != null
+            && activityObject.getId() != null
+            && activityObject.getObjectType() != null;
     }
 }

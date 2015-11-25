@@ -22,6 +22,7 @@ package org.apache.streams.converter.test;
 /**
  * Support class for
  * @see {@link org.apache.streams.converter.test.CustomActivityConverterProcessorTest}
+ * @see {@link org.apache.streams.converter.test.CustomActivityObjectConverterProcessorTest}
  */
 public class CustomType {
 
