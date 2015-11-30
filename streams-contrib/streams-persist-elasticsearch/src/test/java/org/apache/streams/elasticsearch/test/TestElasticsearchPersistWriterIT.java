@@ -128,7 +128,7 @@ public class TestElasticsearchPersistWriterIT extends ElasticsearchIntegrationTe
             update.setAdditionalProperty("str", "str");
             update.setAdditionalProperty("long", 10l);
             update.setActor(
-                    new Actor()
+                    (Actor) new Actor()
                     .withAdditionalProperty("updated", Boolean.TRUE)
                     .withAdditionalProperty("double", 10d)
                     .withAdditionalProperty("map",
