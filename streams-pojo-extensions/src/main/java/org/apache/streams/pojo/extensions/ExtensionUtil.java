@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class ExtensionUtil {
 
-    public static final String DEFAULT_EXTENSION_PROPERTY = "extensions";
+    public static final String DEFAULT_EXTENSION_PROPERTY = null;
 
     private static final ExtensionUtil INSTANCE = new ExtensionUtil(DEFAULT_EXTENSION_PROPERTY);
 
@@ -47,10 +47,7 @@ public class ExtensionUtil {
     }
 
     private ExtensionUtil(String extensionProperty) {
-        if( !Strings.isNullOrEmpty(extensionProperty) )
-            this.extensionProperty = extensionProperty;
-        else
-            this.extensionProperty = DEFAULT_EXTENSION_PROPERTY;
+        this.extensionProperty = extensionProperty;
     }
 
     /**
@@ -88,15 +85,6 @@ public class ExtensionUtil {
         extensions.remove(key);
     };
 
-    public void promoteExtensions(Activity activity) {
-        Map<String,Object> extensions = ensureExtensions(activity);
-        for( String key : extensions.keySet() ) {
-            activity.getAdditionalProperties().put(key, extensions.get(key));
-            removeExtension(activity, key);
-        }
-        activity.getAdditionalProperties().remove("extensions");
-    };
-
     public Map<String, Object> getExtensions(ActivityObject object) {
         ActivityObject activityObject = mapper.convertValue(object, ActivityObject.class);
         Map<String,Object> extensions = ensureExtensions(object);
@@ -127,15 +115,6 @@ public class ExtensionUtil {
         extensions.remove(key);
     };
 
-    public void promoteExtensions(ActivityObject object) {
-        Map<String,Object> extensions = ensureExtensions(object);
-        for( String key : extensions.keySet() ) {
-            object.getAdditionalProperties().put(key, extensions.get(key));
-            removeExtension(object, key);
-        }
-        object.getAdditionalProperties().remove(extensionProperty);
-    };
-
     /**
      * Creates a standard extension property
      * @param activity activity to create the property in
@@ -143,12 +122,21 @@ public class ExtensionUtil {
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> ensureExtensions(Activity activity) {
-        Map<String,Object> extensions = (Map<String,Object>) activity.getAdditionalProperties().get(extensionProperty);
-        if(extensions == null) {
-            extensions = Maps.newHashMap();
-            setExtensions(activity, extensions);
+        Map<String,Object> additionalProperties = activity.getAdditionalProperties();
+        Map<String,Object> extensions;
+        if(additionalProperties == null) {
+            additionalProperties = Maps.newHashMap();
         }
-        return extensions;
+        if( !Strings.isNullOrEmpty(extensionProperty) ) {
+            extensions = (Map<String, Object>) additionalProperties.get(extensionProperty);
+            if(extensions == null) {
+                extensions = Maps.newHashMap();
+                additionalProperties.put(extensionProperty, extensions);
+            }
+            return extensions;
+        } else {
+            return additionalProperties;
+        }
     }
 
     /**
@@ -158,12 +146,21 @@ public class ExtensionUtil {
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> ensureExtensions(ActivityObject object) {
-        Map<String,Object> extensions = (Map<String,Object>) object.getAdditionalProperties().get(extensionProperty);
-        if(extensions == null) {
-            extensions = Maps.newHashMap();
-            setExtensions(object, extensions);
+        Map<String,Object> additionalProperties = object.getAdditionalProperties();
+        Map<String,Object> extensions;
+        if(additionalProperties == null) {
+            additionalProperties = Maps.newHashMap();
         }
-        return extensions;
+        if( !Strings.isNullOrEmpty(extensionProperty) ) {
+            extensions = (Map<String, Object>) additionalProperties.get(extensionProperty);
+            if(extensions == null) {
+                extensions = Maps.newHashMap();
+                additionalProperties.put(extensionProperty, extensions);
+            }
+            return extensions;
+        } else {
+            return additionalProperties;
+        }
     }
 
 }
