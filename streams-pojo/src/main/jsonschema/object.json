@@ -48,6 +48,8 @@
         "author": {
             "type": "object",
             "description": "Describes the entity that created or authored the object. An object MAY contain a single author property whose value is an Object of any type. Note that the author field identifies the entity that created the object and does not necessarily identify the entity that published the object. For instance, it may be the case that an object created by one person is posted and published to a system by an entirely different entity",
+            "javaType": "org.apache.streams.pojo.json.Author",
+            "javaInterfaces": ["java.io.Serializable"],
             "extends": {
                 "$ref": "./object.json"
             }
@@ -68,6 +70,8 @@
             "type": "array",
             "items": {
                 "type": "object",
+                "javaType": "org.apache.streams.pojo.json.Attachment",
+                "javaInterfaces": ["java.io.Serializable"],
                 "$ref": "./object.json"
             }
         },
