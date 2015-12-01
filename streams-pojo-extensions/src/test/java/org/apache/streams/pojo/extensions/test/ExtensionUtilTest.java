@@ -34,41 +34,6 @@ import java.util.Map;
  */
 public class ExtensionUtilTest {
 
-    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
-
-    ExtensionUtil extensionUtil = ExtensionUtil.getInstance();
-    /**
-     * Test promoteExtensions(Activity)
-     */
-    @Test
-    public void testActivityPromoteExtensions() throws Exception {
-        Activity activity = new Activity();
-        Map<String, Object> extensions = extensionUtil.ensureExtensions(activity);
-        extensions.put("extension", "value");
-        extensionUtil.setExtensions(activity, extensions);
-        assert(!Strings.isNullOrEmpty((String)extensionUtil.getExtension(activity, "extension")));
-        extensionUtil.promoteExtensions(activity);
-        extensions = extensionUtil.getExtensions(activity);
-        assert(extensions.size() == 0);
-        assert(activity.getAdditionalProperties().get("extension").equals("value"));
-    }
-
-    /**
-     * Test promoteExtensions(ActivityObject)
-     */
-    @Test
-    public void testActivityObjectPromoteExtensions() throws Exception {
-        ActivityObject activityObject = new ActivityObject();
-        Map<String, Object> extensions = extensionUtil.ensureExtensions(activityObject);
-        extensions.put("extension", "value");
-        extensionUtil.setExtensions(activityObject, extensions);
-        assert(!Strings.isNullOrEmpty((String)extensionUtil.getExtension(activityObject, "extension")));
-        extensionUtil.promoteExtensions(activityObject);
-        extensions = extensionUtil.getExtensions(activityObject);
-        assert(extensions.size() == 0);
-        assert(activityObject.getAdditionalProperties().get("extension").equals("value"));
-    }
-
     @Test
     public void testActivitySetCustomExtension() throws Exception {
         ExtensionUtil customExtensionUtil = ExtensionUtil.getInstance("ext");
