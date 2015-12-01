@@ -158,6 +158,7 @@
 
     <properties>
 
+        <scala.version>2.10</scala.version>
         <datastax.version>1.0.3</datastax.version>
         <zookeeper.version>3.4.5</zookeeper.version>
         <json-path.version>0.9.1</json-path.version>
@@ -385,6 +386,11 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-joda</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-scala_${scala.version}</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>

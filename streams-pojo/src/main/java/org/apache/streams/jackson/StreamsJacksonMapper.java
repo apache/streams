@@ -24,8 +24,8 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.module.scala.DefaultScalaModule;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -68,18 +68,21 @@ public class StreamsJacksonMapper extends ObjectMapper {
      */
     protected StreamsJacksonMapper() {
         super();
+        registerModule(new DefaultScalaModule());
         registerModule(new StreamsJacksonModule());
         configure();
     }
 
     public StreamsJacksonMapper(String format) {
         super();
+        registerModule(new DefaultScalaModule());
         registerModule(new StreamsJacksonModule(Lists.newArrayList(format)));
         configure();
     }
 
     public StreamsJacksonMapper(List<String> formats) {
         super();
+        registerModule(new DefaultScalaModule());
         registerModule(new StreamsJacksonModule(formats));
         configure();
     }
