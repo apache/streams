@@ -21,6 +21,9 @@
             "type": "object",
             "required": true,
             "description": "Describes the entity that performed the activity. An activity MUST contain one actor property whose value is a single Object.",
+            "javaType": "org.apache.streams.pojo.json.Actor",
+            "javaInterfaces": ["java.io.Serializable"],
+            "additionalProperties": false,
             "extends": {
                 "$ref": "./object.json"
             }
@@ -56,12 +59,18 @@
         "generator": {
             "type": "object",
             "description": "Describes the application that generated the activity. An activity MAY contain a generator property whose value is a single Object.",
+            "javaType": "org.apache.streams.pojo.json.Generator",
+            "javaInterfaces": ["java.io.Serializable"],
+            "additionalProperties": false,
             "extends": {
                 "$ref": "./object.json"
             }
         },
         "icon": {
             "type": "object",
+            "javaType": "org.apache.streams.pojo.json.Icon",
+            "javaInterfaces": ["java.io.Serializable"],
+            "additionalProperties": false,
             "properties": {
                 "$ref": "./media_link.json#properties"
             },
@@ -70,6 +79,9 @@
         "provider": {
             "type": "object",
             "description": "Describes the application that published the activity. Note that this is not necessarily the same entity that generated the activity. An activity MAY contain a provider property whose value is a single Object",
+            "javaType": "org.apache.streams.pojo.json.Provider",
+            "javaInterfaces": ["java.io.Serializable"],
+            "additionalProperties": false,
             "extends": {
                 "$ref": "./object.json"
             }

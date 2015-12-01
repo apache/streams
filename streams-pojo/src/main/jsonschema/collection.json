@@ -8,6 +8,7 @@
     "type": "object",
     "title": "collection",
     "javaType": "org.apache.streams.pojo.json.Collection",
+    "javaInterfaces": ["java.io.Serializable"],
     "description": "A collection is a generic list of Objects of any object type. The objectType of each item in the collection MAY be omitted if the type of object can be established through context. The collection is used primarily as the root of an Activity Streams document, but can be used as the value of extension properties in a variety of situations. ",
     "properties": {
         "url": {

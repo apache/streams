@@ -9,16 +9,16 @@
     "title": "Author",
     "description": "Indicates that the actor has authored the object. Note that this is a more specific form of the verb \"create\".",
     "extends": {
-        "$ref": "./create.json"
+        "$ref": "../activity.json"
     },
     "properties": {
         "verb": {
             "type": "string",
-            "default": "create"
+            "default": "author"
         },
         "title": {
             "type": "string",
-            "default": "{actor.displayName} created {object.displayName}"
+            "default": "{actor.displayName} authored {object.displayName}"
         }
     }
 }
