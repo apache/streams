@@ -18,12 +18,12 @@
         },
         "height": {
             "title": "height",
-            "type": "number",
+            "type": "integer",
             "description": "A hint to the consumer about the height, in pixels, of the media resource identified by the url property. A media link MAY contain a height property when the target resource is a visual media item such as an image, video or embeddable HTML page."
         },
         "width": {
             "title": "width",
-            "type": "number",
+            "type": "integer",
             "description": "A hint to the consumer about the width, in pixels, of the media resource identified by the url property. A media link MAY contain a width property when the target resource is a visual media item such as an image, video or embeddable HTML page."
         },
         "url": {

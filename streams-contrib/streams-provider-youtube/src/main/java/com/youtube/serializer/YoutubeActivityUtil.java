@@ -126,8 +126,8 @@ public class YoutubeActivityUtil {
         if(thumbnail != null) {
             Image image = new Image();
             image.setUrl(thumbnail.getUrl());
-            image.setHeight(thumbnail.getHeight().doubleValue());
-            image.setWidth(thumbnail.getWidth().doubleValue());
+            image.setHeight(thumbnail.getHeight());
+            image.setWidth(thumbnail.getWidth());
 
             activityObject.setImage(image);
         }
