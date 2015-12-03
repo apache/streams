@@ -70,10 +70,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-config</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
             <artifactId>streams-converters</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -187,7 +183,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>${testDataBaseURl}/${artifactId}.zip</url>
+                            <url>${testDataBaseURl}/${project.artifactId}.zip</url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
                             <!--<md5>df65b5642f33676313ebe4d5b69a3fff</md5>-->
@@ -202,8 +198,8 @@
                     <skipTests>${skipITs}</skipTests>
                 </configuration>
             </plugin>                
-	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
             </plugin>
         </plugins>

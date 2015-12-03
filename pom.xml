@@ -24,7 +24,6 @@
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-master</artifactId>
         <version>0.3-incubating-SNAPSHOT</version>
-	<relativePath>incubator-streams-master-pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.streams</groupId>
@@ -156,16 +155,6 @@
         </site>
     </distributionManagement>
 
-    <properties>
-
-        <scala.version>2.10</scala.version>
-        <datastax.version>1.0.3</datastax.version>
-        <zookeeper.version>3.4.5</zookeeper.version>
-        <json-path.version>0.9.1</json-path.version>
-        <facebook4j.version>2.1.0</facebook4j.version>
-
-    </properties>
-
     <modules>
         <module>streams-core</module>
         <module>streams-config</module>
@@ -272,6 +261,11 @@
                 <version>${jsonschema2pojo.version}</version>
                 <type>jar</type>
                 <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                <version>${jsonschema2pojo.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.typesafe</groupId>
