@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.api.services.youtube.model.Video;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
@@ -86,9 +87,9 @@ public class YoutubeVideoSerDeTest {
 
             assertEquals(activity.getPublished().getClass(), DateTime.class);
 
-            assertNotNull(activity.getAdditionalProperties().get("extensions"));
+            assertNotNull(activity.getAdditionalProperties());
 
-            Map<String, Object> extensions = (Map<String, Object>)activity.getAdditionalProperties().get("extensions");
+            Map<String, Object> extensions = ExtensionUtil.getInstance().getExtensions(activity);
 
             assertNotNull(extensions.get("youtube"));
             assertNotNull(extensions.get("likes"));

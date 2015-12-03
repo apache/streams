@@ -6,7 +6,6 @@
   ~ regarding copyright ownership.  The ASF licenses this file
   ~ to you under the Apache License, Version 2.0 (the
   ~ "License"); you may not use this file except in compliance
-  ~ with the License.  You may obtain a copy of the License at
   ~
   ~   http://www.apache.org/licenses/LICENSE-2.0
   ~
@@ -19,39 +18,40 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-    <modelVersion>4.0.0</modelVersion>
-
     <parent>
-        <artifactId>streams-contrib</artifactId>
+        <artifactId>streams-project</artifactId>
         <groupId>org.apache.streams</groupId>
         <version>0.3-incubating-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>streams-processor-regex</artifactId>
+    <artifactId>streams-testing</artifactId>
     <name>${project.artifactId}</name>
 
-    <description>Regex Utility Processors</description>
+    <description>Apache Streams Testing Configuration</description>
+
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-pojo</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-pojo-extensions</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-testing</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-            <type>test-jar</type>
+            <groupId>com.carrotsearch.randomizedtesting</groupId>
+            <artifactId>randomizedtesting-runner</artifactId>
+            <version>2.1.2</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
