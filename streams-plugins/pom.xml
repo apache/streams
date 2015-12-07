@@ -42,6 +42,7 @@
         <module>streams-plugin-hive</module>
         <module>streams-plugin-pig</module>
         <module>streams-plugin-pojo</module>
+        <module>streams-plugin-scala</module>
  	</modules>
 
     <dependencyManagement>
