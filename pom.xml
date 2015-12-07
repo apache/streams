@@ -175,6 +175,7 @@
         <module>streams-osgi-components</module>
         <module>streams-pojo</module>
         <module>streams-pojo-extensions</module>
+        <module>streams-plugins</module>
         <module>streams-runtimes</module>
         <module>streams-util</module>
         <module>streams-verbs</module>
