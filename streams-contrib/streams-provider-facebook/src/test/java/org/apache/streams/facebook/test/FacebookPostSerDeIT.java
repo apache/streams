@@ -91,8 +91,7 @@ public class FacebookPostSerDeIT {
             assertNotNull(activity.getAdditionalProperties().get("extensions"));
 
         } catch( Exception e ) {
-            System.out.println(e);
-            e.printStackTrace();
+            LOGGER.error("Exception: ", e);
             Assert.fail();
         }
     }

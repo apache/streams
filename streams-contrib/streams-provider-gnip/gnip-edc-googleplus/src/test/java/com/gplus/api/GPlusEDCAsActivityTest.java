@@ -53,7 +53,7 @@ public class GPlusEDCAsActivityTest {
     public void Tests()   throws Exception
     {
         InputStream is = GPlusEDCAsActivityTest.class.getResourceAsStream("/GPlusEDCFixed.json");
-        if(is == null) System.out.println("null");
+        if(is == null) LOGGER.debug("null");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
@@ -87,8 +87,7 @@ public class GPlusEDCAsActivityTest {
 
             }
         } catch( Exception e ) {
-            System.out.println("Exception: " + e);
-            LOGGER.error(e.getMessage());
+            LOGGER.error("Exception: ", e);
             Assert.fail("");
         }
     }

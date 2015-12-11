@@ -67,8 +67,7 @@ public class FacebookActivitySerDeIT {
             LOGGER.debug(mapper.writeValueAsString(activity));
 
         } catch( Exception e ) {
-            System.out.println(e);
-            e.printStackTrace();
+            LOGGER.error("Exception: ", e);
             Assert.fail();
         }
     }

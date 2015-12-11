@@ -52,7 +52,7 @@ public class FlickrEDCAsActivityTest {
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
         InputStream is = FlickrEDCAsActivityTest.class.getResourceAsStream("/FlickrEDC.xml");
-        if(is == null) System.out.println("null");
+        if(is == null) LOGGER.debug("null");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         XmlMapper xmlMapper = new XmlMapper();

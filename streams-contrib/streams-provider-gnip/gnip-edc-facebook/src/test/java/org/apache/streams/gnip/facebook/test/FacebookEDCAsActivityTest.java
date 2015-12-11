@@ -50,7 +50,7 @@ public class FacebookEDCAsActivityTest {
     public void Tests()   throws Exception
     {
         InputStream is = FacebookEDCAsActivityTest.class.getResourceAsStream("/FacebookEDC.xml");
-        if(is == null) System.out.println("null");
+        if(is == null) LOGGER.debug("null");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);

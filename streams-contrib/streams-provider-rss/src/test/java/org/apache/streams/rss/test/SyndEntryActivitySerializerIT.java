@@ -29,21 +29,22 @@ import org.apache.streams.pojo.json.Provider;
 import org.apache.streams.rss.serializer.SyndEntryActivitySerializer;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests ability to convert SyndEntry ObjectNode form to {@link org.apache.streams.rss.processor.RssTypeConverter} form
  */
 public class SyndEntryActivitySerializerIT {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(SyndEntryActivitySerializerIT.class);
 
     private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
@@ -57,7 +58,7 @@ public class SyndEntryActivitySerializerIT {
 
         while(scanner.hasNext()) {
             String line = scanner.nextLine();
-            System.out.println(line);
+            LOGGER.debug(line);
             ObjectNode node = (ObjectNode) mapper.readTree(line);
 
             objects.add(node);
@@ -110,7 +111,7 @@ public class SyndEntryActivitySerializerIT {
             url = new URL(provider.getUrl());
             url.toURI();
         } catch(Exception e) {
-            System.out.println("Threw an exception while trying to validate URL: " + provider.getUrl());
+            LOGGER.error("Threw an exception while trying to validate URL: {} - {}", provider.getUrl(), e);
         }
 
         assertNotNull(url);

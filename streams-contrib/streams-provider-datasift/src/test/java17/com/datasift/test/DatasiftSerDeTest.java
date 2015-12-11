@@ -54,7 +54,6 @@ public class DatasiftSerDeTest {
             while (br.ready()) {
                 String line = br.readLine();
                 LOGGER.debug(line);
-                System.out.println(line);
 
                 Datasift ser = mapper.readValue(line, Datasift.class);
 

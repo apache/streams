@@ -27,6 +27,8 @@ import com.moreover.api.Article;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.util.MoreoverUtils;
 import org.apache.streams.pojo.json.Activity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,6 +37,8 @@ import java.util.List;
  * Deserializes Moreover JSON format into Activities
  */
 public class MoreoverJsonActivitySerializer implements ActivitySerializer<String> {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(MoreoverJsonActivitySerializer.class);
 
     public MoreoverJsonActivitySerializer() {
     }
@@ -53,7 +57,7 @@ public class MoreoverJsonActivitySerializer implements ActivitySerializer<String
     public Activity deserialize(String serialized) {
         serialized = serialized.replaceAll("\\[[ ]*\\]", "null");
 
-        System.out.println(serialized);
+        LOGGER.debug(serialized);
 
         ObjectMapper mapper = new ObjectMapper();
         AnnotationIntrospector introspector = new JaxbAnnotationIntrospector(mapper.getTypeFactory());

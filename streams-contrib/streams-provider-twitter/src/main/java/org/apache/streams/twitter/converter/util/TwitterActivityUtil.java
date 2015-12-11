@@ -41,6 +41,8 @@ import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.pojo.UserMentions;
 import org.apache.streams.twitter.converter.StreamsTwitterMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +55,8 @@ import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
  * Provides utilities for working with Activity objects within the context of Twitter
  */
 public class TwitterActivityUtil {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(TwitterActivityUtil.class);
 
     /**
      * Updates the given Activity object with the values from the Tweet
@@ -242,7 +246,7 @@ public class TwitterActivityUtil {
             }
         }
         else
-            System.out.println("  0 links");
+            LOGGER.debug("  0 links");
         return links;
     }
 

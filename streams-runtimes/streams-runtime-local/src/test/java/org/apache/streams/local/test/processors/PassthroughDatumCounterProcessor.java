@@ -20,6 +20,8 @@ package org.apache.streams.local.test.processors;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,6 +31,8 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  */
 public class PassthroughDatumCounterProcessor implements StreamsProcessor {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(PassthroughDatumCounterProcessor.class);
 
     public final static String STREAMS_ID = "PassthroughDatumCounterProcessor";
 
@@ -85,7 +89,7 @@ public class PassthroughDatumCounterProcessor implements StreamsProcessor {
 
     @Override
     public void cleanUp() {
-        System.out.println("Clean up "+this.procId);
+        LOGGER.debug("Clean up {}", this.procId);
         synchronized (COUNTS) {
             AtomicLong count = COUNTS.get(this.procId);
             if(count == null) {
@@ -94,7 +98,7 @@ public class PassthroughDatumCounterProcessor implements StreamsProcessor {
                 count.addAndGet(this.count);
             }
         }
-        System.out.println(this.procId+"\t"+this.count);
+        LOGGER.debug("{}\t{}", this.procId, this.count);
     }
 
     public int getMessageCount() {
