@@ -22,24 +22,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import junit.framework.Assert;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
+import org.apache.streams.converter.LineReadWriteConfiguration;
 import org.apache.streams.converter.LineReadWriteUtil;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
 import org.joda.time.DateTime;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.InputStream;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -60,31 +52,41 @@ public class TestLineReadWriteUtil {
     @Test
     public void TestLineReadWrite () throws Exception {
 
-        List<List<String>> fieldArrays = Lists.newArrayList();
-        fieldArrays.add(Lists.newArrayList("ID"));
-        fieldArrays.add(Lists.newArrayList("DOC"));
-        fieldArrays.add(Lists.newArrayList("ID", "DOC"));
-        fieldArrays.add(Lists.newArrayList("ID", "TS", "DOC"));
-        fieldArrays.add(Lists.newArrayList("ID", "TS", "META", "DOC"));
-        fieldArrays.add(Lists.newArrayList("ID", "SEQ", "TS", "META", "DOC"));
+        List<LineReadWriteConfiguration> configs = Lists.newArrayList();
+        configs.add(new LineReadWriteConfiguration());
+        configs.add(new LineReadWriteConfiguration()
+                .withFields(Lists.newArrayList("ID")));
+        configs.add(new LineReadWriteConfiguration()
+                .withFields(Lists.newArrayList("DOC"))
+                .withFieldDelimiter("\t"));
+        configs.add(new LineReadWriteConfiguration()
+                .withFields(Lists.newArrayList("ID", "DOC"))
+                .withFieldDelimiter("\t")
+                .withLineDelimiter("\n"));
+        configs.add(new LineReadWriteConfiguration()
+                .withFields(Lists.newArrayList("ID", "TS", "DOC"))
+                .withLineDelimiter("\n"));
+        configs.add(new LineReadWriteConfiguration()
+                .withFields(Lists.newArrayList("ID", "TS", "META", "DOC"))
+                .withFieldDelimiter("|")
+                .withLineDelimiter("\n"));
+        configs.add(new LineReadWriteConfiguration()
+                .withFields(Lists.newArrayList("ID", "SEQ", "TS", "META", "DOC"))
+                .withFieldDelimiter("|")
+                .withLineDelimiter("\\0"));
 
-        TestLineReadWriteCase(fieldArrays.get(0), null, null);
-        TestLineReadWriteCase(fieldArrays.get(1), "\t", null );
-        TestLineReadWriteCase(fieldArrays.get(2), "\t", "\n" );
-        TestLineReadWriteCase(fieldArrays.get(3), null, "\n" );
-        TestLineReadWriteCase(fieldArrays.get(4), "|", "\n" );
-        TestLineReadWriteCase(fieldArrays.get(5), "|", "\\0" );
+        for(LineReadWriteConfiguration config : configs)
+            TestLineReadWriteCase(config);
 
     }
 
-    public void TestLineReadWriteCase(List<String> fields, String fieldDelimiter, String lineDelimiter) throws Exception {
+    public void TestLineReadWriteCase(LineReadWriteConfiguration lineReadWriteConfiguration) throws Exception {
 
         LineReadWriteUtil lineReadWriteUtil;
-        if( lineDelimiter != null && fieldDelimiter != null ) lineReadWriteUtil = LineReadWriteUtil.getInstance(fields, fieldDelimiter, lineDelimiter);
-        else if( lineDelimiter != null ) lineReadWriteUtil = LineReadWriteUtil.getInstance(fields, null, lineDelimiter);
-        else if( fieldDelimiter != null ) lineReadWriteUtil = LineReadWriteUtil.getInstance(fields, fieldDelimiter);
-        else lineReadWriteUtil = LineReadWriteUtil.getInstance(fields);
 
+        lineReadWriteUtil = LineReadWriteUtil.getInstance(lineReadWriteConfiguration);
+
+        assert(lineReadWriteUtil != null);
         StreamsDatum testDatum = randomDatum();
         String writeResult = lineReadWriteUtil.convertResultToString(testDatum);
         assert !Strings.isNullOrEmpty(writeResult);

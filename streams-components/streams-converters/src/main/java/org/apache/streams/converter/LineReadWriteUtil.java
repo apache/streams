@@ -24,13 +24,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.List;
@@ -44,69 +44,45 @@ public class LineReadWriteUtil {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TypeConverterUtil.class);
 
-    private static LineReadWriteUtil INSTANCE;
+    private static Map<LineReadWriteConfiguration, LineReadWriteUtil> INSTANCE_MAP = Maps.newConcurrentMap();
 
     private final static List<String> DEFAULT_FIELDS = Lists.newArrayList("ID", "SEQ", "TS", "META", "DOC");
 
     private List<String> fields;
     private String fieldDelimiter = "\t";
     private String lineDelimiter = "\n";
+    private String encoding = "UTF-8";
 
     private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
     private LineReadWriteUtil() {
-        this(LineReadWriteUtil.DEFAULT_FIELDS);
     }
 
-    private LineReadWriteUtil(List<String> fields) {
-        if( fields != null && fields.size() > 0) this.fields = fields;
-        else this.fields = LineReadWriteUtil.DEFAULT_FIELDS;
+    private LineReadWriteUtil(LineReadWriteConfiguration configuration) {
+        this.fields = configuration.getFields();
+        this.fieldDelimiter = configuration.getFieldDelimiter();
+        this.lineDelimiter = configuration.getLineDelimiter();
+        this.encoding = configuration.getEncoding();
     }
 
-    private LineReadWriteUtil(List<String> fields, String fieldDelimiter) {
-        this(fields);
-        if( fieldDelimiter != null ) this.fieldDelimiter = fieldDelimiter;
+    public static LineReadWriteUtil getInstance() {
+        return getInstance(new LineReadWriteConfiguration());
     }
 
-    private LineReadWriteUtil(List<String> fields, String fieldDelimiter, String lineDelimiter) {
-        this(fields);
-        if( fieldDelimiter != null ) this.fieldDelimiter = fieldDelimiter;
-        if( lineDelimiter != null ) this.lineDelimiter = lineDelimiter;
-    }
-
-    public static LineReadWriteUtil getInstance(){
-        if( INSTANCE == null )
-            INSTANCE = new LineReadWriteUtil(LineReadWriteUtil.DEFAULT_FIELDS);
-        return INSTANCE;
-    }
-
-    public static LineReadWriteUtil getInstance(List<String> fields){
-        if( INSTANCE == null )
-            INSTANCE = new LineReadWriteUtil(fields);
-        else if( !INSTANCE.fields.equals(fields))
-            return new LineReadWriteUtil(fields);
-        return INSTANCE;
-    }
-
-    public static LineReadWriteUtil getInstance(List<String> fields, String fieldDelimiter){
-        if( INSTANCE == null )
-            INSTANCE = new LineReadWriteUtil(fields, fieldDelimiter);
-        else if( !INSTANCE.fields.equals(fields) || !INSTANCE.fieldDelimiter.equals(fieldDelimiter))
-            return new LineReadWriteUtil(fields, fieldDelimiter);
-        return INSTANCE;
-    }
-
-    public static LineReadWriteUtil getInstance(List<String> fields, String fieldDelimiter, String lineDelimiter){
-        if( INSTANCE == null )
-            INSTANCE = new LineReadWriteUtil(fields, fieldDelimiter, lineDelimiter);
-        else if( !INSTANCE.fields.equals(fields) || !INSTANCE.fieldDelimiter.equals(fieldDelimiter) || !INSTANCE.fieldDelimiter.equals(lineDelimiter))
-            return new LineReadWriteUtil(fields, fieldDelimiter, lineDelimiter);
-        return INSTANCE;
+    public static LineReadWriteUtil getInstance(LineReadWriteConfiguration configuration) {
+        if( INSTANCE_MAP.containsKey(configuration) &&
+            INSTANCE_MAP.get(configuration) != null)
+            return INSTANCE_MAP.get(configuration);
+        else {
+            INSTANCE_MAP.put(configuration, new LineReadWriteUtil(configuration));
+            return INSTANCE_MAP.get(configuration);
+        }
     }
 
     public StreamsDatum processLine(String line) {
 
         List<String> expectedFields = fields;
+        if( line.endsWith(lineDelimiter)) line = trimLineDelimiter(line);
         String[] parsedFields = line.split(fieldDelimiter);
 
         if( parsedFields.length == 0)
@@ -143,7 +119,7 @@ public class LineReadWriteUtil {
             metadata = parseMap(parsedFields[expectedFields.indexOf(FieldConstants.META)]);
         }
 
-        StreamsDatum datum = new StreamsDatum(trimLineDelimiter(json));
+        StreamsDatum datum = new StreamsDatum(json);
         datum.setId(id);
         datum.setTimestamp(ts);
         datum.setMetadata(metadata);
@@ -203,7 +179,7 @@ public class LineReadWriteUtil {
 
             }
             joiner.appendTo(stringBuilder, fielddata);
-            return stringBuilder.append(lineDelimiter).toString();
+            return stringBuilder.toString();
         }
     }
 
