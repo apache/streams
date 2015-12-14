@@ -32,7 +32,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Queues;
 import org.apache.streams.converter.LineReadWriteUtil;
-import org.apache.streams.core.*;
+import org.apache.streams.core.DatumStatusCountable;
+import org.apache.streams.core.DatumStatusCounter;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsPersistReader;
+import org.apache.streams.core.StreamsResultSet;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +112,7 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
 
     public void prepare(Object configurationObject) {
 
-        lineReaderUtil = LineReadWriteUtil.getInstance(s3ReaderConfiguration.getFields(), s3ReaderConfiguration.getFieldDelimiter(), s3ReaderConfiguration.getLineDelimiter());
+        lineReaderUtil = LineReadWriteUtil.getInstance(s3ReaderConfiguration);
         // Connect to S3
         synchronized (this)
         {

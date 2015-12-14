@@ -7,6 +7,9 @@
     "type": "object",
     "javaType" : "org.apache.streams.hdfs.HdfsConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
+    "extends": {
+        "$ref": "../../../../../../../../../streams-components/streams-converters/src/main/jsonschema/org/apache/streams/converter/LineReadWriteConfiguration.json"
+    },
     "properties": {
         "scheme": {
             "type": "string",
@@ -31,32 +34,8 @@
             "description": "User"
         },
         "password": {
-            "type": "string",
-            "description": "Password"
-        },
-        "fields": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "ID",
-            "TS",
-            "META",
-            "DOC"
-          ]
-        },
-        "field_delimiter": {
           "type": "string",
-          "default": "\t"
-        },
-        "line_delimiter": {
-          "type": "string",
-          "default": "\n"
-        },
-        "encoding": {
-          "type": "string",
-          "default": "UTF-8"
+          "description": "Password"
         }
     }
 }

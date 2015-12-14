@@ -7,6 +7,9 @@
     "type": "object",
     "javaType" : "org.apache.streams.s3.S3Configuration",
     "javaInterfaces": ["java.io.Serializable"],
+    "extends": {
+        "$ref": "../../../../../../../../../../streams-components/streams-converters/src/main/jsonschema/org/apache/streams/converter/LineReadWriteConfiguration.json"
+    },
     "properties": {
         "key": {
             "type": "string",
@@ -33,26 +36,6 @@
             "type": "string",
             "description": "The AWS region where your bucket resides",
             "required": false
-        },
-        "fields": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            },
-            "default": [
-                "ID",
-                "TS",
-                "META",
-                "DOC"
-            ]
-        },
-        "field_delimiter": {
-            "type": "string",
-            "default": "\t"
-        },
-        "line_delimiter": {
-            "type": "string",
-            "default": "\n"
         }
     }
 }
