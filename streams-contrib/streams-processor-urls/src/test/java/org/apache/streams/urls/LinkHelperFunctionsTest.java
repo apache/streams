@@ -19,6 +19,8 @@
 package org.apache.streams.urls;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -27,6 +29,8 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 public class LinkHelperFunctionsTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LinkHelperFunctionsTest.class);
 
     @Test
     public void testIsURL() {
@@ -70,9 +74,9 @@ public class LinkHelperFunctionsTest {
         // get required sleep
         long smashewSleepTime1 = LinkResolverHelperFunctions.waitTimeForDomain(domain1);
         // sleep
-        System.out.println("Sleeping: " + new Date().getTime() + "-" + smashewSleepTime1);
+        LOGGER.debug("Sleeping: " + new Date().getTime() + "-" + smashewSleepTime1);
         safeSleep(smashewSleepTime1);
-        System.out.println("Slept For: " + new Date().getTime() + "-" + smashewSleepTime1);
+        LOGGER.debug("Slept For: " + new Date().getTime() + "-" + smashewSleepTime1);
         // safe to run again
         assertEquals("smashew.com: No need to wait", 0, LinkResolverHelperFunctions.waitTimeForDomain(domain1));
     }
@@ -99,7 +103,7 @@ public class LinkHelperFunctionsTest {
         long smashewSleepTime3 = LinkResolverHelperFunctions.waitTimeForDomain(domain1);
         long smashewSleepTime4 = LinkResolverHelperFunctions.waitTimeForDomain(domain1);
 
-        System.out.println("smashew.com: " + smashewSleepTime1 + "," + smashewSleepTime2 + "," + smashewSleepTime3  + "," + smashewSleepTime4);
+        LOGGER.debug("smashew.com: " + smashewSleepTime1 + "," + smashewSleepTime2 + "," + smashewSleepTime3 + "," + smashewSleepTime4);
 
         assertEquals("smashew.com: No need to wait", 0, smashewSleepTime1);
         assertTrue("smashew.com: Wait for at least min x 1", smashewSleepTime2 >= (LinkResolverHelperFunctions.RECENT_DOMAINS_BACKOFF - LinkResolverHelperFunctions.DEFAULT_STAGGER));
@@ -107,13 +111,13 @@ public class LinkHelperFunctionsTest {
         assertTrue("smashew.com: Wait for at least min x 3", smashewSleepTime4 >= (LinkResolverHelperFunctions.RECENT_DOMAINS_BACKOFF * 3) - (LinkResolverHelperFunctions.DEFAULT_STAGGER * 3));
 
         long timeBeforeSleep = new Date().getTime();
-        System.out.println("Sleeping for: " + smashewSleepTime4 + " ms");
+        LOGGER.debug("Sleeping for: " + smashewSleepTime4 + " ms");
 
         safeSleep(smashewSleepTime4);
-        System.out.println("Actually slept for: " + (new Date().getTime() - timeBeforeSleep) + " ms");
+        LOGGER.debug("Actually slept for: " + (new Date().getTime() - timeBeforeSleep) + " ms");
 
         long postSleepDomain1 = LinkResolverHelperFunctions.waitTimeForDomain(domain1);
-        System.out.println("smashew.com: Post Sleep domain1: " + postSleepDomain1);
+        LOGGER.debug("smashew.com: Post Sleep domain1: " + postSleepDomain1);
         assertEquals("Smashew.com: No need to wait after sleep", 0, postSleepDomain1);
 
     }
@@ -132,8 +136,8 @@ public class LinkHelperFunctionsTest {
         long googleSleepTime1 = LinkResolverHelperFunctions.waitTimeForDomain(domain2);
         long googleSleepTime2 = LinkResolverHelperFunctions.waitTimeForDomain(domain2);
 
-        System.out.println("smashew.com: " + smashewSleepTime1 + "," + smashewSleepTime2 + "," + smashewSleepTime3);
-        System.out.println("google.com: " + googleSleepTime1 + "," + googleSleepTime2);
+        LOGGER.debug("smashew.com: " + smashewSleepTime1 + "," + smashewSleepTime2 + "," + smashewSleepTime3);
+        LOGGER.debug("google.com: " + googleSleepTime1 + "," + googleSleepTime2);
 
         assertEquals("smashew.com: No need to wait", 0, smashewSleepTime1);
         assertTrue("smashew.com: Wait for at least min x 1", smashewSleepTime2 >= (LinkResolverHelperFunctions.RECENT_DOMAINS_BACKOFF - LinkResolverHelperFunctions.DEFAULT_STAGGER));
@@ -143,7 +147,7 @@ public class LinkHelperFunctionsTest {
         assertTrue("google.com: No need to wait", googleSleepTime2 >= LinkResolverHelperFunctions.RECENT_DOMAINS_BACKOFF - LinkResolverHelperFunctions.DEFAULT_STAGGER);
 
         try {
-            System.out.println("WAITING FOR: " + smashewSleepTime3);
+            LOGGER.debug("WAITING FOR: " + smashewSleepTime3);
             Thread.sleep(smashewSleepTime3);
         }
         catch(Exception e) {
@@ -153,8 +157,8 @@ public class LinkHelperFunctionsTest {
         long postSleepDomain1 = LinkResolverHelperFunctions.waitTimeForDomain(domain1);
         long postSleepDomain2 = LinkResolverHelperFunctions.waitTimeForDomain(domain2);
 
-        System.out.println("smashew.com: Post Sleep domain1: " + postSleepDomain1);
-        System.out.println("google.com:  Post Sleep domain2: " + postSleepDomain2);
+        LOGGER.debug("smashew.com: Post Sleep domain1: " + postSleepDomain1);
+        LOGGER.debug("google.com:  Post Sleep domain2: " + postSleepDomain2);
 
         assertEquals("Smashew.com: No need to wait after sleep", 0, postSleepDomain1);
         assertEquals("google.com: No need to wait after sleep", 0, postSleepDomain2);

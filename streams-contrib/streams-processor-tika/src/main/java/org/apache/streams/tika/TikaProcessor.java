@@ -59,7 +59,6 @@ public class TikaProcessor implements StreamsProcessor
 
         Activity activity;
 
-        System.out.println( STREAMS_ID + " processing " + entry.getDocument().getClass());
         // get list of shared urls
         if( entry.getDocument() instanceof Activity) {
 
@@ -83,7 +82,7 @@ public class TikaProcessor implements StreamsProcessor
         // for each
         for( String link : outputLinks ) {
 
-            System.out.println( "pulling " + link);
+            LOGGER.debug( "pulling {}", link);
 
             try {
                 StreamsDatum outputDatum = expandLink(link, entry);

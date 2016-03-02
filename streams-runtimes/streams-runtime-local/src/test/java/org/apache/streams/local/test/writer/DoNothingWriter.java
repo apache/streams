@@ -20,11 +20,15 @@ package org.apache.streams.local.test.writer;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by rebanks on 2/20/14.
  */
 public class DoNothingWriter implements StreamsPersistWriter {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(DoNothingWriter.class);
 
     @Override
     public String getId() {
@@ -43,6 +47,6 @@ public class DoNothingWriter implements StreamsPersistWriter {
 
     @Override
     public void cleanUp() {
-        System.out.println("Writer Clean Up!");
+        LOGGER.debug("Writer Clean Up!");
     }
 }

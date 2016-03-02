@@ -20,6 +20,8 @@ package org.apache.streams.local.test.processors;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +30,8 @@ import java.util.List;
  * Created by rebanks on 2/20/14.
  */
 public class DoNothingProcessor implements StreamsProcessor {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(DoNothingProcessor.class);
 
     public final static String STREAMS_ID = "DoNothingProcessor";
 
@@ -55,6 +59,6 @@ public class DoNothingProcessor implements StreamsProcessor {
 
     @Override
     public void cleanUp() {
-        System.out.println("Processor clean up!");
+        LOGGER.debug("Processor clean up!");
     }
 }

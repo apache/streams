@@ -24,7 +24,6 @@ import org.apache.streams.pojo.json.Activity;
 import org.jinstagram.entity.users.basicinfo.UserInfoData;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,8 +75,7 @@ public class InstagramActivitySerDeIT {
                 }
             }
         } catch( Exception e ) {
-            System.out.println(e);
-            e.printStackTrace();
+            LOGGER.error("Exception: ", e);
             Assert.fail();
         }
     }
@@ -126,8 +124,7 @@ public class InstagramActivitySerDeIT {
                 }
             }
         } catch( Exception e ) {
-            System.out.println(e);
-            e.printStackTrace();
+            LOGGER.error("Exception: ", e);
             Assert.fail();
         }
     }

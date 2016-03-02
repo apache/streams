@@ -49,7 +49,7 @@ public class FacebookEDCSerDeTest {
         xmlMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
         InputStream is = FacebookEDCSerDeTest.class.getResourceAsStream("/FacebookEDC.xml");
-        if(is == null) System.out.println("null");
+        if(is == null) LOGGER.debug("null");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);

@@ -97,7 +97,7 @@ public class FileBufferPersistReader implements StreamsPersistReader, Serializab
                 ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
                 BufferedReader buf = new BufferedReader(new InputStreamReader(bais));
                 String s = buf.readLine();
-                System.out.println(s);
+                LOGGER.debug(s);
                 write(new StreamsDatum(s));
                 queueFile.remove();
             } catch (IOException e) {

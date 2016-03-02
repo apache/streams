@@ -70,8 +70,7 @@ public class FacebookPageSerDeIT {
             LOGGER.debug(mapper.writeValueAsString(serde));
 
         } catch( Exception e ) {
-            System.out.println(e);
-            e.printStackTrace();
+            LOGGER.error("Exception: ", e);
             Assert.fail();
         }
     }

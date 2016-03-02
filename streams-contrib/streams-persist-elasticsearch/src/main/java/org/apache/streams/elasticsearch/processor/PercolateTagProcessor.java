@@ -27,12 +27,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.data.util.ActivityUtil;
-import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.elasticsearch.ElasticsearchConfiguration;
 import org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -270,7 +269,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
         BulkResponse response = this.bulkBuilder.execute().actionGet();
         for(BulkItemResponse r : response.getItems()) {
             if(r.isFailed()) {
-                System.out.println(r.getId()+"\t"+r.getFailureMessage());
+                LOGGER.error("{}\t{}", r.getId(), r.getFailureMessage());
             }
         }
         return !response.hasFailures();

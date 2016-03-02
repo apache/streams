@@ -53,7 +53,7 @@ public class RedditEDCAsActivityJSONTest {
     public void Tests()   throws Exception
     {
         InputStream is = RedditEDCAsActivityJSONTest.class.getResourceAsStream("/RedditEDCFixed.json");
-        if(is == null) System.out.println("null");
+        if(is == null) LOGGER.debug("null");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
@@ -88,8 +88,7 @@ public class RedditEDCAsActivityJSONTest {
                 //LOGGER.info(activity);
             }
         } catch( Exception e ) {
-            System.out.println("Exception: " + e);
-            LOGGER.error(e.getMessage());
+            LOGGER.error("Exception: ", e);
             Assert.fail("");
         }
     }
