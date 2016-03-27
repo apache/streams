@@ -28,11 +28,9 @@
     <artifactId>streams-components</artifactId>
 
     <packaging>pom</packaging>
+
     <name>streams-components</name>
-
-    <properties>
-
-    </properties>
+    <description>Functional components to embed in streams, or extend to customize behavior.</description>
 
     <modules>
         <module>streams-converters</module>

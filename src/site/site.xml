@@ -24,6 +24,22 @@
         <version>1.3.0</version>
     </skin>
     <body>
+        <menu ref="parent" inherit="top"/>
         <menu ref="reports"/>
     </body>
+    <custom>
+        <fluidoSkin>
+            <gitHub>
+                <projectId>apache/incubator-streams</projectId>
+                <ribbonOrientation>right</ribbonOrientation>
+                <ribbonColor>black</ribbonColor>
+            </gitHub>
+            <googleSearch/>
+            <twitter>
+                <user>steveblackmon</user>
+                <showUser>true</showUser>
+                <showFollowers>true</showFollowers>
+            </twitter>
+        </fluidoSkin>
+    </custom>
 </project>

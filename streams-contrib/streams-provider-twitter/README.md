@@ -1,38 +1,8 @@
-streams-provider-twitter
-=====================
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-Connects to the twitter streaming API, collects events, and passes each message downstream.
+org.apache.streams:streams-provider-twitter
+===========================================
 
-Example userstream configuration:
-
-    "twitter": {
-        host = "api.twitter.com"
-        endpoint = "userstream"
-        oauth {
-            consumerKey = ""
-            consumerSecret = ""
-            accessToken = ""
-            accessTokenSecret = ""
-        }
-    }
-    
-Example gardenhose configuration:
-
-    "twitter": {
-        host = "api.twitter.com"
-        endpoint = "sample"
-        oauth {
-            consumerKey = ""
-            consumerSecret = ""
-            accessToken = ""
-            accessTokenSecret = ""
-        }
-        track [
-            apache
-        ]
-        follow [
-            TheASF
-        ]
-        
-    }
-    
+[README.md](src/site/index.md "README") 

@@ -7,9 +7,23 @@ streams-provider-sysomos
 
 streams-provider-sysomos contains schema definitions, providers, conversions, and utility classes.
 
-##Schemas
+## Data Types
 
-[Sysomos.json](com/sysomos/Sysomos.json "Sysomos.json")
+| Schema |
+|--------|
+| [Sysomos.json](com/sysomos/Sysomos.json "Sysomos.json") [Sysomos.json.html](apidocs/com/sysomos/Sysomos.html "javadoc") |
+| [Sysomos.xsd](com/sysomos/sysomos.xsd "Sysomos.xsd") [Sysomos.xsd.html](apidocs/com/sysomos/BeatApi.html "javadoc") |
 
-[Sysomos.xsd](com/sysomos/sysomos.xsd "Sysomos.xsd")
+## Configuration
+
+| Schema |
+|--------|
+| [SysomosConfiguration.json](com/sysomos/SysomosConfiguration.json "SysomosConfiguration.json") [SysomosConfiguration.html](apidocs/com/sysomos/SysomosConfiguration.html "javadoc") |
+
+## Components
+
+| Class | Configuration | Example Configuration(s) |
+|-------|---------------|--------------------------|
+| SysomosProvider [SysomosProvider.html](apidocs/org/apache/streams/sysomos/SysomosProvider.html "javadoc") | [SysomosConfiguration.json](com/sysomos/SysomosConfiguration.json "SysomosConfiguration.json") [SysomosConfiguration.html](apidocs/com/sysomos/SysomosConfiguration.html "javadoc") | [sysomos.conf](sysomos.conf "sysomos.conf") |
+
 

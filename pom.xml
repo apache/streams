@@ -32,7 +32,7 @@
     <name>Apache Streams Project</name>
     <description>Apache Streams Project</description>
 
-    <url>http://streams.incubator.apache.org/${project.version}/${project.artifactId}</url>
+    <url>http://streams.incubator.apache.org/site/${project.version}/${project.artifactId}</url>
 
     <licenses>
         <license>
@@ -172,7 +172,7 @@
         <module>streams-contrib</module>
         <module>streams-components</module>
         <module>streams-monitoring</module>
-        <module>streams-osgi-components</module>
+        <!--<module>streams-osgi-components</module>-->
         <module>streams-pojo</module>
         <module>streams-pojo-extensions</module>
         <module>streams-runtimes</module>
@@ -222,13 +222,31 @@
     <reporting>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${reports.plugin.version}</version>
+                <configuration>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <inherited>false</inherited>
+                        <reports>
+                            <report>index</report>
+                            <report>modules</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
             </plugin>
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
+                <version>${site.plugin.version}</version>
+                <configuration>
+                    <topSiteURL>scm:svn:https://svn.apache.org/repos/infra/websites/production/streams/content/site/${project.version}/${project.artifactId}</topSiteURL>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
         </plugins>
     </reporting>

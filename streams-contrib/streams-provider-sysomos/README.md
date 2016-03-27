@@ -1,19 +1,8 @@
-streams-provider-sysomos
-==========================
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-Purpose                  
+org.apache.streams:streams-provider-sysomos
+===========================================
 
-  Module connects to sysomos API, collects events, converts to activity, and passes each activity downstream.
-
-Example configuration
-
-    sysomos {
-        heartbeatIds = [
-            HBID
-        ]
-        apiBatchSize = 500
-        apiKey = KEY
-        minDelayMs = 10000
-        scheduledDelayMs = 120000
-        maxBatchSize = 10000
-    }
+[README.md](src/site/index.md "README") 
