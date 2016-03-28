@@ -1,63 +1,40 @@
 package org.apache.streams.plugins;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import org.apache.streams.data.DocumentClassifier;
 import org.reflections.ReflectionUtils;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.ReflectionUtils.*;
-import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Generated;
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by sblackmon on 11/18/15.
  */
-public class StreamsPojoHive implements Runnable {
+public class StreamsHiveResourceGenerator implements Runnable {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPojoHive.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsHiveResourceGenerator.class);
 
     private final static String LS = System.getProperty("line.separator");
 
     private StreamsPojoHiveMojo mojo;
 
+    String inDir = "./target/test-classes/activities";
     String outDir = "./target/generated-sources/hive";
     String packages[] = {"org.apache.streams.pojo.json"};
 
-    private final Reflections reflections = new Reflections(
-            new ConfigurationBuilder()
-                    .forPackages(packages)
-                    .filterInputsBy(new FilterBuilder().includePackage(packages))
-                    .setScanners(
-                            new SubTypesScanner(),
-                            new TypeAnnotationsScanner()));
-
     public void main(String[] args) {
-        StreamsPojoHive streamsPojoScala = new StreamsPojoHive();
+        StreamsHiveResourceGenerator streamsHiveResourceGenerator = new StreamsHiveResourceGenerator();
         Thread thread = new Thread(streamsPojoScala);
         thread.start();
         try {
@@ -70,7 +47,7 @@ public class StreamsPojoHive implements Runnable {
         return;
     }
 
-    public StreamsPojoHive(StreamsPojoHiveMojo mojo) {
+    public StreamsHiveResourceGenerator(StreamsPojoHiveMojo mojo) {
         this.mojo = mojo;
         if (    mojo != null &&
                 mojo.getTarget() != null &&
@@ -85,7 +62,7 @@ public class StreamsPojoHive implements Runnable {
             packages = mojo.getPackages();
     }
 
-    public StreamsPojoHive() {
+    public StreamsHiveResourceGenerator() {
     }
 
     public void run() {

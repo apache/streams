@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.apache.streams.plugins</groupId>
+    <artifactId>streams-plugin-hive-test</artifactId>
+    <version>0.3-incubating-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Test StreamsPojoHiveMojo</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.streams.plugins</groupId>
+                <artifactId>streams-plugin-hive</artifactId>
+                <version>0.3-incubating-SNAPSHOT</version>
+                <configuration>
+                    <packages>
+                        <package>org.apache.streams.pojo.json</package>
+                    </packages>
+                    <target>target/test-classes/streams-hive-plugin/</target>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>hive</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

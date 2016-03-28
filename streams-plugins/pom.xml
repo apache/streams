@@ -36,7 +36,7 @@
     </properties>
 
     <modules>
-        <module>streams-plugin-scala</module>
+        <module>streams-plugin-pojo</module>
  	</modules>
 
     <dependencyManagement>

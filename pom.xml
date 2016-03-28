@@ -175,6 +175,7 @@
         <module>streams-osgi-components</module>
         <module>streams-pojo</module>
         <module>streams-pojo-extensions</module>
+        <module>streams-plugins</module>
         <module>streams-runtimes</module>
         <module>streams-testing</module>
         <module>streams-util</module>
@@ -182,6 +183,10 @@
     </modules>
 
     <packaging>pom</packaging>
+
+    <properties>
+        <jsonschema2pojo.version>0.4.22</jsonschema2pojo.version>
+    </properties>
 
     <build>
         <plugins>
