@@ -1,7 +1,3 @@
-Apache Streams (incubating)
-Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
---------------------------------------------------------------------------------
-
 streams-provider-datasift
 ==============
 
@@ -21,5 +17,9 @@ streams-provider-datasift contains schema definitions, providers, conversions, a
 
 | Schema |
 |--------|
-| [TwitterConfiguration.json](com/twitter/tweet.json "TwitterConfiguration.json") [TwitterConfiguration.html](apidocs/org/apache/streams/twitter/TwitterConfiguration.html "javadoc") |
+| [DatasiftConfiguration.json](org/apache/streams/datasift/DatasiftConfiguration.json "DatasiftConfiguration.json") [DatasiftConfiguration.html](apidocs/org/apache/streams/datasift/DatasiftConfiguration.html "javadoc") |
+| [DatasiftPushConfiguration.json](org/apache/streams/datasift/DatasiftPushConfiguration.json "DatasiftPushConfiguration.json") [DatasiftPushConfiguration.html](apidocs/org/apache/streams/datasift/DatasiftPushConfiguration.html "javadoc") |
+| [DatasiftStreamConfiguration.json](org/apache/streams/datasift/DatasiftStreamConfiguration.json "DatasiftStreamConfiguration.json") [DatasiftStreamConfiguration.html](apidocs/org/apache/streams/datasift/DatasiftStreamConfiguration.html "javadoc") |
+| [DatasiftWebhookConfiguration.json](org/apache/streams/datasift/DatasiftWebhookConfiguration.json "DatasiftWebhookConfiguration.json") [DatasiftWebhookConfiguration.html](apidocs/org/apache/streams/datasift/DatasiftWebhookConfiguration.html "javadoc") |
 
+###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

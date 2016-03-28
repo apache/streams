@@ -1,14 +1,3 @@
-Apache Streams (incubating)
-Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
---------------------------------------------------------------------------------
-
-# org.apache.streams:streams-project
-
-Release Notes
-=============
-
-[CHANGELOG.md](CHANGELOG.md "CHANGELOG.md")
-
 System Requirements
 ===================
 You need a platform that supports Java SE 7 or later.
@@ -29,11 +18,14 @@ To build from source code:
 
       `mvn install`
 
-Additional Documentation
+Modules
 ========================
 
-[Modules](modules.md "Modules")
+[Modules](modules.html "Modules")
 
-[JavaDocs](apidocs/index.html "JavaDocs")
+Release Notes
+=============
 
-[TestJavaDocs](testapidocs/index.html "TestJavaDocs")
+[CHANGELOG.md](CHANGELOG.md "CHANGELOG.md")
+
+###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

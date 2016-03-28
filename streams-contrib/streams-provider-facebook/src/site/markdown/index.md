@@ -1,7 +1,3 @@
-Apache Streams (incubating)
-Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
---------------------------------------------------------------------------------
-
 streams-provider-facebook
 ==============
 
@@ -20,3 +16,4 @@ streams-provider-facebook contains schema definitions, providers, conversions, a
 | [FacebookConfiguration.json](org/apache/streams/facebook/FacebookConfiguration.json "FacebookConfiguration.json") [FacebookConfiguration.html](apidocs/org/apache/streams/facebook/FacebookConfiguration.html "javadoc") |
 
 
+###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

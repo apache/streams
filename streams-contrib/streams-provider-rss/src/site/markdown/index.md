@@ -1,7 +1,3 @@
-Apache Streams (incubating)
-Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
---------------------------------------------------------------------------------
-
 streams-provider-rss
 ====================
 
@@ -17,3 +13,4 @@ streams-provider-rss
 |-------|---------------|--------------------------|
 | RssStreamProvider [RssStreamProvider.html](apidocs/org/apache/streams/rss/provider/RssStreamProvider.html "javadoc") | [RssStreamConfiguration.json](RssStreamConfiguration.json "RssStreamConfiguration.json") [RssStreamConfiguration.html](apidocs/org/apache/streams/rss/RssStreamConfiguration.html "javadoc") | [rss.conf](rss.conf "rss.conf") |
 
+###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

@@ -1,7 +1,3 @@
-Apache Streams (incubating)
-Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
---------------------------------------------------------------------------------
-
 org.apache.streams:google-gmail
 ===============================
 
@@ -19,3 +15,5 @@ google-gplus contains providers, conversions, and utility classes for activity e
 |-------|---------------|
 | GPlusUserDataProvider | [GPlusUserDataProvider.html](apidocs/com/google/gplus/provider/GPlusUserDataProvider.html "GPlusUserDataProvider.html") |
 | GPlusUserActivityProvider | [GPlusUserActivityProvider.html](apidocs/com/google/gplus/provider/GPlusUserActivityProvider.html "GPlusUserActivityProvider.html") |
+
+###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

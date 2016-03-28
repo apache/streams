@@ -1,7 +1,3 @@
-Apache Streams (incubating)
-Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
---------------------------------------------------------------------------------
-
 streams-provider-sysomos
 ==============
 
@@ -26,4 +22,5 @@ streams-provider-sysomos contains schema definitions, providers, conversions, an
 |-------|---------------|--------------------------|
 | SysomosProvider [SysomosProvider.html](apidocs/org/apache/streams/sysomos/SysomosProvider.html "javadoc") | [SysomosConfiguration.json](com/sysomos/SysomosConfiguration.json "SysomosConfiguration.json") [SysomosConfiguration.html](apidocs/com/sysomos/SysomosConfiguration.html "javadoc") | [sysomos.conf](sysomos.conf "sysomos.conf") |
 
+###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 

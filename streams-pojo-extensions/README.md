@@ -1,4 +1,5 @@
-streams-pojo-extensions
-==============
+org.apache.streams:streams-pojo-extensions
+===========================================
 
-Support for adding and modifying extension properties.
+[README.md](src/site/markdown/index.md "README")
+

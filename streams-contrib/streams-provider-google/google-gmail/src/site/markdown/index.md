@@ -1,7 +1,3 @@
-Apache Streams (incubating)
-Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
---------------------------------------------------------------------------------
-
 org.apache.streams:google-gmail
 ===============================
 
@@ -18,3 +14,5 @@ google-gmail contains providers, conversions, and utility classes for activity e
 | Class | Class JavaDoc | 
 |-------|---------------|
 | GMailProvider | [GMailProvider.html](apidocs/com/google/gmail/provider/GMailProvider.html "GMailProvider.html") | [TwitterUserInformationConfiguration.json](com/twitter/TwitterUserInformationConfiguration.json "TwitterUserInformationConfiguration.json") |
+
+###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
