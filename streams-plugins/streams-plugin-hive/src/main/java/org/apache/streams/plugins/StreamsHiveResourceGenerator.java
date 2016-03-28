@@ -27,15 +27,14 @@ public class StreamsHiveResourceGenerator implements Runnable {
 
     private final static String LS = System.getProperty("line.separator");
 
-    private StreamsPojoHiveMojo mojo;
+    private StreamsHiveResourceGeneratorMojo mojo;
 
     String inDir = "./target/test-classes/activities";
     String outDir = "./target/generated-sources/hive";
-    String packages[] = {"org.apache.streams.pojo.json"};
 
     public void main(String[] args) {
         StreamsHiveResourceGenerator streamsHiveResourceGenerator = new StreamsHiveResourceGenerator();
-        Thread thread = new Thread(streamsPojoScala);
+        Thread thread = new Thread(streamsHiveResourceGenerator);
         thread.start();
         try {
             thread.join();
@@ -47,7 +46,7 @@ public class StreamsHiveResourceGenerator implements Runnable {
         return;
     }
 
-    public StreamsHiveResourceGenerator(StreamsPojoHiveMojo mojo) {
+    public StreamsHiveResourceGenerator(StreamsHiveResourceGeneratorMojo mojo) {
         this.mojo = mojo;
         if (    mojo != null &&
                 mojo.getTarget() != null &&
@@ -66,6 +65,9 @@ public class StreamsHiveResourceGenerator implements Runnable {
     }
 
     public void run() {
+
+        List<File> schemaFiles;
+
 
         List<Class<?>> serializableClasses = detectSerializableClasses();
 
