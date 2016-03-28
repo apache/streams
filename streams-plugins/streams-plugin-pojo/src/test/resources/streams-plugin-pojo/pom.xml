@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.streams.plugins</groupId>
-    <artifactId>streams-plugin-hive-test</artifactId>
+    <artifactId>streams-plugin-pojo-test</artifactId>
     <version>0.3-incubating-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Test StreamsPojoHiveMojo</name>
+    <name>Test StreamsPojoMojo</name>
 
     <dependencies>
         <dependency>
@@ -21,18 +21,18 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.streams.plugins</groupId>
-                <artifactId>streams-plugin-hive</artifactId>
+                <artifactId>streams-plugin-pojo</artifactId>
                 <version>0.3-incubating-SNAPSHOT</version>
                 <configuration>
                     <packages>
                         <package>org.apache.streams.pojo.json</package>
                     </packages>
-                    <target>target/test-classes/streams-hive-plugin/</target>
+                    <target>target/test-classes/streams-pojo-plugin/</target>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>hive</goal>
+                            <goal>pojo</goal>
                         </goals>
                     </execution>
                 </executions>
