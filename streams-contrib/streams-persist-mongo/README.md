@@ -1,15 +1,8 @@
-streams-persist-mongo
-=====================
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-Read and write to MongoDB
+org.apache.streams:streams-persist-mongo
+===========================================
 
-Example configuration:
-
-    "mongo": {
-        "host": "localhost",
-        "port": 27017,
-        "db": "local",
-        "collection": "startup_log"
-    }
-    
-
+[README.md](src/site/markdown/index.md "README")

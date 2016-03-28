@@ -1,20 +1,8 @@
-streams-persist-hbase
-=====================
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-Read and write to HBase
+org.apache.streams:streams-persist-hbase
+===========================================
 
-Example reader or writer configuration:
-
-    hbase {
-        rootdir = "hdfs://cloudera-vm-local:8020/hbase"
-        zookeeper {
-            quorum = "cloudera-vm-local"
-            property {
-                clientPort = 2181
-            }
-        }
-        table = "test_table"
-        family = "test_family"
-        qualifier = "test_column"
-    }
-
+[README.md](src/site/markdown/index.md "README")

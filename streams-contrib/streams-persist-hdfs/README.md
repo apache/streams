@@ -1,29 +1,8 @@
-streams-persist-hdfs
-=====================
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-Read and write to HDFS
+org.apache.streams:streams-persist-hdfs
+===========================================
 
-Example reader configuration:
-
-    hdfs {
-        host = "localhost"
-        port = "50070"
-        path = "/user/cloudera"
-        user = "cloudera"
-        password = "cloudera"
-    }
-    
-Example writer configuration:
-
-    hdfs {
-        host = "localhost"
-        port = "50070"
-        path = "/user/cloudera"
-        user = "cloudera"
-        password = "cloudera"
-        writerPath = "/history/twitter/example"
-        writerFilePrefix = "streams-"
-    }
-    
-        
-
+[README.md](src/site/markdown/index.md "README")

@@ -1,12 +1,8 @@
-streams-persist-file
-=====================
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-Read to / write from File-backed Queue
+org.apache.streams:streams-persist-filebuffer
+===========================================
 
-Example reader/writer configuration:
-
-    file {
-        path = "/tmp/file-queue.txt"
-    }
-    
-Reader will consume lines from Writer
+[README.md](src/site/markdown/index.md "README")

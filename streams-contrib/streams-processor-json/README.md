@@ -1,5 +1,8 @@
-streams-processor-json
-=====================
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-JsonPath Utility Processors
+org.apache.streams:streams-processor-json
+===========================================
 
+[README.md](src/site/markdown/index.md "README")

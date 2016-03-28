@@ -1,5 +1,8 @@
-streams-processor-urls
-=====================
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-URL Utility Processors
+org.apache.streams:streams-processor-urls
+===========================================
 
+[README.md](src/site/markdown/index.md "README")

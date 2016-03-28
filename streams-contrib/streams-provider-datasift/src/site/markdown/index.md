@@ -7,16 +7,19 @@ streams-provider-datasift
 
 streams-provider-datasift contains schema definitions, providers, conversions, and utility classes.
 
-##Schemas
+## Data Types
 
-[Datasift.json](org/apache/streams/datasift/Datasift.json "Datasift.json")
+| Schema |
+|--------|
+| [Datasift.json](org/apache/streams/datasift/Datasift.json "Datasift.json")
+| [DatasiftInteraction.json](org/apache/streams/datasift/interaction/DatasiftInteraction.json "DatasiftInteraction.json")
+| [DatasiftFacebook.json](org/apache/streams/datasift/facebook/DatasiftFacebook.json "DatasiftFacebook.json")
+| [DatasiftInstagram.json](org/apache/streams/datasift/instagram/DatasiftInstagram.json "DatasiftInstagram.json")
+| [DatasiftWebhookData.json](org/apache/streams/datasift/DatasiftWebhookData.json "DatasiftWebhookData.json")
 
-[DatasiftInteraction.json](org/apache/streams/datasift/interaction/DatasiftInteraction.json "DatasiftInteraction.json")
+## Configuration
 
-[DatasiftFacebook.json](org/apache/streams/datasift/facebook/DatasiftFacebook.json "DatasiftFacebook.json")
-
-[DatasiftInstagram.json](org/apache/streams/datasift/instagram/DatasiftInstagram.json "DatasiftInstagram.json")
-
-[DatasiftWebhookData.json](org/apache/streams/datasift/DatasiftWebhookData.json "DatasiftWebhookData.json")
-
+| Schema |
+|--------|
+| [TwitterConfiguration.json](com/twitter/tweet.json "TwitterConfiguration.json") [TwitterConfiguration.html](apidocs/org/apache/streams/twitter/TwitterConfiguration.html "javadoc") |
 

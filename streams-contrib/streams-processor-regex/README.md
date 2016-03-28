@@ -1,5 +1,8 @@
-streams-processor-regex
-=====================
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-Regex Utility Processors
+org.apache.streams:streams-processor-regex
+===========================================
 
+[README.md](src/site/markdown/index.md "README")

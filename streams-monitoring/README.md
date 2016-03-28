@@ -1,4 +1,8 @@
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
+
 streams-monitoring
 ==============
 
-streams-monitoring contains classes and interfaces for monitoring executing streams.
+[README.md](src/site/markdown/index.md "README")

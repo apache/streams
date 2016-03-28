@@ -1,4 +1,8 @@
-streams-pojo
-==============
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-streams-pojo contains ActivityStream json schema definitions and utility classes.
+org.apache.streams:streams-pojo
+===========================================
+
+[README.md](src/site/markdown/index.md "README")

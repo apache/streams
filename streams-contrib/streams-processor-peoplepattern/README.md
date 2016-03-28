@@ -1,13 +1,8 @@
-streams-processor-peoplepattern
-=====================
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-PeoplePattern API Processors
+org.apache.streams:streams-processor-peoplepattern
+===========================================
 
-Example configuration:
-
-    "peoplepattern": {
-        "username": "",
-        "password": ""
-    }
-    
-
+[README.md](src/site/markdown/index.md "README")

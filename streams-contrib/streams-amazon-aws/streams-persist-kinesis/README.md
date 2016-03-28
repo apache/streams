@@ -1,18 +1,8 @@
-streams-persist-kinesis
-==============
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-Read/Write documents to/from Kinesis.
+org.apache.streams:streams-persist-kinesis
+===========================================
 
-Example writer configuration:
-
-    "kinesis": {
-        "key": "",
-        "secretKey": "",
-        "protocol": "HTTPS",
-        "region": "us-east-1",
-        "streams: [
-            "topic1",
-            "topic2"
-        ]
-    }
-
+[README.md](src/site/markdown/index.md "README")

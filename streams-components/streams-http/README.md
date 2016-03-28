@@ -1,23 +1,8 @@
-streams-processor-http
-=====================
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-Hit an http endpoint and place the result in extensions
+org.apache.streams:streams-http
+===========================================
 
-Example SimpleHTTPGetProcessor configuration:
-
-    "http": {
-        "protocol": "http",
-        "hostname": "urls.api.twitter.com",
-        "port": 9300,
-        "resourceUri": "1/urls/count.json"
-    }
-
-Example SimpleHTTPPostPersistWriter configuration:
-
-    "http": {
-        "protocol": "http",
-        "hostname": "localhost",
-        "port": 7474,
-        "resourceUri": "db/data/cypher"
-    }
-
+[README.md](src/site/markdown/index.md "README")
