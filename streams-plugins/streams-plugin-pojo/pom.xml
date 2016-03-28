@@ -20,7 +20,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.streams.plugins</groupId>
-    <artifactId>streams-plugin-hive</artifactId>
+    <artifactId>streams-plugin-pojo</artifactId>
     <version>0.3-incubating-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
@@ -30,10 +30,6 @@
         <version>0.3-incubating-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-
-    <properties>
-        <hive.version>1.14</hive.version>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -49,6 +45,16 @@
         <dependency>
             <groupId>org.jsonschema2pojo</groupId>
             <artifactId>jsonschema2pojo-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jsonschema2pojo</groupId>
+            <artifactId>jsonschema2pojo-maven-plugin</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
