@@ -291,11 +291,12 @@
                 <version>${jsonschema2pojo.version}</version>
                 <type>jar</type>
                 <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jsonschema2pojo</groupId>
-                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-                <version>${jsonschema2pojo.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.typesafe</groupId>

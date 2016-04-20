@@ -22,6 +22,8 @@ streams-provider-twitter contains schema definitions, providers, conversions, an
 
 ## Components
 
+![components](components.dot.svg "Components")
+
 | Class | Configuration | Example Configuration(s) |
 |-------|---------------|--------------------------|
 | TwitterUserInformationProvider [TwitterUserInformationProvider.html](apidocs/org/apache/streams/twitter/TwitterUserInformationConfiguration.html "javadoc") | [TwitterUserInformationConfiguration.json](com/twitter/TwitterUserInformationConfiguration.json "TwitterUserInformationConfiguration.json") [TwitterUserInformationConfiguration.html](apidocs/org/apache/streams/twitter/pojo/TwitterUserInformationConfiguration.html "javadoc") | [userinfo.conf](userinfo.conf "userinfo.conf") |

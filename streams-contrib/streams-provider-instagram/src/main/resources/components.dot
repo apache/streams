@@ -1,0 +1,38 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  subgraph cluster_generators {
+    label="generators";
+    style="dotted";
+    generators_instagram [label="https://api.instagram.com"]
+  }
+
+  subgraph cluster_providers {
+    label="providers";
+    providers_instagram_userinfo [label="InstagramUserInfoCollector"]
+    providers_instagram_media [label="InstagramRecentMediaCollector"]
+  }
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_instagram_activity [label="InstagramTypeConverter"]
+    processors_instagram_activityobject [label="InstagramTypeConverter"]
+  }
+
+  persisters [label="persisters", shape="cylinder"];
+
+  generators_instagram -> providers_instagram_userinfo
+  generators_instagram -> providers_instagram_media
+  providers_instagram_userinfo -> processors_instagram_activityobject [label="o.a.s.i.UserInfoData"]
+  providers_instagram_media -> processors_instagram_activity [label="o.a.s.i.MediaFeedData"]
+
+  processors_instagram_activityobject -> persisters [label="o.a.s.p.j.Page"]
+  processors_instagram_activity -> persisters [label="o.a.s.p.j.Photo\no.a.s.p.j.Video\no.a.s.p.j.Comment"]
+
+}

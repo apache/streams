@@ -1,0 +1,38 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  subgraph cluster_generators {
+    label="generators";
+    style="dotted";
+    generators_youtube [label="https://api.youtube.com"]
+  }
+
+  subgraph cluster_providers {
+    label="providers";
+    providers_youtube_channel [label="YoutubeChannelProvider"]
+    providers_youtube_video [label="YoutubeUserActivityProvider"]
+  }
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_youtube_activity [label="YoutubeTypeConverter"]
+    processors_youtube_activityobject [label="YoutubeTypeConverter"]
+  }
+
+  persisters [label="persisters", shape="cylinder"];
+
+  generators_youtube -> providers_youtube_channel
+  generators_youtube -> providers_youtube_video
+  providers_youtube_channel -> processors_youtube_activityobject [label="o.a.s.y.Channel"]
+  providers_youtube_video -> processors_youtube_activity [label="o.a.s.y.Video"]
+
+  processors_youtube_activityobject -> persisters [label="o.a.s.p.j.Page"]
+  processors_youtube_activity -> persisters [label="o.a.s.p.j.Video\no.a.s.p.j.Comment"]
+
+}

@@ -15,5 +15,8 @@ streams-provider-facebook contains schema definitions, providers, conversions, a
 |--------|
 | [FacebookConfiguration.json](org/apache/streams/facebook/FacebookConfiguration.json "FacebookConfiguration.json") [FacebookConfiguration.html](apidocs/org/apache/streams/facebook/FacebookConfiguration.html "javadoc") |
 
+## Example
+
+![components](components.dot.svg "Components")
 
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

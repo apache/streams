@@ -11,6 +11,8 @@ streams-provider-youtube contains providers, conversions, and utility classes.
 
 ## Components
 
+![components](components.dot.svg "Components")
+
 | Class | Configuration |
 |-------|---------------|
 | YoutubeChannelProvider [YoutubeChannelProvider.html](apidocs/com/youtube/provider/YoutubeChannelProvider.html "javadoc") | [YoutubeConfiguration.json](com/youtube/YoutubeConfiguration.json "YoutubeConfiguration.json") [YoutubeConfiguration.html](apidocs/com/youtube/YoutubeConfiguration.html "javadoc")

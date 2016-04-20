@@ -1,0 +1,36 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  subgraph cluster_generators {
+    label="generators";
+    style="dotted";
+    generators_gplus [label="https://www.googleapis.com/gmail/v1"]
+  }
+
+  subgraph cluster_providers {
+    label="providers";
+    providers_gplus_GPlusUserActivityProvider [label="GPlusUserActivityProvider"]
+    providers_gplus_GPlusUserDataProvider [label="providers_gplus_GPlusUserDataProvider"]
+  }
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_gplus_activity [label="GooglePlusTypeConverter"]
+  }
+
+  persisters [label="persisters", shape="cylinder"];
+
+  generators_gplus -> providers_gplus_GPlusUserActivityProvider
+  generators_gplus -> providers_gplus_GPlusUserDataProvider
+
+  providers_gplus_GPlusUserActivityProvider -> processors_gplus_activity [label="c.g.a.s.p.m.Activity"]
+  providers_gplus_GPlusUserDataProvider -> processors_gplus_activity [label="c.g.a.s.p.m.Person"]
+
+  processors_gplus_activity -> persisters [label="o.a.s.p.j.Activity"]
+}

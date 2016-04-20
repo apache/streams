@@ -1,0 +1,33 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  subgraph cluster_generators {
+    label="generators";
+    style="dotted";
+    generators_rss [label="RSS Feeds"]
+  }
+
+  subgraph cluster_providers {
+    label="providers";
+    providers_rss_streamprovider [label="RssStreamProvider"]
+  }
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_rss_activity [label="RssTypeConverter"]
+  }
+
+  persisters [label="persisters", shape="cylinder"];
+
+  generators_rss -> providers_rss_streamprovider
+  providers_rss_streamprovider -> processors_rss_activity [label="c.s.s.f.s.SyndEntry"]
+
+  processors_rss_activity -> persisters [label="o.a.s.p.j.Activity"]
+
+}

@@ -11,9 +11,12 @@ google-gplus contains providers, conversions, and utility classes for activity e
 
 ## Components
 
+![components](components.dot.svg "Components")
+
 | Class | Class JavaDoc | 
 |-------|---------------|
 | GPlusUserDataProvider | [GPlusUserDataProvider.html](apidocs/com/google/gplus/provider/GPlusUserDataProvider.html "GPlusUserDataProvider.html") |
 | GPlusUserActivityProvider | [GPlusUserActivityProvider.html](apidocs/com/google/gplus/provider/GPlusUserActivityProvider.html "GPlusUserActivityProvider.html") |
+| GooglePlusTypeConverter | [GooglePlusTypeConverter.html](apidocs/com/google/gplus/processor/GooglePlusTypeConverter.html "GooglePlusTypeConverter.html") |
 
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

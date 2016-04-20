@@ -1,0 +1,26 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  subgraph cluster_generators {
+    label="generators";
+    style="dotted";
+    generators_gmail [label="https://www.googleapis.com/gmail/v1"]
+  }
+
+  subgraph cluster_providers {
+    label="providers";
+    providers_gmail [label="GmailProvider"]
+  }
+
+  persisters [label="persisters", shape="cylinder"];
+
+  generators_gmail -> providers_gmail
+
+  providers_gmail -> persisters
+}

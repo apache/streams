@@ -1,0 +1,38 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  subgraph cluster_generators {
+    label="generators";
+    style="dotted";
+    generators_facebook [label="https://api.facebook.com"]
+  }
+
+  subgraph cluster_providers {
+    label="providers";
+      providers_facebook_page [label="FacebookPageProvider"]
+      providers_facebook_pagefeed [label="FacebookPageFeedDataCollector"]
+  }
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_facebook_activity [label="FacebookPageActivitySerializer"]
+    processors_facebook_activityobject [label="FacebookPostActivitySerializer"]
+  }
+
+  persisters [label="persisters", shape="cylinder"];
+
+  generators_facebook -> providers_facebook_page
+  generators_facebook -> providers_facebook_pagefeed
+  providers_facebook_page -> processors_facebook_activityobject [label="o.a.s.f.Page"]
+  providers_facebook_pagefeed -> processors_facebook_activity [label="o.a.s.f.Post\no.a.s.f.Comment"]
+
+  processors_facebook_activityobject -> persisters [label="o.a.s.p.j.Page"]
+  processors_facebook_activity -> persisters [label="o.a.s.p.j.Post\no.a.s.p.j.Comment"]
+
+}

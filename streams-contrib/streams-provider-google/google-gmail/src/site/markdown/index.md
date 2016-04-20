@@ -11,6 +11,8 @@ google-gmail contains providers, conversions, and utility classes for activity e
 
 ## Components
 
+![components](components.dot.svg "Components")
+
 | Class | Class JavaDoc | 
 |-------|---------------|
 | GMailProvider | [GMailProvider.html](apidocs/com/google/gmail/provider/GMailProvider.html "GMailProvider.html") | [TwitterUserInformationConfiguration.json](com/twitter/TwitterUserInformationConfiguration.json "TwitterUserInformationConfiguration.json") |
