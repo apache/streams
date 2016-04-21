@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "title": "Host",
+    "description": "Indicates that the actor is hosting the object. As in hosting an event, or hosting a service.",
+    "extends": {
+        "$ref": "../activity.json"
+    },
+    "properties": {
+        "verb": {
+            "type": "string",
+            "default": "host"
+        },
+        "title": {
+            "type": "string",
+            "default": "{actor.displayName} is hosting {object.displayName}"
+        }
+    }
+}

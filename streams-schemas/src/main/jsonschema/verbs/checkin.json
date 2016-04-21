@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "title": "checkin",
+    "description": "Indicates that the actor has checked-in to the object. For instance, a person checking-in to a Place.",
+    "extends": {
+        "$ref": "../activity.json"
+    },
+    "properties": {
+        "verb": {
+            "type": "string",
+            "default": "checkin"
+        },
+        "title": {
+            "type": "string",
+            "default": "{actor.displayName} checked in at {object.displayName}"
+        }
+    }
+}
