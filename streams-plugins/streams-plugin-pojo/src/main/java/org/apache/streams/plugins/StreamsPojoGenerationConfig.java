@@ -2,197 +2,67 @@ package org.apache.streams.plugins;
 
 import org.jsonschema2pojo.AnnotationStyle;
 import org.jsonschema2pojo.Annotator;
+import org.jsonschema2pojo.DefaultGenerationConfig;
 import org.jsonschema2pojo.GenerationConfig;
 import org.jsonschema2pojo.SourceType;
 import org.jsonschema2pojo.rules.RuleFactory;
+import org.jsonschema2pojo.util.URLUtil;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by sblackmon on 3/27/16.
  */
-public class StreamsPojoGenerationConfig implements GenerationConfig {
+public class StreamsPojoGenerationConfig extends DefaultGenerationConfig {
 
-        @Override
-        public boolean isGenerateBuilders() {
-            return false;
-        }
+    private String sourceDirectory;
+    private List<String> sourcePaths;
+    private String targetPackage;
+    private String targetDirectory;
 
-        @Override
-        public boolean isUsePrimitives() {
-            return false;
-        }
+    public void setSourceDirectory(String sourceDirectory) {
+        this.sourceDirectory = sourceDirectory;
+    }
 
-        @Override
-        public Iterator<URL> getSource() {
-            return null;
-        }
+    public void setSourcePaths(List<String> sourcePaths) {
+        this.sourcePaths = sourcePaths;
+    }
 
-        @Override
-        public File getTargetDirectory() {
-            return null;
-        }
+    public void setTargetPackage(String targetPackage) {
+        this.targetPackage = targetPackage;
+    }
 
-        @Override
-        public String getTargetPackage() {
-            return null;
-        }
+    public void setTargetDirectory(String targetDirectory) {
+        this.targetDirectory = targetDirectory;
+    }
 
-        @Override
-        public char[] getPropertyWordDelimiters() {
-            return new char[0];
-        }
+    @Override
+    public String getTargetPackage() {
+        return targetPackage;
+    }
 
-        @Override
-        public boolean isUseLongIntegers() {
-            return false;
-        }
+    @Override
+    public File getTargetDirectory() {
+        return new File(targetDirectory);
+    }
 
-        @Override
-        public boolean isUseDoubleNumbers() {
-            return false;
+    @Override
+    public Iterator<URL> getSource() {
+        if (null != sourceDirectory) {
+            return Collections.singleton(URLUtil.parseURL(sourceDirectory)).iterator();
         }
+        List<URL> sourceURLs = new ArrayList<URL>();
+        if( sourcePaths != null && sourcePaths.size() > 0)
+            for (String source : sourcePaths) {
+                sourceURLs.add(URLUtil.parseURL(source));
+            }
+        return sourceURLs.iterator();
+    }
 
-        @Override
-        public boolean isUseBigDecimals() {
-            return false;
-        }
-
-        @Override
-        public boolean isIncludeHashcodeAndEquals() {
-            return false;
-        }
-
-        @Override
-        public boolean isIncludeToString() {
-            return false;
-        }
-
-        @Override
-        public AnnotationStyle getAnnotationStyle() {
-            return null;
-        }
-
-        @Override
-        public Class<? extends Annotator> getCustomAnnotator() {
-            return null;
-        }
-
-        @Override
-        public Class<? extends RuleFactory> getCustomRuleFactory() {
-            return null;
-        }
-
-        @Override
-        public boolean isIncludeJsr303Annotations() {
-            return false;
-        }
-
-        @Override
-        public SourceType getSourceType() {
-            return null;
-        }
-
-        @Override
-        public boolean isRemoveOldOutput() {
-            return false;
-        }
-
-        @Override
-        public String getOutputEncoding() {
-            return null;
-        }
-
-        @Override
-        public boolean isUseJodaDates() {
-            return false;
-        }
-
-        @Override
-        public boolean isUseJodaLocalDates() {
-            return false;
-        }
-
-        @Override
-        public boolean isUseJodaLocalTimes() {
-            return false;
-        }
-
-        @Override
-        public boolean isUseCommonsLang3() {
-            return false;
-        }
-
-        @Override
-        public boolean isParcelable() {
-            return false;
-        }
-
-        @Override
-        public FileFilter getFileFilter() {
-            return null;
-        }
-
-        @Override
-        public boolean isInitializeCollections() {
-            return false;
-        }
-
-        @Override
-        public String getClassNamePrefix() {
-            return null;
-        }
-
-        @Override
-        public String getClassNameSuffix() {
-            return null;
-        }
-
-        @Override
-        public boolean isIncludeConstructors() {
-            return false;
-        }
-
-        @Override
-        public boolean isConstructorsRequiredPropertiesOnly() {
-            return false;
-        }
-
-        @Override
-        public boolean isIncludeAdditionalProperties() {
-            return false;
-        }
-
-        @Override
-        public boolean isIncludeAccessors() {
-            return false;
-        }
-
-        @Override
-        public String getTargetVersion() {
-            return null;
-        }
-
-        @Override
-        public boolean isIncludeDynamicAccessors() {
-            return false;
-        }
-
-        @Override
-        public String getDateTimeType() {
-            return null;
-        }
-
-        @Override
-        public String getDateType() {
-            return null;
-        }
-
-        @Override
-        public String getTimeType() {
-            return null;
-        }
 }

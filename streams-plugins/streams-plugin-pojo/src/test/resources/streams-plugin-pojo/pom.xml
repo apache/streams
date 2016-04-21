@@ -9,11 +9,48 @@
     <packaging>jar</packaging>
     <name>Test StreamsPojoMojo</name>
 
+    <properties>
+        <jackson.version>2.6.1</jackson.version>
+        <commons-lang.version>2.6</commons-lang.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>4.11</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schemas</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-joda</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons-lang.version}</version>
         </dependency>
     </dependencies>
 
@@ -24,16 +61,61 @@
                 <artifactId>streams-plugin-pojo</artifactId>
                 <version>0.3-incubating-SNAPSHOT</version>
                 <configuration>
-                    <packages>
-                        <package>org.apache.streams.pojo.json</package>
-                    </packages>
-                    <target>target/test-classes/streams-pojo-plugin/</target>
+                    <sourcePaths>
+                        <sourcePath>target/test-classes/streams-schemas/activity.json</sourcePath>
+                        <sourcePath>target/test-classes/streams-schemas/collection.json</sourcePath>
+                        <sourcePath>target/test-classes/streams-schemas/media_link.json</sourcePath>
+                        <sourcePath>target/test-classes/streams-schemas/object.json</sourcePath>
+                        <sourcePath>target/test-classes/streams-schemas/objectTypes</sourcePath>
+                        <sourcePath>target/test-classes/streams-schemas/verbs</sourcePath>
+                    </sourcePaths>
+                    <targetPackage>org.apache.streams.pojo.testmojo</targetPackage>
+                    <targetDirectory>target/generated-sources/test-mojo</targetDirectory>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
                             <goal>pojo</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <configuration>
+                    <includes>**/*.json</includes>
+                    <outputDirectory>${project.build.directory}/test-classes/streams-schemas</outputDirectory>
+                    <includeGroupIds>org.apache.streams</includeGroupIds>
+                    <includeArtifactIds>streams-schemas</includeArtifactIds>
+                    <includeTypes>jar,test-jar</includeTypes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>unpack-schemas</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/generated-sources/test-mojo</source>
+                            </sources>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
