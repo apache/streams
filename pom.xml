@@ -177,6 +177,7 @@
         <module>streams-pojo-extensions</module>
         <module>streams-plugins</module>
         <module>streams-runtimes</module>
+        <module>streams-schemas</module>
         <module>streams-testing</module>
         <module>streams-util</module>
         <module>streams-verbs</module>

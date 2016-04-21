@@ -29,10 +29,10 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
-@Mojo(  name = "hive",
+@Mojo(  name = "pojo",
         defaultPhase = LifecyclePhase.GENERATE_SOURCES
 )
-@Execute(   goal = "hive",
+@Execute(   goal = "pojo",
             phase = LifecyclePhase.GENERATE_SOURCES
 )
 public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
@@ -55,45 +55,42 @@ public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
     @Parameter( defaultValue = "${project.basedir}", readonly = true )
     public File basedir;
 
-    @Parameter( defaultValue = "${jsonschema2pojo.sourceDirectory}", readonly = true ) // Maven 3 only
+    @Parameter( defaultValue = "./src/main/jsonschema", readonly = true ) // Maven 3 only
     public String sourceDirectory;
 
-    @Parameter( defaultValue = "${jsonschema2pojo.sourcePaths}", readonly = true ) // Maven 3 only
-    public String[] sourcePaths;
+    @Parameter( readonly = true ) // Maven 3 only
+    public List<String> sourcePaths;
 
-    @Parameter(defaultValue = "${project.build.directory}", readonly = true)
-    public File target;
+    @Parameter(defaultValue = "./target/generated-sources/streams-plugin-pojo", readonly = true)
+    public String targetDirectory;
+
+    @Parameter(readonly = true)
+    public String targetPackage;
 
     public void execute() throws MojoExecutionException {
 
         addProjectDependenciesToClasspath();
 
-        // verify source directories
-        if (isNotBlank(sourceDirectory)) {
-            // verify sourceDirectory
-            try {
-                URLUtil.parseURL(sourceDirectory);
-            } catch (IllegalArgumentException e) {
-                throw new MojoExecutionException(e.getMessage(), e);
-            }
-        } else if (sourcePaths != null) {
-            // verify individual source paths
-            for (String source : sourcePaths) {
-                try {
-                    URLUtil.parseURL(source);
-                } catch (IllegalArgumentException e) {
-                    throw new MojoExecutionException(e.getMessage(), e);
-                }
-            }
-        } else {
-            throw new MojoExecutionException("One of sourceDirectory or sourcePaths must be provided");
-        }
+        StreamsPojoGenerationConfig config = new StreamsPojoGenerationConfig();
 
+        if( sourcePaths != null && sourcePaths.size() > 0)
+            config.setSourcePaths(sourcePaths);
+        else
+            config.setSourceDirectory(sourceDirectory);
+        config.setTargetPackage(targetPackage);
+        config.setTargetDirectory(targetDirectory);
+
+        StreamsPojoSourceGenerator streamsPojoSourceGenerator = new StreamsPojoSourceGenerator(config);
+        Thread thread = new Thread(streamsPojoSourceGenerator);
+        thread.start();
         try {
-            Jsonschema2Pojo.generate(new StreamsPojoGenerationConfig());
-        } catch (IOException e) {
-            throw new MojoExecutionException("Error generating classes from JSON Schema file(s) " + sourceDirectory, e);
+            thread.join();
+        } catch (InterruptedException e) {
+            LOGGER.error("InterruptedException", e);
+        } catch (Exception e) {
+            LOGGER.error("Exception", e);
         }
+        return;
 
 //        List<Class<?>> serializableClasses = detectSerializableClasses();
 //
@@ -131,29 +128,6 @@ public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
             LOGGER.info("Skipping addition of project artifacts, there appears to be a dependecy resolution problem", e);
         }
 
-    }
-
-    private void writeFile(String pojoFile, String pojoHive) {
-        try {
-            File path = new File(pojoFile);
-            File dir = path.getParentFile();
-            if( !dir.exists() )
-                dir.mkdirs();
-            Files.write(Paths.get(pojoFile), pojoHive.getBytes(), StandardOpenOption.CREATE_NEW);
-        } catch (Exception e) {
-            LOGGER.error("Write Exception: {}", e);
-        }
-    }
-
-    public Iterator<URL> getSource() {
-        if (null != sourceDirectory) {
-            return Collections.singleton(URLUtil.parseURL(sourceDirectory)).iterator();
-        }
-        List<URL> sourceURLs = new ArrayList<URL>();
-        for (String source : sourcePaths) {
-            sourceURLs.add(URLUtil.parseURL(source));
-        }
-        return sourceURLs.iterator();
     }
 
 //    public List<Class<?>> detectSerializableClasses() {
