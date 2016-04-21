@@ -24,8 +24,8 @@ digraph g {
 
   generators -> providers
   providers -> processors
-  processors -> persisters_mongo_writer [label="o.a.s.p.StreamsDatum"]
-  persisters_mongo_reader -> processors [label="o.a.s.p.StreamsDatum[String]"]
+  processors -> persisters_mongo_writer [label="StreamsDatum"]
+  persisters_mongo_reader -> processors [label="StreamsDatum[String]"]
   persisters_mongo_reader <- mongo
   persisters_mongo_writer -> mongo
 

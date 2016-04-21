@@ -1,0 +1,36 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  generators [label="generators", shape="circle"];
+  providers [label="providers", shape="circle"];
+  persisters [label="persisters", shape="circle"];
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_regex_AbstractRegexExtensionExtractor [label="AbstractRegexExtensionExtractor"]
+    processors_regex_RegexHashtagExtractor [label="RegexHashtagExtractor"]
+    processors_regex_RegexMentionsExtractor [label="RegexMentionsExtractor"]
+    processors_regex_RegexUrlExtractor [label="RegexUrlExtractor"]
+  }
+
+  generators -> providers
+
+  providers -> processors_regex_AbstractRegexExtensionExtractor [label="StreamsDatum[Activity]\nStreamsDatum[ObjectNode]"]
+  processors_regex_AbstractRegexExtensionExtractor -> persisters [label="StreamsDatum[Activity]"]
+
+  providers -> processors_regex_RegexHashtagExtractor [label="StreamsDatum[Activity]\nStreamsDatum[ObjectNode]"]
+  processors_regex_RegexHashtagExtractor -> persisters [label="StreamsDatum[Activity]"]
+
+  providers -> processors_regex_RegexMentionsExtractor [label="StreamsDatum[Activity]\nStreamsDatum[ObjectNode]"]
+  processors_regex_RegexMentionsExtractor -> persisters [label="StreamsDatum[Activity]"]
+
+  providers -> processors_regex_RegexUrlExtractor [label="StreamsDatum[Activity]\nStreamsDatum[ObjectNode]"]
+  processors_regex_RegexUrlExtractor -> persisters [label="StreamsDatum[Activity]"]
+
+}

@@ -23,7 +23,7 @@ digraph g {
 
   generators -> providers
   providers -> processors
-  processors -> persisters_hbase_writer [label="o.a.s.p.StreamsDatum[String]\no.a.s.p.StreamsDatum[ObjectNode]"]
+  processors -> persisters_hbase_writer [label="StreamsDatum[String]\nStreamsDatum[ObjectNode]"]
   persisters_hbase_writer -> hbase
 
 }

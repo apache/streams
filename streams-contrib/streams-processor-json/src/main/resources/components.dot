@@ -1,0 +1,28 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  generators [label="generators", shape="circle"];
+  providers [label="providers", shape="circle"];
+  persisters [label="persisters", shape="circle"];
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_json_JsonPathExtractor [label="JsonPathExtractor"]
+    processors_json_JsonPathFilter [label="JsonPathFilter"]
+  }
+
+  generators -> providers
+
+  providers -> processors_json_JsonPathExtractor [label="StreamsDatum[String]\nStreamsDatum[ObjectNode]"]
+  processors_json_JsonPathExtractor -> persisters [label="StreamsDatum[String]\nStreamsDatum[ObjectNode]"]
+
+  providers -> processors_json_JsonPathFilter [label="StreamsDatum[ObjectNode]"]
+  processors_json_JsonPathFilter -> persisters [label="StreamsDatum[ObjectNode]"]
+
+}

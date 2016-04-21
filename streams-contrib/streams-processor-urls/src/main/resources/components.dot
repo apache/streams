@@ -1,0 +1,24 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  generators [label="generators", shape="circle"];
+  providers [label="providers", shape="circle"];
+  persisters [label="persisters", shape="circle"];
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_urls_LinkResolverProcessor [label="LinkResolverProcessor"]
+  }
+
+  generators -> providers
+
+  providers -> processors_urls_LinkResolverProcessor [label="StreamsDatum[Activity]\nStreamsDatum[String]"]
+  processors_urls_LinkResolverProcessor -> persisters [label="StreamsDatum[Activity]\nStreamsDatum[ObjectNode]"]
+
+}

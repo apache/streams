@@ -33,9 +33,9 @@ digraph g {
 
   generators -> providers
   providers -> processors
-  processors -> persisters_elasticsearch_writer [label="o.a.s.p.StreamsDatum"]
-  processors -> persisters_elasticsearch_updater [label="o.a.s.p.StreamsDatum"]
-  persisters_elasticsearch_reader -> processors [label="o.a.s.p.StreamsDatum[String]"]
+  processors -> persisters_elasticsearch_writer [label="StreamsDatum"]
+  processors -> persisters_elasticsearch_updater [label="StreamsDatum"]
+  persisters_elasticsearch_reader -> processors [label="StreamsDatum[String]"]
   persisters_elasticsearch_reader <- elasticsearch
   persisters_elasticsearch_writer -> elasticsearch
   persisters_elasticsearch_updater -> elasticsearch

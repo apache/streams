@@ -24,8 +24,8 @@ digraph g {
 
   generators -> providers
   providers -> processors
-  processors -> persisters_hdfs_writer [label="o.a.s.p.StreamsDatum"]
-  persisters_hdfs_reader -> processors [label="o.a.s.p.StreamsDatum"]
+  processors -> persisters_hdfs_writer [label="StreamsDatum"]
+  persisters_hdfs_reader -> processors [label="StreamsDatum"]
   persisters_hdfs_reader <- hdfs
   persisters_hdfs_writer -> hdfs
 

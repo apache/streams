@@ -1,0 +1,28 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  generators [label="generators", shape="circle"];
+  providers [label="providers", shape="circle"];
+  persisters [label="persisters", shape="circle"];
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_jackson_CleanAdditionalPropertiesProcessor [label="CleanAdditionalPropertiesProcessor"]
+    processors_jackson_TypeConverterProcessor [label="TypeConverterProcessor"]
+  }
+
+  generators -> providers
+
+  providers -> processors_jackson_CleanAdditionalPropertiesProcessor [label="StreamsDatum"]
+  processors_jackson_CleanAdditionalPropertiesProcessor -> persisters [label="StreamsDatum"]
+
+  providers -> processors_jackson_TypeConverterProcessor [label="StreamsDatum"]
+  processors_jackson_TypeConverterProcessor -> persisters [label="StreamsDatum"]
+
+}

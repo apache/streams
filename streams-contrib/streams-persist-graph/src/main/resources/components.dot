@@ -24,8 +24,8 @@ digraph g {
 
   generators -> providers
   providers -> processors
-  processors -> persisters_graph_writer [label="o.a.s.p.StreamsDatum"]
-  persisters_graph_reader -> processors [label="o.a.s.p.StreamsDatum"]
+  processors -> persisters_graph_writer [label="StreamsDatum"]
+  persisters_graph_reader -> processors [label="StreamsDatum"]
   persisters_graph_reader <- neo4j
   persisters_graph_writer -> neo4j
 

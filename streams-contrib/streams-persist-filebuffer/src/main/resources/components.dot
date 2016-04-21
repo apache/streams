@@ -24,8 +24,8 @@ digraph g {
 
   generators -> providers
   providers -> processors
-  processors -> persisters_filebuffer_writer [label="o.a.s.p.StreamsDatum"]
-  persisters_filebuffer_reader -> processors [label="o.a.s.p.StreamsDatum[String]"]
+  processors -> persisters_filebuffer_writer [label="StreamsDatum"]
+  persisters_filebuffer_reader -> processors [label="StreamsDatum[String]"]
   persisters_filebuffer_writer -> filebuffer
   persisters_filebuffer_reader <- filebuffer
 }
