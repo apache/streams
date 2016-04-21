@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="id" type="xs:string"/>
+    <xs:element name="actor" type="objectType"/>
+    <xs:element name="verb" type="verbType"/>
+    <xs:element name="object" type="objectType"/>
+    <xs:element name="target" type="objectType"/>
+    <xs:element name="object-type" type="xs:string"/>
+    <xs:element name="published" type="xs:dateTime"/>
+    <xs:element name="updated" type="xs:dateTime"/>
+    <xs:element name="provider" type="objectType"/>
+    <xs:element name="title" type="xs:string"/>
+    <xs:element name="content" type="xs:string"/>
+    <xs:element name="url" type="xs:string"/>
+
+    <xs:simpleType name="verbType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="favorite"/>
+            <xs:enumeration value="follow"/>
+            <xs:enumeration value="join"/>
+            <xs:enumeration value="like"/>
+            <xs:enumeration value="make-friend"/>
+            <xs:enumeration value="play"/>
+            <xs:enumeration value="post"/>
+            <xs:enumeration value="rsvp-yes"/>
+            <xs:enumeration value="rsvp-no"/>
+            <xs:enumeration value="rsvp-maybe"/>
+            <xs:enumeration value="save"/>
+            <xs:enumeration value="share"/>
+            <xs:enumeration value="tag"/>
+            <xs:enumeration value="update"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="objectType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="image" type="mediaLink"/>
+            <xs:element name="displayName" type="xs:string"/>
+            <xs:element name="summary" type="xs:string"/>
+            <xs:element name="content" type="xs:string"/>
+            <xs:element name="url" type="xs:string"/>
+            <xs:element name="published" type="xs:string"/>
+            <xs:element name="updated" type="xs:string"/>
+            <xs:element name="object-type" >
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="article"/>
+                        <xs:enumeration value="audio"/>
+                        <xs:enumeration value="badge"/>
+                        <xs:enumeration value="collection"/>
+                        <xs:enumeration value="comment"/>
+                        <xs:enumeration value="course"/>
+                        <xs:enumeration value="file"/>
+                        <xs:enumeration value="image"/>
+                        <xs:enumeration value="person"/>
+                        <xs:enumeration value="review"/>
+                        <xs:enumeration value="service"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+
+    </xs:complexType>
+
+    <xs:complexType name="mediaLink">
+        <xs:sequence>
+            <xs:element name="duration" type="xs:positiveInteger"/>
+            <xs:element name="height" type="xs:positiveInteger"/>
+            <xs:element name="width" type="xs:positiveInteger"/>
+            <xs:element name="url" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
