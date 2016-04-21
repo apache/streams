@@ -1,0 +1,31 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  generators [label="generators", shape="circle"];
+  providers [label="providers", shape="circle"];
+  processors [label="processors", shape="circle"];
+
+  subgraph cluster_persisters {
+    label="persisters";
+    persisters_kinesis_reader [label="KinesisPersistReader"]
+    persisters_kinesis_writer [label="KinesisPersistWriter"]
+  }
+
+  subgraph cluster_queues {
+    label="queues";
+    kinesis [label="kinesis"]
+  }
+
+  generators -> providers
+  providers -> processors
+  processors -> persisters_kinesis_writer [label="o.a.s.p.StreamsDatum"]
+  persisters_kinesis_reader -> processors [label="o.a.s.p.StreamsDatum[String]"]
+  persisters_kinesis_writer -> kinesis
+  persisters_kinesis_reader <- kinesis
+}

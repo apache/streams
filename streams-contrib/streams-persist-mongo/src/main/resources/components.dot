@@ -1,0 +1,32 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  generators [label="generators", shape="circle"];
+  providers [label="providers", shape="circle"];
+  processors [label="processors", shape="circle"];
+
+  subgraph cluster_persisters {
+    label="persisters";
+    persisters_mongo_reader [label="MongoPersistReader"]
+    persisters_mongo_writer [label="MongoPersistWriter"]
+  }
+
+  subgraph cluster_dbs {
+    label="dbs";
+    mongo [label="mongo"]
+  }
+
+  generators -> providers
+  providers -> processors
+  processors -> persisters_mongo_writer [label="o.a.s.p.StreamsDatum"]
+  persisters_mongo_reader -> processors [label="o.a.s.p.StreamsDatum[String]"]
+  persisters_mongo_reader <- mongo
+  persisters_mongo_writer -> mongo
+
+}

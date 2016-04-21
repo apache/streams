@@ -3,19 +3,18 @@ streams-persist-hbase
 
 Read and write to HBase
 
-Example reader or writer configuration:
+## Configuration
 
-    hbase {
-        rootdir = "hdfs://cloudera-vm-local:8020/hbase"
-        zookeeper {
-            quorum = "cloudera-vm-local"
-            property {
-                clientPort = 2181
-            }
-        }
-        table = "test_table"
-        family = "test_family"
-        qualifier = "test_column"
-    }
+| Schema |
+|--------|
+| [HbaseConfiguration.json](org/apache/streams/hbase/HbaseConfiguration.json "HbaseConfiguration.json") [HbaseConfiguration.html](apidocs/org/apache/streams/hbase/HbaseConfiguration.html "javadoc") |
+
+## Components
+
+![components](components.dot.svg "Components")
+
+| Class | Configuration | Example Configuration(s) |
+|-------|---------------|--------------------------|
+| HbasePersistWriter [HbasePersistWriter.html](apidocs/org/apache/streams/hbase/HbasePersistWriter "javadoc") | [HbaseConfiguration.json](org/apache/streams/hbase/HbaseConfiguration.json "HbaseConfiguration.json") [HbaseConfiguration.html](apidocs/org/apache/streams/hbase/HbaseConfiguration.html "javadoc") | [hbase.conf](hbase.conf "hbase.conf") |
 
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

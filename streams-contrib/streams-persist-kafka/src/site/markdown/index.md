@@ -1,15 +1,21 @@
 streams-persist-kafka
 =====================
 
-Read and write to Kafka
+Read/write to/from Kafka
 
-Example reader / writer configuration:
+## Configuration
 
-    kafka {
-        brokerlist = "localhost:9092"
-    	zkconnect = "localhost:2181"
-    	topic = "topic"
-    	groupId = "group"
-    }
+| Schema |
+|--------|
+| [KafkaConfiguration.json](org/apache/streams/kafka/KafkaConfiguration.json "KafkaConfiguration.json") [KafkaConfiguration.html](apidocs/org/apache/streams/kafka/KafkaConfiguration.html "javadoc") |
+
+## Components
+
+![components](components.dot.svg "Components")
+
+| Class | 
+|-------|
+| KafkaPersistReader [KafkaPersistReader.html](apidocs/org/apache/streams/kafka/KafkaPersistReader.html "javadoc") 
+| KafkaPersistWriter [KafkaPersistWriter.html](apidocs/org/apache/streams/kafka/KafkaPersistWriter.html "javadoc") 
 
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

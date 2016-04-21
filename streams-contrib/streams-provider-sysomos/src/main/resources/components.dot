@@ -1,0 +1,33 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  subgraph cluster_generators {
+    label="generators";
+    style="dotted";
+    generators_sysomos [label="https://api.sysomos.com"]
+  }
+
+  subgraph cluster_providers {
+    label="providers";
+      providers_sysomos [label="SysomosProvider"]
+  }
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_sysomos_typeconveter [label="SysomosTypeConverter"]
+  }
+
+  persisters [label="persisters", shape="cylinder"];
+
+  generators_sysomos -> providers_sysomos
+  providers_sysomos -> processors_sysomos_typeconveter [label="c.s.x.BeatApi.BeatResponse.Beat"]
+
+  processors_sysomos_typeconveter -> persisters [label="o.a.s.p.j.Activity"]
+
+}

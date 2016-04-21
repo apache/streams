@@ -1,0 +1,29 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  generators [label="generators", shape="circle"];
+  providers [label="providers", shape="circle"];
+  processors [label="processors", shape="circle"];
+
+  subgraph cluster_persisters {
+    label="persisters";
+    persisters_hbase_writer [label="HbasePersistWriter"]
+  }
+
+  subgraph cluster_dbs {
+    label="dbs";
+    hbase [label="hbase"]
+  }
+
+  generators -> providers
+  providers -> processors
+  processors -> persisters_hbase_writer [label="o.a.s.p.StreamsDatum[String]\no.a.s.p.StreamsDatum[ObjectNode]"]
+  persisters_hbase_writer -> hbase
+
+}

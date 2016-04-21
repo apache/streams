@@ -1,0 +1,32 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  generators [label="generators", shape="circle"];
+  providers [label="providers", shape="circle"];
+  processors [label="processors", shape="circle"];
+
+  subgraph cluster_persisters {
+    label="persisters";
+    persisters_hdfs_reader [label="WebHdfsPersistReader"]
+    persisters_hdfs_writer [label="WebHdfsPersistWriter"]
+  }
+
+  subgraph cluster_dbs {
+    label="dbs";
+    hdfs [label="hdfs"]
+  }
+
+  generators -> providers
+  providers -> processors
+  processors -> persisters_hdfs_writer [label="o.a.s.p.StreamsDatum"]
+  persisters_hdfs_reader -> processors [label="o.a.s.p.StreamsDatum"]
+  persisters_hdfs_reader <- hdfs
+  persisters_hdfs_writer -> hdfs
+
+}

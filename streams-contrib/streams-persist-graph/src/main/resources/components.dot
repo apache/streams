@@ -1,0 +1,32 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  generators [label="generators", shape="circle"];
+  providers [label="providers", shape="circle"];
+  processors [label="processors", shape="circle"];
+
+  subgraph cluster_persisters {
+    label="persisters";
+    persisters_graph_reader [label="GraphVertexReader"]
+    persisters_graph_writer [label="GraphHttpWriter"]
+  }
+
+  subgraph cluster_dbs {
+    label="dbs";
+    neo4j [label="neo4j"]
+  }
+
+  generators -> providers
+  providers -> processors
+  processors -> persisters_graph_writer [label="o.a.s.p.StreamsDatum"]
+  persisters_graph_reader -> processors [label="o.a.s.p.StreamsDatum"]
+  persisters_graph_reader <- neo4j
+  persisters_graph_writer -> neo4j
+
+}

@@ -1,0 +1,36 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  subgraph cluster_generators {
+    label="generators";
+    style="dotted";
+    generators_moreover [label="https://api.moreover.com"]
+  }
+
+  subgraph cluster_providers {
+    label="providers";
+      providers_moreover [label="MoreoverProvider"]
+  }
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_moreover_jsonconverter [label="MoreoverJsonActivitySerializer"]
+    processors_moreover_xmlconverter [label="MoreoverXmlActivitySerializer"]
+  }
+
+  persisters [label="persisters", shape="cylinder"];
+
+  generators_moreover -> providers_moreover
+  providers_moreover -> processors_moreover_jsonconverter [label="c.m.Moreover"]
+  providers_moreover -> processors_moreover_xmlconverter [label="c.m.a.Article"]
+
+  processors_moreover_jsonconverter -> persisters [label="o.a.s.p.j.Activity"]
+  processors_moreover_xmlconverter -> persisters [label="o.a.s.p.j.Activity"]
+
+}

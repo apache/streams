@@ -1,0 +1,32 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  generators [label="generators", shape="circle"];
+  providers [label="providers", shape="circle"];
+  processors [label="processors", shape="circle"];
+
+  subgraph cluster_persisters {
+    label="persisters";
+    persisters_s3_reader [label="S3PersistReader"]
+    persisters_s3_writer [label="S3PersistWriter"]
+  }
+
+  subgraph cluster_dbs {
+    label="dbs";
+    s3 [label="s3"]
+  }
+
+  generators -> providers
+  providers -> processors
+  processors -> persisters_s3_writer [label="o.a.s.p.StreamsDatum"]
+  persisters_s3_reader -> processors [label="o.a.s.p.StreamsDatum[String]"]
+  persisters_s3_reader <- s3
+  persisters_s3_writer -> s3
+
+}

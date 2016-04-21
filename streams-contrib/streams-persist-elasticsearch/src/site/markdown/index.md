@@ -1,39 +1,23 @@
 streams-persist-elasticsearch
 =====================
 
-Read and write to Elasticsearch
+Read/write to/from Elasticsearch
 
-Example reader configuration:
+## Configuration
 
-    "elasticsearch": {
-        "hosts": [
-            "localhost"
-        ],
-        "port": 9300,
-        "clusterName": "elasticsearch",
-        "indexes": [
-            "sourceindex"
-        ],
-        "types": [
-            "sourcetype"
-        ],
-        "_search": {
-            "query" : {
-                "match_all" : { }
-            }
-        }
-    }
+| Schema |
+|--------|
+| [ElasticsearchConfiguration.json](org/apache/streams/elasticsearch/ElasticsearchConfiguration.json "ElasticsearchConfiguration.json") [ElasticsearchConfiguration.html](apidocs/org/apache/streams/elasticsearch/ElasticsearchConfiguration.html "javadoc") |
 
-Example writer configuration:
+## Components
 
-    "elasticsearch": {
-        "hosts": [
-            "localhost"
-        ],
-        "port": 9300,
-        "clusterName": "elasticsearch",
-        "index": "destinationindex",
-        "type": "destinationtype
-    }
+![components](components.dot.svg "Components")
+
+| Class | Configuration | Example Configuration(s) |
+|-------|---------------|--------------------------|
+| ElasticsearchPersistReader [ElasticsearchPersistReader.html](apidocs/org/apache/streams/elasticsearch/ElasticsearchPersistReader.html "javadoc") | [ElasticsearchReaderConfiguration.json](org/apache/streams/elasticsearch/ElasticsearchReaderConfiguration.json "ElasticsearchReaderConfiguration.json") [ElasticsearchReaderConfiguration.html](apidocs/org/apache/streams/elasticsearch/ElasticsearchReaderConfiguration.html "javadoc") | [elasticsearch-read.conf](elasticsearch-read.conf "elasticsearch-read.conf") |
+| ElasticsearchPersistWriter [ElasticsearchPersistWriter.html](apidocs/org/apache/streams/elasticsearch/ElasticsearchPersistWriter "javadoc") | [ElasticsearchWriterConfiguration.json](org/apache/streams/elasticsearch/ElasticsearchWriterConfiguration.json "ElasticsearchWriterConfiguration.json") [ElasticsearchWriterConfiguration.html](apidocs/org/apache/streams/elasticsearch/ElasticsearchWriterConfiguration.html "javadoc") | [elasticsearch-write.conf](elasticsearch-write.conf "elasticsearch-write.conf") |
+| ElasticsearchPersistUpdater [ElasticsearchPersistUpdater.html](apidocs/org/apache/streams/elasticsearch/ElasticsearchPersistUpdater "javadoc") | [ElasticsearchWriterConfiguration.json](org/apache/streams/elasticsearch/ElasticsearchWriterConfiguration.json "ElasticsearchWriterConfiguration.json") [ElasticsearchWriterConfiguration.html](apidocs/org/apache/streams/elasticsearch/ElasticsearchWriterConfiguration.html "javadoc") | [elasticsearch-write.conf](elasticsearch-write.conf "elasticsearch-write.conf") |
+
 
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

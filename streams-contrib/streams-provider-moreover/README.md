@@ -1,17 +1,8 @@
-streams-provider-moreover
-==========================
+Apache Streams (incubating)
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-Purpose                  
+org.apache.streams:streams-provider-moreover
+============================================
 
-  Module connects to moreover API, collects events, converts to activity, and passes each activity downstream.
-
-Example configuration
-
-    moreover {
-        apiKeys {
-            key {
-                key = ""
-                startingSequence = ""
-            }
-        }
-    }
+[README.md](src/site/markdown/index.md "README")
