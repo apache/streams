@@ -1,0 +1,42 @@
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  generators [label="generators", shape="circle"];
+  providers [label="providers", shape="circle"];
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_elasticsearch_DatumFromMetadataAsDocumentProcessor [label="DatumFromMetadataAsDocumentProcessor"]
+    processors_elasticsearch_DatumFromMetadataProcessor [label="DatumFromMetadataProcessor"]
+    processors_elasticsearch_DocumentToMetadataProcessor [label="DocumentToMetadataProcessor"]
+    processors_elasticsearch_MetadataFromDocumentProcessor [label="MetadataFromDocumentProcessor"]
+    processors_elasticsearch_PercolateTagProcessor [label="PercolateTagProcessor"]
+  }
+
+  subgraph cluster_persisters {
+    label="persisters";
+    persisters_elasticsearch_reader [label="ElasticsearchPersistReader"]
+    persisters_elasticsearch_writer [label="ElasticsearchPersistWriter"]
+    persisters_elasticsearch_updater [label="ElasticsearchPersistUpdater"]
+  }
+
+  subgraph cluster_dbs {
+    label="dbs";
+    elasticsearch [label="elasticsearch"]
+  }
+
+  generators -> providers
+  providers -> processors
+  processors -> persisters_elasticsearch_writer [label="o.a.s.p.StreamsDatum"]
+  processors -> persisters_elasticsearch_updater [label="o.a.s.p.StreamsDatum"]
+  persisters_elasticsearch_reader -> processors [label="o.a.s.p.StreamsDatum[String]"]
+  persisters_elasticsearch_reader <- elasticsearch
+  persisters_elasticsearch_writer -> elasticsearch
+  persisters_elasticsearch_updater -> elasticsearch
+}
