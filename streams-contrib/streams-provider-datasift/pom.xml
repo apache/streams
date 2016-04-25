@@ -190,7 +190,7 @@
                 <configuration>
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
-                    <sourceDirectory>src/main/jsonschema</sourceDirectory>
+                    <sourceDirectory>${project.basedir}/src/main/jsonschema</sourceDirectory>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.datasift</targetPackage>
                     <useLongIntegers>true</useLongIntegers>

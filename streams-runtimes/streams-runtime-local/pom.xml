@@ -137,7 +137,7 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/LocalRuntimeConfiguration.json</sourcePath>
+                        <sourcePath>${project.basedir}/src/main/jsonschema/LocalRuntimeConfiguration.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.local</targetPackage>

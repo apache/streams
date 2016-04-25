@@ -152,7 +152,7 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/google/gmail</sourcePath>
+                        <sourcePath>${project.basedir}/src/main/jsonschema/com/google/gmail</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.google.gmail.pojo</targetPackage>

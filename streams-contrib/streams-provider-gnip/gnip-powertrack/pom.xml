@@ -123,7 +123,7 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/gnip/Gnip.json</sourcePath>
+                        <sourcePath>${project.basedir}/src/main/jsonschema/com/gnip/Gnip.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>com.gnip</targetPackage>
