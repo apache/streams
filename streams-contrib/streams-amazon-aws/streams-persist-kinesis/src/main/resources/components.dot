@@ -27,5 +27,5 @@ digraph g {
   processors -> persisters_kinesis_writer [label="StreamsDatum"]
   persisters_kinesis_reader -> processors [label="StreamsDatum[String]"]
   persisters_kinesis_writer -> kinesis
-  persisters_kinesis_reader <- kinesis
+  kinesis -> persisters_kinesis_reader
 }
