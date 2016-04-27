@@ -22,4 +22,6 @@ streams-provider-datasift contains schema definitions, providers, conversions, a
 | [DatasiftStreamConfiguration.json](org/apache/streams/datasift/DatasiftStreamConfiguration.json "DatasiftStreamConfiguration.json") [DatasiftStreamConfiguration.html](apidocs/org/apache/streams/datasift/DatasiftStreamConfiguration.html "javadoc") |
 | [DatasiftWebhookConfiguration.json](org/apache/streams/datasift/DatasiftWebhookConfiguration.json "DatasiftWebhookConfiguration.json") [DatasiftWebhookConfiguration.html](apidocs/org/apache/streams/datasift/DatasiftWebhookConfiguration.html "javadoc") |
 
+[JavaDocs](apidocs/index.html "JavaDocs")
+
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

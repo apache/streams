@@ -21,4 +21,6 @@ Example SimpleHTTPPostPersistWriter configuration:
         "resourceUri": "db/data/cypher"
     }
 
+[JavaDocs](apidocs/index.html "JavaDocs")
+
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

@@ -12,4 +12,6 @@ Read/Write documents to/from console.
 | ConsolePersistReader [ConsolePersistReader.html](apidocs/org/apache/streams/console/ConsolePersistReader.html "javadoc")
 | ConsolePersistWriter [ConsolePersistWriter.html](apidocs/org/apache/streams/console/ConsolePersistWriter "javadoc")
 
+[JavaDocs](apidocs/index.html "JavaDocs")
+
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

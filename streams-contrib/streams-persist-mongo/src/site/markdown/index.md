@@ -18,4 +18,6 @@ Read/write to/from MongoDB
 | MongoPersistReader [MongoPersistReader.html](apidocs/org/apache/streams/mongo/MongoPersistReader.html "javadoc") 
 | MongoPersistWriter [MongoPersistWriter.html](apidocs/org/apache/streams/mongo/MongoPersistWriter.html "javadoc") 
     
+[JavaDocs](apidocs/index.html "JavaDocs")
+
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

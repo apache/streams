@@ -11,4 +11,6 @@ streams-runtime-dropwizard can embed streams and stream components within the dr
 
 [StreamsDropwizardConfiguration.json](StreamsDropwizardConfiguration.json "StreamsDropwizardConfiguration.json")
 
+[JavaDocs](apidocs/index.html "JavaDocs")
+
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

@@ -19,4 +19,6 @@ google-gplus contains providers, conversions, and utility classes for activity e
 | GPlusUserActivityProvider | [GPlusUserActivityProvider.html](apidocs/com/google/gplus/provider/GPlusUserActivityProvider.html "GPlusUserActivityProvider.html") |
 | GooglePlusTypeConverter | [GooglePlusTypeConverter.html](apidocs/com/google/gplus/processor/GooglePlusTypeConverter.html "GooglePlusTypeConverter.html") |
 
+[JavaDocs](apidocs/index.html "JavaDocs")
+
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

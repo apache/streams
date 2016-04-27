@@ -17,4 +17,6 @@ google-gmail contains providers, conversions, and utility classes for activity e
 |-------|---------------|
 | GMailProvider | [GMailProvider.html](apidocs/com/google/gmail/provider/GMailProvider.html "GMailProvider.html") | [TwitterUserInformationConfiguration.json](com/twitter/TwitterUserInformationConfiguration.json "TwitterUserInformationConfiguration.json") |
 
+[JavaDocs](apidocs/index.html "JavaDocs")
+
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

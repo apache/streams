@@ -26,7 +26,7 @@ digraph g {
   providers -> processors
   processors -> persisters_s3_writer [label="StreamsDatum"]
   persisters_s3_reader -> processors [label="StreamsDatum[String]"]
-  persisters_s3_reader <- s3
+  s3 -> persisters_s3_reader
   persisters_s3_writer -> s3
 
 }

@@ -20,4 +20,6 @@ streams-provider-moreover contains schema definitions, providers, conversions, a
 
 ![components](components.dot.svg "Components")
 
+[JavaDocs](apidocs/index.html "JavaDocs")
+
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

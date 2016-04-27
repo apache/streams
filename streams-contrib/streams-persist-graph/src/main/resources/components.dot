@@ -19,14 +19,14 @@ digraph g {
 
   subgraph cluster_dbs {
     label="dbs";
-    neo4j [label="neo4j"]
+    neo4j [label="neo4j", shape="cylinder"]
   }
 
   generators -> providers
   providers -> processors
   processors -> persisters_graph_writer [label="StreamsDatum"]
   persisters_graph_reader -> processors [label="StreamsDatum"]
-  persisters_graph_reader <- neo4j
+  neo4j -> persisters_graph_reader
   persisters_graph_writer -> neo4j
 
 }

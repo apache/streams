@@ -19,5 +19,6 @@ Read/write to/from Elasticsearch
 | ElasticsearchPersistWriter [ElasticsearchPersistWriter.html](apidocs/org/apache/streams/elasticsearch/ElasticsearchPersistWriter "javadoc") | [ElasticsearchWriterConfiguration.json](org/apache/streams/elasticsearch/ElasticsearchWriterConfiguration.json "ElasticsearchWriterConfiguration.json") [ElasticsearchWriterConfiguration.html](apidocs/org/apache/streams/elasticsearch/ElasticsearchWriterConfiguration.html "javadoc") | [elasticsearch-write.conf](elasticsearch-write.conf "elasticsearch-write.conf") |
 | ElasticsearchPersistUpdater [ElasticsearchPersistUpdater.html](apidocs/org/apache/streams/elasticsearch/ElasticsearchPersistUpdater "javadoc") | [ElasticsearchWriterConfiguration.json](org/apache/streams/elasticsearch/ElasticsearchWriterConfiguration.json "ElasticsearchWriterConfiguration.json") [ElasticsearchWriterConfiguration.html](apidocs/org/apache/streams/elasticsearch/ElasticsearchWriterConfiguration.html "javadoc") | [elasticsearch-write.conf](elasticsearch-write.conf "elasticsearch-write.conf") |
 
+[JavaDocs](apidocs/index.html "JavaDocs")
 
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

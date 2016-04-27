@@ -9,7 +9,7 @@ digraph g {
 
   generators [label="generators", shape="circle"];
   providers [label="providers", shape="circle"];
-  persisters [label="persisters", shape="circle"];
+  persisters [label="persisters", shape="cylinder"];
 
   subgraph cluster_processors {
     label="processors";

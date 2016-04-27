@@ -20,5 +20,6 @@ streams-provider-sysomos contains schema definitions, providers, conversions, an
 
 ![components](components.dot.svg "Components")
 
-###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+[JavaDocs](apidocs/index.html "JavaDocs")
 
+###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

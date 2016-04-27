@@ -19,14 +19,14 @@ digraph g {
 
   subgraph cluster_dbs {
     label="dbs";
-    mongo [label="mongo"]
+    mongo [label="mongo", shape="cylinder"]
   }
 
   generators -> providers
   providers -> processors
   processors -> persisters_mongo_writer [label="StreamsDatum"]
   persisters_mongo_reader -> processors [label="StreamsDatum[String]"]
-  persisters_mongo_reader <- mongo
+  mongo -> persisters_mongo_reader
   persisters_mongo_writer -> mongo
 
 }

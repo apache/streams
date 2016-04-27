@@ -17,12 +17,10 @@ streams-pojo contains ActivityStream json schema definitions and utility classes
 
 [objectTypes](objectTypes "objectTypes/")
 
-##XML Schemas
-
-[activity.xsd](activity.xsd "activity.xsd")
-
 ##Test Activities
 
 [activities](activities "activities/")
+
+[JavaDocs](apidocs/index.html "JavaDocs")
 
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

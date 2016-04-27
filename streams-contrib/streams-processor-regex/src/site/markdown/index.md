@@ -14,4 +14,6 @@ Regex Utility Processors
 | RegexMentionsExtractor [RegexMentionsExtractor.html](apidocs/org/apache/streams/regex/RegexMentionsExtractor.html "javadoc")
 | RegexUrlExtractor [RegexUrlExtractor.html](apidocs/org/apache/streams/regex/RegexUrlExtractor.html "javadoc")
 
+[JavaDocs](apidocs/index.html "JavaDocs")
+
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

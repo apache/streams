@@ -32,6 +32,7 @@
     <properties>
         <scala.version>2.9.2</scala.version>
         <kafka.version>0.8.0</kafka.version>
+        <clojure.version>1.2.0</clojure.version>
     </properties>
 
     <dependencies>
@@ -78,9 +79,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency> <!-- Have to add to be able to .get() from storm tuple -->
+        <dependency>
             <groupId>org.clojure</groupId>
             <artifactId>clojure</artifactId>
+            <version>${clojure.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>clojure-contrib</artifactId>
+            <version>${clojure.version}</version>
         </dependency>
         <dependency>
             <groupId>com.101tec</groupId>

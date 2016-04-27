@@ -28,14 +28,14 @@ digraph g {
 
   subgraph cluster_dbs {
     label="dbs";
-    elasticsearch [label="elasticsearch"]
+    elasticsearch [label="elasticsearch", shape="cylinder"]
   }
 
   generators -> providers
-  providers -> processors
-  processors -> persisters_elasticsearch_writer [label="StreamsDatum"]
-  processors -> persisters_elasticsearch_updater [label="StreamsDatum"]
-  persisters_elasticsearch_reader -> processors [label="StreamsDatum[String]"]
+  providers -> processors_elasticsearch_DocumentToMetadataProcessor [lhead=cluster_processors]
+  processors_elasticsearch_DocumentToMetadataProcessor -> persisters_elasticsearch_writer [ltail=cluster_processors]
+  processors_elasticsearch_DocumentToMetadataProcessor -> persisters_elasticsearch_updater [ltail=cluster_processors]
+  persisters_elasticsearch_reader -> processors_elasticsearch_DocumentToMetadataProcessor [label="StreamsDatum[String]", lhead=cluster_processors]
   persisters_elasticsearch_reader <- elasticsearch
   persisters_elasticsearch_writer -> elasticsearch
   persisters_elasticsearch_updater -> elasticsearch

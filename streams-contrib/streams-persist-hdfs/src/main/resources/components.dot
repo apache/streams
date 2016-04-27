@@ -19,14 +19,14 @@ digraph g {
 
   subgraph cluster_dbs {
     label="dbs";
-    hdfs [label="hdfs"]
+    hdfs [label="hdfs", shape="tab"]
   }
 
   generators -> providers
   providers -> processors
   processors -> persisters_hdfs_writer [label="StreamsDatum"]
   persisters_hdfs_reader -> processors [label="StreamsDatum"]
-  persisters_hdfs_reader <- hdfs
+  hdfs -> persisters_hdfs_reader
   persisters_hdfs_writer -> hdfs
 
 }
