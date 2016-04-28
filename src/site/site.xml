@@ -17,9 +17,6 @@
   ~ under the License.
   -->
 <project>
-    <body>
-        <menu ref="reports" />
-    </body>
     <custom>
         <fluidoSkin>
             <topBarEnabled>true</topBarEnabled>

@@ -3,6 +3,10 @@ org.apache.streams:streams-provider-youtube
 
 streams-provider-youtube contains providers, conversions, and utility classes.
 
+## Data Types
+
+This module relies on classes from com.google.apis:google-api-services-youtube
+
 ## Configuration
 
 | Schema |

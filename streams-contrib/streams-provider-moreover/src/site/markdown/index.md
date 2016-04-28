@@ -14,7 +14,7 @@ streams-provider-moreover contains schema definitions, providers, conversions, a
 
 | Schema |
 |--------|
-| [MoreoverConfiguration.json](org/apache/streams/moreover/MoreoverConfiguration.json "MoreoverConfiguration.json") [MoreoverConfiguration.html](apidocs/org/apache/streams/moreover/MoreoverConfiguration.html "javadoc") |
+| [MoreoverConfiguration.json](com/moreover/MoreoverConfiguration.json "MoreoverConfiguration.json") [MoreoverConfiguration.html](apidocs/com/moreover/MoreoverConfiguration.html "javadoc") |
 
 ## Components
 
