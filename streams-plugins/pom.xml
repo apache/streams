@@ -36,6 +36,7 @@
     </properties>
 
     <modules>
+        <module>streams-plugin-hive</module>
         <module>streams-plugin-pojo</module>
  	</modules>
 
