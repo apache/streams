@@ -40,6 +40,12 @@
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-config</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
@@ -47,15 +53,13 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jsonschema2pojo</groupId>
-            <artifactId>jsonschema2pojo-core</artifactId>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schemas</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-pojo</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-            <type>test-jar</type>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
@@ -219,9 +223,10 @@
                             <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <includeArtifactIds>streams-pojo</includeArtifactIds>
+                            <includeGroupIds>org.apache.streams</includeGroupIds>
+                            <includeArtifactIds>streams-schemas</includeArtifactIds>
                             <includes>**/*.json</includes>
-                            <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+                            <outputDirectory>${project.build.directory}/test-classes/streams-schemas</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

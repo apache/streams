@@ -1,4 +1,4 @@
-package org.apache.streams.plugins;
+package org.apache.streams.plugins.hive;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.List;
 
 @Mojo(  name = "hive",
         defaultPhase = LifecyclePhase.GENERATE_SOURCES
@@ -38,14 +39,28 @@ public class StreamsHiveResourceGeneratorMojo extends AbstractMojo {
     @Parameter( defaultValue = "${project.basedir}", readonly = true )
     private File basedir;
 
-    @Parameter(defaultValue = "${project.build.directory}", readonly = true)
-    private File target;
+    @Parameter( defaultValue = "./src/main/jsonschema", readonly = true ) // Maven 3 only
+    public String sourceDirectory;
 
-    @Parameter(defaultValue = "org.apache.streams.pojo.json", readonly = true)
-    private String[] packages;
+    @Parameter( readonly = true ) // Maven 3 only
+    public List<String> sourcePaths;
+
+    @Parameter(defaultValue = "./target/generated-sources/streams-plugin-hive", readonly = true)
+    public String targetDirectory;
 
     public void execute() throws MojoExecutionException {
-        StreamsHiveResourceGenerator streamsPojoScala = new StreamsHiveResourceGenerator(this);
+
+        //addProjectDependenciesToClasspath();
+
+        StreamsHiveGenerationConfig config = new StreamsHiveGenerationConfig();
+
+        if( sourcePaths != null && sourcePaths.size() > 0)
+            config.setSourcePaths(sourcePaths);
+        else
+            config.setSourceDirectory(sourceDirectory);
+        config.setTargetDirectory(targetDirectory);
+
+        StreamsHiveResourceGenerator streamsPojoScala = new StreamsHiveResourceGenerator(config);
         Thread thread = new Thread(streamsPojoScala);
         thread.start();
         try {
@@ -58,11 +73,4 @@ public class StreamsHiveResourceGeneratorMojo extends AbstractMojo {
         return;
     }
 
-    public File getTarget() {
-        return target;
-    }
-
-    public String[] getPackages() {
-        return packages;
-    }
 }
