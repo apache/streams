@@ -4,7 +4,7 @@
         "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
         "http://www.apache.org/licenses/LICENSE-2.0"
     ],
-    "id": "#",
+    "id": "http://streams.incubator.apache.org/site/0.3-incubating-SNAPSHOT/streams-schemas/verbs/confirm.json#",
     "type": "object",
     "title": "Confirm",
     "description": "Indicates that the actor has confirmed or agrees with the object. For instance, a software developer might confirm an issue reported against a product.",

@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.streams.plugins.hive.StreamsHiveGenerationConfig;
 import org.apache.streams.plugins.hive.StreamsHiveResourceGenerator;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +23,19 @@ import static org.apache.streams.schema.FileUtil.dropSourcePathPrefix;
 /**
  * Test that Activity beans are compatible with the example activities in the spec.
  */
+@Ignore
 public class StreamsHiveResourceGeneratorTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsHiveResourceGeneratorTest.class);
+
+    public static final Predicate<File> hqlFilter = new Predicate<File>() {
+        @Override
+        public boolean apply(@Nullable File file) {
+            if( file.getName().endsWith(".hql") )
+                return true;
+            else return false;
+        }
+    };
 
     /**
      * Tests that all example activities can be loaded into Activity beans
@@ -57,15 +68,7 @@ public class StreamsHiveResourceGeneratorTest {
             LOGGER.error("Exception", e);
         }
 
-        File testOutput = new File( "./target/generated-sources/test");
-        Predicate<File> hqlFilter = new Predicate<File>() {
-            @Override
-            public boolean apply(@Nullable File file) {
-                if( file.getName().endsWith(".hql") )
-                    return true;
-                else return false;
-            }
-        };
+        File testOutput = config.getTargetDirectory();
 
         assert( testOutput != null );
         assert( testOutput.exists() == true );

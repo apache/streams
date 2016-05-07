@@ -4,7 +4,7 @@
         "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
         "http://www.apache.org/licenses/LICENSE-2.0"
     ],
-    "id": "#",
+    "id": "http://streams.incubator.apache.org/site/0.3-incubating-SNAPSHOT/streams-schemas/activity.json#",
     "type": "object",
     "title": "activity",
     "javaInterfaces": ["java.io.Serializable"],
@@ -61,11 +61,11 @@
         },
         "icon": {
             "type": "object",
+            "description": "An IRI[RFC3987] identifying an image resource provides a visual representation of the activity, intended for human consumption. The image SHOULD have an aspect ratio of one (horizontal) to one (vertical) and SHOULD be suitable for presentation at a small size. An activity MAY have an icon property",
             "javaInterfaces": ["java.io.Serializable"],
-            "properties": {
-                "$ref": "./media_link.json#properties"
-            },
-            "description": "An IRI[RFC3987] identifying an image resource provides a visual representation of the activity, intended for human consumption. The image SHOULD have an aspect ratio of one (horizontal) to one (vertical) and SHOULD be suitable for presentation at a small size. An activity MAY have an icon property"
+            "extends": {
+                "$ref": "./media_link.json"
+            }
         },
         "provider": {
             "type": "object",

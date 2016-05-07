@@ -81,12 +81,6 @@
             <subscribe>dev-subscribe@streams.incubator.apache.org</subscribe>
             <unsubscribe>dev-unsubscribe@streams.incubator.apache.org</unsubscribe>
         </mailingList>
-        <mailingList>
-            <name>User Mailing List</name>
-            <post>user@streams.incubator.apache.org</post>
-            <subscribe>user-subscribe@streams.incubator.apache.org</subscribe>
-            <unsubscribe>user-unsubscribe@streams.incubator.apache.org</unsubscribe>
-        </mailingList>
     </mailingLists>
 
     <repositories>
@@ -184,10 +178,6 @@
     </modules>
 
     <packaging>pom</packaging>
-
-    <properties>
-        <jsonschema2pojo.version>0.4.22</jsonschema2pojo.version>
-    </properties>
 
     <build>
         <plugins>

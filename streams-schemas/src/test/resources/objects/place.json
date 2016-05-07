@@ -1,0 +1,9 @@
+{
+  "objectType": "place",
+  "displayName": "Some Random Location on Earth",
+  "position": {
+	"latitude": 34.34,
+	"longitude": -127.23,
+	"altitude": 100.05
+  }
+}

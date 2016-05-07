@@ -3,7 +3,6 @@ package org.apache.streams.schema;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.jsonschema2pojo.util.NameHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +20,10 @@ public class SchemaUtil {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SchemaUtil.class);
     private static final JsonNodeFactory NODE_FACTORY = JsonNodeFactory.instance;
+    public static final String ILLEGAL_CHARACTER_REGEX = "[^0-9a-zA-Z_$]";
 
     public static String childQualifiedName(String parentQualifiedName, String childSimpleName) {
-        String safeChildName = childSimpleName.replaceAll(NameHelper.ILLEGAL_CHARACTER_REGEX, "_");
+        String safeChildName = childSimpleName.replaceAll(ILLEGAL_CHARACTER_REGEX, "_");
         return isEmpty(parentQualifiedName) ? safeChildName : parentQualifiedName + "." + safeChildName;
     }
 

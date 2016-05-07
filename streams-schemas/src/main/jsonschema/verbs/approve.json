@@ -4,7 +4,7 @@
         "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
         "http://www.apache.org/licenses/LICENSE-2.0"
     ],
-    "id": "#",
+    "id": "http://streams.incubator.apache.org/site/0.3-incubating-SNAPSHOT/streams-schemas/verbs/approve.json#",
     "type": "object",
     "title": "Approve",
     "description": "Indicates that the actor has approved the object. For instance, a manager might approve a travel request.",
