@@ -4,7 +4,7 @@
         "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
         "http://www.apache.org/licenses/LICENSE-2.0"
     ],
-    "id": "#",
+    "id": "http://streams.incubator.apache.org/site/0.3-incubating-SNAPSHOT/streams-schemas/verbs/save.json#",
     "type": "object",
     "title": "Save",
     "description": "Indicates that the actor has called out the object as being of interest primarily to him- or herself. Though this action MAY be shared publicly, the implication is that the object has been saved primarily for the actor's own benefit rather than to show it to others as would be indicated by the \"share\" verb.",

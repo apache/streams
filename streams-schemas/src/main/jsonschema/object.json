@@ -4,7 +4,7 @@
         "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
         "http://www.apache.org/licenses/LICENSE-2.0"
     ],
-    "id": "#",
+    "id": "http://streams.incubator.apache.org/site/0.3-incubating-SNAPSHOT/streams-schemas/object.json#",
     "type": "object",
     "title": "object",
     "javaInterfaces": ["java.io.Serializable"],
@@ -18,10 +18,10 @@
         "image": {
             "format": "image",
             "type": "object",
+            "description": "Description of a resource providing a visual representation of the object, intended for human consumption. An object MAY contain an image property whose value is a Media Link.",
             "extends": {
                 "$ref": "./media_link.json"
-            },
-            "description": "Description of a resource providing a visual representation of the object, intended for human consumption. An object MAY contain an image property whose value is a Media Link."
+            }
         },
         "displayName": {
             "type": "string",

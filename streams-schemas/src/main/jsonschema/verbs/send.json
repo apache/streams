@@ -4,21 +4,21 @@
         "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
         "http://www.apache.org/licenses/LICENSE-2.0"
     ],
-    "id": "#",
+    "id": "http://streams.incubator.apache.org/site/0.3-incubating-SNAPSHOT/streams-schemas/verbs/send.json#",
     "type": "object",
-    "title": "Share",
-    "description": "Indicates that the actor has called out the object to readers. In most cases, the actor did not create the object being shared, but is instead drawing attention to it.",
+    "title": "Send",
+    "description": "Indicates that the actor has sent the object to the target.",
     "extends": {
         "$ref": "../activity.json"
     },
     "properties": {
         "verb": {
             "type": "string",
-            "default": "share"
+            "default": "send"
         },
         "title": {
             "type": "string",
-            "default": "{actor.displayName} shared {object.displayName}"
+            "default": "{actor.displayName} sent {object.displayName}"
         }
     }
 }

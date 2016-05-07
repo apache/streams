@@ -111,7 +111,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>target/generated-sources/jsonschema2pojo</source>
+                                <source>${project.basedir}/target/generated-sources/jsonschema2pojo</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -121,12 +121,6 @@
                 <groupId>org.jsonschema2pojo</groupId>
                 <artifactId>jsonschema2pojo-maven-plugin</artifactId>
                 <configuration>
-                    <addCompileSourceRoot>true</addCompileSourceRoot>
-                    <generateBuilders>true</generateBuilders>
-                    <sourcePaths>
-                        <sourcePath>src/main/jsonschema</sourcePath>
-                    </sourcePaths>
-                    <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.config</targetPackage>
                     <useLongIntegers>true</useLongIntegers>
                     <useJodaDates>true</useJodaDates>

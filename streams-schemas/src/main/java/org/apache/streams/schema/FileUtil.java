@@ -22,9 +22,16 @@ public class FileUtil {
     public static String dropSourcePathPrefix(String inputFile, String sourceDirectory) {
         if(Strings.isNullOrEmpty(sourceDirectory))
             return inputFile;
-        else if( inputFile.contains(sourceDirectory) ) {
-            return inputFile.substring(inputFile.indexOf(sourceDirectory)+sourceDirectory.length()+1);
-        } else return inputFile;
+        else {
+            try {
+                if( inputFile.contains(sourceDirectory) && inputFile.indexOf(sourceDirectory) > 0) {
+                    return inputFile.substring(inputFile.indexOf(sourceDirectory)+sourceDirectory.length()+1);
+                }
+            } catch( Throwable e ) {
+                return inputFile;
+            }
+        }
+        return inputFile;
     }
 
     public static String swapExtension(String inputFile, String originalExtension, String newExtension) {

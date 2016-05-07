@@ -48,14 +48,14 @@ public interface GenerationConfig {
      *         Setting this to false will disable additional properties support,
      *         regardless of the input schema(s).
      */
-    boolean isIncludeAdditionalProperties();
+//    boolean isIncludeAdditionalProperties();
 
     /**
      * Gets the 'targetVersion' configuration option.
      *
      *  @return The target version for generated source files.
      */
-    String getTargetVersion();
+//    String getTargetVersion();
 
 //    /**
 //     * Gets the `includeDynamicAccessors` configuraiton option.

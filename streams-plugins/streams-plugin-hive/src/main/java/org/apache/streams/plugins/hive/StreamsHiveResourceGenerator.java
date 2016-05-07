@@ -46,12 +46,11 @@ public class StreamsHiveResourceGenerator implements Runnable {
 
     private int currentDepth = 0;
 
-    public void main(String[] args) {
+    public static void main(String[] args) {
         StreamsHiveGenerationConfig config = new StreamsHiveGenerationConfig();
 
-        String sourceDirectory = "./target/test-classes/activities";
-        String targetDirectory = "./target/generated-sources/streams-plugin-hive";
-        String targetPackage = "";
+        String sourceDirectory = "src/main/jsonschema";
+        String targetDirectory = "target/generated-resources/hive";
 
         if( args.length > 0 )
             sourceDirectory = args[0];

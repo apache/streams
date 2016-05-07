@@ -1,0 +1,9 @@
+{
+   "objectType": "issue",
+   "displayName": "Terms of Use Violation",
+   "url": "http://.../terms-of-use",
+   "types": [
+	 "http://example.org/codes/inappropriateMaterial",
+	 "http://example.org/codes/copyrightViolation"
+   ]
+}

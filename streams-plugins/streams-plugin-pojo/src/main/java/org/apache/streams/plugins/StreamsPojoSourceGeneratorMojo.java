@@ -3,6 +3,7 @@ package org.apache.streams.plugins;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -39,6 +40,8 @@ public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPojoSourceGeneratorMojo.class);
 
+    private volatile MojoFailureException mojoFailureException;
+
     @Component
     public MavenProject project;
 
@@ -67,7 +70,7 @@ public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
     @Parameter(readonly = true)
     public String targetPackage;
 
-    public void execute() throws MojoExecutionException {
+    public void execute() throws MojoExecutionException, MojoFailureException {
 
         addProjectDependenciesToClasspath();
 
@@ -81,38 +84,30 @@ public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
         config.setTargetDirectory(targetDirectory);
 
         StreamsPojoSourceGenerator streamsPojoSourceGenerator = new StreamsPojoSourceGenerator(config);
+
+        Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
+            public void uncaughtException(Thread th, Throwable ex) {
+                LOGGER.error("Exception", ex);
+                mojoFailureException = new MojoFailureException("Exception", ex);
+            }
+        };
+        Thread.setDefaultUncaughtExceptionHandler(h);
         Thread thread = new Thread(streamsPojoSourceGenerator);
-        thread.start();
+        thread.setUncaughtExceptionHandler(h);
         try {
+            thread.start();
             thread.join();
         } catch (InterruptedException e) {
             LOGGER.error("InterruptedException", e);
         } catch (Exception e) {
             LOGGER.error("Exception", e);
+            throw new MojoFailureException("Exception", e);
         }
-        return;
 
-//        List<Class<?>> serializableClasses = detectSerializableClasses();
-//
-//        LOGGER.info("Detected {} serialiables:", serializableClasses.size());
-//        for( Class clazz : serializableClasses )
-//            LOGGER.debug(clazz.toString());
-//
-//        List<Class<?>> pojoClasses = detectPojoClasses(serializableClasses);
-//
-//        LOGGER.info("Detected {} pojos:", pojoClasses.size());
-//        for( Class clazz : pojoClasses ) {
-//            LOGGER.debug(clazz.toString());
-//
-//        }
-//
-//
-//        for( Class clazz : pojoClasses ) {
-//            String pojoPath = clazz.getPackage().getName().replace(".pojo.json", ".hive").replace(".","/")+"/";
-//            String pojoName = clazz.getSimpleName()+".hql";
-//            String pojoHive = renderPojo(clazz);
-//            writeFile(outDir+"/"+pojoPath+pojoName, pojoHive);
-//        }
+        if( mojoFailureException != null )
+            throw mojoFailureException;
+
+        return;
 
     }
 
