@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
+import twitter4j.RateLimitStatus;
 
 /**
  *  Handle expected and unexpected exceptions.
@@ -35,7 +36,7 @@ public class TwitterErrorHandler
 
     @Deprecated
     public static int handleTwitterError(Twitter twitter, Exception exception) {
-        return handleTwitterError( twitter, null, exception);
+        return handleTwitterError(twitter, null, exception);
     }
 
     public static int handleTwitterError(Twitter twitter, Long id, Exception exception)
@@ -45,12 +46,21 @@ public class TwitterErrorHandler
             TwitterException e = (TwitterException)exception;
             if(e.exceededRateLimitation())
             {
-                LOGGER.warn("Rate Limit Exceeded");
+                long millisUntilReset = retry;
+
+                final RateLimitStatus rateLimitStatus = e.getRateLimitStatus();
+                if (rateLimitStatus != null) {
+                    millisUntilReset = rateLimitStatus.getSecondsUntilReset() * 1000;
+                }
+
+                LOGGER.warn("Rate Limit Exceeded. Will retry in {} seconds...", millisUntilReset / 1000);
+
                 try {
-                    Thread.sleep(retry);
+                    Thread.sleep(millisUntilReset);
                 } catch (InterruptedException e1) {
                     Thread.currentThread().interrupt();
                 }
+
                 return 1;
             }
             else if(e.isCausedByNetworkIssue())
