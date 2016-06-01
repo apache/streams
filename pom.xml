@@ -219,6 +219,59 @@
         </pluginManagement>
     </build>
 
+    <profiles>
+        <profile>
+            <id>contrib-check</id>
+            <properties>
+                <skipTests>false</skipTests>
+                <maven.test.skip>false</maven.test.skip>
+            </properties>
+            <build>
+                <plugins>
+                  <plugin>
+                      <groupId>org.apache.rat</groupId>
+                      <artifactId>apache-rat-plugin</artifactId>
+                      <configuration>
+                          <excludes>
+                              <exclude>.travis.yml</exclude>
+                              <exclude>.git</exclude>
+                              <exclude>.gitignore</exclude>
+                              <exclude>.git/**</exclude>
+                              <exclude>.idea/**</exclude>
+                              <exclude>**/DEPENDENCIES</exclude>
+                              <exclude>**/LICENSE</exclude>
+                              <exclude>**/MANIFEST.MF</exclude>
+                              <exclude>**/NOTICE</exclude>
+                              <exclude>**/README.*</exclude>
+                              <exclude>**/target/**</exclude>
+                              <exclude>**/overlays/**</exclude>
+                              <exclude>**/src/test/resources/**/*.csv</exclude>
+                              <exclude>**/src/test/resources/**/*.tsv</exclude>
+                              <exclude>**/src/test/resources/**/*.txt</exclude>
+                              <exclude>**/src/site/resources/**</exclude>
+                              <exclude>**/.gitignore</exclude>
+                              <exclude>**/*.properties</exclude>
+                              <exclude>**/*.iml</exclude>
+                              <exclude>**/*.ini</exclude>
+                              <exclude>**/*.jar</exclude>
+                              <exclude>dependency-reduced-pom.xml</exclude>
+                              <exclude>rat.txt</exclude>
+                          </excludes>
+                      </configuration>
+                      <executions>
+                          <execution>
+                              <goals>
+                                  <goal>check</goal>
+                              </goals>
+                              <phase>verify</phase>
+                          </execution>
+                      </executions>
+                  </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
