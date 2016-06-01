@@ -20,10 +20,10 @@ import static org.apache.streams.plugins.cassandra.test.StreamsCassandraResource
 public class StreamsCassandraResourceGeneratorCLITest {
 
     @Test
-    public void testStreamsHiveResourceGeneratorCLI() throws Exception {
+    public void testStreamsCassandraResourceGeneratorCLI() throws Exception {
 
-        String sourceDirectory = "target/test-classes/streams-schemas";
-        String targetDirectory = "target/generated-resources/cassandra-cli";
+        String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
+        String targetDirectory = "target/generated-resources/test-cli";
 
         List<String> argsList = Lists.newArrayList(sourceDirectory, targetDirectory);
         StreamsCassandraResourceGenerator.main(argsList.toArray(new String[0]));
@@ -39,7 +39,9 @@ public class StreamsCassandraResourceGeneratorCLITest {
         Collection<File> outputCollection = Lists.newArrayList(outputIterator);
         assert( outputCollection.size() == 1 );
 
-        Path path = Paths.get("types.cql");
+        Path path = Paths.get(testOutput.getAbsolutePath()).resolve("types.cql");
+
+        assert( path.toFile().exists() );
 
         String typesCqlBytes = new String(
                 java.nio.file.Files.readAllBytes(path));

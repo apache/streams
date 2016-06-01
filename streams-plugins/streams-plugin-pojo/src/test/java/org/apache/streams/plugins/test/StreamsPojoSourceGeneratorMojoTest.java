@@ -53,7 +53,7 @@ public class StreamsPojoSourceGeneratorMojoTest extends TestCase {
 
         verifier.resetStreams();
 
-        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-sources/test-mojo");
+        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-sources/pojo-mojo");
 
         assert( testOutput != null );
         assert( testOutput.exists() == true );

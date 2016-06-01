@@ -6,13 +6,13 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.apache.streams.plugins.pig.StreamsPigGenerationConfig;
-import org.apache.streams.schema.FieldType;
-import org.apache.streams.schema.FieldUtil;
-import org.apache.streams.schema.FileUtil;
-import org.apache.streams.schema.GenerationConfig;
-import org.apache.streams.schema.Schema;
-import org.apache.streams.schema.SchemaStore;
+import org.apache.streams.util.schema.FieldType;
+import org.apache.streams.util.schema.FieldUtil;
+import org.apache.streams.util.schema.FileUtil;
+import org.apache.streams.util.schema.GenerationConfig;
+import org.apache.streams.util.schema.Schema;
+import org.apache.streams.util.schema.SchemaStore;
+import org.apache.streams.util.schema.SchemaStoreImpl;
 import org.jsonschema2pojo.util.URLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.apache.streams.schema.FileUtil.dropExtension;
-import static org.apache.streams.schema.FileUtil.dropSourcePathPrefix;
-import static org.apache.streams.schema.FileUtil.swapExtension;
-import static org.apache.streams.schema.FileUtil.writeFile;
+import static org.apache.streams.util.schema.FileUtil.dropExtension;
+import static org.apache.streams.util.schema.FileUtil.dropSourcePathPrefix;
+import static org.apache.streams.util.schema.FileUtil.swapExtension;
+import static org.apache.streams.util.schema.FileUtil.writeFile;
 
 public class StreamsPigResourceGenerator implements Runnable {
 
@@ -38,7 +38,7 @@ public class StreamsPigResourceGenerator implements Runnable {
 
     private StreamsPigGenerationConfig config;
 
-    private SchemaStore schemaStore = new SchemaStore();
+    private SchemaStore schemaStore = new SchemaStoreImpl();
 
     private int currentDepth = 0;
 
@@ -57,16 +57,8 @@ public class StreamsPigResourceGenerator implements Runnable {
         config.setTargetDirectory(targetDirectory);
 
         StreamsPigResourceGenerator streamsPigResourceGenerator = new StreamsPigResourceGenerator(config);
-        Thread thread = new Thread(streamsPigResourceGenerator);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptedException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-        }
-        return;
+        streamsPigResourceGenerator.run();
+
     }
 
     public StreamsPigResourceGenerator(StreamsPigGenerationConfig config) {
@@ -160,13 +152,9 @@ public class StreamsPigResourceGenerator implements Runnable {
                 if (fieldType != null ) {
                     switch (fieldType) {
                         case ARRAY:
-                            ObjectNode itemsNode = FieldUtil.resolveItemsNode(fieldNode);
-                            if( itemsNode == null ) {
-                                ObjectNode resolvedItems = schemaStore.resolveProperties(schema, fieldNode, fieldId);
-                                itemsNode = FieldUtil.resolveItemsNode();
-                            }
-                            if( itemsNode != null && currentDepth <= config.getMaxDepth()) {
-                                StringBuilder arrayItemsBuilder = appendArrayItems(new StringBuilder(), schema, fieldId, itemsNode, seperator);
+                            ObjectNode resolvedItems = schemaStore.resolveItems(schema, fieldNode, fieldId);
+                            if( resolvedItems != null && currentDepth <= config.getMaxDepth()) {
+                                StringBuilder arrayItemsBuilder = appendArrayItems(new StringBuilder(), schema, fieldId, resolvedItems, seperator);
                                 if( !Strings.isNullOrEmpty(arrayItemsBuilder.toString())) {
                                     fieldStrings.add(arrayItemsBuilder.toString());
                                 }

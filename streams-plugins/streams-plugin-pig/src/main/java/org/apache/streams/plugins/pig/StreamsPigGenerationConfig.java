@@ -1,11 +1,10 @@
 package org.apache.streams.plugins.pig;
 
-import org.apache.streams.schema.GenerationConfig;
+import org.apache.streams.util.schema.GenerationConfig;
 import org.jsonschema2pojo.DefaultGenerationConfig;
 import org.jsonschema2pojo.util.URLUtil;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;

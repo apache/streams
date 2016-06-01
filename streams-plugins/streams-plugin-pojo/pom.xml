@@ -44,8 +44,15 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-schemas</artifactId>
+            <artifactId>streams-util</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schema-activitystreams</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jsonschema2pojo</groupId>
@@ -224,9 +231,9 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <configuration>
                     <includes>**/*.json</includes>
-                    <outputDirectory>${project.build.directory}/test-classes/streams-schemas</outputDirectory>
+                    <outputDirectory>${project.build.directory}/test-classes/streams-schema-activitystreams</outputDirectory>
                     <includeGroupIds>org.apache.streams</includeGroupIds>
-                    <includeArtifactIds>streams-schemas</includeArtifactIds>
+                    <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
                     <includeTypes>jar,test-jar</includeTypes>
                 </configuration>
                 <executions>

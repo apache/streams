@@ -51,7 +51,7 @@ public class StreamsHbaseResourceGeneratorMojoTest extends TestCase {
 
         verifier.resetStreams();
 
-        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/test-mojo");
+        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/hbase-mojo");
 
         assert( testOutput != null );
         assert( testOutput.exists() == true );

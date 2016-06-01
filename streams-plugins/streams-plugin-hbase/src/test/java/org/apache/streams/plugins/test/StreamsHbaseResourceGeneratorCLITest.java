@@ -21,7 +21,7 @@ public class StreamsHbaseResourceGeneratorCLITest {
     @Test
     public void testStreamsHiveResourceGeneratorCLI() throws Exception {
 
-        String sourceDirectory = "target/test-classes/streams-schemas";
+        String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
         String targetDirectory = "target/generated-resources/hbase-cli";
 
         List<String> argsList = Lists.newArrayList(sourceDirectory, targetDirectory);

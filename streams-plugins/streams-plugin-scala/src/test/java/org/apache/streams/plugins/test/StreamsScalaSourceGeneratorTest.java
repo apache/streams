@@ -1,6 +1,6 @@
 package org.apache.streams.plugins.test;
 
-import org.apache.streams.plugins.StreamsPojoScala;
+import org.apache.streams.plugins.StreamsScalaSourceGenerator;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +11,9 @@ import java.io.FileFilter;
 /**
  * Test that Activity beans are compatible with the example activities in the spec.
  */
-public class StreamsPojoScalaTest {
+public class StreamsScalaSourceGeneratorTest {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPojoScalaTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorTest.class);
 
     /**
      * Tests that all example activities can be loaded into Activity beans
@@ -22,8 +22,8 @@ public class StreamsPojoScalaTest {
      */
     @Test
     public void testDetectPojoScala() throws Exception {
-        StreamsPojoScala streamsPojoScala = new StreamsPojoScala();
-        streamsPojoScala.main(new String[0]);
+        StreamsScalaSourceGenerator streamsScalaSourceGenerator = new StreamsScalaSourceGenerator();
+        streamsScalaSourceGenerator.main(new String[0]);
 
         File testOutput = new File( "./target/generated-sources/scala/org/apache/streams/scala");
         FileFilter scalaFilter = new FileFilter() {

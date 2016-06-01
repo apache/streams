@@ -1,16 +1,13 @@
 package org.apache.streams.plugins;
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +19,9 @@ import java.io.File;
 @Execute(   goal = "scala",
             phase = LifecyclePhase.GENERATE_SOURCES
 )
-public class StreamsPojoScalaMojo extends AbstractMojo {
+public class StreamsScalaSourceGeneratorMojo extends AbstractMojo {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPojoScalaMojo.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorMojo.class);
 
     @Component
     private MavenProject project;
@@ -48,17 +45,8 @@ public class StreamsPojoScalaMojo extends AbstractMojo {
     private String packages;
 
     public void execute() throws MojoExecutionException {
-        StreamsPojoScala streamsPojoScala = new StreamsPojoScala(this);
-        Thread thread = new Thread(streamsPojoScala);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptedException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-        }
-        return;
+        StreamsScalaSourceGenerator streamsScalaSourceGenerator = new StreamsScalaSourceGenerator(this);
+        streamsScalaSourceGenerator.run();
     }
 
     public File getTarget() {

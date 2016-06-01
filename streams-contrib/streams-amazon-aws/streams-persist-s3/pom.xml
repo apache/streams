@@ -114,9 +114,9 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/org/apache/streams/s3/S3Configuration.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/org/apache/streams/s3/S3WriterConfiguration.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/org/apache/streams/s3/S3ReaderConfiguration.json</sourcePath>
+                        <sourcePath>${project.basedir}/src/main/jsonschema/org/apache/streams/s3/S3Configuration.json</sourcePath>
+                        <sourcePath>${project.basedir}/src/main/jsonschema/org/apache/streams/s3/S3WriterConfiguration.json</sourcePath>
+                        <sourcePath>${project.basedir}/src/main/jsonschema/org/apache/streams/s3/S3ReaderConfiguration.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.s3.pojo</targetPackage>

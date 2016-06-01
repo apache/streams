@@ -23,7 +23,7 @@ public class StreamsPojoSourceGeneratorCLITest {
     @Test
     public void testStreamsPojoSourceGeneratorCLI() throws Exception {
 
-        String sourceDirectory = "target/test-classes/streams-schemas";
+        String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
         String targetDirectory = "target/generated-sources/test-cli";
 
         List<String> argsList = Lists.newArrayList(sourceDirectory, targetDirectory);

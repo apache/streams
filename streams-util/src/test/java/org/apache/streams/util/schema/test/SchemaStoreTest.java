@@ -1,27 +1,22 @@
-package org.apache.streams.schema.test;
+package org.apache.streams.util.schema.test;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
-import org.apache.streams.schema.Schema;
-import org.apache.streams.schema.SchemaStore;
+import org.apache.streams.util.schema.Schema;
+import org.apache.streams.util.schema.SchemaStore;
+import org.apache.streams.util.schema.SchemaStoreImpl;
 import org.junit.Test;
 
 import java.io.File;
 import java.net.URI;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Created by sblackmon on 5/2/16.
  */
-public class SchemaStoreTests {
+public class SchemaStoreTest {
 
     @Test
     public void indexMediaLink() {
-        SchemaStore schemaStore = new SchemaStore();
-        File file = new File("target/classes/media_link.json");
+        SchemaStore schemaStore = new SchemaStoreImpl();
+        File file = new File("target/test-classes/media_link.json");
         schemaStore.create(file.toURI());
         assert( schemaStore.getFileUriCount() == 1);
         assert( schemaStore.getByUri(file.toURI()).isPresent());
@@ -30,8 +25,8 @@ public class SchemaStoreTests {
 
     @Test
     public void indexApprove() {
-        SchemaStore schemaStore = new SchemaStore();
-        File file = new File("target/classes/verbs/approve.json");
+        SchemaStore schemaStore = new SchemaStoreImpl();
+        File file = new File("target/test-classes/verbs/approve.json");
         schemaStore.create(file.toURI());
         assert( schemaStore.getFileUriCount() == 4);
         assert( schemaStore.getByUri(file.toURI()).isPresent());
@@ -40,8 +35,8 @@ public class SchemaStoreTests {
 
     @Test
     public void indexCollection() {
-        SchemaStore schemaStore = new SchemaStore();
-        File file = new File("target/classes/collection.json");
+        SchemaStore schemaStore = new SchemaStoreImpl();
+        File file = new File("target/test-classes/collection.json");
         schemaStore.create(file.toURI());
         assert( schemaStore.getFileUriCount() == 3);
         assert( schemaStore.getByUri(file.toURI()).isPresent());
@@ -55,8 +50,8 @@ public class SchemaStoreTests {
 
     @Test
     public void indexUpdate() {
-        SchemaStore schemaStore = new SchemaStore();
-        File file = new File("target/classes/verbs/update.json");
+        SchemaStore schemaStore = new SchemaStoreImpl();
+        File file = new File("target/test-classes/verbs/update.json");
         schemaStore.create(file.toURI());
         assert( schemaStore.getFileUriCount() == 4);
         assert( schemaStore.getByUri(file.toURI()).isPresent());

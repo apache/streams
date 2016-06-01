@@ -157,8 +157,8 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/instagram/InstagramConfiguration.json</sourcePath>
-                        <sourcePath>src/main/jsonschema/com/instagram/InstagramUserInformationConfiguration.json</sourcePath>
+                        <sourcePath>${project.basedir}/src/main/jsonschema/com/instagram/InstagramConfiguration.json</sourcePath>
+                        <sourcePath>${project.basedir}/src/main/jsonschema/com/instagram/InstagramUserInformationConfiguration.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.instagram.pojo</targetPackage>

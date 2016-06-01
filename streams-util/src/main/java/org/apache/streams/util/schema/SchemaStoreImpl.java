@@ -1,10 +1,9 @@
-package org.apache.streams.schema;
+package org.apache.streams.util.schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import org.apache.commons.lang3.StringUtils;
@@ -20,12 +19,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.streams.schema.URIUtil.safeResolve;
+import static org.apache.streams.util.schema.URIUtil.safeResolve;
 
 /**
  * Created by steve on 4/30/16.
  */
-public class SchemaStore extends Ordering<Schema> {
+public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SchemaStore.class);
     private final static JsonNodeFactory NODE_FACTORY = JsonNodeFactory.instance;
@@ -34,9 +33,10 @@ public class SchemaStore extends Ordering<Schema> {
     protected FragmentResolver fragmentResolver = new FragmentResolver();
     protected ContentResolver contentResolver = new ContentResolver();
 
-    public SchemaStore() {
+    public SchemaStoreImpl() {
     }
 
+    @Override
     public synchronized Schema create(URI uri) {
         if(!getByUri(uri).isPresent()) {
             URI baseURI = URIUtil.removeFragment(uri);
@@ -89,6 +89,7 @@ public class SchemaStore extends Ordering<Schema> {
         return this.schemas.get(uri);
     }
 
+    @Override
     public Schema create(Schema parent, String path) {
         if(path.equals("#")) {
             return parent;
@@ -108,14 +109,17 @@ public class SchemaStore extends Ordering<Schema> {
         return parent != null && (parent.getId() == null || parent.getId().toString().startsWith("#/")) && path.startsWith("#/");
     }
 
+    @Override
     public synchronized void clearCache() {
         this.schemas.clear();
     }
 
+    @Override
     public Integer getSize() {
         return schemas.size();
     }
 
+    @Override
     public Optional<Schema> getById(URI id) {
         for( Schema schema : schemas.values() ) {
             if( schema.getId() != null && schema.getId().equals(id) )
@@ -124,6 +128,7 @@ public class SchemaStore extends Ordering<Schema> {
         return Optional.absent();
     }
 
+    @Override
     public Optional<Schema> getByUri(URI uri) {
         for( Schema schema : schemas.values() ) {
             if( schema.getURI().equals(uri) )
@@ -132,6 +137,7 @@ public class SchemaStore extends Ordering<Schema> {
         return Optional.absent();
     }
 
+    @Override
     public Integer getFileUriCount() {
         int count = 0;
         for( Schema schema : schemas.values() ) {
@@ -141,6 +147,7 @@ public class SchemaStore extends Ordering<Schema> {
         return count;
     }
 
+    @Override
     public Integer getHttpUriCount() {
         int count = 0;
         for( Schema schema : schemas.values() ) {
@@ -150,12 +157,14 @@ public class SchemaStore extends Ordering<Schema> {
         return count;
     }
 
+    @Override
     public Iterator<Schema> getSchemaIterator() {
         List<Schema> schemaList = Lists.newArrayList(schemas.values());
         Collections.sort(schemaList, this);
         return schemaList.iterator();
     }
 
+    @Override
     public ObjectNode resolveProperties(Schema schema, ObjectNode fieldNode, String resourceId) {
         // this should return something more suitable like:
         //   Map<String, Pair<Schema, ObjectNode>>
@@ -213,6 +222,61 @@ public class SchemaStore extends Ordering<Schema> {
         else resolvedProperties = schemaProperties.deepCopy();
 
         return resolvedProperties;
+    }
+
+    public ObjectNode resolveItems(Schema schema, ObjectNode fieldNode, String resourceId) {
+        ObjectNode schemaItems = NODE_FACTORY.objectNode();
+        ObjectNode parentItems = NODE_FACTORY.objectNode();
+        if (fieldNode == null) {
+            ObjectNode schemaContent = (ObjectNode) schema.getContent();
+            if( schemaContent.has("items") ) {
+                schemaItems = (ObjectNode) schemaContent.get("items");
+                if (schema.getParentContent() != null) {
+                    ObjectNode parentContent = (ObjectNode) schema.getParentContent();
+                    if (parentContent.has("items")) {
+                        parentItems = (ObjectNode) parentContent.get("items");
+                    }
+                }
+            }
+        } else if (fieldNode != null && fieldNode.size() > 0) {
+            if (fieldNode.has("items") && fieldNode.get("items").isObject() && fieldNode.get("items").size() > 0)
+                schemaItems = (ObjectNode) fieldNode.get("items");
+            URI parentURI = null;
+            if( fieldNode.has("$ref") || fieldNode.has("extends") ) {
+                JsonNode refNode = fieldNode.get("$ref");
+                JsonNode extendsNode = fieldNode.get("extends");
+                if (refNode != null && refNode.isValueNode())
+                    parentURI = URI.create(refNode.asText());
+                else if (extendsNode != null && extendsNode.isObject())
+                    parentURI = URI.create(extendsNode.get("$ref").asText());
+                ObjectNode parentContent = null;
+                URI absoluteURI;
+                if (parentURI.isAbsolute())
+                    absoluteURI = parentURI;
+                else {
+                    absoluteURI = schema.getURI().resolve(parentURI);
+                    if (!absoluteURI.isAbsolute() || (absoluteURI.isAbsolute() && !getByUri(absoluteURI).isPresent() ))
+                        absoluteURI = schema.getParentURI().resolve(parentURI);
+                }
+                if (absoluteURI != null && absoluteURI.isAbsolute()) {
+                    if (getByUri(absoluteURI).isPresent())
+                        parentContent = (ObjectNode) getByUri(absoluteURI).get().getContent();
+                    if (parentContent != null && parentContent.isObject() && parentContent.has("items")) {
+                        parentItems = (ObjectNode) parentContent.get("items");
+                    } else if (absoluteURI.getPath().endsWith("#items")) {
+                        absoluteURI = URI.create(absoluteURI.toString().replace("#items", ""));
+                        parentItems = (ObjectNode) getByUri(absoluteURI).get().getContent().get("items");
+                    }
+                }
+            }
+        }
+
+        ObjectNode resolvedItems = NODE_FACTORY.objectNode();
+        if (parentItems != null && parentItems.size() > 0)
+            resolvedItems = SchemaUtil.mergeProperties(schemaItems, parentItems);
+        else resolvedItems = schemaItems.deepCopy();
+
+        return resolvedItems;
     }
 
     @Override

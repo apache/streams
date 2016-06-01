@@ -21,7 +21,7 @@ public class StreamsHiveResourceGeneratorCLITest {
     @Test
     public void testStreamsHiveResourceGeneratorCLI() throws Exception {
 
-        String sourceDirectory = "target/test-classes/streams-schemas";
+        String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
         String targetDirectory = "target/generated-resources/hive-cli";
 
         List<String> argsList = Lists.newArrayList(sourceDirectory, targetDirectory);

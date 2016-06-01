@@ -25,7 +25,7 @@ public class StreamsPojoSourceGenerator implements Runnable {
         StreamsPojoGenerationConfig config = new StreamsPojoGenerationConfig();
 
         String sourceDirectory = "./target/test-classes/activities";
-        String targetDirectory = "./target/generated-sources/streams-plugin-pojo";
+        String targetDirectory = "./target/generated-sources/pojo";
         String targetPackage = "";
 
         if( args.length > 0 )
@@ -40,15 +40,8 @@ public class StreamsPojoSourceGenerator implements Runnable {
         config.setTargetDirectory(targetDirectory);
 
         StreamsPojoSourceGenerator streamsPojoSourceGenerator = new StreamsPojoSourceGenerator(config);
-        Thread thread = new Thread(streamsPojoSourceGenerator);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptedException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-        }
+        streamsPojoSourceGenerator.run();
+
         return;
     }
 
@@ -67,8 +60,6 @@ public class StreamsPojoSourceGenerator implements Runnable {
             LOGGER.error("{} {}", e.getClass(), e.getMessage());
         }
     }
-
-
 
     private void writeFile(String pojoFile, String pojoHive) {
         try {

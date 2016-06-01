@@ -15,10 +15,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.List;
 
-@Mojo(  name = "hbase",
+@Mojo(  name = "generate-resources",
         defaultPhase = LifecyclePhase.GENERATE_RESOURCES
 )
-@Execute(   goal = "hbase",
+@Execute(   goal = "generate-resources",
             phase = LifecyclePhase.GENERATE_RESOURCES
 )
 public class StreamsHbaseResourceGeneratorMojo extends AbstractMojo {
@@ -64,30 +64,8 @@ public class StreamsHbaseResourceGeneratorMojo extends AbstractMojo {
         config.setTargetDirectory(targetDirectory);
 
         StreamsHbaseResourceGenerator streamsHbaseResourceGenerator = new StreamsHbaseResourceGenerator(config);
+        streamsHbaseResourceGenerator.run();
 
-        Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
-            public void uncaughtException(Thread th, Throwable ex) {
-                LOGGER.error("Exception", ex);
-                mojoFailureException = new MojoFailureException("Exception", ex);
-            }
-        };
-        Thread.setDefaultUncaughtExceptionHandler(h);
-        Thread thread = new Thread(streamsHbaseResourceGenerator);
-        thread.setUncaughtExceptionHandler(h);
-        try {
-            thread.start();
-            thread.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptedException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-            mojoFailureException = new MojoFailureException("Exception", e);
-        }
-
-        if( mojoFailureException != null )
-            throw mojoFailureException;
-
-        return;
     }
 
 }

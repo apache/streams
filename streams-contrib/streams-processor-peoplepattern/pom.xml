@@ -125,7 +125,7 @@
                         <addCompileSourceRoot>true</addCompileSourceRoot>
                         <generateBuilders>true</generateBuilders>
                         <sourcePaths>
-                            <sourcePath>src/main/jsonschema/org/apache/streams/peoplepattern</sourcePath>
+                            <sourcePath>${project.basedir}/src/main/jsonschema/org/apache/streams/peoplepattern</sourcePath>
                         </sourcePaths>
                         <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                         <targetPackage>org.apache.streams.peoplepattern</targetPackage>

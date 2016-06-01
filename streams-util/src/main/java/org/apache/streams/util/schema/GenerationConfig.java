@@ -1,4 +1,4 @@
-package org.apache.streams.schema;
+package org.apache.streams.util.schema;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -6,7 +6,8 @@ import java.net.URL;
 import java.util.Iterator;
 
 /**
- * Created by sblackmon on 5/3/16.
+ * GenerationConfig represents the common fields and field accessors for
+ * streams modules that transform schemas into generated-sources or generated-resources
  */
 public interface GenerationConfig {
 

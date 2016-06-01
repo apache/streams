@@ -133,7 +133,7 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/org/apache/streams/mongo/MongoConfiguration.json</sourcePath>
+                        <sourcePath>${project.basedir}/src/main/jsonschema/org/apache/streams/mongo/MongoConfiguration.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.mongo.pojo</targetPackage>

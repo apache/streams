@@ -151,7 +151,7 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/com/youtube/YoutubeConfiguration.json</sourcePath>
+                        <sourcePath>${project.basedir}/src/main/jsonschema/com/youtube/YoutubeConfiguration.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.youtube.pojo</targetPackage>

@@ -1,17 +1,21 @@
 package org.apache.streams.plugins.elasticsearch;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.apache.streams.schema.FieldType;
-import org.apache.streams.schema.FieldUtil;
-import org.apache.streams.schema.GenerationConfig;
-import org.apache.streams.schema.Schema;
-import org.apache.streams.schema.SchemaStore;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.util.schema.FieldType;
+import org.apache.streams.util.schema.FieldUtil;
+import org.apache.streams.util.schema.GenerationConfig;
+import org.apache.streams.util.schema.Schema;
+import org.apache.streams.util.schema.SchemaStore;
+import org.apache.streams.util.schema.SchemaStoreImpl;
 import org.jsonschema2pojo.util.URLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +29,11 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.apache.streams.schema.FileUtil.dropExtension;
-import static org.apache.streams.schema.FileUtil.dropSourcePathPrefix;
-import static org.apache.streams.schema.FileUtil.resolveRecursive;
-import static org.apache.streams.schema.FileUtil.writeFile;
+import static org.apache.streams.util.schema.FileUtil.dropExtension;
+import static org.apache.streams.util.schema.FileUtil.dropSourcePathPrefix;
+import static org.apache.streams.util.schema.FileUtil.resolveRecursive;
+import static org.apache.streams.util.schema.FileUtil.swapExtension;
+import static org.apache.streams.util.schema.FileUtil.writeFile;
 
 /**
  * Created by sblackmon on 5/3/16.
@@ -37,15 +42,17 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsElasticsearchResourceGenerator.class);
 
+    ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+
     private final static String LS = System.getProperty("line.separator");
 
     private StreamsElasticsearchGenerationConfig config;
 
-    private SchemaStore schemaStore = new SchemaStore();
+    private SchemaStore schemaStore = new SchemaStoreImpl();
 
     private int currentDepth = 0;
 
-    public void main(String[] args) {
+    public static void main(String[] args) {
         StreamsElasticsearchGenerationConfig config = new StreamsElasticsearchGenerationConfig();
 
         String sourceDirectory = "target/test-classes/activities";
@@ -59,17 +66,9 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
         config.setSourceDirectory(sourceDirectory);
         config.setTargetDirectory(targetDirectory);
 
-        StreamsElasticsearchResourceGenerator StreamsElasticsearchResourceGenerator = new StreamsElasticsearchResourceGenerator(config);
-        Thread thread = new Thread(StreamsElasticsearchResourceGenerator);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptedException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-        }
-        return;
+        StreamsElasticsearchResourceGenerator streamsElasticsearchResourceGenerator = new StreamsElasticsearchResourceGenerator(config);
+        streamsElasticsearchResourceGenerator.run();
+
     }
 
     public StreamsElasticsearchResourceGenerator(StreamsElasticsearchGenerationConfig config) {
@@ -106,7 +105,6 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
 
         LOGGER.info("Identified {} objects:", schemaStore.getSize());
 
-        String outputFile = config.getTargetDirectory() + "/" + "types.cql";
         StringBuilder typesContent = new StringBuilder();
 
         for (Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator(); schemaIterator.hasNext(); ) {
@@ -118,6 +116,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
                 for (String sourcePath : config.getSourcePaths()) {
                     resourcePath = dropSourcePathPrefix(resourcePath, sourcePath);
                 }
+                String outputFile = config.getTargetDirectory() + "/" + resourcePath;
 
                 LOGGER.info("Processing {}:", resourcePath);
 
@@ -125,25 +124,33 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
 
                 String resourceContent = generateResource(schema, resourceId);
 
-                typesContent.append(resourceContent);
+                if( !Strings.isNullOrEmpty(resourceContent))
+                    writeFile(outputFile, resourceContent);
 
-                LOGGER.info("Added {}:", resourceId);
+                LOGGER.info("Wrote {}:", outputFile);
             }
         }
-
-        writeFile(outputFile, typesContent.toString());
 
     }
 
     public String generateResource(Schema schema, String resourceId) {
         StringBuilder resourceBuilder = new StringBuilder();
-        resourceBuilder.append("CREATE TYPE ");
-        resourceBuilder.append(resourceId);
-        resourceBuilder.append(" IF NOT EXISTS (");
-        resourceBuilder.append(LS);
-        resourceBuilder = appendRootObject(resourceBuilder, schema, resourceId, ' ');
-        resourceBuilder.append(");");
-        resourceBuilder.append(LS);
+
+        ObjectNode rootNode = (ObjectNode) schema.getContent();
+
+        // remove java*
+        // remove description
+        // resolve all $ref
+        // replace format: date with type: date
+        // replace format: date-time with type: date
+        // replace array of primitive with just primitive
+
+        try {
+            String objectString = MAPPER.writeValueAsString(rootNode);
+            resourceBuilder.append(objectString);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("{}: {}", e.getClass().getName(), e);
+        }
         return resourceBuilder.toString();
     }
 

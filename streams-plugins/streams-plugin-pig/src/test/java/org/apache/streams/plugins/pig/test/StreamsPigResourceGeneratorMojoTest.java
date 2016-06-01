@@ -31,7 +31,7 @@ public class StreamsPigResourceGeneratorMojoTest extends TestCase {
 
 
     @Test
-    public void testStreamsHiveResourceGeneratorMojo() throws Exception {
+    public void testStreamsPigResourceGeneratorMojo() throws Exception {
 
         File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-pig" );
 
@@ -50,7 +50,7 @@ public class StreamsPigResourceGeneratorMojoTest extends TestCase {
 
         verifier.resetStreams();
 
-        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/test-mojo");
+        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/pig-mojo");
 
         assert( testOutput != null );
         assert( testOutput.exists() == true );

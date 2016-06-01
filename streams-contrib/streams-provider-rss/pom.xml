@@ -163,7 +163,7 @@
                     <addCompileSourceRoot>true</addCompileSourceRoot>
                     <generateBuilders>true</generateBuilders>
                     <sourcePaths>
-                        <sourcePath>src/main/jsonschema/RssStreamConfiguration.json</sourcePath>
+                        <sourcePath>${project.basedir}/src/main/jsonschema/RssStreamConfiguration.json</sourcePath>
                     </sourcePaths>
                     <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                     <targetPackage>org.apache.streams.rss.pojo</targetPackage>

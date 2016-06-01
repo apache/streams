@@ -18,7 +18,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static org.apache.streams.schema.FileUtil.dropSourcePathPrefix;
+import static org.apache.streams.util.schema.FileUtil.dropSourcePathPrefix;
 
 /**
  * Test that Activity beans are compatible with the example activities in the spec.
@@ -47,26 +47,18 @@ public class StreamsHiveResourceGeneratorTest {
 
         StreamsHiveGenerationConfig config = new StreamsHiveGenerationConfig();
 
-        String sourceDirectory = "target/test-classes/streams-schemas";
+        String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
 
         config.setSourceDirectory(sourceDirectory);
 
-        config.setTargetDirectory("target/generated-sources/test");
+        config.setTargetDirectory("target/generated-resources/test");
 
         config.setExclusions(Sets.newHashSet("attachments"));
 
         config.setMaxDepth(2);
 
         StreamsHiveResourceGenerator streamsHiveResourceGenerator = new StreamsHiveResourceGenerator(config);
-        Thread thread = new Thread(streamsHiveResourceGenerator);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptedException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-        }
+        streamsHiveResourceGenerator.run();
 
         File testOutput = config.getTargetDirectory();
 
@@ -106,19 +98,5 @@ public class StreamsHiveResourceGeneratorTest {
             LOGGER.info("Fails: {}", fails);
             Assert.fail();
         }
-
-
-//        assert( new File(testOutput + "/traits").exists() == true );
-//        assert( new File(testOutput + "/traits").isDirectory() == true );
-//        assert( new File(testOutput + "/traits").listFiles(scalaFilter) != null );
-//        assert( new File(testOutput + "/traits").listFiles(scalaFilter).length == 4 );
-//        assert( new File(testOutput + "/objectTypes").exists() == true );
-//        assert( new File(testOutput + "/objectTypes").isDirectory() == true );
-//        assert( new File(testOutput + "/objectTypes").listFiles(scalaFilter) != null );
-//        assert( new File(testOutput + "/objectTypes").listFiles(scalaFilter).length == 43 );
-//        assert( new File(testOutput + "/verbs").exists() == true );
-//        assert( new File(testOutput + "/verbs").isDirectory() == true );
-//        assert( new File(testOutput + "/verbs").listFiles(scalaFilter) != null );
-//        assert( new File(testOutput + "/verbs").listFiles(scalaFilter).length == 89 );
-    }
+   }
 }

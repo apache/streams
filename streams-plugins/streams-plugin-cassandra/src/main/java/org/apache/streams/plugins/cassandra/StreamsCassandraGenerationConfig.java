@@ -1,6 +1,6 @@
 package org.apache.streams.plugins.cassandra;
 
-import org.apache.streams.schema.GenerationConfig;
+import org.apache.streams.util.schema.GenerationConfig;
 import org.jsonschema2pojo.DefaultGenerationConfig;
 import org.jsonschema2pojo.util.URLUtil;
 

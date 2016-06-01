@@ -1,4 +1,4 @@
-package org.apache.streams.schema;
+package org.apache.streams.util.schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

@@ -1,48 +1,37 @@
 package org.apache.streams.plugins;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import org.apache.streams.data.DocumentClassifier;
 import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-import org.reflections.ReflectionUtils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Generated;
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by sblackmon on 11/18/15.
  */
-public class StreamsPojoScala implements Runnable {
+public class StreamsScalaSourceGenerator implements Runnable {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPojoScala.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGenerator.class);
 
     private final static String LS = System.getProperty("line.separator");
 
-    private StreamsPojoScalaMojo mojo;
+    private StreamsScalaSourceGeneratorMojo mojo;
 
     String outDir = "./target/generated-sources/scala";
     String packages = "org.apache.streams.pojo.json";
@@ -56,20 +45,11 @@ public class StreamsPojoScala implements Runnable {
                             new TypeAnnotationsScanner()));
 
     public void main(String[] args) {
-        StreamsPojoScala streamsPojoScala = new StreamsPojoScala();
-        Thread thread = new Thread(streamsPojoScala);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptedException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-        }
-        return;
+        StreamsScalaSourceGenerator streamsScalaSourceGenerator = new StreamsScalaSourceGenerator();
+        streamsScalaSourceGenerator.run();
     }
 
-    public StreamsPojoScala(StreamsPojoScalaMojo mojo) {
+    public StreamsScalaSourceGenerator(StreamsScalaSourceGeneratorMojo mojo) {
         this.mojo = mojo;
         if (    mojo != null &&
                 mojo.getTarget() != null &&
@@ -84,7 +64,7 @@ public class StreamsPojoScala implements Runnable {
             packages = mojo.getPackages();
     }
 
-    public StreamsPojoScala() {
+    public StreamsScalaSourceGenerator() {
     }
 
     public void run() {
