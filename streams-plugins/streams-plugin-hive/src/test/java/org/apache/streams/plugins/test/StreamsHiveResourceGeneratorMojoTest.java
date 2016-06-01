@@ -50,7 +50,7 @@ public class StreamsHiveResourceGeneratorMojoTest extends TestCase {
 
         verifier.resetStreams();
 
-        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/test-mojo");
+        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/hive-mojo");
 
         assert( testOutput != null );
         assert( testOutput.exists() == true );

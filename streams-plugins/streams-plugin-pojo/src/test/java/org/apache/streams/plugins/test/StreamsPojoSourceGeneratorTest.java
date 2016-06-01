@@ -43,53 +43,30 @@ public class StreamsPojoSourceGeneratorTest {
         StreamsPojoGenerationConfig config = new StreamsPojoGenerationConfig();
 
         List<String> sourcePaths = Lists.newArrayList(
-            "target/test-classes/streams-schemas/activity.json",
-            "target/test-classes/streams-schemas/collection.json",
-            "target/test-classes/streams-schemas/media_link.json",
-            "target/test-classes/streams-schemas/object.json",
-            "target/test-classes/streams-schemas/objectTypes",
-            "target/test-classes/streams-schemas/verbs"
+            "target/test-classes/streams-schema-activitystreams/activity.json",
+            "target/test-classes/streams-schema-activitystreams/collection.json",
+            "target/test-classes/streams-schema-activitystreams/media_link.json",
+            "target/test-classes/streams-schema-activitystreams/object.json",
+            "target/test-classes/streams-schema-activitystreams/objectTypes",
+            "target/test-classes/streams-schema-activitystreams/verbs"
         );
         config.setSourcePaths(sourcePaths);
 
 //        config.setSourceDirectory("target/test-classes/streams-schemas");
-        config.setTargetPackage("org.apache.streams.pojo.test");
-        config.setTargetDirectory("target/generated-sources/test");
+        config.setTargetPackage("org.apache.streams.pojo");
+        config.setTargetDirectory("target/generated-sources/pojo");
 
         StreamsPojoSourceGenerator streamsPojoSourceGenerator = new StreamsPojoSourceGenerator(config);
-        Thread thread = new Thread(streamsPojoSourceGenerator);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptedException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-        }
+        streamsPojoSourceGenerator.run();
 
-        File testOutput = new File( "target/generated-sources/test");
+        assert( config.getTargetDirectory() != null );
+        assert( config.getTargetDirectory().exists() == true );
+        assert( config.getTargetDirectory().isDirectory() == true );
 
-        assert( testOutput != null );
-        assert( testOutput.exists() == true );
-        assert( testOutput.isDirectory() == true );
-
-        Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
+        Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(config.getTargetDirectory())
                 .filter(javaFilter);
         Collection<File> outputCollection = Lists.newArrayList(outputIterator);
         assert( outputCollection.size() > 133 );
 
-//        assert( testOutput.listFiles(javaFilter).length == 11 );
-//        assert( new File(testOutput + "/traits").exists() == true );
-//        assert( new File(testOutput + "/traits").isDirectory() == true );
-//        assert( new File(testOutput + "/traits").listFiles(scalaFilter) != null );
-//        assert( new File(testOutput + "/traits").listFiles(scalaFilter).length == 4 );
-//        assert( new File(testOutput + "/objectTypes").exists() == true );
-//        assert( new File(testOutput + "/objectTypes").isDirectory() == true );
-//        assert( new File(testOutput + "/objectTypes").listFiles(scalaFilter) != null );
-//        assert( new File(testOutput + "/objectTypes").listFiles(scalaFilter).length == 43 );
-//        assert( new File(testO`utput + "/verbs").exists() == true );
-//        assert( new File(testOutput + "/verbs").isDirectory() == true );
-//        assert( new File(testOutput + "/verbs").listFiles(scalaFilter) != null );
-//        assert( new File(testOutput + "/verbs").listFiles(scalaFilter).length == 89 );
-    }
+  }
 }

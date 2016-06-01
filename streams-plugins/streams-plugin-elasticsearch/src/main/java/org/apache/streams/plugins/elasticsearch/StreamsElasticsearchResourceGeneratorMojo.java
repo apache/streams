@@ -15,10 +15,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.List;
 
-@Mojo(  name = "elasticsearch",
+@Mojo(  name = "generate-resources",
         defaultPhase = LifecyclePhase.GENERATE_RESOURCES
 )
-@Execute(   goal = "elasticsearch",
+@Execute(   goal = "generate-resources",
             phase = LifecyclePhase.GENERATE_RESOURCES
 )
 public class StreamsElasticsearchResourceGeneratorMojo extends AbstractMojo {
@@ -65,29 +65,8 @@ public class StreamsElasticsearchResourceGeneratorMojo extends AbstractMojo {
 
         StreamsElasticsearchResourceGenerator streamsElasticsearchResourceGenerator = new StreamsElasticsearchResourceGenerator(config);
 
-        Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
-            public void uncaughtException(Thread th, Throwable ex) {
-                LOGGER.error("Exception", ex);
-                mojoFailureException = new MojoFailureException("Exception", ex);
-            }
-        };
-        Thread.setDefaultUncaughtExceptionHandler(h);
-        Thread thread = new Thread(streamsElasticsearchResourceGenerator);
-        thread.setUncaughtExceptionHandler(h);
-        try {
-            thread.start();
-            thread.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptedException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-            mojoFailureException = new MojoFailureException("Exception", e);
-        }
+        streamsElasticsearchResourceGenerator.run();
 
-        if( mojoFailureException != null )
-            throw mojoFailureException;
-
-        return;
     }
 
 }

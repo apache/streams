@@ -30,10 +30,10 @@ import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
-@Mojo(  name = "pojo",
+@Mojo(  name = "generate-sources",
         defaultPhase = LifecyclePhase.GENERATE_SOURCES
 )
-@Execute(   goal = "pojo",
+@Execute(   goal = "generate-sources",
             phase = LifecyclePhase.GENERATE_SOURCES
 )
 public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
@@ -45,16 +45,6 @@ public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
     @Component
     public MavenProject project;
 
-//    @Component
-//    private Settings settings;
-//
-//    @Parameter( defaultValue = "${localRepository}", readonly = true, required = true )
-//    protected ArtifactRepository localRepository;
-//
-//    @Parameter( defaultValue = "${plugin}", readonly = true ) // Maven 3 only
-//    private PluginDescriptor plugin;
-//
-
     @Parameter( defaultValue = "${project.basedir}", readonly = true )
     public File basedir;
 
@@ -64,7 +54,7 @@ public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
     @Parameter( readonly = true ) // Maven 3 only
     public List<String> sourcePaths;
 
-    @Parameter(defaultValue = "./target/generated-sources/streams-plugin-pojo", readonly = true)
+    @Parameter(defaultValue = "./target/generated-sources/pojo", readonly = true)
     public String targetDirectory;
 
     @Parameter(readonly = true)
@@ -84,30 +74,7 @@ public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
         config.setTargetDirectory(targetDirectory);
 
         StreamsPojoSourceGenerator streamsPojoSourceGenerator = new StreamsPojoSourceGenerator(config);
-
-        Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
-            public void uncaughtException(Thread th, Throwable ex) {
-                LOGGER.error("Exception", ex);
-                mojoFailureException = new MojoFailureException("Exception", ex);
-            }
-        };
-        Thread.setDefaultUncaughtExceptionHandler(h);
-        Thread thread = new Thread(streamsPojoSourceGenerator);
-        thread.setUncaughtExceptionHandler(h);
-        try {
-            thread.start();
-            thread.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptedException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-            throw new MojoFailureException("Exception", e);
-        }
-
-        if( mojoFailureException != null )
-            throw mojoFailureException;
-
-        return;
+        streamsPojoSourceGenerator.run();
 
     }
 
@@ -125,117 +92,4 @@ public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
 
     }
 
-//    public List<Class<?>> detectSerializableClasses() {
-//
-//        Set<Class<? extends Serializable>> classes =
-//                reflections.getSubTypesOf(java.io.Serializable.class);
-//
-//        List<Class<?>> result = Lists.newArrayList();
-//
-//        for( Class clazz : classes ) {
-//            result.add(clazz);
-//        }
-//
-//        return result;
-//    }
-//
-//    public List<Class<?>> detectPojoClasses(List<Class<?>> classes) {
-//
-//        List<Class<?>> result = Lists.newArrayList();
-//
-//        for( Class clazz : classes ) {
-//            try {
-//                clazz.newInstance().toString();
-//            } catch( Exception e) {}
-//            // super-halfass way to know if this is a jsonschema2pojo
-//            if( clazz.getAnnotations().length >= 1 )
-//                result.add(clazz);
-//        }
-//
-//        return result;
-//    }
-//
-//    public String renderPojo(Class<?> pojoClass) {
-//        StringBuffer stringBuffer = new StringBuffer();
-//        stringBuffer.append("CREATE TABLE ");
-//        stringBuffer.append(pojoClass.getPackage().getName().replace(".pojo.json", ".hive"));
-//        stringBuffer.append(LS);
-//        stringBuffer.append("(");
-//        stringBuffer.append(LS);
-//
-//        Set<Field> fields = ReflectionUtils.getAllFields(pojoClass);
-//        appendFields(stringBuffer, fields, "", ",");
-//
-//        stringBuffer.append(")");
-//
-//        return stringBuffer.toString();
-//    }
-//
-//    private void appendFields(StringBuffer stringBuffer, Set<Field> fields, String varDef, String fieldDelimiter) {
-//        if( fields.size() > 0 ) {
-//            stringBuffer.append(LS);
-//            Map<String,Field> fieldsToAppend = uniqueFields(fields);
-//            for( Iterator<Field> iter = fieldsToAppend.values().iterator(); iter.hasNext(); ) {
-//                Field field = iter.next();
-//                stringBuffer.append(name(field));
-//                stringBuffer.append(": ");
-//                stringBuffer.append(type(field));
-//                if( iter.hasNext()) stringBuffer.append(fieldDelimiter);
-//                stringBuffer.append(LS);
-//            }
-//        } else {
-//            stringBuffer.append(LS);
-//        }
-//    }
-//
-//    private String value(Field field) {
-//        if( field.getName().equals("verb")) {
-//            return "\"post\"";
-//        } else if( field.getName().equals("objectType")) {
-//            return "\"application\"";
-//        } else return null;
-//    }
-//
-//    private String type(Field field) {
-//        if( field.getType().equals(java.lang.String.class)) {
-//            return "STRING";
-//        } else if( field.getType().equals(java.lang.Integer.class)) {
-//            return "INT";
-//        } else if( field.getType().equals(org.joda.time.DateTime.class)) {
-//            return "DATE";
-//        }else if( field.getType().equals(java.util.Map.class)) {
-//            return "MAP";
-//        } else if( field.getType().equals(java.util.List.class)) {
-//            return "ARRAY";
-//        }
-//        return field.getType().getCanonicalName().replace(".pojo.json", ".scala");
-//    }
-//
-//    private Map<String,Field> uniqueFields(Set<Field> fieldset) {
-//        Map<String,Field> fields = Maps.newTreeMap();
-//        Field item = null;
-//        for( Iterator<Field> it = fieldset.iterator(); it.hasNext(); item = it.next() ) {
-//            if( item != null && item.getName() != null ) {
-//                Field added = fields.put(item.getName(), item);
-//            }
-//            // ensure right class will get used
-//        }
-//        return fields;
-//    }
-//
-//    private String name(Field field) {
-//        if( field.getName().equals("object"))
-//            return "obj";
-//        else return field.getName();
-//    }
-//
-//    private boolean override(Field field) {
-//        try {
-//            if( field.getDeclaringClass().getSuperclass().getField(field.getName()) != null )
-//                return true;
-//            else return false;
-//        } catch( Exception e ) {
-//            return false;
-//        }
-//    }
 }

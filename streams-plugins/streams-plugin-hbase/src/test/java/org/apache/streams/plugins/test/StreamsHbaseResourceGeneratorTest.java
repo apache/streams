@@ -8,7 +8,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.streams.plugins.hbase.StreamsHbaseGenerationConfig;
 import org.apache.streams.plugins.hbase.StreamsHbaseResourceGenerator;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static org.apache.streams.schema.FileUtil.dropSourcePathPrefix;
+import static org.apache.streams.util.schema.FileUtil.dropSourcePathPrefix;
 
 /**
  * Test that Activity beans are compatible with the example activities in the spec.
@@ -46,11 +45,11 @@ public class StreamsHbaseResourceGeneratorTest {
 
         StreamsHbaseGenerationConfig config = new StreamsHbaseGenerationConfig();
 
-        String sourceDirectory = "target/test-classes/streams-schemas";
+        String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
 
         config.setSourceDirectory(sourceDirectory);
 
-        config.setTargetDirectory("target/generated-resources/test");
+        config.setTargetDirectory("target/generated-resources/hbase");
 
         config.setExclusions(Sets.newHashSet("attachments"));
 
@@ -58,18 +57,9 @@ public class StreamsHbaseResourceGeneratorTest {
         config.setMaxDepth(2);
 
         StreamsHbaseResourceGenerator streamsHbaseResourceGenerator = new StreamsHbaseResourceGenerator(config);
-        Thread thread = new Thread(streamsHbaseResourceGenerator);
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptedException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-        }
+        streamsHbaseResourceGenerator.run();
 
         File testOutput = config.getTargetDirectory();
-
 
         assert( testOutput != null );
         assert( testOutput.exists() == true );
@@ -108,18 +98,5 @@ public class StreamsHbaseResourceGeneratorTest {
             Assert.fail();
         }
 
-
-//        assert( new File(testOutput + "/traits").exists() == true );
-//        assert( new File(testOutput + "/traits").isDirectory() == true );
-//        assert( new File(testOutput + "/traits").listFiles(scalaFilter) != null );
-//        assert( new File(testOutput + "/traits").listFiles(scalaFilter).length == 4 );
-//        assert( new File(testOutput + "/objectTypes").exists() == true );
-//        assert( new File(testOutput + "/objectTypes").isDirectory() == true );
-//        assert( new File(testOutput + "/objectTypes").listFiles(scalaFilter) != null );
-//        assert( new File(testOutput + "/objectTypes").listFiles(scalaFilter).length == 43 );
-//        assert( new File(testOutput + "/verbs").exists() == true );
-//        assert( new File(testOutput + "/verbs").isDirectory() == true );
-//        assert( new File(testOutput + "/verbs").listFiles(scalaFilter) != null );
-//        assert( new File(testOutput + "/verbs").listFiles(scalaFilter).length == 89 );
     }
 }

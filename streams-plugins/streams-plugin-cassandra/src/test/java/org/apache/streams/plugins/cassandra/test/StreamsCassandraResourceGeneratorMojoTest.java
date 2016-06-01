@@ -52,7 +52,9 @@ public class StreamsCassandraResourceGeneratorMojoTest extends TestCase {
 
         verifier.resetStreams();
 
-        File testOutput = new File( "./target/generated-resources/test-mojo");
+        Path testOutputPath = Paths.get(testDir.getAbsolutePath()).resolve("target/generated-resources/test-mojo");
+
+        File testOutput = testOutputPath.toFile();
 
         assert( testOutput != null );
         assert( testOutput.exists() == true );
@@ -63,13 +65,14 @@ public class StreamsCassandraResourceGeneratorMojoTest extends TestCase {
         Collection<File> outputCollection = Lists.newArrayList(outputIterator);
         assert( outputCollection.size() == 1 );
 
-        Path path = Paths.get("./target/generated-sources/test/types.cql");
+        Path path = testOutputPath.resolve("types.cql");
+
+        assert( path.toFile().exists() );
 
         String typesCqlBytes = new String(
                 java.nio.file.Files.readAllBytes(path));
 
         assert( StringUtils.countMatches(typesCqlBytes, "CREATE TYPE") == 133 );
 
-        assert( !typesCqlBytes.contains("IDK"));
     }
 }

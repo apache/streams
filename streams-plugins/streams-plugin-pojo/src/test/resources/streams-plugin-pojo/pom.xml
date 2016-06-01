@@ -23,9 +23,15 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-schemas</artifactId>
+            <artifactId>streams-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schema-activitystreams</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+            <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -62,20 +68,20 @@
                 <version>0.3-incubating-SNAPSHOT</version>
                 <configuration>
                     <sourcePaths>
-                        <sourcePath>target/test-classes/streams-schemas/activity.json</sourcePath>
-                        <sourcePath>target/test-classes/streams-schemas/collection.json</sourcePath>
-                        <sourcePath>target/test-classes/streams-schemas/media_link.json</sourcePath>
-                        <sourcePath>target/test-classes/streams-schemas/object.json</sourcePath>
-                        <sourcePath>target/test-classes/streams-schemas/objectTypes</sourcePath>
-                        <sourcePath>target/test-classes/streams-schemas/verbs</sourcePath>
+                        <sourcePath>target/test-classes/streams-schema-activitystreams/activity.json</sourcePath>
+                        <sourcePath>target/test-classes/streams-schema-activitystreams/collection.json</sourcePath>
+                        <sourcePath>target/test-classes/streams-schema-activitystreams/media_link.json</sourcePath>
+                        <sourcePath>target/test-classes/streams-schema-activitystreams/object.json</sourcePath>
+                        <sourcePath>target/test-classes/streams-schema-activitystreams/objectTypes</sourcePath>
+                        <sourcePath>target/test-classes/streams-schema-activitystreams/verbs</sourcePath>
                     </sourcePaths>
-                    <targetPackage>org.apache.streams.pojo.testmojo</targetPackage>
-                    <targetDirectory>target/generated-sources/test-mojo</targetDirectory>
+                    <targetPackage>org.apache.streams.pojo.mojo</targetPackage>
+                    <targetDirectory>target/generated-sources/pojo-mojo</targetDirectory>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>pojo</goal>
+                            <goal>generate-sources</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -86,9 +92,9 @@
                 <version>2.10</version>
                 <configuration>
                     <includes>**/*.json</includes>
-                    <outputDirectory>${project.build.directory}/test-classes/streams-schemas</outputDirectory>
+                    <outputDirectory>${project.build.directory}/test-classes/streams-schema-activitystreams</outputDirectory>
                     <includeGroupIds>org.apache.streams</includeGroupIds>
-                    <includeArtifactIds>streams-schemas</includeArtifactIds>
+                    <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
                     <includeTypes>jar,test-jar</includeTypes>
                 </configuration>
                 <executions>

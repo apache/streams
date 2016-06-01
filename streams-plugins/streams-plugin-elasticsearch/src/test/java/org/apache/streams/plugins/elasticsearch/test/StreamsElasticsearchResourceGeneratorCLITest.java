@@ -1,33 +1,29 @@
-package org.apache.streams.plugins.test;
+package org.apache.streams.plugins.elasticsearch.test;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import org.apache.streams.plugins.StreamsPojoSourceGenerator;
+import org.apache.streams.plugins.elasticsearch.StreamsElasticsearchResourceGenerator;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-import static org.apache.streams.plugins.test.StreamsPojoSourceGeneratorTest.javaFilter;
+import static org.apache.streams.plugins.elasticsearch.test.StreamsElasticsearchResourceGeneratorTest.jsonFilter;
 
 /**
  * Created by sblackmon on 5/5/16.
  */
-public class StreamsPojoSourceGeneratorCLITest {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPojoSourceGeneratorTest.class);
+public class StreamsElasticsearchResourceGeneratorCLITest {
 
     @Test
-    public void testStreamsPojoSourceGeneratorCLI() throws Exception {
+    public void testStreamsElasticsearchResourceGeneratorCLI() throws Exception {
 
         String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
-        String targetDirectory = "target/generated-sources/test-cli";
+        String targetDirectory = "target/generated-resources/elasticsearch-cli";
 
         List<String> argsList = Lists.newArrayList(sourceDirectory, targetDirectory);
-        StreamsPojoSourceGenerator.main(argsList.toArray(new String[0]));
+        StreamsElasticsearchResourceGenerator.main(argsList.toArray(new String[0]));
 
         File testOutput = new File(targetDirectory);
 
@@ -36,8 +32,8 @@ public class StreamsPojoSourceGeneratorCLITest {
         assert( testOutput.isDirectory() == true );
 
         Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-                .filter(javaFilter);
+                .filter(jsonFilter);
         Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-        assert( outputCollection.size() > 133 );
+        assert( outputCollection.size() == 133 );
     }
 }

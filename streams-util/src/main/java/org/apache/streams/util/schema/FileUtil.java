@@ -1,4 +1,4 @@
-package org.apache.streams.schema;
+package org.apache.streams.util.schema;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -13,7 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by steve on 5/1/16.
+ * FileUtil contains methods to assist in working with local schema files during
+ * source or resource generation.
  */
 public class FileUtil {
 

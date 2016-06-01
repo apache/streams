@@ -1,13 +1,12 @@
-package org.apache.streams.schema;
+package org.apache.streams.util.schema;
 
 import com.google.common.base.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
- * Created by sblackmon on 5/1/16.
+ * URIUtil contains methods to assist in resolving URIs and URI fragments.
  */
 public class URIUtil {
 

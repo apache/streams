@@ -15,10 +15,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.List;
 
-@Mojo(  name = "pig",
+@Mojo(  name = "generate-resources",
         defaultPhase = LifecyclePhase.GENERATE_RESOURCES
 )
-@Execute(   goal = "pig",
+@Execute(   goal = "generate-resources",
             phase = LifecyclePhase.GENERATE_RESOURCES
 )
 public class StreamsPigResourceGeneratorMojo extends AbstractMojo {
@@ -30,15 +30,6 @@ public class StreamsPigResourceGeneratorMojo extends AbstractMojo {
     @Component
     private MavenProject project;
 
-//    @Component
-//    private Settings settings;
-//
-//    @Parameter( defaultValue = "${localRepository}", readonly = true, required = true )
-//    protected ArtifactRepository localRepository;
-//
-//    @Parameter( defaultValue = "${plugin}", readonly = true ) // Maven 3 only
-//    private PluginDescriptor plugin;
-//
     @Parameter( defaultValue = "${project.basedir}", readonly = true )
     private File basedir;
 
@@ -64,30 +55,7 @@ public class StreamsPigResourceGeneratorMojo extends AbstractMojo {
         config.setTargetDirectory(targetDirectory);
 
         StreamsPigResourceGenerator streamsPigResourceGenerator = new StreamsPigResourceGenerator(config);
-
-        Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
-            public void uncaughtException(Thread th, Throwable ex) {
-                LOGGER.error("Exception", ex);
-                mojoFailureException = new MojoFailureException("Exception", ex);
-            }
-        };
-        Thread.setDefaultUncaughtExceptionHandler(h);
-        Thread thread = new Thread(streamsPigResourceGenerator);
-        thread.setUncaughtExceptionHandler(h);
-        try {
-            thread.start();
-            thread.join();
-        } catch (InterruptedException e) {
-            LOGGER.error("InterruptedException", e);
-        } catch (Exception e) {
-            LOGGER.error("Exception", e);
-            mojoFailureException = new MojoFailureException("Exception", e);
-        }
-
-        if( mojoFailureException != null )
-            throw mojoFailureException;
-
-        return;
+        streamsPigResourceGenerator.run();
     }
 
 }

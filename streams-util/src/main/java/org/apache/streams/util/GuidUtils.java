@@ -25,7 +25,7 @@ import com.google.common.hash.Hashing;
 import java.nio.charset.Charset;
 
 /**
- * Created by sblackmon on 12/13/13.
+ * GuidUtils contains methods for generating guids from identifiers.
  */
 public class GuidUtils {
 

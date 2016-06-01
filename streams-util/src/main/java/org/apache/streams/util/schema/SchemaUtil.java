@@ -1,4 +1,4 @@
-package org.apache.streams.schema;
+package org.apache.streams.util.schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,7 +13,7 @@ import java.util.Map;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
- * Created by steve on 4/30/16.
+ * SchemaUtil contains methods to assist in resolving schemas and schema fragments.
  */
 public class SchemaUtil {
 
