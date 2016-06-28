@@ -1,4 +1,7 @@
 {
+  "$license": [
+      "http://www.apache.org/licenses/LICENSE-2.0"
+  ],  
   "published": "2011-02-10T15:04:55Z",
   "actor": {
     "url": "http://example.org/martin",

@@ -613,6 +613,7 @@
                         </executions>
                         <configuration>
                             <excludes>
+                                <exclude>.travis.yml</exclude>
                                 <exclude>.git</exclude>
                                 <exclude>.gitignore</exclude>
                                 <exclude>.git/**</exclude>
@@ -624,8 +625,10 @@
                                 <exclude>**/README.*</exclude>
                                 <exclude>**/target/**</exclude>
                                 <exclude>**/overlays/**</exclude>
-                                <exclude>**/src/main/resources/**</exclude>
-                                <exclude>**/src/test/resources/**</exclude>
+                                <exclude>**/src/test/resources/**/*.csv</exclude>
+                                <exclude>**/src/test/resources/**/*.tsv</exclude>
+                                <exclude>**/src/test/resources/**/*.txt</exclude>
+                                <exclude>**/src/site/resources/**</exclude>
                                 <exclude>**/.gitignore</exclude>
                                 <exclude>**/*.properties</exclude>
                                 <exclude>**/*.iml</exclude>
