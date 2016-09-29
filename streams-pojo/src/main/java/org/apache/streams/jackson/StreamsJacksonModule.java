@@ -46,29 +46,44 @@ public class StreamsJacksonModule extends SimpleModule {
     public StreamsJacksonModule() {
         super();
 
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                                                  .setUrls(ClasspathHelper.forPackage("org.apache.streams.jackson"))
-                                                  .setScanners(new SubTypesScanner()));
-
-        Set<Class<? extends StreamsDateTimeFormat>> dateTimeFormatClasses = reflections.getSubTypesOf(StreamsDateTimeFormat.class);
-
-        List<String> dateTimeFormats = new ArrayList<>();
-        for (Class dateTimeFormatClass : dateTimeFormatClasses) {
-            try {
-                dateTimeFormats.add(((StreamsDateTimeFormat) (dateTimeFormatClass.newInstance())).getFormat());
-            } catch (Exception e) {
-                LOGGER.warn("Exception getting format from " + dateTimeFormatClass);
-            }
-        }
-
         addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
-        addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class, dateTimeFormats));
+        addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class));
 
         addSerializer(Period.class, new StreamsPeriodSerializer(Period.class));
         addDeserializer(Period.class, new StreamsPeriodDeserializer(Period.class));
     }
 
-    public StreamsJacksonModule(List<String> formats) {
+    public StreamsJacksonModule(boolean scanForDateTimeFormats) {
+        super();
+
+        if(scanForDateTimeFormats) {
+            Reflections reflections = new Reflections(new ConfigurationBuilder()
+                    .setUrls(ClasspathHelper.forPackage("org.apache.streams.jackson"))
+                    .setScanners(new SubTypesScanner()));
+
+            Set<Class<? extends StreamsDateTimeFormat>> dateTimeFormatClasses = reflections.getSubTypesOf(StreamsDateTimeFormat.class);
+
+            List<String> dateTimeFormats = new ArrayList<>();
+            for (Class dateTimeFormatClass : dateTimeFormatClasses) {
+                try {
+                    dateTimeFormats.add(((StreamsDateTimeFormat) (dateTimeFormatClass.newInstance())).getFormat());
+                } catch (Exception e) {
+                    LOGGER.warn("Exception getting format from " + dateTimeFormatClass);
+                }
+            }
+
+            addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class, dateTimeFormats));
+        } else {
+            addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class));
+        }
+
+        addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
+
+        addSerializer(Period.class, new StreamsPeriodSerializer(Period.class));
+        addDeserializer(Period.class, new StreamsPeriodDeserializer(Period.class));
+    }
+
+    public StreamsJacksonModule(List < String > formats) {
         super();
 
         addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
