@@ -32,6 +32,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(Parameterized.class)
@@ -77,4 +78,23 @@ public class RegexUtilsTest {
         assertThat(regularResults.size(), is(equalTo(regularMatchCount)));
     }
 
+    @Test
+    public void testMatches_timeout() {
+        /**
+         * The purpose of this test is to ensure that any sort of catastrophic backtracking
+         * is stopped in a reasonable amount of time.
+         */
+        String pattern = "(x+x+)+y";
+        String content = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
+        long startTime = System.currentTimeMillis();
+        Map<String, List<Integer>> regularResults = RegexUtils.extractMatches(pattern, content);
+        long endTime = System.currentTimeMillis();
+
+        long executionTime = ((endTime - startTime) / 1000);
+
+        //We are asserting that the time it took to run is less than 1.5 times the timeout value
+        //This is to account for any sort of (small) overhead that could occur
+        assertTrue(executionTime < RegexUtils.REGEX_MATCH_THREAD_KEEP_ALIVE_DEFAULT_TIMEOUT * 1.5);
+    }
 }

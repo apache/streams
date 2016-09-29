@@ -26,6 +26,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +39,10 @@ public class RegexUtils {
 
     private static final Map<String, Pattern> patternCache = Maps.newConcurrentMap();
     private final static Logger LOGGER = LoggerFactory.getLogger(RegexUtils.class);
+    final static long REGEX_MATCH_THREAD_KEEP_ALIVE_DEFAULT_TIMEOUT = 1000L; //1 second
+    private static final int MAX_THREADS = 64; //Must be multiple of two
+
+    private static ForkJoinPool threadPool = new ForkJoinPool(MAX_THREADS);
 
     private RegexUtils() {}
 
@@ -62,27 +69,16 @@ public class RegexUtils {
 
     protected static Map<String, List<Integer>> getMatches(String pattern, String content, int capture) {
         try {
-            Map<String, List<Integer>> matches = Maps.newHashMap();
-            if(content == null) {
-                return matches;
-            }
+            //Since certain regex patterns can be susceptible to catastrophic backtracking
+            //We need to be able to isolate this operation in a separate thread and kill
+            //it if it ends up taking too long
+            RegexRunnable regexRunnable = new RegexRunnable(pattern, content, capture);
 
-            Matcher m = getPattern(pattern).matcher(content);
-            while (m.find()) {
-                String group = capture > 0 ? m.group(capture) : m.group();
-                if (group != null && !group.equals("")) {
-                    List<Integer> indices;
-                    if (matches.containsKey(group)) {
-                        indices = matches.get(group);
-                    } else {
-                        indices = Lists.newArrayList();
-                        matches.put(group, indices);
-                    }
-                    indices.add(m.start());
-                }
-            }
-            return matches;
-        } catch (Throwable e) {
+            threadPool.submit(regexRunnable);
+            threadPool.awaitTermination(REGEX_MATCH_THREAD_KEEP_ALIVE_DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+
+            return regexRunnable.getMatches();
+        } catch (Exception e) {
             LOGGER.error("Throwable process {}", e);
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -98,5 +94,43 @@ public class RegexUtils {
             patternCache.put(pattern, p);
         }
         return p;
+    }
+
+    static class RegexRunnable extends RecursiveAction {
+        private String pattern;
+        private InterruptableCharSequence content;
+        private int capture;
+
+        private Map<String, List<Integer>> matches = Maps.newHashMap();
+
+        public RegexRunnable(String pattern, String content, int capture) {
+            this.pattern = pattern;
+            this.content = new InterruptableCharSequence(content);
+            this.capture = capture;
+        }
+
+        @Override
+        public void compute() {
+            if(content != null) {
+                Matcher m = getPattern(pattern).matcher(content);
+                while (m.find()) {
+                    String group = capture > 0 ? m.group(capture) : m.group();
+                    if (group != null && !group.equals("")) {
+                        List<Integer> indices;
+                        if (matches.containsKey(group)) {
+                            indices = matches.get(group);
+                        } else {
+                            indices = Lists.newArrayList();
+                            matches.put(group, indices);
+                        }
+                        indices.add(m.start());
+                    }
+                }
+            }
+        }
+
+        public Map<String, List<Integer>> getMatches() {
+            return this.matches;
+        }
     }
 }
