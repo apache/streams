@@ -32,6 +32,7 @@ import org.apache.streams.local.monitoring.MonitoringConfiguration;
 import org.apache.streams.local.queues.ThroughputQueue;
 import org.apache.streams.local.tasks.*;
 import org.apache.streams.monitoring.tasks.BroadcastMonitorThread;
+import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 
@@ -310,6 +311,9 @@ public class LocalStreamBuilder implements StreamBuilder {
         }
         this.executor.shutdown();
         this.monitor.shutdown();
+
+        clearJMXBeans();
+
         try {
             if(!this.executor.awaitTermination(streamConfig.getExecutorShutdownPauseMs(), TimeUnit.MILLISECONDS)){
                 this.executor.shutdownNow();
@@ -334,6 +338,9 @@ public class LocalStreamBuilder implements StreamBuilder {
         for(StreamComponent prov : this.providers.values()) {
             shutDownTask(prov, streamsTasks);
         }
+
+        clearJMXBeans();
+
         //need to make this configurable
         if(!this.executor.awaitTermination(streamConfig.getExecutorShutdownWaitMs(), TimeUnit.MILLISECONDS)) { // all threads should have terminated already.
             this.executor.shutdownNow();
@@ -342,6 +349,14 @@ public class LocalStreamBuilder implements StreamBuilder {
         if(!this.monitor.awaitTermination(streamConfig.getMonitorShutdownWaitMs(), TimeUnit.MILLISECONDS)) { // all threads should have terminated already.
             this.monitor.shutdownNow();
             this.monitor.awaitTermination(streamConfig.getMonitorShutdownWaitMs(), TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void clearJMXBeans() {
+        try {
+            ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
+        } catch (Exception e) {
+            LOGGER.error("Exception while trying to remove all MBeans of domain 'org.apache.streams.local' : {}", e);
         }
     }
 
