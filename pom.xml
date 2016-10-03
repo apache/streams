@@ -33,7 +33,7 @@
     <name>Apache Streams Project</name>
     <description>Apache Streams Project</description>
 
-    <url>http://streams.incubator.apache.org/site/${project.version}/${project.artifactId}</url>
+    <url>http://streams.incubator.apache.org/site/${project.version}/streams-project</url>
 
     <licenses>
         <license>
@@ -164,7 +164,7 @@
         </snapshotRepository>
         <site>
             <id>site.streams.project</id>
-            <url>scm:svn:https://svn.apache.org/repos/infra/websites/production/streams/content/site/${project.version}/streams-project</url>
+            <url>scm:svn:https://svn.apache.org/repos/asf/incubator/streams/site/trunk/content/site/${project.version}/streams-project</url>
         </site>
     </distributionManagement>
 
