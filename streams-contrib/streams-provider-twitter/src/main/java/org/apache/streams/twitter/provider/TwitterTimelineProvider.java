@@ -18,15 +18,23 @@
 
 package org.apache.streams.twitter.provider;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.TwitterUserInformationConfiguration;
+import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
+import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -48,11 +56,39 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  *  Retrieve recent posts from a list of user ids or names.
  */
-public class TwitterTimelineProvider implements StreamsProvider, Serializable {
+public class TwitterTimelineProvider implements StreamsProvider, Serializable, Runnable {
 
     public final static String STREAMS_ID = "TwitterTimelineProvider";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProvider.class);
+
+    private static ObjectMapper MAPPER = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+
+    public static void main(String[] args) {
+        TwitterUserInformationConfiguration config = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration("twitter");
+        TwitterTimelineProvider provider = new TwitterTimelineProvider(config);
+        provider.run();
+    }
+
+    @Override
+    public void run() {
+        prepare(config);
+        startStream();
+        do {
+            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+            Iterator<StreamsDatum> iterator = readCurrent().iterator();
+            while(iterator.hasNext()) {
+                StreamsDatum datum = iterator.next();
+                String json;
+                try {
+                    json = MAPPER.writeValueAsString(datum.getDocument());
+                    System.out.println(json);
+                } catch (JsonProcessingException e) {
+                    System.err.println(e.getMessage());
+                }
+            }
+        } while( isRunning());
+    }
 
     public static final int MAX_NUMBER_WAITING = 10000;
 
@@ -116,6 +152,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         running.set(true);
 
         executor.shutdown();
+
     }
 
     public boolean shouldContinuePulling(List<Status> statuses) {
@@ -304,4 +341,5 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
             lock.readLock().unlock();
         }
     }
+
 }
