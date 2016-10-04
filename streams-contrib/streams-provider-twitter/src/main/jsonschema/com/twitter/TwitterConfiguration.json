@@ -72,6 +72,16 @@
                     "type": "string"
                 }
             }
+        },
+        "retrySleepMs": {
+             "type": "integer",
+             "description": "ms to sleep when hitting a rate limit",
+             "default": 100000
+         },
+         "retryMax": {
+             "type": "integer",
+             "description": "ms to sleep when hitting a rate limit",
+             "default": 10
         }
    }
 }

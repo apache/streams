@@ -6,6 +6,7 @@
     ],
     "id": "#",
     "javaType" : "org.apache.streams.twitter.pojo.Follow",
+    "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "follower": {
             "$ref": "User.json"

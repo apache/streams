@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import twitter4j.Twitter;
 
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -57,6 +58,7 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
     }
 
     public TwitterFollowingProvider(TwitterFollowingConfiguration config) {
+        super(config);
         this.config = config;
     }
 
@@ -130,7 +132,7 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
     }
 
     protected Queue<StreamsDatum> constructQueue() {
-        return Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(MAX_NUMBER_WAITING));
+        return new ConcurrentLinkedQueue<StreamsDatum>();
     }
 
     @Override
@@ -148,5 +150,10 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
         } finally {
             lock.readLock().unlock();
         }
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running.get();
     }
 }

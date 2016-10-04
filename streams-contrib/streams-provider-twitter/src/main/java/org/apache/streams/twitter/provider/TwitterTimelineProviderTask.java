@@ -18,10 +18,17 @@
 
 package org.apache.streams.twitter.provider;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
+import org.apache.streams.twitter.pojo.*;
+import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.*;
+import twitter4j.Status;
 
 import java.util.List;
 
@@ -31,6 +38,8 @@ import java.util.List;
 public class TwitterTimelineProviderTask implements Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProviderTask.class);
+
+    private static ObjectMapper MAPPER = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
 
     protected TwitterTimelineProvider provider;
     protected Twitter client;
@@ -48,6 +57,8 @@ public class TwitterTimelineProviderTask implements Runnable {
         Paging paging = new Paging(1, 200);
         List<Status> statuses = null;
         int count = 0;
+
+        LOGGER.info(id + " Thread Starting");
 
         do
         {
@@ -67,10 +78,15 @@ public class TwitterTimelineProviderTask implements Runnable {
                     statuses = client.getUserTimeline(id, paging);
 
                     for (Status tStat : statuses) {
-                        String json = TwitterObjectFactory.getRawJSON(tStat);
 
+                        String json = TwitterObjectFactory.getRawJSON(tStat);
                         if( count < provider.getConfig().getMaxItems() ) {
-                            provider.addDatum(new StreamsDatum(json));
+                            try {
+                                org.apache.streams.twitter.pojo.Tweet tweet = MAPPER.readValue(json, org.apache.streams.twitter.pojo.Tweet.class);
+                                ComponentUtils.offerUntilSuccess(new StreamsDatum(tweet), provider.providerQueue);
+                            } catch(Exception exception) {
+                                LOGGER.warn("Failed to read document as Tweet ", tStat);
+                            }
                             count++;
                         }
 

@@ -18,17 +18,24 @@
 
 package org.apache.streams.twitter.provider;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.TwitterFollowingConfiguration;
 import org.apache.streams.twitter.TwitterUserInformationConfiguration;
+import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
+import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.util.ComponentUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -36,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.json.DataObjectFactory;
 
@@ -48,17 +54,27 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 public class TwitterUserInformationProvider implements StreamsProvider, Serializable
 {
 
     public static final String STREAMS_ID = "TwitterUserInformationProvider";
 
+    private static ObjectMapper MAPPER = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TwitterUserInformationProvider.class);
+
+    public static final int MAX_NUMBER_WAITING = 1000;
 
     private TwitterUserInformationConfiguration config;
 
-    protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
+    protected final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    protected volatile Queue<StreamsDatum> providerQueue;
 
     public TwitterUserInformationConfiguration getConfig()              { return config; }
 
@@ -81,7 +97,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     }
 
     public TwitterUserInformationProvider() {
-        this.config = new ComponentConfigurator<>(TwitterFollowingConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
+        this.config = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
     }
 
     public TwitterUserInformationProvider(TwitterUserInformationConfiguration config) {
@@ -99,7 +115,20 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     @Override
     public void startStream() {
+
+        Preconditions.checkArgument(idsBatches.hasNext() || screenNameBatches.hasNext());
+
+        LOGGER.info("{}{} - startStream", idsBatches, screenNameBatches);
+
+        while(idsBatches.hasNext())
+            loadBatch(idsBatches.next());
+
+        while(screenNameBatches.hasNext())
+            loadBatch(screenNameBatches.next());
+
         running.set(true);
+
+        executor.shutdown();
     }
 
     protected void loadBatch(Long[] ids) {
@@ -116,9 +145,14 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
                 for(int i = 0; i < ids.length; i++)
                     toQuery[i] = ids[i];
 
-                for (User tStat : client.lookupUsers(toQuery)) {
-                    String json = DataObjectFactory.getRawJSON(tStat);
-                    ComponentUtils.offerUntilSuccess(new StreamsDatum(json), providerQueue);
+                for (twitter4j.User tUser : client.lookupUsers(toQuery)) {
+                    String json = DataObjectFactory.getRawJSON(tUser);
+                    try {
+                        User user = MAPPER.readValue(json, org.apache.streams.twitter.pojo.User.class);
+                        ComponentUtils.offerUntilSuccess(new StreamsDatum(user), providerQueue);
+                    } catch(Exception exception) {
+                        LOGGER.warn("Failed to read document as User ", tUser);
+                    }
                 }
                 keepTrying = 10;
             }
@@ -141,9 +175,14 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
         {
             try
             {
-                for (User tStat : client.lookupUsers(ids)) {
-                    String json = DataObjectFactory.getRawJSON(tStat);
-                    providerQueue.offer(new StreamsDatum(json));
+                for (twitter4j.User tUser : client.lookupUsers(ids)) {
+                    String json = DataObjectFactory.getRawJSON(tUser);
+                    try {
+                        User user = MAPPER.readValue(json, org.apache.streams.twitter.pojo.User.class);
+                        ComponentUtils.offerUntilSuccess(new StreamsDatum(user), providerQueue);
+                    } catch(Exception exception) {
+                        LOGGER.warn("Failed to read document as User ", tUser);
+                    }
                 }
                 keepTrying = 10;
             }
@@ -158,28 +197,32 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     public StreamsResultSet readCurrent() {
 
-        Preconditions.checkArgument(idsBatches.hasNext() || screenNameBatches.hasNext());
+        LOGGER.info("{}{} - readCurrent", idsBatches, screenNameBatches);
 
-        LOGGER.info("readCurrent");
+        StreamsResultSet result;
 
-        while(idsBatches.hasNext())
-            loadBatch(idsBatches.next());
+        try {
+            lock.writeLock().lock();
+            result = new StreamsResultSet(providerQueue);
+            result.setCounter(new DatumStatusCounter());
+            providerQueue = constructQueue();
+            LOGGER.info("{}{} - providing {} docs", idsBatches, screenNameBatches, result.size());
+        } finally {
+            lock.writeLock().unlock();
+        }
 
-        while(screenNameBatches.hasNext())
-            loadBatch(screenNameBatches.next());
+        if( providerQueue.isEmpty() && executor.isTerminated()) {
+            LOGGER.info("{}{} - completed", idsBatches, screenNameBatches);
 
-
-        LOGGER.info("Finished.  Cleaning up...");
-
-        LOGGER.info("Providing {} docs", providerQueue.size());
-
-        StreamsResultSet result =  new StreamsResultSet(providerQueue);
-        running.set(false);
-
-        LOGGER.info("Exiting");
+            running.set(false);
+        }
 
         return result;
 
+    }
+
+    protected Queue<StreamsDatum> constructQueue() {
+        return new LinkedBlockingQueue<StreamsDatum>();
     }
 
     public StreamsResultSet readNew(BigInteger sequence) {
@@ -224,6 +267,13 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
         if( o instanceof TwitterFollowingConfiguration )
             config = (TwitterUserInformationConfiguration) o;
+
+        try {
+            lock.writeLock().lock();
+            providerQueue = constructQueue();
+        } finally {
+            lock.writeLock().unlock();
+        }
 
         Preconditions.checkNotNull(providerQueue);
         Preconditions.checkNotNull(config.getOauth().getConsumerKey());
@@ -276,7 +326,10 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
         if(screenNames.size() > 0)
             screenNameBatches.add(screenNames.toArray(new String[ids.size()]));
 
-        executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, (ids.size() + screenNames.size())));
+        if(ids.size() + screenNames.size() > 0)
+            executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, (ids.size() + screenNames.size())));
+        else
+            executor = MoreExecutors.listeningDecorator(newSingleThreadExecutor());
 
         this.idsBatches = idsBatches.iterator();
         this.screenNameBatches = screenNameBatches.iterator();

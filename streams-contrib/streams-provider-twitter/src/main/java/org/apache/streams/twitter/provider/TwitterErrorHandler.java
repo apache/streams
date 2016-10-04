@@ -18,6 +18,9 @@
 
 package org.apache.streams.twitter.provider;
 
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.twitter.TwitterConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Twitter;
@@ -32,11 +35,18 @@ public class TwitterErrorHandler
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterErrorHandler.class);
 
     // selected because 3 * 5 + n >= 15 for positive n
-    protected static final long retry = 3*60*1000;
+    protected static long retry =
+            new ComponentConfigurator<TwitterConfiguration>(TwitterConfiguration.class).detectConfiguration(
+                    StreamsConfigurator.getConfig().getConfig("twitter")
+            ).getRetrySleepMs();
+    protected static long retryMax =
+            new ComponentConfigurator<TwitterConfiguration>(TwitterConfiguration.class).detectConfiguration(
+                    StreamsConfigurator.getConfig().getConfig("twitter")
+            ).getRetryMax();
 
     @Deprecated
     public static int handleTwitterError(Twitter twitter, Exception exception) {
-        return handleTwitterError(twitter, null, exception);
+        return handleTwitterError( twitter, null, exception);
     }
 
     public static int handleTwitterError(Twitter twitter, Long id, Exception exception)
@@ -82,11 +92,11 @@ public class TwitterErrorHandler
                         LOGGER.warn("User does not exist: {}", id);
                     else
                         LOGGER.warn("User does not exist");
-                    return 100;
+                    return (int)retryMax;
                 }
                 else
                 {
-                    return 1;
+                    return (int)retryMax/3;
                 }
             }
             else
@@ -94,7 +104,7 @@ public class TwitterErrorHandler
                 if(e.getExceptionCode().equals("ced778ef-0c669ac0"))
                 {
                     // This is a known weird issue, not exactly sure the cause, but you'll never be able to get the data.
-                    return 5;
+                    return (int)retryMax/3;
                 }
                 else if(e.getExceptionCode().equals("4be80492-0a7bf7c7")) {
                     // This is a 401 reflecting credentials don't have access to the requested resource.
@@ -102,7 +112,7 @@ public class TwitterErrorHandler
                         LOGGER.warn("Authentication Exception accessing id: {}", id);
                     else
                         LOGGER.warn("Authentication Exception");
-                    return 5;
+                    return (int)retryMax;
                 }
                 else
                 {
@@ -111,19 +121,19 @@ public class TwitterErrorHandler
                     LOGGER.warn("   Access: {}", e.getAccessLevel());
                     LOGGER.warn("     Code: {}", e.getExceptionCode());
                     LOGGER.warn("  Message: {}", e.getLocalizedMessage());
-                    return 1;
+                    return (int)retryMax/10;
                 }
             }
         }
         else if(exception instanceof RuntimeException)
         {
             LOGGER.warn("TwitterGrabber: Unknown Runtime Error", exception.getMessage());
-            return 1;
+            return (int)retryMax/3;
         }
         else
         {
             LOGGER.info("Completely Unknown Exception: {}", exception);
-            return 1;
+            return (int)retryMax/3;
         }
     }
 
