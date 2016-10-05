@@ -115,10 +115,6 @@
             <scope>test</scope>
             <type>test-jar</type>
         </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -144,11 +140,6 @@
                 <artifactId>lucene-codecs</artifactId>
                 <version>${lucene.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-all</artifactId>
-                <version>1.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -232,6 +223,22 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${failsafe.plugin.version}</version>
+                <configuration>
+                    <!-- Run integration test suite rather than individual tests. -->
+                    <excludes>
+                        <exclude>**/*Test.java</exclude>
+                        <exclude>**/*Tests.java</exclude>
+                        <include>**/*IT.java</include>
+                    </excludes>
+                    <includes>
+                        <include>**/*ITs.java</include>
+                    </includes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
