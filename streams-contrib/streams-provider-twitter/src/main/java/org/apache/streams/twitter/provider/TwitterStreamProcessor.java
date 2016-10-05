@@ -88,8 +88,9 @@ public class TwitterStreamProcessor extends StringDelimitedProcessor {
         @Override
         public List<StreamsDatum> call() throws Exception {
             if(item != null) {
-                ObjectNode objectNode = (ObjectNode) mapper.readTree(item);
-                StreamsDatum rawDatum = new StreamsDatum(objectNode);
+                Class itemClass = TwitterEventClassifier.detectClass(item);
+                Object document = mapper.readValue(item, itemClass);
+                StreamsDatum rawDatum = new StreamsDatum(document);
                 return Lists.newArrayList(rawDatum);
             }
             return Lists.newArrayList();

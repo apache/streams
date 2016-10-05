@@ -197,7 +197,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     public StreamsResultSet readCurrent() {
 
-        LOGGER.info("{}{} - readCurrent", idsBatches, screenNameBatches);
+        LOGGER.debug("{}{} - readCurrent", idsBatches, screenNameBatches);
 
         StreamsResultSet result;
 
@@ -206,7 +206,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
             result = new StreamsResultSet(providerQueue);
             result.setCounter(new DatumStatusCounter());
             providerQueue = constructQueue();
-            LOGGER.info("{}{} - providing {} docs", idsBatches, screenNameBatches, result.size());
+            LOGGER.debug("{}{} - providing {} docs", idsBatches, screenNameBatches, result.size());
         } finally {
             lock.writeLock().unlock();
         }
@@ -215,6 +215,8 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
             LOGGER.info("{}{} - completed", idsBatches, screenNameBatches);
 
             running.set(false);
+
+            LOGGER.info("Exiting");
         }
 
         return result;

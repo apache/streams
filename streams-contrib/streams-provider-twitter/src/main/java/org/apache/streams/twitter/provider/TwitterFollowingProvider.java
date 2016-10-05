@@ -88,7 +88,7 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
         Twitter client = getTwitterClient();
 
         for (int i = 0; i < ids.length; i++) {
-            TwitterFollowingProviderTask providerTask = new TwitterFollowingProviderTask(this, client, ids[i], getConfig().getEndpoint(), getConfig().getIdsOnly());
+            TwitterFollowingProviderTask providerTask = new TwitterFollowingProviderTask(this, client, ids[i]);
             executor.submit(providerTask);
         }
     }
@@ -97,7 +97,7 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
         Twitter client = getTwitterClient();
 
         for (int i = 0; i < screenNames.length; i++) {
-            TwitterFollowingProviderTask providerTask = new TwitterFollowingProviderTask(this, client, screenNames[i], getConfig().getEndpoint(), getConfig().getIdsOnly());
+            TwitterFollowingProviderTask providerTask = new TwitterFollowingProviderTask(this, client, screenNames[i]);
             executor.submit(providerTask);
         }
 
@@ -106,7 +106,7 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
     @Override
     public StreamsResultSet readCurrent() {
 
-        LOGGER.debug("Providing {} docs", providerQueue.size());
+        LOGGER.info("{}{} - readCurrent", idsBatches, screenNameBatches);
 
         StreamsResultSet result;
 
@@ -115,12 +115,13 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
             result = new StreamsResultSet(providerQueue);
             result.setCounter(new DatumStatusCounter());
             providerQueue = constructQueue();
+            LOGGER.debug("{}{} - providing {} docs", idsBatches, screenNameBatches, result.size());
         } finally {
             lock.writeLock().unlock();
         }
 
         if (providerQueue.isEmpty() && executor.isTerminated()) {
-            LOGGER.info("Finished.  Cleaning up...");
+            LOGGER.info("{}{} - completed", idsBatches, screenNameBatches);
 
             running.set(false);
 

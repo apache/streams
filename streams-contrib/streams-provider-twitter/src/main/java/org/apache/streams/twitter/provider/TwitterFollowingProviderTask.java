@@ -44,27 +44,20 @@ public class TwitterFollowingProviderTask implements Runnable {
     protected TwitterFollowingProvider provider;
     protected Twitter client;
     protected Long id;
-    protected Boolean idsOnly;
     protected String screenName;
-    protected String endpoint;
 
-    private int max_per_page = 200;
     int count = 0;
 
-    public TwitterFollowingProviderTask(TwitterFollowingProvider provider, Twitter twitter, Long id, String endpoint, Boolean idsOnly) {
+    public TwitterFollowingProviderTask(TwitterFollowingProvider provider, Twitter twitter, Long id) {
         this.provider = provider;
         this.client = twitter;
         this.id = id;
-        this.endpoint = endpoint;
-        this.idsOnly = idsOnly;
     }
 
-    public TwitterFollowingProviderTask(TwitterFollowingProvider provider, Twitter twitter, String screenName, String endpoint, Boolean idsOnly) {
+    public TwitterFollowingProviderTask(TwitterFollowingProvider provider, Twitter twitter, String screenName) {
         this.provider = provider;
         this.client = twitter;
         this.screenName = screenName;
-        this.endpoint = endpoint;
-        this.idsOnly = idsOnly;
     }
 
 
@@ -84,9 +77,9 @@ public class TwitterFollowingProviderTask implements Runnable {
 
     protected void getFollowing(Long id) {
 
-        Preconditions.checkArgument(endpoint.equals("friends") || endpoint.equals("followers"));
+        Preconditions.checkArgument(provider.getConfig().getEndpoint().equals("friends") || provider.getConfig().getEndpoint().equals("followers"));
 
-        if( idsOnly )
+        if( provider.getConfig().getIdsOnly() )
             collectIds(id);
         else
             collectUsers(id);
@@ -112,10 +105,10 @@ public class TwitterFollowingProviderTask implements Runnable {
                 }
 
                 PagableResponseList<twitter4j.User> list = null;
-                if( endpoint.equals("followers") )
-                    list = client.friendsFollowers().getFollowersList(id.longValue(), curser, max_per_page);
-                else if( endpoint.equals("friends") )
-                    list = client.friendsFollowers().getFriendsList(id.longValue(), curser, max_per_page);
+                if( provider.getConfig().getEndpoint().equals("followers") )
+                    list = client.friendsFollowers().getFollowersList(id.longValue(), curser, provider.getConfig().getMaxItems().intValue());
+                else if( provider.getConfig().getEndpoint().equals("friends") )
+                    list = client.friendsFollowers().getFriendsList(id.longValue(), curser, provider.getConfig().getMaxItems().intValue());
 
                 Preconditions.checkNotNull(list);
                 Preconditions.checkArgument(list.size() > 0);
@@ -126,11 +119,11 @@ public class TwitterFollowingProviderTask implements Runnable {
 
                     try {
                         Follow follow = null;
-                        if( endpoint.equals("followers") ) {
+                        if( provider.getConfig().getEndpoint().equals("followers") ) {
                             follow = new Follow()
                                     .withFollowee(mapper.readValue(userJson, User.class))
                                     .withFollower(mapper.readValue(otherJson, User.class));
-                        } else if( endpoint.equals("friends") ) {
+                        } else if( provider.getConfig().getEndpoint().equals("friends") ) {
                             follow = new Follow()
                                     .withFollowee(mapper.readValue(otherJson, User.class))
                                     .withFollower(mapper.readValue(userJson, User.class));
@@ -147,9 +140,9 @@ public class TwitterFollowingProviderTask implements Runnable {
                         LOGGER.warn("Exception: {}", e);
                     }
                 }
-                if( list.size() == max_per_page )
-                    curser = list.getNextCursor();
-                else break;
+                if( !list.hasNext() ) break;
+                if( list.getNextCursor() == 0 ) break;
+                curser = list.getNextCursor();
             }
             catch(TwitterException twitterException) {
                 keepTrying += TwitterErrorHandler.handleTwitterError(client, twitterException);
@@ -170,10 +163,10 @@ public class TwitterFollowingProviderTask implements Runnable {
             try
             {
                 twitter4j.IDs ids = null;
-                if( endpoint.equals("followers") )
-                    ids = client.friendsFollowers().getFollowersIDs(id.longValue(), curser, max_per_page);
-                else if( endpoint.equals("friends") )
-                    ids = client.friendsFollowers().getFriendsIDs(id.longValue(), curser, max_per_page);
+                if( provider.getConfig().getEndpoint().equals("followers") )
+                    ids = client.friendsFollowers().getFollowersIDs(id.longValue(), curser, provider.getConfig().getMaxItems().intValue());
+                else if( provider.getConfig().getEndpoint().equals("friends") )
+                    ids = client.friendsFollowers().getFriendsIDs(id.longValue(), curser, provider.getConfig().getMaxItems().intValue());
 
                 Preconditions.checkNotNull(ids);
                 Preconditions.checkArgument(ids.getIDs().length > 0);
@@ -182,16 +175,15 @@ public class TwitterFollowingProviderTask implements Runnable {
 
                     try {
                         Follow follow = null;
-                        if( endpoint.equals("followers") ) {
+                        if( provider.getConfig().getEndpoint().equals("followers") ) {
                             follow = new Follow()
                                     .withFollowee(new User().withId(id))
                                     .withFollower(new User().withId(otherId));
-                        } else if( endpoint.equals("friends") ) {
+                        } else if( provider.getConfig().getEndpoint().equals("friends") ) {
                             follow = new Follow()
                                     .withFollowee(new User().withId(otherId))
                                     .withFollower(new User().withId(id));
                         }
-                        ComponentUtils.offerUntilSuccess(new StreamsDatum(follow), provider.providerQueue);
 
                         Preconditions.checkNotNull(follow);
 
@@ -203,9 +195,9 @@ public class TwitterFollowingProviderTask implements Runnable {
                         LOGGER.warn("Exception: {}", e);
                     }
                 }
-                if( ids.hasNext() )
-                    curser = ids.getNextCursor();
-                else break;
+                if( !ids.hasNext() ) break;
+                if( ids.getNextCursor() == 0 ) break;
+                curser = ids.getNextCursor();
             }
             catch(TwitterException twitterException) {
                 keepTrying += TwitterErrorHandler.handleTwitterError(client, id, twitterException);
