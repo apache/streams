@@ -43,26 +43,10 @@ public class TwitterTimelineProviderIT {
     @Test
     public void testTwitterTimelineProvider() throws Exception {
 
-        PrintStream stdout = new PrintStream(new BufferedOutputStream(new FileOutputStream("./target/test-classes/TwitterTimelineProviderTest.stdout.txt")));
-        PrintStream stderr = new PrintStream(new BufferedOutputStream(new FileOutputStream("./target/test-classes/TwitterTimelineProviderTest.stderr.txt")));
+        String configfile = "./target/test-classes/TwitterTimelineProviderIT.conf";
+        String outfile = "./target/test-classes/TwitterTimelineProviderIT.txt";
 
-        System.setOut(stdout);
-        System.setErr(stderr);
-
-        Config reference = ConfigFactory.load();
-        File conf_file = new File("target/test-classes/TwitterTimelineProviderTest.conf");
-        assert(conf_file.exists());
-        Config testResourceConfig = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-
-        Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-        StreamsConfiguration streams = StreamsConfigurator.detectConfiguration(typesafe);
-        TwitterUserInformationConfiguration testConfig = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration(typesafe.getConfig("twitter"));
-
-        TwitterTimelineProvider provider = new TwitterTimelineProvider(testConfig);
-        provider.run();
-
-        stdout.flush();
-        stderr.flush();
+        TwitterTimelineProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
 
         File out = new File("target/test-classes/TwitterTimelineProviderTest.stdout.txt");
         assert (out.exists());
@@ -75,19 +59,6 @@ public class TwitterTimelineProviderIT {
         while(outCounter.readLine() != null) {}
 
         assert (outCounter.getLineNumber() == 1000);
-
-        File err = new File("target/test-classes/TwitterTimelineProviderTest.stderr.txt");
-        assert (err.exists());
-        assert (err.canRead());
-        assert (err.isFile());
-
-        FileReader errReader = new FileReader(err);
-        LineNumberReader errCounter = new LineNumberReader(errReader);
-
-        while(errCounter.readLine() != null) {}
-
-        assert (errCounter.getLineNumber() == 0);
-
 
     }
 }

@@ -24,8 +24,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigParseOptions;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
@@ -42,6 +46,11 @@ import org.slf4j.LoggerFactory;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
@@ -55,8 +64,22 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  *  Retrieve recent posts from a list of user ids or names.
+ *
+ *  To use from command line:
+ *
+ *  Supply (at least) the following required configuration in application.conf:
+ *
+ *  twitter.oauth.consumerKey
+ *  twitter.oauth.consumerSecret
+ *  twitter.oauth.accessToken
+ *  twitter.oauth.accessTokenSecret
+ *  twitter.info
+ *
+ *  Launch using:
+ *
+ *  mvn exec:java -Dexec.mainClass=org.apache.streams.twitter.provider.TwitterTimelineProvider -Dexec.args="application.conf tweets.json"
  */
-public class TwitterTimelineProvider implements StreamsProvider, Serializable, Runnable {
+public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     public final static String STREAMS_ID = "TwitterTimelineProvider";
 
@@ -64,30 +87,43 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable, R
 
     private static ObjectMapper MAPPER = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
 
-    public static void main(String[] args) {
-        TwitterUserInformationConfiguration config = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration("twitter");
-        TwitterTimelineProvider provider = new TwitterTimelineProvider(config);
-        provider.run();
-    }
+    public static void main(String[] args) throws Exception {
 
-    @Override
-    public void run() {
-        prepare(config);
-        startStream();
+        Preconditions.checkArgument(args.length >= 2);
+
+        String configfile = args[0];
+        String outfile = args[1];
+
+        Config reference = ConfigFactory.load();
+        File conf_file = new File(configfile);
+        assert(conf_file.exists());
+        Config testResourceConfig = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
+
+        Config typesafe  = testResourceConfig.withFallback(reference).resolve();
+
+        StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
+        TwitterUserInformationConfiguration config = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration(typesafe, "twitter");
+        TwitterTimelineProvider provider = new TwitterTimelineProvider(config);
+
+        PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
+        provider.prepare(config);
+        provider.startStream();
         do {
-            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-            Iterator<StreamsDatum> iterator = readCurrent().iterator();
+            Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
+            Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
             while(iterator.hasNext()) {
                 StreamsDatum datum = iterator.next();
                 String json;
                 try {
                     json = MAPPER.writeValueAsString(datum.getDocument());
-                    System.out.println(json);
+                    outStream.println(json);
                 } catch (JsonProcessingException e) {
                     System.err.println(e.getMessage());
                 }
             }
-        } while( isRunning());
+        } while( provider.isRunning());
+        provider.cleanUp();
+        outStream.flush();
     }
 
     public static final int MAX_NUMBER_WAITING = 10000;
@@ -189,7 +225,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable, R
 
         StreamsResultSet result;
 
-        LOGGER.info("Providing {} docs", providerQueue.size());
+        LOGGER.debug("Providing {} docs", providerQueue.size());
 
         try {
             lock.writeLock().lock();
