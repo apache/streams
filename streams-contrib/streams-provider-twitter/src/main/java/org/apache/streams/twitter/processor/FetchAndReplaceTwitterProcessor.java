@@ -28,21 +28,26 @@ import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.TwitterConfiguration;
 import org.apache.streams.twitter.TwitterStreamConfiguration;
+import org.apache.streams.twitter.converter.StreamsTwitterMapper;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.provider.TwitterConfigurator;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
-import org.apache.streams.twitter.converter.StreamsTwitterMapper;
 import org.apache.streams.twitter.provider.TwitterProviderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import twitter4j.*;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.TwitterObjectFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.List;
 
-import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.*;
+import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.getProvider;
+import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.updateActivity;
 
 /**
  *  Given an Activity, fetches the tweet by the activity object id and replaces the existing activity with the converted activity

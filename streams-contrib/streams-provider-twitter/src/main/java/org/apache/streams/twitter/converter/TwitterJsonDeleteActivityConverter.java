@@ -30,7 +30,7 @@ import org.apache.streams.twitter.pojo.Tweet;
 import java.io.Serializable;
 import java.util.List;
 
-import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.*;
+import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.updateActivity;
 
 
 /**

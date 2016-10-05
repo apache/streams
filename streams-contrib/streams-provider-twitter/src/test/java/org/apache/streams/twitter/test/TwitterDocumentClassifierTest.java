@@ -19,7 +19,11 @@
 package org.apache.streams.twitter.test;
 
 import org.apache.streams.twitter.converter.TwitterDocumentClassifier;
-import org.apache.streams.twitter.pojo.*;
+import org.apache.streams.twitter.pojo.Delete;
+import org.apache.streams.twitter.pojo.Follow;
+import org.apache.streams.twitter.pojo.Retweet;
+import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.twitter.pojo.User;
 import org.junit.Assert;
 import org.junit.Test;
 

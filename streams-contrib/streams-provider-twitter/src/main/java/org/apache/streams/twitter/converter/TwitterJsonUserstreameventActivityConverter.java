@@ -30,7 +30,8 @@ import org.apache.streams.twitter.pojo.UserstreamEvent;
 
 import java.util.List;
 
-import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.*;
+import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.formatId;
+import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.getProvider;
 
 
 /**

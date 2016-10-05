@@ -19,17 +19,15 @@
 package org.apache.streams.twitter.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigRenderOptions;
-import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.twitter.*;
+import org.apache.streams.twitter.TwitterConfiguration;
+import org.apache.streams.twitter.TwitterStreamConfiguration;
+import org.apache.streams.twitter.TwitterUserInformationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * This class resolves TwitterConfiguration from typesafe config

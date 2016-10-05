@@ -28,7 +28,7 @@ import org.apache.streams.twitter.pojo.Retweet;
 import java.io.Serializable;
 import java.util.List;
 
-import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.*;
+import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.updateActivity;
 
 public class TwitterJsonRetweetActivityConverter implements ActivityConverter<Retweet>, Serializable {
 
