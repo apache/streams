@@ -12,7 +12,7 @@
             "_parent": {
               "type": "object"
             },
-            "routing": {
+            "_routing": {
                 "required": true
             },
             "dynamic": true

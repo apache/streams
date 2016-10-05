@@ -18,55 +18,73 @@
 
 package org.apache.streams.elasticsearch.test;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.Lists;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigParseOptions;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfiguration;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.elasticsearch.ElasticsearchClient;
+import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.elasticsearch.ElasticsearchPersistUpdater;
 import org.apache.streams.elasticsearch.ElasticsearchPersistWriter;
 import org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.Requests;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.test.ElasticsearchIntegrationTest;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Created by sblackmon on 10/20/14.
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@ElasticsearchIntegrationTest.ClusterScope(scope= ElasticsearchIntegrationTest.Scope.TEST, numNodes=1)
-public class TestElasticsearchPersistWriterIT extends ElasticsearchIntegrationTest {
+public class ElasticsearchPersistWriterIT {
 
-    protected String TEST_INDEX = "TestElasticsearchPersistWriter".toLowerCase();
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(TestElasticsearchPersistWriterIT.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistWriterIT.class);
 
     private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
     protected ElasticsearchWriterConfiguration testConfiguration;
+    protected Client testClient;
 
     @Before
-    public void prepareTest() {
+    public void prepareTest() throws Exception {
 
-        testConfiguration = new ElasticsearchWriterConfiguration();
-        testConfiguration.setHosts(Lists.newArrayList("localhost"));
-        testConfiguration.setClusterName(cluster().getClusterName());
-        testConfiguration.setIndex("writer");
-        testConfiguration.setType("activity");
+        Config reference  = ConfigFactory.load();
+        File conf_file = new File("target/test-classes/ElasticsearchPersistWriterIT.conf");
+        assert(conf_file.exists());
+        Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
+        Properties es_properties  = new Properties();
+        InputStream es_stream  = new FileInputStream("elasticsearch.properties");
+        es_properties.load(es_stream);
+        Config esProps  = ConfigFactory.parseProperties(es_properties);
+        Config typesafe  = testResourceConfig.withFallback(esProps).withFallback(reference).resolve();
+        StreamsConfiguration streams  = StreamsConfigurator.detectConfiguration(typesafe);
+        testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration(typesafe, "elasticsearch");
+        testClient = new ElasticsearchClientManager(testConfiguration).getClient();
 
     }
 
@@ -78,18 +96,23 @@ public class TestElasticsearchPersistWriterIT extends ElasticsearchIntegrationTe
 
     void testPersistWriter() throws Exception {
 
-       assert(!indexExists(TEST_INDEX));
+        IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getIndex());
+        IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
+        if(indicesExistsResponse.isExists()) {
+            DeleteIndexRequest deleteIndexRequest = Requests.deleteIndexRequest(testConfiguration.getIndex());
+            DeleteIndexResponse deleteIndexResponse = testClient.admin().indices().delete(deleteIndexRequest).actionGet();
+        };
 
-       ElasticsearchPersistWriter testPersistWriter = new ElasticsearchPersistWriter(testConfiguration);
-       testPersistWriter.prepare(null);
+        ElasticsearchPersistWriter testPersistWriter = new ElasticsearchPersistWriter(testConfiguration);
+        testPersistWriter.prepare(null);
 
-       InputStream testActivityFolderStream = TestElasticsearchPersistWriterIT.class.getClassLoader()
+        InputStream testActivityFolderStream = ElasticsearchPersistWriterIT.class.getClassLoader()
                .getResourceAsStream("activities");
-       List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+        List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
 
-       for( String file : files) {
+        for( String file : files) {
            LOGGER.info("File: " + file );
-           InputStream testActivityFileStream = TestElasticsearchPersistWriterIT.class.getClassLoader()
+           InputStream testActivityFileStream = ElasticsearchPersistWriterIT.class.getClassLoader()
                    .getResourceAsStream("activities/" + file);
            Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
            StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
@@ -99,9 +122,7 @@ public class TestElasticsearchPersistWriterIT extends ElasticsearchIntegrationTe
 
        testPersistWriter.cleanUp();
 
-       flushAndRefresh();
-
-       long count = client().count(client().prepareCount().request()).actionGet().getCount();
+       long count = testClient.count(testClient.prepareCount().request()).actionGet().getCount();
 
        assert(count == 89);
 
@@ -109,18 +130,22 @@ public class TestElasticsearchPersistWriterIT extends ElasticsearchIntegrationTe
 
     void testPersistUpdater() throws Exception {
 
-        long count = client().count(client().prepareCount().request()).actionGet().getCount();
+        IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getIndex());
+        IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
+        assertTrue(indicesExistsResponse.isExists());
+
+        long count = testClient.count(testClient.prepareCount().request()).actionGet().getCount();
 
         ElasticsearchPersistUpdater testPersistUpdater = new ElasticsearchPersistUpdater(testConfiguration);
         testPersistUpdater.prepare(null);
 
-        InputStream testActivityFolderStream = TestElasticsearchPersistWriterIT.class.getClassLoader()
+        InputStream testActivityFolderStream = ElasticsearchPersistWriterIT.class.getClassLoader()
                 .getResourceAsStream("activities");
         List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
 
         for( String file : files) {
             LOGGER.info("File: " + file );
-            InputStream testActivityFileStream = TestElasticsearchPersistWriterIT.class.getClassLoader()
+            InputStream testActivityFileStream = ElasticsearchPersistWriterIT.class.getClassLoader()
                     .getResourceAsStream("activities/" + file);
             Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
             Activity update = new Activity();
@@ -141,19 +166,15 @@ public class TestElasticsearchPersistWriterIT extends ElasticsearchIntegrationTe
 
         testPersistUpdater.cleanUp();
 
-        flushAndRefresh();
-
-        long updated = client().prepareCount().setQuery(
-                QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(),
-                        FilterBuilders.existsFilter("updated")
-                )
+        long updated = testClient.prepareCount().setQuery(
+            QueryBuilders.existsQuery("updated")
         ).execute().actionGet().getCount();
 
         LOGGER.info("updated: {}", updated);
 
         assertEquals(count, updated);
 
-        long actorupdated = client().prepareCount().setQuery(
+        long actorupdated = testClient.prepareCount().setQuery(
                 QueryBuilders.termQuery("actor.updated", true)
         ).execute().actionGet().getCount();
 
@@ -161,7 +182,7 @@ public class TestElasticsearchPersistWriterIT extends ElasticsearchIntegrationTe
 
         assertEquals(count, actorupdated);
 
-        long strupdated = client().prepareCount().setQuery(
+        long strupdated = testClient.prepareCount().setQuery(
                 QueryBuilders.termQuery("str", "str")
         ).execute().actionGet().getCount();
 
@@ -169,7 +190,7 @@ public class TestElasticsearchPersistWriterIT extends ElasticsearchIntegrationTe
 
         assertEquals(count, strupdated);
 
-        long longupdated = client().prepareCount().setQuery(
+        long longupdated = testClient.prepareCount().setQuery(
                 QueryBuilders.rangeQuery("long").from(9).to(11)
         ).execute().actionGet().getCount();
 
@@ -177,7 +198,7 @@ public class TestElasticsearchPersistWriterIT extends ElasticsearchIntegrationTe
 
         assertEquals(count, longupdated);
 
-        long doubleupdated = client().prepareCount().setQuery(
+        long doubleupdated = testClient.prepareCount().setQuery(
                 QueryBuilders.rangeQuery("long").from(9).to(11)
         ).execute().actionGet().getCount();
 
@@ -185,7 +206,7 @@ public class TestElasticsearchPersistWriterIT extends ElasticsearchIntegrationTe
 
         assertEquals(count, doubleupdated);
 
-        long mapfieldupdated = client().prepareCount().setQuery(
+        long mapfieldupdated = testClient.prepareCount().setQuery(
                 QueryBuilders.termQuery("actor.map.field", "item")
         ).execute().actionGet().getCount();
 
