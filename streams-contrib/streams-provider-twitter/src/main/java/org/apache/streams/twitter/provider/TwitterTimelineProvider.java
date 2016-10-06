@@ -22,6 +22,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -68,6 +72,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+
 /**
  *  Retrieve recent posts from a list of user ids or names.
  *
@@ -91,47 +97,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProvider.class);
 
-    private static ObjectMapper MAPPER = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
-
-    public static void main(String[] args) throws Exception {
-
-        Preconditions.checkArgument(args.length >= 2);
-
-        String configfile = args[0];
-        String outfile = args[1];
-
-        Config reference = ConfigFactory.load();
-        File conf_file = new File(configfile);
-        assert(conf_file.exists());
-        Config testResourceConfig = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-
-        Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-
-        StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-        TwitterUserInformationConfiguration config = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration(typesafe, "twitter");
-        TwitterTimelineProvider provider = new TwitterTimelineProvider(config);
-
-        PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
-        provider.prepare(config);
-        provider.startStream();
-        do {
-            Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-            Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
-            while(iterator.hasNext()) {
-                StreamsDatum datum = iterator.next();
-                String json;
-                try {
-                    json = MAPPER.writeValueAsString(datum.getDocument());
-                    outStream.println(json);
-                } catch (JsonProcessingException e) {
-                    System.err.println(e.getMessage());
-                }
-            }
-        } while( provider.isRunning());
-        provider.cleanUp();
-        outStream.flush();
-    }
-
     public static final int MAX_NUMBER_WAITING = 10000;
 
     private TwitterUserInformationConfiguration config;
@@ -154,18 +119,57 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     protected int idsCount;
     protected Twitter client;
 
-    protected ExecutorService executor;
+    protected ListeningExecutorService executor;
 
     protected DateTime start;
     protected DateTime end;
 
     protected final AtomicBoolean running = new AtomicBoolean();
 
+    List<ListenableFuture<Object>> futures = new ArrayList<>();
+
     Boolean jsonStoreEnabled;
     Boolean includeEntitiesEnabled;
 
-    private static ExecutorService getExecutor() {
-        return Executors.newSingleThreadExecutor();
+    public static void main(String[] args) throws Exception {
+
+        Preconditions.checkArgument(args.length >= 2);
+
+        String configfile = args[0];
+        String outfile = args[1];
+
+        Config reference = ConfigFactory.load();
+        File conf_file = new File(configfile);
+        assert(conf_file.exists());
+        Config testResourceConfig = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
+
+        Config typesafe  = testResourceConfig.withFallback(reference).resolve();
+
+        StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
+        TwitterUserInformationConfiguration config = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration(typesafe, "twitter");
+        TwitterTimelineProvider provider = new TwitterTimelineProvider(config);
+
+        ObjectMapper mapper = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+
+        PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
+        provider.prepare(config);
+        provider.startStream();
+        do {
+            Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
+            Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
+            while(iterator.hasNext()) {
+                StreamsDatum datum = iterator.next();
+                String json;
+                try {
+                    json = mapper.writeValueAsString(datum.getDocument());
+                    outStream.println(json);
+                } catch (JsonProcessingException e) {
+                    System.err.println(e.getMessage());
+                }
+            }
+        } while( provider.isRunning());
+        provider.cleanUp();
+        outStream.flush();
     }
 
     public TwitterTimelineProvider(TwitterUserInformationConfiguration config) {
@@ -182,16 +186,42 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     }
 
     @Override
+    public void prepare(Object o) {
+
+
+
+        try {
+            lock.writeLock().lock();
+            providerQueue = constructQueue();
+        } finally {
+            lock.writeLock().unlock();
+        }
+
+        Preconditions.checkNotNull(providerQueue);
+        Preconditions.checkNotNull(config.getOauth().getConsumerKey());
+        Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
+        Preconditions.checkNotNull(config.getOauth().getAccessToken());
+        Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
+        Preconditions.checkNotNull(config.getInfo());
+
+        consolidateToIDs();
+
+        if(ids.size() > 1)
+            executor = MoreExecutors.listeningDecorator(TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(5, ids.size()));
+        else
+            executor = MoreExecutors.listeningDecorator(newSingleThreadExecutor());
+    }
+
+    @Override
     public void startStream() {
+
         LOGGER.debug("{} startStream", STREAMS_ID);
 
         Preconditions.checkArgument(!ids.isEmpty());
 
-        LOGGER.debug("{} - readCurrent", ids);
+        running.set(true);
 
         submitTimelineThreads(ids.toArray(new Long[0]));
-
-        running.set(true);
 
         executor.shutdown();
 
@@ -202,13 +232,15 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     }
 
     protected void submitTimelineThreads(Long[] ids) {
+
         Twitter client = getTwitterClient();
 
         for(int i = 0; i < ids.length; i++) {
 
             TwitterTimelineProviderTask providerTask = new TwitterTimelineProviderTask(this, client, ids[i]);
-            executor.submit(providerTask);
-
+            ListenableFuture future = executor.submit(providerTask);
+            futures.add(future);
+            LOGGER.info("submitted {}", ids[i]);
         }
 
     }
@@ -242,7 +274,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
             lock.writeLock().unlock();
         }
 
-        if( providerQueue.isEmpty() && executor.isTerminated()) {
+        if( result.size() == 0 && providerQueue.isEmpty() && executor.isTerminated() ) {
             LOGGER.info("Finished.  Cleaning up...");
 
             running.set(false);
@@ -268,50 +300,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         throw new NotImplementedException();
     }
 
-    @Override
-    public boolean isRunning() {
-        return running.get();
-    }
 
-    void shutdownAndAwaitTermination(ExecutorService pool) {
-        pool.shutdown(); // Disable new tasks from being submitted
-        try {
-            // Wait a while for existing tasks to terminate
-            if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
-                pool.shutdownNow(); // Cancel currently executing tasks
-                // Wait a while for tasks to respond to being cancelled
-                if (!pool.awaitTermination(10, TimeUnit.SECONDS))
-                    System.err.println("Pool did not terminate");
-            }
-        } catch (InterruptedException ie) {
-            // (Re-)Cancel if current thread also interrupted
-            pool.shutdownNow();
-            // Preserve interrupt status
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    @Override
-    public void prepare(Object o) {
-
-        executor = getExecutor();
-
-        try {
-            lock.writeLock().lock();
-            providerQueue = constructQueue();
-        } finally {
-            lock.writeLock().unlock();
-        }
-
-        Preconditions.checkNotNull(providerQueue);
-        Preconditions.checkNotNull(config.getOauth().getConsumerKey());
-        Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
-        Preconditions.checkNotNull(config.getOauth().getAccessToken());
-        Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
-        Preconditions.checkNotNull(config.getInfo());
-
-        consolidateToIDs();
-    }
 
     /**
      * Using the "info" list that is contained in the configuration, ensure that all
@@ -375,13 +364,31 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
         shutdownAndAwaitTermination(executor);
     }
 
-    public void addDatum(StreamsDatum datum) {
+    void shutdownAndAwaitTermination(ExecutorService pool) {
+        pool.shutdown(); // Disable new tasks from being submitted
         try {
-            lock.readLock().lock();
-            ComponentUtils.offerUntilSuccess(datum, providerQueue);
-        } finally {
-            lock.readLock().unlock();
+            // Wait a while for existing tasks to terminate
+            if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
+                pool.shutdownNow(); // Cancel currently executing tasks
+                // Wait a while for tasks to respond to being cancelled
+                if (!pool.awaitTermination(10, TimeUnit.SECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            pool.shutdownNow();
+            // Preserve interrupt status
+            Thread.currentThread().interrupt();
         }
     }
 
+    @Override
+    public boolean isRunning() {
+        if (providerQueue.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone()) {
+            LOGGER.info("Completed");
+            running.set(false);
+            LOGGER.info("Exiting");
+        }
+        return running.get();
+    }
 }

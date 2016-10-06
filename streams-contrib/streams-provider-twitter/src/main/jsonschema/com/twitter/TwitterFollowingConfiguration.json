@@ -12,7 +12,7 @@
         "ids_only": {
             "type": "boolean",
             "description": "Whether to collect ids only, or full profiles",
-            "value": "true"
+            "default": "true"
         }
     }
 }
