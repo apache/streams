@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.twitter.test;
+package org.apache.streams.twitter.test.data;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

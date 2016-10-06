@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -86,7 +87,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterStreamProvider.class);
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         Preconditions.checkArgument(args.length >= 2);
 
@@ -106,7 +107,13 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
         ObjectMapper mapper = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
 
-        PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
+        PrintStream outStream = null;
+        try {
+            outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
+        } catch (FileNotFoundException e) {
+            LOGGER.error("FileNotFoundException", e);
+            return;
+        }
         provider.prepare(config);
         provider.startStream();
         do {

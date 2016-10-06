@@ -344,6 +344,8 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
             lock.writeLock().unlock();
         }
 
+        return result;
+
     }
 
     protected Queue<StreamsDatum> constructQueue() {

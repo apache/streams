@@ -16,23 +16,15 @@
  * under the License.
  */
 
-package org.apache.streams.twitter.test;
+package org.apache.streams.twitter.test.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-import org.apache.streams.converter.ActivityConverterUtil;
 import org.apache.streams.converter.ActivityObjectConverterUtil;
 import org.apache.streams.data.util.ActivityUtil;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Tests {@link: org.apache.streams.twitter.converter.*}

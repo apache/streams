@@ -16,39 +16,27 @@
  * under the License.
  */
 
-package org.apache.streams.twitter.provider;
+package org.apache.streams.twitter.test.providers;
 
 import com.google.common.collect.Lists;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigParseOptions;
-import org.apache.streams.config.ComponentConfigurator;
-import org.apache.streams.config.StreamsConfiguration;
-import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.twitter.TwitterUserInformationConfiguration;
+import org.apache.streams.twitter.provider.TwitterFollowingProvider;
 import org.junit.Test;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.LineNumberReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.List;
 
-public class TwitterTimelineProviderIT {
+public class TwitterFollowingProviderIT {
 
     @Test
-    public void testTwitterTimelineProvider() throws Exception {
+    public void testTwitterFollowingProvider() throws Exception {
 
-        String configfile = "./target/test-classes/TwitterTimelineProviderIT.conf";
-        String outfile = "./target/test-classes/TwitterTimelineProviderIT.txt";
+        String configfile = "./target/test-classes/TwitterFollowingProviderIT.conf";
+        String outfile = "./target/test-classes/TwitterFollowingProviderIT.stdout.txt";
 
-        TwitterTimelineProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
+        TwitterFollowingProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
 
-        File out = new File("target/test-classes/TwitterTimelineProviderTest.stdout.txt");
+        File out = new File(outfile);
         assert (out.exists());
         assert (out.canRead());
         assert (out.isFile());
@@ -58,7 +46,7 @@ public class TwitterTimelineProviderIT {
 
         while(outCounter.readLine() != null) {}
 
-        assert (outCounter.getLineNumber() == 1000);
+        assert (outCounter.getLineNumber() == 10000);
 
     }
 }
