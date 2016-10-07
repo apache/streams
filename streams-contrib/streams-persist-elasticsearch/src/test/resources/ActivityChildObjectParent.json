@@ -2,7 +2,7 @@
     "$license": [
       "http://www.apache.org/licenses/LICENSE-2.0"
     ],
-    "template": "elasticsearch_persist_writer_parent_child_it",
+    "template": "*_parent_child_it",
     "order": 100,
     "mappings": {
         "object": {
