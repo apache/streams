@@ -61,7 +61,8 @@ public class MongoPersistReader implements StreamsPersistReader {
     private MongoConfiguration config;
     private MongoPersistReaderTask readerTask;
 
-    protected DB client;
+    protected MongoClient client;
+    protected DB db;
     protected DBCollection collection;
 
     protected DBCursor cursor;
@@ -95,13 +96,13 @@ public class MongoPersistReader implements StreamsPersistReader {
 
     public void stop() {
 
-        try {
-            client.cleanCursors(true);
-            client.requestDone();
-        } catch (Exception e) {
-        } finally {
-            client.requestDone();
-        }
+//        try {
+//            client.st
+//            client.requestDone();
+//        } catch (Exception e) {
+//        } finally {
+//            client.requestDone();
+//        }
     }
 
     @Override
@@ -155,22 +156,23 @@ public class MongoPersistReader implements StreamsPersistReader {
 
     private synchronized void connectToMongo() {
 
-        try {
-            client = new MongoClient(config.getHost(), config.getPort().intValue()).getDB(config.getDb());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            return;
+        ServerAddress serverAddress = new ServerAddress(config.getHost(), config.getPort().intValue());
+
+        if (!Strings.isNullOrEmpty(config.getUser()) && !Strings.isNullOrEmpty(config.getPassword())) {
+            MongoCredential credential =
+                    MongoCredential.createCredential(config.getUser(), config.getDb(), config.getPassword().toCharArray());
+            client = new MongoClient(serverAddress, Lists.<MongoCredential>newArrayList(credential));
+        } else {
+            client = new MongoClient(serverAddress);
         }
 
-        if (!Strings.isNullOrEmpty(config.getUser()) && !Strings.isNullOrEmpty(config.getPassword()))
-            client.authenticate(config.getUser(), config.getPassword().toCharArray());
+        db = client.getDB(config.getDb());
 
-        if (!client.collectionExists(config.getCollection())) {
-            client.createCollection(config.getCollection(), null);
+        if (!db.collectionExists(config.getCollection())) {
+            db.createCollection(config.getCollection(), null);
         }
-        ;
 
-        collection = client.getCollection(config.getCollection());
+        collection = db.getCollection(config.getCollection());
     }
 
     @Override
