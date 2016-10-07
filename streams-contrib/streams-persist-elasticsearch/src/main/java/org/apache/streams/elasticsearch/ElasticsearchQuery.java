@@ -20,26 +20,18 @@ package org.apache.streams.elasticsearch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
-import com.google.common.base.Objects;
-import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -57,7 +49,6 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     private int batchSize = 100;
     private String scrollTimeout = "5m";
     private org.elasticsearch.index.query.QueryBuilder queryBuilder;
-    private org.elasticsearch.index.query.FilterBuilder filterBuilder;// These are private to help us manage the scroll
     private SearchRequestBuilder search;
     private SearchResponse scrollResp;
     private int scrollPositionInScroll = SCROLL_POSITION_NOT_INITIALIZED;
@@ -105,10 +96,6 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
 
     public void setQueryBuilder(QueryBuilder queryBuilder) {
         this.queryBuilder = queryBuilder;
-    }
-
-    public void setFilterBuilder(FilterBuilder filterBuilder) {
-        this.filterBuilder = filterBuilder;
     }
 
     public void execute(Object o) {

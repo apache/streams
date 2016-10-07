@@ -2,7 +2,7 @@
     "$license": [
       "http://www.apache.org/licenses/LICENSE-2.0"
     ],
-    "template": "*",
+    "template": "*_parent_child_it",
     "order": 100,
     "mappings": {
         "object": {
@@ -12,7 +12,7 @@
             "_parent": {
               "type": "object"
             },
-            "routing": {
+            "_routing": {
                 "required": true
             },
             "dynamic": true

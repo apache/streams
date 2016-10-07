@@ -27,18 +27,22 @@ import com.mongodb.DBAddress;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import com.mongodb.util.JSON;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
@@ -63,8 +67,8 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
 
     private MongoConfiguration config;
 
-    protected DB client;
-    protected DBAddress dbaddress;
+    protected MongoClient client;
+    protected DB db;
     protected DBCollection collection;
 
     protected List<DBObject> insertBatch = Lists.newArrayList();
@@ -116,8 +120,8 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
     }
 
     public synchronized void close() throws IOException {
-        client.cleanCursors(true);
-        backgroundFlushTask.shutdownNow();
+//        client.cleanCursors(true);
+//        backgroundFlushTask.shutdownNow();
     }
 
     public void start() {
@@ -223,7 +227,6 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
                 ObjectNode node = mapper.valueToTree(streamsDatum.getDocument());
                 dbObject = (DBObject) JSON.parse(node.toString());
             } catch (Exception e) {
-                e.printStackTrace();
                 LOGGER.error("Unsupported type: " + streamsDatum.getDocument().getClass(), e);
             }
         }
@@ -232,21 +235,24 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
 
     private synchronized void connectToMongo() {
 
-        try {
-            client = new MongoClient(config.getHost(), config.getPort().intValue()).getDB(config.getDb());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            return;
+        ServerAddress serverAddress = new ServerAddress(config.getHost(), config.getPort().intValue());
+
+        if (!Strings.isNullOrEmpty(config.getUser()) && !Strings.isNullOrEmpty(config.getPassword())) {
+            MongoCredential credential =
+                    MongoCredential.createCredential(config.getUser(), config.getDb(), config.getPassword().toCharArray());
+            client = new MongoClient(serverAddress, Lists.<MongoCredential>newArrayList(credential));
+        } else {
+            client = new MongoClient(serverAddress);
         }
 
-        if (!Strings.isNullOrEmpty(config.getUser()) && !Strings.isNullOrEmpty(config.getPassword()))
-            client.authenticate(config.getUser(), config.getPassword().toCharArray());
+        db = client.getDB(config.getDb());
 
-        if (!client.collectionExists(config.getCollection())) {
-            client.createCollection(config.getCollection(), null);
+        if (!db.collectionExists(config.getCollection())) {
+            db.createCollection(config.getCollection(), null);
         }
-        ;
 
-        collection = client.getCollection(config.getCollection());
+        collection = db.getCollection(config.getCollection());
     }
+
+
 }

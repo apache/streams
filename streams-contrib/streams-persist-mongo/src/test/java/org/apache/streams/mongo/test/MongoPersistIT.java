@@ -19,12 +19,15 @@
 package org.apache.streams.mongo.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fakemongo.Fongo;
-import com.mongodb.DB;
-import com.mongodb.DBAddress;
 import com.mongodb.MongoClient;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigParseOptions;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfiguration;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -34,67 +37,62 @@ import org.apache.streams.mongo.MongoPersistWriter;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
- * Test copying documents between two indexes on same cluster
+ * Test writing documents
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({MongoPersistReader.class, MongoPersistWriter.class, MongoClient.class, DB.class})
-public class TestMongoPersist {
+public class MongoPersistIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TestMongoPersist.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(MongoPersistIT.class);
 
     ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-    MongoClient mockClient;
-
-    Fongo fongo;
-    DB mockDB;
+    MongoConfiguration testConfiguration;
 
     int count = 0;
 
     @Before
-    public void setup() {
-        fongo = new Fongo("testmongo");
-        mockDB = fongo.getDB("test");
+    public void setup() throws Exception {
 
-        this.mockClient = PowerMockito.mock(MongoClient.class);
-
-        PowerMockito.when(mockClient.getDB(Mockito.anyString()))
-                .thenReturn(mockDB);
-
-        try {
-            PowerMockito.whenNew(MongoClient.class).withAnyArguments().thenReturn(mockClient);
-        } catch (Exception e) {}
+        Config reference  = ConfigFactory.load();
+        File conf_file = new File("target/test-classes/MongoPersistIT.conf");
+        assert(conf_file.exists());
+        Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
+        Properties mongo_properties  = new Properties();
+        InputStream mongo_stream  = new FileInputStream("mongo.properties");
+        mongo_properties.load(mongo_stream);
+        Config mongoProps  = ConfigFactory.parseProperties(mongo_properties);
+        Config typesafe  = testResourceConfig.withFallback(mongoProps).withFallback(reference).resolve();
+        StreamsConfiguration streams  = StreamsConfigurator.detectConfiguration(typesafe);
+        testConfiguration = new ComponentConfigurator<>(MongoConfiguration.class).detectConfiguration(typesafe, "mongo");
 
     }
 
     @Test
     public void testMongoPersist() throws Exception {
 
-        MongoConfiguration mongoConfiguration = new MongoConfiguration().withHost("localhost").withDb("test").withPort(37017l).withCollection("activities");
-
-        MongoPersistWriter writer = new MongoPersistWriter(mongoConfiguration);
+        MongoPersistWriter writer = new MongoPersistWriter(testConfiguration);
 
         writer.prepare(null);
 
-        InputStream testActivityFolderStream = TestMongoPersist.class.getClassLoader()
+        InputStream testActivityFolderStream = MongoPersistIT.class.getClassLoader()
                 .getResourceAsStream("activities");
         List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
 
         for( String file : files) {
             LOGGER.info("File: " + file );
-            InputStream testActivityFileStream = TestMongoPersist.class.getClassLoader()
+            InputStream testActivityFileStream = MongoPersistIT.class.getClassLoader()
                     .getResourceAsStream("activities/" + file);
             Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
             activity.getAdditionalProperties().remove("$license");
@@ -104,15 +102,21 @@ public class TestMongoPersist {
             count++;
         }
 
+        LOGGER.info("Total Written: {}", count );
+
+        assertEquals( 89, count );
+
         writer.cleanUp();
 
-        MongoPersistReader reader = new MongoPersistReader(mongoConfiguration);
+        MongoPersistReader reader = new MongoPersistReader(testConfiguration);
 
         reader.prepare(null);
 
         StreamsResultSet resultSet = reader.readAll();
 
-        assert( resultSet.size() == count);
+        LOGGER.info("Total Read: {}", resultSet.size() );
+
+        assertEquals( 89, resultSet.size() );
 
     }
 }
