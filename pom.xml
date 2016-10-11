@@ -174,7 +174,6 @@
         <module>streams-contrib</module>
         <module>streams-components</module>
         <module>streams-monitoring</module>
-        <!--<module>streams-osgi-components</module>-->
         <module>streams-pojo</module>
         <module>streams-pojo-extensions</module>
         <module>streams-runtimes</module>
