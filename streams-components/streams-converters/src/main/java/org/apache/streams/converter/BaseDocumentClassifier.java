@@ -45,9 +45,6 @@ public class BaseDocumentClassifier implements DocumentClassifier {
     @Override
     @SuppressWarnings("unchecked")
     public List<Class> detectClasses(Object document) {
-        Preconditions.checkArgument(
-                document instanceof String
-             || document instanceof ObjectNode);
 
         Activity activity = null;
         ObjectNode node = null;
