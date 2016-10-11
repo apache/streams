@@ -27,8 +27,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.scala.DefaultScalaModule;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.apache.streams.pojo.StreamsJacksonMapperConfiguration;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * StreamsJacksonMapper is the recommended interface to jackson for any streams component.
@@ -39,10 +42,22 @@ import java.util.List;
  */
 public class StreamsJacksonMapper extends ObjectMapper {
 
-    private static final StreamsJacksonMapper INSTANCE = new StreamsJacksonMapper();
+    private static Map<StreamsJacksonMapperConfiguration, StreamsJacksonMapper> INSTANCE_MAP = Maps.newConcurrentMap();
 
-    public static StreamsJacksonMapper getInstance(){
-        return INSTANCE;
+    private StreamsJacksonMapperConfiguration configuration = new StreamsJacksonMapperConfiguration();
+
+    public static StreamsJacksonMapper getInstance() {
+        return getInstance(new StreamsJacksonMapperConfiguration());
+    }
+
+    public static StreamsJacksonMapper getInstance(StreamsJacksonMapperConfiguration configuration) {
+        if( INSTANCE_MAP.containsKey(configuration) &&
+                INSTANCE_MAP.get(configuration) != null)
+            return INSTANCE_MAP.get(configuration);
+        else {
+            INSTANCE_MAP.put(configuration, new StreamsJacksonMapper(configuration));
+            return INSTANCE_MAP.get(configuration);
+        }
     }
 
     public static StreamsJacksonMapper getInstance(String format){
@@ -68,22 +83,35 @@ public class StreamsJacksonMapper extends ObjectMapper {
      */
     protected StreamsJacksonMapper() {
         super();
-        registerModule(new DefaultScalaModule());
-        registerModule(new StreamsJacksonModule());
+        registerModule(new StreamsJacksonModule(configuration.getDateFormats()));
+        if( configuration.getEnableScala())
+            registerModule(new DefaultScalaModule());
         configure();
     }
 
+    @Deprecated
     public StreamsJacksonMapper(String format) {
         super();
-        registerModule(new DefaultScalaModule());
         registerModule(new StreamsJacksonModule(Lists.newArrayList(format)));
+        if( configuration.getEnableScala())
+            registerModule(new DefaultScalaModule());
         configure();
     }
 
+    @Deprecated
     public StreamsJacksonMapper(List<String> formats) {
         super();
-        registerModule(new DefaultScalaModule());
         registerModule(new StreamsJacksonModule(formats));
+        if( configuration.getEnableScala())
+            registerModule(new DefaultScalaModule());
+        configure();
+    }
+
+    public StreamsJacksonMapper(StreamsJacksonMapperConfiguration configuration) {
+        super();
+        registerModule(new StreamsJacksonModule(configuration.getDateFormats()));
+        if( configuration.getEnableScala())
+            registerModule(new DefaultScalaModule());
         configure();
     }
 

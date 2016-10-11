@@ -191,6 +191,7 @@
                 <configuration>
                     <sourcePaths>
                         <sourcePath>${basedir}/src/main/jsonschema</sourcePath>
+                        <sourcePath>${basedir}/src/main/jsonschema/org/apache/streams/pojo</sourcePath>
                         <sourcePath>${basedir}/src/main/jsonschema/verbs</sourcePath>
                         <sourcePath>${basedir}/src/main/jsonschema/objectTypes</sourcePath>
                     </sourcePaths>
