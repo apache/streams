@@ -176,6 +176,7 @@
         <module>streams-monitoring</module>
         <module>streams-pojo</module>
         <module>streams-pojo-extensions</module>
+        <module>streams-plugins</module>
         <module>streams-runtimes</module>
         <module>streams-testing</module>
         <module>streams-util</module>
