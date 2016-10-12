@@ -20,8 +20,11 @@ package org.apache.streams.instagram.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
@@ -33,11 +36,18 @@ import java.util.List;
 
 import static org.apache.streams.instagram.serializer.util.InstagramActivityUtil.updateActivity;
 
-public class InstagramJsonActivitySerializer implements ActivitySerializer<String>, Serializable
+public class InstagramMediaFeedDataConverter implements ActivityConverter<MediaFeedData>, Serializable
 {
 
-    public InstagramJsonActivitySerializer() {
+    public static Class requiredClass = MediaFeedData.class;
 
+    public InstagramMediaFeedDataConverter() {
+
+    }
+
+    @Override
+    public Class requiredClass() {
+        return requiredClass;
     }
 
     @Override
@@ -46,33 +56,28 @@ public class InstagramJsonActivitySerializer implements ActivitySerializer<Strin
     }
 
     @Override
-    public String serialize(Activity deserialized) throws ActivitySerializerException {
+    public MediaFeedData fromActivity(Activity deserialized) throws ActivityConversionException {
         throw new NotImplementedException();
     }
 
     @Override
-    public Activity deserialize(String serialized) throws ActivitySerializerException {
-
-        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
-        MediaFeedData mediaFeedData = null;
-
-        try {
-            mediaFeedData = mapper.readValue(serialized, MediaFeedData.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public List<Activity> toActivityList(MediaFeedData item) throws ActivityConversionException {
 
         Activity activity = new Activity();
 
-        updateActivity(mediaFeedData, activity);
+        updateActivity(item, activity);
 
-        return activity;
+        return Lists.newArrayList(activity);
     }
 
     @Override
-    public List<Activity> deserializeAll(List<String> serializedList) {
+    public List<MediaFeedData> fromActivityList(List<Activity> list) throws ActivityConversionException {
         throw new NotImplementedException();
     }
+
+    @Override
+    public List<Activity> toActivityList(List<MediaFeedData> list) throws ActivityConversionException {
+        throw new NotImplementedException();
+    }
+
 }

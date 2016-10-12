@@ -23,7 +23,6 @@ import org.jinstagram.auth.model.Token;
  */
 public class InstagramOauthToken extends Token {
 
-
     public InstagramOauthToken(String token) {
         this(token, null);
     }
@@ -40,4 +39,5 @@ public class InstagramOauthToken extends Token {
         InstagramOauthToken that = (InstagramOauthToken) o;
         return this.getToken().equals(that.getToken());
     }
+
 }
