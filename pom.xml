@@ -83,12 +83,6 @@
             <subscribe>dev-subscribe@streams.incubator.apache.org</subscribe>
             <unsubscribe>dev-unsubscribe@streams.incubator.apache.org</unsubscribe>
         </mailingList>
-        <mailingList>
-            <name>User Mailing List</name>
-            <post>user@streams.incubator.apache.org</post>
-            <subscribe>user-subscribe@streams.incubator.apache.org</subscribe>
-            <unsubscribe>user-unsubscribe@streams.incubator.apache.org</unsubscribe>
-        </mailingList>
     </mailingLists>
 
     <repositories>
@@ -174,10 +168,11 @@
         <module>streams-contrib</module>
         <module>streams-components</module>
         <module>streams-monitoring</module>
-        <!--<module>streams-osgi-components</module>-->
         <module>streams-pojo</module>
         <module>streams-pojo-extensions</module>
+        <module>streams-plugins</module>
         <module>streams-runtimes</module>
+        <module>streams-schemas</module>
         <module>streams-testing</module>
         <module>streams-util</module>
         <module>streams-verbs</module>

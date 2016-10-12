@@ -1,0 +1,20 @@
+{
+  "$license": [
+    "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "actor": {
+    "objectType": "person",
+    "displayName": "Sally"
+  },
+  "verb": "assign",
+  "object": {
+    "objectType": "issue",
+    "displayName": "Issue #123: Some Issue"
+  },
+  "target": {
+    "objectType": "person",
+    "displayName": "Joe"
+  },
+  "title": "Sally assigned Issue #123 to Joe"
+}

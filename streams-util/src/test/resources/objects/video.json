@@ -1,0 +1,8 @@
+{
+    "objectType": "video",
+    "displayName": "Cute little kittens",
+    "embedCode": "<video width="320" height="240" controls="controls">...</video>",
+    "stream": {
+      "url": "http://example.org/my_video.mpg"
+    }
+}
