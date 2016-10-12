@@ -60,6 +60,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Instagram {@link org.apache.streams.core.StreamsProvider} that provides the recent media data for a group of users
+ *
+ * Retrieve recent posts from a list of user ids or names.
+ *
+ *  To use from command line:
+ *
+ *  Supply (at least) the following required configuration in application.conf:
+ *
+ *  instagram.clientKey
+ *  instagram.usersInfo.authorizedTokens
+ *  instagram.usersInfo.users
+ *
+ *  Launch using:
+ *
+ *  mvn exec:java -Dexec.mainClass=org.apache.streams.instagram.provider.recentmedia.InstagramRecentMediaProvider -Dexec.args="application.conf media.json"
  */
 public class InstagramRecentMediaProvider extends InstagramAbstractProvider {
 

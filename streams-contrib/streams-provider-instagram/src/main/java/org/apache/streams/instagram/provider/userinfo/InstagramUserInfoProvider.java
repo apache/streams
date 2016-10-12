@@ -44,6 +44,20 @@ import java.util.concurrent.TimeUnit;
 /**
  * Instagram provider that pulls UserInfoData from Instagram
  * @see org.apache.streams.instagram.provider.InstagramAbstractProvider
+ *
+ * Retrieve latest user details from a list of user ids or names.
+ *
+ *  To use from command line:
+ *
+ *  Supply (at least) the following required configuration in application.conf:
+ *
+ *  instagram.clientKey
+ *  instagram.usersInfo.authorizedTokens
+ *  instagram.usersInfo.users
+ *
+ *  Launch using:
+ *
+ *  mvn exec:java -Dexec.mainClass=org.apache.streams.instagram.provider.userinfo.InstagramUserInfoProvider -Dexec.args="application.conf userinfo.json"
  */
 public class InstagramUserInfoProvider extends InstagramAbstractProvider {
 
