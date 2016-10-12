@@ -1,0 +1,16 @@
+{
+  "objectType": "group",
+  "displayName": "My Work Group",
+  "members": {
+	"items": [
+	  {
+		"objectType": "person",
+		"displayName": "Laura"
+	  },
+	  {
+		"objectType": "person",
+		"displayName": "Mark"
+	  }
+	]
+  }
+}

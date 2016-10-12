@@ -1,0 +1,9 @@
+{
+    "objectType": "permission",
+    "displayName": "Permission to Edit File: 2Q2014 Sales Forecast.xls",
+    "scope": {
+      "objectType": "file",
+      "displayName": "2Q2014 Sales Forecast.xls"
+    },
+    "actions": ["modify", "delete", "create"]
+}

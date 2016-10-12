@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.apache.streams.plugins</groupId>
+    <artifactId>streams-plugin-cassandra-test</artifactId>
+    <version>0.3-incubating-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Test StreamsCassandraResourceGeneratorMojo</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schema-activitystreams</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.streams.plugins</groupId>
+                <artifactId>streams-plugin-cassandra</artifactId>
+                <version>0.3-incubating-SNAPSHOT</version>
+                <configuration>
+                    <sourcePaths>
+                        <sourcePath>target/test-classes/streams-schema-activitystreams/activity.json</sourcePath>
+                        <sourcePath>target/test-classes/streams-schema-activitystreams/collection.json</sourcePath>
+                        <sourcePath>target/test-classes/streams-schema-activitystreams/media_link.json</sourcePath>
+                        <sourcePath>target/test-classes/streams-schema-activitystreams/object.json</sourcePath>
+                        <sourcePath>target/test-classes/streams-schema-activitystreams/objectTypes</sourcePath>
+                        <sourcePath>target/test-classes/streams-schema-activitystreams/verbs</sourcePath>
+                    </sourcePaths>
+                    <targetDirectory>target/generated-resources/test-mojo</targetDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <configuration>
+                    <includes>**/*.json</includes>
+                    <outputDirectory>${project.build.directory}/test-classes/streams-schema-activitystreams</outputDirectory>
+                    <includeGroupIds>org.apache.streams</includeGroupIds>
+                    <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
+                    <includeTypes>jar,test-jar</includeTypes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>unpack-schemas</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -97,9 +97,9 @@
                              },
                              "indices": {
                                  "type": "array",
-                                 "items": [{
-                                         "type": "integer"
-                                 }]
+                                 "items": {
+                                     "type": "integer"
+                                 }
                              }
                           }
                     }

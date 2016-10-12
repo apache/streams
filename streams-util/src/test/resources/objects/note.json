@@ -1,0 +1,12 @@
+{
+  "objectType": "note",
+  "displayName": "A note with a binary attachment",
+  "attachments": [
+	{
+	  "objectType": "binary",
+	  "data": "dGhpcyBpcyB1bmNvbXByZXNzZWQgZGF0YQo=",
+	  "md5": "827ae7e1ab45e4dd591d087c741e5770",
+	  "length": 25
+	}
+  ]
+}

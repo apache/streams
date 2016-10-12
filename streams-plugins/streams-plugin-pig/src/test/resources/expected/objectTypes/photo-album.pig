@@ -1,0 +1,1 @@
+objectTypes_photoalbum = LOAD '' USING JsonLoader('objectType:chararray, {t: ()}');

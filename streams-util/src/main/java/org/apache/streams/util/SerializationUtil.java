@@ -23,7 +23,8 @@ import org.apache.commons.io.input.ClassLoaderObjectInputStream;
 import java.io.*;
 
 /**
- * Created by rebanks on 2/18/14.
+ * SerializationUtil contains methods for serializing, deserializing, and cloning
+ * documents and tasks.
  */
 public class SerializationUtil {
 
