@@ -5,7 +5,7 @@
 
     <groupId>org.apache.streams.plugins</groupId>
     <artifactId>streams-plugin-scala-test</artifactId>
-    <version>0.3-incubating-SNAPSHOT</version>
+    <version>0.4-incubating-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Test StreamsPojoScalaMojo</name>
 
@@ -22,7 +22,7 @@
             <plugin>
                 <groupId>org.apache.streams.plugins</groupId>
                 <artifactId>streams-plugin-scala</artifactId>
-                <version>0.3-incubating-SNAPSHOT</version>
+                <version>0.4-incubating-SNAPSHOT</version>
                 <configuration>
                     <packages>org.apache.streams.pojo.json</packages>
                     <target>target/test-classes/streams-scala-plugin/</target>
