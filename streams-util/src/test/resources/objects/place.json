@@ -1,9 +1,13 @@
 {
+  "$license": [
+    "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
   "objectType": "place",
   "displayName": "Some Random Location on Earth",
   "position": {
-	"latitude": 34.34,
-	"longitude": -127.23,
-	"altitude": 100.05
+    "latitude": 34.34,
+    "longitude": -127.23,
+    "altitude": 100.05
   }
 }

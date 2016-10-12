@@ -1,12 +1,16 @@
 {
+  "$license": [
+    "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
   "objectType": "note",
   "displayName": "A note with a binary attachment",
   "attachments": [
-	{
-	  "objectType": "binary",
-	  "data": "dGhpcyBpcyB1bmNvbXByZXNzZWQgZGF0YQo=",
-	  "md5": "827ae7e1ab45e4dd591d087c741e5770",
-	  "length": 25
-	}
+    {
+      "objectType": "binary",
+      "data": "dGhpcyBpcyB1bmNvbXByZXNzZWQgZGF0YQo=",
+      "md5": "827ae7e1ab45e4dd591d087c741e5770",
+      "length": 25
+    }
   ]
 }
