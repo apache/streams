@@ -1,5 +1,5 @@
 {
-    "$schema": "http://streams.incubator.apache.org/site/0.3-incubating-SNAPSHOT/streams-schemas/media_link.json#",
+    "$schema": "http://streams.incubator.apache.org/site/latest/streams-project/streams-schemas/media_link.json#",
     "duration": 30000,
     "height": 480,
     "width": 640,

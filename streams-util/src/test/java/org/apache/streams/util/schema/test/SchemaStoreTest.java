@@ -44,7 +44,7 @@ public class SchemaStoreTest {
         Schema collection = schemaStore.getByUri(file.toURI()).get();
         assert( collection.getParent() == null );
         assert( schemaStore.getById(
-                URI.create("http://streams.incubator.apache.org/site/0.3-incubating-SNAPSHOT/streams-schemas/object.json#"
+                URI.create("http://streams.incubator.apache.org/site/latest/streams-project/streams-schemas/object.json#"
                 )).isPresent());
     }
 
@@ -60,7 +60,7 @@ public class SchemaStoreTest {
         assert( update.getParent() != null );
         assert( update.getParent().getId().getScheme().equals("http"));
         assert( update.getParent().getId().getHost().equals("streams.incubator.apache.org"));
-        assert( update.getParent().getId().getPath().startsWith("/site/0.3-incubating-SNAPSHOT/streams-schemas"));
+        assert( update.getParent().getId().getPath().startsWith("/site/latest/streams-project/streams-schemas"));
         assert( update.getParent().getId().getPath().endsWith("activity.json"));
     }
 
