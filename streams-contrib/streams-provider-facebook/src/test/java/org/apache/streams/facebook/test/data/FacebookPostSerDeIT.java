@@ -16,32 +16,33 @@
  * under the License.
  */
 
-package org.apache.streams.facebook.test;
+package org.apache.streams.facebook.test.data;
 
-import org.apache.streams.facebook.api.FacebookPostActivitySerializer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.streams.facebook.Post;
+import org.apache.streams.facebook.serializer.FacebookActivityUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 
-/**
- * Tests conversion of Facebook Post inputs to Activity
- */
-public class FacebookActivitySerDeIT {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FacebookActivitySerDeIT.class);
-    private FacebookPostActivitySerializer serializer = new FacebookPostActivitySerializer();
+/**
+ * Tests serialization of Facebook Post inputs
+ */
+public class FacebookPostSerDeIT {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(FacebookPostSerDeIT.class);
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Test
@@ -51,7 +52,7 @@ public class FacebookActivitySerDeIT {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-        InputStream is = FacebookActivitySerDeIT.class.getResourceAsStream("/testpost.json");
+        InputStream is = FacebookPostSerDeIT.class.getResourceAsStream("/testpost.json");
         Joiner joiner = Joiner.on(" ").skipNulls();
         is = new BoundedInputStream(is, 10000);
         String json;
@@ -60,11 +61,33 @@ public class FacebookActivitySerDeIT {
             json = joiner.join(IOUtils.readLines(is));
             LOGGER.debug(json);
 
-            Post post = mapper.readValue(json, Post.class);
+            Post ser = mapper.readValue(json, Post.class);
 
-            Activity activity = serializer.deserialize(post);
+            String de = mapper.writeValueAsString(ser);
 
-            LOGGER.debug(mapper.writeValueAsString(activity));
+            LOGGER.debug(de);
+
+            Post serde = mapper.readValue(de, Post.class);
+
+            Assert.assertEquals(ser, serde);
+
+            LOGGER.debug(mapper.writeValueAsString(serde));
+
+            Activity activity = new Activity();
+            FacebookActivityUtil.updateActivity(ser, activity);
+
+            assertNotNull(activity);
+            assertNotNull(activity.getActor().getId());
+            assertNotNull(activity.getActor().getDisplayName());
+            assertNotNull(activity.getId());
+            assert(activity.getVerb().equals("post"));
+            assertNotNull(activity.getObject());
+            assertNotNull(activity.getUpdated());
+            assertNotNull(activity.getPublished());
+            assertEquals(activity.getProvider().getId(), "id:providers:facebook");
+            assertEquals(activity.getProvider().getDisplayName(), "Facebook");
+            assertEquals(activity.getLinks().size(), 1);
+            assertNotNull(activity.getAdditionalProperties().get("facebook"));
 
         } catch( Exception e ) {
             LOGGER.error("Exception: ", e);

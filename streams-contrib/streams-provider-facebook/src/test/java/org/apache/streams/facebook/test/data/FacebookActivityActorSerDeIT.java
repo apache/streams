@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.facebook.test;
+package org.apache.streams.facebook.test.data;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,9 +24,9 @@ import com.google.common.base.Joiner;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.streams.facebook.Page;
+import org.apache.streams.facebook.api.FacebookPageActivitySerializer;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.junit.Assert;
-import org.junit.Ignore;
+import org.apache.streams.pojo.json.Activity;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,44 +34,33 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 
 /**
- * Tests serialization of Facebook Page inputs
+ * Tests conversion of Facebook Page inputs to Actor
  */
-public class FacebookPageSerDeIT {
+public class FacebookActivityActorSerDeIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FacebookPageSerDeIT.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(FacebookActivityActorSerDeIT.class);
+    private FacebookPageActivitySerializer serializer = new FacebookPageActivitySerializer();
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Test
-    public void Tests()
+    public void Tests() throws Exception
     {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-        InputStream is = FacebookPageSerDeIT.class.getResourceAsStream("/testpage.json");
+        InputStream is = FacebookActivityActorSerDeIT.class.getResourceAsStream("/testpage.json");
         Joiner joiner = Joiner.on(" ").skipNulls();
         is = new BoundedInputStream(is, 10000);
         String json;
 
-        try {
-            json = joiner.join(IOUtils.readLines(is));
-            LOGGER.debug(json);
+        json = joiner.join(IOUtils.readLines(is));
+        LOGGER.debug(json);
 
-            Page ser = mapper.readValue(json, Page.class);
+        Page page = mapper.readValue(json, Page.class);
 
-            String de = mapper.writeValueAsString(ser);
+        Activity activity = serializer.deserialize(page);
 
-            LOGGER.debug(de);
-
-            Page serde = mapper.readValue(de, Page.class);
-
-            Assert.assertEquals(ser, serde);
-
-            LOGGER.debug(mapper.writeValueAsString(serde));
-
-        } catch( Exception e ) {
-            LOGGER.error("Exception: ", e);
-            Assert.fail();
-        }
+        LOGGER.debug(mapper.writeValueAsString(activity));
     }
 }

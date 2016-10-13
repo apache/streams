@@ -18,6 +18,7 @@
 package org.apache.streams.facebook.provider;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import facebook4j.Facebook;
 import facebook4j.FacebookFactory;
 import facebook4j.conf.ConfigurationBuilder;
@@ -94,17 +95,19 @@ public abstract class FacebookDataCollector implements Runnable {
      */
     protected Facebook getNextFacebookClient() {
             ConfigurationBuilder cb = new ConfigurationBuilder();
-            cb.setDebugEnabled(true)
-                    .setOAuthAppId(this.config.getOauth().getAppId())
-                    .setOAuthAppSecret(this.config.getOauth().getAppSecret());
+            cb.setDebugEnabled(true);
+            cb.setOAuthPermissions(READ_ONLY);
+            cb.setOAuthAppId(this.config.getOauth().getAppId());
+            cb.setOAuthAppSecret(this.config.getOauth().getAppSecret());
             if(this.authTokens.numAvailableTokens() > 0)
-                    cb.setOAuthAccessToken(this.authTokens.getNextAvailableToken());
+                cb.setOAuthAccessToken(this.authTokens.getNextAvailableToken());
             else {
                 cb.setOAuthAccessToken(this.config.getOauth().getAppAccessToken());
                 LOGGER.debug("appAccessToken : {}", this.config.getOauth().getAppAccessToken());
             }
-                    cb.setOAuthPermissions(READ_ONLY)
-                    .setJSONStoreEnabled(true);
+            cb.setJSONStoreEnabled(true);
+            if(!Strings.isNullOrEmpty(config.getVersion()))
+                cb.setRestBaseURL("https://graph.facebook.com/" + config.getVersion() + "/");
             LOGGER.debug("appId : {}", this.config.getOauth().getAppId());
             LOGGER.debug("appSecret: {}", this.config.getOauth().getAppSecret());
             FacebookFactory ff = new FacebookFactory(cb.build());

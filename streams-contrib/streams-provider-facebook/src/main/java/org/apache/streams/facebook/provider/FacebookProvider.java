@@ -20,6 +20,10 @@ package org.apache.streams.facebook.provider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.ConfigRenderOptions;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
@@ -36,6 +40,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
@@ -56,7 +62,9 @@ public abstract class FacebookProvider implements StreamsProvider {
     protected BlockingQueue<StreamsDatum> datums;
 
     private AtomicBoolean isComplete;
-    private ExecutorService executor;
+    private ListeningExecutorService executor;
+    List<ListenableFuture<Object>> futures = new ArrayList<>();
+
     private FacebookDataCollector dataCollector;
 
     public FacebookProvider() {
@@ -78,8 +86,9 @@ public abstract class FacebookProvider implements StreamsProvider {
 
     @Override
     public void startStream() {
-        this.dataCollector = getDataCollector();
-        this.executor.submit(dataCollector);
+        ListenableFuture future = executor.submit(getDataCollector());
+        futures.add(future);
+        executor.shutdown();
     }
 
     protected abstract FacebookDataCollector getDataCollector();
@@ -92,7 +101,6 @@ public abstract class FacebookProvider implements StreamsProvider {
             ComponentUtils.offerUntilSuccess(ComponentUtils.pollWhileNotEmpty(this.datums), batch);
             ++batchSize;
         }
-        this.isComplete.set(batch.isEmpty() && this.datums.isEmpty() && this.dataCollector.isComplete());
         return new StreamsResultSet(batch);
     }
 
@@ -107,15 +115,10 @@ public abstract class FacebookProvider implements StreamsProvider {
     }
 
     @Override
-    public boolean isRunning() {
-        return !this.isComplete.get();
-    }
-
-    @Override
     public void prepare(Object configurationObject) {
         this.datums = Queues.newLinkedBlockingQueue();
         this.isComplete = new AtomicBoolean(false);
-        this.executor = Executors.newFixedThreadPool(1);
+        this.executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
     }
 
     @Override
@@ -137,5 +140,15 @@ public abstract class FacebookProvider implements StreamsProvider {
             ids.add(idConfig);
         }
         this.configuration.setIds(ids);
+    }
+
+    @Override
+    public boolean isRunning() {
+        if (datums.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone()) {
+            LOGGER.info("Completed");
+            isComplete.set(true);
+            LOGGER.info("Exiting");
+        }
+        return !isComplete.get();
     }
 }

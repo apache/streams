@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.facebook.provider.page;
+package org.apache.streams.facebook.test;
 
 import facebook4j.Cover;
 import facebook4j.Page;
@@ -99,6 +99,11 @@ public class TestPage implements Page {
     }
 
     @Override
+    public String getCompanyOverview() {
+        return null;
+    }
+
+    @Override
     public Integer getTalkingAboutCount() {
         return null;
     }
@@ -119,7 +124,22 @@ public class TestPage implements Page {
     }
 
     @Override
+    public Integer getFanCount() {
+        return null;
+    }
+
+    @Override
     public Date getCreatedTime() {
+        return null;
+    }
+
+    @Override
+    public String getAbout() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
         return null;
     }
 }
