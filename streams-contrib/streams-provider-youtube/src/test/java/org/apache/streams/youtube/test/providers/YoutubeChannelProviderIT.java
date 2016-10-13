@@ -49,7 +49,7 @@ public class YoutubeChannelProviderIT {
 
         while(outCounter.readLine() != null) {}
 
-        assert (outCounter.getLineNumber() > 1);
+        assert (outCounter.getLineNumber() >= 1);
 
     }
 }
