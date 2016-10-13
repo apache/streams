@@ -30,10 +30,8 @@
     <artifactId>streams-provider-youtube</artifactId>
 
     <properties>
-        <project.youtube.version>v3-rev107-1.18.0-rc</project.youtube.version>
-        <project.youtube.analytics.version>v1-rev24-1.17.0-rc</project.youtube.analytics.version>
-        <project.http.version>1.18.0-rc</project.http.version>
-        <project.oauth.version>1.18.0-rc</project.oauth.version>
+        <youtube.client.version>v3-rev178-1.22.0</youtube.client.version>
+        <google.client.version>1.22.0</google.client.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -53,7 +51,7 @@
         <dependency>
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
-            <version>${project.http.version}</version>
+            <version>${google.client.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -69,7 +67,7 @@
         <dependency>
             <groupId>com.google.oauth-client</groupId>
             <artifactId>google-oauth-client-jetty</artifactId>
-            <version>${project.oauth.version}</version>
+            <version>${google.client.version}</version>
         </dependency>
 
         <dependency>
@@ -101,7 +99,7 @@
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client</artifactId>
-            <version>1.17.0-rc</version>
+            <version>${google.client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
@@ -111,7 +109,7 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-youtube</artifactId>
-            <version>v3-rev126-1.19.1</version>
+            <version>${youtube.client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
@@ -165,6 +163,13 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <skipTests>${skipITs}</skipTests>
+                </configuration>
             </plugin>
         </plugins>
     </build>

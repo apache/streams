@@ -19,14 +19,21 @@
 
 package com.youtube.provider;
 
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.google.api.services.youtube.YouTube;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
@@ -41,9 +48,11 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,12 +62,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+
 public abstract class YoutubeProvider implements StreamsProvider {
 
     public static final String STREAMS_ID = "YoutubeProvider";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(YoutubeProvider.class);
     private final static int MAX_BATCH_SIZE = 1000;
+
+    // This OAuth 2.0 access scope allows for full read/write access to the
+    // authenticated user's account.
+    List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube");
 
     /**
      * Define a global instance of the HTTP transport.
@@ -72,7 +87,9 @@ public abstract class YoutubeProvider implements StreamsProvider {
 
     private static final int DEFAULT_THREAD_POOL_SIZE = 5;
 
-    private ExecutorService executor;
+    List<ListenableFuture<Object>> futures = new ArrayList<>();
+
+    private ListeningExecutorService executor;
     private BlockingQueue<StreamsDatum> datumQueue;
     private AtomicBoolean isComplete;
     private boolean previousPullWasEmpty;
@@ -99,6 +116,21 @@ public abstract class YoutubeProvider implements StreamsProvider {
     }
 
     @Override
+    public void prepare(Object configurationObject) {
+        try {
+            this.youtube = createYouTubeClient();
+        } catch (IOException |GeneralSecurityException e) {
+            LOGGER.error("Failed to created oauth for YouTube : {}", e);
+            throw new RuntimeException(e);
+        }
+
+        this.executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(DEFAULT_THREAD_POOL_SIZE));
+        this.datumQueue = new LinkedBlockingQueue<>(1000);
+        this.isComplete = new AtomicBoolean(false);
+        this.previousPullWasEmpty = false;
+    }
+
+    @Override
     public void startStream() {
         BackOffStrategy backOffStrategy = new ExponentialBackOffStrategy(2);
 
@@ -109,7 +141,9 @@ public abstract class YoutubeProvider implements StreamsProvider {
             if(this.config.getDefaultBeforeDate() != null && user.getBeforeDate() == null) {
                 user.setBeforeDate(this.config.getDefaultBeforeDate());
             }
-            this.executor.submit(getDataCollector(backOffStrategy, this.datumQueue, this.youtube, user));
+
+            ListenableFuture future = executor.submit(getDataCollector(backOffStrategy, this.datumQueue, this.youtube, user));
+            futures.add(future);
         }
 
         this.executor.shutdown();
@@ -128,9 +162,6 @@ public abstract class YoutubeProvider implements StreamsProvider {
                 ComponentUtils.offerUntilSuccess(datum, batch);
             }
         }
-        boolean pullIsEmpty = batch.isEmpty() && this.datumQueue.isEmpty() &&this.executor.isTerminated();
-        this.isComplete.set(this.previousPullWasEmpty && pullIsEmpty);
-        this.previousPullWasEmpty = pullIsEmpty;
         return new StreamsResultSet(batch);
     }
 
@@ -144,29 +175,22 @@ public abstract class YoutubeProvider implements StreamsProvider {
         return null;
     }
 
-    @Override
-    public boolean isRunning() {
-        return !this.isComplete.get();
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-        try {
-            this.youtube = createYouTubeClient();
-        } catch (IOException |GeneralSecurityException e) {
-            LOGGER.error("Failed to created oauth for GPlus : {}", e);
-            throw new RuntimeException(e);
-        }
-
-        this.executor = Executors.newFixedThreadPool(DEFAULT_THREAD_POOL_SIZE);
-        this.datumQueue = new LinkedBlockingQueue<>(1000);
-        this.isComplete = new AtomicBoolean(false);
-        this.previousPullWasEmpty = false;
-    }
-
     @VisibleForTesting
     protected YouTube createYouTubeClient() throws IOException, GeneralSecurityException {
-        return new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, null).setApplicationName("Streams Application").build();
+        GoogleCredential.Builder credentialBuilder = new GoogleCredential.Builder()
+                .setTransport(HTTP_TRANSPORT)
+                .setJsonFactory(JSON_FACTORY)
+                .setServiceAccountId(getConfig().getOauth().getServiceAccountEmailAddress())
+                .setServiceAccountScopes(scopes);
+
+        if( !Strings.isNullOrEmpty(getConfig().getOauth().getPathToP12KeyFile())) {
+            File p12KeyFile = new File(getConfig().getOauth().getPathToP12KeyFile());
+            if( p12KeyFile.exists() && p12KeyFile.isFile() && p12KeyFile.canRead()) {
+                credentialBuilder = credentialBuilder.setServiceAccountPrivateKeyFromP12File(p12KeyFile);
+            }
+        }
+        Credential credential = credentialBuilder.build();
+        return new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName("Streams Application").build();
     }
 
     @Override
@@ -232,5 +256,15 @@ public abstract class YoutubeProvider implements StreamsProvider {
         }
 
         this.config.setYoutubeUsers(youtubeUsers);
+    }
+
+    @Override
+    public boolean isRunning() {
+        if (datumQueue.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone()) {
+            LOGGER.info("Completed");
+            isComplete.set(true);
+            LOGGER.info("Exiting");
+        }
+        return !isComplete.get();
     }
 }
