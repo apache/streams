@@ -103,7 +103,6 @@ public class GPlusUserDataProvider extends AbstractGPlusProvider{
                     json = (String) datum.getDocument();
                 else
                     json = gson.toJson(datum.getDocument());
-                json = gson.toJson(datum.getDocument());
                 outStream.println(json);
             }
         } while( provider.isRunning());
