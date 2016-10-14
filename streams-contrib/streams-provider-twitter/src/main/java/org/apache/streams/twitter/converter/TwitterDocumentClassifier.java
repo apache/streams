@@ -45,7 +45,6 @@ public class TwitterDocumentClassifier implements DocumentClassifier {
     public List<Class> detectClasses(Object document) {
 
         Preconditions.checkNotNull(document);
-        Preconditions.checkArgument(document instanceof String || document instanceof ObjectNode);
 
         mapper = new StreamsJacksonMapper(Lists.newArrayList(StreamsTwitterMapper.TWITTER_FORMAT));
 
@@ -56,7 +55,7 @@ public class TwitterDocumentClassifier implements DocumentClassifier {
             else if( document instanceof ObjectNode )
                 objectNode = (ObjectNode) document;
             else
-                return Lists.newArrayList();
+                objectNode = mapper.convertValue(document, ObjectNode.class);
         } catch (IOException e) {
             return Lists.newArrayList();
         }
@@ -68,7 +67,7 @@ public class TwitterDocumentClassifier implements DocumentClassifier {
         else if( objectNode.findValue("delete") != null )
             classList.add(Delete.class);
         else if( objectNode.findValue("friends") != null ||
-                objectNode.findValue("friends_str") != null )
+                 objectNode.findValue("friends_str") != null )
             classList.add(FriendList.class);
         else if( objectNode.findValue("target_object") != null )
             classList.add(UserstreamEvent.class);
