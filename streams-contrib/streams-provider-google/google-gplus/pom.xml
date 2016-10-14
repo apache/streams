@@ -30,8 +30,11 @@
     <description>Google+ Provider</description>
 
     <properties>
+        <google.client.version>1.22.0</google.client.version>
+        <gplus.client.version>v1-rev457-1.22.0</gplus.client.version>
         <skipITs>true</skipITs>
         <testDataBaseURl>http://streams.peoplepattern.com.s3.amazonaws.com/test-data/</testDataBaseURl>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <repositories>
@@ -94,17 +97,17 @@
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-plus</artifactId>
-            <version>v1-rev184-1.19.0</version>
+            <version>${gplus.client.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client</artifactId>
-            <version>1.17.0-rc</version>
+            <version>${google.client.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
-            <version>1.17.0-rc</version>
+            <version>${google.client.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
