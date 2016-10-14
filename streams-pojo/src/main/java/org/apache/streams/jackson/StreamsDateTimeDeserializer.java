@@ -26,6 +26,8 @@ import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -43,14 +45,21 @@ public class StreamsDateTimeDeserializer extends StdDeserializer<DateTime> imple
 
     List<DateTimeFormatter> formatters = Lists.newArrayList();
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsDateTimeDeserializer.class);
+
     protected StreamsDateTimeDeserializer(Class<DateTime> dateTimeClass) {
         super(dateTimeClass);
     }
 
     protected StreamsDateTimeDeserializer(Class<DateTime> dateTimeClass, List<String> formats) {
         super(dateTimeClass);
-        for( String format : formats )
-            formatters.add(DateTimeFormat.forPattern(format));
+        for( String format : formats ) {
+            try {
+                formatters.add(DateTimeFormat.forPattern(format));
+            } catch (Exception e) {
+                LOGGER.warn("Exception parsing format " + format);
+            }
+        }
     }
 
     /**
