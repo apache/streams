@@ -91,13 +91,15 @@ public class GPlusPersonDeserializer extends JsonDeserializer<Person> {
             person.setVerified(node.get("verified").asBoolean());
 
             List<Person.Emails> emails = Lists.newArrayList();
-            for (JsonNode emailNode : node.get("emails")) {
-                Person.Emails email = m.readValue(m.writeValueAsString(emailNode), Person.Emails.class);
-                emails.add(email);
+            if( node.has("emails")) {
+                for (JsonNode emailNode : node.get("emails")) {
+                    Person.Emails email = m.readValue(m.writeValueAsString(emailNode), Person.Emails.class);
+                    emails.add(email);
+                }
             }
 
-            person.setTagline(node.get("tagline").asText());
-            person.setAboutMe(node.get("aboutMe").asText());
+            if( node.has("tagline")) person.setTagline(node.get("tagline").asText());
+            if( node.has("aboutMe")) person.setAboutMe(node.get("aboutMe").asText());
         } catch (Exception e) {
             LOGGER.error("Exception while trying to deserialize a Person object: {}", e);
         }

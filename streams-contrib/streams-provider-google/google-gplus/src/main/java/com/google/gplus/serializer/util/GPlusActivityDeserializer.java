@@ -142,20 +142,21 @@ public class GPlusActivityDeserializer extends JsonDeserializer<Activity> {
      */
     private List<Activity.PlusObject.Attachments> buildAttachments(JsonNode objectNode) {
         List<Activity.PlusObject.Attachments> attachments = Lists.newArrayList();
-        for (JsonNode attachmentNode : objectNode.get("attachments")) {
-            Activity.PlusObject.Attachments attachments1 = new Activity.PlusObject.Attachments();
-            attachments1.setObjectType(attachmentNode.get("objectType").asText());
-            attachments1.setDisplayName(attachmentNode.get("displayName").asText());
-            attachments1.setContent(attachmentNode.get("content").asText());
-            attachments1.setUrl(attachmentNode.get("url").asText());
+        if( objectNode.has("attachments") )
+            for (JsonNode attachmentNode : objectNode.get("attachments")) {
+                Activity.PlusObject.Attachments attachments1 = new Activity.PlusObject.Attachments();
+                attachments1.setObjectType(attachmentNode.get("objectType").asText());
+                if( attachmentNode.has("displayName")) attachments1.setDisplayName(attachmentNode.get("displayName").asText());
+                if( attachmentNode.has("content")) attachments1.setContent(attachmentNode.get("content").asText());
+                if( attachmentNode.has("url")) attachments1.setUrl(attachmentNode.get("url").asText());
 
-            Activity.PlusObject.Attachments.Image image1 = new Activity.PlusObject.Attachments.Image();
-            JsonNode imageNode1 = attachmentNode.get("image");
-            image1.setUrl(imageNode1.get("url").asText());
-            attachments1.setImage(image1);
+                Activity.PlusObject.Attachments.Image image1 = new Activity.PlusObject.Attachments.Image();
+                JsonNode imageNode1 = attachmentNode.get("image");
+                image1.setUrl(imageNode1.get("url").asText());
+                attachments1.setImage(image1);
 
-            attachments.add(attachments1);
-        }
+                attachments.add(attachments1);
+            }
 
         return attachments;
     }

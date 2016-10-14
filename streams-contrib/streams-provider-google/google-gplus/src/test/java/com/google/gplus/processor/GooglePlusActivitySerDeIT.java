@@ -25,6 +25,7 @@ import com.google.gplus.serializer.util.GPlusActivityDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
@@ -96,9 +97,8 @@ public class GooglePlusActivitySerDeIT {
                     assertNotNull(activity.getTitle());
                     assertNotNull(activity.getUrl());
 
-                    Map<String, Object> extensions = (Map<String, Object>)activity.getAdditionalProperties().get("extensions");
+                    Map<String, Object> extensions = ExtensionUtil.getInstance().getExtensions(activity);
                     assertNotNull(extensions);
-                    assertNotNull(extensions.get("googlePlus"));
 
                     if(activity.getContent() != null) {
                         assertNotNull(extensions.get("rebroadcasts"));
