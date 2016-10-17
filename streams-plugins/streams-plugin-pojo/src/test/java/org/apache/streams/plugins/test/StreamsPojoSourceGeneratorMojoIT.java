@@ -24,7 +24,6 @@ import com.google.common.io.Files;
 import junit.framework.TestCase;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +39,9 @@ import static org.apache.streams.plugins.test.StreamsPojoSourceGeneratorTest.jav
  * Tests that streams-plugin-pojo running via maven can convert activity schemas into pojos
  * which then compile.
  */
-public class StreamsPojoSourceGeneratorMojoTest extends TestCase {
+public class StreamsPojoSourceGeneratorMojoIT extends TestCase {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPojoSourceGeneratorMojoTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPojoSourceGeneratorMojoIT.class);
 
     protected void setUp() throws Exception
     {

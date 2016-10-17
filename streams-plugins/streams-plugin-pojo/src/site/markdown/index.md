@@ -11,7 +11,7 @@ Output will be placed in target/generated-sources/pojo by default
 
 Run within a module containing a src/main/jsonschema directory
 
-    mvn org.apache.streams.plugins:streams-plugin-pojo:0.3-incubating-SNAPSHOT:pojo
+    mvn org.apache.streams.plugins:streams-plugin-pojo:0.4-incubating:pojo
 
 [streams-plugin-pojo/pom.xml](streams-plugin-pojo/pom.xml "streams-plugin-pojo/pom.xml")
 

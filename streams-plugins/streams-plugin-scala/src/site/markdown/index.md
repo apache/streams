@@ -9,7 +9,7 @@ streams-plugin-scala generates source files from json schemas suitable for writi
 
 Run within a module containing a src/main/jsonschema directory
 
-    mvn org.apache.streams.plugins:streams-plugin-scala:0.3-incubating-SNAPSHOT:pig
+    mvn org.apache.streams.plugins:streams-plugin-scala:0.4-incubating:pig
 
 [streams-plugin-scala/pom.xml](streams-plugin-scala/pom.xml "streams-plugin-scala/pom.xml")
 

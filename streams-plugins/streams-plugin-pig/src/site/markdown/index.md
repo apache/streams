@@ -11,7 +11,7 @@ Output will be placed in target/generated-resources/pig by default
 
 Run within a module containing a src/main/jsonschema directory
 
-    mvn org.apache.streams.plugins:streams-plugin-pig:0.3-incubating-SNAPSHOT:pig
+    mvn org.apache.streams.plugins:streams-plugin-pig:0.4-incubating:pig
 
 [streams-plugin-pig/pom.xml](streams-plugin-pig/pom.xml "streams-plugin-pig/pom.xml")
 

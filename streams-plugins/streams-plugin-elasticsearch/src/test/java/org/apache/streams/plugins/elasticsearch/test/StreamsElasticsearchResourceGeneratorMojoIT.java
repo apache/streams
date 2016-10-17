@@ -16,11 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.streams.plugins.pig.test;
+package org.apache.streams.plugins.elasticsearch.test;
 
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import junit.framework.TestCase;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
@@ -30,17 +28,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
-import static org.apache.streams.plugins.pig.test.StreamsPigResourceGeneratorTest.pigFilter;
 
 /**
  * Tests that streams-plugin-hive running via maven generates hql resources
  */
-public class StreamsPigResourceGeneratorMojoTest extends TestCase {
+public class StreamsElasticsearchResourceGeneratorMojoIT extends TestCase {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPigResourceGeneratorMojoTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsElasticsearchResourceGeneratorMojoIT.class);
 
     protected void setUp() throws Exception
     {
@@ -50,9 +45,9 @@ public class StreamsPigResourceGeneratorMojoTest extends TestCase {
 
 
     @Test
-    public void testStreamsPigResourceGeneratorMojo() throws Exception {
+    public void testStreamsElasticsearchResourceGeneratorMojo() throws Exception {
 
-        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-pig" );
+        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-elasticsearch" );
 
         Verifier verifier;
 
@@ -69,15 +64,5 @@ public class StreamsPigResourceGeneratorMojoTest extends TestCase {
 
         verifier.resetStreams();
 
-        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/pig-mojo");
-
-        assert( testOutput != null );
-        assert( testOutput.exists() == true );
-        assert( testOutput.isDirectory() == true );
-
-        Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-                .filter(pigFilter);
-        Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-        assert( outputCollection.size() == 133 );
     }
 }
