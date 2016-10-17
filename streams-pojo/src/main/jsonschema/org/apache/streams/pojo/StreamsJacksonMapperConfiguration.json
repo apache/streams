@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.pojo.StreamsJacksonMapperConfiguration",
+  "javaInterfaces": ["java.io.Serializable"],
+  "properties": {
+    "dateFormats": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "enableScala": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

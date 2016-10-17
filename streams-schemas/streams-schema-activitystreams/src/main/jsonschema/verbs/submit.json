@@ -4,7 +4,7 @@
         "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
         "http://www.apache.org/licenses/LICENSE-2.0"
     ],
-    "id": "http://streams.incubator.apache.org/site/0.3-incubating-SNAPSHOT/streams-schemas/verbs/submit.json#",
+    "id": "http://streams.incubator.apache.org/site/latest/streams-project/streams-schemas/verbs/submit.json#",
     "type": "object",
     "title": "Submit",
     "description": "Indicates that the actor has submitted the object. If a target is specified, it indicates the entity to which the object was submitted.",
