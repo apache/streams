@@ -169,7 +169,7 @@
                     <includes>**/*.json</includes>
                     <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
                     <includeGroupIds>org.apache.streams</includeGroupIds>
-                    <includeArtifactIds>streams-pojo</includeArtifactIds>
+                    <includeArtifactIds>streams-schemas-activitystreams</includeArtifactIds>
                     <includeTypes>test-jar</includeTypes>
                 </configuration>
                 <executions>
