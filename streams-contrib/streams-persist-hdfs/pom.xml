@@ -219,7 +219,7 @@
                             <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <includeArtifactIds>streams-pojo</includeArtifactIds>
+                            <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
                             <includes>**/*.json</includes>
                             <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
                         </configuration>
