@@ -71,7 +71,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.10</version>
                 <configuration>
                     <includes>**/*.json</includes>
                     <outputDirectory>${project.build.directory}/test-classes/streams-schema-activitystreams</outputDirectory>
