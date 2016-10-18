@@ -38,9 +38,9 @@ public class SchemaOrderingTest {
     @Test
     public void compareVerbParent() {
         SchemaStore schemaStore = new SchemaStoreImpl();
-        File update = new File("target/test-classes/verbs/update.json");
+        File update = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
         schemaStore.create(update.toURI());
-        File activity = new File("target/test-classes/activity.json");
+        File activity = new File("target/test-classes/activitystreams-schemas/activity.json");
         schemaStore.create(activity.toURI());
         assert( schemaStore.compare( schemaStore.getByUri(update.toURI()).get(), schemaStore.getByUri(activity.toURI()).get()) == 1);
         Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
@@ -56,9 +56,9 @@ public class SchemaOrderingTest {
     @Test
     public void compareObjectTypeParent() {
         SchemaStore schemaStore = new SchemaStoreImpl();
-        File alert = new File("target/test-classes/objectTypes/alert.json");
+        File alert = new File("target/test-classes/activitystreams-schemas/objectTypes/alert.json");
         schemaStore.create(alert.toURI());
-        File object = new File("target/test-classes/object.json");
+        File object = new File("target/test-classes/activitystreams-schemas/object.json");
         schemaStore.create(object.toURI());
         assert( schemaStore.compare( schemaStore.getByUri(object.toURI()).get(), schemaStore.getByUri(alert.toURI()).get()) == -1);
         Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
@@ -74,9 +74,9 @@ public class SchemaOrderingTest {
     @Test
     public void compareUnrelated() {
         SchemaStore schemaStore = new SchemaStoreImpl();
-        File alert = new File("target/test-classes/objectTypes/alert.json");
+        File alert = new File("target/test-classes/activitystreams-schemas/objectTypes/alert.json");
         schemaStore.create(alert.toURI());
-        File update = new File("target/test-classes/verbs/update.json");
+        File update = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
         schemaStore.create(update.toURI());
         assert( schemaStore.compare( schemaStore.getByUri(alert.toURI()).get(), schemaStore.getByUri(update.toURI()).get()) == 0);
     }
@@ -84,9 +84,9 @@ public class SchemaOrderingTest {
     @Test
     public void compareVerbFieldRef() {
         SchemaStore schemaStore = new SchemaStoreImpl();
-        File update = new File("target/test-classes/verbs/update.json");
+        File update = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
         schemaStore.create(update.toURI());
-        File object = new File("target/test-classes/object.json");
+        File object = new File("target/test-classes/activitystreams-schemas/object.json");
         schemaStore.create(object.toURI());
         assert( schemaStore.compare( schemaStore.getByUri(update.toURI()).get(), schemaStore.getByUri(object.toURI()).get()) == 1);
         Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
@@ -102,9 +102,9 @@ public class SchemaOrderingTest {
     @Test
     public void compareObjectTypeFieldRef() {
         SchemaStore schemaStore = new SchemaStoreImpl();
-        File alert = new File("target/test-classes/objectTypes/alert.json");
+        File alert = new File("target/test-classes/activitystreams-schemas/objectTypes/alert.json");
         schemaStore.create(alert.toURI());
-        File media_link = new File("target/test-classes/media_link.json");
+        File media_link = new File("target/test-classes/activitystreams-schemas/media_link.json");
         schemaStore.create(media_link.toURI());
         assert( schemaStore.compare( schemaStore.getByUri(media_link.toURI()).get(), schemaStore.getByUri(alert.toURI()).get()) == -1);
         Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
@@ -121,9 +121,9 @@ public class SchemaOrderingTest {
     @Test
     public void compareVerbAncestorIndirect() {
         SchemaStore schemaStore = new SchemaStoreImpl();
-        File update = new File("target/test-classes/verbs/update.json");
+        File update = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
         schemaStore.create(update.toURI());
-        File media_link = new File("target/test-classes/media_link.json");
+        File media_link = new File("target/test-classes/activitystreams-schemas/media_link.json");
         schemaStore.create(media_link.toURI());
         assert( schemaStore.getByUri(media_link.toURI()).isPresent());
         assert( schemaStore.getByUri(update.toURI()).isPresent());

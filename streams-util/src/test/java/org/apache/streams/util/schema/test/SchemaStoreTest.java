@@ -33,7 +33,7 @@ public class SchemaStoreTest {
     @Test
     public void indexMediaLink() {
         SchemaStore schemaStore = new SchemaStoreImpl();
-        File file = new File("target/test-classes/media_link.json");
+        File file = new File("target/test-classes/activitystreams-schemas/media_link.json");
         schemaStore.create(file.toURI());
         assert( schemaStore.getFileUriCount() == 1);
         assert( schemaStore.getByUri(file.toURI()).isPresent());
@@ -43,7 +43,7 @@ public class SchemaStoreTest {
     @Test
     public void indexApprove() {
         SchemaStore schemaStore = new SchemaStoreImpl();
-        File file = new File("target/test-classes/verbs/approve.json");
+        File file = new File("target/test-classes/activitystreams-schemas/verbs/approve.json");
         schemaStore.create(file.toURI());
         assert( schemaStore.getFileUriCount() == 4);
         assert( schemaStore.getByUri(file.toURI()).isPresent());
@@ -53,7 +53,7 @@ public class SchemaStoreTest {
     @Test
     public void indexCollection() {
         SchemaStore schemaStore = new SchemaStoreImpl();
-        File file = new File("target/test-classes/collection.json");
+        File file = new File("target/test-classes/activitystreams-schemas/collection.json");
         schemaStore.create(file.toURI());
         assert( schemaStore.getFileUriCount() == 3);
         assert( schemaStore.getByUri(file.toURI()).isPresent());
@@ -68,7 +68,7 @@ public class SchemaStoreTest {
     @Test
     public void indexUpdate() {
         SchemaStore schemaStore = new SchemaStoreImpl();
-        File file = new File("target/test-classes/verbs/update.json");
+        File file = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
         schemaStore.create(file.toURI());
         assert( schemaStore.getFileUriCount() == 4);
         assert( schemaStore.getByUri(file.toURI()).isPresent());
