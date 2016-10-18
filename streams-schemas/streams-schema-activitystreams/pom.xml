@@ -51,7 +51,7 @@
                         <id>add-source</id>
                         <phase>generate-sources</phase>
                         <goals>
-                            <goal>add-test-resource</goal>
+                            <goal>add-resource</goal>
                         </goals>
                         <configuration>
                             <resources>

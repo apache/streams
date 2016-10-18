@@ -73,7 +73,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
     public static void main(String[] args) {
         StreamsElasticsearchGenerationConfig config = new StreamsElasticsearchGenerationConfig();
 
-        String sourceDirectory = "target/test-classes/activities";
+        String sourceDirectory = "src/main/jsonschema";
         String targetDirectory = "target/generated-resources/streams-plugin-elasticsearch";
 
         if( args.length > 0 )

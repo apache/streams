@@ -43,8 +43,8 @@ public class StreamsPojoSourceGenerator implements Runnable {
     public static void main(String[] args) {
         StreamsPojoGenerationConfig config = new StreamsPojoGenerationConfig();
 
-        String sourceDirectory = "./target/test-classes/activities";
-        String targetDirectory = "./target/generated-sources/pojo";
+        String sourceDirectory = "src/main/jsonschema";
+        String targetDirectory = "target/generated-sources/pojo";
         String targetPackage = "";
 
         if( args.length > 0 )

@@ -64,7 +64,7 @@ public class StreamsPigResourceGeneratorTest {
 
         StreamsPigGenerationConfig config = new StreamsPigGenerationConfig();
 
-        String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
+        String sourceDirectory = "target/test-classes/activitystreams-schemas";
 
         config.setSourceDirectory(sourceDirectory);
 

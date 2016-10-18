@@ -40,7 +40,7 @@ public class StreamsCassandraResourceGeneratorCLITest {
     @Test
     public void testStreamsCassandraResourceGeneratorCLI() throws Exception {
 
-        String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
+        String sourceDirectory = "target/test-classes/activitystreams-schemas";
         String targetDirectory = "target/generated-resources/test-cli";
 
         List<String> argsList = Lists.newArrayList(sourceDirectory, targetDirectory);

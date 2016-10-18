@@ -61,7 +61,7 @@ public class StreamsCassandraResourceGeneratorTest {
 
         StreamsCassandraGenerationConfig config = new StreamsCassandraGenerationConfig();
 
-        String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
+        String sourceDirectory = "target/test-classes/activitystreams-schemas";
 
         config.setSourceDirectory(sourceDirectory);
 

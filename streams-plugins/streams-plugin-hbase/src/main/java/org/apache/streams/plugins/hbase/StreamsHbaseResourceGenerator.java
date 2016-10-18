@@ -65,8 +65,8 @@ public class StreamsHbaseResourceGenerator implements Runnable {
     public static void main(String[] args) {
         StreamsHbaseGenerationConfig config = new StreamsHbaseGenerationConfig();
 
-        String sourceDirectory = "./target/test-classes/activities";
-        String targetDirectory = "./target/generated-resources/hbase";
+        String sourceDirectory = "src/main/jsonschema";
+        String targetDirectory = "target/generated-resources/hbase";
 
         if( args.length > 0 )
             sourceDirectory = args[0];

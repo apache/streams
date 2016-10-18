@@ -63,7 +63,7 @@ public class StreamsElasticsearchResourceGeneratorTest {
 
         StreamsElasticsearchGenerationConfig config = new StreamsElasticsearchGenerationConfig();
 
-        String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
+        String sourceDirectory = "target/test-classes/activitystreams-schemas";
 
         config.setSourceDirectory(sourceDirectory);
 

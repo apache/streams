@@ -63,7 +63,7 @@
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-schema-activitystreams</artifactId>
             <version>${project.version}</version>
-            <type>test-jar</type>
+            <type>jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -237,10 +237,11 @@
                             <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
+                            <includes>**/*.json</includes>
                             <includeGroupIds>org.apache.streams</includeGroupIds>
                             <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
-                            <includes>**/*.json</includes>
-                            <outputDirectory>${project.build.directory}/test-classes/streams-schema-activitystreams</outputDirectory>
+                            <includeTypes>jar</includeTypes>
+                            <outputDirectory>${project.build.directory}/test-classes/activitystreams-schemas</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>

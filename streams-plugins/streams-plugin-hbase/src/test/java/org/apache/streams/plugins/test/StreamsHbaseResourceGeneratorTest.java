@@ -64,7 +64,7 @@ public class StreamsHbaseResourceGeneratorTest {
 
         StreamsHbaseGenerationConfig config = new StreamsHbaseGenerationConfig();
 
-        String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
+        String sourceDirectory = "target/test-classes/activitystreams-schemas";
 
         config.setSourceDirectory(sourceDirectory);
 

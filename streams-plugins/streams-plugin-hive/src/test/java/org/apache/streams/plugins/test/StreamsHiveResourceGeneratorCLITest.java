@@ -40,7 +40,7 @@ public class StreamsHiveResourceGeneratorCLITest {
     @Test
     public void testStreamsHiveResourceGeneratorCLI() throws Exception {
 
-        String sourceDirectory = "target/test-classes/streams-schema-activitystreams";
+        String sourceDirectory = "target/test-classes/activitystreams-schemas";
         String targetDirectory = "target/generated-resources/hive-cli";
 
         List<String> argsList = Lists.newArrayList(sourceDirectory, targetDirectory);
