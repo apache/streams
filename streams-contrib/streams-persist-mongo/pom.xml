@@ -67,11 +67,10 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-pojo</artifactId>
+            <artifactId>streams-schema-activitystreams</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -197,7 +196,6 @@
                     <plugin>
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
-                        <version>${docker.plugin.version}</version>
                         <configuration combine.self="override">
                             <watchInterval>500</watchInterval>
                             <logDate>default</logDate>
@@ -212,7 +210,7 @@
                                         <ports>
                                             <port>${mongo.tcp.host}:${mongo.tcp.port}:27017</port>
                                         </ports>
-                                        <portPropertyFile>mongo.properties</portPropertyFile>
+                                        <portPropertyFile>${pom.basedir}/mongo.properties</portPropertyFile>
                                         <log>
                                             <enabled>true</enabled>
                                             <date>default</date>

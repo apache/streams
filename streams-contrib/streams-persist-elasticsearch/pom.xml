@@ -91,11 +91,10 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-pojo</artifactId>
+            <artifactId>streams-schema-activitystreams</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>
@@ -169,7 +168,7 @@
                     <includes>**/*.json</includes>
                     <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
                     <includeGroupIds>org.apache.streams</includeGroupIds>
-                    <includeArtifactIds>streams-schemas-activitystreams</includeArtifactIds>
+                    <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
                     <includeTypes>test-jar</includeTypes>
                 </configuration>
                 <executions>
@@ -276,7 +275,6 @@
                     <plugin>
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
-                        <version>${docker.plugin.version}</version>
                         <configuration combine.self="override">
                             <watchInterval>500</watchInterval>
                             <logDate>default</logDate>
@@ -292,7 +290,7 @@
                                             <port>${es.http.host}:${es.http.port}:9200</port>
                                             <port>${es.tcp.host}:${es.tcp.port}:9300</port>
                                         </ports>
-                                        <portPropertyFile>elasticsearch.properties</portPropertyFile>
+                                        <portPropertyFile>${pom.basedir}/elasticsearch.properties</portPropertyFile>
                                         <wait>
                                             <log>elasticsearch startup</log>
                                             <http>
