@@ -22,12 +22,11 @@
 
     <parent>
         <groupId>org.apache.streams</groupId>
-        <artifactId>streams-master</artifactId>
+        <artifactId>apache-streams-master</artifactId>
         <version>0.4-incubating-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.streams</groupId>
-    <artifactId>streams-project</artifactId>
+    <artifactId>apache-streams-project</artifactId>
   <version>0.4-incubating-SNAPSHOT</version>
 
     <name>Apache Streams Project</name>
@@ -270,11 +269,6 @@
     </profiles>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
