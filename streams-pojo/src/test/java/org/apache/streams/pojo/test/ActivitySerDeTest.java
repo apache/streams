@@ -53,7 +53,7 @@ public class ActivitySerDeTest {
     public void testActivitySerDe() throws Exception {
 
         InputStream testActivityFolderStream = ActivitySerDeTest.class.getClassLoader()
-                .getResourceAsStream("activities");
+                .getResourceAsStream("activitystreams-testdocs/activities");
         List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
 
         for( String file : files) {

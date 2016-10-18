@@ -69,6 +69,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/*.json</include>
+                    </includes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

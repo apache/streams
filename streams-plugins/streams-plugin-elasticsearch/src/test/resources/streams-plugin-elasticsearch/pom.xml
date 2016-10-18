@@ -39,7 +39,7 @@
             <artifactId>streams-schema-activitystreams</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-            <type>test-jar</type>
+            <type>jar</type>
         </dependency>
     </dependencies>
 
@@ -73,10 +73,10 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <configuration>
                     <includes>**/*.json</includes>
-                    <outputDirectory>${project.build.directory}/test-classes/streams-schema-activitystreams</outputDirectory>
+                    <outputDirectory>${project.build.directory}/test-classes/activitystreams-schemas</outputDirectory>
                     <includeGroupIds>org.apache.streams</includeGroupIds>
                     <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
-                    <includeTypes>jar,test-jar</includeTypes>
+                    <includeTypes>jar</includeTypes>
                 </configuration>
                 <executions>
                     <execution>

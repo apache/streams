@@ -56,14 +56,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-pojo</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
             <artifactId>streams-converters</artifactId>
             <version>${project.version}</version>
         </dependency>
