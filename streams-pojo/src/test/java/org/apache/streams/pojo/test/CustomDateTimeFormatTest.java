@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.data.data.util;
+package org.apache.streams.pojo.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

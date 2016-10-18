@@ -16,7 +16,7 @@
 * under the License.
 */
 
-package org.apache.streams.data.data.util;
+package org.apache.streams.pojo.test;
 
 import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.DateTime;

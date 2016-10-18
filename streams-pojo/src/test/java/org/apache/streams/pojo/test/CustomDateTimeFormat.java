@@ -16,12 +16,12 @@
  * under the License.
  */
 
-package org.apache.streams.data.data.util;
+package org.apache.streams.pojo.test;
 
 import org.apache.streams.jackson.StreamsDateTimeFormat;
 
 /**
- * Supporting class for {@link org.apache.streams.data.data.util.CustomDateTimeFormatTest}
+ * Supporting class for {@link CustomDateTimeFormatTest}
  */
 public class CustomDateTimeFormat implements StreamsDateTimeFormat {
 

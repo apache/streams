@@ -225,6 +225,7 @@
                             <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
+                            <includeGroupIds>org.apache.streams</includeGroupIds>
                             <includeArtifactIds>streams-pojo</includeArtifactIds>
                             <includes>org/apache/streams/pojo/json/**</includes>
                             <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
