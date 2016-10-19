@@ -210,7 +210,7 @@
                                         <ports>
                                             <port>${mongo.tcp.host}:${mongo.tcp.port}:27017</port>
                                         </ports>
-                                        <portPropertyFile>${pom.basedir}/mongo.properties</portPropertyFile>
+                                        <portPropertyFile>mongo.properties</portPropertyFile>
                                         <log>
                                             <enabled>true</enabled>
                                             <date>default</date>

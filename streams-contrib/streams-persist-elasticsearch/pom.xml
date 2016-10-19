@@ -290,7 +290,7 @@
                                             <port>${es.http.host}:${es.http.port}:9200</port>
                                             <port>${es.tcp.host}:${es.tcp.port}:9300</port>
                                         </ports>
-                                        <portPropertyFile>${pom.basedir}/elasticsearch.properties</portPropertyFile>
+                                        <portPropertyFile>elasticsearch.properties</portPropertyFile>
                                         <wait>
                                             <log>elasticsearch startup</log>
                                             <http>
