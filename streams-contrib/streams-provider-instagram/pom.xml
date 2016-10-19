@@ -95,7 +95,7 @@
         <dependency>
             <groupId>com.sachinhandiekar</groupId>
             <artifactId>jInstagram</artifactId>
-            <version>1.0.7</version>
+            <version>1.1.8</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -198,12 +198,28 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <skipTests>${skipITs}</skipTests>
+                    <!-- Run integration test suite rather than individual tests. -->
+                    <excludes>
+                        <exclude>**/*Test.java</exclude>
+                        <exclude>**/*Tests.java</exclude>
+                    </excludes>
+                    <includes>
+                        <exclude>**/*IT.java</exclude>
+                        <include>**/*ITs.java</include>
+                    </includes>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit47</artifactId>
+                        <version>${failsafe.plugin.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
-<plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-</plugin>
+            </plugin>
         </plugins>
     </build>
 </project>

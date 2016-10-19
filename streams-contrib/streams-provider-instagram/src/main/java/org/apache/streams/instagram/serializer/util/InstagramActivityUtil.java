@@ -22,6 +22,7 @@ package org.apache.streams.instagram.serializer.util;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
@@ -60,7 +61,7 @@ public class InstagramActivityUtil {
      * @param activity the target of the updates.  Will receive all values from the tweet.
      * @throws ActivitySerializerException
      */
-    public static void updateActivity(MediaFeedData item, Activity activity) throws ActivitySerializerException {
+    public static void updateActivity(MediaFeedData item, Activity activity) throws ActivityConversionException {
         activity.setActor(buildActor(item));
         activity.setVerb("post");
 
@@ -104,13 +105,13 @@ public class InstagramActivityUtil {
 
         try {
             Image image = new Image();
-            image.setUrl(item.getProfile_picture());
+            image.setUrl(item.getProfilePicture());
 
             Counts counts = item.getCounts();
 
             Map<String, Object> extensions = new HashMap<String, Object>();
 
-            extensions.put("followers", counts.getFollwed_by());
+            extensions.put("followers", counts.getFollowedBy());
             extensions.put("follows", counts.getFollows());
             extensions.put("screenName", item.getUsername());
             extensions.put("posts", counts.getMedia());

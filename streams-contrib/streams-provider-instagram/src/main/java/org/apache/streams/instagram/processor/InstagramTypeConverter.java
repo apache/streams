@@ -21,9 +21,11 @@ package org.apache.streams.instagram.processor;
 import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.instagram.serializer.InstagramUserInfoSerializer;
+import org.apache.streams.instagram.serializer.InstagramMediaFeedDataConverter;
+import org.apache.streams.instagram.serializer.InstagramUserInfoDataConverter;
 import org.apache.streams.instagram.serializer.util.InstagramActivityUtil;
 import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
 import org.jinstagram.entity.users.basicinfo.UserInfoData;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.slf4j.Logger;
@@ -32,32 +34,20 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Queue;
 
+/**
+ * This is deprecated - use ActivityConverterProcessor or ActivityObjectConverterProcessor
+ */
+@Deprecated
 public class InstagramTypeConverter implements StreamsProcessor {
 
     public final static String STREAMS_ID = "InstagramTypeConverter";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(InstagramTypeConverter.class);
 
-    private Queue<MediaFeedData> inQueue;
-    private Queue<StreamsDatum> outQueue;
-
-    private InstagramActivityUtil instagramActivityUtil;
-    private InstagramUserInfoSerializer userInfoSerializer;
-
-    private int count = 0;
+    private InstagramMediaFeedDataConverter mediaFeedDataConverter;
+    private InstagramUserInfoDataConverter userInfoDataConverter;
 
     public final static String TERMINATE = new String("TERMINATE");
-
-    public InstagramTypeConverter() {
-    }
-
-    public Queue<StreamsDatum> getProcessorOutputQueue() {
-        return outQueue;
-    }
-
-    public void setProcessorInputQueue(Queue<MediaFeedData> inputQueue) {
-        inQueue = inputQueue;
-    }
 
     @Override
     public String getId() {
@@ -73,38 +63,38 @@ public class InstagramTypeConverter implements StreamsProcessor {
             Object item = entry.getDocument();
 
             LOGGER.debug("{} processing {}", STREAMS_ID, item.getClass());
-            Activity activity = null;
             if(item instanceof MediaFeedData) {
+
                 //We don't need to use the mapper, since we have a process to convert between
                 //MediaFeedData objects and Activity objects already
-                activity = new Activity();
+                List<Activity> activity = mediaFeedDataConverter.toActivityList((MediaFeedData)item);
 
-                instagramActivityUtil.updateActivity((MediaFeedData)item, activity);
-
+                if( activity.size() > 0 ) result = new StreamsDatum(activity);
 
             } else if(item instanceof UserInfoData) {
-                activity = new Activity();
-                instagramActivityUtil.updateActivity((UserInfoData) item, activity);
+
+                ActivityObject activityObject = userInfoDataConverter.toActivityObject((UserInfoData)item);
+
+                if( activityObject != null ) result = new StreamsDatum(activityObject);
+
             }
-            if(activity != null) {
-                result = new StreamsDatum(activity);
-                count++;
-            }
+
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("Exception while converting MediaFeedData to Activity: {}", e.getMessage());
+            LOGGER.error("Exception while converting item: {}", e.getMessage());
         }
 
-        if( result != null )
+        if( result != null ) {
             return Lists.newArrayList(result);
-        else
+        } else
             return Lists.newArrayList();
+
     }
 
     @Override
     public void prepare(Object o) {
-        instagramActivityUtil = new InstagramActivityUtil();
-        this.userInfoSerializer = new InstagramUserInfoSerializer();
+        mediaFeedDataConverter = new InstagramMediaFeedDataConverter();
+        userInfoDataConverter = new InstagramUserInfoDataConverter();
     }
 
     @Override

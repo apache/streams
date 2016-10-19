@@ -53,7 +53,7 @@ public class InstagramUserInfoCollector extends InstagramDataCollector<UserInfoD
         while(!successful && attempt < MAX_ATTEMPTS) {
             ++attempt;
             try {
-                userInfo = getNextInstagramClient().getUserInfo(Long.valueOf(user.getUserId()));
+                userInfo = getNextInstagramClient().getUserInfo(user.getUserId());
             } catch (Exception e) {
                 if(e instanceof InstagramRateLimitException) {
                     LOGGER.warn("Hit rate limit exception, backing off.");
@@ -85,7 +85,7 @@ public class InstagramUserInfoCollector extends InstagramDataCollector<UserInfoD
 
     @Override
     protected StreamsDatum convertToStreamsDatum(UserInfoData item) {
-        return new StreamsDatum(item, Long.toString(item.getId()));
+        return new StreamsDatum(item, item.getId());
     }
 
 

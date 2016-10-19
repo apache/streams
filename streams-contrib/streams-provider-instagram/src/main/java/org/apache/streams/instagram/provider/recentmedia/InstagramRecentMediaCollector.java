@@ -69,7 +69,7 @@ public class InstagramRecentMediaCollector extends InstagramDataCollector<MediaF
                 MediaFeed feed = null;
                 try {
                     if (pagination == null) {
-                        feed = getNextInstagramClient().getRecentMediaFeed(Long.valueOf(user.getUserId()),
+                        feed = getNextInstagramClient().getRecentMediaFeed(user.getUserId(),
                                 0,
                                 null,
                                 null,

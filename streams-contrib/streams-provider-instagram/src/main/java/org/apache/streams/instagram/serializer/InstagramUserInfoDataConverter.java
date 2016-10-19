@@ -20,11 +20,12 @@ package org.apache.streams.instagram.serializer;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.streams.data.ActivityObjectConverter;
 import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.exceptions.ActivitySerializerException;
-import org.apache.streams.instagram.UsersInfo;
-import org.apache.streams.instagram.provider.userinfo.InstagramUserInfoProvider;
 import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
@@ -41,13 +42,18 @@ import java.util.Map;
 /**
  *
  */
-public class InstagramUserInfoSerializer implements ActivitySerializer<UserInfoData> {
+public class InstagramUserInfoDataConverter implements ActivityObjectConverter<UserInfoData> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoSerializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoDataConverter.class);
 
     private static final String STREAMS_ID_PREFIX = "id:instagram:";
     private static final String PROVIDER_ID = "id:provider:instagram";
     private static final String DISPLAY_NAME = "Instagram";
+
+    @Override
+    public Class requiredClass() {
+        return UserInfoData.class;
+    }
 
     @Override
     public String serializationFormat() {
@@ -55,47 +61,35 @@ public class InstagramUserInfoSerializer implements ActivitySerializer<UserInfoD
     }
 
     @Override
-    public UserInfoData serialize(Activity deserialized) throws ActivitySerializerException {
-        throw new NotImplementedException();
+    public UserInfoData fromActivityObject(ActivityObject deserialized) throws ActivityConversionException {
+        return null;
     }
 
     @Override
-    public Activity deserialize(UserInfoData serialized) throws ActivitySerializerException {
-        Activity activity = new Activity();
+    public ActivityObject toActivityObject(UserInfoData serialized) throws ActivityConversionException {
+        ActivityObject activityObject = new ActivityObject();
+        activityObject.setObjectType("page");
         Provider provider = new Provider();
         provider.setId(PROVIDER_ID);
         provider.setDisplayName(DISPLAY_NAME);
-        activity.setProvider(provider);
-        activity.setPublished(DateTime.now().withZone(DateTimeZone.UTC));
-        Actor actor = new Actor();
+        activityObject.getAdditionalProperties().put("provider", provider);
+        activityObject.setPublished(DateTime.now().withZone(DateTimeZone.UTC));
         Image image = new Image();
-        image.setUrl(serialized.getProfile_picture());
-        actor.setImage(image);
-        actor.setId(STREAMS_ID_PREFIX+serialized.getId());
-        actor.setSummary(serialized.getBio());
-        actor.setAdditionalProperty("handle", serialized.getUsername());
-        actor.setDisplayName(serialized.getFullName());
+        image.setUrl(serialized.getProfilePicture());
+        activityObject.setImage(image);
+        activityObject.setId(STREAMS_ID_PREFIX+serialized.getId());
+        activityObject.setSummary(serialized.getBio());
+        activityObject.setAdditionalProperty("handle", serialized.getUsername());
+        activityObject.setDisplayName(serialized.getFullName());
+        activityObject.setUrl(serialized.getWebsite());
         Map<String, Object> extensions = Maps.newHashMap();
-        actor.setAdditionalProperty("extensions", extensions);
+        activityObject.setAdditionalProperty("extensions", extensions);
         extensions.put("screenName", serialized.getUsername());
         extensions.put("posts", serialized.getCounts().getMedia());
-        extensions.put("followers", serialized.getCounts().getFollwed_by());
+        extensions.put("followers", serialized.getCounts().getFollowedBy());
         extensions.put("website", serialized.getWebsite());
         extensions.put("following", serialized.getCounts().getFollows());
-        return activity;
+        return activityObject;
     }
 
-    @Override
-    public List<Activity> deserializeAll(List<UserInfoData> serializedList) {
-        List<Activity> result = Lists.newLinkedList();
-        for(UserInfoData data : serializedList) {
-            try {
-                result.add(deserialize(data));
-            } catch (ActivitySerializerException ase) {
-                LOGGER.error("Caught ActivitySerializerException, dropping user info data : {}", data.getId());
-                LOGGER.error("Exception : {}", ase);
-            }
-        }
-        return result;
-    }
 }
