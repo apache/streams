@@ -29,6 +29,10 @@ import com.google.api.services.plus.Plus;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gson.Gson;
 import com.typesafe.config.Config;
 import org.apache.streams.config.StreamsConfigurator;
@@ -48,6 +52,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -74,7 +79,11 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
     private static final Gson GSON = new Gson();
 
     private GPlusConfiguration config;
-    private ExecutorService executor;
+
+    List<ListenableFuture<Object>> futures = new ArrayList<>();
+
+    private ListeningExecutorService executor;
+
     private BlockingQueue<StreamsDatum> datumQueue;
     private BlockingQueue<Runnable> runnables;
     private AtomicBoolean isComplete;
@@ -91,6 +100,28 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
 
     public AbstractGPlusProvider(GPlusConfiguration config) {
         this.config = config;
+    }
+
+    @Override
+    public void prepare(Object configurationObject) {
+
+        Preconditions.checkNotNull(config.getOauth().getPathToP12KeyFile());
+        Preconditions.checkNotNull(config.getOauth().getAppName());
+        Preconditions.checkNotNull(config.getOauth().getServiceAccountEmailAddress());
+
+        try {
+            this.plus = createPlusClient();
+        } catch (IOException|GeneralSecurityException e) {
+            LOGGER.error("Failed to created oauth for GPlus : {}", e);
+            throw new RuntimeException(e);
+        }
+        // GPlus rate limits you to 5 calls per second, so there is not a need to execute more than one
+        // collector unless you have multiple oauth tokens
+        //TODO make this configurable based on the number of oauth tokens
+        this.executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
+        this.datumQueue = new LinkedBlockingQueue<>(1000);
+        this.isComplete = new AtomicBoolean(false);
+        this.previousPullWasEmpty = false;
     }
 
     @Override
@@ -141,33 +172,6 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
     @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         return null;
-    }
-
-    @Override
-    public boolean isRunning() {
-        return !this.isComplete.get();
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-
-        Preconditions.checkNotNull(config.getOauth().getPathToP12KeyFile());
-        Preconditions.checkNotNull(config.getOauth().getAppName());
-        Preconditions.checkNotNull(config.getOauth().getServiceAccountEmailAddress());
-
-        try {
-            this.plus = createPlusClient();
-        } catch (IOException|GeneralSecurityException e) {
-            LOGGER.error("Failed to created oauth for GPlus : {}", e);
-            throw new RuntimeException(e);
-        }
-        // GPlus rate limits you to 5 calls per second, so there is not a need to execute more than one
-        // collector unless you have multiple oauth tokens
-        //TODO make this configurable based on the number of oauth tokens
-        this.executor = Executors.newFixedThreadPool(1);
-        this.datumQueue = new LinkedBlockingQueue<>(1000);
-        this.isComplete = new AtomicBoolean(false);
-        this.previousPullWasEmpty = false;
     }
 
     @VisibleForTesting
@@ -242,5 +246,16 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
         }
         this.config.setGooglePlusUsers(gPlusUsers);
     }
+
+    @Override
+    public boolean isRunning() {
+       if (datumQueue.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone()) {
+            LOGGER.info("Completed");
+            isComplete.set(true);
+           LOGGER.info("Exiting");
+       }
+       return !isComplete.get();
+    }
+
 
 }

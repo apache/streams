@@ -111,7 +111,8 @@ public class GPlusUserActivityCollector extends GPlusDataCollector {
                                 || (beforeDate == null && afterDate.isBefore(published))
                                 || (afterDate == null && beforeDate.isAfter(published))
                                 || ((afterDate != null && beforeDate != null) && (afterDate.isBefore(published) && beforeDate.isAfter(published)))) {
-                            this.datumQueue.put(new StreamsDatum(MAPPER.writeValueAsString(activity), activity.getId()));
+                            String json = MAPPER.writeValueAsString(activity);
+                            this.datumQueue.put(new StreamsDatum(json, activity.getId()));
                         } else if(afterDate != null && afterDate.isAfter(published)) {
                             feed.setNextPageToken(null); // do not fetch next page
                             break;

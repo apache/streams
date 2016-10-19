@@ -1,4 +1,4 @@
-org.apache.streams:google-gmail
+org.apache.streams:google-gplus
 ===============================
 
 google-gplus contains providers, conversions, and utility classes for activity exchange with Google+
@@ -19,6 +19,29 @@ google-gplus contains providers, conversions, and utility classes for activity e
 | GPlusUserActivityProvider | [GPlusUserActivityProvider.html](apidocs/com/google/gplus/provider/GPlusUserActivityProvider.html "GPlusUserActivityProvider.html") |
 | GooglePlusTypeConverter | [GooglePlusTypeConverter.html](apidocs/com/google/gplus/processor/GooglePlusTypeConverter.html "GooglePlusTypeConverter.html") |
 
+Test:
+-----
+
+Log into admin console
+Create project
+Enable Data API on project
+Create service account
+Download p12 file
+
+Create a local file `gplus.conf` with valid gplus credentials
+
+    gplus {
+      apiKey = ""
+      oauth {
+        serviceAccountEmailAddress = ""
+        pathToP12KeyFile = ""
+      }
+    }
+    
+Build with integration testing enabled, using your credentials
+
+    mvn clean test verify -DskipITs=false -DargLine="-Dconfig.file=`pwd`/gplus.conf"
+    
 [JavaDocs](apidocs/index.html "JavaDocs")
 
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

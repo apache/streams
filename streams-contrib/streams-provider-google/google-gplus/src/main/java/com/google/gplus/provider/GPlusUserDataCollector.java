@@ -78,7 +78,8 @@ public  class GPlusUserDataCollector extends GPlusDataCollector {
                 }
                 ++attempts;
             } while(tryAgain && attempts < MAX_ATTEMPTS);
-            this.datumQueue.put(new StreamsDatum(MAPPER.writeValueAsString(person), person.getId()));
+            String json = MAPPER.writeValueAsString(person);
+            this.datumQueue.put(new StreamsDatum(json, person.getId()));
         } catch (Throwable t) {
             LOGGER.warn("Unable to pull user data for user={} : {}", userInfo.getUserId(), t);
             if(t instanceof InterruptedException) {

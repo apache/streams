@@ -149,10 +149,12 @@ public class GooglePlusActivityUtil {
      * @param gPlusActivity
      */
     private static void addGPlusExtensions(Activity activity, com.google.api.services.plus.model.Activity gPlusActivity) {
+
+        activity.getAdditionalProperties().put("googlePlus", gPlusActivity);
+
         Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
 
         com.google.api.services.plus.model.Activity.PlusObject object = gPlusActivity.getObject();
-        extensions.put("googlePlus", gPlusActivity);
 
         if(object != null) {
             com.google.api.services.plus.model.Activity.PlusObject.Plusoners plusoners = object.getPlusoners();
