@@ -50,7 +50,7 @@
             <artifactId>streams-schema-activitystreams</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-            <type>test-jar</type>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -87,12 +87,12 @@
                 <version>0.4-incubating-SNAPSHOT</version>
                 <configuration>
                     <sourcePaths>
-                        <sourcePath>target/test-classes/streams-schema-activitystreams/activity.json</sourcePath>
-                        <sourcePath>target/test-classes/streams-schema-activitystreams/collection.json</sourcePath>
-                        <sourcePath>target/test-classes/streams-schema-activitystreams/media_link.json</sourcePath>
-                        <sourcePath>target/test-classes/streams-schema-activitystreams/object.json</sourcePath>
-                        <sourcePath>target/test-classes/streams-schema-activitystreams/objectTypes</sourcePath>
-                        <sourcePath>target/test-classes/streams-schema-activitystreams/verbs</sourcePath>
+                        <sourcePath>target/test-classes/activitystreams-schemas/activity.json</sourcePath>
+                        <sourcePath>target/test-classes/activitystreams-schemas/collection.json</sourcePath>
+                        <sourcePath>target/test-classes/activitystreams-schemas/media_link.json</sourcePath>
+                        <sourcePath>target/test-classes/activitystreams-schemas/object.json</sourcePath>
+                        <sourcePath>target/test-classes/activitystreams-schemas/objectTypes</sourcePath>
+                        <sourcePath>target/test-classes/activitystreams-schemas/verbs</sourcePath>
                     </sourcePaths>
                     <targetPackage>org.apache.streams.pojo.mojo</targetPackage>
                     <targetDirectory>target/generated-sources/pojo-mojo</targetDirectory>
@@ -110,10 +110,10 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <configuration>
                     <includes>**/*.json</includes>
-                    <outputDirectory>${project.build.directory}/test-classes/streams-schema-activitystreams</outputDirectory>
+                    <outputDirectory>${project.build.directory}/test-classes/activitystreams-schemas</outputDirectory>
                     <includeGroupIds>org.apache.streams</includeGroupIds>
                     <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
-                    <includeTypes>jar,test-jar</includeTypes>
+                    <includeTypes>jar</includeTypes>
                 </configuration>
                 <executions>
                     <execution>
