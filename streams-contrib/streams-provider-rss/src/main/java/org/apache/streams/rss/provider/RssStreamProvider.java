@@ -18,22 +18,30 @@
 
 package org.apache.streams.rss.provider;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigParseOptions;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.rss.FeedDetails;
 import org.apache.streams.rss.RssStreamConfiguration;
 import org.apache.streams.rss.provider.perpetual.RssFeedScheduler;
@@ -42,7 +50,11 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -52,7 +64,15 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ * RSS {@link org.apache.streams.core.StreamsProvider} that provides content from rss feeds in boilerpipe format
  *
+ *  To use from command line:
+ *
+ *  Supply configuration similar to src/test/resources/rss.conf
+ *
+ *  Launch using:
+ *
+ *  mvn exec:java -Dexec.mainClass=org.apache.streams.rss.provider.RssStreamProvider -Dexec.args="rss.conf articles.json"
  */
 public class RssStreamProvider implements StreamsProvider {
 
@@ -177,5 +197,44 @@ public class RssStreamProvider implements StreamsProvider {
         ComponentUtils.shutdownExecutor(this.executor, 10, 10);
     }
 
+    public static void main(String[] args) throws Exception {
 
+        Preconditions.checkArgument(args.length >= 2);
+
+        String configfile = args[0];
+        String outfile = args[1];
+
+        Config reference = ConfigFactory.load();
+        File conf_file = new File(configfile);
+        assert(conf_file.exists());
+        Config testResourceConfig = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
+
+        Config typesafe  = testResourceConfig.withFallback(reference).resolve();
+
+        StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
+        RssStreamConfiguration config = new ComponentConfigurator<>(RssStreamConfiguration.class).detectConfiguration(typesafe, "rss");
+        RssStreamProvider provider = new RssStreamProvider(config);
+
+        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+
+        PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
+        provider.prepare(config);
+        provider.startStream();
+        do {
+            Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
+            Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
+            while(iterator.hasNext()) {
+                StreamsDatum datum = iterator.next();
+                String json;
+                try {
+                    json = mapper.writeValueAsString(datum.getDocument());
+                    outStream.println(json);
+                } catch (JsonProcessingException e) {
+                    System.err.println(e.getMessage());
+                }
+            }
+        } while( provider.isRunning());
+        provider.cleanUp();
+        outStream.flush();
+    }
 }
