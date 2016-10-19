@@ -25,6 +25,7 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
+import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.google.gplus.configuration.UserInfo;
@@ -63,6 +64,7 @@ public class YoutubeChannelDataCollector extends YoutubeDataCollector{
 
     @Override
     public void run() {
+        Gson gson = new Gson();
         try {
             int attempt = 0;
              YouTube.Channels.List channelLists = this.youTube.channels().list(CONTENT).setId(this.userInfo.getUserId()).setKey(this.youtubeConfig.getApiKey());
@@ -71,7 +73,8 @@ public class YoutubeChannelDataCollector extends YoutubeDataCollector{
                 try {
                     List<Channel> channels = channelLists.execute().getItems();
                     for (Channel channel : channels) {
-                        this.queue.put(new StreamsDatum(MAPPER.writeValueAsString(channel), channel.getId()));
+                        String json = gson.toJson(channel);
+                        this.queue.put(new StreamsDatum(json, channel.getId()));
                     }
                     if (StringUtils.isEmpty(channelLists.getPageToken())) {
                         channelLists = null;

@@ -28,6 +28,7 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ActivityListResponse;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
+import com.google.gson.Gson;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.google.gplus.configuration.UserInfo;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -62,6 +63,8 @@ public class YoutubeUserActivityCollector extends YoutubeDataCollector {
     private YouTube youtube;
     private UserInfo userInfo;
     private YoutubeConfiguration config;
+
+    Gson gson = new Gson();
 
     public YoutubeUserActivityCollector(YouTube youtube, BlockingQueue<StreamsDatum> datumQueue, BackOffStrategy backOff, UserInfo userInfo, YoutubeConfiguration config) {
         this.youtube = youtube;
@@ -169,7 +172,7 @@ public class YoutubeUserActivityCollector extends YoutubeDataCollector {
                             || (afterDate == null && beforeDate.isAfter(published))
                             || ((afterDate != null && beforeDate != null) && (afterDate.isAfter(published) && beforeDate.isBefore(published)))) {
                         LOGGER.debug("Providing Youtube Activity: {}", MAPPER.writeValueAsString(video));
-                        this.datumQueue.put(new StreamsDatum(MAPPER.writeValueAsString(video), activity.getId()));
+                        this.datumQueue.put(new StreamsDatum(gson.toJson(video), activity.getId()));
                     } else if (afterDate != null && afterDate.isAfter(published)) {
                         feed.setNextPageToken(null); // do not fetch next page
                         break;
