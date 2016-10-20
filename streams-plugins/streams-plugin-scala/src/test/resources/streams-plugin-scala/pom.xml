@@ -32,6 +32,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -58,7 +59,7 @@
                 <version>0.4-incubating-SNAPSHOT</version>
                 <configuration>
                     <packages>org.apache.streams.pojo.json</packages>
-                    <target>target/test-classes/streams-scala-plugin/</target>
+                    <target>target/generated-sources/scala-mojo</target>
                 </configuration>
                 <executions>
                     <execution>

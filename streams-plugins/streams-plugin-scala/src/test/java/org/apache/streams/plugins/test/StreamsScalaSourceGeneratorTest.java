@@ -19,11 +19,15 @@
 
 package org.apache.streams.plugins.test;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
+import org.apache.streams.plugins.StreamsScalaGenerationConfig;
 import org.apache.streams.plugins.StreamsScalaSourceGenerator;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileFilter;
 
@@ -34,17 +38,31 @@ public class StreamsScalaSourceGeneratorTest {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorTest.class);
 
+    public static final Predicate<File> scalaFilter = new Predicate<File>() {
+        @Override
+        public boolean apply(@Nullable File file) {
+            if( file.getName().endsWith(".scala") )
+                return true;
+            else return false;
+        }
+    };
     /**
      * Tests that all example activities can be loaded into Activity beans
      *
      * @throws Exception
      */
     @Test
-    public void testDetectPojoScala() throws Exception {
-        StreamsScalaSourceGenerator streamsScalaSourceGenerator = new StreamsScalaSourceGenerator();
-        streamsScalaSourceGenerator.main(new String[0]);
+    public void testStreamsScalaSourceGenerator() throws Exception {
 
-        File testOutput = new File( "./target/generated-sources/scala/org/apache/streams/scala");
+        StreamsScalaGenerationConfig streamsScalaGenerationConfig = new StreamsScalaGenerationConfig();
+        streamsScalaGenerationConfig.setSourcePackages(Lists.newArrayList("org.apache.streams.pojo.json"));
+        streamsScalaGenerationConfig.setTargetPackage("org.apache.streams.scala");
+        streamsScalaGenerationConfig.setTargetDirectory("target/generated-sources/scala-test");
+
+        StreamsScalaSourceGenerator streamsScalaSourceGenerator = new StreamsScalaSourceGenerator(streamsScalaGenerationConfig);
+        streamsScalaSourceGenerator.run();
+
+        File testOutput = new File( "./target/generated-sources/scala-test/org/apache/streams/scala");
         FileFilter scalaFilter = new FileFilter() {
             @Override
             public boolean accept(File pathname) {

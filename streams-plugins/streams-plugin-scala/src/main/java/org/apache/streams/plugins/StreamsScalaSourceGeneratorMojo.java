@@ -19,6 +19,8 @@
 
 package org.apache.streams.plugins;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -64,7 +66,12 @@ public class StreamsScalaSourceGeneratorMojo extends AbstractMojo {
     private String packages;
 
     public void execute() throws MojoExecutionException {
-        StreamsScalaSourceGenerator streamsScalaSourceGenerator = new StreamsScalaSourceGenerator(this);
+        StreamsScalaGenerationConfig config = new StreamsScalaGenerationConfig();
+        config.setSourcePackages(Splitter.on(',').splitToList(packages));
+        config.setTargetDirectory(target.toString());
+
+        StreamsScalaSourceGenerator streamsScalaSourceGenerator = new StreamsScalaSourceGenerator(config);
+
         streamsScalaSourceGenerator.run();
     }
 

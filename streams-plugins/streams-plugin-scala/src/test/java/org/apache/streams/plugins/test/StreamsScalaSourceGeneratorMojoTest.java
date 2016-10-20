@@ -33,14 +33,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.apache.streams.plugins.test.StreamsHbaseResourceGeneratorTest.txtFilter;
+import static org.apache.streams.plugins.test.StreamsScalaSourceGeneratorTest.scalaFilter;
 
 /**
- * Tests that streams-plugin-hive running via maven generates hql resources
+ * Tests that streams-plugin-pojo running via maven can convert activity schemas into pojos
+ * which then compile.
  */
-public class StreamsHbaseResourceGeneratorMojoIT extends TestCase {
+public class StreamsScalaSourceGeneratorMojoTest extends TestCase {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsHbaseResourceGeneratorMojoIT.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorMojoTest.class);
 
     protected void setUp() throws Exception
     {
@@ -50,9 +51,9 @@ public class StreamsHbaseResourceGeneratorMojoIT extends TestCase {
 
 
     @Test
-    public void testStreamsHbaseResourceGeneratorMojo() throws Exception {
+    public void testStreamsScalaSourceGeneratorMojo() throws Exception {
 
-        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-hbase" );
+        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-scala" );
 
         Verifier verifier;
 
@@ -61,23 +62,22 @@ public class StreamsHbaseResourceGeneratorMojoIT extends TestCase {
         List cliOptions = new ArrayList();
         cliOptions.add( "-N" );
         verifier.executeGoals( Lists.<String>newArrayList(
-                "clean",
-                "dependency:unpack-dependencies",
-                "generate-resources"));
+                "compile"));
 
         verifier.verifyErrorFreeLog();
 
         verifier.resetStreams();
 
-        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/hbase-mojo");
+        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-sources/scala-mojo");
 
         assert( testOutput != null );
         assert( testOutput.exists() == true );
         assert( testOutput.isDirectory() == true );
 
         Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-                .filter(txtFilter);
+                .filter(scalaFilter);
         Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-        assert( outputCollection.size() == 133 );
+        assert( outputCollection.size() > 133 );
+
     }
 }

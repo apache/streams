@@ -21,63 +21,43 @@ package org.apache.streams.plugins.test;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import junit.framework.TestCase;
-import org.apache.maven.it.Verifier;
-import org.apache.maven.it.util.ResourceExtractor;
+import org.apache.streams.plugins.StreamsScalaSourceGenerator;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.apache.streams.plugins.test.StreamsHiveResourceGeneratorTest.hqlFilter;
+import static org.apache.streams.plugins.test.StreamsScalaSourceGeneratorTest.scalaFilter;
 
 /**
- * Tests that streams-plugin-hive running via maven generates hql resources
+ * Created by sblackmon on 5/5/16.
  */
-public class StreamsHiveResourceGeneratorMojoIT extends TestCase {
+public class StreamsScalaSourceGeneratorCLITest {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsHiveResourceGeneratorMojoIT.class);
-
-    protected void setUp() throws Exception
-    {
-        // required for mojo lookups to work
-        super.setUp();
-    }
-
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorCLITest.class);
 
     @Test
-    public void testStreamsHiveResourceGeneratorMojo() throws Exception {
+    public void testStreamsScalaSourceGeneratorCLI() throws Exception {
 
-        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-hive" );
+        String sourcePackages = "org.apache.streams.pojo.json";
+        String targetPackage = "org.apache.streams.scala";
+        String targetDirectory = "./target/generated-sources/scala-cli";
 
-        Verifier verifier;
+        List<String> argsList = Lists.newArrayList(sourcePackages, targetDirectory, targetPackage);
+        StreamsScalaSourceGenerator.main(argsList.toArray(new String[argsList.size()]));
 
-        verifier = new Verifier( testDir.getAbsolutePath() );
-
-        List cliOptions = new ArrayList();
-        cliOptions.add( "-N" );
-        verifier.executeGoals( Lists.<String>newArrayList(
-                "clean",
-                "dependency:unpack-dependencies",
-                "generate-resources"));
-
-        verifier.verifyErrorFreeLog();
-
-        verifier.resetStreams();
-
-        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/hive-mojo");
+        File testOutput = new File(targetDirectory);
 
         assert( testOutput != null );
         assert( testOutput.exists() == true );
         assert( testOutput.isDirectory() == true );
 
         Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-                .filter(hqlFilter);
+                .filter(scalaFilter);
         Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-        assert( outputCollection.size() == 133 );
+        assert( outputCollection.size() > 133 );
     }
 }

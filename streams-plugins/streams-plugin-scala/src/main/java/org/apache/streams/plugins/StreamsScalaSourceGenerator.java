@@ -19,6 +19,7 @@
 
 package org.apache.streams.plugins;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -50,40 +51,48 @@ public class StreamsScalaSourceGenerator implements Runnable {
 
     private final static String LS = System.getProperty("line.separator");
 
-    private StreamsScalaSourceGeneratorMojo mojo;
+    private StreamsScalaGenerationConfig config;
 
-    String outDir = "./target/generated-sources/scala";
-    String packages = "org.apache.streams.pojo.json";
+    private Reflections reflections;
 
-    private final Reflections reflections = new Reflections(
-            new ConfigurationBuilder()
-                    // TODO
-                    .forPackages(packages)
-                    .setScanners(
-                            new SubTypesScanner(),
-                            new TypeAnnotationsScanner()));
+    private String outDir;
 
-    public void main(String[] args) {
-        StreamsScalaSourceGenerator streamsScalaSourceGenerator = new StreamsScalaSourceGenerator();
+    public static void main(String[] args) {
+        StreamsScalaGenerationConfig config = new StreamsScalaGenerationConfig();
+
+        List<String> sourcePackages = Lists.newArrayList();
+        String targetDirectory = "target/generated-sources/pojo";
+        String targetPackage = "";
+
+        if( args.length > 0 )
+            sourcePackages = Splitter.on(',').splitToList(args[0]);
+        if( args.length > 1 )
+            targetDirectory = args[1];
+        if( args.length > 2 )
+            targetPackage = args[2];
+
+        config.setSourcePackages(sourcePackages);
+        config.setTargetPackage(targetPackage);
+        config.setTargetDirectory(targetDirectory);
+
+        StreamsScalaSourceGenerator streamsScalaSourceGenerator = new StreamsScalaSourceGenerator(config);
         streamsScalaSourceGenerator.run();
     }
 
-    public StreamsScalaSourceGenerator(StreamsScalaSourceGeneratorMojo mojo) {
-        this.mojo = mojo;
-        if (    mojo != null &&
-                mojo.getTarget() != null &&
-                !Strings.isNullOrEmpty(mojo.getTarget().getAbsolutePath())
-            )
-            outDir = mojo.getTarget().getAbsolutePath();
+    public StreamsScalaSourceGenerator(StreamsScalaGenerationConfig config) {
+        this.config = config;
+        this.outDir = config.getTargetDirectory().getAbsolutePath();
+        reflections = new Reflections(
+                new ConfigurationBuilder()
+                        // TODO
+                        .forPackages(
+                                config.getSourcePackages()
+                                        .toArray(new String[config.getSourcePackages().size()])
+                        )
+                        .setScanners(
+                                new SubTypesScanner(),
+                                new TypeAnnotationsScanner()));
 
-        if (    mojo != null &&
-                mojo.getPackages() != null &&
-                !Strings.isNullOrEmpty(mojo.getPackages())
-            )
-            packages = mojo.getPackages();
-    }
-
-    public StreamsScalaSourceGenerator() {
     }
 
     public void run() {
