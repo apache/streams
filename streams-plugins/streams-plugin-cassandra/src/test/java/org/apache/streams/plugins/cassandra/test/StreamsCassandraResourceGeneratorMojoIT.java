@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.streams.plugins.test;
+package org.apache.streams.plugins.cassandra.test;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import junit.framework.TestCase;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
 import org.junit.Test;
@@ -29,18 +29,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.apache.streams.plugins.test.StreamsHbaseResourceGeneratorTest.txtFilter;
+import static org.apache.streams.plugins.cassandra.test.StreamsCassandraResourceGeneratorTest.cqlFilter;
 
 /**
  * Tests that streams-plugin-hive running via maven generates hql resources
  */
-public class StreamsHbaseResourceGeneratorMojoTest extends TestCase {
+public class StreamsCassandraResourceGeneratorMojoIT extends TestCase {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsHbaseResourceGeneratorMojoTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsCassandraResourceGeneratorMojoIT.class);
 
     protected void setUp() throws Exception
     {
@@ -48,11 +50,10 @@ public class StreamsHbaseResourceGeneratorMojoTest extends TestCase {
         super.setUp();
     }
 
-
     @Test
-    public void testStreamsHbaseResourceGeneratorMojo() throws Exception {
+    public void testStreamsCassandraResourceGeneratorMojo() throws Exception {
 
-        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-hbase" );
+        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-cassandra" );
 
         Verifier verifier;
 
@@ -69,15 +70,27 @@ public class StreamsHbaseResourceGeneratorMojoTest extends TestCase {
 
         verifier.resetStreams();
 
-        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/hbase-mojo");
+        Path testOutputPath = Paths.get(testDir.getAbsolutePath()).resolve("target/generated-resources/test-mojo");
+
+        File testOutput = testOutputPath.toFile();
 
         assert( testOutput != null );
         assert( testOutput.exists() == true );
         assert( testOutput.isDirectory() == true );
 
         Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-                .filter(txtFilter);
+                .filter(cqlFilter);
         Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-        assert( outputCollection.size() == 133 );
+        assert( outputCollection.size() == 1 );
+
+        Path path = testOutputPath.resolve("types.cql");
+
+        assert( path.toFile().exists() );
+
+        String typesCqlBytes = new String(
+                java.nio.file.Files.readAllBytes(path));
+
+        assert( StringUtils.countMatches(typesCqlBytes, "CREATE TYPE") == 133 );
+
     }
 }

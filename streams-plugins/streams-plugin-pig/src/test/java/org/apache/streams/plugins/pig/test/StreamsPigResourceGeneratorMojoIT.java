@@ -38,9 +38,9 @@ import static org.apache.streams.plugins.pig.test.StreamsPigResourceGeneratorTes
 /**
  * Tests that streams-plugin-hive running via maven generates hql resources
  */
-public class StreamsPigResourceGeneratorMojoTest extends TestCase {
+public class StreamsPigResourceGeneratorMojoIT extends TestCase {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPigResourceGeneratorMojoTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPigResourceGeneratorMojoIT.class);
 
     protected void setUp() throws Exception
     {

@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.streams.plugins.cassandra.test;
+
+package org.apache.streams.plugins.test;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import junit.framework.TestCase;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
 import org.junit.Test;
@@ -29,20 +29,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.apache.streams.plugins.cassandra.test.StreamsCassandraResourceGeneratorTest.cqlFilter;
+import static org.apache.streams.plugins.test.StreamsScalaSourceGeneratorTest.scalaFilter;
 
 /**
- * Tests that streams-plugin-hive running via maven generates hql resources
+ * Tests that streams-plugin-pojo running via maven can convert activity schemas into pojos
+ * which then compile.
  */
-public class StreamsCassandraResourceGeneratorMojoTest extends TestCase {
+public class StreamsScalaSourceGeneratorMojoIT extends TestCase {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsCassandraResourceGeneratorMojoTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorMojoIT.class);
 
     protected void setUp() throws Exception
     {
@@ -50,10 +49,11 @@ public class StreamsCassandraResourceGeneratorMojoTest extends TestCase {
         super.setUp();
     }
 
-    @Test
-    public void testStreamsCassandraResourceGeneratorMojo() throws Exception {
 
-        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-cassandra" );
+    @Test
+    public void testStreamsScalaSourceGeneratorMojo() throws Exception {
+
+        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-scala" );
 
         Verifier verifier;
 
@@ -62,35 +62,22 @@ public class StreamsCassandraResourceGeneratorMojoTest extends TestCase {
         List cliOptions = new ArrayList();
         cliOptions.add( "-N" );
         verifier.executeGoals( Lists.<String>newArrayList(
-                "clean",
-                "dependency:unpack-dependencies",
-                "generate-resources"));
+                "compile"));
 
         verifier.verifyErrorFreeLog();
 
         verifier.resetStreams();
 
-        Path testOutputPath = Paths.get(testDir.getAbsolutePath()).resolve("target/generated-resources/test-mojo");
-
-        File testOutput = testOutputPath.toFile();
+        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-sources/scala-mojo");
 
         assert( testOutput != null );
         assert( testOutput.exists() == true );
         assert( testOutput.isDirectory() == true );
 
         Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-                .filter(cqlFilter);
+                .filter(scalaFilter);
         Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-        assert( outputCollection.size() == 1 );
-
-        Path path = testOutputPath.resolve("types.cql");
-
-        assert( path.toFile().exists() );
-
-        String typesCqlBytes = new String(
-                java.nio.file.Files.readAllBytes(path));
-
-        assert( StringUtils.countMatches(typesCqlBytes, "CREATE TYPE") == 133 );
+        assert( outputCollection.size() > 133 );
 
     }
 }

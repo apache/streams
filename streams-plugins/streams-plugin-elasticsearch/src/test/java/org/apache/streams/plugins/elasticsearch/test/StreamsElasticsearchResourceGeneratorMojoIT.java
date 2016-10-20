@@ -33,9 +33,9 @@ import java.util.List;
 /**
  * Tests that streams-plugin-hive running via maven generates hql resources
  */
-public class StreamsElasticsearchResourceGeneratorMojoTest extends TestCase {
+public class StreamsElasticsearchResourceGeneratorMojoIT extends TestCase {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsElasticsearchResourceGeneratorMojoTest.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsElasticsearchResourceGeneratorMojoIT.class);
 
     protected void setUp() throws Exception
     {
