@@ -18,18 +18,20 @@
 
 package org.apache.streams.elasticsearch.processor;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
-import org.apache.streams.elasticsearch.ElasticsearchConfigurator;
 import org.apache.streams.elasticsearch.ElasticsearchMetadataUtil;
 import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -37,18 +39,12 @@ import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.joda.time.DateTime;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Uses index and type in metadata map stored in datum document to populate current document into datums
  */
 public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, Serializable {
 
-    public final static String STREAMS_ID = "DatumFromMetadataProcessor";
+    private final static String STREAMS_ID = "DatumFromMetadataProcessor";
 
     private ElasticsearchClientManager elasticsearchClientManager;
     private ElasticsearchReaderConfiguration config;
@@ -56,12 +52,13 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
     private ObjectMapper mapper;
 
     public DatumFromMetadataAsDocumentProcessor() {
-        Config config = StreamsConfigurator.config.getConfig("elasticsearch");
-        this.config = ElasticsearchConfigurator.detectReaderConfiguration(config);
+        this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch"));
     }
 
     public DatumFromMetadataAsDocumentProcessor(Config config) {
-        this.config = ElasticsearchConfigurator.detectReaderConfiguration(config);
+        this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch"));
     }
 
     public DatumFromMetadataAsDocumentProcessor(ElasticsearchReaderConfiguration config) {
@@ -75,7 +72,7 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
-        List<StreamsDatum> result = Lists.newArrayList();
+        List<StreamsDatum> result = new ArrayList<>();
 
         ObjectNode metadataObjectNode;
         try {
@@ -86,7 +83,7 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
 
         Map<String, Object> metadata = ElasticsearchMetadataUtil.asMap(metadataObjectNode);
 
-        if(entry == null || entry.getMetadata() == null)
+        if(entry.getMetadata() == null)
             return result;
 
         String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
@@ -98,7 +95,7 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
         getRequestBuilder.setFetchSource(true);
         GetResponse getResponse = getRequestBuilder.get();
 
-        if( getResponse == null || getResponse.isExists() == false || getResponse.isSourceEmpty() == true )
+        if( getResponse == null || !getResponse.isExists() || getResponse.isSourceEmpty())
             return result;
 
         entry.setDocument(getResponse.getSource());

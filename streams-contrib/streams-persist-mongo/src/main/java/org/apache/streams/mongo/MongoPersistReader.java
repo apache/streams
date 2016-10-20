@@ -23,11 +23,19 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
-import com.mongodb.*;
-import com.mongodb.util.JSON;
-import com.typesafe.config.Config;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.*;
+import org.apache.streams.core.DatumStatusCounter;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsPersistReader;
+import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -35,11 +43,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.UnknownHostException;
-import java.util.List;
 import java.util.Queue;
-import java.util.Random;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -49,7 +57,6 @@ public class MongoPersistReader implements StreamsPersistReader {
     public static final String STREAMS_ID = "MongoPersistReader";
 
     private final static Logger LOGGER = LoggerFactory.getLogger(MongoPersistReader.class);
-    private final static long MAX_WRITE_LATENCY = 1000;
 
     protected volatile Queue<StreamsDatum> persistQueue;
 
@@ -59,7 +66,6 @@ public class MongoPersistReader implements StreamsPersistReader {
     private ExecutorService executor;
 
     private MongoConfiguration config;
-    private MongoPersistReaderTask readerTask;
 
     protected MongoClient client;
     protected DB db;
@@ -67,13 +73,11 @@ public class MongoPersistReader implements StreamsPersistReader {
 
     protected DBCursor cursor;
 
-    protected List<DBObject> insertBatch = Lists.newArrayList();
-
     protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public MongoPersistReader() {
-        Config config = StreamsConfigurator.config.getConfig("mongo");
-        this.config = MongoConfigurator.detectConfiguration(config);
+        this.config = new ComponentConfigurator<>(MongoConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("mongo"));
     }
 
     public MongoPersistReader(MongoConfiguration config) {
@@ -81,8 +85,8 @@ public class MongoPersistReader implements StreamsPersistReader {
     }
 
     public MongoPersistReader(Queue<StreamsDatum> persistQueue) {
-        Config config = StreamsConfigurator.config.getConfig("mongo");
-        this.config = MongoConfigurator.detectConfiguration(config);
+        this.config = new ComponentConfigurator<>(MongoConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("mongo"));
         this.persistQueue = persistQueue;
     }
 
@@ -95,14 +99,6 @@ public class MongoPersistReader implements StreamsPersistReader {
     }
 
     public void stop() {
-
-//        try {
-//            client.st
-//            client.requestDone();
-//        } catch (Exception e) {
-//        } finally {
-//            client.requestDone();
-//        }
     }
 
     @Override
@@ -121,8 +117,7 @@ public class MongoPersistReader implements StreamsPersistReader {
 
         cursor = collection.find();
 
-        if( cursor == null ||
-            cursor.hasNext() == false )
+        if( cursor == null || !cursor.hasNext())
             throw new RuntimeException("Collection not present or empty!");
 
         persistQueue = constructQueue();
@@ -149,9 +144,8 @@ public class MongoPersistReader implements StreamsPersistReader {
             LOGGER.warn("document isn't valid JSON.");
             return null;
         }
-        StreamsDatum datum = new StreamsDatum(objectNode, id);
 
-        return datum;
+        return new StreamsDatum(objectNode, id);
     }
 
     private synchronized void connectToMongo() {
@@ -161,7 +155,7 @@ public class MongoPersistReader implements StreamsPersistReader {
         if (!Strings.isNullOrEmpty(config.getUser()) && !Strings.isNullOrEmpty(config.getPassword())) {
             MongoCredential credential =
                     MongoCredential.createCredential(config.getUser(), config.getDb(), config.getPassword().toCharArray());
-            client = new MongoClient(serverAddress, Lists.<MongoCredential>newArrayList(credential));
+            client = new MongoClient(serverAddress, Lists.newArrayList(credential));
         } else {
             client = new MongoClient(serverAddress);
         }
@@ -178,15 +172,12 @@ public class MongoPersistReader implements StreamsPersistReader {
     @Override
     public StreamsResultSet readAll() {
 
-        DBCursor cursor = collection.find();
-        try {
-            while(cursor.hasNext()) {
+        try (DBCursor cursor = collection.find()) {
+            while (cursor.hasNext()) {
                 DBObject dbObject = cursor.next();
                 StreamsDatum datum = prepareDatum(dbObject);
                 write(datum);
             }
-        } finally {
-            cursor.close();
         }
 
         return readCurrent();
@@ -196,14 +187,14 @@ public class MongoPersistReader implements StreamsPersistReader {
     public void startStream() {
 
         LOGGER.debug("startStream");
-        readerTask = new MongoPersistReaderTask(this);
+        MongoPersistReaderTask readerTask = new MongoPersistReaderTask(this);
         Thread readerTaskThread = new Thread(readerTask);
         Future future = executor.submit(readerTaskThread);
 
         while( !future.isDone() && !future.isCancelled()) {
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException ignored) {}
         }
 
         executor.shutdown();
@@ -219,9 +210,6 @@ public class MongoPersistReader implements StreamsPersistReader {
             lock.writeLock().lock();
             current = new StreamsResultSet(persistQueue);
             current.setCounter(new DatumStatusCounter());
-//            current.getCounter().add(countersCurrent);
-//            countersTotal.add(countersCurrent);
-//            countersCurrent = new DatumStatusCounter();
             persistQueue = constructQueue();
         } finally {
             lock.writeLock().unlock();

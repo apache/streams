@@ -24,9 +24,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Uninterruptibles;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -39,8 +37,8 @@ import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.apache.streams.components.http.HttpConfigurator;
 import org.apache.streams.components.http.HttpProviderConfiguration;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
@@ -58,19 +56,15 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -91,14 +85,15 @@ public class SimpleHttpProvider implements StreamsProvider {
 
     protected HttpProviderConfiguration configuration;
 
-    protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+    protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<>();
 
     protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     private ExecutorService executor;
 
     public SimpleHttpProvider() {
-        this(HttpConfigurator.detectProviderConfiguration(StreamsConfigurator.config.getConfig("http")));
+        this(new ComponentConfigurator<>(HttpProviderConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("http")));
     }
 
     public SimpleHttpProvider(HttpProviderConfiguration providerConfiguration) {
@@ -116,8 +111,7 @@ public class SimpleHttpProvider implements StreamsProvider {
       Override this to add parameters to the request
      */
     protected Map<String, String> prepareParams(StreamsDatum entry) {
-
-        return Maps.newHashMap();
+        return new HashMap<>();
     }
 
     public HttpRequestBase prepareHttpRequest(URI uri) {
@@ -154,11 +148,7 @@ public class SimpleHttpProvider implements StreamsProvider {
             builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
             sslsf = new SSLConnectionSocketFactory(
                     builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-        } catch (NoSuchAlgorithmException e) {
-            LOGGER.warn(e.getMessage());
-        } catch (KeyManagementException e) {
-            LOGGER.warn(e.getMessage());
-        } catch (KeyStoreException e) {
+        } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
             LOGGER.warn(e.getMessage());
         }
 
@@ -243,7 +233,7 @@ public class SimpleHttpProvider implements StreamsProvider {
 
         CloseableHttpResponse response = null;
 
-        String entityString = null;
+        String entityString;
         try {
             response = httpclient.execute(httpRequest);
             HttpEntity entity = response.getEntity();
@@ -259,8 +249,10 @@ public class SimpleHttpProvider implements StreamsProvider {
             LOGGER.error("IO error:\n{}\n{}\n{}", uri.toString(), response, e.getMessage());
         } finally {
             try {
-                response.close();
-            } catch (IOException e) {}
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException ignored) {}
         }
         return results;
     }

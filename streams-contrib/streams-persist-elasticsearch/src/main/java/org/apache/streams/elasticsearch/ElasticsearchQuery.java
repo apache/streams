@@ -19,19 +19,21 @@
 package org.apache.streams.elasticsearch;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.Lists;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.script.Script;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,10 +44,9 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
 
     private ElasticsearchClientManager elasticsearchClientManager;
     private ElasticsearchReaderConfiguration config;
-    private List<String> indexes = Lists.newArrayList();
-    private List<String> types = Lists.newArrayList();
+    private List<String> indexes = new ArrayList<>();
+    private List<String> types = new ArrayList<>();
     private int limit = 1000 * 1000 * 1000; // we are going to set the default limit very high to 1bil
-    private boolean random = false;
     private int batchSize = 100;
     private String scrollTimeout = "5m";
     private org.elasticsearch.index.query.QueryBuilder queryBuilder;
@@ -59,7 +60,8 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     private StreamsJacksonMapper mapper = StreamsJacksonMapper.getInstance();
 
     public ElasticsearchQuery() {
-        this(ElasticsearchConfigurator.detectReaderConfiguration(StreamsConfigurator.config.getConfig("elasticsearch")));
+        this(new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch")));
     }
 
     public ElasticsearchQuery(ElasticsearchReaderConfiguration config) {
@@ -141,8 +143,9 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
                 search = search.setTypes(types.toArray(new String[0]));
 
             // TODO: Replace when all clusters are upgraded past 0.90.4 so we can implement a RANDOM scroll.
-            if (this.random)
-                search = search.addSort(SortBuilders.scriptSort("random()", "number"));
+            boolean random = false;
+            if (random)
+                search = search.addSort(SortBuilders.scriptSort(new Script("random()"), "number"));
         }
 
         // We don't have a scroll, we need to create a scroll

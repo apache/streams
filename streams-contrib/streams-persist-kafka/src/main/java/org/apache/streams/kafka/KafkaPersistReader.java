@@ -19,7 +19,6 @@
 package org.apache.streams.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.typesafe.config.Config;
 import kafka.consumer.Consumer;
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.KafkaStream;
@@ -27,6 +26,7 @@ import kafka.consumer.Whitelist;
 import kafka.javaapi.consumer.ConsumerConnector;
 import kafka.serializer.StringDecoder;
 import kafka.utils.VerifiableProperties;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistReader;
@@ -34,8 +34,6 @@ import org.apache.streams.core.StreamsResultSet;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.apache.streams.kafka.KafkaConfiguration;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -59,7 +57,6 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable {
 
     private KafkaConfiguration config;
 
-    private ConsumerConfig consumerConfig;
     private ConsumerConnector consumerConnector;
 
     public List<KafkaStream<String, String>> inStreams;
@@ -67,14 +64,14 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable {
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public KafkaPersistReader() {
-        Config config = StreamsConfigurator.config.getConfig("kafka");
-        this.config = KafkaConfigurator.detectConfiguration(config);
-        this.persistQueue  = new ConcurrentLinkedQueue<StreamsDatum>();
+        this.config = new ComponentConfigurator<>(KafkaConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("kafka"));
+        this.persistQueue  = new ConcurrentLinkedQueue<>();
     }
 
     public KafkaPersistReader(Queue<StreamsDatum> persistQueue) {
-        Config config = StreamsConfigurator.config.getConfig("kafka");
-        this.config = KafkaConfigurator.detectConfiguration(config);
+        this.config = new ComponentConfigurator<>(KafkaConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("kafka"));
         this.persistQueue = persistQueue;
     }
 
@@ -93,7 +90,7 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable {
         Properties props = new Properties();
         props.setProperty("serializer.encoding", "UTF8");
 
-        consumerConfig = new ConsumerConfig(props);
+        ConsumerConfig consumerConfig = new ConsumerConfig(props);
 
         consumerConnector = Consumer.createJavaConsumerConnector(consumerConfig);
 
@@ -154,7 +151,7 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable {
         while( !executor.isTerminated()) {
             try {
                 executor.awaitTermination(5, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException ignored) {}
         }
     }
 }

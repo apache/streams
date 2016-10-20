@@ -20,20 +20,26 @@ package org.apache.streams.hbase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.*;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsPersistWriter;
-import org.apache.streams.util.GuidUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.client.HConnection;
+import org.apache.hadoop.hbase.client.HConnectionManager;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.HTablePool;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsPersistWriter;
+import org.apache.streams.util.GuidUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Closeable
 {
@@ -53,12 +59,14 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
     private HbaseConfiguration config;
 
     public HbasePersistWriter() {
-        this.config = HbaseConfigurator.detectConfiguration();
-        this.persistQueue  = new ConcurrentLinkedQueue<StreamsDatum>();
+        this.config = new ComponentConfigurator<>(HbaseConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("hbase"));
+        this.persistQueue  = new ConcurrentLinkedQueue<>();
     }
 
     public HbasePersistWriter(Queue<StreamsDatum> persistQueue) {
-        this.config = HbaseConfigurator.detectConfiguration();
+        this.config = new ComponentConfigurator<>(HbaseConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("hbase"));
         this.persistQueue = persistQueue;
     }
 
@@ -110,7 +118,6 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
         {
             LOGGER.error("There was an error connecting to HBase, please check your settings and try again");
             e.printStackTrace();
-            return;
         }
     }
 
@@ -164,7 +171,6 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
         } catch (IOException e) {
             e.printStackTrace();
             LOGGER.warn("Failure executin put: {}", streamsDatum.getDocument().toString());
-            return;
         }
 
     }
@@ -191,7 +197,6 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
             task.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
-            return;
         }
 
     }

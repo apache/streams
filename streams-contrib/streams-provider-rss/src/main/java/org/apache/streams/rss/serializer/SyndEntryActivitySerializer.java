@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.data.util.RFC3339Utils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -37,8 +36,8 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNode> {
 
@@ -57,7 +56,7 @@ public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNod
 
     @Override
     public List<Activity> deserializeAll(List<ObjectNode> objectNodes) {
-        List<Activity> result = Lists.newLinkedList();
+        List<Activity> result = new LinkedList<>();
         for (ObjectNode node : objectNodes) {
             result.add(deserialize(node));
         }
@@ -180,7 +179,7 @@ public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNod
         if (entry.get("uri") != null)
             uri = entry.get("uri").textValue();
 
-        /**
+        /*
          * Order of precedence for resourceLocation selection
          *
          * 1. Valid URI
@@ -209,9 +208,7 @@ public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNod
      * @return boolean of whether or not the resource is valid
      */
     private boolean isValidResource(String resource) {
-        if(resource != null && resource.startsWith("http") || resource.startsWith("www"))
-            return true;
-        return false;
+        return resource != null && (resource.startsWith("http") || resource.startsWith("www"));
     }
 
     /**

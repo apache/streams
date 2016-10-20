@@ -16,10 +16,7 @@ package org.apache.streams.instagram.provider.recentmedia;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Queues;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -28,18 +25,10 @@ import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsProvider;
-import org.apache.streams.core.StreamsResultSet;
-import org.apache.streams.instagram.*;
+import org.apache.streams.instagram.InstagramConfiguration;
 import org.apache.streams.instagram.provider.InstagramAbstractProvider;
 import org.apache.streams.instagram.provider.InstagramDataCollector;
-import org.apache.streams.instagram.provider.recentmedia.InstagramRecentMediaCollector;
-import org.apache.streams.instagram.provider.userinfo.InstagramUserInfoProvider;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.util.ComponentUtils;
-import org.apache.streams.util.SerializationUtil;
-import org.jinstagram.entity.users.feed.MediaFeedData;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,16 +36,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.math.BigInteger;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Instagram {@link org.apache.streams.core.StreamsProvider} that provides the recent media data for a group of users

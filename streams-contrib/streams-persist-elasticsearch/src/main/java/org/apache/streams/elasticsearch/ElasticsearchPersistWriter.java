@@ -22,9 +22,13 @@ package org.apache.streams.elasticsearch;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.Uninterruptibles;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.*;
+import org.apache.streams.core.DatumStatus;
+import org.apache.streams.core.DatumStatusCountable;
+import org.apache.streams.core.DatumStatusCounter;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -45,8 +49,12 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -57,7 +65,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistWriter.class);
     private static final NumberFormat MEGABYTE_FORMAT = new DecimalFormat("#.##");
     private static final NumberFormat NUMBER_FORMAT = new DecimalFormat("###,###,###,###");
-    private static final Long DEFAULT_BULK_FLUSH_THRESHOLD = 5l * 1024l * 1024l;
+    private static final Long DEFAULT_BULK_FLUSH_THRESHOLD = 5L * 1024L * 1024L;
     private static final int DEFAULT_BATCH_SIZE = 100;
     //ES defaults its bulk index queue to 50 items.  We want to be under this on our backoff so set this to 1/2 ES default
     //at a batch size as configured here.
@@ -67,7 +75,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
 
     protected static final ObjectMapper OBJECT_MAPPER = StreamsJacksonMapper.getInstance();
 
-    protected final List<String> affectedIndexes = new ArrayList<String>();
+    protected final List<String> affectedIndexes = new ArrayList<>();
 
     protected final ElasticsearchClientManager manager;
     protected final ElasticsearchWriterConfiguration config;
@@ -96,7 +104,8 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     private final AtomicLong totalSizeInBytes = new AtomicLong(0);
 
     public ElasticsearchPersistWriter() {
-        this(ElasticsearchConfigurator.detectWriterConfiguration(StreamsConfigurator.config.getConfig("elasticsearch")));
+        this(new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch")));
     }
 
     public ElasticsearchPersistWriter(ElasticsearchWriterConfiguration config) {
@@ -170,10 +179,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     }
 
     protected String docAsJson(Object streamsDocument) throws IOException {
-
-        String docAsJson = (streamsDocument instanceof String) ? streamsDocument.toString() : OBJECT_MAPPER.writeValueAsString(streamsDocument);
-
-        return docAsJson;
+        return (streamsDocument instanceof String) ? streamsDocument.toString() : OBJECT_MAPPER.writeValueAsString(streamsDocument);
     }
 
     protected StreamsDatum appendMetadata(StreamsDatum streamsDatum) throws IOException {
@@ -210,7 +216,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             LOGGER.warn("This is unexpected: {}", e);
         } finally {
 
-            if( veryLargeBulk == true ) {
+            if(veryLargeBulk) {
                 resetRefreshInterval();
             }
 
@@ -219,7 +225,8 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                 LOGGER.debug("refreshIndexes completed");
             }
 
-            LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]", this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
+            LOGGER.debug("Closed ElasticSearch Writer: Ok[{}] Failed[{}] Orphaned[{}]",
+              this.totalOk.get(), this.totalFailed.get(), this.getTotalOutstanding());
             timer.cancel();
 
             LOGGER.debug("cleanUp completed");
@@ -275,7 +282,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
             return;
 
         // wait for one minute to catch up if it needs to
-        waitToCatchUp(5, 1 * 60 * 1000);
+        waitToCatchUp(5, 60 * 1000);
 
         // call the flush command.
         flush(this.bulkRequest, this.currentBatchItems.get(), this.currentBatchBytes.get());
@@ -306,7 +313,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
     private void checkForBackOff() {
         try {
             if (this.getTotalOutstanding() > WAITING_DOCS_LIMIT) {
-                /****************************************************************************
+                /*
                  * Author:
                  * Smashew
                  *

@@ -22,16 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
@@ -53,14 +44,19 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.io.Serializable;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -84,21 +80,21 @@ public class RssStreamProvider implements StreamsProvider {
 
     private RssStreamConfiguration config;
     private boolean perpetual;
-    private Set<String> urlFeeds;
     private ExecutorService executor;
     private BlockingQueue<StreamsDatum> dataQueue;
     private AtomicBoolean isComplete;
-    private int consecutiveEmptyReads;
 
     @VisibleForTesting
     protected RssFeedScheduler scheduler;
 
     public RssStreamProvider() {
-        this(RssStreamConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("rss")), false);
+        this(new ComponentConfigurator<>(RssStreamConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("rss")), false);
     }
 
     public RssStreamProvider(boolean perpetual) {
-        this(RssStreamConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("rss")), perpetual);
+        this(new ComponentConfigurator<>(RssStreamConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("rss")), perpetual);
     }
 
     public RssStreamProvider(RssStreamConfiguration config) {
@@ -120,14 +116,13 @@ public class RssStreamProvider implements StreamsProvider {
     }
 
     public void setRssFeeds(Set<String> urlFeeds) {
-        this.urlFeeds = urlFeeds;
     }
 
     public void setRssFeeds(Map<String, Long> feeds) {
         if(this.config == null) {
             this.config = new RssStreamConfiguration();
         }
-        List<FeedDetails> feedDetails = Lists.newLinkedList();
+        List<FeedDetails> feedDetails = new ArrayList<>();
         for(String feed : feeds.keySet()) {
             Long delay = feeds.get(feed);
             FeedDetails detail = new FeedDetails();
@@ -146,7 +141,7 @@ public class RssStreamProvider implements StreamsProvider {
 
     @Override
     public StreamsResultSet readCurrent() {
-        Queue<StreamsDatum> batch = Queues.newConcurrentLinkedQueue();
+        Queue<StreamsDatum> batch = new ConcurrentLinkedQueue<>();
         int batchSize = 0;
         while(!this.dataQueue.isEmpty() && batchSize < MAX_SIZE) {
             StreamsDatum datum = ComponentUtils.pollWhileNotEmpty(this.dataQueue);
@@ -177,10 +172,10 @@ public class RssStreamProvider implements StreamsProvider {
     @Override
     public void prepare(Object configurationObject) {
         this.executor = new ThreadPoolExecutor(1, 4, 15L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-        this.dataQueue = Queues.newLinkedBlockingQueue();
+        this.dataQueue = new LinkedBlockingQueue<>();
         this.scheduler = getScheduler(this.dataQueue);
         this.isComplete = new AtomicBoolean(false);
-        this.consecutiveEmptyReads = 0;
+        int consecutiveEmptyReads = 0;
     }
 
     @VisibleForTesting
@@ -222,9 +217,7 @@ public class RssStreamProvider implements StreamsProvider {
         provider.startStream();
         do {
             Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-            Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
-            while(iterator.hasNext()) {
-                StreamsDatum datum = iterator.next();
+            for (StreamsDatum datum : provider.readCurrent()) {
                 String json;
                 try {
                     json = mapper.writeValueAsString(datum.getDocument());

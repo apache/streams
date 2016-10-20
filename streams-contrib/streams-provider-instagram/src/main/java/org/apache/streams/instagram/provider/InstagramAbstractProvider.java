@@ -14,18 +14,16 @@ specific language governing permissions and limitations
 under the License. */
 package org.apache.streams.instagram.provider;
 
-import com.google.common.collect.Queues;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.instagram.InstagramConfiguration;
-import org.apache.streams.instagram.InstagramConfigurator;
 import org.apache.streams.instagram.User;
 import org.apache.streams.instagram.UsersInfo;
 import org.apache.streams.util.ComponentUtils;
@@ -37,11 +35,13 @@ import org.slf4j.LoggerFactory;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -60,16 +60,16 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
     private static final int MAX_BATCH_SIZE = 2000;
 
     protected InstagramConfiguration config;
-    private InstagramDataCollector dataCollector;
     protected Queue<StreamsDatum> dataQueue;
     private ListeningExecutorService executorService;
 
-    List<ListenableFuture<Object>> futures = new ArrayList<>();
+    private List<ListenableFuture<Object>> futures = new ArrayList<>();
 
     private AtomicBoolean isCompleted;
 
     public InstagramAbstractProvider() {
-        this.config = InstagramConfigurator.detectInstagramConfiguration(StreamsConfigurator.config.getConfig("instagram"));
+        this.config = new ComponentConfigurator<>(InstagramConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("instagram"));
     }
 
     public InstagramAbstractProvider(InstagramConfiguration config) {
@@ -89,22 +89,22 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
 
     @Override
     public void startStream() {
-        this.dataCollector = getInstagramDataCollector();
+        InstagramDataCollector dataCollector = getInstagramDataCollector();
         this.executorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
-        ListenableFuture future = this.executorService.submit(this.dataCollector);
+        ListenableFuture future = this.executorService.submit(dataCollector);
         this.futures.add(future);
     }
 
     /**
      * Return the data collector to use to connect to instagram.
-     * @return
+     * @return {@link InstagramDataCollector}
      */
     protected abstract InstagramDataCollector getInstagramDataCollector();
 
 
     @Override
     public StreamsResultSet readCurrent() {
-        Queue<StreamsDatum> batch = Queues.newConcurrentLinkedQueue();
+        Queue<StreamsDatum> batch = new ConcurrentLinkedQueue<>();
         int count = 0;
         while(!this.dataQueue.isEmpty() && count < MAX_BATCH_SIZE) {
             ComponentUtils.offerUntilSuccess(ComponentUtils.pollWhileNotEmpty(this.dataQueue), batch);
@@ -125,7 +125,7 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
 
     @Override
     public void prepare(Object configurationObject) {
-        this.dataQueue = Queues.newConcurrentLinkedQueue();
+        this.dataQueue = new ConcurrentLinkedQueue<>();
         this.isCompleted = new AtomicBoolean(false);
     }
 
@@ -171,7 +171,7 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
      * @param tokenStrings
      */
     public void setAuthorizedUserTokens(Collection<String> tokenStrings) {
-        ensureUsersInfo(this.config).setAuthorizedTokens(Sets.newHashSet(tokenStrings));
+        ensureUsersInfo(this.config).setAuthorizedTokens(new HashSet<>(tokenStrings));
     }
 
     /**
@@ -197,7 +197,7 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
      * @param usersWithAfterDate instagram user id mapped to BeforeDate time
      */
     public void setUsersWithAfterDate(Map<String, DateTime> usersWithAfterDate) {
-        Set<User> users = Sets.newHashSet();
+        Set<User> users = new HashSet<>();
         for(String userId : usersWithAfterDate.keySet()) {
             User user = new User();
             user.setUserId(userId);

@@ -34,7 +34,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.typesafe.config.Config;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
@@ -53,16 +53,14 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 public abstract class YoutubeProvider implements StreamsProvider {
 
@@ -73,7 +71,7 @@ public abstract class YoutubeProvider implements StreamsProvider {
 
     // This OAuth 2.0 access scope allows for full read/write access to the
     // authenticated user's account.
-    List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube");
+    private List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube");
 
     /**
      * Define a global instance of the HTTP transport.
@@ -87,7 +85,7 @@ public abstract class YoutubeProvider implements StreamsProvider {
 
     private static final int DEFAULT_THREAD_POOL_SIZE = 5;
 
-    List<ListenableFuture<Object>> futures = new ArrayList<>();
+    private List<ListenableFuture<Object>> futures = new ArrayList<>();
 
     private ListeningExecutorService executor;
     private BlockingQueue<StreamsDatum> datumQueue;
@@ -98,8 +96,8 @@ public abstract class YoutubeProvider implements StreamsProvider {
     protected YoutubeConfiguration config;
 
     public YoutubeProvider() {
-        Config config = StreamsConfigurator.config.getConfig("youtube");
-        this.config = YoutubeConfigurator.detectConfiguration(config);
+        this.config = new ComponentConfigurator<>(YoutubeConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("youtube"));
 
         Preconditions.checkNotNull(this.config.getApiKey());
     }
@@ -228,7 +226,7 @@ public abstract class YoutubeProvider implements StreamsProvider {
      * @param userIds
      */
     public void setUserInfoWithDefaultDates(Set<String> userIds) {
-        List<UserInfo> youtubeUsers = Lists.newLinkedList();
+        List<UserInfo> youtubeUsers = new LinkedList<>();
 
         for(String userId : userIds) {
             UserInfo user = new UserInfo();
@@ -246,7 +244,7 @@ public abstract class YoutubeProvider implements StreamsProvider {
      * @param usersAndAfterDates
      */
     public void setUserInfoWithAfterDate(Map<String, DateTime> usersAndAfterDates) {
-        List<UserInfo> youtubeUsers = Lists.newLinkedList();
+        List<UserInfo> youtubeUsers = new LinkedList<>();
 
         for(String userId : usersAndAfterDates.keySet()) {
             UserInfo user = new UserInfo();

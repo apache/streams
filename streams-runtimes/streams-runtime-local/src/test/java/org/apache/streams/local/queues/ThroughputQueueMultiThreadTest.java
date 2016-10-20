@@ -34,9 +34,9 @@ import java.util.concurrent.*;
 /**
  * MultiThread unit tests for {@link org.apache.streams.local.queues.ThroughputQueue}
  */
-public class ThroughputQueueMulitThreadTest extends RandomizedTest {
+public class ThroughputQueueMultiThreadTest extends RandomizedTest {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ThroughputQueueMulitThreadTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ThroughputQueueMultiThreadTest.class);
     private static final String MBEAN_ID = "testQueue";
     private static final String STREAM_ID = "test_stream";
     private static long STREAM_START_TIME = (new DateTime()).getMillis();
@@ -182,7 +182,7 @@ public class ThroughputQueueMulitThreadTest extends RandomizedTest {
 
 
     /**
-     * Helper runnable for test {@link ThroughputQueueMulitThreadTest#testBlockOnFullQueue()}
+     * Helper runnable for test {@link ThroughputQueueMultiThreadTest#testBlockOnFullQueue()}
      */
     private class BlocksOnFullQueue implements Runnable {
 
@@ -222,7 +222,7 @@ public class ThroughputQueueMulitThreadTest extends RandomizedTest {
 
 
     /**
-     * Helper runnable class for test {@link ThroughputQueueMulitThreadTest#testBlockOnEmptyQueue()}
+     * Helper runnable class for test {@link ThroughputQueueMultiThreadTest#testBlockOnEmptyQueue()}
      */
     private class BlocksOnEmptyQueue implements Runnable {
 

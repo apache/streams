@@ -18,23 +18,20 @@
 
 package com.google.gplus.provider;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.plus.Plus;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gson.Gson;
-import com.typesafe.config.Config;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
@@ -53,14 +50,14 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -94,8 +91,8 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
     protected Plus plus;
 
     public AbstractGPlusProvider() {
-        Config config = StreamsConfigurator.config.getConfig("gplus");
-        this.config = GPlusConfigurator.detectConfiguration(config);
+        this.config = new ComponentConfigurator<>(GPlusConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("gplus"));
     }
 
     public AbstractGPlusProvider(GPlusConfiguration config) {
@@ -221,7 +218,7 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
      * @param userIds
      */
     public void setUserInfoWithDefaultDates(Set<String> userIds) {
-        List<UserInfo> gPlusUsers = Lists.newLinkedList();
+        List<UserInfo> gPlusUsers = new LinkedList<>();
         for(String userId : userIds) {
             UserInfo user = new UserInfo();
             user.setUserId(userId);
@@ -237,7 +234,7 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
      * @param usersAndAfterDates
      */
     public void setUserInfoWithAfterDate(Map<String, DateTime> usersAndAfterDates) {
-        List<UserInfo> gPlusUsers = Lists.newLinkedList();
+        List<UserInfo> gPlusUsers = new LinkedList<>();
         for(String userId : usersAndAfterDates.keySet()) {
             UserInfo user = new UserInfo();
             user.setUserId(userId);
