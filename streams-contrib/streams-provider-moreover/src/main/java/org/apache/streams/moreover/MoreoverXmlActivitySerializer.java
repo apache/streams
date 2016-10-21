@@ -16,13 +16,14 @@
  * under the License.
  */
 
-package org.apache.streams.data;
+package org.apache.streams.moreover;
 
 import com.moreover.api.Article;
 import com.moreover.api.ArticlesResponse;
 import com.moreover.api.ObjectFactory;
 import org.apache.commons.lang.SerializationException;
-import org.apache.streams.data.util.MoreoverUtils;
+import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.moreover.MoreoverUtils;
 import org.apache.streams.pojo.json.Activity;
 
 import javax.xml.bind.JAXBContext;

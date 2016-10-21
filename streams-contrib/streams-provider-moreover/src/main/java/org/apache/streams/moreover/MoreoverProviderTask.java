@@ -16,16 +16,13 @@
  * under the License.
  */
 
-package org.apache.streams.data.moreover;
+package org.apache.streams.moreover;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
 import java.util.Queue;
 
 /**

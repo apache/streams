@@ -16,12 +16,10 @@
  * under the License.
  */
 
-package org.apache.streams.data.moreover;
+package org.apache.streams.moreover;
 
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
-import org.apache.streams.moreover.MoreoverConfiguration;
-import org.apache.streams.moreover.MoreoverKeyData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

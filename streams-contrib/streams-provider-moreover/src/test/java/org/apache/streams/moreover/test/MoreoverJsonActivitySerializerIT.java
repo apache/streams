@@ -16,26 +16,23 @@
  * under the License.
  */
 
-package org.apache.streams.data;
+package org.apache.streams.moreover.test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
-import org.apache.streams.data.util.JsonUtil;
+import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.moreover.MoreoverJsonActivitySerializer;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.net.URL;
 import java.nio.charset.Charset;
 
-import static org.apache.streams.data.util.MoreoverTestUtil.test;
+import static org.apache.streams.moreover.MoreoverTestUtil.test;
 
 /**
  * Tests ability to serialize moreover json Strings
