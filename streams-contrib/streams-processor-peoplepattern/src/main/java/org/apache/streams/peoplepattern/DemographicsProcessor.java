@@ -18,10 +18,9 @@
 
 package org.apache.streams.peoplepattern;
 
-import com.google.common.collect.Maps;
-import org.apache.streams.components.http.HttpConfigurator;
 import org.apache.streams.components.http.HttpProcessorConfiguration;
 import org.apache.streams.components.http.processor.SimpleHTTPGetProcessor;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
@@ -31,6 +30,7 @@ import org.apache.streams.pojo.json.Actor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -43,7 +43,8 @@ public class DemographicsProcessor extends SimpleHTTPGetProcessor {
     private final static Logger LOGGER = LoggerFactory.getLogger(DemographicsProcessor.class);
 
     public DemographicsProcessor() {
-        this(HttpConfigurator.detectProcessorConfiguration(StreamsConfigurator.config.getConfig("peoplepattern")));
+        this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("peoplepattern")));
     }
 
     public DemographicsProcessor(HttpProcessorConfiguration peoplePatternConfiguration) {
@@ -65,7 +66,7 @@ public class DemographicsProcessor extends SimpleHTTPGetProcessor {
         Actor actor = activity.getActor();
         ActivityObject actorObject = mapper.convertValue(actor, ActivityObject.class);
         String username = (String) ExtensionUtil.getInstance().getExtension(actorObject, "screenName");
-        Map<String, String> params = Maps.newHashMap();
+        Map<String, String> params = new HashMap<>();
         params.put("id", actor.getId());
         params.put("name", actor.getDisplayName());
         params.put("username", username);
@@ -73,4 +74,4 @@ public class DemographicsProcessor extends SimpleHTTPGetProcessor {
         return params;
     }
 
-};
+}

@@ -23,30 +23,29 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.mongodb.DB;
-import com.mongodb.DBAddress;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.util.JSON;
-import com.typesafe.config.Config;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -71,12 +70,13 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
     protected DB db;
     protected DBCollection collection;
 
-    protected List<DBObject> insertBatch = Lists.newArrayList();
+    protected List<DBObject> insertBatch = new ArrayList<>();
 
     protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public MongoPersistWriter() {
-        this(MongoConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("mongo")));
+        this(new ComponentConfigurator<>(MongoConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("mongo")));
     }
 
     public MongoPersistWriter(MongoConfiguration config) {
@@ -112,7 +112,7 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
             lock.writeLock().lock();
             collection.insert(insertBatch);
             lastWrite.set(System.currentTimeMillis());
-            insertBatch = Lists.newArrayList();
+            insertBatch = new ArrayList<>();
         } finally {
             lock.writeLock().unlock();
         }
@@ -179,7 +179,7 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
             }
             try {
                 Thread.sleep(new Random().nextInt(1));
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
         }
 
@@ -187,7 +187,7 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
 
     @Override
     public void prepare(Object configurationObject) {
-        this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+        this.persistQueue = new ConcurrentLinkedQueue<>();
         start();
     }
 
@@ -240,7 +240,7 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable {
         if (!Strings.isNullOrEmpty(config.getUser()) && !Strings.isNullOrEmpty(config.getPassword())) {
             MongoCredential credential =
                     MongoCredential.createCredential(config.getUser(), config.getDb(), config.getPassword().toCharArray());
-            client = new MongoClient(serverAddress, Lists.<MongoCredential>newArrayList(credential));
+            client = new MongoClient(serverAddress, Lists.newArrayList(credential));
         } else {
             client = new MongoClient(serverAddress);
         }

@@ -20,7 +20,7 @@
 package org.apache.streams.twitter.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
@@ -32,7 +32,6 @@ import org.apache.streams.twitter.converter.StreamsTwitterMapper;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.provider.TwitterConfigurator;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
 import org.apache.streams.twitter.provider.TwitterProviderUtil;
 import org.slf4j.Logger;
@@ -44,6 +43,7 @@ import twitter4j.TwitterFactory;
 import twitter4j.TwitterObjectFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.getProvider;
@@ -69,7 +69,8 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     private int retryCount;
 
     public FetchAndReplaceTwitterProcessor() {
-        this(TwitterConfigurator.detectTwitterStreamConfiguration(StreamsConfigurator.config.getConfig("twitter")));
+        this(new ComponentConfigurator<>(TwitterStreamConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter")));
     }
 
     public FetchAndReplaceTwitterProcessor(TwitterStreamConfiguration config) {
@@ -92,7 +93,7 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
         } else {
             throw new IllegalStateException("Requires an activity document");
         }
-        return Lists.newArrayList(entry);
+        return new ArrayList<>();
     }
 
 

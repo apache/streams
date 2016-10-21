@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
@@ -34,8 +33,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.apache.streams.components.http.HttpConfigurator;
 import org.apache.streams.components.http.HttpPersistWriterConfiguration;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
@@ -47,11 +46,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by steve on 11/12/14.
- */
 public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
 
     private final static String STREAMS_ID = "SimpleHTTPPostPersistWriter";
@@ -69,7 +66,8 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
     protected String authHeader;
 
     public SimpleHTTPPostPersistWriter() {
-        this(HttpConfigurator.detectPersistWriterConfiguration(StreamsConfigurator.config.getConfig("http")));
+        this(new ComponentConfigurator<>(HttpPersistWriterConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("http")));
     }
 
     public SimpleHTTPPostPersistWriter(HttpPersistWriterConfiguration configuration) {
@@ -128,8 +126,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
      Override this to add parameters to the request
      */
     protected Map<String, String> prepareParams(StreamsDatum entry) {
-
-        return Maps.newHashMap();
+        return new HashMap<>();
     }
 
     /**
@@ -157,9 +154,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
         try {
             String entity = mapper.writeValueAsString(payload);
             httppost.setEntity(new StringEntity(entity));
-        } catch (JsonProcessingException e) {
-            LOGGER.warn(e.getMessage());
-        } catch (UnsupportedEncodingException e) {
+        } catch (JsonProcessingException | UnsupportedEncodingException e) {
             LOGGER.warn(e.getMessage());
         }
         return httppost;
@@ -173,7 +168,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
 
         CloseableHttpResponse response = null;
 
-        String entityString = null;
+        String entityString;
         try {
             response = httpclient.execute(httpPost);
             HttpEntity entity = response.getEntity();
@@ -186,8 +181,10 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
             LOGGER.error("IO error:\n{}\n{}\n{}", httpPost.toString(), response, e.getMessage());
         } finally {
             try {
-                response.close();
-            } catch (IOException e) {}
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException ignored) {}
         }
         return result;
     }
@@ -207,11 +204,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
             uriBuilder = uriBuilder.addParameter("access_token", configuration.getAccessToken());
         if( !Strings.isNullOrEmpty(configuration.getUsername())
                 && !Strings.isNullOrEmpty(configuration.getPassword())) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(configuration.getUsername());
-            stringBuilder.append(":");
-            stringBuilder.append(configuration.getPassword());
-            String string = stringBuilder.toString();
+            String string = configuration.getUsername() + ":" + configuration.getPassword();
             authHeader = Base64.encodeBase64String(string.getBytes());
         }
 

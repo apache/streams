@@ -22,11 +22,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Queues;
 import com.squareup.tape.QueueFile;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistReader;
 import org.apache.streams.core.StreamsResultSet;
-import org.apache.streams.filebuffer.FileBufferConfiguration;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ import java.util.concurrent.Executors;
  */
 public class FileBufferPersistReader implements StreamsPersistReader, Serializable {
 
-    public final static String STREAMS_ID = "FileBufferPersistReader";
+    public static final String STREAMS_ID = "FileBufferPersistReader";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileBufferPersistReader.class);
 
@@ -66,7 +66,8 @@ public class FileBufferPersistReader implements StreamsPersistReader, Serializab
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public FileBufferPersistReader() {
-        this(FileBufferConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("filebuffer")));
+        this(new ComponentConfigurator<>(FileBufferConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("filebuffer")));
     }
 
     public FileBufferPersistReader(FileBufferConfiguration config) {

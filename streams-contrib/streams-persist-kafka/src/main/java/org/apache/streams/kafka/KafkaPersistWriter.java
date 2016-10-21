@@ -20,10 +20,10 @@ package org.apache.streams.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.typesafe.config.Config;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
@@ -51,14 +51,14 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
     private Producer<String, String> producer;
 
     public KafkaPersistWriter() {
-        Config config = StreamsConfigurator.config.getConfig("kafka");
-        this.config = KafkaConfigurator.detectConfiguration(config);
-        this.persistQueue  = new ConcurrentLinkedQueue<StreamsDatum>();
+        this.config = new ComponentConfigurator<>(KafkaConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("kafka"));
+        this.persistQueue  = new ConcurrentLinkedQueue<>();
     }
 
     public KafkaPersistWriter(Queue<StreamsDatum> persistQueue) {
-        Config config = StreamsConfigurator.config.getConfig("kafka");
-        this.config = KafkaConfigurator.detectConfiguration(config);
+        this.config = new ComponentConfigurator<>(KafkaConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("kafka"));
         this.persistQueue = persistQueue;
     }
 
@@ -76,7 +76,7 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
 
         ProducerConfig config = new ProducerConfig(props);
 
-        producer = new Producer<String, String>(config);
+        producer = new Producer<>(config);
 
         new Thread(new KafkaPersistWriterTask(this)).start();
     }
@@ -106,7 +106,7 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
 
             String hash = GuidUtils.generateGuid(text);
 
-            KeyedMessage<String, String> data = new KeyedMessage<String, String>(config.getTopic(), hash, text);
+            KeyedMessage<String, String> data = new KeyedMessage<>(config.getTopic(), hash, text);
 
             producer.send(data);
 

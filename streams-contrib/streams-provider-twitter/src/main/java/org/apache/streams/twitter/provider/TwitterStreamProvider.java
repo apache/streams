@@ -107,7 +107,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
         ObjectMapper mapper = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
 
-        PrintStream outStream = null;
+        PrintStream outStream;
         try {
             outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
         } catch (FileNotFoundException e) {
@@ -164,8 +164,8 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     }
 
     public TwitterStreamProvider() {
-        Config config = StreamsConfigurator.config.getConfig("twitter");
-        this.config = TwitterConfigurator.detectTwitterStreamConfiguration(config);
+        this.config = new ComponentConfigurator<>(TwitterStreamConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
     }
 
     public TwitterStreamProvider(TwitterStreamConfiguration config) {
@@ -287,9 +287,9 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
             return;
         }
 
-        LOGGER.debug("host={}\tendpoint={}\taut={}", new Object[] {hosebirdHosts,endpoint,auth});
+        LOGGER.debug("host={}\tendpoint={}\taut={}", hosebirdHosts, endpoint, auth);
 
-        providerQueue = new LinkedBlockingQueue<Future<List<StreamsDatum>>>(MAX_BATCH);
+        providerQueue = new LinkedBlockingQueue<>(MAX_BATCH);
 
         client = new ClientBuilder()
             .name("apache/streams/streams-contrib/streams-provider-twitter")

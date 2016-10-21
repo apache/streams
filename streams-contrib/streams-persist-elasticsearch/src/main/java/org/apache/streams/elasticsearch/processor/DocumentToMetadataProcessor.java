@@ -18,28 +18,18 @@
 
 package org.apache.streams.elasticsearch.processor;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.typesafe.config.Config;
-import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.elasticsearch.ElasticsearchClientManager;
-import org.apache.streams.elasticsearch.ElasticsearchConfigurator;
 import org.apache.streams.elasticsearch.ElasticsearchMetadataUtil;
-import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +41,7 @@ import java.util.Map;
  */
 public class DocumentToMetadataProcessor implements StreamsProcessor, Serializable {
 
-    public final static String STREAMS_ID = "DatumFromMetadataProcessor";
+    private final static String STREAMS_ID = "DatumFromMetadataProcessor";
 
     private ObjectMapper mapper;
 
@@ -67,7 +57,7 @@ public class DocumentToMetadataProcessor implements StreamsProcessor, Serializab
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
-        List<StreamsDatum> result = Lists.newArrayList();
+        List<StreamsDatum> result = new ArrayList<>();
 
         Object object = entry.getDocument();
         ObjectNode metadataObjectNode;
@@ -81,7 +71,7 @@ public class DocumentToMetadataProcessor implements StreamsProcessor, Serializab
 
         Map<String, Object> metadata = ElasticsearchMetadataUtil.asMap(metadataObjectNode);
 
-        if(entry == null || metadata == null)
+        if(metadata == null)
             return result;
 
         entry.setMetadata(metadata);

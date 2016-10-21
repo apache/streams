@@ -22,10 +22,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.squareup.tape.QueueFile;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
-import org.apache.streams.filebuffer.FileBufferConfiguration;
 import org.apache.streams.util.GuidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,8 @@ public class FileBufferPersistWriter implements StreamsPersistWriter, Serializab
     private QueueFile queueFile;
 
     public FileBufferPersistWriter() {
-       this(FileBufferConfigurator.detectConfiguration(StreamsConfigurator.config.getConfig("filebuffer")));
+       this(new ComponentConfigurator<>(FileBufferConfiguration.class)
+         .detectConfiguration(StreamsConfigurator.getConfig().getConfig("filebuffer")));
     }
 
     public FileBufferPersistWriter(FileBufferConfiguration config) {
@@ -71,9 +72,9 @@ public class FileBufferPersistWriter implements StreamsPersistWriter, Serializab
 
         String key = entry.getId() != null ? entry.getId() : GuidUtils.generateGuid("filewriter");
 
-        Preconditions.checkArgument(Strings.isNullOrEmpty(key) == false);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(key));
         Preconditions.checkArgument(entry.getDocument() instanceof String);
-        Preconditions.checkArgument(Strings.isNullOrEmpty((String)entry.getDocument()) == false);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty((String) entry.getDocument()));
 
         byte[] item = ((String)entry.getDocument()).getBytes();
         try {
@@ -101,7 +102,7 @@ public class FileBufferPersistWriter implements StreamsPersistWriter, Serializab
 
         Preconditions.checkNotNull(queueFile);
 
-        this.persistQueue  = new ConcurrentLinkedQueue<StreamsDatum>();
+        this.persistQueue  = new ConcurrentLinkedQueue<>();
 
     }
 

@@ -22,12 +22,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
@@ -35,8 +32,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.apache.streams.components.http.HttpConfigurator;
 import org.apache.streams.components.http.HttpProcessorConfiguration;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
@@ -49,6 +46,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +71,8 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
     protected String authHeader;
 
     public SimpleHTTPPostProcessor() {
-        this(HttpConfigurator.detectProcessorConfiguration(StreamsConfigurator.config.getConfig("http")));
+        this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("http")));
     }
 
     public SimpleHTTPPostProcessor(HttpProcessorConfiguration processorConfiguration) {
@@ -148,7 +148,7 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
 
-        List<StreamsDatum> result = Lists.newArrayList();
+        List<StreamsDatum> result = new ArrayList<>();
 
         ObjectNode rootDocument = getRootDocument(entry);
 
@@ -184,8 +184,10 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
             return result;
         } finally {
             try {
-                response.close();
-            } catch (IOException e) {}
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException ignored) {}
         }
 
         if( entityString == null )
@@ -213,19 +215,15 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
      Override this to add parameters to the request
      */
     protected Map<String, String> prepareParams(StreamsDatum entry) {
-
-        return Maps.newHashMap();
+        return new HashMap<>();
     }
 
     /**
      Override this to add parameters to the request
      */
     protected HttpEntity preparePayload(StreamsDatum entry) {
-
-        HttpEntity entity = (new StringEntity("{}",
-                ContentType.create("application/json")));
-
-        return entity;
+        return new StringEntity("{}",
+                ContentType.create("application/json"));
     }
 
 
@@ -252,11 +250,7 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
             uriBuilder = uriBuilder.addParameter("access_token", configuration.getAccessToken());
         if( !Strings.isNullOrEmpty(configuration.getUsername())
             && !Strings.isNullOrEmpty(configuration.getPassword())) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(configuration.getUsername());
-            stringBuilder.append(":");
-            stringBuilder.append(configuration.getPassword());
-            String string = stringBuilder.toString();
+            String string = configuration.getUsername() + ":" + configuration.getPassword();
             authHeader = Base64.encodeBase64String(string.getBytes());
         }
         httpclient = HttpClients.createDefault();

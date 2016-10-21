@@ -19,32 +19,40 @@
 package com.google.gmail.provider;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Queues;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gmail.GMailConfiguration;
-import com.google.gmail.GMailConfigurator;
 import com.googlecode.gmail4j.GmailClient;
 import com.googlecode.gmail4j.GmailConnection;
 import com.googlecode.gmail4j.http.HttpGmailConnection;
 import com.googlecode.gmail4j.javamail.ImapGmailClient;
 import com.googlecode.gmail4j.javamail.ImapGmailConnection;
 import com.googlecode.gmail4j.rss.RssGmailClient;
-import com.typesafe.config.Config;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.*;
+import org.apache.streams.core.DatumStatusCounter;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsProvider;
+import org.apache.streams.core.StreamsResultSet;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Queue;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by sblackmon on 12/10/13.
  */
-public class GMailProvider implements StreamsProvider, DatumStatusCountable {
+public class GMailProvider implements StreamsProvider, Serializable {
 
     public final static String STREAMS_ID = "GMailProvider";
 
@@ -62,9 +70,9 @@ public class GMailProvider implements StreamsProvider, DatumStatusCountable {
         this.config = config;
     }
 
-    protected BlockingQueue inQueue = new LinkedBlockingQueue<String>(10000);
+    protected BlockingQueue inQueue = new LinkedBlockingQueue<>(10000);
 
-    protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+    protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<>();
     protected Future task;
 
     public BlockingQueue<Object> getInQueue() {
@@ -83,8 +91,8 @@ public class GMailProvider implements StreamsProvider, DatumStatusCountable {
     }
 
     public GMailProvider() {
-        Config config = StreamsConfigurator.config.getConfig("gmail");
-        this.config = GMailConfigurator.detectConfiguration(config);
+        this.config = new ComponentConfigurator<>(GMailConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("gmail"));
     }
 
     public GMailProvider(GMailConfiguration config) {
@@ -92,8 +100,8 @@ public class GMailProvider implements StreamsProvider, DatumStatusCountable {
     }
 
     public GMailProvider(Class klass) {
-        Config config = StreamsConfigurator.config.getConfig("gmail");
-        this.config = GMailConfigurator.detectConfiguration(config);
+        this.config = new ComponentConfigurator<>(GMailConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("gmail"));
         this.klass = klass;
     }
 
@@ -123,7 +131,7 @@ public class GMailProvider implements StreamsProvider, DatumStatusCountable {
         StreamsResultSet current;
 
         synchronized( GMailProvider.class ) {
-            current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(providerQueue));
+            current = new StreamsResultSet(new ConcurrentLinkedQueue<>(providerQueue));
             current.setCounter(new DatumStatusCounter());
             current.getCounter().add(countersCurrent);
             countersTotal.add(countersCurrent);
@@ -178,10 +186,5 @@ public class GMailProvider implements StreamsProvider, DatumStatusCountable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public DatumStatusCounter getDatumStatusCounter() {
-        return null;
     }
 }

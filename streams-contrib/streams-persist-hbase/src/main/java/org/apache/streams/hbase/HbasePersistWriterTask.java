@@ -48,7 +48,7 @@ public class HbasePersistWriterTask implements Runnable {
             }
             try {
                 Thread.sleep(new Random().nextInt(1));
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException ignored) {}
         }
 
     }

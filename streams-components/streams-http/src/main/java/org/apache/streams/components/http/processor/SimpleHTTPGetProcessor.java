@@ -22,8 +22,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -32,13 +30,13 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.apache.streams.components.http.HttpConfigurator;
 import org.apache.streams.components.http.HttpProcessorConfiguration;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +44,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +71,8 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
 
     protected String authHeader;
     public SimpleHTTPGetProcessor() {
-        this(HttpConfigurator.detectProcessorConfiguration(StreamsConfigurator.config.getConfig("http")));
+        this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("http")));
     }
 
     public SimpleHTTPGetProcessor(HttpProcessorConfiguration processorConfiguration) {
@@ -147,7 +148,7 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
 
-        List<StreamsDatum> result = Lists.newArrayList();
+        List<StreamsDatum> result = new ArrayList<>();
 
         ObjectNode rootDocument = getRootDocument(entry);
 
@@ -172,8 +173,10 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
             return result;
         } finally {
             try {
-                response.close();
-            } catch (IOException e) {}
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException ignored) {}
         }
 
         if( entityString == null )
@@ -218,8 +221,7 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
      Override this to add parameters to the request
      */
     protected Map<String, String> prepareParams(StreamsDatum entry) {
-
-        return Maps.newHashMap();
+        return new HashMap<>();
     }
 
     /**
@@ -251,11 +253,7 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
             uriBuilder = uriBuilder.addParameter("access_token", configuration.getAccessToken());
         if( !Strings.isNullOrEmpty(configuration.getUsername())
             && !Strings.isNullOrEmpty(configuration.getPassword())) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(configuration.getUsername());
-            stringBuilder.append(":");
-            stringBuilder.append(configuration.getPassword());
-            String string = stringBuilder.toString();
+            String string = configuration.getUsername() + ":" + configuration.getPassword();
             authHeader = Base64.encodeBase64String(string.getBytes());
         }
         httpclient = HttpClients.createDefault();

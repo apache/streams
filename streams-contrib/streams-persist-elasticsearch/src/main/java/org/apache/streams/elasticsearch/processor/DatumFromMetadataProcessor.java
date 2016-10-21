@@ -18,13 +18,12 @@
 
 package org.apache.streams.elasticsearch.processor;
 
-import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
-import org.apache.streams.elasticsearch.ElasticsearchConfigurator;
 import org.apache.streams.elasticsearch.ElasticsearchMetadataUtil;
 import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.elasticsearch.action.get.GetRequestBuilder;
@@ -32,6 +31,7 @@ import org.elasticsearch.action.get.GetResponse;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,18 +40,19 @@ import java.util.Map;
  */
 public class DatumFromMetadataProcessor implements StreamsProcessor, Serializable {
 
-    public final static String STREAMS_ID = "DatumFromMetadataProcessor";
+    private final static String STREAMS_ID = "DatumFromMetadataProcessor";
 
     private ElasticsearchClientManager elasticsearchClientManager;
     private ElasticsearchReaderConfiguration config;
 
     public DatumFromMetadataProcessor() {
-        Config config = StreamsConfigurator.config.getConfig("elasticsearch");
-        this.config = ElasticsearchConfigurator.detectReaderConfiguration(config);
+        this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch"));
     }
 
     public DatumFromMetadataProcessor(Config config) {
-        this.config = ElasticsearchConfigurator.detectReaderConfiguration(config);
+        this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
+          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch"));
     }
 
     public DatumFromMetadataProcessor(ElasticsearchReaderConfiguration config) {
@@ -65,7 +66,7 @@ public class DatumFromMetadataProcessor implements StreamsProcessor, Serializabl
 
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
-        List<StreamsDatum> result = Lists.newArrayList();
+        List<StreamsDatum> result = new ArrayList<>();
 
         if(entry == null || entry.getMetadata() == null)
             return result;
@@ -81,7 +82,7 @@ public class DatumFromMetadataProcessor implements StreamsProcessor, Serializabl
         getRequestBuilder.setFetchSource(true);
         GetResponse getResponse = getRequestBuilder.get();
 
-        if( getResponse == null || getResponse.isExists() == false || getResponse.isSourceEmpty() == true )
+        if( getResponse == null || getResponse.isExists() || getResponse.isSourceEmpty() )
             return result;
 
         entry.setDocument(getResponse.getSource());
