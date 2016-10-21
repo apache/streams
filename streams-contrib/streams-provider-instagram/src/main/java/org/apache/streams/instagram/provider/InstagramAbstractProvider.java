@@ -16,6 +16,10 @@ package org.apache.streams.instagram.provider;
 
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
@@ -31,12 +35,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -53,8 +61,11 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
 
     protected InstagramConfiguration config;
     private InstagramDataCollector dataCollector;
-    protected Queue<StreamsDatum> dataQueue; //exposed for testing
-    private ExecutorService executorService;
+    protected Queue<StreamsDatum> dataQueue;
+    private ListeningExecutorService executorService;
+
+    List<ListenableFuture<Object>> futures = new ArrayList<>();
+
     private AtomicBoolean isCompleted;
 
     public InstagramAbstractProvider() {
@@ -65,6 +76,12 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
         this.config = SerializationUtil.cloneBySerialization(config);
     }
 
+    public static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
+        return new ThreadPoolExecutor(nThreads, nThreads,
+                5000L, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
+    }
+
     @Override
     public String getId() {
         return STREAMS_ID;
@@ -73,8 +90,9 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
     @Override
     public void startStream() {
         this.dataCollector = getInstagramDataCollector();
-        this.executorService = Executors.newSingleThreadExecutor();
-        this.executorService.submit(this.dataCollector);
+        this.executorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
+        ListenableFuture future = this.executorService.submit(this.dataCollector);
+        this.futures.add(future);
     }
 
     /**
@@ -92,7 +110,6 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
             ComponentUtils.offerUntilSuccess(ComponentUtils.pollWhileNotEmpty(this.dataQueue), batch);
             ++count;
         }
-        this.isCompleted.set(batch.size() == 0 && this.dataQueue.isEmpty() && this.dataCollector.isCompleted());
         return new StreamsResultSet(batch);
     }
 
@@ -104,11 +121,6 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
     @Override
     public StreamsResultSet readRange(DateTime start, DateTime end) {
         return null;
-    }
-
-    @Override
-    public boolean isRunning() {
-        return !this.isCompleted.get();
     }
 
     @Override
@@ -202,6 +214,16 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
             config.setUsersInfo(usersInfo);
         }
         return usersInfo;
+    }
+
+    @Override
+    public boolean isRunning() {
+        if (dataQueue.isEmpty() && executorService.isTerminated() && Futures.allAsList(futures).isDone()) {
+            LOGGER.info("Completed");
+            isCompleted.set(true);
+            LOGGER.info("Exiting");
+        }
+        return !isCompleted.get();
     }
 
 }
