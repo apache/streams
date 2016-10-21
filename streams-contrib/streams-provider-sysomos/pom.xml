@@ -159,7 +159,6 @@
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.8.3</version>
                 <configuration>
                     <schemaDirectory>src/main/xmlschema/com/sysomos/</schemaDirectory>
                     <generateDirectory>target/generated-sources/jaxb2</generateDirectory>
@@ -181,7 +180,6 @@
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
-                <version>1.2.1</version>
                 <executions>
                     <execution>
                         <id>download-it-data</id>
@@ -205,10 +203,10 @@
                 <skipTests>${skipITs}</skipTests>
             </configuration>
             </plugin>
-		<plugin>
-		 <groupId>org.apache.maven.plugins</groupId>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-		</plugin>
+            </plugin>
         </plugins>
 
     </build>
