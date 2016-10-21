@@ -36,6 +36,7 @@ import org.apache.streams.twitter.Url;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Entities;
 import org.apache.streams.twitter.pojo.Hashtag;
+import org.apache.streams.twitter.pojo.Place;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
@@ -49,6 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.math.DoubleMath.mean;
 import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
@@ -273,8 +275,7 @@ public class TwitterActivityUtil {
                         .or(Optional.of(tweet.getId().toString()))
                         .orNull()
         ));
-        location.put("coordinates", tweet.getCoordinates());
-        extensions.put("location", location);
+        location.put("coordinates", boundingBoxCenter(tweet.getPlace()));       extensions.put("location", location);
     }
 
     /**
@@ -350,4 +351,26 @@ public class TwitterActivityUtil {
 
         extensions.put("keywords", tweet.getText());
     }
+
+    /**
+     * Compute central coordinates from bounding box
+     * @param place the bounding box to use as the source
+     */
+    public static List<Double> boundingBoxCenter(Place place) {
+        if( place == null ) return new ArrayList<>();
+        if( place.getBoundingBox() == null ) return new ArrayList<>();
+        if( place.getBoundingBox().getCoordinates().size() != 1 ) return new ArrayList<>();
+        if( place.getBoundingBox().getCoordinates().get(0).size() != 4 ) return new ArrayList<>();
+        List<Double> lats = Lists.newArrayList();
+        List<Double> lons = Lists.newArrayList();
+        for( List<Double> point : place.getBoundingBox().getCoordinates().get(0)) {
+            lats.add(point.get(0));
+            lons.add(point.get(1));
+        }
+        List<Double> result = new ArrayList<Double>();
+        result.add(new Double(mean(lats)));
+        result.add(new Double(mean(lons)));
+        return result;
+    }
+
 }
