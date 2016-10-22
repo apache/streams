@@ -36,17 +36,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Created by sblackmon on 2/10/14.
- */
 public class ElasticsearchClientManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchClientManager.class);
-    private static Map<String, ElasticsearchClient> ALL_CLIENTS = new HashMap<String, ElasticsearchClient>();
+    private static Map<String, ElasticsearchClient> ALL_CLIENTS = new HashMap<>();
 
     private ElasticsearchConfiguration elasticsearchConfiguration;
 
@@ -85,7 +82,7 @@ public class ElasticsearchClientManager {
     }
 
     public void start() throws Exception {
-        /***********************************************************************
+        /*
          * Note:
          * Everything in these classes is being switched to lazy loading. Within
          * Heroku you only have 60 seconds to connect, and bind to the service,
@@ -130,11 +127,11 @@ public class ElasticsearchClientManager {
     }
 
     public boolean equals(Object o) {
-        return EqualsBuilder.reflectionEquals(this, o, Arrays.asList(this.elasticsearchConfiguration.toString()));
+        return EqualsBuilder.reflectionEquals(this, o, Collections.singletonList(this.elasticsearchConfiguration.toString()));
     }
 
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, Arrays.asList(this.elasticsearchConfiguration.toString()));
+        return HashCodeBuilder.reflectionHashCode(this, Collections.singletonList(this.elasticsearchConfiguration.toString()));
     }
 
     private synchronized void checkAndLoadClient(String clusterName) {
