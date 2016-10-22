@@ -21,9 +21,6 @@ package org.apache.streams.elasticsearch;
 import org.elasticsearch.Version;
 import org.elasticsearch.client.Client;
 
-/**
- * Created by sblackmon on 2/10/14.
- */
 public class ElasticsearchClient {
 
     private Client client;

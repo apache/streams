@@ -19,15 +19,12 @@
 package org.apache.streams.elasticsearch;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.Maps;
 import org.apache.streams.core.StreamsDatum;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-/**
- * Created by sblackmon on 10/20/14.
- */
 public class ElasticsearchMetadataUtil {
 
     public static String getIndex(Map<String, Object> metadata, ElasticsearchWriterConfiguration config) {
@@ -100,25 +97,25 @@ public class ElasticsearchMetadataUtil {
         return id;
     }
 
-    public static String getParent(StreamsDatum datum) {
+    static String getParent(StreamsDatum datum) {
 
         String parent = null;
 
         Map<String, Object> metadata = datum.getMetadata();
 
-        if( parent == null && metadata != null && metadata.containsKey("parent"))
+        if(metadata != null && metadata.containsKey("parent"))
             parent = (String) datum.getMetadata().get("parent");
 
         return parent;
     }
 
-    public static String getRouting(StreamsDatum datum) {
+    static String getRouting(StreamsDatum datum) {
 
         String routing = null;
 
         Map<String, Object> metadata = datum.getMetadata();
 
-        if( routing == null && metadata != null && metadata.containsKey("routing"))
+        if(metadata != null && metadata.containsKey("routing"))
             routing = (String) datum.getMetadata().get("routing");
 
         return routing;
@@ -133,7 +130,7 @@ public class ElasticsearchMetadataUtil {
     public static Map<String, Object> asMap(JsonNode node) {
 
         Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
-        Map<String, Object> ret = Maps.newHashMap();
+        Map<String, Object> ret = new HashMap<>();
 
         Map.Entry<String, JsonNode> entry;
 

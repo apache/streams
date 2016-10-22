@@ -32,7 +32,9 @@ import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,7 +72,7 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
         } else if (entry.getDocument() instanceof ObjectNode) {
             activity = mapper.convertValue(entry.getDocument(), Activity.class);
         } else {
-            return Lists.newArrayList();
+            return new ArrayList<>();
         }
         if (Strings.isNullOrEmpty(pattern)) {
             prepare(null);
@@ -81,7 +83,7 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
             entities.add(prepareObject(key));
         }
 
-        Set<T> set = Sets.newHashSet();
+        Set<T> set = new HashSet<>();
         set.addAll(entities);
         entities.clear();
         entities.addAll(set);
@@ -122,7 +124,7 @@ public abstract class AbstractRegexExtensionExtractor<T> implements StreamsProce
         if(extensions.containsKey(extensionKey) && extensions.get(extensionKey) != null) {
             hashtags = Sets.newHashSet((Iterable<T>) extensions.get(extensionKey));
         } else {
-            hashtags = Sets.newHashSet();
+            hashtags = new HashSet<>();
         }
 
         extensions.put(extensionKey, hashtags);

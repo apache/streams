@@ -24,9 +24,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.DatumStatus;
-import org.apache.streams.core.DatumStatusCountable;
-import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -58,7 +55,7 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumStatusCountable, Serializable {
+public class ElasticsearchPersistWriter implements StreamsPersistWriter, Serializable {
 
     public static final String STREAMS_ID = ElasticsearchPersistWriter.class.getCanonicalName();
 
@@ -266,14 +263,6 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, DatumSt
                         .actionGet();
             }
         }
-    }
-
-    @Override
-    public DatumStatusCounter getDatumStatusCounter() {
-        DatumStatusCounter counters = new DatumStatusCounter();
-        counters.incrementStatus(DatumStatus.SUCCESS, (int)this.totalOk.get());
-        counters.incrementStatus(DatumStatus.FAIL, (int)this.totalFailed.get());
-        return counters;
     }
 
     private synchronized void flushInternal() {
