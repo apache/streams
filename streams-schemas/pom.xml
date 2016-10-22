@@ -34,6 +34,7 @@
 
     <modules>
         <module>streams-schema-activitystreams</module>
+        <module>streams-schema-activitystreams2</module>
     </modules>
 
 </project>
