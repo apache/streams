@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.data.util;
+package org.apache.streams.moreover;
 
 import com.moreover.api.*;
 import org.apache.streams.pojo.extensions.ExtensionUtil;

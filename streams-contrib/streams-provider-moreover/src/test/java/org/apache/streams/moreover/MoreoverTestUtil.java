@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.data.util;
+package org.apache.streams.moreover;
 
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;

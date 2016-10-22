@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.data.moreover;
+package org.apache.streams.moreover;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;

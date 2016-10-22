@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.data;
+package org.apache.streams.moreover;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -25,7 +25,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.moreover.api.Article;
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.streams.data.util.MoreoverUtils;
+import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.moreover.MoreoverUtils;
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

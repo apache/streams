@@ -16,13 +16,11 @@
  * under the License.
  */
 
-package org.apache.streams.data.moreover;
+package org.apache.streams.moreover;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
 
-import java.math.BigInteger;
-import java.util.Iterator;
 import java.util.Queue;
 
 public class MoreoverResultSetWrapper extends StreamsResultSet {

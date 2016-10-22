@@ -16,14 +16,13 @@
  * under the License.
  */
 
-package org.apache.streams.data;
-
+package org.apache.streams.moreover.test;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
+import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.pojo.json.Activity;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -32,7 +31,9 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static org.apache.streams.data.util.MoreoverTestUtil.test;
+import org.apache.streams.moreover.MoreoverXmlActivitySerializer;
+
+import static org.apache.streams.moreover.MoreoverTestUtil.test;
 
 /**
  * Tests ability to serialize moreover xml Strings

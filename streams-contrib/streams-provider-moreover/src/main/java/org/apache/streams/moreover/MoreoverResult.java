@@ -16,19 +16,16 @@
  * under the License.
  */
 
-package org.apache.streams.data.moreover;
+package org.apache.streams.moreover;
 
 import com.fasterxml.aalto.stax.InputFactoryImpl;
 import com.fasterxml.aalto.stax.OutputFactoryImpl;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.moreover.api.Article;
 import com.moreover.api.ArticlesResponse;
@@ -36,7 +33,6 @@ import org.apache.streams.core.StreamsDatum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Iterator;
