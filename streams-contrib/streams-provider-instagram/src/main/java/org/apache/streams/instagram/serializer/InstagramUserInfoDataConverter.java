@@ -18,15 +18,9 @@
 
 package org.apache.streams.instagram.serializer;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.streams.data.ActivityObjectConverter;
-import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivityConversionException;
-import org.apache.streams.exceptions.ActivitySerializerException;
-import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
 import org.jinstagram.entity.users.basicinfo.UserInfoData;
@@ -34,9 +28,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.lang.NotImplementedException;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -82,7 +75,7 @@ public class InstagramUserInfoDataConverter implements ActivityObjectConverter<U
         activityObject.setAdditionalProperty("handle", serialized.getUsername());
         activityObject.setDisplayName(serialized.getFullName());
         activityObject.setUrl(serialized.getWebsite());
-        Map<String, Object> extensions = Maps.newHashMap();
+        Map<String, Object> extensions = new HashMap<>();
         activityObject.setAdditionalProperty("extensions", extensions);
         extensions.put("screenName", serialized.getUsername());
         extensions.put("posts", serialized.getCounts().getMedia());

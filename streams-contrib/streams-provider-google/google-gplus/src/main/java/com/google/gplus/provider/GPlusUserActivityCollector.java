@@ -132,6 +132,4 @@ public class GPlusUserActivityCollector extends GPlusDataCollector {
         }
     }
 
-
-
 }

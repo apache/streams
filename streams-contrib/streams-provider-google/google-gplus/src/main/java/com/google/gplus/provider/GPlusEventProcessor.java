@@ -25,6 +25,7 @@ import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -38,17 +39,15 @@ public class GPlusEventProcessor implements Runnable {
     private BlockingQueue<String> inQueue;
     private Queue<StreamsDatum> outQueue;
 
-    private Class inClass;
     private Class outClass;
 
     private GPlusActivitySerializer gPlusActivitySerializer = new GPlusActivitySerializer();
 
-    public final static String TERMINATE = new String("TERMINATE");
+    private final static String TERMINATE = "TERMINATE";
 
     public GPlusEventProcessor(BlockingQueue<String> inQueue, Queue<StreamsDatum> outQueue, Class inClass, Class outClass) {
         this.inQueue = inQueue;
         this.outQueue = outQueue;
-        this.inClass = inClass;
         this.outClass = outClass;
     }
 
@@ -65,7 +64,7 @@ public class GPlusEventProcessor implements Runnable {
             try {
                 String item = inQueue.take();
                 Thread.sleep(new Random().nextInt(100));
-                if(item==TERMINATE) {
+                if(Objects.equals(item, TERMINATE)) {
                     LOGGER.info("Terminating!");
                     break;
                 }
@@ -78,7 +77,7 @@ public class GPlusEventProcessor implements Runnable {
                     outQueue.offer(new StreamsDatum(item));
                 else {
                     // convert to desired format
-                    com.google.api.services.plus.model.Activity gplusActivity = (com.google.api.services.plus.model.Activity)mapper.readValue(item, com.google.api.services.plus.model.Activity.class);
+                    com.google.api.services.plus.model.Activity gplusActivity = mapper.readValue(item, com.google.api.services.plus.model.Activity.class);
 
                     Activity streamsActivity = gPlusActivitySerializer.deserialize(gplusActivity);
 
@@ -91,4 +90,4 @@ public class GPlusEventProcessor implements Runnable {
         }
     }
 
-};
+}

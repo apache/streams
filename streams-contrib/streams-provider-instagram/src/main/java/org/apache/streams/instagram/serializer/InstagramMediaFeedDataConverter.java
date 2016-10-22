@@ -18,19 +18,13 @@
 
 package org.apache.streams.instagram.serializer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivityConverter;
-import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivityConversionException;
-import org.apache.streams.exceptions.ActivitySerializerException;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 

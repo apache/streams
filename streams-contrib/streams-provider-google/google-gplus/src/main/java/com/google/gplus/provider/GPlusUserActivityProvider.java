@@ -37,7 +37,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -59,7 +58,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class GPlusUserActivityProvider extends AbstractGPlusProvider{
 
-    public final static String STREAMS_ID = "GPlusUserActivityProvider";
+    private final static String STREAMS_ID = "GPlusUserActivityProvider";
 
     public GPlusUserActivityProvider() {
         super();
@@ -104,9 +103,7 @@ public class GPlusUserActivityProvider extends AbstractGPlusProvider{
         provider.startStream();
         do {
             Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-            Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
-            while(iterator.hasNext()) {
-                StreamsDatum datum = iterator.next();
+            for (StreamsDatum datum : provider.readCurrent()) {
                 String json;
                 if (datum.getDocument() instanceof String)
                     json = (String) datum.getDocument();

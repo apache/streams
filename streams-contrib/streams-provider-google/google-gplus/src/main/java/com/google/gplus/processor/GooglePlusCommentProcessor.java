@@ -19,18 +19,15 @@
 
 package com.google.gplus.processor;
 
-import com.google.api.client.util.Lists;
 import com.google.api.services.plus.model.Comment;
-import com.google.api.services.plus.model.Person;
-import com.google.gplus.serializer.util.GPlusActivityDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class GooglePlusCommentProcessor implements StreamsProcessor {
     private final static String STREAMS_ID = "GooglePlusCommentProcessor";
@@ -57,8 +54,8 @@ public class GooglePlusCommentProcessor implements StreamsProcessor {
                 String activityId = getGPlusID(activity.getId());
 
                 //Call Google Plus API to get list of comments for this activity ID
-                /**TODO: FILL ME OUT WITH THE API CALL**/
-                List<Comment> comments = Lists.newArrayList();
+                /* TODO: FILL ME OUT WITH THE API CALL **/
+                List<Comment> comments = new ArrayList<>();
 
                 googlePlusActivityUtil.updateActivity(comments, activity);
                 result = new StreamsDatum(activity);
@@ -71,7 +68,7 @@ public class GooglePlusCommentProcessor implements StreamsProcessor {
         if( result != null )
             return com.google.common.collect.Lists.newArrayList(result);
         else
-            return com.google.common.collect.Lists.newArrayList();
+            return new ArrayList<>();
     }
 
     @Override
