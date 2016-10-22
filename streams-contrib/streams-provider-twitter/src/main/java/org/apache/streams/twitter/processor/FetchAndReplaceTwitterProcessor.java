@@ -21,6 +21,7 @@ package org.apache.streams.twitter.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
@@ -32,7 +33,6 @@ import org.apache.streams.twitter.converter.StreamsTwitterMapper;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.provider.TwitterConfigurator;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
 import org.apache.streams.twitter.provider.TwitterProviderUtil;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     private int retryCount;
 
     public FetchAndReplaceTwitterProcessor() {
-        this(TwitterConfigurator.detectTwitterStreamConfiguration(StreamsConfigurator.config.getConfig("twitter")));
+        this(new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration(StreamsConfigurator.config, "twitter"));
     }
 
     public FetchAndReplaceTwitterProcessor(TwitterStreamConfiguration config) {
