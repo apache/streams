@@ -361,13 +361,13 @@ public class TwitterActivityUtil {
         if( place.getBoundingBox() == null ) return new ArrayList<>();
         if( place.getBoundingBox().getCoordinates().size() != 1 ) return new ArrayList<>();
         if( place.getBoundingBox().getCoordinates().get(0).size() != 4 ) return new ArrayList<>();
-        List<Double> lats = Lists.newArrayList();
-        List<Double> lons = Lists.newArrayList();
+        List<Double> lats = new ArrayList<>();
+        List<Double> lons = new ArrayList<>();
         for( List<Double> point : place.getBoundingBox().getCoordinates().get(0)) {
             lats.add(point.get(0));
             lons.add(point.get(1));
         }
-        List<Double> result = new ArrayList<Double>();
+        List<Double> result = new ArrayList<>();
         result.add(new Double(mean(lats)));
         result.add(new Double(mean(lons)));
         return result;
