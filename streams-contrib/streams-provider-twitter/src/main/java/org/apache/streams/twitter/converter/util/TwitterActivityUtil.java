@@ -275,7 +275,8 @@ public class TwitterActivityUtil {
                         .or(Optional.of(tweet.getId().toString()))
                         .orNull()
         ));
-        location.put("coordinates", boundingBoxCenter(tweet.getPlace()));       extensions.put("location", location);
+        location.put("coordinates", boundingBoxCenter(tweet.getPlace()));       
+        extensions.put("location", location);
     }
 
     /**
