@@ -32,7 +32,7 @@
     <name>Apache Streams :: streams-master</name>
     <description>Apache Streams Master Pom</description>
     <packaging>pom</packaging>
-    <version>0.3-incubating-SNAPSHOT</version>
+    <version>0.4-incubating-SNAPSHOT</version>
 
     <inceptionYear>2012</inceptionYear>
 
@@ -64,7 +64,7 @@
     </ciManagement>
 
     <prerequisites>
-        <maven>3.0.5</maven>
+        <maven>3.3.9</maven>
     </prerequisites>
 
     <mailingLists>
@@ -117,11 +117,12 @@
     <properties>
 
         <!-- Build Properties -->
-        <java.version>1.7</java.version>
+        <java.version>1.8</java.version>
+        <maven.version>3.3.9</maven.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <streams.version>0.3-incubating-SNAPSHOT</streams.version>
+        <streams.version>0.4-incubating-SNAPSHOT</streams.version>
 
         <!-- Release Properties -->
         <snapshot.repository.url>
@@ -137,7 +138,7 @@
         <clean.plugin.version>2.6</clean.plugin.version>
         <depgraph.plugin.version>1.0.2</depgraph.plugin.version>
         <docker.plugin.version>0.11.5-M1</docker.plugin.version>
-        <enforcer.plugin.version>1.3.1</enforcer.plugin.version>
+        <enforcer.plugin.version>1.4.1</enforcer.plugin.version>
         <failsafe.plugin.version>2.17</failsafe.plugin.version>
         <jar.plugin.version>2.6</jar.plugin.version>
         <javadoc.plugin.version>2.10.2</javadoc.plugin.version>
@@ -322,9 +323,13 @@
                             <configuration>
                                 <rules>
                                     <requireJavaVersion>
-                                        <message>Java 6 or higher is required to compile this module</message>
-                                        <version>${java.version}</version>
+                                        <message>Java 8 or higher is required to compile this module</message>
+                                        <version>[${java.version},)</version>
                                     </requireJavaVersion>
+                                    <requireMavenVersion>
+                                        <message>Maven 3.3.9 or higher is required to compile this module</message>
+                                        <version>[${maven.version},)</version>
+                                    </requireMavenVersion>
                                 </rules>
                             </configuration>
                         </execution>
