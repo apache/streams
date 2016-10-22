@@ -48,8 +48,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
-
 /**
  * Provides utilities for working with Activity objects within the context of Instagram
  */
@@ -59,7 +57,7 @@ public class InstagramActivityUtil {
      * Updates the given Activity object with the values from the item
      * @param item the object to use as the source
      * @param activity the target of the updates.  Will receive all values from the tweet.
-     * @throws ActivitySerializerException
+     * @throws ActivityConversionException
      */
     public static void updateActivity(MediaFeedData item, Activity activity) throws ActivityConversionException {
         activity.setActor(buildActor(item));
@@ -109,7 +107,7 @@ public class InstagramActivityUtil {
 
             Counts counts = item.getCounts();
 
-            Map<String, Object> extensions = new HashMap<String, Object>();
+            Map<String, Object> extensions = new HashMap<>();
 
             extensions.put("followers", counts.getFollowedBy());
             extensions.put("follows", counts.getFollows());
@@ -143,7 +141,7 @@ public class InstagramActivityUtil {
             Image image = new Image();
             image.setUrl(item.getUser().getProfilePictureUrl());
 
-            Map<String, Object> extensions = new HashMap<String, Object>();
+            Map<String, Object> extensions = new HashMap<>();
             extensions.put("screenName", item.getUser().getUserName());
 
             actor.setDisplayName(item.getUser().getFullName());
@@ -175,13 +173,13 @@ public class InstagramActivityUtil {
         Image standardResolution = new Image();
         if(item.getType().equals("image") && item.getImages() != null) {
             ImageData standardResolutionData = item.getImages().getStandardResolution();
-            standardResolution.setHeight(new Long(standardResolutionData.getImageHeight()));
-            standardResolution.setWidth(new Long(standardResolutionData.getImageWidth()));
+            standardResolution.setHeight((long) standardResolutionData.getImageHeight());
+            standardResolution.setWidth((long) standardResolutionData.getImageWidth());
             standardResolution.setUrl(standardResolutionData.getImageUrl());
         } else if(item.getType().equals("video") && item.getVideos() != null) {
             VideoData standardResolutionData = item.getVideos().getStandardResolution();
-            standardResolution.setHeight(new Long(standardResolutionData.getHeight()));
-            standardResolution.setWidth(new Long(standardResolutionData.getWidth()));
+            standardResolution.setHeight((long) standardResolutionData.getHeight());
+            standardResolution.setWidth((long) standardResolutionData.getWidth());
             standardResolution.setUrl(standardResolutionData.getUrl());
         }
 
@@ -197,7 +195,7 @@ public class InstagramActivityUtil {
      * @return
      */
     public static List<ActivityObject> buildActivityObjectAttachments(MediaFeedData item) {
-        List<ActivityObject> attachments = new ArrayList<ActivityObject>();
+        List<ActivityObject> attachments = new ArrayList<>();
 
         addImageObjects(attachments, item);
         addVideoObjects(attachments, item);
@@ -221,16 +219,16 @@ public class InstagramActivityUtil {
                 ActivityObject thumbnailObject = new ActivityObject();
                 Image thumbnailImage = new Image();
                 thumbnailImage.setUrl(thumbnail.getImageUrl());
-                thumbnailImage.setHeight(new Long(thumbnail.getImageHeight()));
-                thumbnailImage.setWidth(new Long(thumbnail.getImageWidth()));
+                thumbnailImage.setHeight((long) thumbnail.getImageHeight());
+                thumbnailImage.setWidth((long) thumbnail.getImageWidth());
                 thumbnailObject.setImage(thumbnailImage);
                 thumbnailObject.setObjectType("image");
 
                 ActivityObject lowResolutionObject = new ActivityObject();
                 Image lowResolutionImage = new Image();
                 lowResolutionImage.setUrl(lowResolution.getImageUrl());
-                lowResolutionImage.setHeight(new Long(lowResolution.getImageHeight()));
-                lowResolutionImage.setWidth(new Long(lowResolution.getImageWidth()));
+                lowResolutionImage.setHeight((long) lowResolution.getImageHeight());
+                lowResolutionImage.setWidth((long) lowResolution.getImageWidth());
                 lowResolutionObject.setImage(lowResolutionImage);
                 lowResolutionObject.setObjectType("image");
 
@@ -257,8 +255,8 @@ public class InstagramActivityUtil {
                 ActivityObject lowResolutionVideoObject = new ActivityObject();
                 Image lowResolutionVideoImage = new Image();
                 lowResolutionVideoImage.setUrl(lowResolutionVideo.getUrl());
-                lowResolutionVideoImage.setHeight(new Long(lowResolutionVideo.getHeight()));
-                lowResolutionVideoImage.setWidth(new Long(lowResolutionVideo.getWidth()));
+                lowResolutionVideoImage.setHeight((long) lowResolutionVideo.getHeight());
+                lowResolutionVideoImage.setWidth((long) lowResolutionVideo.getWidth());
                 lowResolutionVideoObject.setImage(lowResolutionVideoImage);
                 lowResolutionVideoObject.setObjectType("video");
 
@@ -275,8 +273,7 @@ public class InstagramActivityUtil {
      * @return a list of links corresponding to the expanded URL
      */
     public static List<String> getLinks(MediaFeedData item) {
-        List<String> links = Lists.newArrayList();
-        return links;
+        return new ArrayList<>();
     }
 
     /**
@@ -288,7 +285,7 @@ public class InstagramActivityUtil {
         Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
 
         if(item.getLocation() != null) {
-            Map<String, Object> coordinates = new HashMap<String, Object>();
+            Map<String, Object> coordinates = new HashMap<>();
             coordinates.put("type", "Point");
             coordinates.put("coordinates", "[" + item.getLocation().getLongitude() + "," + item.getLocation().getLatitude() + "]");
 
@@ -328,7 +325,7 @@ public class InstagramActivityUtil {
         addLocationExtension(activity, item);
 
         if(item.getLikes() != null) {
-            Map<String, Object> likes = new HashMap<String, Object>();
+            Map<String, Object> likes = new HashMap<>();
             likes.put("count", item.getLikes().getCount());
             extensions.put("likes", likes);
         }

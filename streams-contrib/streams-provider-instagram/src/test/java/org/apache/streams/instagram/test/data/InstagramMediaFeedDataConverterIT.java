@@ -20,28 +20,22 @@ package org.apache.streams.instagram.test.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import org.apache.commons.lang.StringUtils;
-import org.apache.streams.data.ActivityConverter;
-import org.apache.streams.data.ActivityObjectConverter;
-import org.apache.streams.instagram.serializer.InstagramMediaFeedDataConverter;
-import org.apache.streams.instagram.serializer.InstagramUserInfoDataConverter;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.ActivityObject;
-import org.jinstagram.entity.users.basicinfo.UserInfoData;
-import org.jinstagram.entity.users.feed.MediaFeedData;
-import org.junit.Assert;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.Map;
+import org.apache.commons.lang.StringUtils;
+import org.apache.streams.data.ActivityConverter;
+import org.apache.streams.instagram.serializer.InstagramMediaFeedDataConverter;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.json.Activity;
+import org.jinstagram.entity.users.feed.MediaFeedData;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -62,12 +56,12 @@ public class InstagramMediaFeedDataConverterIT {
     private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     @Test
-    public void InstagramMediaFeedDataConverterIT() throws Exception {
+    public void InstagramMediaFeedDataConverterITCase() throws Exception {
         InputStream is = InstagramMediaFeedDataConverterIT.class.getResourceAsStream("/testMediaFeedObjects.txt");
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 
-        PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream("target/test-classes/InstagramMediaFeedDataConverterIT.txt")));
+        PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream("target/test-classes/InstagramMediaFeedDataConverterITCase.txt")));
 
         try {
             while (br.ready()) {
