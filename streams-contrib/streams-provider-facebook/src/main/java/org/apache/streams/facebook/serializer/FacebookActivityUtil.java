@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import org.apache.streams.data.util.ActivityUtil;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.facebook.Cover;
 import org.apache.streams.facebook.Datum;
@@ -42,11 +42,10 @@ import org.apache.streams.pojo.json.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.apache.streams.data.util.ActivityUtil.*;
 
 public class FacebookActivityUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(FacebookActivityUtil.class);
@@ -77,7 +76,7 @@ public class FacebookActivityUtil {
         activity.setPublished(post.getCreatedTime());
 
         if(post.getLink() != null && post.getLink().length() > 0) {
-            List<String> links = Lists.newArrayList();
+            List<String> links = new ArrayList<>();
             links.add(post.getLink());
             activity.setLinks(links);
         }
@@ -90,7 +89,7 @@ public class FacebookActivityUtil {
     }
 
     /**
-     * Builds out the {@link org.apache.streams.pojo.json.ActivityObject} from the given {@link org.apache.streams.pojo.json.Post}
+     * Builds out the {@link org.apache.streams.pojo.json.ActivityObject} from the given {@link Post}
      * @param post
      * @return {@link org.apache.streams.pojo.json.ActivityObject}
      */
@@ -165,7 +164,7 @@ public class FacebookActivityUtil {
     }
 
     /**
-     * Builds an {@link org.apache.streams.pojo.json.Actor} object from the {@link org.apache.streams.pojo.json.Post}
+     * Builds an {@link org.apache.streams.pojo.json.Actor} object from the {@link Post}
      * @param post
      * @return {@link org.apache.streams.pojo.json.Actor}
      */
@@ -176,7 +175,7 @@ public class FacebookActivityUtil {
             actor.setId(formatId(
                     Optional.fromNullable(
                             post.getFrom().getId())
-                            .or(Optional.of(post.getFrom().getId().toString()))
+                            .or(Optional.of(post.getFrom().getId()))
                             .orNull()
             ));
 
@@ -195,7 +194,7 @@ public class FacebookActivityUtil {
      * @param page
      */
     public static void buildExtensions(Actor actor, Page page) {
-        Map<String, Object> extensions = new HashMap<String, Object>();
+        Map<String, Object> extensions = new HashMap<>();
         Location location = page.getLocation();
 
         if(location != null)
@@ -214,12 +213,13 @@ public class FacebookActivityUtil {
      * @param activity
      * @param post
      */
+    @SuppressWarnings("unchecked")
     public static void buildExtensions(Activity activity, Post post) {
         ObjectMapper mapper = StreamsJacksonMapper.getInstance();
         Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
 
         if(post.getLikes() != null && post.getLikes().size() > 0) {
-            Map<String, Object> likes = Maps.newHashMap();
+            Map<String, Object> likes = new HashMap<>();
             org.apache.streams.facebook.Like like = post.getLikes().get(0);
 
             if(like.getAdditionalProperties().containsKey("data")) {
@@ -228,7 +228,7 @@ public class FacebookActivityUtil {
         }
 
         if(post.getShares() != null) {
-            Map<String, Object> shares = Maps.newHashMap();
+            Map<String, Object> shares = new HashMap<>();
             shares.put("count", ((Map<String, Object>)post.getShares()).get("count"));
             extensions.put("rebroadcasts", shares);
         }
@@ -236,10 +236,10 @@ public class FacebookActivityUtil {
         if(post.getTo() != null) {
             To to = post.getTo();
             List<Datum> data = to.getData();
-            extensions.put("user_mentions", Lists.newArrayList());
+            extensions.put("user_mentions", new ArrayList<>());
 
             for(Datum d : data) {
-                Map<String, String> mention = Maps.newHashMap();
+                Map<String, String> mention = new HashMap<>();
 
                 mention.put("id", d.getId());
                 mention.put("displayName", d.getName());
@@ -252,7 +252,7 @@ public class FacebookActivityUtil {
         if(post.getPlace() != null) {
             Place place = post.getPlace();
             if(place.getAdditionalProperties().containsKey("location")) {
-                extensions.put(LOCATION_EXTENSION, place.getAdditionalProperties().get("location"));
+                extensions.put(ActivityUtil.LOCATION_EXTENSION, place.getAdditionalProperties().get("location"));
             }
         }
 

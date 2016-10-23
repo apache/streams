@@ -21,15 +21,16 @@ package org.apache.streams.twitter.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import java.util.List;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.exceptions.ActivityConversionException;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.TwitterConfiguration;
 import org.apache.streams.twitter.TwitterStreamConfiguration;
-import org.apache.streams.twitter.converter.StreamsTwitterMapper;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
@@ -43,8 +44,6 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.TwitterObjectFactory;
 import twitter4j.conf.ConfigurationBuilder;
-
-import java.util.List;
 
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.getProvider;
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.updateActivity;
@@ -99,7 +98,7 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     @Override
     public void prepare(Object configurationObject) {
         this.client = getTwitterClient();
-        this.mapper = StreamsTwitterMapper.getInstance();
+        this.mapper = StreamsJacksonMapper.getInstance();
     }
 
     @Override

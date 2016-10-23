@@ -25,7 +25,6 @@ import org.apache.streams.data.util.ActivityUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
-import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.User;
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Tests {@link: org.apache.streams.twitter.converter.*}
+ * Tests {org.apache.streams.twitter.converter.*}
  */
 public class TwitterActivityObjectsConvertersTest {
 

@@ -18,7 +18,12 @@
 
 package org.apache.streams.moreover;
 
-import com.moreover.api.*;
+import com.moreover.api.Article;
+import com.moreover.api.Author;
+import com.moreover.api.AuthorPublishingPlatform;
+import com.moreover.api.Feed;
+import com.moreover.api.Source;
+import org.apache.streams.data.util.ActivityUtil;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
@@ -29,9 +34,17 @@ import org.joda.time.DateTime;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import static org.apache.streams.data.util.ActivityUtil.*;
+import static org.apache.streams.data.util.ActivityUtil.LANGUAGE_EXTENSION;
+import static org.apache.streams.data.util.ActivityUtil.LOCATION_EXTENSION;
+import static org.apache.streams.data.util.ActivityUtil.LOCATION_EXTENSION_COUNTRY;
+import static org.apache.streams.data.util.ActivityUtil.getObjectId;
+import static org.apache.streams.data.util.ActivityUtil.getProviderId;
 
 /**
  * Provides utilities for Moroever data
@@ -67,7 +80,7 @@ public class MoreoverUtils {
     }
 
     private static List convertLinks(Article article) {
-        List list = new LinkedList();
+        List<String> list = new LinkedList<>();
         Article.OutboundUrls outboundUrls = article.getOutboundUrls();
         if (outboundUrls != null) {
             for (String url : outboundUrls.getOutboundUrl()) {
@@ -110,7 +123,7 @@ public class MoreoverUtils {
         Actor actor = new Actor();
         AuthorPublishingPlatform platform = author.getPublishingPlatform();
         String userId = platform.getUserId();
-        if (userId != null) actor.setId(getPersonId(getProviderID(platformName), userId));
+        if (userId != null) actor.setId(ActivityUtil.getPersonId(getProviderID(platformName), userId));
         actor.setDisplayName(author.getName());
         actor.setUrl(author.getHomeUrl());
         actor.setSummary(author.getDescription());
@@ -122,7 +135,7 @@ public class MoreoverUtils {
         Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
         String country = value.getLocation().getCountryCode() == null ? value.getLocation().getCountry() : value.getLocation().getCountryCode();
         if (country != null) {
-            Map<String, Object> location = new HashMap<String, Object>();
+            Map<String, Object> location = new HashMap<>();
             location.put(LOCATION_EXTENSION_COUNTRY, country);
             extensions.put(LOCATION_EXTENSION, location);
         }

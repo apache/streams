@@ -19,7 +19,8 @@
 
 package com.google.gplus.processor;
 
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.gplus.serializer.util.GPlusActivityDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
@@ -30,7 +31,6 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,6 @@ import static org.junit.Assert.assertNotNull;
 public class GooglePlusActivitySerDeIT {
     private final static Logger LOGGER = LoggerFactory.getLogger(GooglePlusActivitySerDeIT.class);
     private ObjectMapper objectMapper;
-    private GooglePlusActivityUtil googlePlusActivityUtil;
 
     @Before
     public void setup() {
@@ -58,11 +57,10 @@ public class GooglePlusActivitySerDeIT {
         simpleModule.addDeserializer(com.google.api.services.plus.model.Activity.class, new GPlusActivityDeserializer());
         objectMapper.registerModule(simpleModule);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        googlePlusActivityUtil = new GooglePlusActivityUtil();
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void TestActivityObjects() {
         InputStream is = GooglePlusActivitySerDeIT.class.getResourceAsStream("/google_plus_activity_jsons.txt");
         InputStreamReader isr = new InputStreamReader(is);
@@ -77,7 +75,7 @@ public class GooglePlusActivitySerDeIT {
 
                     com.google.api.services.plus.model.Activity gPlusActivity = objectMapper.readValue(line, com.google.api.services.plus.model.Activity.class);
 
-                    googlePlusActivityUtil.updateActivity(gPlusActivity, activity);
+                    GooglePlusActivityUtil.updateActivity(gPlusActivity, activity);
                     LOGGER.info("activity: {}", activity);
 
                     assertNotNull(activity);

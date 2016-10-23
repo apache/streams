@@ -78,7 +78,7 @@ public class ActivityUtil {
     public static Map<String, Object> ensureExtensions(Activity activity) {
         Map<String, Object> extensions = (Map)activity.getAdditionalProperties().get(EXTENSION_PROPERTY);
         if(extensions == null) {
-            extensions = new HashMap<String, Object>();
+            extensions = new HashMap<>();
             activity.setAdditionalProperty(EXTENSION_PROPERTY, extensions);
         }
         return extensions;

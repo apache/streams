@@ -26,6 +26,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.streams.exceptions.ActivityConversionException;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
@@ -41,7 +42,6 @@ import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.pojo.UserMentions;
-import org.apache.streams.twitter.converter.StreamsTwitterMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.math.DoubleMath.mean;
-import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
 
 /**
  * Provides utilities for working with Activity objects within the context of Twitter
@@ -67,7 +66,7 @@ public class TwitterActivityUtil {
      * @throws org.apache.streams.exceptions.ActivityConversionException
      */
     public static void updateActivity(Tweet tweet, Activity activity) throws ActivityConversionException {
-        ObjectMapper mapper = StreamsTwitterMapper.getInstance();
+        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
         activity.setActor(buildActor(tweet));
         activity.setId(formatId(activity.getVerb(),
                 Optional.fromNullable(
@@ -99,7 +98,6 @@ public class TwitterActivityUtil {
      * Updates the given Activity object with the values from the User
      * @param user the object to use as the source
      * @param activity the target of the updates.  Will receive all values from the tweet.
-     * @throws org.apache.streams.exceptions.ActivityConversionException
      */
     public static void updateActivity(User user, Activity activity) {
         activity.setActor(buildActor(user));
@@ -121,7 +119,7 @@ public class TwitterActivityUtil {
         if(Strings.isNullOrEmpty(activity.getId()))
             throw new ActivityConversionException("Unable to determine activity id");
         activity.setProvider(getProvider());
-        addTwitterExtension(activity, StreamsTwitterMapper.getInstance().convertValue(delete, ObjectNode.class));
+        addTwitterExtension(activity, StreamsJacksonMapper.getInstance().convertValue(delete, ObjectNode.class));
     }
 
     /**
@@ -219,7 +217,7 @@ public class TwitterActivityUtil {
             actor.setUrl(user.getUrl());
         }
 
-        Map<String, Object> extensions = new HashMap<String, Object>();
+        Map<String, Object> extensions = new HashMap<>();
         extensions.put("location", user.getLocation());
         extensions.put("posts", user.getStatusesCount());
         extensions.put("favorites", user.getFavouritesCount());
@@ -241,7 +239,7 @@ public class TwitterActivityUtil {
      * @return a list of links corresponding to the expanded URL (no t.co)
      */
     public static List<String> getLinks(Tweet tweet) {
-        List<String> links = Lists.newArrayList();
+        List<String> links = new ArrayList<>();
         if( tweet.getEntities().getUrls() != null ) {
             for (Url url : tweet.getEntities().getUrls()) {
                 links.add(url.getExpandedUrl());
@@ -267,8 +265,8 @@ public class TwitterActivityUtil {
      * @param tweet the object to use as the source
      */
     public static void addLocationExtension(Activity activity, Tweet tweet) {
-        Map<String, Object> extensions = ensureExtensions(activity);
-        Map<String, Object> location = new HashMap<String, Object>();
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
+        Map<String, Object> location = new HashMap<>();
         location.put("id", formatId(
                 Optional.fromNullable(
                         tweet.getIdStr())
@@ -296,7 +294,7 @@ public class TwitterActivityUtil {
      * @param event the Twitter event to add as the extension
      */
     public static void addTwitterExtension(Activity activity, ObjectNode event) {
-        Map<String, Object> extensions = org.apache.streams.data.util.ActivityUtil.ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
         extensions.put("twitter", event);
     }
     /**
@@ -315,32 +313,32 @@ public class TwitterActivityUtil {
      * @param tweet
      */
     public static void addTwitterExtensions(Activity activity, Tweet tweet) {
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
 
-        List<String> hashtags = new ArrayList<String>();
+        List<String> hashtags = new ArrayList<>();
         for(Hashtag hashtag : tweet.getEntities().getHashtags()) {
             hashtags.add(hashtag.getText());
         }
         extensions.put("hashtags", hashtags);
 
-        Map<String, Object> likes = new HashMap<String, Object>();
+        Map<String, Object> likes = new HashMap<>();
         likes.put("perspectival", tweet.getFavorited());
         likes.put("count", tweet.getAdditionalProperties().get("favorite_count"));
 
         extensions.put("likes", likes);
 
-        Map<String, Object> rebroadcasts = new HashMap<String, Object>();
+        Map<String, Object> rebroadcasts = new HashMap<>();
         rebroadcasts.put("perspectival", tweet.getRetweeted());
         rebroadcasts.put("count", tweet.getRetweetCount());
 
         extensions.put("rebroadcasts", rebroadcasts);
 
-        List<Map<String, Object>> userMentions = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> userMentions = new ArrayList<>();
         Entities entities = tweet.getEntities();
 
         for(UserMentions user : entities.getUserMentions()) {
             //Map the twitter user object into an actor
-            Map<String, Object> actor = new HashMap<String, Object>();
+            Map<String, Object> actor = new HashMap<>();
             actor.put("id", "id:twitter:" + user.getIdStr());
             actor.put("displayName", user.getName());
             actor.put("handle", user.getScreenName());
@@ -369,8 +367,8 @@ public class TwitterActivityUtil {
             lons.add(point.get(1));
         }
         List<Double> result = new ArrayList<>();
-        result.add(new Double(mean(lats)));
-        result.add(new Double(mean(lons)));
+        result.add(mean(lats));
+        result.add(mean(lons));
         return result;
     }
 

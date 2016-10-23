@@ -21,19 +21,18 @@ package org.apache.streams.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.apache.streams.data.DocumentClassifier;
 import org.apache.streams.data.util.ActivityUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * BaseDocumentClassifier is included by default in all
- * @see {@link org.apache.streams.converter.ActivityConverterProcessor}
+ * @see org.apache.streams.converter.ActivityConverterProcessor
  *
  * Ensures generic String and ObjectNode documents can be converted to Activity
  *
@@ -46,10 +45,10 @@ public class BaseDocumentClassifier implements DocumentClassifier {
     @SuppressWarnings("unchecked")
     public List<Class> detectClasses(Object document) {
 
-        Activity activity = null;
+        Activity activity;
         ObjectNode node = null;
 
-        List<Class> classes = Lists.newArrayList();
+        List<Class> classes = new ArrayList<>();
         // Soon javax.validation will available in jackson
         //   That will make this simpler and more powerful
         if( document instanceof String ) {
@@ -62,11 +61,11 @@ public class BaseDocumentClassifier implements DocumentClassifier {
                 try {
                     node = this.mapper.readValue((String)document, ObjectNode.class);
                     classes.add(ObjectNode.class);
-                } catch (IOException e2) { }
+                } catch (IOException ignored) { }
             }
         } else if( document instanceof ObjectNode ){
             classes.add(ObjectNode.class);
-            activity = this.mapper.convertValue((ObjectNode)document, Activity.class);
+            activity = this.mapper.convertValue(document, Activity.class);
             if(ActivityUtil.isValid(activity))
                 classes.add(Activity.class);
         } else {
