@@ -229,7 +229,7 @@
                       <groupId>org.apache.rat</groupId>
                       <artifactId>apache-rat-plugin</artifactId>
                       <configuration>
-                          <excludes>
+                          <excludes combine.children="append">
                               <exclude>.travis.yml</exclude>
                               <exclude>.git</exclude>
                               <exclude>.gitignore</exclude>
@@ -245,7 +245,10 @@
                               <exclude>**/src/test/resources/**/*.csv</exclude>
                               <exclude>**/src/test/resources/**/*.tsv</exclude>
                               <exclude>**/src/test/resources/**/*.txt</exclude>
-                              <exclude>**/src/site/resources/**</exclude>
+                              <exclude>**/src/site/resources/**/*.csv</exclude>
+                              <exclude>**/src/site/resources/**/*.tsv</exclude>
+                              <exclude>**/src/site/resources/**/*.txt</exclude>
+                              <exclude>**/src/site/resources/**/*.json</exclude>
                               <exclude>**/.gitignore</exclude>
                               <exclude>**/*.properties</exclude>
                               <exclude>**/*.iml</exclude>
