@@ -19,7 +19,6 @@
 
 package com.google.gplus.serializer.util;
 
-import com.google.api.client.util.Maps;
 import com.google.api.services.plus.model.Comment;
 import com.google.api.services.plus.model.Person;
 import com.google.common.base.Joiner;
@@ -126,7 +125,7 @@ public class GooglePlusActivityUtil {
         obj.setContent(comment.getObject().getContent());
         obj.setObjectType(comment.getObject().getObjectType());
 
-        Map<String, Object> extensions = Maps.newHashMap();
+        Map<String, Object> extensions = new HashMap<>();
         extensions.put("googlePlus", comment);
 
         obj.setAdditionalProperty("extensions", extensions);

@@ -22,20 +22,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
-import junit.framework.Assert;
 import org.apache.streams.config.ComponentConfiguration;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
 * Test for
-* @see {@link org.apache.streams.config.ComponentConfigurator}
+* @see org.apache.streams.config.ComponentConfigurator
 */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(StreamsConfigurator.class)

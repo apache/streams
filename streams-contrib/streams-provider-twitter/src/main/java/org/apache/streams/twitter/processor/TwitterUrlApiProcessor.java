@@ -20,13 +20,13 @@ package org.apache.streams.twitter.processor;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.streams.components.http.HttpProcessorConfiguration;
 import org.apache.streams.components.http.processor.SimpleHTTPGetProcessor;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +71,7 @@ public class TwitterUrlApiProcessor extends SimpleHTTPGetProcessor implements St
     @Override
     protected Map<String, String> prepareParams(StreamsDatum entry) {
 
-        Map<String, String> params = Maps.newHashMap();
+        Map<String, String> params = new HashMap<>();
 
         params.put("url", mapper.convertValue(entry.getDocument(), Activity.class).getLinks().get(0));
 

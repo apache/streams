@@ -19,18 +19,18 @@
 package org.apache.streams.twitter.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.provider.TwitterEventClassifier;
-import org.apache.streams.twitter.converter.StreamsTwitterMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
@@ -41,12 +41,12 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TwitterProfileProcessor.class);
 
-    private ObjectMapper mapper = new StreamsTwitterMapper();
+    private ObjectMapper mapper = StreamsJacksonMapper.getInstance(TwitterDateTimeFormat.TWITTER_FORMAT);
 
     private Queue<StreamsDatum> inQueue;
     private Queue<StreamsDatum> outQueue;
 
-    public final static String TERMINATE = new String("TERMINATE");
+    private final static String TERMINATE = "TERMINATE";
 
     @Override
     public void run() {
@@ -86,7 +86,7 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
 
-        List<StreamsDatum> result = Lists.newArrayList();
+        List<StreamsDatum> result = new ArrayList<>();
         String item;
         try {
             // first check for valid json
@@ -94,7 +94,7 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
             if( entry.getDocument() instanceof String) {
                 item = (String) entry.getDocument();
             } else {
-                item = mapper.writeValueAsString((ObjectNode)entry.getDocument());
+                item = mapper.writeValueAsString(entry.getDocument());
             }
 
             Class inClass = TwitterEventClassifier.detectClass(item);
@@ -117,14 +117,14 @@ public class TwitterProfileProcessor implements StreamsProcessor, Runnable {
                 user = mapper.readValue(item, User.class);
                 result.add(createStreamsDatum(user));
             } else {
-                return Lists.newArrayList();
+                return new ArrayList<>();
             }
 
             return result;
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.warn("Error processing " + entry.toString());
-            return Lists.newArrayList();
+            return new ArrayList<>();
         }
     }
 

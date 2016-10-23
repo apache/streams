@@ -41,7 +41,7 @@ import static org.mockito.Matchers.any;
 
 /**
  * Test for
- * @see {@link org.apache.streams.components.http.persist.SimpleHTTPPostPersistWriter}
+ * @see org.apache.streams.components.http.persist.SimpleHTTPPostPersistWriter
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({HttpClients.class, CloseableHttpResponse.class, CloseableHttpResponse.class})
@@ -65,11 +65,6 @@ public class SimpleHTTPPostPersistWriterTest {
     private static final String PROTOCOL = "http";
 
     /**
-     * HttpClients mock.
-     */
-    private HttpClients httpClients;
-
-    /**
      * CloseableHttpClient mock.
      */
     private CloseableHttpClient client;
@@ -89,15 +84,12 @@ public class SimpleHTTPPostPersistWriterTest {
      */
     private ByteArrayInputStream input;
 
-    /**
-     * Instance under tests.
-     */
-    private SimpleHTTPPostPersistWriter writer;
-
     @Before
     public void setUp() throws Exception
     {
-        this.httpClients = PowerMockito.mock(HttpClients.class);
+        /*
+      HttpClients mock.
+     */
         this.client = PowerMockito.mock(CloseableHttpClient.class);
 
         PowerMockito.mockStatic(HttpClients.class);
@@ -119,16 +111,19 @@ public class SimpleHTTPPostPersistWriterTest {
         HttpPersistWriterConfiguration configuration = new HttpPersistWriterConfiguration();
         configuration.setProtocol(PROTOCOL);
         configuration.setHostname(HOSTNAME);
-        configuration.setPort(new Long(PORT));
+        configuration.setPort((long) PORT);
         configuration.setResourcePath("/");
 
-        this.writer = new SimpleHTTPPostPersistWriter(configuration);
+        /*
+      Instance under tests.
+     */
+        SimpleHTTPPostPersistWriter writer = new SimpleHTTPPostPersistWriter(configuration);
 
-        this.writer.prepare(null);
+        writer.prepare(null);
 
         StreamsDatum testDatum = new StreamsDatum(mapper.readValue("{\"message\":\"ping\"}", ObjectNode.class));
 
-        this.writer.write(testDatum);
+        writer.write(testDatum);
 
         Mockito.verify(this.client).execute(any(HttpUriRequest.class));
 
