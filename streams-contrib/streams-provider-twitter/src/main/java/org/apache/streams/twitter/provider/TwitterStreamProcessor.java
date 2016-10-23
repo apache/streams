@@ -21,16 +21,18 @@ package org.apache.streams.twitter.provider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.ComponentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
@@ -91,7 +93,7 @@ public class TwitterStreamProcessor extends StringDelimitedProcessor {
                 StreamsDatum rawDatum = new StreamsDatum(document);
                 return Lists.newArrayList(rawDatum);
             }
-            return Lists.newArrayList();
+            return new ArrayList<>();
         }
     }
 }

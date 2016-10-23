@@ -65,6 +65,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
@@ -105,7 +106,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
         TwitterStreamConfiguration config = new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration(typesafe, "twitter");
         TwitterStreamProvider provider = new TwitterStreamProvider(config);
 
-        ObjectMapper mapper = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+        ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
 
         PrintStream outStream = null;
         try {
@@ -286,9 +287,9 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
             return;
         }
 
-        LOGGER.debug("host={}\tendpoint={}\taut={}", new Object[] {hosebirdHosts,endpoint,auth});
+        LOGGER.debug("host={}\tendpoint={}\taut={}", hosebirdHosts, endpoint, auth);
 
-        providerQueue = new LinkedBlockingQueue<Future<List<StreamsDatum>>>(MAX_BATCH);
+        providerQueue = new LinkedBlockingQueue<>(MAX_BATCH);
 
         client = new ClientBuilder()
             .name("apache/streams/streams-contrib/streams-provider-twitter")
@@ -342,10 +343,10 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
             LOGGER.warn("Interrupted while waiting for future.  Initiate shutdown.");
             this.cleanUp();
             Thread.currentThread().interrupt();
-            return Lists.newArrayList();
+            return new ArrayList<>();
         } catch (ExecutionException e) {
             LOGGER.warn("Error getting tweet from future");
-            return Lists.newArrayList();
+            return new ArrayList<>();
         }
     }
 }
