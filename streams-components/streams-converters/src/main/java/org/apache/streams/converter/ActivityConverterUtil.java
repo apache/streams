@@ -21,8 +21,7 @@ package org.apache.streams.converter;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.data.DocumentClassifier;
 import org.apache.streams.data.util.ActivityUtil;
@@ -35,11 +34,13 @@ import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ActivityConverterUtil converts document into all possible Activity
@@ -70,8 +71,8 @@ public class ActivityConverterUtil {
         return new ActivityConverterUtil(configuration);
     }
 
-    private List<DocumentClassifier> classifiers = Lists.newLinkedList();
-    private List<ActivityConverter> converters = Lists.newLinkedList();
+    private List<DocumentClassifier> classifiers = new LinkedList<>();
+    private List<ActivityConverter> converters = new LinkedList<>();
 
     /*
       Use getInstance to get a globally shared thread-safe ActivityConverterUtil,
@@ -90,7 +91,7 @@ public class ActivityConverterUtil {
     }
     public List<Activity> convert(Object document) {
 
-        List<Activity> result = Lists.newArrayList();
+        List<Activity> result = new ArrayList<>();
 
         List<Class> detectedClasses = detectClasses(document);
 
@@ -128,7 +129,7 @@ public class ActivityConverterUtil {
 
     protected List<Activity> applyConverter(ActivityConverter converter, Object typedDoc) {
 
-        List<Activity> activities = Lists.newArrayList();
+        List<Activity> activities = new ArrayList<>();
         // if the document can be typed as the required class
         if( typedDoc != null ) {
 
@@ -145,7 +146,7 @@ public class ActivityConverterUtil {
 
     protected List<Activity> convertToActivity(ActivityConverter converter, Object document) {
 
-        List<Activity> activities = Lists.newArrayList();
+        List<Activity> activities = new ArrayList<>();
         try {
             activities = converter.toActivityList(document);
         } catch (ActivityConversionException e1) {
@@ -197,7 +198,7 @@ public class ActivityConverterUtil {
 
     private Map<Class, Object> convertToDetectedClasses(List<Class> datumClasses, Object document) {
 
-        Map<Class, Object> convertedDocuments = Maps.newHashMap();
+        Map<Class, Object> convertedDocuments = new HashMap<>();
         for( Class detectedClass : datumClasses ) {
 
             Object typedDoc;

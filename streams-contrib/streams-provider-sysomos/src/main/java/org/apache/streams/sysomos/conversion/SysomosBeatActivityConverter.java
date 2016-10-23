@@ -19,7 +19,6 @@
 
 package org.apache.streams.sysomos.conversion;
 
-import com.google.common.collect.Maps;
 import com.sysomos.xml.BeatApi;
 import org.apache.commons.lang.StringUtils;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
@@ -29,16 +28,22 @@ import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.streams.data.util.ActivityUtil.*;
+import static org.apache.streams.data.util.ActivityUtil.LANGUAGE_EXTENSION;
+import static org.apache.streams.data.util.ActivityUtil.LOCATION_EXTENSION;
+import static org.apache.streams.data.util.ActivityUtil.LOCATION_EXTENSION_COUNTRY;
+import static org.apache.streams.data.util.ActivityUtil.getObjectId;
+import static org.apache.streams.data.util.ActivityUtil.getPersonId;
+import static org.apache.streams.data.util.ActivityUtil.getProviderId;
 
 /**
  * Converts an instance of a {@link com.sysomos.xml.BeatApi.BeatResponse.Beat} to an {@link org.apache.streams.pojo.json.Activity}
  */
 public class SysomosBeatActivityConverter {
 
-    public static final String LANGUAGE_KEY = "LANGUAGE";
+    private static final String LANGUAGE_KEY = "LANGUAGE";
 
     public Activity convert(BeatApi.BeatResponse.Beat beat) {
         Activity converted = new Activity();
@@ -111,7 +116,7 @@ public class SysomosBeatActivityConverter {
             if (extensions.containsKey(LOCATION_EXTENSION)) {
                 location = (Map<String, Object>) extensions.get(LOCATION_EXTENSION);
             } else {
-                location = Maps.newHashMap();
+                location = new HashMap<>();
                 extensions.put(LOCATION_EXTENSION, location);
             }
             location.put(LOCATION_EXTENSION_COUNTRY, country);
@@ -127,7 +132,7 @@ public class SysomosBeatActivityConverter {
     }
 
     protected Map<String, BeatApi.BeatResponse.Beat.Tag> mapTags(BeatApi.BeatResponse.Beat beat) {
-        Map<String, BeatApi.BeatResponse.Beat.Tag> tags = Maps.newHashMap();
+        Map<String, BeatApi.BeatResponse.Beat.Tag> tags = new HashMap<>();
         for(BeatApi.BeatResponse.Beat.Tag tag : beat.getTag()) {
             if(tag.getSystemType() != null) {
                 tags.put(tag.getSystemType().trim(), tag);

@@ -19,10 +19,8 @@
 package org.apache.streams.pojo.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,7 +38,6 @@ public class CustomDateTimeFormatTest {
         String input = "Tue Jan 17 21:21:46 Z 2012";
         Long outputMillis = 1326835306000L;
         ObjectMapper mapper = StreamsJacksonMapper.getInstance(format);
-        DateTime time;
         try {
             String json = "{\"published\":\"" + input + "\"}";
             Activity activity = mapper.readValue(json, Activity.class);
@@ -60,7 +57,6 @@ public class CustomDateTimeFormatTest {
         String input = "Tue Jan 17 21:21:46 Z 2012";
         Long outputMillis = 1326835306000L;
         ObjectMapper mapper = StreamsJacksonMapper.getInstance();
-        DateTime time;
         try {
             String json = "{\"published\":\"" + input + "\"}";
             Activity activity = mapper.readValue(json, Activity.class);

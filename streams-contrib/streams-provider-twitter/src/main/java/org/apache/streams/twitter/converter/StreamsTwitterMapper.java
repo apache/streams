@@ -43,12 +43,11 @@ public class StreamsTwitterMapper extends StreamsJacksonMapper {
 
     public static final DateTimeFormatter TWITTER_FORMATTER = DateTimeFormat.forPattern(TWITTER_FORMAT);
 
-    public static final Long getMillis(String dateTime) {
+    public static Long getMillis(String dateTime) {
 
         // this function is for pig which doesn't handle exceptions well
         try {
-            Long result = TWITTER_FORMATTER.parseMillis(dateTime);
-            return result;
+            return TWITTER_FORMATTER.parseMillis(dateTime);
         } catch( Exception e ) {
             return null;
         }
@@ -72,10 +71,10 @@ public class StreamsTwitterMapper extends StreamsJacksonMapper {
                         DateTime result = null;
                         try {
                             result = TWITTER_FORMATTER.parseDateTime(jpar.getValueAsString());
-                        } catch( Exception e ) { }
+                        } catch( Exception ignored ) { }
                         try {
                             result = RFC3339Utils.getInstance().parseToUTC(jpar.getValueAsString());
-                        } catch( Exception e ) { }
+                        } catch( Exception ignored ) { }
                         return result;
                     }
                 });

@@ -50,25 +50,17 @@ import javax.mail.internet.MimeMultipart;
 import java.util.List;
 import java.util.Map;
 
-/**
-* Created with IntelliJ IDEA.
-* User: mdelaet
-* Date: 9/30/13
-* Time: 9:24 AM
-* To change this template use File | Settings | File Templates.
-*/
 public class GMailMessageActivitySerializer implements ActivitySerializer<GmailMessage> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GMailMessageActivitySerializer.class);
 
-    GMailProvider provider;
-
-    ObjectMapper mapper = new ObjectMapper();
+    private GMailProvider provider;
 
     public GMailMessageActivitySerializer(GMailProvider provider) {
 
         this.provider = provider;
 
+        ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, Boolean.FALSE);
 
         mapper.addMixInAnnotations(IMAPSSLStore.class, MessageMixIn.class);

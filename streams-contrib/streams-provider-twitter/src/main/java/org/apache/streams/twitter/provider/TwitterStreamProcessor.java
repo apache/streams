@@ -19,20 +19,18 @@
 package org.apache.streams.twitter.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.twitter.converter.StreamsTwitterMapper;
-import org.apache.streams.util.ComponentUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.util.ComponentUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -59,7 +57,7 @@ public class TwitterStreamProcessor extends StringDelimitedProcessor {
 
     @Override
     public boolean process() throws IOException, InterruptedException {
-        String msg = null;
+        String msg;
         do {
             msg = this.processNextMessage();
             if(msg == null) {
@@ -77,7 +75,7 @@ public class TwitterStreamProcessor extends StringDelimitedProcessor {
 
     protected static class StreamDeserializer implements Callable<List<StreamsDatum>> {
 
-        protected static final ObjectMapper mapper = StreamsTwitterMapper.getInstance();
+        protected static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
         protected String item;
 

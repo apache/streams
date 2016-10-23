@@ -22,6 +22,10 @@ package com.google.gplus.serializer.util;
 import com.google.api.client.util.Maps;
 import com.google.api.services.plus.model.Comment;
 import com.google.api.services.plus.model.Person;
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
@@ -29,17 +33,13 @@ import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
-import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-import org.apache.streams.exceptions.ActivitySerializerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import static org.apache.streams.data.util.ActivityUtil.ensureExtensions;
+import java.util.Map;
 
 public class GooglePlusActivityUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(GooglePlusActivityUtil.class);
@@ -76,7 +76,7 @@ public class GooglePlusActivityUtil {
             addComment(activity, comment);
         }
 
-        Map<String, Object> extensions = ensureExtensions(activity);
+        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
         extensions.put("comment_count", comments.size());
     }
 
@@ -189,7 +189,7 @@ public class GooglePlusActivityUtil {
             activityObject.setContent(object.getContent());
             activityObject.setObjectType(object.getObjectType());
 
-            java.util.List<ActivityObject> attachmentsList = Lists.newArrayList();
+            java.util.List<ActivityObject> attachmentsList = new ArrayList<>();
             for (com.google.api.services.plus.model.Activity.PlusObject.Attachments attachments : object.getAttachments()) {
                 ActivityObject attach = new ActivityObject();
 
@@ -220,7 +220,7 @@ public class GooglePlusActivityUtil {
      * out {@link org.apache.streams.pojo.json.Actor} object
      *
      * @param gPlusActor
-     * @return
+     * @return {@link Actor}
      */
     private static Actor buildActor(com.google.api.services.plus.model.Activity.Actor gPlusActor) {
         Actor actor = new Actor();
@@ -267,7 +267,7 @@ public class GooglePlusActivityUtil {
         }
         actor.setImage(image);
 
-        Map<String, Object> extensions = new HashMap<String, Object>();
+        Map<String, Object> extensions = new HashMap<>();
 
         extensions.put("followers", person.getCircledByCount());
         extensions.put("googleplus", person);

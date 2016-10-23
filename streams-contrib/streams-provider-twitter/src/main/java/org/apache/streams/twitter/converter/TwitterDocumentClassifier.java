@@ -33,20 +33,21 @@ import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.pojo.UserstreamEvent;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.streams.twitter.converter.TwitterDateTimeFormat.TWITTER_FORMAT;
 
 /**
  * Ensures twitter documents can be converted to Activity
  */
 public class TwitterDocumentClassifier implements DocumentClassifier {
 
-    private static ObjectMapper mapper;
-
     public List<Class> detectClasses(Object document) {
 
         Preconditions.checkNotNull(document);
 
-        mapper = new StreamsJacksonMapper(Lists.newArrayList(StreamsTwitterMapper.TWITTER_FORMAT));
+        ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(TWITTER_FORMAT));
 
         ObjectNode objectNode;
         try {
@@ -57,10 +58,10 @@ public class TwitterDocumentClassifier implements DocumentClassifier {
             else
                 objectNode = mapper.convertValue(document, ObjectNode.class);
         } catch (IOException e) {
-            return Lists.newArrayList();
+            return new ArrayList<>();
         }
 
-        List<Class> classList = Lists.newArrayList();
+        List<Class> classList = new ArrayList<>();
 
         if( objectNode.findValue("retweeted_status") != null && objectNode.get("retweeted_status") != null)
             classList.add(Retweet.class);
