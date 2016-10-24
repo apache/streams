@@ -49,7 +49,7 @@ public class FacebookPageFeedProviderIT {
             }
         });
         testThread.start();
-        testThread.join(30000);
+        testThread.join(60000);
 
         File out = new File(outfile);
         assert (out.exists());

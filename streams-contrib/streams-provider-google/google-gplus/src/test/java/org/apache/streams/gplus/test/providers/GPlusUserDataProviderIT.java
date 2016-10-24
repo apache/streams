@@ -50,7 +50,7 @@ public class GPlusUserDataProviderIT {
             }
         });
         testThread.start();
-        testThread.join(30000);
+        testThread.join(60000);
 
         GPlusUserDataProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
 

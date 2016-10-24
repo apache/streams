@@ -50,7 +50,7 @@ public class FacebookPageProviderIT {
             }
         });
         testThread.start();
-        testThread.join(30000);
+        testThread.join(60000);
 
         FacebookPageProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
 
