@@ -93,6 +93,7 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
         this.executorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
         ListenableFuture future = this.executorService.submit(dataCollector);
         this.futures.add(future);
+        executorService.shutdown();
     }
 
     /**
