@@ -18,9 +18,10 @@
 
 package org.apache.streams.youtube.test.providers;
 
-import com.google.common.collect.Lists;
 import com.youtube.provider.YoutubeChannelProvider;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -31,13 +32,27 @@ import java.io.LineNumberReader;
  */
 public class YoutubeChannelProviderIT {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(YoutubeChannelProviderIT.class);
+
     @Test
     public void testYoutubeChannelProvider() throws Exception {
 
         String configfile = "./target/test-classes/YoutubeChannelProviderIT.conf";
         String outfile = "./target/test-classes/YoutubeChannelProviderIT.stdout.txt";
 
-        YoutubeChannelProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
+        String[] args = new String[2];
+        args[0] = configfile;
+        args[1] = outfile;
+
+        Thread testThread = new Thread((Runnable) () -> {
+            try {
+                YoutubeChannelProvider.main(args);
+            } catch( Exception e ) {
+                LOGGER.error("Test Exception!", e);
+            }
+        });
+        testThread.start();
+        testThread.join(30000);
 
         File out = new File(outfile);
         assert (out.exists());

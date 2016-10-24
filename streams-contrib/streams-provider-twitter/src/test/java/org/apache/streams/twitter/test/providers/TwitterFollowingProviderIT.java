@@ -18,9 +18,10 @@
 
 package org.apache.streams.twitter.test.providers;
 
-import com.google.common.collect.Lists;
 import org.apache.streams.twitter.provider.TwitterFollowingProvider;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -28,13 +29,27 @@ import java.io.LineNumberReader;
 
 public class TwitterFollowingProviderIT {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFollowingProviderIT.class);
+
     @Test
     public void testTwitterFollowingProvider() throws Exception {
 
         String configfile = "./target/test-classes/TwitterFollowingProviderIT.conf";
         String outfile = "./target/test-classes/TwitterFollowingProviderIT.stdout.txt";
 
-        TwitterFollowingProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
+        String[] args = new String[2];
+        args[0] = configfile;
+        args[1] = outfile;
+
+        Thread testThread = new Thread((Runnable) () -> {
+            try {
+                TwitterFollowingProvider.main(args);
+            } catch( Exception e ) {
+                LOGGER.error("Test Exception!", e);
+            }
+        });
+        testThread.start();
+        testThread.join(30000);
 
         File out = new File(outfile);
         assert (out.exists());

@@ -18,9 +18,10 @@
 
 package org.apache.streams.facebook.test.providers.pagefeed;
 
-import com.google.common.collect.Lists;
 import org.apache.streams.facebook.provider.pagefeed.FacebookPageFeedProvider;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -28,13 +29,27 @@ import java.io.LineNumberReader;
 
 public class FacebookPageFeedProviderIT {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FacebookPageFeedProviderIT.class);
+
     @Test
     public void testFacebookPageFeedProvider() throws Exception {
 
         String configfile = "./target/test-classes/FacebookPageFeedProviderIT.conf";
         String outfile = "./target/test-classes/FacebookPageFeedProviderIT.stdout.txt";
 
-        FacebookPageFeedProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
+        String[] args = new String[2];
+        args[0] = configfile;
+        args[1] = outfile;
+
+        Thread testThread = new Thread((Runnable) () -> {
+            try {
+                FacebookPageFeedProvider.main(args);
+            } catch( Exception e ) {
+                LOGGER.error("Test Exception!", e);
+            }
+        });
+        testThread.start();
+        testThread.join(30000);
 
         File out = new File(outfile);
         assert (out.exists());

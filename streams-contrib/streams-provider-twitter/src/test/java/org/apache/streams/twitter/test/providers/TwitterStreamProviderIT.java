@@ -18,9 +18,10 @@
 
 package org.apache.streams.twitter.test.providers;
 
-import com.google.common.collect.Lists;
 import org.apache.streams.twitter.provider.TwitterStreamProvider;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -28,23 +29,25 @@ import java.io.LineNumberReader;
 
 public class TwitterStreamProviderIT {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TwitterStreamProviderIT.class);
+
     final String outfile = "./target/test-classes/TwitterStreamProviderIT.stdout.txt";
+    final String configfile = "./target/test-classes/TwitterStreamProviderIT.conf";
 
     @Test
     public void testTwitterStreamProvider() throws Exception {
 
+        String[] args = new String[2];
+        args[0] = configfile;
+        args[1] = outfile;
 
-        Thread testThread = new Thread(
-            new Runnable() {
-
-                String configfile = "./target/test-classes/TwitterStreamProviderIT.conf";
-
-                @Override
-                public void run() {
-                    TwitterStreamProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
-                }
+        Thread testThread = new Thread((Runnable) () -> {
+            try {
+                TwitterStreamProvider.main(args);
+            } catch( Exception e ) {
+                LOGGER.error("Test Exception!", e);
             }
-        );
+        });
         testThread.start();
         testThread.join(30000);
 

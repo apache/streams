@@ -18,10 +18,10 @@
 
 package org.apache.streams.instagram.test.providers;
 
-import com.google.common.collect.Lists;
-import org.apache.streams.instagram.provider.recentmedia.InstagramRecentMediaProvider;
 import org.apache.streams.instagram.provider.userinfo.InstagramUserInfoProvider;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -31,6 +31,8 @@ import java.io.LineNumberReader;
  * Created by sblackmon on 10/12/16.
  */
 public class InstagramUserInfoProviderIT {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoProviderIT.class);
 
     @Test
     public void testInstagramUserInfoProvider() throws Exception {
@@ -42,7 +44,15 @@ public class InstagramUserInfoProviderIT {
         args[0] = configfile;
         args[1] = outfile;
 
-        InstagramUserInfoProvider.main(args);
+        Thread testThread = new Thread((Runnable) () -> {
+            try {
+                InstagramUserInfoProvider.main(args);
+            } catch( Exception e ) {
+                LOGGER.error("Test Exception!", e);
+            }
+        });
+        testThread.start();
+        testThread.join(30000);
 
         File out = new File(outfile);
         assert (out.exists());
