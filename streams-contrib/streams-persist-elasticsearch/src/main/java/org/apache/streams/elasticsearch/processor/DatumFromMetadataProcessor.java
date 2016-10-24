@@ -82,7 +82,7 @@ public class DatumFromMetadataProcessor implements StreamsProcessor, Serializabl
         getRequestBuilder.setFetchSource(true);
         GetResponse getResponse = getRequestBuilder.get();
 
-        if( getResponse == null || getResponse.isExists() || getResponse.isSourceEmpty() )
+        if( getResponse == null || !getResponse.isExists() || getResponse.isSourceEmpty() )
             return result;
 
         entry.setDocument(getResponse.getSource());
