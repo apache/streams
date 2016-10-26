@@ -179,6 +179,7 @@
                 <artifactId>apache-rat-plugin</artifactId>
                 <configuration>
                     <excludes combine.children="append">
+                        <exclude>src/test/resources/activities.txt</exclude>
                         <exclude>src/test/resources/actor.json</exclude>
                         <exclude>src/test/resources/do.json</exclude>
                         <exclude>src/test/resources/follow.json</exclude>
