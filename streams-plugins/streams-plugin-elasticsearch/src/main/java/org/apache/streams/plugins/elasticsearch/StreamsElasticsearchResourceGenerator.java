@@ -24,9 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.schema.FieldType;
 import org.apache.streams.util.schema.FieldUtil;
@@ -41,26 +39,23 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.streams.util.schema.FileUtil.dropExtension;
 import static org.apache.streams.util.schema.FileUtil.dropSourcePathPrefix;
 import static org.apache.streams.util.schema.FileUtil.resolveRecursive;
-import static org.apache.streams.util.schema.FileUtil.swapExtension;
 import static org.apache.streams.util.schema.FileUtil.writeFile;
 
-/**
- * Created by sblackmon on 5/3/16.
- */
 public class StreamsElasticsearchResourceGenerator implements Runnable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(StreamsElasticsearchResourceGenerator.class);
 
-    ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+    private ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
     private final static String LS = System.getProperty("line.separator");
 
@@ -95,7 +90,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
 
     public void run() {
 
-        checkNotNull(config);
+        Objects.requireNonNull(config);
 
         generate(config);
 
@@ -103,7 +98,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
 
     public void generate(StreamsElasticsearchGenerationConfig config) {
 
-        LinkedList<File> sourceFiles = new LinkedList<File>();
+        List<File> sourceFiles = new LinkedList<>();
 
         for (Iterator<URL> sources = config.getSource(); sources.hasNext();) {
             URL source = sources.next();
@@ -116,8 +111,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
 
         LOGGER.info("Resolved {} schema files:", sourceFiles.size());
 
-        for (Iterator<File> iterator = sourceFiles.iterator(); iterator.hasNext();) {
-            File item = iterator.next();
+        for (File item : sourceFiles) {
             schemaStore.create(item.toURI());
         }
 
@@ -179,7 +173,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
             builder.append(LS);
             propertiesNode.remove("id");
         }
-        if( propertiesNode != null && propertiesNode.isObject() && propertiesNode.size() > 0) {
+        if( propertiesNode.isObject() && propertiesNode.size() > 0) {
             builder = appendPropertiesNode(builder, schema, propertiesNode, seperator);
         }
         return builder;
@@ -187,7 +181,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
 
     private StringBuilder appendValueField(StringBuilder builder, Schema schema, String fieldId, FieldType fieldType, Character seperator) {
         // safe to append nothing
-        checkNotNull(builder);
+        Objects.requireNonNull(builder);
         builder.append(cqlEscape(fieldId));
         builder.append(seperator);
         builder.append(cqlType(fieldType));
@@ -196,7 +190,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
 
     public StringBuilder appendArrayItems(StringBuilder builder, Schema schema, String fieldId, ObjectNode itemsNode, Character seperator) {
         // not safe to append nothing
-        checkNotNull(builder);
+        Objects.requireNonNull(builder);
         if( itemsNode == null ) return builder;
         if( itemsNode.has("type")) {
             try {
@@ -220,7 +214,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
                                 if (!absoluteURI.isAbsolute() || (absoluteURI.isAbsolute() && !schemaStore.getByUri(absoluteURI).isPresent() ))
                                     absoluteURI = schema.getParentURI().resolve(parentURI);
                             }
-                            if (absoluteURI != null && absoluteURI.isAbsolute()) {
+                            if (absoluteURI.isAbsolute()) {
                                 Optional<Schema> schemaLookup = schemaStore.getByUri(absoluteURI);
                                 if (schemaLookup.isPresent()) {
                                     objectSchema = schemaLookup.get();
@@ -242,45 +236,45 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
                 LOGGER.warn("No item type resolvable for {}", fieldId);
             }
         }
-        checkNotNull(builder);
+        Objects.requireNonNull(builder);
         return builder;
     }
 
     private StringBuilder appendArrayField(StringBuilder builder, Schema schema, String fieldId, FieldType fieldType, Character seperator) {
         // safe to append nothing
-        checkNotNull(builder);
-        checkNotNull(fieldId);
+        Objects.requireNonNull(builder);
+        Objects.requireNonNull(fieldId);
         builder.append(cqlEscape(fieldId));
         builder.append(seperator);
-        builder.append("list<"+cqlType(fieldType)+">");
-        checkNotNull(builder);
+        builder.append("list<").append(cqlType(fieldType)).append(">");
+        Objects.requireNonNull(builder);
         return builder;
     }
 
     private StringBuilder appendArrayObject(StringBuilder builder, Schema schema, String fieldId, Character seperator) {
         // safe to append nothing
-        checkNotNull(builder);
+        Objects.requireNonNull(builder);
         String schemaSymbol = schemaSymbol(schema);
         if( !Strings.isNullOrEmpty(fieldId) && schemaSymbol != null ) {
             builder.append(cqlEscape(fieldId));
             builder.append(seperator);
-            builder.append("list<" + schemaSymbol + ">");
+            builder.append("list<").append(schemaSymbol).append(">");
             builder.append(LS);
         }
-        checkNotNull(builder);
+        Objects.requireNonNull(builder);
         return builder;
     }
 
     private StringBuilder appendSchemaField(StringBuilder builder, Schema schema, String fieldId, Character seperator) {
         // safe to append nothing
-        checkNotNull(builder);
+        Objects.requireNonNull(builder);
         String schemaSymbol = schemaSymbol(schema);
         if( !Strings.isNullOrEmpty(fieldId) && schemaSymbol != null ) {
             builder.append(cqlEscape(fieldId));
             builder.append(seperator);
             builder.append(schemaSymbol);
         }
-        checkNotNull(builder);
+        Objects.requireNonNull(builder);
         return builder;
     }
 
@@ -291,11 +285,11 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
      however treatment is way different when resolving a type symbol vs resolving and listing fields .
      */
     private StringBuilder appendPropertiesNode(StringBuilder builder, Schema schema, ObjectNode propertiesNode, Character seperator) {
-        checkNotNull(builder);
-        checkNotNull(propertiesNode);
+        Objects.requireNonNull(builder);
+        Objects.requireNonNull(propertiesNode);
         Iterator<Map.Entry<String, JsonNode>> fields = propertiesNode.fields();
         Joiner joiner = Joiner.on(","+LS).skipNulls();
-        List<String> fieldStrings = Lists.newArrayList();
+        List<String> fieldStrings = new ArrayList<>();
         for( ; fields.hasNext(); ) {
             Map.Entry<String, JsonNode> field = fields.next();
             String fieldId = field.getKey();
@@ -331,7 +325,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
                                     if (!absoluteURI.isAbsolute() || (absoluteURI.isAbsolute() && !schemaStore.getByUri(absoluteURI).isPresent() ))
                                         absoluteURI = schema.getParentURI().resolve(parentURI);
                                 }
-                                if (absoluteURI != null && absoluteURI.isAbsolute()) {
+                                if (absoluteURI.isAbsolute()) {
                                     Optional<Schema> schemaLookup = schemaStore.getByUri(absoluteURI);
                                     if (schemaLookup.isPresent()) {
                                         objectSchema = schemaLookup.get();
@@ -356,7 +350,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
             }
         }
         builder.append(joiner.join(fieldStrings)).append(LS);
-        Preconditions.checkNotNull(builder);
+        Objects.requireNonNull(builder);
         return builder;
     }
 
