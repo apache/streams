@@ -2,14 +2,14 @@
 
 Start neo4j via docker with the docker maven plugin:
 
-    docker -PdockerITs docker:start 
+    docker -PdockerITs docker:start
 
 Confirm that neo4j is running:
 
     docker ps
-  
+
 Confirm that host and post(s) are in property file:
-  
+
     cat neo4j.properties
 
 Create a local file `neo4j.conf` with cluster details:
@@ -26,3 +26,4 @@ When configuring a stream, include these files:
     include "neo4j.properties"
     include "neo4j.conf"
 
+###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

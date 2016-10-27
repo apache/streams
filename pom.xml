@@ -225,48 +225,10 @@
             </properties>
             <build>
                 <plugins>
-                  <plugin>
-                      <groupId>org.apache.rat</groupId>
-                      <artifactId>apache-rat-plugin</artifactId>
-                      <configuration>
-                          <excludes combine.children="append">
-                              <exclude>.travis.yml</exclude>
-                              <exclude>.git</exclude>
-                              <exclude>.gitignore</exclude>
-                              <exclude>.git/**</exclude>
-                              <exclude>.idea/**</exclude>
-                              <exclude>**/DEPENDENCIES</exclude>
-                              <exclude>**/LICENSE</exclude>
-                              <exclude>**/MANIFEST.MF</exclude>
-                              <exclude>**/NOTICE</exclude>
-                              <exclude>**/README.*</exclude>
-                              <exclude>**/target/**</exclude>
-                              <exclude>**/overlays/**</exclude>
-                              <exclude>**/src/test/resources/**/*.csv</exclude>
-                              <exclude>**/src/test/resources/**/*.tsv</exclude>
-                              <exclude>**/src/test/resources/**/*.txt</exclude>
-                              <exclude>**/src/site/resources/**/*.csv</exclude>
-                              <exclude>**/src/site/resources/**/*.tsv</exclude>
-                              <exclude>**/src/site/resources/**/*.txt</exclude>
-                              <exclude>**/src/site/resources/**/*.json</exclude>
-                              <exclude>**/.gitignore</exclude>
-                              <exclude>**/*.properties</exclude>
-                              <exclude>**/*.iml</exclude>
-                              <exclude>**/*.ini</exclude>
-                              <exclude>**/*.jar</exclude>
-                              <exclude>dependency-reduced-pom.xml</exclude>
-                              <exclude>rat.txt</exclude>
-                          </excludes>
-                      </configuration>
-                      <executions>
-                          <execution>
-                              <goals>
-                                  <goal>check</goal>
-                              </goals>
-                              <phase>validate</phase>
-                          </execution>
-                      </executions>
-                  </plugin>
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -315,6 +277,10 @@
             </plugin>
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
             </plugin>
         </plugins>
     </reporting>

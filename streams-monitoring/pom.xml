@@ -119,7 +119,7 @@
                 <artifactId>apache-rat-plugin</artifactId>
                 <configuration>
                     <excludes combine.children="append">
-                        <exclude>**/MemoryUsageObjects.json</exclude>
+                        <exclude>src/test/resources/MemoryUsageObjects.json</exclude>
                     </excludes>
                 </configuration>
             </plugin>
