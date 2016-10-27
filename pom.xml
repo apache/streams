@@ -23,12 +23,12 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-master</artifactId>
-        <version>0.5-incubating-SNAPSHOT</version>
+        <version>0.4-incubating-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.streams</groupId>
     <artifactId>streams-project</artifactId>
-  <version>0.5-incubating-SNAPSHOT</version>
+  <version>0.4-incubating-SNAPSHOT</version>
 
     <name>Apache Streams Project</name>
     <description>Apache Streams Project</description>
