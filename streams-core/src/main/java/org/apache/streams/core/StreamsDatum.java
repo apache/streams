@@ -26,17 +26,14 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by sblackmon on 1/2/14.
- */
 public class StreamsDatum implements Serializable {
 
     public StreamsDatum(Object document) {
-        this(document, null, null, null, new HashMap<String, Object>());
+        this(document, null, null, null, new HashMap<>());
     }
 
     public StreamsDatum(Object document, String id) {
-        this(document, id, null, null, new HashMap<String, Object>());
+        this(document, id, null, null, new HashMap<>());
     }
 
     public StreamsDatum(Object document, BigInteger sequenceid) {
@@ -56,7 +53,7 @@ public class StreamsDatum implements Serializable {
     }
 
     public StreamsDatum(Object document, String id, DateTime timestamp) {
-        this(document, id, timestamp, null, new HashMap<String, Object>());
+        this(document, id, timestamp, null, new HashMap<>());
     }
 
     public StreamsDatum(Object document, String id, Map<String, Object> metadata) {
@@ -68,7 +65,7 @@ public class StreamsDatum implements Serializable {
     }
 
     public StreamsDatum(Object document, String id, BigInteger sequenceid) {
-        this(document, id, sequenceid, new HashMap<String, Object>());
+        this(document, id, sequenceid, new HashMap<>());
     }
 
     public StreamsDatum(Object document, String id, DateTime timestamp, BigInteger sequenceid) {
@@ -76,7 +73,7 @@ public class StreamsDatum implements Serializable {
         this.id = id;
         this.timestamp = timestamp;
         this.sequenceid = sequenceid;
-        this.metadata = new HashMap<String, Object>();
+        this.metadata = new HashMap<>();
     }
 
     public StreamsDatum(Object document, String id, DateTime timestamp, BigInteger sequenceid, Map<String, Object> metadata) {
@@ -160,7 +157,13 @@ public class StreamsDatum implements Serializable {
 
     @Override
     public String toString() {
-        return this.id+"\tMetadata="+this.metadata+"\tTimestamp="+this.timestamp+"\tSequence="+this.sequenceid+"\tDocument="+this.document;
+        return "StreamsDatum{" +
+          "timestamp=" + timestamp +
+          ", sequenceid=" + sequenceid +
+          ", metadata=" + metadata +
+          ", document=" + document +
+          ", id='" + id + '\'' +
+          '}';
     }
 
 }

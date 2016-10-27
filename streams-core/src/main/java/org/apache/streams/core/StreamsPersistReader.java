@@ -20,9 +20,7 @@ package org.apache.streams.core;
 
 import org.joda.time.DateTime;
 
-import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Queue;
 
 /**
  *
@@ -32,9 +30,9 @@ import java.util.Queue;
  */
 public interface StreamsPersistReader extends StreamsProvider {
 
-    public StreamsResultSet readAll();
-    public StreamsResultSet readNew(BigInteger sequence);
-    public StreamsResultSet readRange(DateTime start, DateTime end);
+    StreamsResultSet readAll();
+    StreamsResultSet readNew(BigInteger sequence);
+    StreamsResultSet readRange(DateTime start, DateTime end);
 
 
 }

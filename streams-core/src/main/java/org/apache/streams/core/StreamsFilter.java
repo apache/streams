@@ -18,12 +18,8 @@
 
 package org.apache.streams.core;
 
-import java.util.List;
 import java.util.Queue;
 
-/**
- * Created by sblackmon on 12/13/13.
- */
 public interface StreamsFilter {
 
     void start();

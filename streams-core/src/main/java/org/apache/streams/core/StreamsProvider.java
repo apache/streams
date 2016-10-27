@@ -18,10 +18,8 @@
 
 package org.apache.streams.core;
 
-import org.joda.time.DateTime;
-
 import java.math.BigInteger;
-import java.util.Queue;
+import org.joda.time.DateTime;
 
 /**
  * A StreamsProvider represents the entry point into the Streams pipeline.  Providers are responsible for inserting
@@ -43,7 +41,7 @@ public interface StreamsProvider extends StreamsOperation {
     /**
      * TODO: Define how this operates or eliminate
      * @param sequence
-     * @return
+     * @return {@link StreamsResultSet}
      */
     StreamsResultSet readNew(BigInteger sequence);
 
@@ -51,7 +49,7 @@ public interface StreamsProvider extends StreamsOperation {
      * TODO: Define how this operates or eliminate
      * @param start
      * @param end
-     * @return
+     * @return {@link StreamsResultSet}
      */
     StreamsResultSet readRange(DateTime start, DateTime end);
 
