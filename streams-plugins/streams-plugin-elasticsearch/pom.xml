@@ -22,13 +22,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.streams.plugins</groupId>
     <artifactId>streams-plugin-elasticsearch</artifactId>
-    <version>0.4-incubating-SNAPSHOT</version>
+    <version>0.4-incubating</version>
     <packaging>maven-plugin</packaging>
 
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-plugins</artifactId>
-        <version>0.4-incubating-SNAPSHOT</version>
+        <version>0.4-incubating</version>
         <relativePath>..</relativePath>
     </parent>
 
