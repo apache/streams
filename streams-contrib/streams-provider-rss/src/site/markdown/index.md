@@ -5,7 +5,7 @@ streams-provider-rss
 
 | Schema |
 |--------|
-| [contents.xsd](contents.xsd "contents.xsd") [contents.xsd.html](apidocs/org/apache/streams/rss/FeedDetails.html "javadoc") |
+| [contents.xsd](http://www.dlese.org/Metadata/opml/2.0/contents.xsd "contents.xsd") [FeedDetails.html](apidocs/org/apache/streams/rss/FeedDetails.html "javadoc") |
 
 ## Components
 
