@@ -71,7 +71,6 @@ public class StreamsPojoSourceGeneratorTest {
         );
         config.setSourcePaths(sourcePaths);
 
-//        config.setSourceDirectory("target/test-classes/streams-schemas");
         config.setTargetPackage("org.apache.streams.pojo");
         config.setTargetDirectory("target/generated-sources/pojo");
 

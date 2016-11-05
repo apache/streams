@@ -24,13 +24,13 @@
 
     <groupId>org.apache.streams.plugins</groupId>
     <artifactId>streams-plugin-pojo-test</artifactId>
-    <version>0.4-incubating-SNAPSHOT</version>
+    <version>0.5-incubating-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Test StreamsPojoMojo</name>
 
     <properties>
         <jackson.version>2.6.1</jackson.version>
-        <commons-lang.version>2.6</commons-lang.version>
+        <commons-lang3.version>3.4</commons-lang3.version>
     </properties>
 
     <repositories>
@@ -123,9 +123,9 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${commons-lang.version}</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
         </dependency>
     </dependencies>
 
@@ -134,7 +134,7 @@
             <plugin>
                 <groupId>org.apache.streams.plugins</groupId>
                 <artifactId>streams-plugin-pojo</artifactId>
-                <version>0.4-incubating-SNAPSHOT</version>
+                <version>${project.version}</version>
                 <configuration>
                     <sourcePaths>
                         <sourcePath>target/test-classes/activitystreams-schemas/activity.json</sourcePath>
