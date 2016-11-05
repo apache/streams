@@ -26,7 +26,7 @@
     <packaging>maven-plugin</packaging>
 
     <parent>
-        <groupId>org.apache.streams</groupId>
+        <groupId>org.apache.streams.plugins</groupId>
         <artifactId>streams-plugins</artifactId>
         <version>0.5-incubating-SNAPSHOT</version>
     </parent>
@@ -53,10 +53,6 @@
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jsonschema2pojo</groupId>
-            <artifactId>jsonschema2pojo-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
@@ -163,9 +159,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
