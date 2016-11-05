@@ -28,7 +28,6 @@ import org.apache.streams.data.util.RFC3339Utils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Author;
 import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
@@ -83,7 +82,7 @@ public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNod
 
         Activity activity = new Activity();
         Provider provider = buildProvider(entry);
-        Actor actor = buildActor(entry);
+        ActivityObject actor = buildActor(entry);
         ActivityObject activityObject = buildActivityObject(entry);
 
         activityObject.setUrl(provider.getUrl());
@@ -124,9 +123,9 @@ public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNod
      * @param entry
      * @return
      */
-    private Actor buildActor(ObjectNode entry) {
+    private ActivityObject buildActor(ObjectNode entry) {
+        ActivityObject actor = new ActivityObject();
         Author author = new Author();
-        Actor actor = new Actor();
 
         if (entry.get("author") != null) {
             author.setId(entry.get("author").textValue());

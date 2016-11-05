@@ -24,7 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
 
@@ -53,7 +52,7 @@ public class SysomosBeatActivityConverter {
         converted.setTitle(beat.getTitle());
         converted.setPublished(new DateTime(beat.getTime()));
         converted.setUrl(beat.getLink());
-        converted.setActor(new Actor());
+        converted.setActor(new ActivityObject());
         Map<String, BeatApi.BeatResponse.Beat.Tag> mappedTags = mapTags(beat);
         Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(converted);
         extensions.put("keywords", beat.getContent());
@@ -71,7 +70,7 @@ public class SysomosBeatActivityConverter {
     protected void setChannelSpecificValues(BeatApi.BeatResponse.Beat beat, Activity converted, Map<String, BeatApi.BeatResponse.Beat.Tag> mappedTags) {
         String mediaType = beat.getMediaType();
         String lowerMediaType = mediaType.toLowerCase();
-        Actor actor = converted.getActor();
+        ActivityObject actor = converted.getActor();
         ActivityObject object = converted.getObject();
         if ("TWITTER".equals(mediaType)) {
             actor.setId(getPersonId(lowerMediaType, beat.getHost()));

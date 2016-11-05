@@ -27,7 +27,6 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
 import org.jinstagram.entity.comments.CommentData;
@@ -98,8 +97,8 @@ public class InstagramActivityUtil {
      * @param item
      * @return Actor object
      */
-    public static Actor buildActor(UserInfoData item) {
-        Actor actor = new Actor();
+    public static ActivityObject buildActor(UserInfoData item) {
+        ActivityObject actor = new ActivityObject();
 
         try {
             Image image = new Image();
@@ -134,8 +133,8 @@ public class InstagramActivityUtil {
      * @param item the item
      * @return a valid Actor
      */
-    public static Actor buildActor(MediaFeedData item) {
-        Actor actor = new Actor();
+    public static ActivityObject buildActor(MediaFeedData item) {
+        ActivityObject actor = new ActivityObject();
 
         try {
             Image image = new Image();

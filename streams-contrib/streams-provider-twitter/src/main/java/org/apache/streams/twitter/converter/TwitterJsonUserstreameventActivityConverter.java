@@ -25,7 +25,6 @@ import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.twitter.pojo.UserstreamEvent;
 
 import java.util.List;
@@ -97,8 +96,8 @@ public class TwitterJsonUserstreameventActivityConverter implements ActivityConv
         return activity;
     }
 
-    public Actor buildActor(UserstreamEvent event) {
-        Actor actor = new Actor();
+    public ActivityObject buildActor(UserstreamEvent event) {
+        ActivityObject actor = new ActivityObject();
         //actor.setId(formatId(delete.getDelete().getStatus().getUserIdStr()));
         return actor;
     }

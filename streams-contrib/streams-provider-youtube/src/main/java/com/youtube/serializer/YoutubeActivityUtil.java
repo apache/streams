@@ -31,7 +31,6 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
@@ -95,8 +94,8 @@ public class YoutubeActivityUtil {
         }
     }
 
-    public static Actor createActorForChannel(Channel channel) {
-        Actor actor = new Actor();
+    public static ActivityObject createActorForChannel(Channel channel) {
+        ActivityObject actor = new ActivityObject();
         actor.setId("id:youtube:"+channel.getId());
         actor.setSummary(channel.getSnippet().getDescription());
         actor.setDisplayName(channel.getSnippet().getTitle());
@@ -156,13 +155,13 @@ public class YoutubeActivityUtil {
     }
 
     /**
-     * Build an {@link org.apache.streams.pojo.json.Actor} object given the video object
+     * Build an {@link org.apache.streams.pojo.json.ActivityObject} actor given the video object
      * @param video
      * @param id
      * @return Actor object
      */
-    private static Actor buildActor(Video video, String id) {
-        Actor actor = new Actor();
+    private static ActivityObject buildActor(Video video, String id) {
+        ActivityObject actor = new ActivityObject();
 
         actor.setId("id:youtube:" + id);
         actor.setDisplayName(video.getSnippet().getChannelTitle());

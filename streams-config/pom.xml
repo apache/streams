@@ -46,11 +46,11 @@
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jsonschema2pojo</groupId>
-            <artifactId>jsonschema2pojo-core</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -59,6 +59,25 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.1.0.Final</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -100,6 +119,26 @@
         </testResources>
         <plugins>
             <plugin>
+                <groupId>org.apache.streams.plugins</groupId>
+                <artifactId>streams-plugin-pojo</artifactId>
+                <version>${project.version}</version>
+                <configuration>
+                    <sourcePaths>
+                        <sourcePath>${basedir}/src/main/jsonschema</sourcePath>
+                    </sourcePaths>
+                    <targetDirectory>${basedir}/target/generated-sources/pojo</targetDirectory>
+                    <targetPackage>org.apache.streams.config</targetPackage>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate-sources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
@@ -111,31 +150,9 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${project.basedir}/target/generated-sources/jsonschema2pojo</source>
+                                <source>${basedir}/target/generated-sources/pojo</source>
                             </sources>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.jsonschema2pojo</groupId>
-                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-                <configuration>
-                    <addCompileSourceRoot>true</addCompileSourceRoot>
-                    <generateBuilders>true</generateBuilders>
-                    <sourcePaths>
-                        <sourcePath>${project.basedir}/src/main/jsonschema</sourcePath>
-                    </sourcePaths>
-                    <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
-                    <targetPackage>org.apache.streams.config</targetPackage>
-                    <useLongIntegers>true</useLongIntegers>
-                    <useJodaDates>true</useJodaDates>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

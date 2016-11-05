@@ -20,7 +20,7 @@
 package org.apache.streams.verbs;
 
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Provider;
 import org.junit.Test;
 
@@ -32,7 +32,7 @@ public class ObjectCombinationSpecificOrderingTest {
 
     @Test
     public void compareMatchCountTest() {
-        Actor actor = new Actor();
+        ActivityObject actor = new ActivityObject();
         actor.setObjectType("actor");
         Activity activity = new Activity().withActor(actor);
         ObjectCombination combination1 = new ObjectCombination();

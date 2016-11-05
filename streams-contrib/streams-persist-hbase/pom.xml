@@ -107,6 +107,25 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.streams.plugins</groupId>
+                <artifactId>streams-plugin-pojo</artifactId>
+                <version>${project.version}</version>
+                <configuration>
+                    <sourcePaths>
+                        <sourcePath>${project.basedir}/src/main/jsonschema</sourcePath>
+                    </sourcePaths>
+                    <targetDirectory>${project.basedir}/target/generated-sources/pojo</targetDirectory>
+                    <targetPackage>org.apache.streams.hbase.pojo</targetPackage>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-sources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
@@ -118,31 +137,9 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>target/generated-sources/jsonschema2pojo</source>
+                                <source>target/generated-sources/pojo</source>
                             </sources>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.jsonschema2pojo</groupId>
-                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-                <configuration>
-                    <addCompileSourceRoot>true</addCompileSourceRoot>
-                    <generateBuilders>true</generateBuilders>
-                    <sourcePaths>
-                        <sourcePath>${project.basedir}/src/main/jsonschema/org/apache/streams/hbase/HbaseConfiguration.json</sourcePath>
-                    </sourcePaths>
-                    <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
-                    <targetPackage>org.apache.streams.hbase.pojo</targetPackage>
-                    <useLongIntegers>true</useLongIntegers>
-                    <useJodaDates>true</useJodaDates>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

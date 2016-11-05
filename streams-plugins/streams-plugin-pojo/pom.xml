@@ -26,28 +26,13 @@
     <packaging>maven-plugin</packaging>
 
     <parent>
-        <groupId>org.apache.streams</groupId>
+        <groupId>org.apache.streams.plugins</groupId>
         <artifactId>streams-plugins</artifactId>
         <version>0.5-incubating-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-config</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-util</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-schema-activitystreams</artifactId>
@@ -57,8 +42,8 @@
         </dependency>
         <dependency>
             <groupId>org.jsonschema2pojo</groupId>
-            <artifactId>jsonschema2pojo-core</artifactId>
-            <version>0.4.10</version>
+            <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+            <version>${jsonschema2pojo.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -67,9 +52,8 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.jsonschema2pojo</groupId>
-            <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-            <version>0.4.10</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
@@ -167,11 +151,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>

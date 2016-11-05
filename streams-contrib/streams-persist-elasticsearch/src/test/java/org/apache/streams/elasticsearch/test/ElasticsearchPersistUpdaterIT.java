@@ -34,7 +34,7 @@ import org.apache.streams.elasticsearch.ElasticsearchPersistWriter;
 import org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.pojo.json.ActivityObject;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -126,7 +126,7 @@ public class ElasticsearchPersistUpdaterIT {
             update.setAdditionalProperty("str", "str");
             update.setAdditionalProperty("long", 10l);
             update.setActor(
-                    (Actor) new Actor()
+                    new ActivityObject()
                     .withAdditionalProperty("updated", Boolean.TRUE)
                     .withAdditionalProperty("double", 10d)
                     .withAdditionalProperty("map",

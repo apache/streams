@@ -13,7 +13,7 @@
     "properties": {
         "monitoring": {
             "type" : "object",
-            "javaType" : "org.apache.streams.local.monitoring.MonitoringConfiguration"
+            "$ref": "../../../../../streams-monitoring/src/main/jsonschema/org/apache/streams/local/monitoring/MonitoringConfiguration.json"
         },
         "executorShutdownPauseMs": {
             "type": "integer",

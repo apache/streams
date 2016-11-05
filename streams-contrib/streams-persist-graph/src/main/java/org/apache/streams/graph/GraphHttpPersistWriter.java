@@ -38,7 +38,6 @@ import org.apache.streams.graph.neo4j.Neo4jHttpGraphHelper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +139,7 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
 
         if( activity != null ) {
 
-            Actor actor = activity.getActor();
+            ActivityObject actor = activity.getActor();
             Provider provider = activity.getProvider();
 
             if( provider != null &&

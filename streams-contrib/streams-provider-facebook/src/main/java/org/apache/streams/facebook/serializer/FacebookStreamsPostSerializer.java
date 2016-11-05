@@ -22,7 +22,7 @@ import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.facebook.Post;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Provider;
 
 import java.util.List;
@@ -61,8 +61,8 @@ public class FacebookStreamsPostSerializer implements ActivitySerializer<Post> {
         return null;
     }
 
-    public Actor createActor(Post post) {
-        Actor actor = new Actor();
+    public ActivityObject createActor(Post post) {
+        ActivityObject actor = new ActivityObject();
         actor.setDisplayName(post.getFrom().getName());
         actor.setId(ID_PREFIX+post.getFrom().getId());
         return actor;

@@ -30,7 +30,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
 import org.apache.streams.twitter.Url;
@@ -127,8 +126,8 @@ public class TwitterActivityUtil {
      * @param delete the delete event
      * @return a valid Actor
      */
-    public static Actor buildActor(Delete delete) {
-        Actor actor = new Actor();
+    public static ActivityObject buildActor(Delete delete) {
+        ActivityObject actor = new ActivityObject();
         actor.setId(formatId(delete.getDelete().getStatus().getUserIdStr()));
         actor.setObjectType("page");
         return actor;
@@ -184,24 +183,24 @@ public class TwitterActivityUtil {
     }
 
     /**
-     * Builds the activity {@link org.apache.streams.pojo.json.Actor} object from the tweet
+     * Builds the activity {@link org.apache.streams.pojo.json.ActivityObject} actor from the tweet
      * @param tweet the object to use as the source
      * @return a valid Actor populated from the Tweet
      */
-    public static Actor buildActor(Tweet tweet) {
-        Actor actor = new Actor();
+    public static ActivityObject buildActor(Tweet tweet) {
+        ActivityObject actor = new ActivityObject();
         User user = tweet.getUser();
 
         return buildActor(user);
     }
 
     /**
-     * Builds the activity {@link org.apache.streams.pojo.json.Actor} object from the User
+     * Builds the activity {@link org.apache.streams.pojo.json.ActivityObject} actor from the User
      * @param user the object to use as the source
      * @return a valid Actor populated from the Tweet
      */
-    public static Actor buildActor(User user) {
-        Actor actor = new Actor();
+    public static ActivityObject buildActor(User user) {
+        ActivityObject actor = new ActivityObject();
         actor.setId(formatId(
                 Optional.fromNullable(
                         user.getIdStr())

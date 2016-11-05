@@ -11,15 +11,15 @@
         "classifiers": {
             "type": "array",
             "items": {
-                "type": "object",
-                "javaType": "org.apache.streams.data.DocumentClassifier"
+                "javaType": "org.apache.streams.data.DocumentClassifier",
+                "type": "object"
             }
         },
         "converters": {
             "type": "array",
             "items": {
-                "type": "object",
-                "javaType": "org.apache.streams.data.ActivityConverter"
+                "javaType": "org.apache.streams.data.ActivityConverter",
+                "type": "object"
             }
         }
     }

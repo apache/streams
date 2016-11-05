@@ -31,6 +31,10 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileFilter;
 
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test that Activity beans are compatible with the example activities in the spec.
  */
@@ -72,21 +76,21 @@ public class StreamsScalaSourceGeneratorTest {
             }
         };
 
-        assert( testOutput != null );
-        assert( testOutput.exists() == true );
-        assert( testOutput.isDirectory() == true );
-        assert( testOutput.listFiles(scalaFilter).length == 11 );
-        assert( new File(testOutput + "/traits").exists() == true );
-        assert( new File(testOutput + "/traits").isDirectory() == true );
-        assert( new File(testOutput + "/traits").listFiles(scalaFilter) != null );
-        assert( new File(testOutput + "/traits").listFiles(scalaFilter).length == 4 );
-        assert( new File(testOutput + "/objectTypes").exists() == true );
-        assert( new File(testOutput + "/objectTypes").isDirectory() == true );
-        assert( new File(testOutput + "/objectTypes").listFiles(scalaFilter) != null );
-        assert( new File(testOutput + "/objectTypes").listFiles(scalaFilter).length == 43 );
-        assert( new File(testOutput + "/verbs").exists() == true );
-        assert( new File(testOutput + "/verbs").isDirectory() == true );
-        assert( new File(testOutput + "/verbs").listFiles(scalaFilter) != null );
-        assert( new File(testOutput + "/verbs").listFiles(scalaFilter).length == 89 );
+        assertNotNull( testOutput );
+        assertTrue( testOutput.exists() );
+        assertTrue( testOutput.isDirectory() );
+        assertEquals( 10, testOutput.listFiles(scalaFilter).length );
+        assertTrue( new File(testOutput + "/traits").exists() );
+        assertTrue( new File(testOutput + "/traits").isDirectory() );
+        assertNotNull( new File(testOutput + "/traits").listFiles(scalaFilter) );
+        assertEquals( 4, new File(testOutput + "/traits").listFiles(scalaFilter).length );
+        assertTrue( new File(testOutput + "/objectTypes").exists() );
+        assertTrue( new File(testOutput + "/objectTypes").isDirectory() );
+        assertNotNull( new File(testOutput + "/objectTypes").listFiles(scalaFilter) );
+        assertEquals( 42, new File(testOutput + "/objectTypes").listFiles(scalaFilter).length);
+        assertTrue( new File(testOutput + "/verbs").exists() );
+        assertTrue( new File(testOutput + "/verbs").isDirectory() );
+        assertNotNull( new File(testOutput + "/verbs").listFiles(scalaFilter) );
+        assertEquals( 89, new File(testOutput + "/verbs").listFiles(scalaFilter).length );
     }
 }
