@@ -26,7 +26,6 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,9 +62,8 @@ public class AccountTypeProcessor extends SimpleHTTPGetProcessor {
     @Override
     protected Map<String, String> prepareParams(StreamsDatum entry) {
         Activity activity = mapper.convertValue(entry.getDocument(), Activity.class);
-        Actor actor = activity.getActor();
-        ActivityObject actorObject = mapper.convertValue(actor, ActivityObject.class);
-        String username = (String) ExtensionUtil.getInstance().getExtension(actorObject, "screenName");
+        ActivityObject actor = mapper.convertValue(activity.getActor(), ActivityObject.class);
+        String username = (String) ExtensionUtil.getInstance().getExtension(actor, "screenName");
         Map<String, String> params = new HashMap<>();
         params.put("id", actor.getId());
         params.put("name", actor.getDisplayName());

@@ -21,7 +21,6 @@ package org.apache.streams.graph.test;
 import org.apache.streams.graph.neo4j.CypherQueryGraphHelper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.javatuples.Pair;
 import org.junit.Test;
 
@@ -86,15 +85,15 @@ public class TestCypherQueryGraphHelper {
     @Test
     public void createEdgeRequestTest() throws Exception {
 
-        Actor actor = new Actor();
+        ActivityObject actor = new ActivityObject();
         actor.setId("actor");
         actor.setObjectType("type");
         actor.setContent("content");
 
-        ActivityObject activityObject = new ActivityObject();
-        activityObject.setId("object");
-        activityObject.setObjectType("type");
-        activityObject.setContent("content");
+        ActivityObject object = new ActivityObject();
+        object.setId("object");
+        object.setObjectType("type");
+        object.setContent("content");
 
         Activity activity = new Activity();
         activity.setId("activity");
@@ -102,7 +101,7 @@ public class TestCypherQueryGraphHelper {
         activity.setContent("content");
 
         activity.setActor(actor);
-        activity.setObject(activityObject);
+        activity.setObject(object);
 
         Pair<String, Map<String, Object>> queryAndParams = helper.createEdgeRequest(activity);
 

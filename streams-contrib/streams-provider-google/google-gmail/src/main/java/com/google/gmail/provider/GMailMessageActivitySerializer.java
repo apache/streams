@@ -38,7 +38,6 @@ import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Generator;
 import org.apache.streams.pojo.json.Icon;
 import org.apache.streams.pojo.json.Provider;
@@ -94,7 +93,7 @@ public class GMailMessageActivitySerializer implements ActivitySerializer<GmailM
         provider.setId("http://gmail.com");
         provider.setDisplayName("GMail");
         activity.setProvider(provider);
-        Actor actor = new Actor();
+        ActivityObject actor = new ActivityObject();
         actor.setId(gmailMessage.getFrom().getEmail());
         actor.setDisplayName(gmailMessage.getFrom().getName());
         activity.setActor(actor);

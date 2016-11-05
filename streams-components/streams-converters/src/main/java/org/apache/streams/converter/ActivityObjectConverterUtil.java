@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,11 +63,11 @@ public class ActivityObjectConverterUtil {
 
     private static final ActivityObjectConverterUtil INSTANCE = new ActivityObjectConverterUtil();
 
-    public static ActivityObjectConverterUtil getInstance(){
+    public static ActivityObjectConverterUtil getInstance() {
         return INSTANCE;
     }
 
-    public static ActivityObjectConverterUtil getInstance(ActivityObjectConverterProcessorConfiguration configuration){
+    public static ActivityObjectConverterUtil getInstance(ActivityObjectConverterProcessorConfiguration configuration) {
         return new ActivityObjectConverterUtil(configuration);
     }
 
@@ -91,11 +92,9 @@ public class ActivityObjectConverterUtil {
 
     public synchronized ActivityObject convert(Object document) {
 
-        ActivityObject result = null;
-
         List<Class> detectedClasses = detectClasses(document);
 
-        if( detectedClasses.size() == 0 ) {
+        if (detectedClasses.size() == 0) {
             LOGGER.warn("Unable to classify");
             return null;
         } else {
@@ -106,30 +105,28 @@ public class ActivityObjectConverterUtil {
         //   use TypeUtil to switch the document to that type
         Map<Class, Object> typedDocs = convertToDetectedClasses(detectedClasses, document);
 
-        if( typedDocs.size() == 0 ) {
+        if (typedDocs.size() == 0) {
             LOGGER.warn("Unable to convert to any detected Class");
             return null;
-        }
-        else {
+        } else {
             LOGGER.debug("Document has " + typedDocs.size() + " representations: " + typedDocs.toString());
         }
 
-        // for each specified / discovered converter
-        for( ActivityObjectConverter converter : converters ) {
+        Map<Class, ActivityObject> convertedDocs = new HashMap<>();
 
-            Object typedDoc = typedDocs.get(converter.requiredClass());
+        // for each specified / discovered converter
+        for (ActivityObjectConverter converter : converters) {
+
+            Class requiredClass = converter.requiredClass();
+
+            Object typedDoc = typedDocs.get(requiredClass);
 
             ActivityObject activityObject = applyConverter(converter, typedDoc);
 
-            // prefer the most specific ActivityObject sub-class returned by all converters
-            if( activityObject != null ) {
-                if (result == null)
-                    result = activityObject;
-                else if (isAncestor(activityObject.getClass(), result.getClass()))
-                    result = activityObject;
-            }
-
+            convertedDocs.put(requiredClass, activityObject);
         }
+
+        ActivityObject result = deepestDescendant(convertedDocs);
 
         return result;
     }
@@ -138,12 +135,12 @@ public class ActivityObjectConverterUtil {
 
         ActivityObject activityObject = null;
         // if the document can be typed as the required class
-        if( typedDoc != null ) {
+        if (typedDoc != null) {
 
             // let the converter create activities if it can
             try {
                 activityObject = convertToActivityObject(converter, typedDoc);
-            } catch( Exception e ) {
+            } catch (Exception e) {
                 LOGGER.debug("convertToActivity caught exception " + e.getMessage());
             }
 
@@ -170,12 +167,12 @@ public class ActivityObjectConverterUtil {
         // spark 1.5.0 uses guava 14 so for the moment this is the workaround
         // Set<Class> detectedClasses = new ConcurrentHashSet();
         Set<Class> detectedClasses = Collections.newSetFromMap(new ConcurrentHashMap<Class, Boolean>());
-        for( DocumentClassifier classifier : classifiers ) {
+        for (DocumentClassifier classifier : classifiers) {
             try {
                 List<Class> detected = classifier.detectClasses(document);
                 if (detected != null && detected.size() > 0)
                     detectedClasses.addAll(detected);
-            } catch( Exception e) {
+            } catch (Exception e) {
                 LOGGER.warn("{} failed in method detectClasses - ()", classifier.getClass().getCanonicalName(), e);
             }
         }
@@ -186,7 +183,7 @@ public class ActivityObjectConverterUtil {
     private Map<Class, Object> convertToDetectedClasses(List<Class> datumClasses, Object document) {
 
         Map<Class, Object> convertedDocuments = Maps.newHashMap();
-        for( Class detectedClass : datumClasses ) {
+        for (Class detectedClass : datumClasses) {
 
             Object typedDoc;
             if (detectedClass.isInstance(document))
@@ -194,7 +191,7 @@ public class ActivityObjectConverterUtil {
             else
                 typedDoc = TypeConverterUtil.getInstance().convert(document, detectedClass);
 
-            if( typedDoc != null )
+            if (typedDoc != null)
                 convertedDocuments.put(detectedClass, typedDoc);
         }
 
@@ -205,7 +202,7 @@ public class ActivityObjectConverterUtil {
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage("org.apache.streams"))
                 .setScanners(new SubTypesScanner()));
-        if ( classifiers.size() == 0) {
+        if (classifiers.size() == 0) {
             Set<Class<? extends DocumentClassifier>> classifierClasses = reflections.getSubTypesOf(DocumentClassifier.class);
             for (Class classifierClass : classifierClasses) {
                 try {
@@ -216,7 +213,7 @@ public class ActivityObjectConverterUtil {
             }
         }
         Preconditions.checkArgument(classifiers.size() > 0);
-        if ( converters.size() == 0) {
+        if (converters.size() == 0) {
             Set<Class<? extends ActivityObjectConverter>> converterClasses = reflections.getSubTypesOf(ActivityObjectConverter.class);
             for (Class converterClass : converterClasses) {
                 try {
@@ -230,10 +227,29 @@ public class ActivityObjectConverterUtil {
     }
 
     private boolean isAncestor(Class possibleDescendant, Class possibleAncestor) {
-        if( possibleDescendant.equals(Object.class))
+        if (possibleDescendant.equals(Object.class))
             return false;
-        if( possibleDescendant.getSuperclass().equals(possibleAncestor))
+        if (possibleDescendant.getSuperclass().equals(possibleAncestor))
             return true;
         else return isAncestor(possibleDescendant.getSuperclass(), possibleAncestor);
     }
+
+    // prefer the most specific ActivityObject sub-class returned by all converters
+    private ActivityObject deepestDescendant(Map<Class, ActivityObject> map) {
+
+        ActivityObject result = null;
+
+        for( Map.Entry<Class, ActivityObject> entry : map.entrySet()) {
+            if( entry.getKey() != null ) {
+                if (result == null)
+                    result = entry.getValue();
+                else if (isAncestor(entry.getKey(), result.getClass()))
+                    result = entry.getValue();
+            }
+        }
+
+        return result;
+    }
+
+
 }
