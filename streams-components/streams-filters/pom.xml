@@ -75,21 +75,23 @@
                 <directory>src/test/resources</directory>
             </testResource>
         </testResources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.rat</groupId>
-                <artifactId>apache-rat-plugin</artifactId>
-                <configuration>
-                    <excludes combine.children="append">
-                        <exclude>src/test/resources/actor.json</exclude>
-                        <exclude>src/test/resources/follow.json</exclude>
-                        <exclude>src/test/resources/object.json</exclude>
-                        <exclude>src/test/resources/post.json</exclude>
-                        <exclude>src/test/resources/provider.json</exclude>
-                        <exclude>src/test/resources/targetrequired.json</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-      </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.rat</groupId>
+                    <artifactId>apache-rat-plugin</artifactId>
+                    <configuration>
+                        <excludes combine.children="append">
+                            <exclude>src/test/resources/actor.json</exclude>
+                            <exclude>src/test/resources/follow.json</exclude>
+                            <exclude>src/test/resources/object.json</exclude>
+                            <exclude>src/test/resources/post.json</exclude>
+                            <exclude>src/test/resources/provider.json</exclude>
+                            <exclude>src/test/resources/targetrequired.json</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>
