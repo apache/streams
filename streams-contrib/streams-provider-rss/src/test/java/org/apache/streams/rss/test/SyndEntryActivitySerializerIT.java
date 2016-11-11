@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Author;
 import org.apache.streams.pojo.json.Provider;
 import org.apache.streams.rss.serializer.SyndEntryActivitySerializer;
@@ -89,7 +89,7 @@ public class SyndEntryActivitySerializerIT {
         assertEquals(new DateTime(expected, DateTimeZone.UTC), published);
     }
 
-    public void testActor(String expected, Actor actor) {
+    public void testActor(String expected, ActivityObject actor) {
         assertEquals("id:rss:null" + ":" + expected, actor.getId());
         assertEquals(expected, actor.getDisplayName());
     }

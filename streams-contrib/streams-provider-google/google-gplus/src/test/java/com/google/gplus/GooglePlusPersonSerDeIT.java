@@ -27,7 +27,7 @@ import com.google.gplus.serializer.util.GooglePlusActivityUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.Actor;
+import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Provider;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -87,7 +87,7 @@ public class GooglePlusPersonSerDeIT {
                     assertEquals(provider.getId(), "id:providers:googleplus");
                     assertEquals(provider.getDisplayName(), "GooglePlus");
 
-                    Actor actor = activity.getActor();
+                    ActivityObject actor = activity.getActor();
                     assertNotNull(actor.getImage());
                     assert(actor.getId().contains("id:googleplus:"));
                     assertNotNull(actor.getUrl());

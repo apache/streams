@@ -28,7 +28,6 @@ import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
@@ -216,13 +215,13 @@ public class GooglePlusActivityUtil {
 
     /**
      * Given a {@link com.google.api.services.plus.model.Activity.Actor} object, return a fully fleshed
-     * out {@link org.apache.streams.pojo.json.Actor} object
+     * out {@link org.apache.streams.pojo.json.ActivityObject} actor
      *
      * @param gPlusActor
-     * @return {@link Actor}
+     * @return {@link ActivityObject}
      */
-    private static Actor buildActor(com.google.api.services.plus.model.Activity.Actor gPlusActor) {
-        Actor actor = new Actor();
+    private static ActivityObject buildActor(com.google.api.services.plus.model.Activity.Actor gPlusActor) {
+        ActivityObject actor = new ActivityObject();
 
         actor.setDisplayName(gPlusActor.getDisplayName());
         actor.setId(formatId(String.valueOf(gPlusActor.getId())));
@@ -245,8 +244,8 @@ public class GooglePlusActivityUtil {
      * @param person
      * @return Actor constructed with relevant Person details
      */
-    private static Actor buildActor(Person person) {
-        Actor actor = new Actor();
+    private static ActivityObject buildActor(Person person) {
+        ActivityObject actor = new ActivityObject();
 
         actor.setUrl(person.getUrl());
         actor.setDisplayName(person.getDisplayName());

@@ -84,4 +84,39 @@ public class StreamsPojoGenerationConfig extends DefaultGenerationConfig {
         return sourceURLs.iterator();
     }
 
+    @Override
+    public boolean isGenerateBuilders() {
+        return true;
+    }
+
+    @Override
+    public boolean isUseLongIntegers() {
+        return true;
+    }
+
+    @Override
+    public boolean isRemoveOldOutput() {
+        return true;
+    }
+
+    @Override
+    public boolean isUseJodaDates() {
+        return true;
+    }
+
+    @Override
+    public boolean isIncludeJsr303Annotations() {
+        return true;
+    }
+
+    @Override
+    public boolean isUseCommonsLang3() {
+        return true;
+    }
+
+//    @Override
+//    public boolean isIncludeAdditionalProperties() {
+//        return true;
+//    }
+
 }

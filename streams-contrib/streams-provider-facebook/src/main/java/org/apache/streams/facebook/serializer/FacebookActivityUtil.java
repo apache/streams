@@ -36,7 +36,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
 import org.slf4j.Logger;
@@ -130,12 +129,12 @@ public class FacebookActivityUtil {
     }
 
     /**
-     * Builds the activity {@link org.apache.streams.pojo.json.Actor} object from the Page
+     * Builds the activity {@link org.apache.streams.pojo.json.ActivityObject} actor from the Page
      * @param page the object to use as the source
      * @return a valid Actor populated from the Page
      */
-    public static Actor buildActor(Page page) {
-        Actor actor = new Actor();
+    public static ActivityObject buildActor(Page page) {
+        ActivityObject actor = new ActivityObject();
         actor.setId(formatId(
                 Optional.fromNullable(
                         page.getId())
@@ -164,12 +163,12 @@ public class FacebookActivityUtil {
     }
 
     /**
-     * Builds an {@link org.apache.streams.pojo.json.Actor} object from the {@link Post}
+     * Builds an {@link org.apache.streams.pojo.json.ActivityObject} object from the {@link Post}
      * @param post
-     * @return {@link org.apache.streams.pojo.json.Actor}
+     * @return {@link org.apache.streams.pojo.json.ActivityObject}
      */
-    public static Actor buildActor(Post post) {
-        Actor actor = new Actor();
+    public static ActivityObject buildActor(Post post) {
+        ActivityObject actor = new ActivityObject();
 
         try {
             actor.setId(formatId(
@@ -193,7 +192,7 @@ public class FacebookActivityUtil {
      * @param actor
      * @param page
      */
-    public static void buildExtensions(Actor actor, Page page) {
+    public static void buildExtensions(ActivityObject actor, Page page) {
         Map<String, Object> extensions = new HashMap<>();
         Location location = page.getLocation();
 

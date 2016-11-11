@@ -27,7 +27,6 @@ import org.apache.streams.data.util.ActivityUtil;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
 
@@ -119,8 +118,8 @@ public class MoreoverUtils {
         return provider;
     }
 
-    public static Actor convert(Author author, String platformName) {
-        Actor actor = new Actor();
+    public static ActivityObject convert(Author author, String platformName) {
+        ActivityObject actor = new ActivityObject();
         AuthorPublishingPlatform platform = author.getPublishingPlatform();
         String userId = platform.getUserId();
         if (userId != null) actor.setId(ActivityUtil.getPersonId(getProviderID(platformName), userId));

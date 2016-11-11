@@ -22,7 +22,6 @@ package org.apache.streams.verbs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
 import org.junit.Test;
 
@@ -50,7 +49,7 @@ public class VerbDefinitionTemplateTest {
      */
     @Test
     public void testTopField() throws Exception {
-        Actor actor = new Actor();
+        ActivityObject actor = new ActivityObject();
         actor.setObjectType("page");
         actor.setDisplayName("Paige");
         Provider provider = new Provider();

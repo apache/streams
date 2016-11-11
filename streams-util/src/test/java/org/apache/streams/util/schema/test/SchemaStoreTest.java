@@ -60,9 +60,6 @@ public class SchemaStoreTest {
         assert( schemaStore.getById(schemaStore.getByUri(file.toURI()).get().getId()).isPresent());
         Schema collection = schemaStore.getByUri(file.toURI()).get();
         assert( collection.getParent() == null );
-        assert( schemaStore.getById(
-                URI.create("http://streams.incubator.apache.org/site/latest/streams-project/streams-schemas/object.json#"
-                )).isPresent());
     }
 
     @Test
@@ -75,10 +72,10 @@ public class SchemaStoreTest {
         assert( schemaStore.getById(schemaStore.getByUri(file.toURI()).get().getId()).isPresent());
         Schema update = schemaStore.getByUri(file.toURI()).get();
         assert( update.getParent() != null );
-        assert( update.getParent().getId().getScheme().equals("http"));
-        assert( update.getParent().getId().getHost().equals("streams.incubator.apache.org"));
-        assert( update.getParent().getId().getPath().startsWith("/site/latest/streams-project/streams-schemas"));
-        assert( update.getParent().getId().getPath().endsWith("activity.json"));
+        File parentFile = new File("target/test-classes/activitystreams-schemas/activity.json");
+        Schema parent = schemaStore.getByUri(parentFile.toURI()).get();
+        assert( parent != null );
+        assert( update.getParentURI().equals(parent.getURI()));
     }
 
     // test create from messed up URI

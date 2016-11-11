@@ -25,7 +25,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Actor;
 import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -76,7 +75,7 @@ public class YoutubeVideoSerDeTest {
             assertEquals(provider.getId(), "id:providers:youtube");
             assertEquals(provider.getDisplayName(), "YouTube");
 
-            Actor actor = activity.getActor();
+            ActivityObject actor = activity.getActor();
             assert (actor.getId().contains("id:youtube:"));
             assertNotNull(actor.getDisplayName());
             assertNotNull(actor.getSummary());
