@@ -199,10 +199,10 @@ public class FacebookActivityUtil {
         if(location != null)
             extensions.put("location", page.getLocation().toString());
 
-        extensions.put("favorites", page.getLikes());
-        extensions.put("followers", page.getTalkingAboutCount());
+        extensions.put("favorites", page.getTalkingAboutCount());
+        extensions.put("followers", page.getFanCount());
 
-        extensions.put("screenName", page.getUsername());
+        extensions.put("facebook", page);
 
         actor.setAdditionalProperty("extensions", extensions);
     }

@@ -19,152 +19,262 @@
             "required": false
         },
         "accessToken": {
-            "type": "null",
-            "id": "http://jsonschema.net/accessToken",
+            "type": "string",
+            "required": false
+        },
+        "birthday": {
+            "type": "string",
             "required": false
         },
         "category": {
             "type": "string",
-            "id": "http://jsonschema.net/category",
+            "required": false
+        },
+        "can_checkin": {
+            "type": "boolean",
+            "required": false
+        },
+        "can_post": {
+            "type": "boolean",
             "required": false
         },
         "checkins": {
             "type": "integer",
-            "id": "http://jsonschema.net/checkins",
             "required": false
         },
         "communityPage": {
             "type": "boolean",
-            "id": "http://jsonschema.net/communityPage",
             "required": false
         },
         "cover": {
             "type": "object",
-            "id": "http://jsonschema.net/cover",
             "required": false,
             "properties": {
                 "id": {
                     "type": "null",
-                    "id": "http://jsonschema.net/cover/id",
                     "required": false
                 },
                 "offsetY": {
                     "type": "number",
-                    "id": "http://jsonschema.net/cover/offsetY",
                     "required": false
                 },
                 "source": {
                     "type": "string",
-                    "id": "http://jsonschema.net/cover/source",
                     "required": false
                 }
             }
         },
-        "createdTime": {
-            "type": "null",
-            "id": "http://jsonschema.net/createdTime",
+        "display_subtext": {
+            "type": "string",
+            "required": false
+        },
+        "displayed_message_response_time": {
+            "type": "string",
+            "required": false
+        },
+        "engagement": {
+            "type": "object",
+            "required": false,
+            "properties": {
+                "count": {
+                    "type": "integer",
+                    "required": false
+                },
+                "social_sentence": {
+                    "type": "string",
+                    "required": false
+                }
+            }
+        },
+        "fan_count": {
+            "type": "integer",
+            "required": false
+        },
+        "founded": {
+            "type": "string",
+            "required": false
+        },
+        "general_info": {
+            "type": "string",
+            "required": false
+        },
+        "global_brand_root_id": {
+            "type": "string",
             "required": false
         },
         "id": {
             "type": "string",
-            "id": "http://jsonschema.net/id",
             "required": false
         },
-        "likes": {
-            "type": "integer",
-            "id": "http://jsonschema.net/likes",
+        "is_community_page": {
+            "type": "boolean",
+            "required": false
+        },
+        "is_always_open": {
+            "type": "boolean",
+            "required": false
+        },
+        "is_permanently_closed": {
+            "type": "boolean",
+            "required": false
+        },
+        "is_published": {
+            "type": "boolean",
+            "required": false
+        },
+        "is_unclaimed": {
+            "type": "boolean",
+            "required": false
+        },
+        "is_webhooks_subscribed": {
+            "type": "boolean",
+            "required": false
+        },
+        "leadgen_tos_accepted": {
+            "type": "boolean",
             "required": false
         },
         "link": {
             "type": "string",
-            "id": "http://jsonschema.net/link",
             "required": false
         },
         "location": {
             "type": "object",
-            "id": "http://jsonschema.net/location",
             "required": false,
             "properties": {
                 "city": {
                     "type": "string",
-                    "id": "http://jsonschema.net/location/city",
                     "required": false
                 },
                 "country": {
                     "type": "string",
-                    "id": "http://jsonschema.net/location/country",
                     "required": false
                 },
                 "latitude": {
                     "type": "null",
-                    "id": "http://jsonschema.net/location/latitude",
                     "required": false
                 },
                 "longitude": {
                     "type": "null",
-                    "id": "http://jsonschema.net/location/longitude",
                     "required": false
                 },
                 "state": {
                     "type": "string",
-                    "id": "http://jsonschema.net/location/state",
                     "required": false
                 },
                 "street": {
                     "type": "string",
-                    "id": "http://jsonschema.net/location/street",
                     "required": false
                 },
                 "text": {
                     "type": "null",
-                    "id": "http://jsonschema.net/location/text",
                     "required": false
                 },
                 "zip": {
                     "type": "string",
-                    "id": "http://jsonschema.net/location/zip",
                     "required": false
                 }
             }
         },
-        "metadata": {
-            "type": "null",
-            "id": "http://jsonschema.net/metadata",
+        "mission": {
+            "type": "string",
             "required": false
+        },
+        "parking": {
+            "type": "object",
+            "required": false,
+            "properties": {
+                "lot": {
+                    "type": "integer",
+                    "required": false
+                },
+                "street": {
+                    "type": "integer",
+                    "required": false
+                },
+                "valet": {
+                    "type": "integer",
+                    "required": false
+                }
+            }
         },
         "name": {
             "type": "string",
             "id": "http://jsonschema.net/name",
             "required": false
         },
+        "name_with_location_descriptor": {
+            "type": "string",
+            "required": false
+        },
+        "overall_star_rating": {
+            "type": "integer",
+            "required": false
+        },
         "phone": {
             "type": "string",
-            "id": "http://jsonschema.net/phone",
             "required": false
         },
         "picture": {
             "type": "null",
-            "id": "http://jsonschema.net/picture",
             "required": false
         },
         "published": {
             "type": "boolean",
-            "id": "http://jsonschema.net/published",
             "required": false
         },
-        "talkingAboutCount": {
+        "rating_count": {
             "type": "integer",
-            "id": "http://jsonschema.net/talkingAboutCount",
+            "required": false
+        },
+        "talking_about_count": {
+            "type": "integer",
+            "required": false
+        },
+        "voip_info": {
+            "type": "object",
+            "required": false,
+            "properties": {
+                "has_mobile_app": {
+                    "type": "boolean",
+                    "required": false
+                },
+                "has_permission": {
+                    "type": "boolean",
+                    "required": false
+                },
+                "is_callable": {
+                    "type": "boolean",
+                    "required": false
+                },
+                "is_callable_webrtc": {
+                    "type": "boolean",
+                    "required": false
+                },
+                "is_pushable": {
+                    "type": "boolean",
+                    "required": false
+                },
+                "reason_code": {
+                    "type": "integer",
+                    "required": false
+                },
+                "reason_description": {
+                    "type": "string",
+                    "required": false
+                }
+            }
+        },
+        "verification_status": {
+            "type": "string",
             "required": false
         },
         "website": {
             "type": "string",
-            "id": "http://jsonschema.net/website",
             "required": false
         },
-        "wereHereCount": {
+        "were_here_count": {
             "type": "integer",
-            "id": "http://jsonschema.net/wereHereCount",
             "required": false
         }
     }
