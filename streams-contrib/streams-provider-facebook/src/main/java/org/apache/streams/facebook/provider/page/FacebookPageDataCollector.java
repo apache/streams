@@ -27,8 +27,8 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class FacebookPageDataCollector extends FacebookDataCollector {
 
   public FacebookPageDataCollector(BlockingQueue<StreamsDatum> queue, FacebookPageProviderConfiguration configuration) {
     super(configuration, queue);
-    fields = Joiner.on(',').join(configuration.getFields());
+    fields = StringUtils.join(configuration.getFields(), ',');
   }
 
   @Override
