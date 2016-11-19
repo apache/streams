@@ -26,6 +26,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,43 +34,50 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Enrich actor with demographics
+ * Enrich actor with demographics.
  */
 public class DemographicsProcessor extends SimpleHTTPGetProcessor {
 
-    public final static String STREAMS_ID = "DemographicsProcessor";
+  public static final String STREAMS_ID = "DemographicsProcessor";
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(DemographicsProcessor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DemographicsProcessor.class);
 
-    public DemographicsProcessor() {
-        this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
-          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("peoplepattern")));
-    }
+  /**
+   * DemographicsProcessor constructor - resolves HttpProcessorConfiguration from JVM 'peoplepattern'.
+   */
+  public DemographicsProcessor() {
+    this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
+        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("peoplepattern")));
+  }
 
-    public DemographicsProcessor(HttpProcessorConfiguration peoplePatternConfiguration) {
-        super(peoplePatternConfiguration);
-        LOGGER.info("creating DemographicsProcessor");
-        configuration.setProtocol("https");
-        configuration.setHostname("api.peoplepattern.com");
-        configuration.setResourcePath("/v0.2/demographics/");
-        configuration.setEntity(HttpProcessorConfiguration.Entity.ACTOR);
-        configuration.setExtension("demographics");
-    }
+  /**
+   * AccountTypeProcessor constructor - uses supplied HttpProcessorConfiguration.
+   * @param peoplePatternConfiguration peoplePatternConfiguration
+   */
+  public DemographicsProcessor(HttpProcessorConfiguration peoplePatternConfiguration) {
+    super(peoplePatternConfiguration);
+    LOGGER.info("creating DemographicsProcessor");
+    configuration.setProtocol("https");
+    configuration.setHostname("api.peoplepattern.com");
+    configuration.setResourcePath("/v0.2/demographics/");
+    configuration.setEntity(HttpProcessorConfiguration.Entity.ACTOR);
+    configuration.setExtension("demographics");
+  }
 
-    /**
-     Override this to add parameters to the request
-     */
-    @Override
-    protected Map<String, String> prepareParams(StreamsDatum entry) {
-        Activity activity = mapper.convertValue(entry.getDocument(), Activity.class);
-        ActivityObject actor = mapper.convertValue(activity.getActor(), ActivityObject.class);
-        String username = (String) ExtensionUtil.getInstance().getExtension(actor, "screenName");
-        Map<String, String> params = new HashMap<>();
-        params.put("id", actor.getId());
-        params.put("name", actor.getDisplayName());
-        params.put("username", username);
-        params.put("description", actor.getSummary());
-        return params;
-    }
+  /**
+   Override this to add parameters to the request.
+   */
+  @Override
+  protected Map<String, String> prepareParams(StreamsDatum entry) {
+    Activity activity = mapper.convertValue(entry.getDocument(), Activity.class);
+    ActivityObject actor = mapper.convertValue(activity.getActor(), ActivityObject.class);
+    String username = (String) ExtensionUtil.getInstance().getExtension(actor, "screenName");
+    Map<String, String> params = new HashMap<>();
+    params.put("id", actor.getId());
+    params.put("name", actor.getDisplayName());
+    params.put("username", username);
+    params.put("description", actor.getSummary());
+    return params;
+  }
 
 }
