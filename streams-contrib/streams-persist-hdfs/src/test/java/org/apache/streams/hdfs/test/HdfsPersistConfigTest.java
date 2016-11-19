@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
  */
 public class HdfsPersistConfigTest {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(HdfsPersistConfigTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HdfsPersistConfigTest.class);
 
     @Test
     public void getWriterFileUriTest()
