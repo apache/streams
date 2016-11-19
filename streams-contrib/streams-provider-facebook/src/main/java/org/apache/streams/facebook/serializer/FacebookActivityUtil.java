@@ -18,11 +18,6 @@
 
 package org.apache.streams.facebook.serializer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import org.apache.streams.data.util.ActivityUtil;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.facebook.Cover;
@@ -38,6 +33,13 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,158 +48,163 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * FacebookActivityUtil helps convert facebook data to activity formats.
+ */
 public class FacebookActivityUtil {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FacebookActivityUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FacebookActivityUtil.class);
 
-    /**
-     * Updates the given Activity object with the values from the Page
-     * @param page the object to use as the source
-     * @param activity the target of the updates.  Will receive all values from the Page.
-     * @throws org.apache.streams.exceptions.ActivitySerializerException
-     */
-    public static void updateActivity(Page page, Activity activity) throws ActivitySerializerException {
-        activity.setActor(buildActor(page));
-        activity.setId(null);
-        activity.setProvider(getProvider());
+  /**
+   * Updates the given Activity object with the values from the Page.
+   * @param page the object to use as the source
+   * @param activity the target of the updates.  Will receive all values from the Page.
+   * @throws ActivitySerializerException
+   */
+  public static void updateActivity(Page page, Activity activity) throws ActivitySerializerException {
+    activity.setActor(buildActor(page));
+    activity.setId(null);
+    activity.setProvider(getProvider());
+  }
+
+  /**
+   * Updates the given Activity object with the values from the Post.
+   * @param post post
+   * @param activity activity
+   * @throws ActivitySerializerException
+   */
+  public static void updateActivity(Post post, Activity activity) throws ActivitySerializerException {
+    activity.setActor(buildActor(post));
+    activity.setId(formatId(post.getId()));
+    activity.setProvider(getProvider());
+    activity.setUpdated(post.getUpdatedTime());
+    activity.setPublished(post.getCreatedTime());
+
+    if (post.getLink() != null && post.getLink().length() > 0) {
+      List<String> links = new ArrayList<>();
+      links.add(post.getLink());
+      activity.setLinks(links);
     }
 
-    /**
-     * Updates the given Activity object with the values from the Post
-     * @param post
-     * @param activity
-     * @throws ActivitySerializerException
-     */
-    public static void updateActivity(Post post, Activity activity) throws ActivitySerializerException {
-        activity.setActor(buildActor(post));
-        activity.setId(formatId(post.getId()));
-        activity.setProvider(getProvider());
-        activity.setUpdated(post.getUpdatedTime());
-        activity.setPublished(post.getCreatedTime());
+    activity.setContent(post.getMessage());
 
-        if(post.getLink() != null && post.getLink().length() > 0) {
-            List<String> links = new ArrayList<>();
-            links.add(post.getLink());
-            activity.setLinks(links);
-        }
+    activity.setVerb("post");
+    activity.setObject(buildObject(post));
+    buildExtensions(activity, post);
+  }
 
-        activity.setContent(post.getMessage());
+  /**
+   * Builds out the {@link org.apache.streams.pojo.json.ActivityObject} from the given {@link Post}.
+   * @param post
+   * @return {@link org.apache.streams.pojo.json.ActivityObject}
+   */
+  public static ActivityObject buildObject(Post post) {
+    ActivityObject activityObject = new ActivityObject();
 
-        activity.setVerb("post");
-        activity.setObject(buildObject(post));
-        buildExtensions(activity, post);
+    try {
+      activityObject.setContent(post.getMessage());
+      activityObject.setPublished(post.getCreatedTime());
+      activityObject.setUpdated(post.getUpdatedTime());
+      activityObject.setDisplayName(post.getFrom().getName());
+      activityObject.setId(formatId(post.getId()));
+      activityObject.setObjectType(post.getType());
+      activityObject.setUrl(post.getLink());
+
+      if (activityObject.getObjectType().equals("photo")) {
+        Image image = new Image();
+        image.setUrl(activityObject.getUrl());
+        activityObject.setImage(image);
+      }
+    } catch (Exception ex) {
+      LOGGER.error("Exception while trying to build Activity object for post: {}, exception: {}", post, ex);
     }
 
-    /**
-     * Builds out the {@link org.apache.streams.pojo.json.ActivityObject} from the given {@link Post}
-     * @param post
-     * @return {@link org.apache.streams.pojo.json.ActivityObject}
-     */
-    public static ActivityObject buildObject(Post post) {
-        ActivityObject activityObject = new ActivityObject();
+    return activityObject;
+  }
 
-        try {
-            activityObject.setContent(post.getMessage());
-            activityObject.setPublished(post.getCreatedTime());
-            activityObject.setUpdated(post.getUpdatedTime());
-            activityObject.setDisplayName(post.getFrom().getName());
-            activityObject.setId(formatId(post.getId()));
-            activityObject.setObjectType(post.getType());
-            activityObject.setUrl(post.getLink());
+  /**
+   * Gets the common facebook {@link org.apache.streams.pojo.json.Provider} object.
+   * @return a provider object representing Facebook
+   */
+  public static Provider getProvider() {
+    Provider provider = new Provider();
+    provider.setId("id:providers:facebook");
+    provider.setDisplayName("Facebook");
 
-            if(activityObject.getObjectType().equals("photo")) {
-                Image image = new Image();
-                image.setUrl(activityObject.getUrl());
-                activityObject.setImage(image);
-            }
-        } catch (Exception e) {
-            LOGGER.error("Exception while trying to build Activity object for post: {}, exception: {}", post, e);
-        }
+    return provider;
+  }
 
-        return activityObject;
+  /**
+   * Builds the activity {@link org.apache.streams.pojo.json.ActivityObject} actor from the Page.
+   * @param page the object to use as the source
+   * @return a valid Actor populated from the Page
+   */
+  public static ActivityObject buildActor(Page page) {
+    ActivityObject actor = new ActivityObject();
+    actor.setId(formatId(
+        Optional.fromNullable(
+            page.getId())
+            .or(Optional.of(page.getId().toString()))
+            .orNull()
+    ));
+
+    actor.setDisplayName(page.getName());
+    actor.setAdditionalProperty("handle", page.getUsername());
+    actor.setSummary(page.getAbout());
+
+    if (page.getLink() != null) {
+      actor.setUrl(page.getLink());
     }
 
-    /**
-     * Gets the common facebook {@link org.apache.streams.pojo.json.Provider} object
-     * @return a provider object representing Facebook
-     */
-    public static Provider getProvider() {
-        Provider provider = new Provider();
-        provider.setId("id:providers:facebook");
-        provider.setDisplayName("Facebook");
+    Image profileImage = new Image();
+    Cover cover = page.getCover();
 
-        return provider;
+    if (cover != null) {
+      profileImage.setUrl(cover.getSource());
+    }
+    actor.setImage(profileImage);
+
+    buildExtensions(actor, page);
+
+    return actor;
+  }
+
+  /**
+   * Builds an {@link org.apache.streams.pojo.json.ActivityObject} object from the {@link Post}.
+   * @param post post
+   * @return {@link org.apache.streams.pojo.json.ActivityObject}
+   */
+  public static ActivityObject buildActor(Post post) {
+    ActivityObject actor = new ActivityObject();
+
+    try {
+      actor.setId(formatId(
+          Optional.fromNullable(
+              post.getFrom().getId())
+              .or(Optional.of(post.getFrom().getId()))
+              .orNull()
+      ));
+
+      actor.setDisplayName(post.getFrom().getName());
+      actor.setAdditionalProperty("handle", post.getFrom().getName());
+    } catch (Exception ex) {
+      LOGGER.error("Exception trying to build actor for Post: {}, {}", post, ex);
     }
 
-    /**
-     * Builds the activity {@link org.apache.streams.pojo.json.ActivityObject} actor from the Page
-     * @param page the object to use as the source
-     * @return a valid Actor populated from the Page
-     */
-    public static ActivityObject buildActor(Page page) {
-        ActivityObject actor = new ActivityObject();
-        actor.setId(formatId(
-                Optional.fromNullable(
-                        page.getId())
-                        .or(Optional.of(page.getId().toString()))
-                        .orNull()
-        ));
+    return actor;
+  }
 
-        actor.setDisplayName(page.getName());
-        actor.setAdditionalProperty("handle", page.getUsername());
-        actor.setSummary(page.getAbout());
+  /**
+   * Builds the actor extensions given the page object.
+   * @param actor actor
+   * @param page page
+   */
+  public static void buildExtensions(ActivityObject actor, Page page) {
+    Map<String, Object> extensions = new HashMap<>();
+    Location location = page.getLocation();
 
-        if (page.getLink()!=null){
-            actor.setUrl(page.getLink());
-        }
-
-        Image profileImage = new Image();
-        Cover cover = page.getCover();
-
-        if(cover != null)
-            profileImage.setUrl(cover.getSource());
-        actor.setImage(profileImage);
-
-        buildExtensions(actor, page);
-
-        return actor;
+    if (location != null) {
+      extensions.put("location", page.getLocation().toString());
     }
-
-    /**
-     * Builds an {@link org.apache.streams.pojo.json.ActivityObject} object from the {@link Post}
-     * @param post
-     * @return {@link org.apache.streams.pojo.json.ActivityObject}
-     */
-    public static ActivityObject buildActor(Post post) {
-        ActivityObject actor = new ActivityObject();
-
-        try {
-            actor.setId(formatId(
-                    Optional.fromNullable(
-                            post.getFrom().getId())
-                            .or(Optional.of(post.getFrom().getId()))
-                            .orNull()
-            ));
-
-            actor.setDisplayName(post.getFrom().getName());
-            actor.setAdditionalProperty("handle", post.getFrom().getName());
-        } catch (Exception e) {
-            LOGGER.error("Exception trying to build actor for Post: {}, {}", post, e);
-        }
-
-        return actor;
-    }
-
-    /**
-     * Builds the actor extensions given the page object
-     * @param actor
-     * @param page
-     */
-    public static void buildExtensions(ActivityObject actor, Page page) {
-        Map<String, Object> extensions = new HashMap<>();
-        Location location = page.getLocation();
-
-        if(location != null)
-            extensions.put("location", page.getLocation().toString());
 
         extensions.put("favorites", page.getTalkingAboutCount());
         extensions.put("followers", page.getFanCount());

@@ -18,14 +18,16 @@
 
 package org.apache.streams.facebook.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.facebook.Page;
 import org.apache.streams.facebook.serializer.FacebookActivityUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.facebook.Page;
 import org.apache.streams.pojo.json.Activity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
 
@@ -35,32 +37,32 @@ import java.util.List;
  */
 public class FacebookPageActivitySerializer implements ActivitySerializer<Page> {
 
-    public static ObjectMapper mapper;
-    static {
-        mapper = StreamsJacksonMapper.getInstance();
-    }
+  public static ObjectMapper mapper;
+  static {
+    mapper = StreamsJacksonMapper.getInstance();
+  }
 
-    @Override
-    public String serializationFormat() {
-        return "facebook_post_json_v1";
-    }
+  @Override
+  public String serializationFormat() {
+    return "facebook_post_json_v1";
+  }
 
-    @Override
-    public Page serialize(Activity deserialized) throws ActivitySerializerException {
-        throw new NotImplementedException("Not currently supported by this deserializer");
-    }
+  @Override
+  public Page serialize(Activity deserialized) throws ActivitySerializerException {
+    throw new NotImplementedException("Not currently supported by this deserializer");
+  }
 
-    @Override
-    public Activity deserialize(Page page) throws ActivitySerializerException {
-        Activity activity = new Activity();
+  @Override
+  public Activity deserialize(Page page) throws ActivitySerializerException {
+    Activity activity = new Activity();
 
-        FacebookActivityUtil.updateActivity(page, activity);
+    FacebookActivityUtil.updateActivity(page, activity);
 
-        return activity;
-    }
+    return activity;
+  }
 
-    @Override
-    public List<Activity> deserializeAll(List<Page> serializedList) {
-        throw new NotImplementedException("Not currently supported by this deserializer");
-    }
+  @Override
+  public List<Activity> deserializeAll(List<Page> serializedList) {
+    throw new NotImplementedException("Not currently supported by this deserializer");
+  }
 }

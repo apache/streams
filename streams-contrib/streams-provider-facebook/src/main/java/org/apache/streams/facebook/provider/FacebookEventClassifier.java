@@ -18,40 +18,50 @@
 
 package org.apache.streams.facebook.provider;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
-import org.apache.commons.lang.StringUtils;
-
-import java.io.IOException;
-
 import org.apache.streams.facebook.Page;
 import org.apache.streams.facebook.Post;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Preconditions;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
+/**
+ * FacebookEventClassifier classifies facebook events.
+ */
 public class FacebookEventClassifier {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FacebookEventClassifier.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FacebookEventClassifier.class);
 
-    public static Class detectClass( String json ) {
+  /**
+   * detectClass from json string.
+   * @param json json string
+   * @return detected Class
+   */
+  public static Class detectClass( String json ) {
 
-        Preconditions.checkNotNull(json);
-        Preconditions.checkArgument(StringUtils.isNotEmpty(json));
+    Preconditions.checkNotNull(json);
+    Preconditions.checkArgument(StringUtils.isNotEmpty(json));
 
-        ObjectNode objectNode;
-        try {
-            objectNode = (ObjectNode) StreamsJacksonMapper.getInstance().readTree(json);
-        } catch (IOException e) {
-            LOGGER.error("Exception while trying to detect class: {}", e.getMessage());
-            return null;
-        }
-
-        if( objectNode.findValue("about") != null)
-            return Page.class;
-        else if( objectNode.findValue("statusType") != null )
-            return Post.class;
-        else
-            return Post.class;
+    ObjectNode objectNode;
+    try {
+      objectNode = (ObjectNode) StreamsJacksonMapper.getInstance().readTree(json);
+    } catch (IOException ex) {
+      LOGGER.error("Exception while trying to detect class: {}", ex.getMessage());
+      return null;
     }
+
+    if ( objectNode.findValue("about") != null) {
+      return Page.class;
+    } else if ( objectNode.findValue("statusType") != null ) {
+      return Post.class;
+    } else {
+      return Post.class;
+    }
+  }
 }

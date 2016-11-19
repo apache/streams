@@ -20,7 +20,6 @@ package org.apache.streams.facebook.provider.page;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.facebook.FacebookConfiguration;
-import org.apache.streams.facebook.FacebookPageProviderConfiguration;
 import org.apache.streams.facebook.IdConfig;
 import org.apache.streams.facebook.provider.FacebookDataCollector;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -28,7 +27,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +34,10 @@ import java.util.concurrent.BlockingQueue;
 
 import facebook4j.FacebookException;
 import facebook4j.Page;
-import facebook4j.Reading;
 import facebook4j.json.DataObjectFactory;
 
 /**
- * Collects the page data from public Facebook pages
+ * Collects the page data from public Facebook pages.
  */
 public class FacebookPageDataCollector extends FacebookDataCollector {
 
@@ -48,11 +45,8 @@ public class FacebookPageDataCollector extends FacebookDataCollector {
   private static final int MAX_ATTEMPTS = 5;
   private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-  private String fields;
-
-  public FacebookPageDataCollector(BlockingQueue<StreamsDatum> queue, FacebookPageProviderConfiguration configuration) {
+  public FacebookPageDataCollector(BlockingQueue<StreamsDatum> queue, FacebookConfiguration configuration) {
     super(configuration, queue);
-    fields = StringUtils.join(configuration.getFields(), ',');
   }
 
   @Override
@@ -70,7 +64,7 @@ public class FacebookPageDataCollector extends FacebookDataCollector {
     while (attempt < MAX_ATTEMPTS) {
       ++attempt;
       try {
-        Page page = getNextFacebookClient().getPage(pageId, new Reading().fields(fields));
+        Page page = getNextFacebookClient().getPage(pageId);
         return page;
       } catch (FacebookException fe) {
         LOGGER.error("Facebook returned an exception : {}", fe);
