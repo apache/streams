@@ -30,46 +30,46 @@ import java.util.Collection;
  */
 public class RegexUrlExtractor extends AbstractRegexExtensionExtractor<String> implements StreamsProcessor {
 
-    private final static String STREAMS_ID = "RegexUrlExtractor";
+  private static final String STREAMS_ID = "RegexUrlExtractor";
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
 
-    //Temporarily copied from streams-processor-urls so as not to force a dependency on that provider.  This should
-    //be moved to a common utility package
-    public final static String DEFAULT_PATTERN =
-            "(?:(?:https?|ftp)://)" +
-                    "(?:\\S+(?::\\S*)?@)?" +
-                    "(?:" +
-                    "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +
-                    "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +
-                    "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +
-                    "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
-                    "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
-                    "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
-                    "|" +
-                    "(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)" +
-                    "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*" +
-                    "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))" +
-                    ")" +
-                    "(?::\\d{2,5})?" +
-                    "(?:/[^\\s]*)?";
+  //Temporarily copied from streams-processor-urls so as not to force a dependency on that provider.  This should
+  //be moved to a common utility package
+  public static final String DEFAULT_PATTERN =
+      "(?:(?:https?|ftp)://)"
+          + "(?:\\S+(?::\\S*)?@)?"
+          + "(?:"
+          + "(?!(?:10|127)(?:\\.\\d{1,3}){3})"
+          + "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})"
+          + "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})"
+          + "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])"
+          + "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}"
+          + "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))"
+          + "|"
+          + "(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)"
+          + "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*"
+          + "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))"
+          + ")"
+          + "(?::\\d{2,5})?"
+          + "(?:/[^\\s]*)?";
 
-    public final static String PATTERN_CONFIG_KEY = "URLPattern";
+  public static final String PATTERN_CONFIG_KEY = "URLPattern";
 
-    public RegexUrlExtractor() {
-        super(PATTERN_CONFIG_KEY, null, DEFAULT_PATTERN);
-    }
+  public RegexUrlExtractor() {
+    super(PATTERN_CONFIG_KEY, null, DEFAULT_PATTERN);
+  }
 
-    @Override
-    protected String prepareObject(String extracted) {
-        return extracted;
-    }
+  @Override
+  protected String prepareObject(String extracted) {
+    return extracted;
+  }
 
-    @Override
-    protected Collection<String> ensureTargetObject(Activity activity) {
-        return activity.getLinks();
-    }
+  @Override
+  protected Collection<String> ensureTargetObject(Activity activity) {
+    return activity.getLinks();
+  }
 }

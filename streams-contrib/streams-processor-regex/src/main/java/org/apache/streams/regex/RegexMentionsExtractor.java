@@ -18,8 +18,10 @@
  */
 
 package org.apache.streams.regex;
-import com.google.common.collect.Maps;
+
 import org.apache.streams.core.StreamsProcessor;
+
+import com.google.common.collect.Maps;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,27 +32,27 @@ import java.util.Map;
  */
 public class RegexMentionsExtractor extends AbstractRegexExtensionExtractor<Map<String, Object>> implements StreamsProcessor {
 
-    private final static String STREAMS_ID = "RegexMentionsExtractor";
+  private static final String STREAMS_ID = "RegexMentionsExtractor";
 
-    public static final String DEFAULT_PATTERN = "@\\w+";
-    public static final String PATTERN_CONFIG_KEY = "MentionPattern";
-    public static final String EXTENSION_KEY = "user_mentions";
-    public static final String DISPLAY_KEY = "displayName";
+  public static final String DEFAULT_PATTERN = "@\\w+";
+  public static final String PATTERN_CONFIG_KEY = "MentionPattern";
+  public static final String EXTENSION_KEY = "user_mentions";
+  public static final String DISPLAY_KEY = "displayName";
 
-    public RegexMentionsExtractor() {
-        super(PATTERN_CONFIG_KEY, EXTENSION_KEY, DEFAULT_PATTERN);
-    }
+  public RegexMentionsExtractor() {
+    super(PATTERN_CONFIG_KEY, EXTENSION_KEY, DEFAULT_PATTERN);
+  }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
 
-    @Override
-    protected Map<String, Object> prepareObject(String extracted) {
-        HashMap<String, Object> mention = Maps.newHashMap();
-        mention.put(DISPLAY_KEY, extracted.substring(1));
-        return mention;
-    }
+  @Override
+  protected Map<String, Object> prepareObject(String extracted) {
+    HashMap<String, Object> mention = Maps.newHashMap();
+    mention.put(DISPLAY_KEY, extracted.substring(1));
+    return mention;
+  }
 
 }
