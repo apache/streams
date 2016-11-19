@@ -19,58 +19,54 @@ under the License.
 
 package org.apache.streams.converter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.data.ActivityObjectConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
+ * Ensures generic ObjectNode representation of an Activity can be converted to Activity.
+ *
+ * <p/>
  * BaseObjectNodeActivityConverter is included by default in all
  * @see {@link ActivityConverterProcessor}
- *
- * Ensures generic ObjectNode representation of an Activity can be converted to Activity
  *
  */
 public class BaseObjectNodeActivityObjectConverter implements ActivityObjectConverter<ObjectNode> {
 
-    public static Class requiredClass = ObjectNode.class;
+  public static Class requiredClass = ObjectNode.class;
 
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    @Override
-    public Class requiredClass() {
-        return requiredClass;
+  @Override
+  public Class requiredClass() {
+    return requiredClass;
+  }
+
+  @Override
+  public String serializationFormat() {
+    return null;
+  }
+
+  @Override
+  public ObjectNode fromActivityObject(ActivityObject deserialized) throws ActivityConversionException {
+    try {
+      return mapper.convertValue(deserialized, ObjectNode.class);
+    } catch (Exception ex) {
+      throw new ActivityConversionException();
     }
+  }
 
-    @Override
-    public String serializationFormat() {
-        return null;
+  @Override
+  public ActivityObject toActivityObject(ObjectNode serialized) throws ActivityConversionException {
+    try {
+      return mapper.convertValue(serialized, ActivityObject.class);
+    } catch (Exception ex) {
+      throw new ActivityConversionException();
     }
-
-    @Override
-    public ObjectNode fromActivityObject(ActivityObject deserialized) throws ActivityConversionException {
-        try {
-            return mapper.convertValue(deserialized, ObjectNode.class);
-        } catch (Exception e) {
-            throw new ActivityConversionException();
-        }
-    }
-
-    @Override
-    public ActivityObject toActivityObject(ObjectNode serialized) throws ActivityConversionException {
-        try {
-            return mapper.convertValue(serialized, ActivityObject.class);
-        } catch (Exception e) {
-            throw new ActivityConversionException();
-        }
-    }
+  }
 
 }
