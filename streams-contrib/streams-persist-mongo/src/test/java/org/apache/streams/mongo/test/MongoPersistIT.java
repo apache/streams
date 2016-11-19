@@ -18,12 +18,6 @@
 
 package org.apache.streams.mongo.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigParseOptions;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
@@ -32,6 +26,14 @@ import org.apache.streams.mongo.MongoConfiguration;
 import org.apache.streams.mongo.MongoPersistReader;
 import org.apache.streams.mongo.MongoPersistWriter;
 import org.apache.streams.pojo.json.Activity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigParseOptions;
+
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -48,64 +50,64 @@ import static org.junit.Assert.assertEquals;
  */
 public class MongoPersistIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(MongoPersistIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MongoPersistIT.class);
 
-    ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+  ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-    MongoConfiguration testConfiguration;
+  MongoConfiguration testConfiguration;
 
-    int count = 0;
+  int count = 0;
 
-    @Before
-    public void setup() throws Exception {
+  @Before
+  public void setup() throws Exception {
 
-        Config reference  = ConfigFactory.load();
-        File conf_file = new File("target/test-classes/MongoPersistIT.conf");
-        assert(conf_file.exists());
-        Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-        Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-        testConfiguration = new ComponentConfigurator<>(MongoConfiguration.class).detectConfiguration(typesafe, "mongo");
+    Config reference  = ConfigFactory.load();
+    File conf_file = new File("target/test-classes/MongoPersistIT.conf");
+    assert(conf_file.exists());
+    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
+    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
+    testConfiguration = new ComponentConfigurator<>(MongoConfiguration.class).detectConfiguration(typesafe, "mongo");
 
+  }
+
+  @Test
+  public void testMongoPersist() throws Exception {
+
+    MongoPersistWriter writer = new MongoPersistWriter(testConfiguration);
+
+    writer.prepare(null);
+
+    InputStream testActivityFolderStream = MongoPersistIT.class.getClassLoader()
+        .getResourceAsStream("activities");
+    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+
+    for( String file : files) {
+      LOGGER.info("File: " + file );
+      InputStream testActivityFileStream = MongoPersistIT.class.getClassLoader()
+          .getResourceAsStream("activities/" + file);
+      Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
+      activity.getAdditionalProperties().remove("$license");
+      StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
+      writer.write( datum );
+      LOGGER.info("Wrote: " + activity.getVerb() );
+      count++;
     }
 
-    @Test
-    public void testMongoPersist() throws Exception {
+    LOGGER.info("Total Written: {}", count );
 
-        MongoPersistWriter writer = new MongoPersistWriter(testConfiguration);
+    assertEquals( 89, count );
 
-        writer.prepare(null);
+    writer.cleanUp();
 
-        InputStream testActivityFolderStream = MongoPersistIT.class.getClassLoader()
-                .getResourceAsStream("activities");
-        List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    MongoPersistReader reader = new MongoPersistReader(testConfiguration);
 
-        for( String file : files) {
-            LOGGER.info("File: " + file );
-            InputStream testActivityFileStream = MongoPersistIT.class.getClassLoader()
-                    .getResourceAsStream("activities/" + file);
-            Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
-            activity.getAdditionalProperties().remove("$license");
-            StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
-            writer.write( datum );
-            LOGGER.info("Wrote: " + activity.getVerb() );
-            count++;
-        }
+    reader.prepare(null);
 
-        LOGGER.info("Total Written: {}", count );
+    StreamsResultSet resultSet = reader.readAll();
 
-        assertEquals( 89, count );
+    LOGGER.info("Total Read: {}", resultSet.size() );
 
-        writer.cleanUp();
+    assertEquals( 89, resultSet.size() );
 
-        MongoPersistReader reader = new MongoPersistReader(testConfiguration);
-
-        reader.prepare(null);
-
-        StreamsResultSet resultSet = reader.readAll();
-
-        LOGGER.info("Total Read: {}", resultSet.size() );
-
-        assertEquals( 89, resultSet.size() );
-
-    }
+  }
 }
