@@ -18,14 +18,16 @@
 
 package org.apache.streams.graph.test;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.io.IOUtils;
 import org.apache.streams.graph.GraphHttpConfiguration;
 import org.apache.streams.graph.GraphReaderConfiguration;
 import org.apache.streams.graph.GraphVertexReader;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -39,43 +41,43 @@ import java.util.List;
  * Unit test for
  * @see {@link org.apache.streams.graph.GraphVertexReader}
  *
- * Test that graph db responses can be converted to streams data
+ * Test that graph db responses can be converted to streams data.
  */
 public class TestNeo4jHttpVertexReader {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TestNeo4jHttpVertexReader.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestNeo4jHttpVertexReader.class);
 
-    private final static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    private JsonNode sampleReaderResult;
+  private JsonNode sampleReaderResult;
 
-    private GraphReaderConfiguration testConfiguration;
+  private GraphReaderConfiguration testConfiguration;
 
-    private GraphVertexReader graphPersistReader;
+  private GraphVertexReader graphPersistReader;
 
-    @Before
-    public void prepareTest() throws IOException {
+  @Before
+  public void prepareTest() throws IOException {
 
-        testConfiguration = new GraphReaderConfiguration();
-        testConfiguration.setType(GraphHttpConfiguration.Type.NEO_4_J);
+    testConfiguration = new GraphReaderConfiguration();
+    testConfiguration.setType(GraphHttpConfiguration.Type.NEO_4_J);
 
-        graphPersistReader = new GraphVertexReader(testConfiguration);
-        InputStream testActivityFileStream = TestNeo4jHttpVertexReader.class.getClassLoader()
-                .getResourceAsStream("sampleReaderResult.json");
-        String sampleText = IOUtils.toString(testActivityFileStream, "utf-8");
-        sampleReaderResult = mapper.readValue(sampleText, JsonNode.class);
+    graphPersistReader = new GraphVertexReader(testConfiguration);
+    InputStream testActivityFileStream = TestNeo4jHttpVertexReader.class.getClassLoader()
+        .getResourceAsStream("sampleReaderResult.json");
+    String sampleText = IOUtils.toString(testActivityFileStream, "utf-8");
+    sampleReaderResult = mapper.readValue(sampleText, JsonNode.class);
 
-    }
+  }
 
-    @Test
-    public void testParseNeoResult() throws IOException {
+  @Test
+  public void testParseNeoResult() throws IOException {
 
-        List<ObjectNode> result = graphPersistReader.parse(sampleReaderResult);
+    List<ObjectNode> result = graphPersistReader.parse(sampleReaderResult);
 
-        assert( result.size() == 10);
+    assert( result.size() == 10);
 
-        for( int i = 0 ; i < 10; i++ )
-            assert( result.get(i).get("extensions").size() == 5);
+    for( int i = 0 ; i < 10; i++ )
+      assert( result.get(i).get("extensions").size() == 5);
 
-    }
+  }
 }
