@@ -18,102 +18,100 @@
 
 package org.apache.streams.console;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistReader;
-import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.core.StreamsResultSet;
+
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.math.BigInteger;
 import java.util.Queue;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * ConsolePersistReader reads documents from stdin.
+ */
 public class ConsolePersistReader implements StreamsPersistReader {
 
-    private final static String STREAMS_ID = "ConsolePersistReader";
+  private static final String STREAMS_ID = "ConsolePersistReader";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConsolePersistReader.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConsolePersistReader.class);
 
-    protected volatile Queue<StreamsDatum> persistQueue;
+  protected volatile Queue<StreamsDatum> persistQueue;
 
-    protected InputStream inputStream = System.in;
+  protected InputStream inputStream = System.in;
 
-    public ConsolePersistReader() {
-        this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
-    }
+  public ConsolePersistReader() {
+    this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+  }
 
-    public ConsolePersistReader(InputStream inputStream) {
-        this();
-        this.inputStream = inputStream;
-    }
+  public ConsolePersistReader(InputStream inputStream) {
+    this();
+    this.inputStream = inputStream;
+  }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
 
-    public void prepare(Object o) {
+  public void prepare(Object configuration) {
 
-    }
+  }
 
-    public void cleanUp() {
+  public void cleanUp() {
 
-    }
+  }
 
-    @Override
-    public void startStream() {
-        // no op
-    }
+  @Override
+  public void startStream() {
+    // no op
+  }
 
-    @Override
-    public StreamsResultSet readAll() {
-        return readCurrent();
-    }
+  @Override
+  public StreamsResultSet readAll() {
+    return readCurrent();
+  }
 
-    @Override
-    public StreamsResultSet readCurrent() {
+  @Override
+  public StreamsResultSet readCurrent() {
 
-        LOGGER.info("{} readCurrent", STREAMS_ID);
+    LOGGER.info("{} readCurrent", STREAMS_ID);
 
-        Scanner sc = new Scanner(inputStream);
+    Scanner sc = new Scanner(inputStream);
 
-        while( sc.hasNextLine() ) {
+    while ( sc.hasNextLine() ) {
 
-            persistQueue.offer(new StreamsDatum(sc.nextLine()));
-
-        }
-
-        LOGGER.info("Providing {} docs", persistQueue.size());
-
-        StreamsResultSet result =  new StreamsResultSet(persistQueue);
-
-        LOGGER.info("{} Exiting", STREAMS_ID);
-
-        return result;
+      persistQueue.offer(new StreamsDatum(sc.nextLine()));
 
     }
 
-    @Override
-    public StreamsResultSet readNew(BigInteger sequence) {
-        return readCurrent();
-    }
+    LOGGER.info("Providing {} docs", persistQueue.size());
 
-    @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return readCurrent();
-    }
+    StreamsResultSet result =  new StreamsResultSet(persistQueue);
 
-    @Override
-    public boolean isRunning() {
-        return true;  //Will always be running
-    }
+    LOGGER.info("{} Exiting", STREAMS_ID);
+
+    return result;
+
+  }
+
+  @Override
+  public StreamsResultSet readNew(BigInteger sequence) {
+    return readCurrent();
+  }
+
+  @Override
+  public StreamsResultSet readRange(DateTime start, DateTime end) {
+    return readCurrent();
+  }
+
+  @Override
+  public boolean isRunning() {
+    return true;  //Will always be running
+  }
 }

@@ -19,36 +19,43 @@
 package org.apache.streams.console;
 
 import org.apache.streams.core.StreamsDatum;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
+/**
+ * ConsolePersistWriterTask writes documents to stdout on behalf of
+ * @see org.apache.streams.console.ConsolePersistWriter
+ */
 public class ConsolePersistWriterTask implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConsolePersistWriterTask.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConsolePersistWriterTask.class);
 
-    private ConsolePersistWriter writer;
+  private ConsolePersistWriter writer;
 
-    public ConsolePersistWriterTask(ConsolePersistWriter writer) {
-        this.writer = writer;
-    }
+  public ConsolePersistWriterTask(ConsolePersistWriter writer) {
+    this.writer = writer;
+  }
 
-    @Override
-    public void run() {
-        while(true) {
-            if( writer.persistQueue.peek() != null ) {
-                try {
-                    StreamsDatum entry = writer.persistQueue.remove();
-                    writer.write(entry);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                Thread.sleep(new Random().nextInt(100));
-            } catch (InterruptedException e) {}
+  @Override
+  public void run() {
+    while (true) {
+      if ( writer.persistQueue.peek() != null ) {
+        try {
+          StreamsDatum entry = writer.persistQueue.remove();
+          writer.write(entry);
+        } catch (Exception ex) {
+          ex.printStackTrace();
         }
+      }
+      try {
+        Thread.sleep(new Random().nextInt(100));
+      } catch (InterruptedException interrupt) {
+        LOGGER.trace("Interrupted", interrupt);
+      }
     }
+  }
 
 }
