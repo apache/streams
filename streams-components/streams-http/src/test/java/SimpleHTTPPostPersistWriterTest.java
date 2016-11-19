@@ -16,16 +16,18 @@
  * under the License.
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.streams.components.http.HttpPersistWriterConfiguration;
 import org.apache.streams.components.http.persist.SimpleHTTPPostPersistWriter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,87 +49,91 @@ import static org.mockito.Matchers.any;
 @PrepareForTest({HttpClients.class, CloseableHttpResponse.class, CloseableHttpResponse.class})
 public class SimpleHTTPPostPersistWriterTest {
 
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    /**
-     * test port.
+  /**
+   * test port.
+   */
+  private static final int PORT = 18080;
+
+  /**
+   * test hosts.
+   */
+  private static final String HOSTNAME = "localhost";
+
+  /**
+   * test protocol.
+   */
+  private static final String PROTOCOL = "http";
+
+  /**
+   * CloseableHttpClient mock.
+   */
+  private CloseableHttpClient client;
+
+  /**
+   * CloseableHttpClient mock.
+   */
+  private CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
+
+  /**
+   * Our output.
+   */
+  private ByteArrayOutputStream output;
+
+  /**
+   * Our input.
+   */
+  private ByteArrayInputStream input;
+
+  @Before
+  public void setUp() throws Exception
+  {
+    /*
+     HttpClients mock.
      */
-    private static final int PORT = 18080;
+    this.client = PowerMockito.mock(CloseableHttpClient.class);
 
-    /**
-     * test hosts.
+    PowerMockito.mockStatic(HttpClients.class);
+
+    PowerMockito.when(HttpClients.createDefault())
+        .thenReturn(client);
+
+    PowerMockito.when(client.execute(any(HttpUriRequest.class)))
+        .thenReturn(response);
+
+    Mockito.when(response.getEntity()).thenReturn(null);
+    Mockito.doNothing().when(response).close();
+
+  }
+
+  /**
+   * testPersist.
+   * @throws Exception
+   */
+  @Test
+  public void testPersist() throws Exception
+  {
+    HttpPersistWriterConfiguration configuration = new HttpPersistWriterConfiguration();
+    configuration.setProtocol(PROTOCOL);
+    configuration.setHostname(HOSTNAME);
+    configuration.setPort((long) PORT);
+    configuration.setResourcePath("/");
+
+    /*
+     Instance under tests.
      */
-    private static final String HOSTNAME = "localhost";
+    SimpleHTTPPostPersistWriter writer = new SimpleHTTPPostPersistWriter(configuration);
 
-    /**
-     * test protocol.
-     */
-    private static final String PROTOCOL = "http";
+    writer.prepare(null);
 
-    /**
-     * CloseableHttpClient mock.
-     */
-    private CloseableHttpClient client;
+    StreamsDatum testDatum = new StreamsDatum(mapper.readValue("{\"message\":\"ping\"}", ObjectNode.class));
 
-    /**
-     * CloseableHttpClient mock.
-     */
-    private CloseableHttpResponse response = Mockito.mock(CloseableHttpResponse.class);
+    writer.write(testDatum);
 
-    /**
-     * Our output.
-     */
-    private ByteArrayOutputStream output;
+    Mockito.verify(this.client).execute(any(HttpUriRequest.class));
 
-    /**
-     * Our input.
-     */
-    private ByteArrayInputStream input;
+    Mockito.verify(this.response).close();
 
-    @Before
-    public void setUp() throws Exception
-    {
-        /*
-      HttpClients mock.
-     */
-        this.client = PowerMockito.mock(CloseableHttpClient.class);
-
-        PowerMockito.mockStatic(HttpClients.class);
-
-        PowerMockito.when(HttpClients.createDefault())
-                .thenReturn(client);
-
-        PowerMockito.when(client.execute(any(HttpUriRequest.class)))
-                .thenReturn(response);
-
-        Mockito.when(response.getEntity()).thenReturn(null);
-        Mockito.doNothing().when(response).close();
-
-    }
-
-    @Test
-    public void testPersist() throws Exception
-    {
-        HttpPersistWriterConfiguration configuration = new HttpPersistWriterConfiguration();
-        configuration.setProtocol(PROTOCOL);
-        configuration.setHostname(HOSTNAME);
-        configuration.setPort((long) PORT);
-        configuration.setResourcePath("/");
-
-        /*
-      Instance under tests.
-     */
-        SimpleHTTPPostPersistWriter writer = new SimpleHTTPPostPersistWriter(configuration);
-
-        writer.prepare(null);
-
-        StreamsDatum testDatum = new StreamsDatum(mapper.readValue("{\"message\":\"ping\"}", ObjectNode.class));
-
-        writer.write(testDatum);
-
-        Mockito.verify(this.client).execute(any(HttpUriRequest.class));
-
-        Mockito.verify(this.response).close();
-
-    }
+  }
 }

@@ -52,225 +52,241 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Processor retrieves contents from an known url and stores the resulting object in an extension field
+ * Processor retrieves contents from an known url and stores the resulting object in an extension field.
  */
 public class SimpleHTTPPostProcessor implements StreamsProcessor {
 
-    private final static String STREAMS_ID = "SimpleHTTPPostProcessor";
+  private static final String STREAMS_ID = "SimpleHTTPPostProcessor";
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(SimpleHTTPPostProcessor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleHTTPPostProcessor.class);
 
-    protected ObjectMapper mapper;
+  protected ObjectMapper mapper;
 
-    protected URIBuilder uriBuilder;
+  protected URIBuilder uriBuilder;
 
-    protected CloseableHttpClient httpclient;
+  protected CloseableHttpClient httpclient;
 
-    protected HttpProcessorConfiguration configuration;
+  protected HttpProcessorConfiguration configuration;
 
-    protected String authHeader;
+  protected String authHeader;
 
-    public SimpleHTTPPostProcessor() {
-        this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
-          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("http")));
+  /**
+   * SimpleHTTPPostProcessor constructor - resolves HttpProcessorConfiguration from JVM 'http'.
+   */
+  public SimpleHTTPPostProcessor() {
+    this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
+        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("http")));
+  }
+
+  /**
+   * SimpleHTTPPostProcessor constructor - uses provided HttpProcessorConfiguration.
+   */
+  public SimpleHTTPPostProcessor(HttpProcessorConfiguration processorConfiguration) {
+    LOGGER.info("creating SimpleHTTPPostProcessor");
+    LOGGER.info(processorConfiguration.toString());
+    this.configuration = processorConfiguration;
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  /**
+   Override this to store a result other than exact json representation of response.
+   */
+  protected ObjectNode prepareExtensionFragment(String entityString) {
+
+    try {
+      return mapper.readValue(entityString, ObjectNode.class);
+    } catch (IOException ex) {
+      LOGGER.warn("IOException", ex);
+      return null;
+    }
+  }
+
+  /**
+   Override this to place result in non-standard location on document.
+   */
+  protected ObjectNode getRootDocument(StreamsDatum datum) {
+
+    try {
+      String json = datum.getDocument() instanceof String
+          ? (String) datum.getDocument()
+          : mapper.writeValueAsString(datum.getDocument());
+      return mapper.readValue(json, ObjectNode.class);
+    } catch (JsonProcessingException ex) {
+      LOGGER.warn("JsonProcessingException", ex);
+      return null;
+    } catch (IOException ex) {
+      LOGGER.warn("IOException", ex);
+      return null;
     }
 
-    public SimpleHTTPPostProcessor(HttpProcessorConfiguration processorConfiguration) {
-        LOGGER.info("creating SimpleHTTPPostProcessor");
-        LOGGER.info(processorConfiguration.toString());
-        this.configuration = processorConfiguration;
+  }
+
+  /**
+   Override this to place result in non-standard location on document.
+   */
+  protected ActivityObject getEntityToExtend(ObjectNode rootDocument) {
+
+    if ( this.configuration.getEntity().equals(HttpProcessorConfiguration.Entity.ACTIVITY)) {
+      return mapper.convertValue(rootDocument, ActivityObject.class);
+    } else {
+      return mapper.convertValue(rootDocument.get(this.configuration.getEntity().toString()), ActivityObject.class);
+    }
+  }
+
+  /**
+   Override this to place result in non-standard location on document.
+   */
+  protected ObjectNode setEntityToExtend(ObjectNode rootDocument, ActivityObject activityObject) {
+
+    if ( this.configuration.getEntity().equals(HttpProcessorConfiguration.Entity.ACTIVITY)) {
+      return mapper.convertValue(activityObject, ObjectNode.class);
+    } else {
+      rootDocument.set(this.configuration.getEntity().toString(), mapper.convertValue(activityObject, ObjectNode.class));
+    }
+    return rootDocument;
+
+  }
+
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+
+    List<StreamsDatum> result = new ArrayList<>();
+
+    ObjectNode rootDocument = getRootDocument(entry);
+
+    Map<String, String> params = prepareParams(entry);
+
+    URI uri;
+    for ( Map.Entry<String,String> param : params.entrySet() ) {
+      uriBuilder = uriBuilder.setParameter(param.getKey(), param.getValue());
+    }
+    try {
+      uri = uriBuilder.build();
+    } catch (URISyntaxException ex) {
+      LOGGER.error("URI error {}", uriBuilder.toString(), ex);
+      return result;
     }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+    HttpEntity payload = preparePayload(entry);
 
-    /**
-     Override this to store a result other than exact json representation of response
-     */
-    protected ObjectNode prepareExtensionFragment(String entityString) {
+    HttpPost httpPost = prepareHttpPost(uri, payload);
 
-        try {
-            return mapper.readValue(entityString, ObjectNode.class);
-        } catch (IOException e) {
-            LOGGER.warn("IOException", e);
-            return null;
+    CloseableHttpResponse response = null;
+
+    String entityString = null;
+    try {
+      response = httpclient.execute(httpPost);
+      HttpEntity entity = response.getEntity();
+      // TODO: handle retry
+      if (response.getStatusLine().getStatusCode() == 200 && entity != null) {
+        entityString = EntityUtils.toString(entity);
+      }
+    } catch (IOException ex) {
+      LOGGER.error("IO error:\n{}\n{}\n{}", uri.toString(), response, ex);
+      return result;
+    } finally {
+      try {
+        if (response != null) {
+          response.close();
         }
+      } catch (IOException ignored) {
+        LOGGER.trace("IOException", ignored);
+      }
     }
 
-    /**
-     Override this to place result in non-standard location on document
-     */
-    protected ObjectNode getRootDocument(StreamsDatum datum) {
-
-        try {
-            String json = datum.getDocument() instanceof String ?
-                    (String) datum.getDocument() :
-                    mapper.writeValueAsString(datum.getDocument());
-            return mapper.readValue(json, ObjectNode.class);
-        } catch (JsonProcessingException e) {
-            LOGGER.warn("JsonProcessingException", e);
-            return null;
-        } catch (IOException e) {
-            LOGGER.warn("IOException", e);
-            return null;
-        }
-
+    if ( entityString == null ) {
+      return result;
     }
 
-    /**
-     Override this to place result in non-standard location on document
-     */
-    protected ActivityObject getEntityToExtend(ObjectNode rootDocument) {
+    LOGGER.debug(entityString);
 
-        if( this.configuration.getEntity().equals(HttpProcessorConfiguration.Entity.ACTIVITY))
-            return mapper.convertValue(rootDocument, ActivityObject.class);
-        else
-            return mapper.convertValue(rootDocument.get(this.configuration.getEntity().toString()), ActivityObject.class);
+    ObjectNode extensionFragment = prepareExtensionFragment(entityString);
 
+    ActivityObject extensionEntity = getEntityToExtend(rootDocument);
+
+    ExtensionUtil.getInstance().addExtension(extensionEntity, this.configuration.getExtension(), extensionFragment);
+
+    rootDocument = setEntityToExtend(rootDocument, extensionEntity);
+
+    entry.setDocument(rootDocument);
+
+    result.add(entry);
+
+    return result;
+
+  }
+
+  /**
+   Override this to add parameters to the request.
+   */
+  protected Map<String, String> prepareParams(StreamsDatum entry) {
+    return new HashMap<>();
+  }
+
+  /**
+   Override this to add parameters to the request.
+   */
+  protected HttpEntity preparePayload(StreamsDatum entry) {
+    return new StringEntity("{}",
+        ContentType.create("application/json"));
+  }
+
+  /**
+   * Override this to set the URI / entity for the request or modify headers.
+   * @param uri uri
+   * @param entity entity
+   * @return result
+   */
+  public HttpPost prepareHttpPost(URI uri, HttpEntity entity) {
+    HttpPost httpPost = new HttpPost(uri);
+    httpPost.addHeader("content-type", this.configuration.getContentType());
+    if ( !Strings.isNullOrEmpty(authHeader)) {
+      httpPost.addHeader("Authorization", String.format("Basic %s", authHeader));
     }
+    httpPost.setEntity(entity);
+    return httpPost;
+  }
 
-    /**
-     Override this to place result in non-standard location on document
-     */
-    protected ObjectNode setEntityToExtend(ObjectNode rootDocument, ActivityObject activityObject) {
+  @Override
+  public void prepare(Object configurationObject) {
 
-        if( this.configuration.getEntity().equals(HttpProcessorConfiguration.Entity.ACTIVITY))
-            return mapper.convertValue(activityObject, ObjectNode.class);
-        else
-            rootDocument.set(this.configuration.getEntity().toString(), mapper.convertValue(activityObject, ObjectNode.class));
+    mapper = StreamsJacksonMapper.getInstance();
 
-        return rootDocument;
+    uriBuilder = new URIBuilder()
+        .setScheme(this.configuration.getProtocol())
+        .setHost(this.configuration.getHostname())
+        .setPath(this.configuration.getResourcePath());
 
+    if ( !Strings.isNullOrEmpty(configuration.getAccessToken()) ) {
+      uriBuilder = uriBuilder.addParameter("access_token", configuration.getAccessToken());
     }
-
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-
-        List<StreamsDatum> result = new ArrayList<>();
-
-        ObjectNode rootDocument = getRootDocument(entry);
-
-        Map<String, String> params = prepareParams(entry);
-
-        URI uri;
-        for( Map.Entry<String,String> param : params.entrySet()) {
-            uriBuilder = uriBuilder.setParameter(param.getKey(), param.getValue());
-        }
-        try {
-            uri = uriBuilder.build();
-        } catch (URISyntaxException e) {
-            LOGGER.error("URI error {}", uriBuilder.toString(), e);
-            return result;
-        }
-
-        HttpEntity payload = preparePayload(entry);
-
-        HttpPost httpPost = prepareHttpPost(uri, payload);
-
-        CloseableHttpResponse response = null;
-
-        String entityString = null;
-        try {
-            response = httpclient.execute(httpPost);
-            HttpEntity entity = response.getEntity();
-            // TODO: handle retry
-            if (response.getStatusLine().getStatusCode() == 200 && entity != null) {
-                entityString = EntityUtils.toString(entity);
-            }
-        } catch (IOException e) {
-            LOGGER.error("IO error:\n{}\n{}\n{}", uri.toString(), response, e);
-            return result;
-        } finally {
-            try {
-                if (response != null) {
-                    response.close();
-                }
-            } catch (IOException ignored) {}
-        }
-
-        if( entityString == null )
-            return result;
-
-        LOGGER.debug(entityString);
-
-        ObjectNode extensionFragment = prepareExtensionFragment(entityString);
-
-        ActivityObject extensionEntity = getEntityToExtend(rootDocument);
-
-        ExtensionUtil.getInstance().addExtension(extensionEntity, this.configuration.getExtension(), extensionFragment);
-
-        rootDocument = setEntityToExtend(rootDocument, extensionEntity);
-
-        entry.setDocument(rootDocument);
-
-        result.add(entry);
-
-        return result;
-
+    if ( !Strings.isNullOrEmpty(configuration.getUsername())
+        && !Strings.isNullOrEmpty(configuration.getPassword())) {
+      String string = configuration.getUsername() + ":" + configuration.getPassword();
+      authHeader = Base64.encodeBase64String(string.getBytes());
     }
+    httpclient = HttpClients.createDefault();
+  }
 
-    /**
-     Override this to add parameters to the request
-     */
-    protected Map<String, String> prepareParams(StreamsDatum entry) {
-        return new HashMap<>();
+  @Override
+  public void cleanUp() {
+    LOGGER.info("shutting down SimpleHTTPPostProcessor");
+    try {
+      httpclient.close();
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    } finally {
+      try {
+        httpclient.close();
+      } catch (IOException e2) {
+        LOGGER.error("IOException", e2);
+      } finally {
+        httpclient = null;
+      }
     }
-
-    /**
-     Override this to add parameters to the request
-     */
-    protected HttpEntity preparePayload(StreamsDatum entry) {
-        return new StringEntity("{}",
-                ContentType.create("application/json"));
-    }
-
-
-    public HttpPost prepareHttpPost(URI uri, HttpEntity entity) {
-        HttpPost httpPost = new HttpPost(uri);
-        httpPost.addHeader("content-type", this.configuration.getContentType());
-        if( !Strings.isNullOrEmpty(authHeader))
-            httpPost.addHeader("Authorization", String.format("Basic %s", authHeader));
-        httpPost.setEntity(entity);
-        return httpPost;
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-
-        mapper = StreamsJacksonMapper.getInstance();
-
-        uriBuilder = new URIBuilder()
-            .setScheme(this.configuration.getProtocol())
-            .setHost(this.configuration.getHostname())
-            .setPath(this.configuration.getResourcePath());
-
-        if( !Strings.isNullOrEmpty(configuration.getAccessToken()) )
-            uriBuilder = uriBuilder.addParameter("access_token", configuration.getAccessToken());
-        if( !Strings.isNullOrEmpty(configuration.getUsername())
-            && !Strings.isNullOrEmpty(configuration.getPassword())) {
-            String string = configuration.getUsername() + ":" + configuration.getPassword();
-            authHeader = Base64.encodeBase64String(string.getBytes());
-        }
-        httpclient = HttpClients.createDefault();
-    }
-
-    @Override
-    public void cleanUp() {
-        LOGGER.info("shutting down SimpleHTTPPostProcessor");
-        try {
-            httpclient.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                httpclient.close();
-            } catch (IOException e) {
-                LOGGER.error("IOException", e);
-            } finally {
-                httpclient = null;
-            }
-        }
-    }
+  }
 }
