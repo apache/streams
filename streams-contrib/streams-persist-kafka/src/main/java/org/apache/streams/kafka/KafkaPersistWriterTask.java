@@ -19,38 +19,45 @@
 package org.apache.streams.kafka;
 
 import org.apache.streams.core.StreamsDatum;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
+/**
+ * KafkaPersistWriterTask writes documents to kafka on behalf of
+ * @see org.apache.streams.kafka.KafkaPersistWriter
+ */
 public class KafkaPersistWriterTask implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPersistWriterTask.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPersistWriterTask.class);
 
-    private KafkaPersistWriter writer;
+  private KafkaPersistWriter writer;
 
-    public KafkaPersistWriterTask(KafkaPersistWriter writer) {
-        this.writer = writer;
-    }
+  public KafkaPersistWriterTask(KafkaPersistWriter writer) {
+    this.writer = writer;
+  }
 
-    @Override
-    public void run() {
+  @Override
+  public void run() {
 
-        while(true) {
-            if( writer.getPersistQueue().peek() != null ) {
-                try {
-                    StreamsDatum entry = writer.persistQueue.remove();
-                    writer.write(entry);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                Thread.sleep(new Random().nextInt(100));
-            } catch (InterruptedException e) {}
+    while (true) {
+      if ( writer.getPersistQueue().peek() != null ) {
+        try {
+          StreamsDatum entry = writer.persistQueue.remove();
+          writer.write(entry);
+        } catch (Exception ex) {
+          ex.printStackTrace();
         }
-
+      }
+      try {
+        Thread.sleep(new Random().nextInt(100));
+      } catch (InterruptedException interrupt) {
+        LOGGER.trace("Interrupt", interrupt);
+      }
     }
+
+  }
 
 }
