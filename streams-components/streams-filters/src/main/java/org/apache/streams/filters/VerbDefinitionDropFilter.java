@@ -18,15 +18,16 @@
 
 package org.apache.streams.filters;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.verbs.ObjectCombination;
 import org.apache.streams.verbs.VerbDefinition;
 import org.apache.streams.verbs.VerbDefinitionMatchUtil;
 import org.apache.streams.verbs.VerbDefinitionResolver;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,57 +40,60 @@ import java.util.Set;
  */
 public class VerbDefinitionDropFilter implements StreamsProcessor {
 
-    public static final String STREAMS_ID = "VerbDefinitionDropFilter";
+  public static final String STREAMS_ID = "VerbDefinitionDropFilter";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(VerbDefinitionDropFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(VerbDefinitionDropFilter.class);
 
-    protected Set<VerbDefinition> verbDefinitionSet;
-    protected VerbDefinitionResolver resolver;
+  protected Set<VerbDefinition> verbDefinitionSet;
+  protected VerbDefinitionResolver resolver;
 
-    public VerbDefinitionDropFilter() {
-        // get with reflection
+  public VerbDefinitionDropFilter() {
+    // get with reflection
+  }
+
+  public VerbDefinitionDropFilter(Set<VerbDefinition> verbDefinitionSet) {
+    this();
+    this.verbDefinitionSet = verbDefinitionSet;
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+
+    List<StreamsDatum> result = Lists.newArrayList();
+
+    LOGGER.debug("{} filtering {}", STREAMS_ID, entry.getDocument().getClass());
+
+    Activity activity;
+
+    Preconditions.checkArgument(entry.getDocument() instanceof Activity);
+
+    activity = (Activity) entry.getDocument();
+
+    if ( VerbDefinitionMatchUtil.match(activity, this.verbDefinitionSet) == false ) {
+      result.add(entry);
     }
 
-    public VerbDefinitionDropFilter(Set<VerbDefinition> verbDefinitionSet) {
-        this();
-        this.verbDefinitionSet = verbDefinitionSet;
+    return result;
+  }
+
+  @Override
+  public void prepare(Object configuration) {
+    if ( verbDefinitionSet != null) {
+      resolver = new VerbDefinitionResolver(verbDefinitionSet);
+    } else {
+      resolver = new VerbDefinitionResolver();
     }
+    Preconditions.checkNotNull(resolver);
+  }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
-
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-
-        List<StreamsDatum> result = Lists.newArrayList();
-
-        LOGGER.debug("{} filtering {}", STREAMS_ID, entry.getDocument().getClass());
-
-        Activity activity;
-
-        Preconditions.checkArgument(entry.getDocument() instanceof Activity);
-
-        activity = (Activity) entry.getDocument();
-
-        if( VerbDefinitionMatchUtil.match(activity, this.verbDefinitionSet) == false )
-            result.add(entry);
-
-        return result;
-    }
-
-    @Override
-    public void prepare(Object o) {
-        if( verbDefinitionSet != null)
-            resolver = new VerbDefinitionResolver(verbDefinitionSet);
-        else resolver = new VerbDefinitionResolver();
-        Preconditions.checkNotNull(resolver);
-    }
-
-    @Override
-    public void cleanUp() {
-        // noOp
-    }
+  @Override
+  public void cleanUp() {
+    // noOp
+  }
 
 }
