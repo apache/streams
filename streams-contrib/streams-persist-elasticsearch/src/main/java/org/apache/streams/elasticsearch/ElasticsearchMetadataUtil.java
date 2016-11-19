@@ -18,128 +18,197 @@
 
 package org.apache.streams.elasticsearch;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.streams.core.StreamsDatum;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * Utility class for handling Elasticsearch Metadata maps.
+ */
 public class ElasticsearchMetadataUtil {
 
-    public static String getIndex(Map<String, Object> metadata, ElasticsearchWriterConfiguration config) {
+  /**
+   * get Index to use based on supplied parameters.
+   *
+   * @param metadata metadata
+   * @param config config
+   * @return result
+   */
+  public static String getIndex(Map<String, Object> metadata, ElasticsearchWriterConfiguration config) {
 
-        String index = null;
+    String index = null;
 
-        if( metadata != null && metadata.containsKey("index"))
-            index = (String) metadata.get("index");
-
-        if(index == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
-            index = config.getIndex();
-        }
-
-        return index;
+    if ( metadata != null && metadata.containsKey("index")) {
+      index = (String) metadata.get("index");
     }
 
-    public static String getType(Map<String, Object> metadata, ElasticsearchWriterConfiguration config) {
-
-        String type = null;
-
-        if( metadata != null && metadata.containsKey("type"))
-            type = (String) metadata.get("type");
-
-        if(type == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
-            type = config.getType();
-        }
-
-
-        return type;
+    if ( index == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
+      index = config.getIndex();
     }
 
-    public static String getIndex(Map<String, Object> metadata, ElasticsearchReaderConfiguration config) {
+    return index;
+  }
 
-        String index = null;
+  /**
+   * get Index to use based on supplied parameters.
+   *
+   * @param metadata metadata
+   * @param config config
+   * @return result
+   */
+  public static String getIndex(Map<String, Object> metadata, ElasticsearchReaderConfiguration config) {
 
-        if( metadata != null && metadata.containsKey("index"))
-            index = (String) metadata.get("index");
+    String index = null;
 
-        if(index == null) {
-            index = config.getIndexes().get(0);
-        }
-
-        return index;
+    if ( metadata != null && metadata.containsKey("index")) {
+      index = (String) metadata.get("index");
     }
 
-    public static String getType(Map<String, Object> metadata, ElasticsearchReaderConfiguration config) {
-
-        String type = null;
-
-        if( metadata != null && metadata.containsKey("type"))
-            type = (String) metadata.get("type");
-
-        if(type == null) {
-            type = config.getTypes().get(0);
-        }
-
-
-        return type;
+    if ( index == null ) {
+      index = config.getIndexes().get(0);
     }
 
-    public static String getId(StreamsDatum datum) {
+    return index;
+  }
 
-        String id = datum.getId();
+  /**
+   * get Type to use based on supplied parameters.
+   *
+   * @param metadata metadata
+   * @param config config
+   * @return result
+   */
+  public static String getType(Map<String, Object> metadata, ElasticsearchWriterConfiguration config) {
 
-        Map<String, Object> metadata = datum.getMetadata();
+    String type = null;
 
-        if( id == null && metadata != null && metadata.containsKey("id"))
-            id = (String) datum.getMetadata().get("id");
-
-        return id;
+    if ( metadata != null && metadata.containsKey("type")) {
+      type = (String) metadata.get("type");
     }
 
-    static String getParent(StreamsDatum datum) {
-
-        String parent = null;
-
-        Map<String, Object> metadata = datum.getMetadata();
-
-        if(metadata != null && metadata.containsKey("parent"))
-            parent = (String) datum.getMetadata().get("parent");
-
-        return parent;
+    if (type == null || (config.getForceUseConfig() != null && config.getForceUseConfig())) {
+      type = config.getType();
     }
 
-    static String getRouting(StreamsDatum datum) {
+    return type;
+  }
 
-        String routing = null;
+  /**
+   * get Type to use based on supplied parameters.
+   *
+   * @param metadata metadata
+   * @param config config
+   * @return result
+   */
+  public static String getType(Map<String, Object> metadata, ElasticsearchReaderConfiguration config) {
 
-        Map<String, Object> metadata = datum.getMetadata();
+    String type = null;
 
-        if(metadata != null && metadata.containsKey("routing"))
-            routing = (String) datum.getMetadata().get("routing");
-
-        return routing;
+    if ( metadata != null && metadata.containsKey("type")) {
+      type = (String) metadata.get("type");
     }
 
-    public static String getId(Map<String, Object> metadata) {
-
-        return (String) metadata.get("id");
-
+    if (type == null) {
+      type = config.getTypes().get(0);
     }
 
-    public static Map<String, Object> asMap(JsonNode node) {
 
-        Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
-        Map<String, Object> ret = new HashMap<>();
+    return type;
+  }
 
-        Map.Entry<String, JsonNode> entry;
+  /**
+   * get id to use based on supplied parameters.
+   *
+   * @param datum datum
+   * @return result
+   */
+  public static String getId(StreamsDatum datum) {
 
-        while (iterator.hasNext()) {
-            entry = iterator.next();
-            if( entry.getValue().asText() != null )
-                ret.put(entry.getKey(), entry.getValue().asText());
-        }
+    String id = datum.getId();
 
-        return ret;
+    Map<String, Object> metadata = datum.getMetadata();
+
+    if ( id == null && metadata != null && metadata.containsKey("id")) {
+      id = (String) datum.getMetadata().get("id");
     }
+
+    return id;
+  }
+
+  /**
+   * get id to use based on supplied parameters.
+   *
+   * @param metadata metadata
+   * @return result
+   */
+  public static String getId(Map<String, Object> metadata) {
+
+    return (String) metadata.get("id");
+
+  }
+
+  /**
+   * get parent id to use based on supplied parameters.
+   *
+   * @param datum datum
+   * @return result
+   */
+  static String getParent(StreamsDatum datum) {
+
+    String parent = null;
+
+    Map<String, Object> metadata = datum.getMetadata();
+
+    if (metadata != null && metadata.containsKey("parent")) {
+      parent = (String) datum.getMetadata().get("parent");
+    }
+
+    return parent;
+  }
+
+  /**
+   * get routing id to use based on supplied parameters.
+   *
+   * @param datum datum
+   * @return result
+   */
+  static String getRouting(StreamsDatum datum) {
+
+    String routing = null;
+
+    Map<String, Object> metadata = datum.getMetadata();
+
+    if (metadata != null && metadata.containsKey("routing")) {
+      routing = (String) datum.getMetadata().get("routing");
+    }
+
+    return routing;
+  }
+
+  /**
+   * get JsonNode as Map.
+   * @param node node
+   * @return result
+   */
+  // TODO: move this to a utility package
+  public static Map<String, Object> asMap(JsonNode node) {
+
+    Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
+    Map<String, Object> ret = new HashMap<>();
+
+    Map.Entry<String, JsonNode> entry;
+
+    while (iterator.hasNext()) {
+      entry = iterator.next();
+      if ( entry.getValue().asText() != null ) {
+        ret.put(entry.getKey(), entry.getValue().asText());
+      }
+    }
+
+    return ret;
+  }
 }

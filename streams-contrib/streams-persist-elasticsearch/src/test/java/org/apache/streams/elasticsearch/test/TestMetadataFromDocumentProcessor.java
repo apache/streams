@@ -18,25 +18,20 @@
 
 package org.apache.streams.elasticsearch.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Sets;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.SerializationUtils;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.elasticsearch.processor.DocumentToMetadataProcessor;
 import org.apache.streams.elasticsearch.processor.MetadataFromDocumentProcessor;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.junit.Assert;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
+
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.SerializationUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,88 +40,89 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by sblackmon on 10/20/14.
+ * Unit Test for
+ * @see org.apache.streams.elasticsearch.processor.MetadataFromDocumentProcessor
  */
 public class TestMetadataFromDocumentProcessor {
 
-    private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+  private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TestMetadataFromDocumentProcessor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestMetadataFromDocumentProcessor.class);
 
-    @Before
-    public void prepareTest() {
+  @Before
+  public void prepareTest() {
 
+  }
+
+  @Test
+  public void testSerializability() {
+    MetadataFromDocumentProcessor processor = new MetadataFromDocumentProcessor();
+
+    MetadataFromDocumentProcessor clone = (MetadataFromDocumentProcessor) SerializationUtils.clone(processor);
+  }
+
+  @Test
+  public void testMetadataFromDocumentProcessor() throws Exception {
+
+    MetadataFromDocumentProcessor processor = new MetadataFromDocumentProcessor();
+
+    processor.prepare(null);
+
+    InputStream testActivityFolderStream = TestMetadataFromDocumentProcessor.class.getClassLoader()
+        .getResourceAsStream("activities");
+    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+
+    Set<ActivityObject> objects = Sets.newHashSet();
+
+    for( String file : files) {
+      LOGGER.info("File: " + file );
+      InputStream testActivityFileStream = TestMetadataFromDocumentProcessor.class.getClassLoader()
+          .getResourceAsStream("activities/" + file);
+      Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
+      activity.setId(activity.getVerb());
+      activity.getAdditionalProperties().remove("$license");
+
+      if( activity.getActor().getObjectType() != null)
+        objects.add(activity.getActor());
+      if( activity.getObject().getObjectType() != null)
+        objects.add(activity.getObject());
+
+      StreamsDatum datum = new StreamsDatum(activity);
+
+      List<StreamsDatum> resultList = processor.process(datum);
+      assert(resultList != null);
+      assert(resultList.size() == 1);
+
+      StreamsDatum result = resultList.get(0);
+      assert(result != null);
+      assert(result.getDocument() != null);
+      assert(result.getId() != null);
+      assert(result.getMetadata() != null);
+      assert(result.getMetadata().get("id") != null);
+      assert(result.getMetadata().get("type") != null);
+
+      LOGGER.info("valid: " + activity.getVerb() );
     }
 
-    @Test
-    public void testSerializability() {
-        MetadataFromDocumentProcessor processor = new MetadataFromDocumentProcessor();
+    for( ActivityObject activityObject : objects) {
+      LOGGER.info("Object: " + MAPPER.writeValueAsString(activityObject));
 
-        MetadataFromDocumentProcessor clone = (MetadataFromDocumentProcessor) SerializationUtils.clone(processor);
+      activityObject.setId(activityObject.getObjectType());
+      StreamsDatum datum = new StreamsDatum(activityObject);
+
+      List<StreamsDatum> resultList = processor.process(datum);
+      assert(resultList != null);
+      assert(resultList.size() == 1);
+
+      StreamsDatum result = resultList.get(0);
+      assert(result != null);
+      assert(result.getDocument() != null);
+      assert(result.getId() != null);
+      assert(result.getMetadata() != null);
+      assert(result.getMetadata().get("id") != null);
+      assert(result.getMetadata().get("type") != null);
+
+      LOGGER.info("valid: " + activityObject.getObjectType() );
     }
-
-    @Test
-    public void testMetadataFromDocumentProcessor() throws Exception {
-
-        MetadataFromDocumentProcessor processor = new MetadataFromDocumentProcessor();
-
-        processor.prepare(null);
-
-        InputStream testActivityFolderStream = TestMetadataFromDocumentProcessor.class.getClassLoader()
-                .getResourceAsStream("activities");
-        List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
-
-        Set<ActivityObject> objects = Sets.newHashSet();
-
-        for( String file : files) {
-            LOGGER.info("File: " + file );
-            InputStream testActivityFileStream = TestMetadataFromDocumentProcessor.class.getClassLoader()
-                    .getResourceAsStream("activities/" + file);
-            Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
-            activity.setId(activity.getVerb());
-            activity.getAdditionalProperties().remove("$license");
-
-            if( activity.getActor().getObjectType() != null)
-                objects.add(activity.getActor());
-            if( activity.getObject().getObjectType() != null)
-                objects.add(activity.getObject());
-
-            StreamsDatum datum = new StreamsDatum(activity);
-
-            List<StreamsDatum> resultList = processor.process(datum);
-            assert(resultList != null);
-            assert(resultList.size() == 1);
-
-            StreamsDatum result = resultList.get(0);
-            assert(result != null);
-            assert(result.getDocument() != null);
-            assert(result.getId() != null);
-            assert(result.getMetadata() != null);
-            assert(result.getMetadata().get("id") != null);
-            assert(result.getMetadata().get("type") != null);
-
-            LOGGER.info("valid: " + activity.getVerb() );
-        }
-
-        for( ActivityObject activityObject : objects) {
-            LOGGER.info("Object: " + MAPPER.writeValueAsString(activityObject));
-
-            activityObject.setId(activityObject.getObjectType());
-            StreamsDatum datum = new StreamsDatum(activityObject);
-
-            List<StreamsDatum> resultList = processor.process(datum);
-            assert(resultList != null);
-            assert(resultList.size() == 1);
-
-            StreamsDatum result = resultList.get(0);
-            assert(result != null);
-            assert(result.getDocument() != null);
-            assert(result.getId() != null);
-            assert(result.getMetadata() != null);
-            assert(result.getMetadata().get("id") != null);
-            assert(result.getMetadata().get("type") != null);
-
-            LOGGER.info("valid: " + activityObject.getObjectType() );
-        }
-    }
+  }
 }

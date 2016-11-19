@@ -18,111 +18,131 @@
 
 package org.apache.streams.elasticsearch;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
 import org.elasticsearch.action.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+/**
+ * ElasticsearchPersistUpdater updates documents to elasticsearch.
+ */
 public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter implements StreamsPersistWriter {
 
-    public static final String STREAMS_ID = ElasticsearchPersistUpdater.class.getCanonicalName();
+  public static final String STREAMS_ID = ElasticsearchPersistUpdater.class.getCanonicalName();
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistUpdater.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistUpdater.class);
 
-    public ElasticsearchPersistUpdater() {
-        super();
+  public ElasticsearchPersistUpdater() {
+    super();
+  }
+
+  public ElasticsearchPersistUpdater(ElasticsearchWriterConfiguration config) {
+    super(config);
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public void write(StreamsDatum streamsDatum) {
+
+    if (streamsDatum == null || streamsDatum.getDocument() == null) {
+      return;
     }
 
-    public ElasticsearchPersistUpdater(ElasticsearchWriterConfiguration config) {
-        super(config);
+    LOGGER.debug("Update Document: {}", streamsDatum.getDocument());
+
+    Map<String, Object> metadata = streamsDatum.getMetadata();
+
+    LOGGER.debug("Update Metadata: {}", metadata);
+
+    String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
+    String type = ElasticsearchMetadataUtil.getType(metadata, config);
+    String id = ElasticsearchMetadataUtil.getId(streamsDatum);
+    String parent = ElasticsearchMetadataUtil.getParent(streamsDatum);
+    String routing = ElasticsearchMetadataUtil.getRouting(streamsDatum);
+
+    try {
+
+      String docAsJson = docAsJson(streamsDatum.getDocument());
+
+      LOGGER.debug("Attempt Update: ({},{},{},{},{}) {}", index, type, id, parent, routing, docAsJson);
+
+      update(index, type, id, parent, routing, docAsJson);
+
+    } catch (Throwable ex) {
+      LOGGER.warn("Unable to Update Document in ElasticSearch: {}", ex.getMessage());
+    }
+  }
+
+  /**
+   * Prepare and en-queue.
+   * @see org.elasticsearch.action.update.UpdateRequest
+   * @param indexName indexName
+   * @param type type
+   * @param id id
+   * @param parent parent
+   * @param routing routing
+   * @param json json
+   */
+  public void update(String indexName, String type, String id, String parent, String routing, String json) {
+    UpdateRequest updateRequest;
+
+    Preconditions.checkNotNull(id);
+    Preconditions.checkNotNull(json);
+
+    // They didn't specify an ID, so we will create one for them.
+    updateRequest = new UpdateRequest()
+        .index(indexName)
+        .type(type)
+        .id(id)
+        .doc(json);
+
+    if (!Strings.isNullOrEmpty(parent)) {
+      updateRequest = updateRequest.parent(parent);
     }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
+    if (!Strings.isNullOrEmpty(routing)) {
+      updateRequest = updateRequest.routing(routing);
     }
 
-    @Override
-    public void write(StreamsDatum streamsDatum) {
+    // add fields
+    //updateRequest.docAsUpsert(true);
 
-        if(streamsDatum == null || streamsDatum.getDocument() == null)
-            return;
+    add(updateRequest);
 
-        LOGGER.debug("Update Document: {}", streamsDatum.getDocument());
+  }
 
-        Map<String, Object> metadata = streamsDatum.getMetadata();
+  /**
+   * Enqueue UpdateRequest.
+   * @param request request
+   */
+  public void add(UpdateRequest request) {
 
-        LOGGER.debug("Update Metadata: {}", metadata);
+    Preconditions.checkNotNull(request);
+    Preconditions.checkNotNull(request.index());
 
-        String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
-        String type = ElasticsearchMetadataUtil.getType(metadata, config);
-        String id = ElasticsearchMetadataUtil.getId(streamsDatum);
-        String parent = ElasticsearchMetadataUtil.getParent(streamsDatum);
-        String routing = ElasticsearchMetadataUtil.getRouting(streamsDatum);
+    // If our queue is larger than our flush threshold, then we should flush the queue.
+    synchronized (this) {
+      checkIndexImplications(request.index());
 
-        try {
+      bulkRequest.add(request);
 
-            String docAsJson = docAsJson(streamsDatum.getDocument());
+      currentBatchBytes.addAndGet(request.doc().source().length());
+      currentBatchItems.incrementAndGet();
 
-            LOGGER.debug("Attempt Update: ({},{},{},{},{}) {}", index, type, id, parent, routing, docAsJson);
-
-            update(index, type, id, parent, routing, docAsJson);
-
-        } catch (Throwable e) {
-            LOGGER.warn("Unable to Update Document in ElasticSearch: {}", e.getMessage());
-        }
+      checkForFlush();
     }
 
-    public void update(String indexName, String type, String id, String parent, String routing, String json) {
-        UpdateRequest updateRequest;
-
-        Preconditions.checkNotNull(id);
-        Preconditions.checkNotNull(json);
-
-        // They didn't specify an ID, so we will create one for them.
-        updateRequest = new UpdateRequest()
-                .index(indexName)
-                .type(type)
-                .id(id)
-                .doc(json);
-
-        if(!Strings.isNullOrEmpty(parent)) {
-            updateRequest = updateRequest.parent(parent);
-        }
-
-        if(!Strings.isNullOrEmpty(routing)) {
-            updateRequest = updateRequest.routing(routing);
-        }
-
-        // add fields
-        //updateRequest.docAsUpsert(true);
-
-        add(updateRequest);
-
-    }
-
-    public void add(UpdateRequest request) {
-
-        Preconditions.checkNotNull(request);
-        Preconditions.checkNotNull(request.index());
-
-        // If our queue is larger than our flush threshold, then we should flush the queue.
-        synchronized (this) {
-            checkIndexImplications(request.index());
-
-            bulkRequest.add(request);
-
-            currentBatchBytes.addAndGet(request.doc().source().length());
-            currentBatchItems.incrementAndGet();
-
-            checkForFlush();
-        }
-
-    }
+  }
 
 }

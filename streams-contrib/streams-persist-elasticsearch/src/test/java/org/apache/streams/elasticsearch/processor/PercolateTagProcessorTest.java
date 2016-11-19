@@ -22,25 +22,30 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Unit Test for
+ * @see org.apache.streams.elasticsearch.processor.PercolateTagProcessor
+ */
 public class PercolateTagProcessorTest {
-    private final String id = "test_id";
-    private final String query = "test_query";
-    private final String defaultPercolateField = "activity.content";
 
-    private final String expectedResults = "{ \n" +
-            "\"query\" : {\n" +
-            "  \"query_string\" : {\n" +
-            "    \"query\" : \"test_query\",\n" +
-            "    \"default_field\" : \"activity.content\"\n" +
-            "  }\n" +
-            "}\n" +
-            "}";
+  private final String id = "test_id";
+  private final String query = "test_query";
+  private final String defaultPercolateField = "activity.content";
 
-    @Test
-    public void percolateTagProcessorQueryBuilderTest() {
-        PercolateTagProcessor.PercolateQueryBuilder percolateQueryBuilder = new PercolateTagProcessor.PercolateQueryBuilder(id, query, defaultPercolateField);
+  private final String expectedResults = "{ \n" +
+      "\"query\" : {\n" +
+      "  \"query_string\" : {\n" +
+      "    \"query\" : \"test_query\",\n" +
+      "    \"default_field\" : \"activity.content\"\n" +
+      "  }\n" +
+      "}\n" +
+      "}";
 
-        assertEquals(id, percolateQueryBuilder.getId());
+  @Test
+  public void percolateTagProcessorQueryBuilderTest() {
+    PercolateTagProcessor.PercolateQueryBuilder percolateQueryBuilder = new PercolateTagProcessor.PercolateQueryBuilder(id, query, defaultPercolateField);
+
+    assertEquals(id, percolateQueryBuilder.getId());
 //        assertEquals(expectedResults, percolateQueryBuilder.getSource());
-    }
+  }
 }

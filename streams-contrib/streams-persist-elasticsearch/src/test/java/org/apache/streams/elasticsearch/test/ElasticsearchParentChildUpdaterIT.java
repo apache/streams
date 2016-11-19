@@ -74,11 +74,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 /**
- * Created by sblackmon on 10/20/14.
+ * Integration Test for
+ * @see org.apache.streams.elasticsearch.ElasticsearchPersistUpdater
+ * using parent/child associated documents.
  */
 public class ElasticsearchParentChildUpdaterIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ElasticsearchParentChildUpdaterIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchParentChildUpdaterIT.class);
 
     private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 

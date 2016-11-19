@@ -18,21 +18,21 @@
 
 package org.apache.streams.elasticsearch.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigParseOptions;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
 import org.apache.streams.config.ComponentConfigurator;
-import org.apache.streams.config.StreamsConfiguration;
-import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.elasticsearch.ElasticsearchPersistWriter;
 import org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigParseOptions;
+
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -58,71 +58,72 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 /**
- * Created by sblackmon on 10/20/14.
+ * Integration Test for
+ * @see org.apache.streams.elasticsearch.ElasticsearchPersistWriter
  */
 public class ElasticsearchPersistWriterIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistWriterIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistWriterIT.class);
 
-    private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+  private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-    protected ElasticsearchWriterConfiguration testConfiguration;
-    protected Client testClient;
+  protected ElasticsearchWriterConfiguration testConfiguration;
+  protected Client testClient;
 
-    @Before
-    public void prepareTest() throws Exception {
+  @Before
+  public void prepareTest() throws Exception {
 
-        Config reference  = ConfigFactory.load();
-        File conf_file = new File("target/test-classes/ElasticsearchPersistWriterIT.conf");
-        assert(conf_file.exists());
-        Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-        Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-        testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration(typesafe, "elasticsearch");
-        testClient = new ElasticsearchClientManager(testConfiguration).getClient();
+    Config reference  = ConfigFactory.load();
+    File conf_file = new File("target/test-classes/ElasticsearchPersistWriterIT.conf");
+    assert(conf_file.exists());
+    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
+    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
+    testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration(typesafe, "elasticsearch");
+    testClient = new ElasticsearchClientManager(testConfiguration).getClient();
 
-        ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();
-        ClusterHealthResponse clusterHealthResponse = testClient.admin().cluster().health(clusterHealthRequest).actionGet();
-        assertNotEquals(clusterHealthResponse.getStatus(), ClusterHealthStatus.RED);
+    ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();
+    ClusterHealthResponse clusterHealthResponse = testClient.admin().cluster().health(clusterHealthRequest).actionGet();
+    assertNotEquals(clusterHealthResponse.getStatus(), ClusterHealthStatus.RED);
 
-        IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getIndex());
-        IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
-        if(indicesExistsResponse.isExists()) {
-            DeleteIndexRequest deleteIndexRequest = Requests.deleteIndexRequest(testConfiguration.getIndex());
-            DeleteIndexResponse deleteIndexResponse = testClient.admin().indices().delete(deleteIndexRequest).actionGet();
-            assertTrue(deleteIndexResponse.isAcknowledged());
-        };
+    IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getIndex());
+    IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
+    if(indicesExistsResponse.isExists()) {
+      DeleteIndexRequest deleteIndexRequest = Requests.deleteIndexRequest(testConfiguration.getIndex());
+      DeleteIndexResponse deleteIndexResponse = testClient.admin().indices().delete(deleteIndexRequest).actionGet();
+      assertTrue(deleteIndexResponse.isAcknowledged());
+    };
 
+  }
+
+  @Test
+  public void testPersistWriter() throws Exception {
+
+    ElasticsearchPersistWriter testPersistWriter = new ElasticsearchPersistWriter(testConfiguration);
+    testPersistWriter.prepare(null);
+
+    InputStream testActivityFolderStream = ElasticsearchPersistWriterIT.class.getClassLoader()
+        .getResourceAsStream("activities");
+    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+
+    for( String file : files) {
+      LOGGER.info("File: " + file );
+      InputStream testActivityFileStream = ElasticsearchPersistWriterIT.class.getClassLoader()
+          .getResourceAsStream("activities/" + file);
+      Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
+      StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
+      testPersistWriter.write( datum );
+      LOGGER.info("Wrote: " + activity.getVerb() );
     }
 
-    @Test
-    public void testPersistWriter() throws Exception {
+    testPersistWriter.cleanUp();
 
-        ElasticsearchPersistWriter testPersistWriter = new ElasticsearchPersistWriter(testConfiguration);
-        testPersistWriter.prepare(null);
+    SearchRequestBuilder countRequest = testClient
+        .prepareSearch(testConfiguration.getIndex())
+        .setTypes(testConfiguration.getType());
+    SearchResponse countResponse = countRequest.execute().actionGet();
 
-        InputStream testActivityFolderStream = ElasticsearchPersistWriterIT.class.getClassLoader()
-               .getResourceAsStream("activities");
-        List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    assertEquals(89, countResponse.getHits().getTotalHits());
 
-        for( String file : files) {
-           LOGGER.info("File: " + file );
-           InputStream testActivityFileStream = ElasticsearchPersistWriterIT.class.getClassLoader()
-                   .getResourceAsStream("activities/" + file);
-           Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
-           StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
-           testPersistWriter.write( datum );
-           LOGGER.info("Wrote: " + activity.getVerb() );
-        }
-
-        testPersistWriter.cleanUp();
-
-        SearchRequestBuilder countRequest = testClient
-                .prepareSearch(testConfiguration.getIndex())
-                .setTypes(testConfiguration.getType());
-        SearchResponse countResponse = countRequest.execute().actionGet();
-
-        assertEquals(89, countResponse.getHits().getTotalHits());
-
-    }
+  }
 
 }
