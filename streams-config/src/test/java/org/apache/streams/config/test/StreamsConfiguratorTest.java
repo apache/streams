@@ -44,7 +44,7 @@ import java.util.Scanner;
  */
 public class StreamsConfiguratorTest {
 
-    private final static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     public void testDetectConfiguration() throws Exception {
