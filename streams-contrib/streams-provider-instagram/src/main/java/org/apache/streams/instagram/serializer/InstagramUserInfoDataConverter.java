@@ -23,6 +23,7 @@ import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
+
 import org.jinstagram.entity.users.basicinfo.UserInfoData;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -33,56 +34,56 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * InstagramUserInfoDataConverter
  */
 public class InstagramUserInfoDataConverter implements ActivityObjectConverter<UserInfoData> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoDataConverter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoDataConverter.class);
 
-    private static final String STREAMS_ID_PREFIX = "id:instagram:";
-    private static final String PROVIDER_ID = "id:provider:instagram";
-    private static final String DISPLAY_NAME = "Instagram";
+  private static final String STREAMS_ID_PREFIX = "id:instagram:";
+  private static final String PROVIDER_ID = "id:provider:instagram";
+  private static final String DISPLAY_NAME = "Instagram";
 
-    @Override
-    public Class requiredClass() {
-        return UserInfoData.class;
-    }
+  @Override
+  public Class requiredClass() {
+    return UserInfoData.class;
+  }
 
-    @Override
-    public String serializationFormat() {
-        return null;
-    }
+  @Override
+  public String serializationFormat() {
+    return null;
+  }
 
-    @Override
-    public UserInfoData fromActivityObject(ActivityObject deserialized) throws ActivityConversionException {
-        return null;
-    }
+  @Override
+  public UserInfoData fromActivityObject(ActivityObject deserialized) throws ActivityConversionException {
+    return null;
+  }
 
-    @Override
-    public ActivityObject toActivityObject(UserInfoData serialized) throws ActivityConversionException {
-        ActivityObject activityObject = new ActivityObject();
-        activityObject.setObjectType("page");
-        Provider provider = new Provider();
-        provider.setId(PROVIDER_ID);
-        provider.setDisplayName(DISPLAY_NAME);
-        activityObject.getAdditionalProperties().put("provider", provider);
-        activityObject.setPublished(DateTime.now().withZone(DateTimeZone.UTC));
-        Image image = new Image();
-        image.setUrl(serialized.getProfilePicture());
-        activityObject.setImage(image);
-        activityObject.setId(STREAMS_ID_PREFIX+serialized.getId());
-        activityObject.setSummary(serialized.getBio());
-        activityObject.setAdditionalProperty("handle", serialized.getUsername());
-        activityObject.setDisplayName(serialized.getFullName());
-        activityObject.setUrl(serialized.getWebsite());
-        Map<String, Object> extensions = new HashMap<>();
-        activityObject.setAdditionalProperty("extensions", extensions);
-        extensions.put("screenName", serialized.getUsername());
-        extensions.put("posts", serialized.getCounts().getMedia());
-        extensions.put("followers", serialized.getCounts().getFollowedBy());
-        extensions.put("website", serialized.getWebsite());
-        extensions.put("following", serialized.getCounts().getFollows());
-        return activityObject;
-    }
+  @Override
+  public ActivityObject toActivityObject(UserInfoData serialized) throws ActivityConversionException {
+    ActivityObject activityObject = new ActivityObject();
+    activityObject.setObjectType("page");
+    Provider provider = new Provider();
+    provider.setId(PROVIDER_ID);
+    provider.setDisplayName(DISPLAY_NAME);
+    activityObject.getAdditionalProperties().put("provider", provider);
+    activityObject.setPublished(DateTime.now().withZone(DateTimeZone.UTC));
+    Image image = new Image();
+    image.setUrl(serialized.getProfilePicture());
+    activityObject.setImage(image);
+    activityObject.setId(STREAMS_ID_PREFIX + serialized.getId());
+    activityObject.setSummary(serialized.getBio());
+    activityObject.setAdditionalProperty("handle", serialized.getUsername());
+    activityObject.setDisplayName(serialized.getFullName());
+    activityObject.setUrl(serialized.getWebsite());
+    Map<String, Object> extensions = new HashMap<>();
+    activityObject.setAdditionalProperty("extensions", extensions);
+    extensions.put("screenName", serialized.getUsername());
+    extensions.put("posts", serialized.getCounts().getMedia());
+    extensions.put("followers", serialized.getCounts().getFollowedBy());
+    extensions.put("website", serialized.getWebsite());
+    extensions.put("following", serialized.getCounts().getFollows());
+    return activityObject;
+  }
 
 }

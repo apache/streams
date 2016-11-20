@@ -18,24 +18,26 @@
 
 package org.apache.streams.instagram.test.data;
 
+import org.apache.streams.data.ActivityConverter;
+import org.apache.streams.instagram.serializer.InstagramMediaFeedDataConverter;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.json.Activity;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import org.apache.commons.lang.StringUtils;
+import org.jinstagram.entity.users.feed.MediaFeedData;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import org.apache.commons.lang.StringUtils;
-import org.apache.streams.data.ActivityConverter;
-import org.apache.streams.instagram.serializer.InstagramMediaFeedDataConverter;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
-import org.jinstagram.entity.users.feed.MediaFeedData;
-import org.junit.Assert;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -43,61 +45,63 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests conversion of instagram inputs to Activity
+ * Tests conversion of instagram inputs to Activity.
  */
+
 public class InstagramMediaFeedDataConverterIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(InstagramMediaFeedDataConverterIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InstagramMediaFeedDataConverterIT.class);
 
-    // use gson because jInstagram's pojos do
-    private Gson gson = new Gson();
+  // use gson because jInstagram's pojos do
+  private Gson gson = new Gson();
 
-    // use jackson to write to file output
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  // use jackson to write to file output
+  private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    @Test
-    public void InstagramMediaFeedDataConverterITCase() throws Exception {
-        InputStream is = InstagramMediaFeedDataConverterIT.class.getResourceAsStream("/testMediaFeedObjects.txt");
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
+  @Test
+  public void InstagramMediaFeedDataConverterITCase() throws Exception {
+    InputStream is = InstagramMediaFeedDataConverterIT.class.getResourceAsStream("/testMediaFeedObjects.txt");
+    InputStreamReader isr = new InputStreamReader(is);
+    BufferedReader br = new BufferedReader(isr);
 
-        PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream("target/test-classes/InstagramMediaFeedDataConverterITCase.txt")));
+    PrintStream outStream = new PrintStream(
+        new BufferedOutputStream(
+            new FileOutputStream("target/test-classes/InstagramMediaFeedDataConverterITCase.txt")));
 
-        try {
-            while (br.ready()) {
-                String line = br.readLine();
-                if(!StringUtils.isEmpty(line))
-                {
-                    LOGGER.info("raw: {}", line);
+    try {
+      while (br.ready()) {
+        String line = br.readLine();
+        if (!StringUtils.isEmpty(line)) {
+          LOGGER.info("raw: {}", line);
 
-                    MediaFeedData mediaFeedData = gson.fromJson(line, MediaFeedData.class);
+          MediaFeedData mediaFeedData = gson.fromJson(line, MediaFeedData.class);
 
-                    ActivityConverter<MediaFeedData> converter = new InstagramMediaFeedDataConverter();
+          ActivityConverter<MediaFeedData> converter = new InstagramMediaFeedDataConverter();
 
-                    Activity activity = converter.toActivityList(mediaFeedData).get(0);
+          Activity activity = converter.toActivityList(mediaFeedData).get(0);
 
-                    LOGGER.info("activity: {}", activity.toString());
+          LOGGER.info("activity: {}", activity.toString());
 
-                    assertThat(activity, is(not(nullValue())));
+          assertThat(activity, is(not(nullValue())));
 
-                    assertThat(activity.getId(), is(not(nullValue())));
-                    assertThat(activity.getActor(), is(not(nullValue())));
-                    assertThat(activity.getActor().getId(), is(not(nullValue())));
-                    assertThat(activity.getVerb(), is(not(nullValue())));
-                    assertThat(activity.getProvider(), is(not(nullValue())));
+          assertThat(activity.getId(), is(not(nullValue())));
+          assertThat(activity.getActor(), is(not(nullValue())));
+          assertThat(activity.getActor().getId(), is(not(nullValue())));
+          assertThat(activity.getVerb(), is(not(nullValue())));
+          assertThat(activity.getProvider(), is(not(nullValue())));
 
-                    outStream.println(mapper.writeValueAsString(activity));
+          outStream.println(mapper.writeValueAsString(activity));
 
-                }
-
-            }
-            outStream.flush();
-
-        } catch( Exception e ) {
-            LOGGER.error("Exception: ", e);
-            outStream.flush();
-            Assert.fail();
         }
+
+      }
+      outStream.flush();
+
+    } catch ( Exception ex ) {
+      LOGGER.error("Exception: ", ex);
+      outStream.flush();
+      Assert.fail();
     }
+  }
 
 }

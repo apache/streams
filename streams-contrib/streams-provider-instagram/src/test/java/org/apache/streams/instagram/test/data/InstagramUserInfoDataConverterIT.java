@@ -18,18 +18,15 @@
 
 package org.apache.streams.instagram.test.data;
 
+import org.apache.streams.data.ActivityObjectConverter;
+import org.apache.streams.instagram.serializer.InstagramUserInfoDataConverter;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.json.ActivityObject;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
-import org.apache.streams.data.ActivityConverter;
-import org.apache.streams.data.ActivityObjectConverter;
-import org.apache.streams.instagram.serializer.InstagramMediaFeedDataConverter;
-import org.apache.streams.instagram.serializer.InstagramUserInfoDataConverter;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.ActivityObject;
 import org.jinstagram.entity.users.basicinfo.UserInfoData;
-import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -49,71 +46,73 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests conversion of instagram inputs to Activity
+ * Tests conversion of instagram inputs to Activity.
  */
 public class InstagramUserInfoDataConverterIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoDataConverterIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoDataConverterIT.class);
 
-    // use gson because jInstagram's pojos do
-    private Gson gson = new Gson();
+  // use gson because jInstagram's pojos do
+  private Gson gson = new Gson();
 
-    // use jackson to write to file output
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  // use jackson to write to file output
+  private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    @Test
-    public void InstagramUserInfoDataConverterIT() throws Exception {
-        InputStream is = InstagramUserInfoDataConverterIT.class.getResourceAsStream("/testUserInfoData.txt");
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
+  @Test
+  public void InstagramUserInfoDataConverterIT() throws Exception {
+    InputStream is = InstagramUserInfoDataConverterIT.class.getResourceAsStream("/testUserInfoData.txt");
+    InputStreamReader isr = new InputStreamReader(is);
+    BufferedReader br = new BufferedReader(isr);
 
-        PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream("target/test-classes/InstagramUserInfoDataConverterIT.txt")));
+    PrintStream outStream = new PrintStream(
+        new BufferedOutputStream(
+            new FileOutputStream("target/test-classes/InstagramUserInfoDataConverterIT.txt")));
 
-        try {
-            while (br.ready()) {
-                String line = br.readLine();
-                if(!StringUtils.isEmpty(line))
-                {
-                    LOGGER.info("raw: {}", line);
+    try {
+      while (br.ready()) {
+        String line = br.readLine();
+        if (!StringUtils.isEmpty(line)) {
 
-                    UserInfoData userInfoData = gson.fromJson(line, UserInfoData.class);
+          LOGGER.info("raw: {}", line);
 
-                    ActivityObjectConverter<UserInfoData> converter = new InstagramUserInfoDataConverter();
+          UserInfoData userInfoData = gson.fromJson(line, UserInfoData.class);
 
-                    ActivityObject activityObject = converter.toActivityObject(userInfoData);
+          ActivityObjectConverter<UserInfoData> converter = new InstagramUserInfoDataConverter();
 
-                    LOGGER.info("activityObject: {}", activityObject.toString());
+          ActivityObject activityObject = converter.toActivityObject(userInfoData);
 
-                    assertThat(activityObject, is(not(nullValue())));
+          LOGGER.info("activityObject: {}", activityObject.toString());
 
-                    assertThat(activityObject.getId(), is(not(nullValue())));
-                    assertThat(activityObject.getImage(), is(not(nullValue())));
-                    assertThat(activityObject.getDisplayName(), is(not(nullValue())));
-                    assertThat(activityObject.getSummary(), is(not(nullValue())));
+          assertThat(activityObject, is(not(nullValue())));
 
-                    Map<String, Object> extensions = (Map<String, Object>)activityObject.getAdditionalProperties().get("extensions");
-                    assertThat(extensions, is(not(nullValue())));
-                    assertThat(extensions.get("following"), is(not(nullValue())));
-                    assertThat(extensions.get("followers"), is(not(nullValue())));
-                    assertThat(extensions.get("screenName"), is(not(nullValue())));
-                    assertThat(extensions.get("posts"), is(not(nullValue())));
+          assertThat(activityObject.getId(), is(not(nullValue())));
+          assertThat(activityObject.getImage(), is(not(nullValue())));
+          assertThat(activityObject.getDisplayName(), is(not(nullValue())));
+          assertThat(activityObject.getSummary(), is(not(nullValue())));
 
-                    assertThat(activityObject.getAdditionalProperties().get("handle"), is(not(nullValue())));
-                    assertThat(activityObject.getId(), is(not(nullValue())));
-                    assertThat(activityObject.getUrl(), is(not(nullValue())));
+          Map<String, Object> extensions = (Map<String, Object>)activityObject.getAdditionalProperties().get("extensions");
+          assertThat(extensions, is(not(nullValue())));
+          assertThat(extensions.get("following"), is(not(nullValue())));
+          assertThat(extensions.get("followers"), is(not(nullValue())));
+          assertThat(extensions.get("screenName"), is(not(nullValue())));
+          assertThat(extensions.get("posts"), is(not(nullValue())));
 
-                    assertThat(activityObject.getAdditionalProperties().get("provider"), is(not(nullValue())));
+          assertThat(activityObject.getAdditionalProperties().get("handle"), is(not(nullValue())));
+          assertThat(activityObject.getId(), is(not(nullValue())));
+          assertThat(activityObject.getUrl(), is(not(nullValue())));
 
-                    outStream.println(mapper.writeValueAsString(activityObject));
+          assertThat(activityObject.getAdditionalProperties().get("provider"), is(not(nullValue())));
 
-                }
-            }
-            outStream.flush();
+          outStream.println(mapper.writeValueAsString(activityObject));
 
-        } catch( Exception e ) {
-            LOGGER.error("Exception: ", e);
-            outStream.flush();
-            Assert.fail();
         }
+      }
+      outStream.flush();
+
+    } catch ( Exception ex ) {
+      LOGGER.error("Exception: ", ex);
+      outStream.flush();
+      Assert.fail();
     }
+  }
 }
