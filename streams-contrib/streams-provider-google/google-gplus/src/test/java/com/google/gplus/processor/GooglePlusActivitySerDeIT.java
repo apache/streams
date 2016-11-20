@@ -19,17 +19,19 @@
 
 package com.google.gplus.processor;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.google.gplus.serializer.util.GPlusActivityDeserializer;
-import com.google.gplus.serializer.util.GooglePlusActivityUtil;
-import org.apache.commons.lang.StringUtils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Provider;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.gplus.serializer.util.GPlusActivityDeserializer;
+import com.google.gplus.serializer.util.GooglePlusActivityUtil;
+
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -44,71 +46,75 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Tests conversion of gplus inputs to Activity
+ * Tests conversion of gplus inputs to Activity.
  */
 public class GooglePlusActivitySerDeIT {
-    private final static Logger LOGGER = LoggerFactory.getLogger(GooglePlusActivitySerDeIT.class);
-    private ObjectMapper objectMapper;
+  private static final Logger LOGGER = LoggerFactory.getLogger(GooglePlusActivitySerDeIT.class);
+  private ObjectMapper objectMapper;
 
-    @Before
-    public void setup() {
-        objectMapper = StreamsJacksonMapper.getInstance();
-        SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addDeserializer(com.google.api.services.plus.model.Activity.class, new GPlusActivityDeserializer());
-        objectMapper.registerModule(simpleModule);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
+  /**
+   * setup.
+   */
+  @Before
+  public void setup() {
+    objectMapper = StreamsJacksonMapper.getInstance();
+    SimpleModule simpleModule = new SimpleModule();
+    simpleModule.addDeserializer(com.google.api.services.plus.model.Activity.class, new GPlusActivityDeserializer());
+    objectMapper.registerModule(simpleModule);
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+  }
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void TestActivityObjects() {
-        InputStream is = GooglePlusActivitySerDeIT.class.getResourceAsStream("/google_plus_activity_jsons.txt");
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
+  @Test
+  @SuppressWarnings("unchecked")
+  public void testActivityObjects() {
+    InputStream is = GooglePlusActivitySerDeIT.class.getResourceAsStream("/google_plus_activity_jsons.txt");
+    InputStreamReader isr = new InputStreamReader(is);
+    BufferedReader br = new BufferedReader(isr);
 
-        try {
-            while (br.ready()) {
-                String line = br.readLine();
-                if (!StringUtils.isEmpty(line)) {
-                    LOGGER.info("raw: {}", line);
-                    Activity activity = new Activity();
+    try {
+      while (br.ready()) {
+        String line = br.readLine();
+        if (!StringUtils.isEmpty(line)) {
+          LOGGER.info("raw: {}", line);
+          Activity activity = new Activity();
 
-                    com.google.api.services.plus.model.Activity gPlusActivity = objectMapper.readValue(line, com.google.api.services.plus.model.Activity.class);
+          com.google.api.services.plus.model.Activity googlePlusActivity =
+              objectMapper.readValue(line, com.google.api.services.plus.model.Activity.class);
 
-                    GooglePlusActivityUtil.updateActivity(gPlusActivity, activity);
-                    LOGGER.info("activity: {}", activity);
+          GooglePlusActivityUtil.updateActivity(googlePlusActivity, activity);
+          LOGGER.info("activity: {}", activity);
 
-                    assertNotNull(activity);
-                    assert(activity.getId().contains("id:googleplus:post"));
-                    assertEquals(activity.getVerb(), "post");
+          assertNotNull(activity);
+          assert (activity.getId().contains("id:googleplus:post"));
+          assertEquals(activity.getVerb(), "post");
 
-                    Provider provider = activity.getProvider();
-                    assertEquals(provider.getId(), "id:providers:googleplus");
-                    assertEquals(provider.getDisplayName(), "GooglePlus");
+          Provider provider = activity.getProvider();
+          assertEquals(provider.getId(), "id:providers:googleplus");
+          assertEquals(provider.getDisplayName(), "GooglePlus");
 
-                    ActivityObject actor = activity.getActor();
-                    assertNotNull(actor.getImage());
-                    assert(actor.getId().contains("id:googleplus:"));
-                    assertNotNull(actor.getUrl());
+          ActivityObject actor = activity.getActor();
+          assertNotNull(actor.getImage());
+          assert (actor.getId().contains("id:googleplus:"));
+          assertNotNull(actor.getUrl());
 
-                    assertNotNull(activity.getPublished());
-                    assertNotNull(activity.getTitle());
-                    assertNotNull(activity.getUrl());
+          assertNotNull(activity.getPublished());
+          assertNotNull(activity.getTitle());
+          assertNotNull(activity.getUrl());
 
-                    Map<String, Object> extensions = ExtensionUtil.getInstance().getExtensions(activity);
-                    assertNotNull(extensions);
+          Map<String, Object> extensions = ExtensionUtil.getInstance().getExtensions(activity);
+          assertNotNull(extensions);
 
-                    if(activity.getContent() != null) {
-                        assertNotNull(extensions.get("rebroadcasts"));
-                        assertNotNull(extensions.get("keywords"));
-                        assertNotNull(extensions.get("likes"));
-                        assert (((Map<String, Object>) extensions.get("rebroadcasts")).containsKey("count"));
-                        assert (((Map<String, Object>) extensions.get("likes")).containsKey("count"));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("Exception while testing serializability: {}", e);
+          if (activity.getContent() != null) {
+            assertNotNull(extensions.get("rebroadcasts"));
+            assertNotNull(extensions.get("keywords"));
+            assertNotNull(extensions.get("likes"));
+            assert (((Map<String, Object>) extensions.get("rebroadcasts")).containsKey("count"));
+            assert (((Map<String, Object>) extensions.get("likes")).containsKey("count"));
+          }
         }
+      }
+    } catch (Exception ex) {
+      LOGGER.error("Exception while testing serializability: {}", ex);
     }
+  }
 }

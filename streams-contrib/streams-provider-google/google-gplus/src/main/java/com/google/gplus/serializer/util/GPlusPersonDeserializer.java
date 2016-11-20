@@ -19,6 +19,8 @@
 
 package com.google.gplus.serializer.util;
 
+import org.apache.streams.jackson.StreamsJacksonMapper;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -28,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.google.api.client.util.Lists;
 import com.google.api.services.plus.model.Person;
-import org.apache.streams.jackson.StreamsJacksonMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,74 +38,80 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Custom deserializer for GooglePlus' Person model
+ * Custom deserializer for GooglePlus' Person model.
  */
 public class GPlusPersonDeserializer extends JsonDeserializer<Person> {
-    private final static Logger LOGGER = LoggerFactory.getLogger(GPlusPersonDeserializer.class);
 
-    /**
-     * Because the GooglePlus Person object contains complex objects within its hierarchy, we have to use
-     * a custom deserializer
-     *
-     * @param jsonParser
-     * @param deserializationContext
-     * @return The deserialized {@link com.google.api.services.plus.model.Person} object
-     * @throws IOException
-     * @throws JsonProcessingException
-     */
-    @Override
-    public Person deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-        ObjectMapper m = StreamsJacksonMapper.getInstance();
+  private static final Logger LOGGER = LoggerFactory.getLogger(GPlusPersonDeserializer.class);
 
-        JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        Person person = new Person();
-        try {
+  /**
+   * Because the GooglePlus Person object contains complex objects within its hierarchy, we have to use
+   * a custom deserializer
+   *
+   * @param jsonParser jsonParser
+   * @param deserializationContext deserializationContext
+   * @return The deserialized {@link com.google.api.services.plus.model.Person} object
+   * @throws IOException IOException
+   * @throws JsonProcessingException JsonProcessingException
+   */
+  @Override
+  public Person deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-            person.setCircledByCount((Integer) ((IntNode) node.get("circledByCount")).numberValue());
-            person.setDisplayName(node.get("displayName").asText());
-            person.setEtag(node.get("etag").asText());
-            person.setGender(node.get("gender").asText());
-            person.setId(node.get("id").asText());
+    JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+    Person person = new Person();
+    try {
 
-            Person.Image image = new Person.Image();
-            JsonNode imageNode = node.get("image");
-            image.setIsDefault(imageNode.get("isDefault").asBoolean());
-            image.setUrl(imageNode.get("url").asText());
-            person.setImage(image);
+      person.setCircledByCount((Integer) ((IntNode) node.get("circledByCount")).numberValue());
+      person.setDisplayName(node.get("displayName").asText());
+      person.setEtag(node.get("etag").asText());
+      person.setGender(node.get("gender").asText());
+      person.setId(node.get("id").asText());
 
-            person.setIsPlusUser(node.get("isPlusUser").asBoolean());
-            person.setKind(node.get("kind").asText());
+      Person.Image image = new Person.Image();
+      JsonNode imageNode = node.get("image");
+      image.setIsDefault(imageNode.get("isDefault").asBoolean());
+      image.setUrl(imageNode.get("url").asText());
+      person.setImage(image);
 
-            JsonNode nameNode = node.get("name");
-            Person.Name name = m.readValue(m.writeValueAsString(nameNode), Person.Name.class);
-            person.setName(name);
+      person.setIsPlusUser(node.get("isPlusUser").asBoolean());
+      person.setKind(node.get("kind").asText());
 
-            person.setObjectType(node.get("objectType").asText());
+      JsonNode nameNode = node.get("name");
+      Person.Name name = mapper.readValue(mapper.writeValueAsString(nameNode), Person.Name.class);
+      person.setName(name);
 
-            List<Person.Organizations> organizations = Lists.newArrayList();
-            for (JsonNode orgNode : node.get("organizations")) {
-                Person.Organizations org = m.readValue(m.writeValueAsString(orgNode), Person.Organizations.class);
-                organizations.add(org);
-            }
-            person.setOrganizations(organizations);
+      person.setObjectType(node.get("objectType").asText());
 
-            person.setUrl(node.get("url").asText());
-            person.setVerified(node.get("verified").asBoolean());
+      List<Person.Organizations> organizations = Lists.newArrayList();
+      for (JsonNode orgNode : node.get("organizations")) {
+        Person.Organizations org = mapper.readValue(mapper.writeValueAsString(orgNode), Person.Organizations.class);
+        organizations.add(org);
+      }
+      person.setOrganizations(organizations);
 
-            List<Person.Emails> emails = Lists.newArrayList();
-            if( node.has("emails")) {
-                for (JsonNode emailNode : node.get("emails")) {
-                    Person.Emails email = m.readValue(m.writeValueAsString(emailNode), Person.Emails.class);
-                    emails.add(email);
-                }
-            }
+      person.setUrl(node.get("url").asText());
+      person.setVerified(node.get("verified").asBoolean());
 
-            if( node.has("tagline")) person.setTagline(node.get("tagline").asText());
-            if( node.has("aboutMe")) person.setAboutMe(node.get("aboutMe").asText());
-        } catch (Exception e) {
-            LOGGER.error("Exception while trying to deserialize a Person object: {}", e);
+      List<Person.Emails> emails = Lists.newArrayList();
+
+      if ( node.has("emails")) {
+        for (JsonNode emailNode : node.get("emails")) {
+          Person.Emails email = mapper.readValue(mapper.writeValueAsString(emailNode), Person.Emails.class);
+          emails.add(email);
         }
+      }
 
-        return person;
+      if ( node.has("tagline")) {
+        person.setTagline(node.get("tagline").asText());
+      }
+      if ( node.has("aboutMe")) {
+        person.setAboutMe(node.get("aboutMe").asText());
+      }
+    } catch (Exception ex) {
+      LOGGER.error("Exception while trying to deserialize a Person object: {}", ex);
     }
+
+    return person;
+  }
 }

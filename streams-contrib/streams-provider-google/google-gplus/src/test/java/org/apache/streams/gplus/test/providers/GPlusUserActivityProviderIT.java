@@ -29,39 +29,39 @@ import java.io.LineNumberReader;
 
 public class GPlusUserActivityProviderIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GPlusUserActivityProviderIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GPlusUserActivityProviderIT.class);
 
-    @Test
-    public void testGPlusUserActivityProvider() throws Exception {
+  @Test
+  public void testGPlusUserActivityProvider() throws Exception {
 
-        String configfile = "./target/test-classes/GPlusUserActivityProviderIT.conf";
-        String outfile = "./target/test-classes/GPlusUserActivityProviderIT.stdout.txt";
+    String configfile = "./target/test-classes/GPlusUserActivityProviderIT.conf";
+    String outfile = "./target/test-classes/GPlusUserActivityProviderIT.stdout.txt";
 
-        String[] args = new String[2];
-        args[0] = configfile;
-        args[1] = outfile;
+    String[] args = new String[2];
+    args[0] = configfile;
+    args[1] = outfile;
 
-        Thread testThread = new Thread((Runnable) () -> {
-            try {
-                GPlusUserActivityProvider.main(args);
-            } catch( Exception e ) {
-                LOGGER.error("Test Exception!", e);
-            }
-        });
-        testThread.start();
-        testThread.join(60000);
+    Thread testThread = new Thread((Runnable) () -> {
+      try {
+        GPlusUserActivityProvider.main(args);
+      } catch ( Exception ex ) {
+        LOGGER.error("Test Exception!", ex);
+      }
+    });
+    testThread.start();
+    testThread.join(60000);
 
-        File out = new File(outfile);
-        assert (out.exists());
-        assert (out.canRead());
-        assert (out.isFile());
+    File out = new File(outfile);
+    assert (out.exists());
+    assert (out.canRead());
+    assert (out.isFile());
 
-        FileReader outReader = new FileReader(out);
-        LineNumberReader outCounter = new LineNumberReader(outReader);
+    FileReader outReader = new FileReader(out);
+    LineNumberReader outCounter = new LineNumberReader(outReader);
 
-        while(outCounter.readLine() != null) {}
+    while (outCounter.readLine() != null) {}
 
-        assert (outCounter.getLineNumber() >= 1);
+    assert (outCounter.getLineNumber() >= 1);
 
-    }
+  }
 }

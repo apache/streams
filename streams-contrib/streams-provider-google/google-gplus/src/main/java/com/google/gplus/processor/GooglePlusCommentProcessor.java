@@ -19,71 +19,78 @@
 
 package com.google.gplus.processor;
 
-import com.google.api.services.plus.model.Comment;
-import com.google.gplus.serializer.util.GooglePlusActivityUtil;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
+
+import com.google.api.services.plus.model.Comment;
+import com.google.gplus.serializer.util.GooglePlusActivityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * GooglePlusCommentProcessor collects comments about a google plus activity.
+ */
 public class GooglePlusCommentProcessor implements StreamsProcessor {
-    private final static String STREAMS_ID = "GooglePlusCommentProcessor";
-    private final static Logger LOGGER = LoggerFactory.getLogger(GooglePlusCommentProcessor.class);
-    private GooglePlusActivityUtil googlePlusActivityUtil;
-    private int count;
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
+  private static final String STREAMS_ID = "GooglePlusCommentProcessor";
+  private static final Logger LOGGER = LoggerFactory.getLogger(GooglePlusCommentProcessor.class);
+  private GooglePlusActivityUtil googlePlusActivityUtil;
+  private int count;
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+    StreamsDatum result = null;
+
+    try {
+      Object item = entry.getDocument();
+      LOGGER.debug("{} processing {}", STREAMS_ID, item.getClass());
+
+      //Get G+ activity ID from our own activity ID
+      if (item instanceof Activity) {
+        Activity activity = (Activity) item;
+        String activityId = getGPlusID(activity.getId());
+
+        //Call Google Plus API to get list of comments for this activity ID
+        /* TODO: FILL ME OUT WITH THE API CALL **/
+        List<Comment> comments = new ArrayList<>();
+
+        googlePlusActivityUtil.updateActivity(comments, activity);
+        result = new StreamsDatum(activity);
+      }
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      LOGGER.error("Exception while converting Comment to Activity: {}", ex.getMessage());
     }
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        StreamsDatum result = null;
-
-        try {
-            Object item = entry.getDocument();
-            LOGGER.debug("{} processing {}", STREAMS_ID, item.getClass());
-
-            //Get G+ activity ID from our own activity ID
-            if (item instanceof Activity) {
-                Activity activity = (Activity) item;
-                String activityId = getGPlusID(activity.getId());
-
-                //Call Google Plus API to get list of comments for this activity ID
-                /* TODO: FILL ME OUT WITH THE API CALL **/
-                List<Comment> comments = new ArrayList<>();
-
-                googlePlusActivityUtil.updateActivity(comments, activity);
-                result = new StreamsDatum(activity);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("Exception while converting Comment to Activity: {}", e.getMessage());
-        }
-
-        if( result != null )
-            return com.google.common.collect.Lists.newArrayList(result);
-        else
-            return new ArrayList<>();
+    if ( result != null ) {
+      return com.google.common.collect.Lists.newArrayList(result);
+    } else {
+      return new ArrayList<>();
     }
+  }
 
-    @Override
-    public void prepare(Object configurationObject) {
-        googlePlusActivityUtil = new GooglePlusActivityUtil();
-        count = 0;
-    }
+  @Override
+  public void prepare(Object configurationObject) {
+    googlePlusActivityUtil = new GooglePlusActivityUtil();
+    count = 0;
+  }
 
-    @Override
-    public void cleanUp() {
+  @Override
+  public void cleanUp() {
 
-    }
+  }
 
-    private String getGPlusID(String activityID) {
-        String[] activityParts = activityID.split(":");
-        return (activityParts.length > 0) ? activityParts[activityParts.length - 1] : "";
-    }
+  private String getGPlusID(String activityId) {
+    String[] activityParts = activityId.split(":");
+    return (activityParts.length > 0) ? activityParts[activityParts.length - 1] : "";
+  }
 }

@@ -18,24 +18,21 @@
 
 package com.google.gplus.provider;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.services.plus.Plus;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.Uninterruptibles;
-import com.google.gson.Gson;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigParseOptions;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.google.gplus.GPlusConfiguration;
 import org.apache.streams.google.gplus.configuration.UserInfo;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
+
+import com.google.api.services.plus.Plus;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.gson.Gson;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigParseOptions;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -48,78 +45,90 @@ import java.util.concurrent.TimeUnit;
 /**
  *  Retrieve current profile status for a list of accounts.
  *
+ *  <p/>
  *  To use from command line:
  *
+ *  <p/>
  *  Supply (at least) the following required configuration in application.conf:
  *
+ *  <p/>
  *  gplus.oauth.pathToP12KeyFile
  *  gplus.oauth.serviceAccountEmailAddress
  *  gplus.apiKey
  *  gplus.googlePlusUsers
  *
+ *  <p/>
  *  Launch using:
  *
+ *  <p/>
  *  mvn exec:java -Dexec.mainClass=com.google.gplus.provider.GPlusUserDataProvider -Dexec.args="application.conf profiles.json"
  */
-public class GPlusUserDataProvider extends AbstractGPlusProvider{
+public class GPlusUserDataProvider extends AbstractGPlusProvider {
 
-    public final static String STREAMS_ID = "GPlusUserDataProvider";
+  public static final String STREAMS_ID = "GPlusUserDataProvider";
 
-    public GPlusUserDataProvider() {
-        super();
+  public GPlusUserDataProvider() {
+    super();
+  }
+
+  public GPlusUserDataProvider(GPlusConfiguration config) {
+    super(config);
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  protected Runnable getDataCollector(BackOffStrategy strategy, BlockingQueue<StreamsDatum> queue, Plus plus, UserInfo userInfo) {
+    return new GPlusUserDataCollector(plus, strategy, queue, userInfo);
+  }
+
+  /**
+   * Retrieve current profile status for a list of accounts.
+   * @param args args
+   * @throws Exception Exception
+   */
+  public static void main(String[] args) throws Exception {
+
+    Preconditions.checkArgument(args.length >= 2);
+
+    String configfile = args[0];
+    String outfile = args[1];
+
+    Config reference = ConfigFactory.load();
+    File file = new File(configfile);
+    assert (file.exists());
+    Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
+
+    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
+
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
+    GPlusConfiguration config = new ComponentConfigurator<>(GPlusConfiguration.class).detectConfiguration(typesafe, "gplus");
+    GPlusUserDataProvider provider = new GPlusUserDataProvider(config);
+
+    Gson gson = new Gson();
+
+    PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
+    provider.prepare(config);
+    provider.startStream();
+    do {
+      Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
+      Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
+      while (iterator.hasNext()) {
+        StreamsDatum datum = iterator.next();
+        String json;
+        if (datum.getDocument() instanceof String) {
+          json = (String) datum.getDocument();
+        } else {
+          json = gson.toJson(datum.getDocument());
+        }
+        outStream.println(json);
+      }
     }
-
-    public GPlusUserDataProvider(GPlusConfiguration config) {
-        super(config);
-    }
-
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
-
-    @Override
-    protected Runnable getDataCollector(BackOffStrategy strategy, BlockingQueue<StreamsDatum> queue, Plus plus, UserInfo userInfo) {
-        return new GPlusUserDataCollector(plus, strategy, queue, userInfo);
-    }
-
-    public static void main(String[] args) throws Exception {
-
-        Preconditions.checkArgument(args.length >= 2);
-
-        String configfile = args[0];
-        String outfile = args[1];
-
-        Config reference = ConfigFactory.load();
-        File conf_file = new File(configfile);
-        assert(conf_file.exists());
-        Config testResourceConfig = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-
-        Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-
-        StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-        GPlusConfiguration config = new ComponentConfigurator<>(GPlusConfiguration.class).detectConfiguration(typesafe, "gplus");
-        GPlusUserDataProvider provider = new GPlusUserDataProvider(config);
-
-        Gson gson = new Gson();
-
-        PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
-        provider.prepare(config);
-        provider.startStream();
-        do {
-            Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-            Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
-            while(iterator.hasNext()) {
-                StreamsDatum datum = iterator.next();
-                String json;
-                if (datum.getDocument() instanceof String)
-                    json = (String) datum.getDocument();
-                else
-                    json = gson.toJson(datum.getDocument());
-                outStream.println(json);
-            }
-        } while( provider.isRunning());
-        provider.cleanUp();
-        outStream.flush();
-    }
+    while ( provider.isRunning());
+    provider.cleanUp();
+    outStream.flush();
+  }
 }
