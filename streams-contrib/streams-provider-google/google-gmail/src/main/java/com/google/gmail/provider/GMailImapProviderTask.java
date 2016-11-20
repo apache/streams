@@ -18,47 +18,46 @@
 
 package com.google.gmail.provider;
 
-import com.googlecode.gmail4j.GmailClient;
-import com.googlecode.gmail4j.GmailMessage;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.util.ComponentUtils;
+
+import com.googlecode.gmail4j.GmailMessage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
- * Created by sblackmon on 12/10/13.
+ * GMailImapProviderTask collects Gmail via IMAP driver.
  */
 public class GMailImapProviderTask implements Runnable {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(GMailImapProviderTask.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(GMailImapProviderTask.class);
 
-    private GMailProvider provider;
+  private GMailProvider provider;
 
-    public GMailImapProviderTask(GMailProvider provider) {
-        this.provider = provider;
-    }
+  public GMailImapProviderTask(GMailProvider provider) {
+    this.provider = provider;
+  }
 
-    @Override
-    public void run() {
+  @Override
+  public void run() {
 
-        final List<GmailMessage> messages = this.provider.imapClient.getUnreadMessages();
+    final List<GmailMessage> messages = this.provider.imapClient.getUnreadMessages();
 
-        for (GmailMessage message : messages) {
+    for (GmailMessage message : messages) {
 
-            Activity activity;
-            GMailMessageActivitySerializer serializer = new GMailMessageActivitySerializer( this.provider );
-            activity = serializer.deserialize(message);
-            StreamsDatum entry = new StreamsDatum(activity);
-            ComponentUtils.offerUntilSuccess(entry, this.provider.providerQueue);
-
-        }
+      Activity activity;
+      GMailMessageActivitySerializer serializer = new GMailMessageActivitySerializer( this.provider );
+      activity = serializer.deserialize(message);
+      StreamsDatum entry = new StreamsDatum(activity);
+      ComponentUtils.offerUntilSuccess(entry, this.provider.providerQueue);
 
     }
+
+  }
 
 
 }
