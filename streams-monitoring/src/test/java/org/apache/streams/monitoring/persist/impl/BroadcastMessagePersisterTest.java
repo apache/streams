@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.monitoring.persist.impl;
 
 import com.google.common.collect.Lists;
@@ -28,33 +29,33 @@ import static org.junit.Assert.assertNotNull;
 
 public class BroadcastMessagePersisterTest {
 
-    @Test
-    public void testFailedPersist() {
-        BroadcastMessagePersister persister = new BroadcastMessagePersister("http://fake.url.com/fake_endpointasdfasdfas");
+  @Test
+  public void testFailedPersist() {
+    BroadcastMessagePersister persister = new BroadcastMessagePersister("http://fake.url.com/fake_endpointasdfasdfas");
 
-        List<String> messages = Lists.newArrayList();
-        for(int x = 0; x < 10; x ++) {
-            messages.add("Fake_message #" + x);
-        }
-
-        int statusCode = persister.persistMessages(messages);
-
-        assertNotNull(statusCode);
-        assertNotEquals(statusCode, 200);
+    List<String> messages = Lists.newArrayList();
+    for (int x = 0; x < 10; x++) {
+      messages.add("Fake_message #" + x);
     }
 
-    @Test
-    public void testInvalidURL() {
-        BroadcastMessagePersister persister = new BroadcastMessagePersister("h");
+    int statusCode = persister.persistMessages(messages);
 
-        List<String> messages = Lists.newArrayList();
-        for(int x = 0; x < 10; x ++) {
-            messages.add("Fake_message #" + x);
-        }
+    assertNotNull(statusCode);
+    assertNotEquals(statusCode, 200);
+  }
 
-        int statusCode = persister.persistMessages(messages);
+  @Test
+  public void testInvalidUrl() {
+    BroadcastMessagePersister persister = new BroadcastMessagePersister("h");
 
-        assertNotNull(statusCode);
-        assertEquals(statusCode, -1);
+    List<String> messages = Lists.newArrayList();
+    for (int x = 0; x < 10; x++) {
+      messages.add("Fake_message #" + x);
     }
+
+    int statusCode = persister.persistMessages(messages);
+
+    assertNotNull(statusCode);
+    assertEquals(statusCode, -1);
+  }
 }

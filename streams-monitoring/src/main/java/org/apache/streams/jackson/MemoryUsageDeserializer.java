@@ -15,65 +15,70 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.jackson;
+
+import org.apache.streams.pojo.json.MemoryUsageBroadcast;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.streams.pojo.json.MemoryUsageBroadcast;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.util.Arrays;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeDataSupport;
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.util.Arrays;
 
 public class MemoryUsageDeserializer extends JsonDeserializer<MemoryUsageBroadcast> {
-    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(MemoryUsageDeserializer.class);
 
-    public MemoryUsageDeserializer() {
+  private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(MemoryUsageDeserializer.class);
 
-    }
+  public MemoryUsageDeserializer() {
 
-    @Override
-    public MemoryUsageBroadcast deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-        try {
-            MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+  }
 
-            MemoryUsageBroadcast memoryUsageBroadcast = new MemoryUsageBroadcast();
-            JsonNode attributes = jsonParser.getCodec().readTree(jsonParser);
+  @Override
+  public MemoryUsageBroadcast deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+    try {
+      MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
-            ObjectName name = new ObjectName(attributes.get("canonicalName").asText());
-            MBeanInfo info = server.getMBeanInfo(name);
-            memoryUsageBroadcast.setName(name.toString());
+      MemoryUsageBroadcast memoryUsageBroadcast = new MemoryUsageBroadcast();
+      JsonNode attributes = jsonParser.getCodec().readTree(jsonParser);
 
-            for(MBeanAttributeInfo attribute : Arrays.asList(info.getAttributes())) {
-                switch(attribute.getName()) {
-                    case "Verbose":
-                        memoryUsageBroadcast.setVerbose((boolean) server.getAttribute(name, attribute.getName()));
-                        break;
-                    case "ObjectPendingFinalizationCount":
-                        memoryUsageBroadcast.setObjectPendingFinalizationCount(Long.parseLong(server.getAttribute(name, attribute.getName()).toString()));
-                        break;
-                    case "HeapMemoryUsage":
-                        memoryUsageBroadcast.setHeapMemoryUsage((Long) ((CompositeDataSupport)server.getAttribute(name, attribute.getName())).get("used"));
-                        break;
-                    case "NonHeapMemoryUsage":
-                        memoryUsageBroadcast.setNonHeapMemoryUsage((Long) ((CompositeDataSupport)server.getAttribute(name, attribute.getName())).get("used"));
-                        break;
-                }
-            }
+      ObjectName name = new ObjectName(attributes.get("canonicalName").asText());
+      MBeanInfo info = server.getMBeanInfo(name);
+      memoryUsageBroadcast.setName(name.toString());
 
-            return memoryUsageBroadcast;
-        } catch (Exception e) {
-            LOGGER.error("Exception trying to deserialize MemoryUsageDeserializer object: {}", e);
-            return null;
+      for (MBeanAttributeInfo attribute : Arrays.asList(info.getAttributes())) {
+        switch (attribute.getName()) {
+          case "Verbose":
+            memoryUsageBroadcast.setVerbose((boolean) server.getAttribute(name, attribute.getName()));
+            break;
+          case "ObjectPendingFinalizationCount":
+            memoryUsageBroadcast.setObjectPendingFinalizationCount(Long.parseLong(server.getAttribute(name, attribute.getName()).toString()));
+            break;
+          case "HeapMemoryUsage":
+            memoryUsageBroadcast.setHeapMemoryUsage((Long) ((CompositeDataSupport)server.getAttribute(name, attribute.getName())).get("used"));
+            break;
+          case "NonHeapMemoryUsage":
+            memoryUsageBroadcast.setNonHeapMemoryUsage((Long) ((CompositeDataSupport)server.getAttribute(name, attribute.getName())).get("used"));
+            break;
+          default:
+            break;
         }
+      }
+
+      return memoryUsageBroadcast;
+    } catch (Exception ex) {
+      LOGGER.error("Exception trying to deserialize MemoryUsageDeserializer object: {}", ex);
+      return null;
     }
+  }
 }

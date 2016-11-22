@@ -19,25 +19,31 @@
 package org.apache.streams.monitoring.persist.impl;
 
 import org.apache.streams.monitoring.persist.MessagePersister;
+
 import org.slf4j.Logger;
 
 import java.util.List;
 
-public class SLF4JMessagePersister implements MessagePersister {
-    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(SLF4JMessagePersister.class);
-    private static final int SUCCESS_STATUS = 0;
-    private static final int FAILURE_STATUS = -1;
+/**
+ * Persist montoring messages to SLF4J.
+ */
+public class Slf4jMessagePersister implements MessagePersister {
 
-    public SLF4JMessagePersister() {
+  private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(Slf4jMessagePersister.class);
+  private static final int SUCCESS_STATUS = 0;
+  private static final int FAILURE_STATUS = -1;
 
+  public Slf4jMessagePersister() {
+
+  }
+
+  @Override
+  public int persistMessages(List<String> messages) {
+
+    for (String message : messages) {
+      LOGGER.info(message);
     }
 
-    @Override
-    public int persistMessages(List<String> messages) {
-        for(String message : messages) {
-            LOGGER.info(message);
-        }
-
-        return SUCCESS_STATUS;
-    }
+    return SUCCESS_STATUS;
+  }
 }

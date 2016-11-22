@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.monitoring.persist.impl;
 
 import com.google.common.base.Splitter;
@@ -29,47 +30,51 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class LogstashUdpMessagePersisterTest {
 
-    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(LogstashUdpMessagePersisterTest.class);
+  private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(LogstashUdpMessagePersisterTest.class);
 
-    DatagramSocket socket = null;
+  DatagramSocket socket = null;
 
-    @Before
-    public void setup() {
-        try {
-            socket = new DatagramSocket(56789);
-        } catch (SocketException e) {
-            LOGGER.error("Metrics Broadcast Test Setup Failed: " + e.getMessage());
-        }
+  /**
+   * setup.
+   */
+  @Before
+  public void setup() {
+    try {
+      socket = new DatagramSocket(56789);
+    } catch (SocketException ex) {
+      LOGGER.error("Metrics Broadcast Test Setup Failed: " + ex.getMessage());
+    }
+  }
+
+
+  @Test
+  public void testFailedPersist() {
+    LogstashUdpMessagePersister persister = new LogstashUdpMessagePersister("udp://127.0.0.1:56789");
+
+    List<String> messageArray = Lists.newArrayList();
+    for (int x = 0; x < 10; x ++) {
+      messageArray.add("Fake_message #" + x);
     }
 
+    persister.persistMessages(messageArray);
+    byte[] receiveData = new byte[1024];
 
-    @Test
-    public void testFailedPersist() {
-        LogstashUdpMessagePersister persister = new LogstashUdpMessagePersister("udp://127.0.0.1:56789");
+    DatagramPacket messageDatagram = new DatagramPacket(receiveData, receiveData.length);
 
-        List<String> messageArray = Lists.newArrayList();
-        for(int x = 0; x < 10; x ++) {
-            messageArray.add("Fake_message #" + x);
-        }
-
-        persister.persistMessages(messageArray);
-        byte[] receiveData = new byte[1024];
-
-        DatagramPacket messageDatagram = new DatagramPacket(receiveData, receiveData.length);
-
-        try {
-            socket.receive(messageDatagram);
-            assertNotNull(messageDatagram);
-            List<String> messages = Lists.newArrayList(Splitter.on('\n').split(new String(messageDatagram.getData())));
-            assertEquals(messageArray, messages.subList(0,10));
-        } catch (IOException e) {
-            LOGGER.error("Metrics Broadcast Test Failed: " + e.getMessage());
-        }
-
+    try {
+      socket.receive(messageDatagram);
+      assertNotNull(messageDatagram);
+      List<String> messages = Lists.newArrayList(Splitter.on('\n').split(new String(messageDatagram.getData())));
+      assertEquals(messageArray, messages.subList(0,10));
+    } catch (IOException ex) {
+      LOGGER.error("Metrics Broadcast Test Failed: " + ex.getMessage());
     }
+
+  }
 
 }
