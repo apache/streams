@@ -18,12 +18,13 @@
 
 package org.apache.streams.twitter.provider;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.util.ComponentUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Paging;
@@ -39,77 +40,79 @@ import java.util.List;
  */
 public class TwitterTimelineProviderTask implements Runnable {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProviderTask.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProviderTask.class);
 
-    private static ObjectMapper MAPPER = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+  private static ObjectMapper MAPPER = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
 
-    protected TwitterTimelineProvider provider;
-    protected Twitter client;
-    protected Long id;
+  protected TwitterTimelineProvider provider;
+  protected Twitter client;
+  protected Long id;
 
-    public TwitterTimelineProviderTask(TwitterTimelineProvider provider, Twitter twitter, Long id) {
-        this.provider = provider;
-        this.client = twitter;
-        this.id = id;
-    }
+  /**
+   * TwitterTimelineProviderTask constructor.
+   * @param provider TwitterTimelineProvider
+   * @param twitter Twitter
+   * @param id Long
+   */
+  public TwitterTimelineProviderTask(TwitterTimelineProvider provider, Twitter twitter, Long id) {
+    this.provider = provider;
+    this.client = twitter;
+    this.id = id;
+  }
 
-    @Override
-    public void run() {
+  @Override
+  public void run() {
 
-        Paging paging = new Paging(1, 200);
-        List<Status> statuses = null;
-        int count = 0;
+    Paging paging = new Paging(1, 200);
+    List<Status> statuses = null;
+    int count = 0;
 
-        LOGGER.info(id + " Thread Starting");
+    LOGGER.info(id + " Thread Starting");
 
-        do
-        {
-            int keepTrying = 0;
+    do {
+      int keepTrying = 0;
 
-            // keep trying to load, give it 5 attempts.
-            //This value was chosen because it seemed like a reasonable number of times
-            //to retry capturing a timeline given the sorts of errors that could potentially
-            //occur (network timeout/interruption, faulty client, etc.)
-            while (keepTrying < 5)
-            {
+      // keep trying to load, give it 5 attempts.
+      //This value was chosen because it seemed like a reasonable number of times
+      //to retry capturing a timeline given the sorts of errors that could potentially
+      //occur (network timeout/interruption, faulty client, etc.)
+      while (keepTrying < 5) {
 
-                try
-                {
-                    this.client = provider.getTwitterClient();
+        try {
+          this.client = provider.getTwitterClient();
 
-                    statuses = client.getUserTimeline(id, paging);
+          statuses = client.getUserTimeline(id, paging);
 
-                    for (Status tStat : statuses) {
+          for (Status twitterStatus : statuses) {
 
-                        String json = TwitterObjectFactory.getRawJSON(tStat);
-                        if( count < provider.getConfig().getMaxItems() ) {
-                            try {
-                                org.apache.streams.twitter.pojo.Tweet tweet = MAPPER.readValue(json, org.apache.streams.twitter.pojo.Tweet.class);
-                                ComponentUtils.offerUntilSuccess(new StreamsDatum(tweet), provider.providerQueue);
-                            } catch(Exception exception) {
-                                LOGGER.warn("Failed to read document as Tweet ", tStat);
-                            }
-                            count++;
-                        }
+            String json = TwitterObjectFactory.getRawJSON(twitterStatus);
 
-                    }
-
-                    paging.setPage(paging.getPage() + 1);
-
-                    keepTrying = 10;
-                }
-                catch(TwitterException twitterException) {
-                    keepTrying += TwitterErrorHandler.handleTwitterError(client, id, twitterException);
-                }
-                catch(Exception e) {
-                    keepTrying += TwitterErrorHandler.handleTwitterError(client, id, e);
-                }
+            if ( count < provider.getConfig().getMaxItems() ) {
+              try {
+                org.apache.streams.twitter.pojo.Tweet tweet = MAPPER.readValue(json, org.apache.streams.twitter.pojo.Tweet.class);
+                ComponentUtils.offerUntilSuccess(new StreamsDatum(tweet), provider.providerQueue);
+              } catch (Exception exception) {
+                LOGGER.warn("Failed to read document as Tweet ", twitterStatus);
+              }
+              count++;
             }
+
+          }
+
+          paging.setPage(paging.getPage() + 1);
+
+          keepTrying = 10;
+        } catch (TwitterException twitterException) {
+          keepTrying += TwitterErrorHandler.handleTwitterError(client, id, twitterException);
+        } catch (Exception ex) {
+          keepTrying += TwitterErrorHandler.handleTwitterError(client, id, ex);
         }
-        while (provider.shouldContinuePulling(statuses) && count < provider.getConfig().getMaxItems());
-
-        LOGGER.info(id + " Thread Finished");
-
+      }
     }
+    while (provider.shouldContinuePulling(statuses) && count < provider.getConfig().getMaxItems());
+
+    LOGGER.info(id + " Thread Finished");
+
+  }
 
 }

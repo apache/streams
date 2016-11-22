@@ -18,12 +18,13 @@
 
 package org.apache.streams.twitter.converter;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Retweet;
+
+import com.google.common.collect.Lists;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.List;
@@ -32,52 +33,54 @@ import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.upda
 
 public class TwitterJsonRetweetActivityConverter implements ActivityConverter<Retweet>, Serializable {
 
-    public static Class requiredClass = Retweet.class;
+  public static Class requiredClass = Retweet.class;
 
-    @Override
-    public Class requiredClass() {
-        return requiredClass;
+  @Override
+  public Class requiredClass() {
+    return requiredClass;
+  }
+
+  private static TwitterJsonRetweetActivityConverter instance = new TwitterJsonRetweetActivityConverter();
+
+  public TwitterJsonRetweetActivityConverter getInstance() {
+    return instance;
+  }
+
+  @Override
+  public String serializationFormat() {
+    return null;
+  }
+
+  @Override
+  public Retweet fromActivity(Activity deserialized) throws ActivityConversionException {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<Retweet> fromActivityList(List<Activity> list) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<Activity> toActivityList(Retweet retweet) throws ActivityConversionException {
+
+    Activity activity = new Activity();
+    updateActivity(retweet, activity);
+
+    return Lists.newArrayList(activity);
+  }
+
+  @Override
+  public List<Activity> toActivityList(List<Retweet> serializedList) {
+    List<Activity> result = Lists.newArrayList();
+    for ( Retweet item : serializedList ) {
+      try {
+        List<Activity> activities = toActivityList(item);
+        result.addAll(activities);
+      } catch (ActivityConversionException ex) {
+        //
+      }
     }
-
-    private static TwitterJsonRetweetActivityConverter instance = new TwitterJsonRetweetActivityConverter();
-
-    public static TwitterJsonRetweetActivityConverter getInstance() {
-        return instance;
-    }
-
-    @Override
-    public String serializationFormat() {
-        return null;
-    }
-
-    @Override
-    public Retweet fromActivity(Activity deserialized) throws ActivityConversionException {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public List<Activity> toActivityList(Retweet retweet) throws ActivityConversionException {
-
-        Activity activity = new Activity();
-        updateActivity(retweet, activity);
-
-        return Lists.newArrayList(activity);
-    }
-
-    @Override
-    public List<Retweet> fromActivityList(List<Activity> list) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public List<Activity> toActivityList(List<Retweet> serializedList) {
-        List<Activity> result = Lists.newArrayList();
-        for( Retweet item : serializedList ) {
-            try {
-                List<Activity> activities = toActivityList(item);
-                result.addAll(activities);
-            } catch (ActivityConversionException e) {}
-        }
-        return result;
-    }
+    return result;
+  }
 }

@@ -18,63 +18,71 @@
 
 package org.apache.streams.twitter.processor;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.apache.streams.components.http.HttpProcessorConfiguration;
 import org.apache.streams.components.http.processor.SimpleHTTPGetProcessor;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Class gets a global share count from Twitter API for links on Activity datums
+ * Class gets a global share count from Twitter API for links on Activity datums.
  */
 public class TwitterUrlApiProcessor extends SimpleHTTPGetProcessor implements StreamsProcessor {
 
-    private final static String STREAMS_ID = "TwitterUrlApiProcessor";
+  private static final String STREAMS_ID = "TwitterUrlApiProcessor";
 
-    public TwitterUrlApiProcessor() {
-        super();
-        this.configuration.setHostname("urls.api.twitter.com");
-        this.configuration.setResourcePath("/1/urls/count.json");
-        this.configuration.setEntity(HttpProcessorConfiguration.Entity.ACTIVITY);
-        this.configuration.setExtension("twitter_url_count");
+  /**
+   * TwitterUrlApiProcessor constructor.
+   */
+  public TwitterUrlApiProcessor() {
+    super();
+    this.configuration.setHostname("urls.api.twitter.com");
+    this.configuration.setResourcePath("/1/urls/count.json");
+    this.configuration.setEntity(HttpProcessorConfiguration.Entity.ACTIVITY);
+    this.configuration.setExtension("twitter_url_count");
+  }
+
+  /**
+   * TwitterUrlApiProcessor constructor.
+   */
+  public TwitterUrlApiProcessor(HttpProcessorConfiguration processorConfiguration) {
+    super(processorConfiguration);
+    this.configuration.setHostname("urls.api.twitter.com");
+    this.configuration.setResourcePath("/1/urls/count.json");
+    this.configuration.setEntity(HttpProcessorConfiguration.Entity.ACTIVITY);
+    this.configuration.setExtension("twitter_url_count");
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+    Preconditions.checkArgument(entry.getDocument() instanceof Activity);
+    Activity activity = mapper.convertValue(entry.getDocument(), Activity.class);
+    if ( activity.getLinks() != null && activity.getLinks().size() > 0) {
+      return super.process(entry);
+    } else {
+      return Lists.newArrayList(entry);
     }
+  }
 
-    public TwitterUrlApiProcessor(HttpProcessorConfiguration processorConfiguration) {
-        super(processorConfiguration);
-        this.configuration.setHostname("urls.api.twitter.com");
-        this.configuration.setResourcePath("/1/urls/count.json");
-        this.configuration.setEntity(HttpProcessorConfiguration.Entity.ACTIVITY);
-        this.configuration.setExtension("twitter_url_count");
-    }
+  @Override
+  protected Map<String, String> prepareParams(StreamsDatum entry) {
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+    Map<String, String> params = new HashMap<>();
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        Preconditions.checkArgument(entry.getDocument() instanceof Activity);
-        Activity activity = mapper.convertValue(entry.getDocument(), Activity.class);
-        if( activity.getLinks() != null && activity.getLinks().size() > 0)
-            return super.process(entry);
-        else
-            return Lists.newArrayList(entry);
-    }
+    params.put("url", mapper.convertValue(entry.getDocument(), Activity.class).getLinks().get(0));
 
-    @Override
-    protected Map<String, String> prepareParams(StreamsDatum entry) {
-
-        Map<String, String> params = new HashMap<>();
-
-        params.put("url", mapper.convertValue(entry.getDocument(), Activity.class).getLinks().get(0));
-
-        return params;
-    }
+    return params;
+  }
 }

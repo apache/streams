@@ -21,13 +21,14 @@ package org.apache.streams.twitter.processor;
 import org.apache.streams.converter.ActivityConverterProcessor;
 
 /**
- * This class performs conversion of a twitter event to a specified outClass
+ * This class performs conversion of a twitter event to a specified outClass.
  *
+ * <p/>
  * Deprecated: use TypeConverterProcessor and ActivityConverterProcessor instead
  */
 @Deprecated
 public class TwitterTypeConverter extends ActivityConverterProcessor {
 
-    public final static String STREAMS_ID = "TwitterTypeConverter";
+  public static final String STREAMS_ID = "TwitterTypeConverter";
 
 }

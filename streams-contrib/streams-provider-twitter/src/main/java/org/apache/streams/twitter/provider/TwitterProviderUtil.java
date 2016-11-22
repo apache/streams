@@ -16,28 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.twitter.provider;
 
 import org.apache.streams.twitter.TwitterConfiguration;
 
 /**
- * Created by sblackmon on 7/26/15.
+ * TwitterProviderUtil contains utilities for Twitter Providers.
  */
 public class TwitterProviderUtil {
 
-    public static String baseUrl(TwitterConfiguration config) {
+  /**
+   * baseUrl from TwitterConfiguration.
+   * @param config TwitterConfiguration
+   * @return baseUrl
+   */
+  public static String baseUrl(TwitterConfiguration config) {
 
-        String baseUrl = new StringBuilder()
-                .append(config.getProtocol())
-                .append("://")
-                .append(config.getHost())
-                .append(":")
-                .append(config.getPort())
-                .append("/")
-                .append(config.getVersion())
-                .append("/")
-                .toString();
+    String baseUrl = new StringBuilder()
+        .append(config.getProtocol())
+        .append("://")
+        .append(config.getHost())
+        .append(":")
+        .append(config.getPort())
+        .append("/")
+        .append(config.getVersion())
+        .append("/")
+        .toString();
 
-        return baseUrl;
-    }
+    return baseUrl;
+  }
 }

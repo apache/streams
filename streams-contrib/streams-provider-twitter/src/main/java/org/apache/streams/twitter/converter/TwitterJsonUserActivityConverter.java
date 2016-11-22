@@ -18,12 +18,13 @@
 
 package org.apache.streams.twitter.converter;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.User;
+
+import com.google.common.collect.Lists;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
 
@@ -31,52 +32,55 @@ import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.upda
 
 public class TwitterJsonUserActivityConverter implements ActivityConverter<User> {
 
-    public static Class requiredClass = User.class;
+  public static Class requiredClass = User.class;
 
-    @Override
-    public Class requiredClass() {
-        return requiredClass;
+  @Override
+  public Class requiredClass() {
+    return requiredClass;
+  }
+
+  private static TwitterJsonUserActivityConverter instance = new TwitterJsonUserActivityConverter();
+
+  public static TwitterJsonUserActivityConverter getInstance() {
+    return instance;
+  }
+
+  @Override
+  public String serializationFormat() {
+    return null;
+  }
+
+  @Override
+  public User fromActivity(Activity deserialized) throws ActivityConversionException {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<User> fromActivityList(List<Activity> list) {
+    throw new NotImplementedException();
+  }
+
+
+  @Override
+  public List<Activity> toActivityList(User user) throws ActivityConversionException {
+
+    Activity activity = new Activity();
+    updateActivity(user, activity);
+
+    return Lists.newArrayList(activity);
+  }
+
+  @Override
+  public List<Activity> toActivityList(List<User> serializedList) {
+    List<Activity> result = Lists.newArrayList();
+    for ( User item : serializedList ) {
+      try {
+        List<Activity> activities = toActivityList(item);
+        result.addAll(activities);
+      } catch (ActivityConversionException ex) {
+        //
+      }
     }
-
-    private static TwitterJsonUserActivityConverter instance = new TwitterJsonUserActivityConverter();
-
-    public static TwitterJsonUserActivityConverter getInstance() {
-        return instance;
-    }
-
-    @Override
-    public String serializationFormat() {
-        return null;
-    }
-
-    @Override
-    public User fromActivity(Activity deserialized) throws ActivityConversionException {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public List<Activity> toActivityList(User user) throws ActivityConversionException {
-
-        Activity activity = new Activity();
-        updateActivity(user, activity);
-
-        return Lists.newArrayList(activity);
-    }
-
-    @Override
-    public List<User> fromActivityList(List<Activity> list) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public List<Activity> toActivityList(List<User> serializedList) {
-        List<Activity> result = Lists.newArrayList();
-        for( User item : serializedList ) {
-            try {
-                List<Activity> activities = toActivityList(item);
-                result.addAll(activities);
-            } catch (ActivityConversionException e) {}
-        }
-        return result;
-    }
+    return result;
+  }
 }

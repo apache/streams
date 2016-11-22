@@ -18,10 +18,6 @@
 
 package org.apache.streams.twitter.converter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.apache.streams.data.DocumentClassifier;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.pojo.Delete;
@@ -32,6 +28,11 @@ import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.pojo.UserstreamEvent;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,47 +40,53 @@ import java.util.List;
 import static org.apache.streams.twitter.converter.TwitterDateTimeFormat.TWITTER_FORMAT;
 
 /**
- * Ensures twitter documents can be converted to Activity
+ * Ensures twitter documents can be converted to Activity.
  */
 public class TwitterDocumentClassifier implements DocumentClassifier {
 
-    public List<Class> detectClasses(Object document) {
+  @Override
+  public List<Class> detectClasses(Object document) {
 
-        Preconditions.checkNotNull(document);
+    Preconditions.checkNotNull(document);
 
-        ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(TWITTER_FORMAT));
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(TWITTER_FORMAT));
 
-        ObjectNode objectNode;
-        try {
-            if( document instanceof String )
-                objectNode = mapper.readValue((String)document, ObjectNode.class);
-            else if( document instanceof ObjectNode )
-                objectNode = (ObjectNode) document;
-            else
-                objectNode = mapper.convertValue(document, ObjectNode.class);
-        } catch (IOException e) {
-            return new ArrayList<>();
-        }
-
-        List<Class> classList = new ArrayList<>();
-
-        if( objectNode.findValue("retweeted_status") != null && objectNode.get("retweeted_status") != null)
-            classList.add(Retweet.class);
-        else if( objectNode.findValue("delete") != null )
-            classList.add(Delete.class);
-        else if( objectNode.findValue("friends") != null ||
-                 objectNode.findValue("friends_str") != null )
-            classList.add(FriendList.class);
-        else if( objectNode.findValue("target_object") != null )
-            classList.add(UserstreamEvent.class);
-        else if( objectNode.findValue("follower") != null && objectNode.findValue("followee") != null)
-            classList.add(Follow.class);
-        else if ( objectNode.findValue("location") != null && objectNode.findValue("user") == null)
-            classList.add(User.class);
-        else
-            classList.add(Tweet.class);
-
-        return classList;
+    ObjectNode objectNode;
+    try {
+      if ( document instanceof String ) {
+        objectNode = mapper.readValue((String) document, ObjectNode.class);
+      } else if ( document instanceof ObjectNode ) {
+        objectNode = (ObjectNode) document;
+      } else {
+        objectNode = mapper.convertValue(document, ObjectNode.class);
+      }
+    } catch (IOException ex) {
+      return new ArrayList<>();
     }
+
+    List<Class> classList = new ArrayList<>();
+
+    if ( objectNode.findValue("retweeted_status") != null
+        && objectNode.get("retweeted_status") != null) {
+      classList.add(Retweet.class);
+    } else if ( objectNode.findValue("delete") != null ) {
+      classList.add(Delete.class);
+    } else if ( objectNode.findValue("friends") != null
+        || objectNode.findValue("friends_str") != null ) {
+      classList.add(FriendList.class);
+    } else if ( objectNode.findValue("target_object") != null ) {
+      classList.add(UserstreamEvent.class);
+    } else if ( objectNode.findValue("follower") != null
+        && objectNode.findValue("followee") != null) {
+      classList.add(Follow.class);
+    } else if ( objectNode.findValue("location") != null
+        && objectNode.findValue("user") == null) {
+      classList.add(User.class);
+    } else {
+      classList.add(Tweet.class);
+    }
+
+    return classList;
+  }
 
 }
