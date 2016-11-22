@@ -19,16 +19,17 @@
 
 package org.apache.streams.plugins.hbase;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import org.apache.streams.util.schema.FieldType;
 import org.apache.streams.util.schema.FieldUtil;
 import org.apache.streams.util.schema.GenerationConfig;
 import org.apache.streams.util.schema.Schema;
 import org.apache.streams.util.schema.SchemaStore;
 import org.apache.streams.util.schema.SchemaStoreImpl;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import org.jsonschema2pojo.util.URLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,161 +53,188 @@ import static org.apache.streams.util.schema.FileUtil.writeFile;
  */
 public class StreamsHbaseResourceGenerator implements Runnable {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsHbaseResourceGenerator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StreamsHbaseResourceGenerator.class);
 
-    private final static String LS = System.getProperty("line.separator");
+  private static final String LS = System.getProperty("line.separator");
 
-    private StreamsHbaseGenerationConfig config;
+  private StreamsHbaseGenerationConfig config;
 
-    private SchemaStore schemaStore = new SchemaStoreImpl();
+  private SchemaStore schemaStore = new SchemaStoreImpl();
 
-    private int currentDepth = 0;
+  private int currentDepth = 0;
 
-    public static void main(String[] args) {
-        StreamsHbaseGenerationConfig config = new StreamsHbaseGenerationConfig();
+  /**
+   * Run from CLI without Maven
+   *
+   * <p/>
+   * java -jar streams-plugin-hbase-jar-with-dependencies.jar StreamsHbaseResourceGenerator src/main/jsonschema target/generated-resources
+   *
+   * @param args [sourceDirectory, targetDirectory]
+   * */
+  public static void main(String[] args) {
+    StreamsHbaseGenerationConfig config = new StreamsHbaseGenerationConfig();
 
-        String sourceDirectory = "src/main/jsonschema";
-        String targetDirectory = "target/generated-resources/hbase";
+    String sourceDirectory = "src/main/jsonschema";
+    String targetDirectory = "target/generated-resources/hbase";
 
-        if( args.length > 0 )
-            sourceDirectory = args[0];
-        if( args.length > 1 )
-            targetDirectory = args[1];
-
-        config.setSourceDirectory(sourceDirectory);
-        config.setTargetDirectory(targetDirectory);
-
-        StreamsHbaseResourceGenerator streamsHbaseResourceGenerator = new StreamsHbaseResourceGenerator(config);
-        streamsHbaseResourceGenerator.run();
-
+    if ( args.length > 0 ) {
+      sourceDirectory = args[0];
+    }
+    if ( args.length > 1 ) {
+      targetDirectory = args[1];
     }
 
-    public StreamsHbaseResourceGenerator(StreamsHbaseGenerationConfig config) {
-        this.config = config;
+    config.setSourceDirectory(sourceDirectory);
+    config.setTargetDirectory(targetDirectory);
+
+    StreamsHbaseResourceGenerator streamsHbaseResourceGenerator = new StreamsHbaseResourceGenerator(config);
+    streamsHbaseResourceGenerator.run();
+
+  }
+
+  public StreamsHbaseResourceGenerator(StreamsHbaseGenerationConfig config) {
+    this.config = config;
+  }
+
+  @Override
+  public void run() {
+
+    checkNotNull(config);
+
+    generate(config);
+
+  }
+
+  /**
+   * run generate using supplied StreamsHbaseGenerationConfig.
+   * @param config StreamsHbaseGenerationConfig
+   */
+  public void generate(StreamsHbaseGenerationConfig config) {
+
+    LinkedList<File> sourceFiles = new LinkedList<File>();
+
+    for (Iterator<URL> sources = config.getSource(); sources.hasNext();) {
+      URL source = sources.next();
+      sourceFiles.add(URLUtil.getFileFromURL(source));
     }
 
-    public void run() {
+    LOGGER.info("Seeded with {} source paths:", sourceFiles.size());
 
-        checkNotNull(config);
+    resolveRecursive((GenerationConfig)config, sourceFiles);
 
-        generate(config);
+    LOGGER.info("Resolved {} schema files:", sourceFiles.size());
 
+    for (Iterator<File> iterator = sourceFiles.iterator(); iterator.hasNext();) {
+      File item = iterator.next();
+      schemaStore.create(item.toURI());
     }
 
-    public void generate(StreamsHbaseGenerationConfig config) {
+    LOGGER.info("Identified {} objects:", schemaStore.getSize());
 
-        LinkedList<File> sourceFiles = new LinkedList<File>();
-
-        for (Iterator<URL> sources = config.getSource(); sources.hasNext();) {
-            URL source = sources.next();
-            sourceFiles.add(URLUtil.getFileFromURL(source));
+    for (Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator(); schemaIterator.hasNext(); ) {
+      Schema schema = schemaIterator.next();
+      currentDepth = 0;
+      if ( schema.getURI().getScheme().equals("file")) {
+        String inputFile = schema.getURI().getPath();
+        String resourcePath = dropSourcePathPrefix(inputFile, config.getSourceDirectory());
+        for (String sourcePath : config.getSourcePaths()) {
+          resourcePath = dropSourcePathPrefix(resourcePath, sourcePath);
         }
+        String outputFile = config.getTargetDirectory() + "/" + swapExtension(resourcePath, "json", "txt");
 
-        LOGGER.info("Seeded with {} source paths:", sourceFiles.size());
+        LOGGER.info("Processing {}:", resourcePath);
 
-        resolveRecursive((GenerationConfig)config, sourceFiles);
+        String resourceId = dropExtension(resourcePath).replace("/", "_");
 
-        LOGGER.info("Resolved {} schema files:", sourceFiles.size());
+        String resourceContent = generateResource(schema, resourceId);
 
-        for (Iterator<File> iterator = sourceFiles.iterator(); iterator.hasNext();) {
-            File item = iterator.next();
-            schemaStore.create(item.toURI());
-        }
+        writeFile(outputFile, resourceContent);
 
-        LOGGER.info("Identified {} objects:", schemaStore.getSize());
+        LOGGER.info("Wrote {}:", outputFile);
+      }
+    }
 
-        for (Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator(); schemaIterator.hasNext(); ) {
-            Schema schema = schemaIterator.next();
-            currentDepth = 0;
-            if( schema.getURI().getScheme().equals("file")) {
-                String inputFile = schema.getURI().getPath();
-                String resourcePath = dropSourcePathPrefix(inputFile, config.getSourceDirectory());
-                for (String sourcePath : config.getSourcePaths()) {
-                    resourcePath = dropSourcePathPrefix(resourcePath, sourcePath);
-                }
-                String outputFile = config.getTargetDirectory() + "/" + swapExtension(resourcePath, "json", "txt");
+  }
 
-                LOGGER.info("Processing {}:", resourcePath);
+  /**
+   * generateResource String from schema and resourceId.
+   * @param schema Schema
+   * @param resourceId String
+   * @return mapping
+   */
+  public String generateResource(Schema schema, String resourceId) {
+    StringBuilder resourceBuilder = new StringBuilder();
+    resourceBuilder.append("CREATE ");
+    resourceBuilder = appendRootObject(resourceBuilder, schema, resourceId);
+    return resourceBuilder.toString();
+  }
 
-                String resourceId = dropExtension(resourcePath).replace("/", "_");
+  protected StringBuilder appendRootObject(StringBuilder builder, Schema schema, String resourceId) {
+    checkNotNull(builder);
+    ObjectNode propertiesNode = schemaStore.resolveProperties(schema, null, resourceId);
+    if ( propertiesNode != null && propertiesNode.isObject() && propertiesNode.size() > 0) {
 
-                String resourceContent = generateResource(schema, resourceId);
+      List<String> fieldStrings = Lists.newArrayList();
 
-                writeFile(outputFile, resourceContent);
+      // table
+      fieldStrings.add(hbaseEscape(schemaSymbol(schema)));
 
-                LOGGER.info("Wrote {}:", outputFile);
+      // column family
+      fieldStrings.add(hbaseEscape(schemaSymbol(schema)));
+
+      // parent column family
+      if ( schema.getParent() != null ) {
+        fieldStrings.add(hbaseEscape(schemaSymbol(schema.getParent())));
+      }
+
+      // sub-object column families
+      if ( propertiesNode != null && propertiesNode.isObject() && propertiesNode.size() > 0 ) {
+
+        Iterator<Map.Entry<String, JsonNode>> fields = propertiesNode.fields();
+        Joiner joiner = Joiner.on(", ").skipNulls();
+        for ( ; fields.hasNext(); ) {
+          Map.Entry<String, JsonNode> field = fields.next();
+          String fieldId = field.getKey();
+          if ( !config.getExclusions().contains(fieldId) && field.getValue().isObject()) {
+            ObjectNode fieldNode = (ObjectNode) field.getValue();
+            FieldType fieldType = FieldUtil.determineFieldType(fieldNode);
+            if (fieldType != null ) {
+              switch (fieldType) {
+                case OBJECT:
+                  fieldStrings.add(hbaseEscape(fieldId));
+                  break;
+                default:
+                  break;
+              }
             }
+          }
         }
+        builder.append(joiner.join(fieldStrings));
 
+      }
     }
+    checkNotNull(builder);
+    return builder;
+  }
 
-    public String generateResource(Schema schema, String resourceId) {
-        StringBuilder resourceBuilder = new StringBuilder();
-        resourceBuilder.append("CREATE ");
-        resourceBuilder = appendRootObject(resourceBuilder, schema, resourceId);
-        return resourceBuilder.toString();
+  private static String hbaseEscape( String fieldId ) {
+    return "'" + fieldId + "'";
+  }
+
+  private String schemaSymbol( Schema schema ) {
+    if (schema == null) {
+      return null;
     }
-
-    public StringBuilder appendRootObject(StringBuilder builder, Schema schema, String resourceId) {
-        checkNotNull(builder);
-        ObjectNode propertiesNode = schemaStore.resolveProperties(schema, null, resourceId);
-        if( propertiesNode != null && propertiesNode.isObject() && propertiesNode.size() > 0) {
-
-            List<String> fieldStrings = Lists.newArrayList();
-
-            // table
-            fieldStrings.add(hbaseEscape(schemaSymbol(schema)));
-
-            // column family
-            fieldStrings.add(hbaseEscape(schemaSymbol(schema)));
-
-            // parent column family
-            if( schema.getParent() != null )
-                fieldStrings.add(hbaseEscape(schemaSymbol(schema.getParent())));
-
-            // sub-object column families
-            if( propertiesNode != null && propertiesNode.isObject() && propertiesNode.size() > 0 ) {
-
-                Iterator<Map.Entry<String, JsonNode>> fields = propertiesNode.fields();
-                Joiner joiner = Joiner.on(", ").skipNulls();
-                for( ; fields.hasNext(); ) {
-                    Map.Entry<String, JsonNode> field = fields.next();
-                    String fieldId = field.getKey();
-                    if( !config.getExclusions().contains(fieldId) && field.getValue().isObject()) {
-                        ObjectNode fieldNode = (ObjectNode) field.getValue();
-                        FieldType fieldType = FieldUtil.determineFieldType(fieldNode);
-                        if (fieldType != null ) {
-                            switch (fieldType) {
-                                case OBJECT:
-                                    fieldStrings.add(hbaseEscape(fieldId));
-                            }
-                        }
-                    }
-                }
-                builder.append(joiner.join(fieldStrings));
-
-            }
-        }
-        checkNotNull(builder);
-        return builder;
+    if (schema.getURI().getScheme().equals("file")) {
+      String inputFile = schema.getURI().getPath();
+      String resourcePath = dropSourcePathPrefix(inputFile, config.getSourceDirectory());
+      for (String sourcePath : config.getSourcePaths()) {
+        resourcePath = dropSourcePathPrefix(resourcePath, sourcePath);
+      }
+      return dropExtension(resourcePath).replace("/", "_");
+    } else {
+      return "IDK";
     }
-
-    private static String hbaseEscape( String fieldId ) {
-        return "'"+fieldId+"'";
-    }
-
-    private String schemaSymbol( Schema schema ) {
-        if (schema == null) return null;
-        if (schema.getURI().getScheme().equals("file")) {
-            String inputFile = schema.getURI().getPath();
-            String resourcePath = dropSourcePathPrefix(inputFile, config.getSourceDirectory());
-            for (String sourcePath : config.getSourcePaths()) {
-                resourcePath = dropSourcePathPrefix(resourcePath, sourcePath);
-            }
-            return dropExtension(resourcePath).replace("/", "_");
-        } else {
-            return "IDK";
-        }
-    }
+  }
 
 }
