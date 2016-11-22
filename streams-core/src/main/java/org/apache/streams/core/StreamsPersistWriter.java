@@ -18,12 +18,15 @@
 
 package org.apache.streams.core;
 
-public interface StreamsPersistWriter extends StreamsOperation{
+/**
+ * StreamsOperation for writing data out of a pipeline.
+ */
+public interface StreamsPersistWriter extends StreamsOperation {
 
-    /**
-     * Persist the StreamsDatum to the corresponding data store.
-     * @param entry to be stored.
-     */
-    void write( StreamsDatum entry );
+  /**
+   * Persist the StreamsDatum to the corresponding data store.
+   * @param entry to be stored.
+   */
+  void write( StreamsDatum entry );
 
 }

@@ -23,16 +23,14 @@ import org.joda.time.DateTime;
 import java.math.BigInteger;
 
 /**
- *
  * Currently a duplicate interface.  Has exact same methods as StreamsProvider.
- * Future work should make this interface necessary I'm told.
- *
  */
 public interface StreamsPersistReader extends StreamsProvider {
 
-    StreamsResultSet readAll();
-    StreamsResultSet readNew(BigInteger sequence);
-    StreamsResultSet readRange(DateTime start, DateTime end);
+  StreamsResultSet readAll();
 
+  StreamsResultSet readNew(BigInteger sequence);
+
+  StreamsResultSet readRange(DateTime start, DateTime end);
 
 }

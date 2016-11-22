@@ -21,40 +21,43 @@ package org.apache.streams.core;
 import java.util.Iterator;
 import java.util.Queue;
 
+/**
+ * StreamsResultSet is a wrapper for an Iterator around a set of StreamsDatum.
+ */
 public class StreamsResultSet implements Iterable<StreamsDatum> {
 
-    Queue<StreamsDatum> queue;
+  Queue<StreamsDatum> queue;
 
-    DatumStatusCounter counter;
+  DatumStatusCounter counter;
 
-    public StreamsResultSet(Queue<StreamsDatum> queue) {
-        this.queue = queue;
-    }
+  public StreamsResultSet(Queue<StreamsDatum> queue) {
+    this.queue = queue;
+  }
 
 
-    @Override
-    public Iterator<StreamsDatum> iterator() {
-        return queue.iterator();
-    }
+  @Override
+  public Iterator<StreamsDatum> iterator() {
+    return queue.iterator();
+  }
 
-    public int size() {
-        return queue.size();
-    }
+  public int size() {
+    return queue.size();
+  }
 
-    public Queue<StreamsDatum> getQueue() {
-        return queue;
-    }
+  public Queue<StreamsDatum> getQueue() {
+    return queue;
+  }
 
-    public void setQueue(Queue<StreamsDatum> queue) {
-        this.queue = queue;
-    }
+  public void setQueue(Queue<StreamsDatum> queue) {
+    this.queue = queue;
+  }
 
-    public DatumStatusCounter getCounter() {
-        return counter;
-    }
+  public DatumStatusCounter getCounter() {
+    return counter;
+  }
 
-    public void setCounter(DatumStatusCounter counter) {
-        this.counter = counter;
-    }
+  public void setCounter(DatumStatusCounter counter) {
+    this.counter = counter;
+  }
 }
 
