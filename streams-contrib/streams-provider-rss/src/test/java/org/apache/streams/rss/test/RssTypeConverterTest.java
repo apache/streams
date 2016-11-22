@@ -18,17 +18,18 @@
 
 package org.apache.streams.rss.test;
 
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.streams.rss.processor.RssTypeConverter;
+
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Test;
 
 /**
  * Tests Serializability of {@link org.apache.streams.rss.processor.RssTypeConverter}
  */
 public class RssTypeConverterTest {
-    @Test
-    public void testSerializability() {
-        RssTypeConverter converter = new RssTypeConverter();
-        RssTypeConverter clone = SerializationUtils.clone(converter);
-    }
+  @Test
+  public void testSerializability() {
+    RssTypeConverter converter = new RssTypeConverter();
+    RssTypeConverter clone = SerializationUtils.clone(converter);
+  }
 }
