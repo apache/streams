@@ -18,74 +18,84 @@
 
 package org.apache.streams.moreover;
 
-import com.google.common.collect.ImmutableSet;
 import org.apache.streams.core.StreamsDatum;
+
+import com.google.common.collect.ImmutableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Queue;
 
 /**
- * Task to pull from the Morever API
+ * Task that pulls from the Morever API on behalf of MoreoverProvider.
  */
 public class MoreoverProviderTask implements Runnable {
 
-    public static final int LATENCY = 10;
-    public static final int REQUIRED_LATENCY = LATENCY * 1000;
-    private static Logger logger = LoggerFactory.getLogger(MoreoverProviderTask.class);
+  public static final int LATENCY = 10;
+  public static final int REQUIRED_LATENCY = LATENCY * 1000;
+  private static Logger logger = LoggerFactory.getLogger(MoreoverProviderTask.class);
 
-    private String lastSequence;
-    private final String apiKey;
-    private final String apiId;
-    private final Queue<StreamsDatum> results;
-    private final MoreoverClient moClient;
-    private boolean started = false;
+  private String lastSequence;
+  private final String apiKey;
+  private final String apiId;
+  private final Queue<StreamsDatum> results;
+  private final MoreoverClient moClient;
+  private boolean started = false;
 
-    public MoreoverProviderTask(String apiId, String apiKey, Queue<StreamsDatum> results, String lastSequence) {
-        //logger.info("Constructed new task {} for {} {} {}", UUID.randomUUID().toString(), apiId, apiKey, lastSequence);
-        this.apiId = apiId;
-        this.apiKey = apiKey;
-        this.results = results;
-        this.lastSequence = lastSequence;
-        this.moClient = new MoreoverClient(this.apiId, this.apiKey, this.lastSequence);
-        initializeClient(moClient);
-    }
+  /**
+   * MoreoverProviderTask constructor.
+   * @param apiId apiId
+   * @param apiKey apiKey
+   * @param results results
+   * @param lastSequence lastSequence
+   */
+  public MoreoverProviderTask(String apiId, String apiKey, Queue<StreamsDatum> results, String lastSequence) {
+    //logger.info("Constructed new task {} for {} {} {}", UUID.randomUUID().toString(), apiId, apiKey, lastSequence);
+    this.apiId = apiId;
+    this.apiKey = apiKey;
+    this.results = results;
+    this.lastSequence = lastSequence;
+    this.moClient = new MoreoverClient(this.apiId, this.apiKey, this.lastSequence);
+    initializeClient(moClient);
+  }
 
-    @Override
-    public void run() {
-        while(true) {
-            try {
-                ensureTime(moClient);
-                MoreoverResult result = moClient.getArticlesAfter(lastSequence, 500);
-                started = true;
-                lastSequence = result.process().toString();
-                for(StreamsDatum entry : ImmutableSet.copyOf(result.iterator()))
-                    results.offer(entry);
-                logger.info("ApiKey={}\tlastSequenceid={}", this.apiKey, lastSequence);
-
-            } catch (Exception e) {
-                logger.error("Exception while polling moreover", e);
-            }
+  @Override
+  public void run() {
+    while (true) {
+      try {
+        ensureTime(moClient);
+        MoreoverResult result = moClient.getArticlesAfter(lastSequence, 500);
+        started = true;
+        lastSequence = result.process().toString();
+        for (StreamsDatum entry : ImmutableSet.copyOf(result.iterator())) {
+          results.offer(entry);
         }
-    }
+        logger.info("ApiKey={}\tlastSequenceid={}", this.apiKey, lastSequence);
 
-    private void ensureTime(MoreoverClient moClient) {
-        try {
-            long gap = System.currentTimeMillis() - moClient.pullTime;
-            if (gap < REQUIRED_LATENCY)
-                Thread.sleep(REQUIRED_LATENCY - gap);
-        } catch (Exception e) {
-            logger.warn("Error sleeping for latency");
-        }
+      } catch (Exception ex) {
+        logger.error("Exception while polling moreover", ex);
+      }
     }
+  }
 
-    private void initializeClient(MoreoverClient moClient) {
-        try {
-            moClient.getArticlesAfter(this.lastSequence, 2);
-        } catch (Exception e) {
-            logger.error("Failed to start stream, {}", this.apiKey);
-            logger.error("Exception : ", e);
-            throw new IllegalStateException("Unable to initialize stream", e);
-        }
+  private void ensureTime(MoreoverClient moClient) {
+    try {
+      long gap = System.currentTimeMillis() - moClient.pullTime;
+      if (gap < REQUIRED_LATENCY) {
+        Thread.sleep(REQUIRED_LATENCY - gap);
+      }
+    } catch (Exception ex) {
+      logger.warn("Error sleeping for latency");
     }
+  }
+
+  private void initializeClient(MoreoverClient moClient) {
+    try {
+      moClient.getArticlesAfter(this.lastSequence, 2);
+    } catch (Exception ex) {
+      logger.error("Failed to start stream, {}", this.apiKey);
+      logger.error("Exception : ", ex);
+      throw new IllegalStateException("Unable to initialize stream", ex);
+    }
+  }
 }

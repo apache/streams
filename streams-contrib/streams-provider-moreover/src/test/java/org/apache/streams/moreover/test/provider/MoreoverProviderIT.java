@@ -18,10 +18,11 @@
 
 package org.apache.streams.moreover.test.provider;
 
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.moreover.MoreoverProvider;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.apache.streams.moreover.MoreoverProvider;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -32,36 +33,34 @@ import java.io.FileReader;
 import java.io.LineNumberReader;
 
 /**
- * Integration test for MoreoverProviderIT
- *
- * Created by sblackmon on 10/21/16.
+ * Integration test for MoreoverProviderIT.
  */
 @Ignore("this is ignored because the project doesn't have credentials to test it with during CI")
 public class MoreoverProviderIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(MoreoverProviderIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MoreoverProviderIT.class);
 
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    @Test
-    public void testRssStreamProvider() throws Exception {
+  @Test
+  public void testRssStreamProvider() throws Exception {
 
-        String configfile = "./target/test-classes/RssStreamProviderIT.conf";
-        String outfile = "./target/test-classes/RssStreamProviderIT.stdout.txt";
+    String configfile = "./target/test-classes/RssStreamProviderIT.conf";
+    String outfile = "./target/test-classes/RssStreamProviderIT.stdout.txt";
 
-        MoreoverProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
+    MoreoverProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
 
-        File out = new File(outfile);
-        assert (out.exists());
-        assert (out.canRead());
-        assert (out.isFile());
+    File out = new File(outfile);
+    assert (out.exists());
+    assert (out.canRead());
+    assert (out.isFile());
 
-        FileReader outReader = new FileReader(out);
-        LineNumberReader outCounter = new LineNumberReader(outReader);
+    FileReader outReader = new FileReader(out);
+    LineNumberReader outCounter = new LineNumberReader(outReader);
 
-        while(outCounter.readLine() != null) {}
+    while (outCounter.readLine() != null) {}
 
-        assert (outCounter.getLineNumber() >= 1);
+    assert (outCounter.getLineNumber() >= 1);
 
-    }
+  }
 }
