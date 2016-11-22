@@ -30,26 +30,19 @@ import java.net.URL;
  */
 public class SysomosClient {
 
-    public static final String BASE_URL_STRING = "http://api.sysomos.com/";
-    private static final String HEARTBEAT_INFO_URL = "http://api.sysomos.com/v1/heartbeat/info?apiKey={api_key}&hid={hid}";
+  public static final String BASE_URL_STRING = "http://api.sysomos.com/";
+  private static final String HEARTBEAT_INFO_URL = "http://api.sysomos.com/v1/heartbeat/info?apiKey={api_key}&hid={hid}";
 
-    private String apiKey;
+  private String apiKey;
 
-    private HttpURLConnection client;
+  private HttpURLConnection client;
 
-    public SysomosClient(String apiKey) {
-        this.apiKey = apiKey;
-    }
+  public SysomosClient(String apiKey) {
+    this.apiKey = apiKey;
+  }
 
-    public HeartbeatInfo getHeartbeatInfo(String hid) throws Exception {
-        String urlString = HEARTBEAT_INFO_URL.replace("{api_key}", this.apiKey);
-        urlString = urlString.replace("{hid}", hid);
-        String xmlResponse = SysomosUtils.queryUrl(new URL(urlString));
-        return new HeartbeatInfo(xmlResponse);
-    }
-
-    public RequestBuilder createRequestBuilder() {
-        return new ContentRequestBuilder(BASE_URL_STRING, this.apiKey);
-    }
+  public RequestBuilder createRequestBuilder() {
+    return new ContentRequestBuilder(BASE_URL_STRING, this.apiKey);
+  }
 
 }

@@ -27,7 +27,6 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.sysomos.xml.BeatApi;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,60 +40,63 @@ import java.io.InputStreamReader;
  */
 public class SysomosXmlSerDeIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(SysomosXmlSerDeIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SysomosXmlSerDeIT.class);
 
-    private XmlMapper xmlMapper;
+  private XmlMapper xmlMapper;
 
-    @Before
-    public void Before() {
+  /**
+   * before.
+   */
+  @Before
+  public void before() {
 
-        XmlFactory f = new XmlFactory(new InputFactoryImpl(),
-                new OutputFactoryImpl());
+    XmlFactory xmlFactory = new XmlFactory(new InputFactoryImpl(),
+        new OutputFactoryImpl());
 
-        JacksonXmlModule module = new JacksonXmlModule();
+    JacksonXmlModule module = new JacksonXmlModule();
 
-        module.setDefaultUseWrapper(false);
+    module.setDefaultUseWrapper(false);
 
-        xmlMapper = new XmlMapper(f, module);
+    xmlMapper = new XmlMapper(xmlFactory, module);
 
-        xmlMapper
-                .configure(
-                        DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY,
-                        Boolean.TRUE);
-        xmlMapper
-                .configure(
-                        DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,
-                        Boolean.TRUE);
-        xmlMapper
-                .configure(
-                        DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY,
-                        Boolean.TRUE);
-        xmlMapper.configure(
-                DeserializationFeature.READ_ENUMS_USING_TO_STRING,
-                Boolean.TRUE);
+    xmlMapper
+        .configure(
+            DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY,
+            Boolean.TRUE);
+    xmlMapper
+        .configure(
+            DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,
+            Boolean.TRUE);
+    xmlMapper
+        .configure(
+            DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY,
+            Boolean.TRUE);
+    xmlMapper.configure(
+        DeserializationFeature.READ_ENUMS_USING_TO_STRING,
+        Boolean.TRUE);
 
+  }
+
+  @Test
+  public void test() {
+
+    InputStream is = SysomosXmlSerDeIT.class.getResourceAsStream("/sysomos_xmls.txt");
+    InputStreamReader isr = new InputStreamReader(is);
+    BufferedReader br = new BufferedReader(isr);
+
+    try {
+      while (br.ready()) {
+        String line = br.readLine();
+        LOGGER.debug(line);
+
+        BeatApi ser = xmlMapper.readValue(line, BeatApi.class);
+
+        String des = xmlMapper.writeValueAsString(ser);
+        LOGGER.debug(des);
+      }
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
+      Assert.fail();
     }
-
-    @Test
-    public void Test()
-    {
-        InputStream is = SysomosXmlSerDeIT.class.getResourceAsStream("/sysomos_xmls.txt");
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-
-        try {
-            while (br.ready()) {
-                String line = br.readLine();
-                LOGGER.debug(line);
-
-                BeatApi ser = xmlMapper.readValue(line, BeatApi.class);
-
-                String des = xmlMapper.writeValueAsString(ser);
-                LOGGER.debug(des);
-            }
-        } catch( Exception e ) {
-            e.printStackTrace();
-            Assert.fail();
-        }
-    }
+  }
 }

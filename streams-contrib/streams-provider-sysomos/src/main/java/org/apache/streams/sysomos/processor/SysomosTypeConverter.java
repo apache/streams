@@ -19,45 +19,46 @@
 
 package org.apache.streams.sysomos.processor;
 
-import com.google.common.collect.Lists;
-import com.sysomos.xml.BeatApi;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.sysomos.conversion.SysomosBeatActivityConverter;
 
+import com.google.common.collect.Lists;
+import com.sysomos.xml.BeatApi;
+
 import java.util.List;
 
 /**
- * Stream processor that converts Sysomos type to Activity
+ * Stream processor that converts Sysomos type to Activity.
  */
 public class SysomosTypeConverter implements StreamsProcessor {
 
-    public final static String STREAMS_ID = "SysomosTypeConverter";
+  public static final String STREAMS_ID = "SysomosTypeConverter";
 
-    private SysomosBeatActivityConverter converter;
+  private SysomosBeatActivityConverter converter;
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+    if (entry.getDocument() instanceof BeatApi.BeatResponse.Beat) {
+      entry.setDocument(converter.convert((BeatApi.BeatResponse.Beat)entry.getDocument()));
+      return Lists.newArrayList(entry);
+    } else {
+      return Lists.newArrayList();
     }
+  }
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        if(entry.getDocument() instanceof BeatApi.BeatResponse.Beat) {
-            entry.setDocument(converter.convert((BeatApi.BeatResponse.Beat)entry.getDocument()));
-            return Lists.newArrayList(entry);
-        } else {
-            return Lists.newArrayList();
-        }
-    }
+  @Override
+  public void prepare(Object configurationObject) {
+    converter = new SysomosBeatActivityConverter();
+  }
 
-    @Override
-    public void prepare(Object configurationObject) {
-        converter = new SysomosBeatActivityConverter();
-    }
-
-    @Override
-    public void cleanUp() {
-        //NOP
-    }
+  @Override
+  public void cleanUp() {
+    //NOP
+  }
 }
