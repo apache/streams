@@ -16,7 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.plugins.elasticsearch;
+
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.util.schema.FieldType;
+import org.apache.streams.util.schema.FieldUtil;
+import org.apache.streams.util.schema.GenerationConfig;
+import org.apache.streams.util.schema.Schema;
+import org.apache.streams.util.schema.SchemaStore;
+import org.apache.streams.util.schema.SchemaStoreImpl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,13 +34,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.util.schema.FieldType;
-import org.apache.streams.util.schema.FieldUtil;
-import org.apache.streams.util.schema.GenerationConfig;
-import org.apache.streams.util.schema.Schema;
-import org.apache.streams.util.schema.SchemaStore;
-import org.apache.streams.util.schema.SchemaStoreImpl;
 import org.jsonschema2pojo.util.URLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,340 +55,370 @@ import static org.apache.streams.util.schema.FileUtil.writeFile;
 
 public class StreamsElasticsearchResourceGenerator implements Runnable {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsElasticsearchResourceGenerator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StreamsElasticsearchResourceGenerator.class);
 
-    private ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+  private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-    private final static String LS = System.getProperty("line.separator");
+  private static final String LS = System.getProperty("line.separator");
 
-    private StreamsElasticsearchGenerationConfig config;
+  private StreamsElasticsearchGenerationConfig config;
 
-    private SchemaStore schemaStore = new SchemaStoreImpl();
+  private SchemaStore schemaStore = new SchemaStoreImpl();
 
-    private int currentDepth = 0;
+  private int currentDepth = 0;
 
-    public static void main(String[] args) {
-        StreamsElasticsearchGenerationConfig config = new StreamsElasticsearchGenerationConfig();
+  /**
+   * Run from CLI without Maven
+   *
+   * <p/>
+   * java -jar streams-plugin-elasticsearch-jar-with-dependencies.jar StreamsElasticsearchResourceGenerator src/main/jsonschema target/generated-resources
+   *
+   * @param args [sourceDirectory, targetDirectory]
+   */
+  public static void main(String[] args) {
+    StreamsElasticsearchGenerationConfig config = new StreamsElasticsearchGenerationConfig();
 
-        String sourceDirectory = "src/main/jsonschema";
-        String targetDirectory = "target/generated-resources/streams-plugin-elasticsearch";
+    String sourceDirectory = "src/main/jsonschema";
+    String targetDirectory = "target/generated-resources/streams-plugin-elasticsearch";
 
-        if( args.length > 0 )
-            sourceDirectory = args[0];
-        if( args.length > 1 )
-            targetDirectory = args[1];
-
-        config.setSourceDirectory(sourceDirectory);
-        config.setTargetDirectory(targetDirectory);
-
-        StreamsElasticsearchResourceGenerator streamsElasticsearchResourceGenerator = new StreamsElasticsearchResourceGenerator(config);
-        streamsElasticsearchResourceGenerator.run();
-
+    if ( args.length > 0 ) {
+      sourceDirectory = args[0];
+    }
+    if ( args.length > 1 ) {
+      targetDirectory = args[1];
     }
 
-    public StreamsElasticsearchResourceGenerator(StreamsElasticsearchGenerationConfig config) {
-        this.config = config;
+    config.setSourceDirectory(sourceDirectory);
+    config.setTargetDirectory(targetDirectory);
+
+    StreamsElasticsearchResourceGenerator streamsElasticsearchResourceGenerator = new StreamsElasticsearchResourceGenerator(config);
+    streamsElasticsearchResourceGenerator.run();
+
+  }
+
+  public StreamsElasticsearchResourceGenerator(StreamsElasticsearchGenerationConfig config) {
+    this.config = config;
+  }
+
+  @Override
+  public void run() {
+
+    Objects.requireNonNull(config);
+
+    generate(config);
+
+  }
+
+  /**
+   * run generate using supplied StreamsElasticsearchGenerationConfig.
+   * @param config StreamsElasticsearchGenerationConfig
+   */
+  public void generate(StreamsElasticsearchGenerationConfig config) {
+
+    List<File> sourceFiles = new LinkedList<>();
+
+    for (Iterator<URL> sources = config.getSource(); sources.hasNext();) {
+      URL source = sources.next();
+      sourceFiles.add(URLUtil.getFileFromURL(source));
     }
 
-    public void run() {
+    LOGGER.info("Seeded with {} source paths:", sourceFiles.size());
 
-        Objects.requireNonNull(config);
+    resolveRecursive((GenerationConfig)config, sourceFiles);
 
-        generate(config);
+    LOGGER.info("Resolved {} schema files:", sourceFiles.size());
 
+    for (File item : sourceFiles) {
+      schemaStore.create(item.toURI());
     }
 
-    public void generate(StreamsElasticsearchGenerationConfig config) {
+    LOGGER.info("Identified {} objects:", schemaStore.getSize());
 
-        List<File> sourceFiles = new LinkedList<>();
+    StringBuilder typesContent = new StringBuilder();
 
-        for (Iterator<URL> sources = config.getSource(); sources.hasNext();) {
-            URL source = sources.next();
-            sourceFiles.add(URLUtil.getFileFromURL(source));
+    for (Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator(); schemaIterator.hasNext(); ) {
+      Schema schema = schemaIterator.next();
+      currentDepth = 0;
+      if ( schema.getURI().getScheme().equals("file")) {
+        String inputFile = schema.getURI().getPath();
+        String resourcePath = dropSourcePathPrefix(inputFile, config.getSourceDirectory());
+        for (String sourcePath : config.getSourcePaths()) {
+          resourcePath = dropSourcePathPrefix(resourcePath, sourcePath);
+        }
+        String outputFile = config.getTargetDirectory() + "/" + resourcePath;
+
+        LOGGER.info("Processing {}:", resourcePath);
+
+        String resourceId = schemaSymbol(schema);
+
+        String resourceContent = generateResource(schema, resourceId);
+
+        if ( !Strings.isNullOrEmpty(resourceContent)) {
+          writeFile(outputFile, resourceContent);
         }
 
-        LOGGER.info("Seeded with {} source paths:", sourceFiles.size());
+        LOGGER.info("Wrote {}:", outputFile);
+      }
+    }
 
-        resolveRecursive((GenerationConfig)config, sourceFiles);
+  }
 
-        LOGGER.info("Resolved {} schema files:", sourceFiles.size());
+  /**
+   * generateResource String from schema and resourceId.
+   * @param schema Schema
+   * @param resourceId String
+   * @return mapping
+   */
+  public String generateResource(Schema schema, String resourceId) {
+    StringBuilder resourceBuilder = new StringBuilder();
 
-        for (File item : sourceFiles) {
-            schemaStore.create(item.toURI());
-        }
+    ObjectNode rootNode = (ObjectNode) schema.getContent();
 
-        LOGGER.info("Identified {} objects:", schemaStore.getSize());
+    // remove java*
+    // remove description
+    // resolve all $ref
+    // replace format: date with type: date
+    // replace format: date-time with type: date
+    // replace array of primitive with just primitive
 
-        StringBuilder typesContent = new StringBuilder();
+    try {
+      String objectString = MAPPER.writeValueAsString(rootNode);
+      resourceBuilder.append(objectString);
+    } catch (JsonProcessingException ex) {
+      LOGGER.error("{}: {}", ex.getClass().getName(), ex);
+    }
+    return resourceBuilder.toString();
+  }
 
-        for (Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator(); schemaIterator.hasNext(); ) {
-            Schema schema = schemaIterator.next();
-            currentDepth = 0;
-            if( schema.getURI().getScheme().equals("file")) {
-                String inputFile = schema.getURI().getPath();
-                String resourcePath = dropSourcePathPrefix(inputFile, config.getSourceDirectory());
-                for (String sourcePath : config.getSourcePaths()) {
-                    resourcePath = dropSourcePathPrefix(resourcePath, sourcePath);
+  protected StringBuilder appendRootObject(StringBuilder builder, Schema schema, String resourceId, Character seperator) {
+    ObjectNode propertiesNode = schemaStore.resolveProperties(schema, null, resourceId);
+    if ( propertiesNode.get("id") != null ) {
+      builder.append("id text PRIMARY KEY,");
+      builder.append(LS);
+      propertiesNode.remove("id");
+    }
+    if ( propertiesNode.isObject() && propertiesNode.size() > 0) {
+      builder = appendPropertiesNode(builder, schema, propertiesNode, seperator);
+    }
+    return builder;
+  }
+
+  private StringBuilder appendValueField(StringBuilder builder, Schema schema, String fieldId, FieldType fieldType, Character seperator) {
+    // safe to append nothing
+    Objects.requireNonNull(builder);
+    builder.append(cqlEscape(fieldId));
+    builder.append(seperator);
+    builder.append(cqlType(fieldType));
+    return builder;
+  }
+
+  protected StringBuilder appendArrayItems(StringBuilder builder, Schema schema, String fieldId, ObjectNode itemsNode, Character seperator) {
+    // not safe to append nothing
+    Objects.requireNonNull(builder);
+    if ( itemsNode == null ) {
+      return builder;
+    }
+    if ( itemsNode.has("type")) {
+      try {
+        FieldType itemType = FieldUtil.determineFieldType(itemsNode);
+        switch ( itemType ) {
+          case OBJECT:
+            Schema objectSchema = null;
+            URI parentUri = null;
+            if ( itemsNode.has("$ref") || itemsNode.has("extends") ) {
+              JsonNode refNode = itemsNode.get("$ref");
+              JsonNode extendsNode = itemsNode.get("extends");
+              if (refNode != null && refNode.isValueNode()) {
+                parentUri = URI.create(refNode.asText());
+              } else if (extendsNode != null && extendsNode.isObject()) {
+                parentUri = URI.create(extendsNode.get("$ref").asText());
+              }
+              URI absoluteUri;
+              if (parentUri.isAbsolute()) {
+                absoluteUri = parentUri;
+              } else {
+                absoluteUri = schema.getURI().resolve(parentUri);
+                if (!absoluteUri.isAbsolute() || (absoluteUri.isAbsolute() && !schemaStore.getByUri(absoluteUri).isPresent() )) {
+                  absoluteUri = schema.getParentURI().resolve(parentUri);
                 }
-                String outputFile = config.getTargetDirectory() + "/" + resourcePath;
-
-                LOGGER.info("Processing {}:", resourcePath);
-
-                String resourceId = schemaSymbol(schema);
-
-                String resourceContent = generateResource(schema, resourceId);
-
-                if( !Strings.isNullOrEmpty(resourceContent))
-                    writeFile(outputFile, resourceContent);
-
-                LOGGER.info("Wrote {}:", outputFile);
-            }
-        }
-
-    }
-
-    public String generateResource(Schema schema, String resourceId) {
-        StringBuilder resourceBuilder = new StringBuilder();
-
-        ObjectNode rootNode = (ObjectNode) schema.getContent();
-
-        // remove java*
-        // remove description
-        // resolve all $ref
-        // replace format: date with type: date
-        // replace format: date-time with type: date
-        // replace array of primitive with just primitive
-
-        try {
-            String objectString = MAPPER.writeValueAsString(rootNode);
-            resourceBuilder.append(objectString);
-        } catch (JsonProcessingException e) {
-            LOGGER.error("{}: {}", e.getClass().getName(), e);
-        }
-        return resourceBuilder.toString();
-    }
-
-    public StringBuilder appendRootObject(StringBuilder builder, Schema schema, String resourceId, Character seperator) {
-        ObjectNode propertiesNode = schemaStore.resolveProperties(schema, null, resourceId);
-        if( propertiesNode.get("id") != null ) {
-            builder.append("id text PRIMARY KEY,");
-            builder.append(LS);
-            propertiesNode.remove("id");
-        }
-        if( propertiesNode.isObject() && propertiesNode.size() > 0) {
-            builder = appendPropertiesNode(builder, schema, propertiesNode, seperator);
-        }
-        return builder;
-    }
-
-    private StringBuilder appendValueField(StringBuilder builder, Schema schema, String fieldId, FieldType fieldType, Character seperator) {
-        // safe to append nothing
-        Objects.requireNonNull(builder);
-        builder.append(cqlEscape(fieldId));
-        builder.append(seperator);
-        builder.append(cqlType(fieldType));
-        return builder;
-    }
-
-    public StringBuilder appendArrayItems(StringBuilder builder, Schema schema, String fieldId, ObjectNode itemsNode, Character seperator) {
-        // not safe to append nothing
-        Objects.requireNonNull(builder);
-        if( itemsNode == null ) return builder;
-        if( itemsNode.has("type")) {
-            try {
-                FieldType itemType = FieldUtil.determineFieldType(itemsNode);
-                switch( itemType ) {
-                    case OBJECT:
-                        Schema objectSchema = null;
-                        URI parentURI = null;
-                        if( itemsNode.has("$ref") || itemsNode.has("extends") ) {
-                            JsonNode refNode = itemsNode.get("$ref");
-                            JsonNode extendsNode = itemsNode.get("extends");
-                            if (refNode != null && refNode.isValueNode())
-                                parentURI = URI.create(refNode.asText());
-                            else if (extendsNode != null && extendsNode.isObject())
-                                parentURI = URI.create(extendsNode.get("$ref").asText());
-                            URI absoluteURI;
-                            if (parentURI.isAbsolute())
-                                absoluteURI = parentURI;
-                            else {
-                                absoluteURI = schema.getURI().resolve(parentURI);
-                                if (!absoluteURI.isAbsolute() || (absoluteURI.isAbsolute() && !schemaStore.getByUri(absoluteURI).isPresent() ))
-                                    absoluteURI = schema.getParentURI().resolve(parentURI);
-                            }
-                            if (absoluteURI.isAbsolute()) {
-                                Optional<Schema> schemaLookup = schemaStore.getByUri(absoluteURI);
-                                if (schemaLookup.isPresent()) {
-                                    objectSchema = schemaLookup.get();
-                                }
-                            }
-                        }
-                        // have to resolve schema here
-
-                        builder = appendArrayObject(builder, objectSchema, fieldId, seperator);
-                        break;
-                    case ARRAY:
-                        ObjectNode subArrayItems = (ObjectNode) itemsNode.get("items");
-                        builder = appendArrayItems(builder, schema, fieldId, subArrayItems, seperator);
-                        break;
-                    default:
-                        builder = appendArrayField(builder, schema, fieldId, itemType, seperator);
+              }
+              if (absoluteUri.isAbsolute()) {
+                Optional<Schema> schemaLookup = schemaStore.getByUri(absoluteUri);
+                if (schemaLookup.isPresent()) {
+                  objectSchema = schemaLookup.get();
                 }
-            } catch (Exception e) {
-                LOGGER.warn("No item type resolvable for {}", fieldId);
+              }
             }
+            // have to resolve schema here
+
+            builder = appendArrayObject(builder, objectSchema, fieldId, seperator);
+            break;
+          case ARRAY:
+            ObjectNode subArrayItems = (ObjectNode) itemsNode.get("items");
+            builder = appendArrayItems(builder, schema, fieldId, subArrayItems, seperator);
+            break;
+          default:
+            builder = appendArrayField(builder, schema, fieldId, itemType, seperator);
         }
-        Objects.requireNonNull(builder);
-        return builder;
+      } catch (Exception ex) {
+        LOGGER.warn("No item type resolvable for {}", fieldId);
+      }
     }
+    Objects.requireNonNull(builder);
+    return builder;
+  }
 
-    private StringBuilder appendArrayField(StringBuilder builder, Schema schema, String fieldId, FieldType fieldType, Character seperator) {
-        // safe to append nothing
-        Objects.requireNonNull(builder);
-        Objects.requireNonNull(fieldId);
-        builder.append(cqlEscape(fieldId));
-        builder.append(seperator);
-        builder.append("list<").append(cqlType(fieldType)).append(">");
-        Objects.requireNonNull(builder);
-        return builder;
+  private StringBuilder appendArrayField(StringBuilder builder, Schema schema, String fieldId, FieldType fieldType, Character seperator) {
+    // safe to append nothing
+    Objects.requireNonNull(builder);
+    Objects.requireNonNull(fieldId);
+    builder.append(cqlEscape(fieldId));
+    builder.append(seperator);
+    builder.append("list<").append(cqlType(fieldType)).append(">");
+    Objects.requireNonNull(builder);
+    return builder;
+  }
+
+  private StringBuilder appendArrayObject(StringBuilder builder, Schema schema, String fieldId, Character seperator) {
+    // safe to append nothing
+    Objects.requireNonNull(builder);
+    String schemaSymbol = schemaSymbol(schema);
+    if ( !Strings.isNullOrEmpty(fieldId) && schemaSymbol != null ) {
+      builder.append(cqlEscape(fieldId));
+      builder.append(seperator);
+      builder.append("list<").append(schemaSymbol).append(">");
+      builder.append(LS);
     }
+    Objects.requireNonNull(builder);
+    return builder;
+  }
 
-    private StringBuilder appendArrayObject(StringBuilder builder, Schema schema, String fieldId, Character seperator) {
-        // safe to append nothing
-        Objects.requireNonNull(builder);
-        String schemaSymbol = schemaSymbol(schema);
-        if( !Strings.isNullOrEmpty(fieldId) && schemaSymbol != null ) {
-            builder.append(cqlEscape(fieldId));
-            builder.append(seperator);
-            builder.append("list<").append(schemaSymbol).append(">");
-            builder.append(LS);
-        }
-        Objects.requireNonNull(builder);
-        return builder;
+  private StringBuilder appendSchemaField(StringBuilder builder, Schema schema, String fieldId, Character seperator) {
+    // safe to append nothing
+    Objects.requireNonNull(builder);
+    String schemaSymbol = schemaSymbol(schema);
+    if ( !Strings.isNullOrEmpty(fieldId) && schemaSymbol != null ) {
+      builder.append(cqlEscape(fieldId));
+      builder.append(seperator);
+      builder.append(schemaSymbol);
     }
+    Objects.requireNonNull(builder);
+    return builder;
+  }
 
-    private StringBuilder appendSchemaField(StringBuilder builder, Schema schema, String fieldId, Character seperator) {
-        // safe to append nothing
-        Objects.requireNonNull(builder);
-        String schemaSymbol = schemaSymbol(schema);
-        if( !Strings.isNullOrEmpty(fieldId) && schemaSymbol != null ) {
-            builder.append(cqlEscape(fieldId));
-            builder.append(seperator);
-            builder.append(schemaSymbol);
-        }
-        Objects.requireNonNull(builder);
-        return builder;
-    }
-
-    /*
-     can this be moved to streams-schemas if schemastore available in scope?
-     maybe an interface?
-     lot of boilerplate / reuse between plugins
-     however treatment is way different when resolving a type symbol vs resolving and listing fields .
-     */
-    private StringBuilder appendPropertiesNode(StringBuilder builder, Schema schema, ObjectNode propertiesNode, Character seperator) {
-        Objects.requireNonNull(builder);
-        Objects.requireNonNull(propertiesNode);
-        Iterator<Map.Entry<String, JsonNode>> fields = propertiesNode.fields();
-        Joiner joiner = Joiner.on(","+LS).skipNulls();
-        List<String> fieldStrings = new ArrayList<>();
-        for( ; fields.hasNext(); ) {
-            Map.Entry<String, JsonNode> field = fields.next();
-            String fieldId = field.getKey();
-            if( !config.getExclusions().contains(fieldId) && field.getValue().isObject()) {
-                ObjectNode fieldNode = (ObjectNode) field.getValue();
-                FieldType fieldType = FieldUtil.determineFieldType(fieldNode);
-                if (fieldType != null ) {
-                    switch (fieldType) {
-                        case ARRAY:
-                            ObjectNode itemsNode = (ObjectNode) fieldNode.get("items");
-                            if( currentDepth <= config.getMaxDepth()) {
-                                StringBuilder arrayItemsBuilder = appendArrayItems(new StringBuilder(), schema, fieldId, itemsNode, seperator);
-                                if( !Strings.isNullOrEmpty(arrayItemsBuilder.toString())) {
-                                    fieldStrings.add(arrayItemsBuilder.toString());
-                                }
-                            }
-                            break;
-                        case OBJECT:
-                            Schema objectSchema = null;
-                            URI parentURI = null;
-                            if( fieldNode.has("$ref") || fieldNode.has("extends") ) {
-                                JsonNode refNode = fieldNode.get("$ref");
-                                JsonNode extendsNode = fieldNode.get("extends");
-                                if (refNode != null && refNode.isValueNode())
-                                    parentURI = URI.create(refNode.asText());
-                                else if (extendsNode != null && extendsNode.isObject())
-                                    parentURI = URI.create(extendsNode.get("$ref").asText());
-                                URI absoluteURI;
-                                if (parentURI.isAbsolute())
-                                    absoluteURI = parentURI;
-                                else {
-                                    absoluteURI = schema.getURI().resolve(parentURI);
-                                    if (!absoluteURI.isAbsolute() || (absoluteURI.isAbsolute() && !schemaStore.getByUri(absoluteURI).isPresent() ))
-                                        absoluteURI = schema.getParentURI().resolve(parentURI);
-                                }
-                                if (absoluteURI.isAbsolute()) {
-                                    Optional<Schema> schemaLookup = schemaStore.getByUri(absoluteURI);
-                                    if (schemaLookup.isPresent()) {
-                                        objectSchema = schemaLookup.get();
-                                    }
-                                }
-                            }
-                            //ObjectNode childProperties = schemaStore.resolveProperties(schema, fieldNode, fieldId);
-                            if( currentDepth < config.getMaxDepth()) {
-                                StringBuilder structFieldBuilder = appendSchemaField(new StringBuilder(), objectSchema, fieldId, seperator);
-                                if( !Strings.isNullOrEmpty(structFieldBuilder.toString())) {
-                                    fieldStrings.add(structFieldBuilder.toString());
-                                }
-                            }
-                            break;
-                        default:
-                            StringBuilder valueFieldBuilder = appendValueField(new StringBuilder(), schema, fieldId, fieldType, seperator);
-                            if( !Strings.isNullOrEmpty(valueFieldBuilder.toString())) {
-                                fieldStrings.add(valueFieldBuilder.toString());
-                            }
-                    }
-                }
-            }
-        }
-        builder.append(joiner.join(fieldStrings)).append(LS);
-        Objects.requireNonNull(builder);
-        return builder;
-    }
-
-    private static String cqlEscape( String fieldId ) {
-        return "`"+fieldId+"`";
-    }
-
-    private static String cqlType( FieldType fieldType ) {
-        switch( fieldType ) {
-            case STRING:
-                return "text";
-            case INTEGER:
-                return "int";
-            case NUMBER:
-                return "double";
-            case OBJECT:
-                return "tuple";
+  /*
+   can this be moved to streams-schemas if schemastore available in scope?
+   maybe an interface?
+   lot of boilerplate / reuse between plugins
+   however treatment is way different when resolving a type symbol vs resolving and listing fields .
+   */
+  private StringBuilder appendPropertiesNode(StringBuilder builder, Schema schema, ObjectNode propertiesNode, Character seperator) {
+    Objects.requireNonNull(builder);
+    Objects.requireNonNull(propertiesNode);
+    Iterator<Map.Entry<String, JsonNode>> fields = propertiesNode.fields();
+    Joiner joiner = Joiner.on("," + LS).skipNulls();
+    List<String> fieldStrings = new ArrayList<>();
+    for ( ; fields.hasNext(); ) {
+      Map.Entry<String, JsonNode> field = fields.next();
+      String fieldId = field.getKey();
+      if ( !config.getExclusions().contains(fieldId) && field.getValue().isObject()) {
+        ObjectNode fieldNode = (ObjectNode) field.getValue();
+        FieldType fieldType = FieldUtil.determineFieldType(fieldNode);
+        if (fieldType != null ) {
+          switch (fieldType) {
             case ARRAY:
-                return "list";
+              ObjectNode itemsNode = (ObjectNode) fieldNode.get("items");
+              if ( currentDepth <= config.getMaxDepth()) {
+                StringBuilder arrayItemsBuilder = appendArrayItems(new StringBuilder(), schema, fieldId, itemsNode, seperator);
+                if ( !Strings.isNullOrEmpty(arrayItemsBuilder.toString())) {
+                  fieldStrings.add(arrayItemsBuilder.toString());
+                }
+              }
+              break;
+            case OBJECT:
+              Schema objectSchema = null;
+              URI parentUri = null;
+              if ( fieldNode.has("$ref") || fieldNode.has("extends") ) {
+                JsonNode refNode = fieldNode.get("$ref");
+                JsonNode extendsNode = fieldNode.get("extends");
+                if (refNode != null && refNode.isValueNode()) {
+                  parentUri = URI.create(refNode.asText());
+                } else if (extendsNode != null && extendsNode.isObject()) {
+                  parentUri = URI.create(extendsNode.get("$ref").asText());
+                }
+                URI absoluteUri;
+                if (parentUri.isAbsolute()) {
+                  absoluteUri = parentUri;
+                } else {
+                  absoluteUri = schema.getURI().resolve(parentUri);
+                  if (!absoluteUri.isAbsolute() || (absoluteUri.isAbsolute() && !schemaStore.getByUri(absoluteUri).isPresent() )) {
+                    absoluteUri = schema.getParentURI().resolve(parentUri);
+                  }
+                }
+                if (absoluteUri.isAbsolute()) {
+                  Optional<Schema> schemaLookup = schemaStore.getByUri(absoluteUri);
+                  if (schemaLookup.isPresent()) {
+                    objectSchema = schemaLookup.get();
+                  }
+                }
+              }
+              //ObjectNode childProperties = schemaStore.resolveProperties(schema, fieldNode, fieldId);
+              if ( currentDepth < config.getMaxDepth()) {
+                StringBuilder structFieldBuilder = appendSchemaField(new StringBuilder(), objectSchema, fieldId, seperator);
+                if ( !Strings.isNullOrEmpty(structFieldBuilder.toString())) {
+                  fieldStrings.add(structFieldBuilder.toString());
+                }
+              }
+              break;
             default:
-                return fieldType.name().toUpperCase();
+              StringBuilder valueFieldBuilder = appendValueField(new StringBuilder(), schema, fieldId, fieldType, seperator);
+              if ( !Strings.isNullOrEmpty(valueFieldBuilder.toString())) {
+                fieldStrings.add(valueFieldBuilder.toString());
+              }
+          }
         }
+      }
     }
+    builder.append(joiner.join(fieldStrings)).append(LS);
+    Objects.requireNonNull(builder);
+    return builder;
+  }
 
-    private String schemaSymbol( Schema schema ) {
-        if (schema == null) return null;
-        // this needs to return whatever
-        if (schema.getURI().getScheme().equals("file")) {
-            String inputFile = schema.getURI().getPath();
-            String resourcePath = dropSourcePathPrefix(inputFile, config.getSourceDirectory());
-            for (String sourcePath : config.getSourcePaths()) {
-                resourcePath = dropSourcePathPrefix(resourcePath, sourcePath);
-            }
-            return dropExtension(resourcePath).replace("/", "_");
-        } else {
-            return "IDK";
-        }
+  private static String cqlEscape( String fieldId ) {
+    return "`" + fieldId + "`";
+  }
+
+  private static String cqlType( FieldType fieldType ) {
+    switch ( fieldType ) {
+      case STRING:
+        return "text";
+      case INTEGER:
+        return "int";
+      case NUMBER:
+        return "double";
+      case OBJECT:
+        return "tuple";
+      case ARRAY:
+        return "list";
+      default:
+        return fieldType.name().toUpperCase();
     }
+  }
+
+  private String schemaSymbol( Schema schema ) {
+    if (schema == null) {
+      return null;
+    }
+    // this needs to return whatever
+    if (schema.getURI().getScheme().equals("file")) {
+      String inputFile = schema.getURI().getPath();
+      String resourcePath = dropSourcePathPrefix(inputFile, config.getSourceDirectory());
+      for (String sourcePath : config.getSourcePaths()) {
+        resourcePath = dropSourcePathPrefix(resourcePath, sourcePath);
+      }
+      return dropExtension(resourcePath).replace("/", "_");
+    } else {
+      return "IDK";
+    }
+  }
 }

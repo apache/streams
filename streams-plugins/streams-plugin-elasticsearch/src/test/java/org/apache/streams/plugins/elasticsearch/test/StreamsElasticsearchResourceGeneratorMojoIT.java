@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.plugins.elasticsearch.test;
 
 import com.google.common.collect.Lists;
@@ -31,38 +32,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests that streams-plugin-hive running via maven generates hql resources
+ * Tests that streams-plugin-elasticsearch running via maven generates elasticsearch mapping resources.
  */
 public class StreamsElasticsearchResourceGeneratorMojoIT extends TestCase {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsElasticsearchResourceGeneratorMojoIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StreamsElasticsearchResourceGeneratorMojoIT.class);
 
-    protected void setUp() throws Exception
-    {
-        // required for mojo lookups to work
-        super.setUp();
-    }
+  protected void setUp() throws Exception {
+    // required for mojo lookups to work
+    super.setUp();
+  }
 
 
-    @Test
-    public void testStreamsElasticsearchResourceGeneratorMojo() throws Exception {
+  @Test
+  public void testStreamsElasticsearchResourceGeneratorMojo() throws Exception {
 
-        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-elasticsearch" );
+    File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-elasticsearch" );
 
-        Verifier verifier;
+    Verifier verifier;
 
-        verifier = new Verifier( testDir.getAbsolutePath() );
+    verifier = new Verifier( testDir.getAbsolutePath() );
 
-        List cliOptions = new ArrayList();
-        cliOptions.add( "-N" );
-        verifier.executeGoals( Lists.<String>newArrayList(
-                "clean",
-                "dependency:unpack-dependencies",
-                "generate-resources"));
+    List cliOptions = new ArrayList();
+    cliOptions.add( "-N" );
+    verifier.executeGoals( Lists.<String>newArrayList(
+        "clean",
+        "dependency:unpack-dependencies",
+        "generate-resources"));
 
-        verifier.verifyErrorFreeLog();
+    verifier.verifyErrorFreeLog();
 
-        verifier.resetStreams();
+    verifier.resetStreams();
 
-    }
+  }
 }
