@@ -19,47 +19,40 @@
 
 package org.apache.streams.plugins;
 
-import org.jsonschema2pojo.DefaultGenerationConfig;
-import org.jsonschema2pojo.util.URLUtil;
-
 import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by sblackmon on 3/27/16.
+ * Configures StreamsScalaSourceGenerator.
  */
 public class StreamsScalaGenerationConfig {
 
-    private List<String> sourcePackages;
-    private String targetPackage;
-    private String targetDirectory;
+  private List<String> sourcePackages;
+  private String targetPackage;
+  private String targetDirectory;
 
-    public void setSourcePackages(List<String> sourcePackages) {
-        this.sourcePackages = sourcePackages;
-    }
+  public void setSourcePackages(List<String> sourcePackages) {
+    this.sourcePackages = sourcePackages;
+  }
 
-    public List<String> getSourcePackages() {
-        return sourcePackages;
-    }
+  public List<String> getSourcePackages() {
+    return sourcePackages;
+  }
 
-    public void setTargetPackage(String targetPackage) {
-        this.targetPackage = targetPackage;
-    }
+  public void setTargetPackage(String targetPackage) {
+    this.targetPackage = targetPackage;
+  }
 
-    public void setTargetDirectory(String targetDirectory) {
-        this.targetDirectory = targetDirectory;
-    }
+  public void setTargetDirectory(String targetDirectory) {
+    this.targetDirectory = targetDirectory;
+  }
 
-    public String getTargetPackage() {
-        return targetPackage;
-    }
+  public String getTargetPackage() {
+    return targetPackage;
+  }
 
-    public File getTargetDirectory() {
-        return new File(targetDirectory);
-    }
+  public File getTargetDirectory() {
+    return new File(targetDirectory);
+  }
 
 }

@@ -20,9 +20,9 @@
 package org.apache.streams.plugins;
 
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -34,52 +34,59 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-@Mojo(  name = "scala",
-        defaultPhase = LifecyclePhase.GENERATE_SOURCES
-)
-@Execute(   goal = "scala",
-            phase = LifecyclePhase.GENERATE_SOURCES
-)
+@Mojo(
+    name = "scala",
+    defaultPhase = LifecyclePhase.GENERATE_SOURCES
+    )
+@Execute(
+    goal = "scala",
+    phase = LifecyclePhase.GENERATE_SOURCES
+    )
 public class StreamsScalaSourceGeneratorMojo extends AbstractMojo {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorMojo.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorMojo.class);
 
-    @Component
-    private MavenProject project;
+  @Component
+  private MavenProject project;
 
-//    @Component
-//    private Settings settings;
-//
-//    @Parameter( defaultValue = "${localRepository}", readonly = true, required = true )
-//    protected ArtifactRepository localRepository;
-//
-//    @Parameter( defaultValue = "${plugin}", readonly = true ) // Maven 3 only
-//    private PluginDescriptor plugin;
-//
-    @Parameter( defaultValue = "${project.basedir}", readonly = true )
-    private File basedir;
+  //    @Component
+  //    private Settings settings;
+  //
+  //    @Parameter( defaultValue = "${localRepository}", readonly = true, required = true )
+  //    protected ArtifactRepository localRepository;
+  //
+  //    @Parameter( defaultValue = "${plugin}", readonly = true ) // Maven 3 only
+  //    private PluginDescriptor plugin;
+  //
+  @Parameter( defaultValue = "${project.basedir}", readonly = true )
+  private File basedir;
 
-    @Parameter(defaultValue = "${project.build.directory}", readonly = true)
-    private File target;
+  @Parameter(defaultValue = "${project.build.directory}", readonly = true)
+  private File target;
 
-    @Parameter(defaultValue = "org.apache.streams.pojo.json", readonly = true)
-    private String packages;
+  @Parameter(defaultValue = "org.apache.streams.pojo.json", readonly = true)
+  private String packages;
 
-    public void execute() throws MojoExecutionException {
-        StreamsScalaGenerationConfig config = new StreamsScalaGenerationConfig();
-        config.setSourcePackages(Splitter.on(',').splitToList(packages));
-        config.setTargetDirectory(target.toString());
+  /**
+   * execute StreamsScalaSourceGeneratorMojo.
+   * @throws MojoExecutionException MojoExecutionException
+   * @throws MojoFailureException MojoFailureException
+   */
+  public void execute() throws MojoExecutionException {
+    StreamsScalaGenerationConfig config = new StreamsScalaGenerationConfig();
+    config.setSourcePackages(Splitter.on(',').splitToList(packages));
+    config.setTargetDirectory(target.toString());
 
-        StreamsScalaSourceGenerator streamsScalaSourceGenerator = new StreamsScalaSourceGenerator(config);
+    StreamsScalaSourceGenerator streamsScalaSourceGenerator = new StreamsScalaSourceGenerator(config);
 
-        streamsScalaSourceGenerator.run();
-    }
+    streamsScalaSourceGenerator.run();
+  }
 
-    public File getTarget() {
-        return target;
-    }
+  public File getTarget() {
+    return target;
+  }
 
-    public String getPackages() {
-        return packages;
-    }
+  public String getPackages() {
+    return packages;
+  }
 }

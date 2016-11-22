@@ -19,9 +19,10 @@
 
 package org.apache.streams.plugins.test;
 
+import org.apache.streams.plugins.StreamsScalaSourceGenerator;
+
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import org.apache.streams.plugins.StreamsScalaSourceGenerator;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,31 +34,31 @@ import java.util.List;
 import static org.apache.streams.plugins.test.StreamsScalaSourceGeneratorTest.scalaFilter;
 
 /**
- * Created by sblackmon on 5/5/16.
+ * Test whether StreamsScalaSourceGeneratorCLI generates sources.
  */
 public class StreamsScalaSourceGeneratorCLITest {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorCLITest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorCLITest.class);
 
-    @Test
-    public void testStreamsScalaSourceGeneratorCLI() throws Exception {
+  @Test
+  public void testStreamsScalaSourceGeneratorCLI() throws Exception {
 
-        String sourcePackages = "org.apache.streams.pojo.json";
-        String targetPackage = "org.apache.streams.scala";
-        String targetDirectory = "./target/generated-sources/scala-cli";
+    String sourcePackages = "org.apache.streams.pojo.json";
+    String targetPackage = "org.apache.streams.scala";
+    String targetDirectory = "./target/generated-sources/scala-cli";
 
-        List<String> argsList = Lists.newArrayList(sourcePackages, targetDirectory, targetPackage);
-        StreamsScalaSourceGenerator.main(argsList.toArray(new String[argsList.size()]));
+    List<String> argsList = Lists.newArrayList(sourcePackages, targetDirectory, targetPackage);
+    StreamsScalaSourceGenerator.main(argsList.toArray(new String[argsList.size()]));
 
-        File testOutput = new File(targetDirectory);
+    File testOutput = new File(targetDirectory);
 
-        assert( testOutput != null );
-        assert( testOutput.exists() == true );
-        assert( testOutput.isDirectory() == true );
+    assert ( testOutput != null );
+    assert ( testOutput.exists() == true );
+    assert ( testOutput.isDirectory() == true );
 
-        Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-                .filter(scalaFilter);
-        Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-        assert( outputCollection.size() > 133 );
-    }
+    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
+        .filter(scalaFilter);
+    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
+    assert ( outputCollection.size() > 133 );
+  }
 }
