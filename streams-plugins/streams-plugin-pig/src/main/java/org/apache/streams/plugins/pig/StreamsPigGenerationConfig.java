@@ -96,8 +96,8 @@ public class StreamsPigGenerationConfig extends DefaultGenerationConfig implemen
       for (String source : sourcePaths) {
         sourceUrls.add(URLUtil.parseURL(source));
       }
-      return sourceUrls.iterator();
     }
+    return sourceUrls.iterator();
   }
 
   public void setMaxDepth(int maxDepth) {

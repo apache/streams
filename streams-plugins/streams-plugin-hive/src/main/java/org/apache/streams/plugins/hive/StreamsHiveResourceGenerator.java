@@ -137,8 +137,8 @@ public class StreamsHiveResourceGenerator implements Runnable {
     for (Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator(); schemaIterator.hasNext(); ) {
       Schema schema = schemaIterator.next();
       currentDepth = 0;
-      if ( schema.getURI().getScheme().equals("file")) {
-        String inputFile = schema.getURI().getPath();
+      if ( schema.getUri().getScheme().equals("file")) {
+        String inputFile = schema.getUri().getPath();
         String resourcePath = dropSourcePathPrefix(inputFile, config.getSourceDirectory());
         for (String sourcePath : config.getSourcePaths()) {
           resourcePath = dropSourcePathPrefix(resourcePath, sourcePath);

@@ -19,6 +19,7 @@ package org.apache.streams.util.api.requests.backoff;
  * BackOffStrategy will cause the current thread to sleep for a specific amount of time. This is used to adhere to
  * api rate limits.
  *
+ * <p/>
  * The example below illustrates using a BackOffStrategy to slow down requests when you hit a rate limit exception.
  *
  * <code>
@@ -36,16 +37,17 @@ package org.apache.streams.util.api.requests.backoff;
  */
 public interface BackOffStrategy {
 
-    /**
-     * Cause the current thread to sleep for an amount of time based on the implemented strategy. If limits are set
-     * on the number of times the backOff can be called, an exception will be thrown.
-     * @throws BackOffException
-     */
-    public void backOff() throws BackOffException;
+  /**
+   * Cause the current thread to sleep for an amount of time based on the implemented strategy. If limits are set
+   * on the number of times the backOff can be called, an exception will be thrown.
+   * @throws BackOffException BackOffException
+   */
+  public void backOff() throws BackOffException;
 
-    /**
-     * Rests the back off strategy to its original state.  After the call the strategy will act as if {@link AbstractBackOffStrategy#backOff()}
-     * has never been called.
-     */
-    public void reset();
+  /**
+   * Rests the back off strategy to its original state.
+   * After the call the strategy will act as if {@link AbstractBackOffStrategy#backOff()}
+   * has never been called.
+   */
+  public void reset();
 }

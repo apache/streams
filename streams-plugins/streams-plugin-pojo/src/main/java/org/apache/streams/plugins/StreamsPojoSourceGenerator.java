@@ -52,7 +52,7 @@ public class StreamsPojoSourceGenerator implements Runnable {
    * Run from CLI without Maven
    *
    * <p/>
-   * java -jar streams-plugin-pojo-jar-with-dependencies.jar StreamsPojoSourceGenerator src/main/jsonschema target/generated-resources
+   * java -jar streams-plugin-pojo-jar-with-dependencies.jar StreamsPojoSourceGenerator src/main/jsonschema target/generated-sources
    *
    * @param args [sourceDirectory, targetDirectory, targetPackage]
    * */

@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.util.schema;
 
 /**
@@ -22,10 +23,10 @@ package org.apache.streams.util.schema;
  * be able to translate.
  */
 public enum FieldType {
-    STRING,
-    INTEGER,
-    NUMBER,
-    BOOLEAN,
-    OBJECT,
-    ARRAY
+  STRING,
+  INTEGER,
+  NUMBER,
+  BOOLEAN,
+  OBJECT,
+  ARRAY
 }

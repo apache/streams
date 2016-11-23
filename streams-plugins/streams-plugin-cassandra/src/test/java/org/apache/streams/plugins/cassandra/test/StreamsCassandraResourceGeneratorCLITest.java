@@ -35,7 +35,7 @@ import java.util.List;
 import static org.apache.streams.plugins.cassandra.test.StreamsCassandraResourceGeneratorTest.cqlFilter;
 
 /**
- * Created by sblackmon on 5/5/16.
+ * Test that StreamsCassandraResourceGeneratorCLI generates resources.
  */
 public class StreamsCassandraResourceGeneratorCLITest {
 

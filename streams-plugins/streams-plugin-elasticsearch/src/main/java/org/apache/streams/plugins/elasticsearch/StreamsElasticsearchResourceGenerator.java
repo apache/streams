@@ -139,8 +139,8 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
     for (Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator(); schemaIterator.hasNext(); ) {
       Schema schema = schemaIterator.next();
       currentDepth = 0;
-      if ( schema.getURI().getScheme().equals("file")) {
-        String inputFile = schema.getURI().getPath();
+      if ( schema.getUri().getScheme().equals("file")) {
+        String inputFile = schema.getUri().getPath();
         String resourcePath = dropSourcePathPrefix(inputFile, config.getSourceDirectory());
         for (String sourcePath : config.getSourcePaths()) {
           resourcePath = dropSourcePathPrefix(resourcePath, sourcePath);
@@ -237,9 +237,9 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
               if (parentUri.isAbsolute()) {
                 absoluteUri = parentUri;
               } else {
-                absoluteUri = schema.getURI().resolve(parentUri);
+                absoluteUri = schema.getUri().resolve(parentUri);
                 if (!absoluteUri.isAbsolute() || (absoluteUri.isAbsolute() && !schemaStore.getByUri(absoluteUri).isPresent() )) {
-                  absoluteUri = schema.getParentURI().resolve(parentUri);
+                  absoluteUri = schema.getParentUri().resolve(parentUri);
                 }
               }
               if (absoluteUri.isAbsolute()) {
@@ -350,9 +350,9 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
                 if (parentUri.isAbsolute()) {
                   absoluteUri = parentUri;
                 } else {
-                  absoluteUri = schema.getURI().resolve(parentUri);
+                  absoluteUri = schema.getUri().resolve(parentUri);
                   if (!absoluteUri.isAbsolute() || (absoluteUri.isAbsolute() && !schemaStore.getByUri(absoluteUri).isPresent() )) {
-                    absoluteUri = schema.getParentURI().resolve(parentUri);
+                    absoluteUri = schema.getParentUri().resolve(parentUri);
                   }
                 }
                 if (absoluteUri.isAbsolute()) {
@@ -410,8 +410,8 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
       return null;
     }
     // this needs to return whatever
-    if (schema.getURI().getScheme().equals("file")) {
-      String inputFile = schema.getURI().getPath();
+    if (schema.getUri().getScheme().equals("file")) {
+      String inputFile = schema.getUri().getPath();
       String resourcePath = dropSourcePathPrefix(inputFile, config.getSourceDirectory());
       for (String sourcePath : config.getSourcePaths()) {
         resourcePath = dropSourcePathPrefix(resourcePath, sourcePath);

@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.util.schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,33 +35,44 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 public class SchemaUtil {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(SchemaUtil.class);
-    private static final JsonNodeFactory NODE_FACTORY = JsonNodeFactory.instance;
-    public static final String ILLEGAL_CHARACTER_REGEX = "[^0-9a-zA-Z_$]";
+  private static final Logger LOGGER = LoggerFactory.getLogger(SchemaUtil.class);
+  private static final JsonNodeFactory NODE_FACTORY = JsonNodeFactory.instance;
+  public static final String ILLEGAL_CHARACTER_REGEX = "[^0-9a-zA-Z_$]";
 
-    public static String childQualifiedName(String parentQualifiedName, String childSimpleName) {
-        String safeChildName = childSimpleName.replaceAll(ILLEGAL_CHARACTER_REGEX, "_");
-        return isEmpty(parentQualifiedName) ? safeChildName : parentQualifiedName + "." + safeChildName;
+  public static String childQualifiedName(String parentQualifiedName, String childSimpleName) {
+    String safeChildName = childSimpleName.replaceAll(ILLEGAL_CHARACTER_REGEX, "_");
+    return isEmpty(parentQualifiedName) ? safeChildName : parentQualifiedName + "." + safeChildName;
+  }
+
+  /**
+   * read Schema from URL.
+   * @param schemaUrl URL
+   * @return ObjectNode
+   */
+  public static ObjectNode readSchema(URL schemaUrl) {
+
+    ObjectNode schemaNode = NODE_FACTORY.objectNode();
+    schemaNode.put("$ref", schemaUrl.toString());
+    return schemaNode;
+
+  }
+
+  /**
+   * merge parent and child properties maps.
+   * @param content ObjectNode
+   * @param parent ObjectNode
+   * @return merged ObjectNode
+   */
+  public static ObjectNode mergeProperties(ObjectNode content, ObjectNode parent) {
+
+    ObjectNode merged = parent.deepCopy();
+    Iterator<Map.Entry<String, JsonNode>> fields = content.fields();
+    for ( ; fields.hasNext(); ) {
+      Map.Entry<String, JsonNode> field = fields.next();
+      String fieldId = field.getKey();
+      merged.put(fieldId, field.getValue().deepCopy());
     }
-
-    public static ObjectNode readSchema(URL schemaUrl) {
-
-        ObjectNode schemaNode = NODE_FACTORY.objectNode();
-        schemaNode.put("$ref", schemaUrl.toString());
-        return schemaNode;
-
-    }
-
-    public static ObjectNode mergeProperties(ObjectNode content, ObjectNode parent) {
-
-        ObjectNode merged = parent.deepCopy();
-        Iterator<Map.Entry<String, JsonNode>> fields = content.fields();
-        for( ; fields.hasNext(); ) {
-            Map.Entry<String, JsonNode> field = fields.next();
-            String fieldId = field.getKey();
-            merged.put(fieldId, field.getValue().deepCopy());
-        }
-        return merged;
-    }
+    return merged;
+  }
 
 }

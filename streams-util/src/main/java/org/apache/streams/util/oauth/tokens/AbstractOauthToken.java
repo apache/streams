@@ -12,22 +12,23 @@ software distributed under the License is distributed on an
 KIND, either express or implied. See the License for the
 specific language governing permissions and limitations
 under the License. */
+
 package org.apache.streams.util.oauth.tokens;
 
 /**
- *
+ * AbstractOauthToken.
  */
 public abstract class AbstractOauthToken {
 
-    /**
-     * Must create equals method for all OauthTokens.
-     * @param o
-     * @return true if equal, and false otherwise
-     */
-    protected abstract boolean internalEquals(Object o);
+  /**
+   * Must create equals method for all OauthTokens.
+   * @param object object for comparison
+   * @return true if equal, and false otherwise
+   */
+  protected abstract boolean internalEquals(Object object);
 
-    @Override
-    public boolean equals(Object o) {
-        return this.internalEquals(o);
-    }
+  @Override
+  public boolean equals(Object object) {
+    return this.internalEquals(object);
+  }
 }

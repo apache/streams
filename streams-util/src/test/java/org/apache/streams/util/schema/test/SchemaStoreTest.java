@@ -15,71 +15,72 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.util.schema.test;
 
 import org.apache.streams.util.schema.Schema;
 import org.apache.streams.util.schema.SchemaStore;
 import org.apache.streams.util.schema.SchemaStoreImpl;
+
 import org.junit.Test;
 
 import java.io.File;
-import java.net.URI;
 
 /**
  * Created by sblackmon on 5/2/16.
  */
 public class SchemaStoreTest {
 
-    @Test
-    public void indexMediaLink() {
-        SchemaStore schemaStore = new SchemaStoreImpl();
-        File file = new File("target/test-classes/activitystreams-schemas/media_link.json");
-        schemaStore.create(file.toURI());
-        assert( schemaStore.getFileUriCount() == 1);
-        assert( schemaStore.getByUri(file.toURI()).isPresent());
-        assert( schemaStore.getById(schemaStore.getByUri(file.toURI()).get().getId()).isPresent());
-    }
+  @Test
+  public void indexMediaLink() {
+    SchemaStore schemaStore = new SchemaStoreImpl();
+    File file = new File("target/test-classes/activitystreams-schemas/media_link.json");
+    schemaStore.create(file.toURI());
+    assert ( schemaStore.getFileUriCount() == 1);
+    assert ( schemaStore.getByUri(file.toURI()).isPresent());
+    assert ( schemaStore.getById(schemaStore.getByUri(file.toURI()).get().getId()).isPresent());
+  }
 
-    @Test
-    public void indexApprove() {
-        SchemaStore schemaStore = new SchemaStoreImpl();
-        File file = new File("target/test-classes/activitystreams-schemas/verbs/approve.json");
-        schemaStore.create(file.toURI());
-        assert( schemaStore.getFileUriCount() == 4);
-        assert( schemaStore.getByUri(file.toURI()).isPresent());
-        assert( schemaStore.getById(schemaStore.getByUri(file.toURI()).get().getId()).isPresent());
-    }
+  @Test
+  public void indexApprove() {
+    SchemaStore schemaStore = new SchemaStoreImpl();
+    File file = new File("target/test-classes/activitystreams-schemas/verbs/approve.json");
+    schemaStore.create(file.toURI());
+    assert ( schemaStore.getFileUriCount() == 4);
+    assert ( schemaStore.getByUri(file.toURI()).isPresent());
+    assert ( schemaStore.getById(schemaStore.getByUri(file.toURI()).get().getId()).isPresent());
+  }
 
-    @Test
-    public void indexCollection() {
-        SchemaStore schemaStore = new SchemaStoreImpl();
-        File file = new File("target/test-classes/activitystreams-schemas/collection.json");
-        schemaStore.create(file.toURI());
-        assert( schemaStore.getFileUriCount() == 3);
-        assert( schemaStore.getByUri(file.toURI()).isPresent());
-        assert( schemaStore.getById(schemaStore.getByUri(file.toURI()).get().getId()).isPresent());
-        Schema collection = schemaStore.getByUri(file.toURI()).get();
-        assert( collection.getParent() == null );
-    }
+  @Test
+  public void indexCollection() {
+    SchemaStore schemaStore = new SchemaStoreImpl();
+    File file = new File("target/test-classes/activitystreams-schemas/collection.json");
+    schemaStore.create(file.toURI());
+    assert ( schemaStore.getFileUriCount() == 3);
+    assert ( schemaStore.getByUri(file.toURI()).isPresent());
+    assert ( schemaStore.getById(schemaStore.getByUri(file.toURI()).get().getId()).isPresent());
+    Schema collection = schemaStore.getByUri(file.toURI()).get();
+    assert ( collection.getParent() == null );
+  }
 
-    @Test
-    public void indexUpdate() {
-        SchemaStore schemaStore = new SchemaStoreImpl();
-        File file = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
-        schemaStore.create(file.toURI());
-        assert( schemaStore.getFileUriCount() == 4);
-        assert( schemaStore.getByUri(file.toURI()).isPresent());
-        assert( schemaStore.getById(schemaStore.getByUri(file.toURI()).get().getId()).isPresent());
-        Schema update = schemaStore.getByUri(file.toURI()).get();
-        assert( update.getParent() != null );
-        File parentFile = new File("target/test-classes/activitystreams-schemas/activity.json");
-        Schema parent = schemaStore.getByUri(parentFile.toURI()).get();
-        assert( parent != null );
-        assert( update.getParentURI().equals(parent.getURI()));
-    }
+  @Test
+  public void indexUpdate() {
+    SchemaStore schemaStore = new SchemaStoreImpl();
+    File file = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
+    schemaStore.create(file.toURI());
+    assert ( schemaStore.getFileUriCount() == 4);
+    assert ( schemaStore.getByUri(file.toURI()).isPresent());
+    assert ( schemaStore.getById(schemaStore.getByUri(file.toURI()).get().getId()).isPresent());
+    Schema update = schemaStore.getByUri(file.toURI()).get();
+    assert ( update.getParent() != null );
+    File parentFile = new File("target/test-classes/activitystreams-schemas/activity.json");
+    Schema parent = schemaStore.getByUri(parentFile.toURI()).get();
+    assert ( parent != null );
+    assert ( update.getParentUri().equals(parent.getUri()));
+  }
 
-    // test create from messed up URI
+  // test create from messed up URI
 
-    // test create from URI with messed up reference
+  // test create from URI with messed up reference
 
 }

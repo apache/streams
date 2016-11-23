@@ -16,9 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.data.util;
-
-import org.apache.streams.jackson.StreamsJacksonMapper;
+package org.apache.streams.jackson;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;

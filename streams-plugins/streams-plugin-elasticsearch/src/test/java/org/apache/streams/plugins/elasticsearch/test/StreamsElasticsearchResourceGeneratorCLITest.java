@@ -32,7 +32,7 @@ import java.util.List;
 import static org.apache.streams.plugins.elasticsearch.test.StreamsElasticsearchResourceGeneratorTest.jsonFilter;
 
 /**
- * Created by sblackmon on 5/5/16.
+ * Test that StreamsElasticsearchResourceGeneratorCLI generates resources.
  */
 public class StreamsElasticsearchResourceGeneratorCLITest {
 

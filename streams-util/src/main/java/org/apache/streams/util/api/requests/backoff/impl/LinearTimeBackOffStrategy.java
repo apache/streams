@@ -24,17 +24,16 @@ import org.apache.streams.util.api.requests.backoff.AbstractBackOffStrategy;
  */
 public class LinearTimeBackOffStrategy extends AbstractBackOffStrategy {
 
+  public LinearTimeBackOffStrategy(int baseBackOffTimeInSeconds) {
+    this(baseBackOffTimeInSeconds, -1);
+  }
 
-    public LinearTimeBackOffStrategy(int baseBackOffTimeInSeconds) {
-        this(baseBackOffTimeInSeconds, -1);
-    }
+  public LinearTimeBackOffStrategy(int baseBackOffTimeInSeconds, int maxAttempts) {
+    super(baseBackOffTimeInSeconds, -1);
+  }
 
-    public LinearTimeBackOffStrategy(int baseBackOffTimeInSeconds, int maxAttempts) {
-        super(baseBackOffTimeInSeconds, -1);
-    }
-
-    @Override
-    protected long calculateBackOffTime(int attemptCount, long baseSleepTime) {
-        return 1000L * attemptCount * baseSleepTime;
-    }
+  @Override
+  protected long calculateBackOffTime(int attemptCount, long baseSleepTime) {
+    return 1000L * attemptCount * baseSleepTime;
+  }
 }

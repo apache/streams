@@ -24,7 +24,7 @@ import org.apache.streams.facebook.IdConfig;
 import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
 import org.apache.streams.util.api.requests.backoff.impl.ExponentialBackOffStrategy;
 import org.apache.streams.util.oauth.tokens.tokenmanager.SimpleTokenManager;
-import org.apache.streams.util.oauth.tokens.tokenmanager.impl.BasicTokenManger;
+import org.apache.streams.util.oauth.tokens.tokenmanager.impl.BasicTokenManager;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
@@ -66,7 +66,7 @@ public abstract class FacebookDataCollector implements Runnable {
     this.queue = queue;
     this.isComplete = new AtomicBoolean(false);
     this.backOff = new ExponentialBackOffStrategy(5);
-    this.authTokens = new BasicTokenManger<String>();
+    this.authTokens = new BasicTokenManager<String>();
     if (config.getUserAccessTokens() != null) {
       for (String token : config.getUserAccessTokens()) {
         this.authTokens.addTokenToPool(token);

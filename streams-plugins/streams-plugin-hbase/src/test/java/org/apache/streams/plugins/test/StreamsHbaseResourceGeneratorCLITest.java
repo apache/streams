@@ -32,7 +32,7 @@ import java.util.List;
 import static org.apache.streams.plugins.test.StreamsHbaseResourceGeneratorTest.txtFilter;
 
 /**
- * Created by sblackmon on 5/5/16.
+ * Test that StreamsHbaseResourceGeneratorCLI generates resources.
  */
 public class StreamsHbaseResourceGeneratorCLITest {
 

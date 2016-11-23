@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.util.schema;
 
 import com.google.common.base.Preconditions;
@@ -35,60 +36,93 @@ import java.util.List;
  */
 public class FileUtil {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
 
-    public static String dropSourcePathPrefix(String inputFile, String sourceDirectory) {
-        if(Strings.isNullOrEmpty(sourceDirectory))
-            return inputFile;
-        else {
-            try {
-                if( inputFile.contains(sourceDirectory) && inputFile.indexOf(sourceDirectory) > 0) {
-                    return inputFile.substring(inputFile.indexOf(sourceDirectory)+sourceDirectory.length()+1);
-                }
-            } catch( Throwable e ) {
-                return inputFile;
-            }
+  /**
+   * drop source path prefix between inputFile and sourceDirectory.
+   * @param inputFile inputFile
+   * @param sourceDirectory sourceDirectory
+   * @return without path prefix
+   */
+  public static String dropSourcePathPrefix(String inputFile, String sourceDirectory) {
+    if (Strings.isNullOrEmpty(sourceDirectory)) {
+      return inputFile;
+    } else {
+      try {
+        if ( inputFile.contains(sourceDirectory) && inputFile.indexOf(sourceDirectory) > 0) {
+          return inputFile.substring(inputFile.indexOf(sourceDirectory) + sourceDirectory.length() + 1);
         }
+      } catch ( Throwable throwable ) {
         return inputFile;
+      }
+    }
+    return inputFile;
+  }
+
+  /**
+   * swapExtension.
+   * @param inputFile inputFile
+   * @param originalExtension originalExtension
+   * @param newExtension newExtension
+   * @return extension swapped
+   */
+  public static String swapExtension(String inputFile, String originalExtension, String newExtension) {
+    if (inputFile.endsWith("." + originalExtension)) {
+      return inputFile.replace("." + originalExtension, "." + newExtension);
+    } else {
+      return inputFile;
+    }
+  }
+
+  /**
+   * dropExtension.
+   * @param inputFile inputFile
+   * @return extension dropped
+   */
+  public static String dropExtension(String inputFile) {
+    if (inputFile.contains(".")) {
+      return inputFile.substring(0, inputFile.lastIndexOf("."));
+    } else {
+      return inputFile;
+    }
+  }
+
+  /**
+   * writeFile.
+   * @param resourceFile resourceFile
+   * @param resourceContent resourceContent
+   */
+  public static void writeFile(String resourceFile, String resourceContent) {
+    try {
+      File path = new File(resourceFile);
+      File dir = path.getParentFile();
+      if ( !dir.exists() ) {
+        dir.mkdirs();
+      }
+      Files.write(Paths.get(resourceFile), resourceContent.getBytes(), StandardOpenOption.CREATE_NEW);
+    } catch (Exception ex) {
+      LOGGER.error("Write Exception: {}", ex);
+    }
+  }
+
+  /**
+   * resolveRecursive.
+   * @param config GenerationConfig
+   * @param schemaFiles List of schemaFiles
+   */
+  public static void resolveRecursive(GenerationConfig config, List<File> schemaFiles) {
+
+    Preconditions.checkArgument(schemaFiles.size() > 0);
+    int index = 0;
+    while ( schemaFiles.size() > index) {
+      File child = schemaFiles.get(index);
+      if (child.isDirectory()) {
+        schemaFiles.addAll(Arrays.asList(child.listFiles(config.getFileFilter())));
+        schemaFiles.remove(child);
+      } else {
+        index += 1;
+      }
     }
 
-    public static String swapExtension(String inputFile, String originalExtension, String newExtension) {
-        if(inputFile.endsWith("."+originalExtension))
-            return inputFile.replace("."+originalExtension, "."+newExtension);
-        else return inputFile;
-    }
-
-    public static String dropExtension(String inputFile) {
-        if(inputFile.contains("."))
-            return inputFile.substring(0, inputFile.lastIndexOf("."));
-        else return inputFile;
-    }
-
-    public static void writeFile(String resourceFile, String resourceContent) {
-        try {
-            File path = new File(resourceFile);
-            File dir = path.getParentFile();
-            if( !dir.exists() )
-                dir.mkdirs();
-            Files.write(Paths.get(resourceFile), resourceContent.getBytes(), StandardOpenOption.CREATE_NEW);
-        } catch (Exception e) {
-            LOGGER.error("Write Exception: {}", e);
-        }
-    }
-
-    public static void resolveRecursive(GenerationConfig config, List<File> schemaFiles) {
-
-        Preconditions.checkArgument(schemaFiles.size() > 0);
-        int i = 0;
-        while( schemaFiles.size() > i) {
-            File child = schemaFiles.get(i);
-            if (child.isDirectory()) {
-                schemaFiles.addAll(Arrays.asList(child.listFiles(config.getFileFilter())));
-                schemaFiles.remove(child);
-            } else {
-                i += 1;
-            }
-        }
-
-    }
+  }
 }

@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.util.schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,49 +27,69 @@ import java.net.URI;
  */
 public class Schema {
 
-    private final URI id;
-    private final URI uri;
-    private final JsonNode content;
-    private final Schema parent;
-    private final boolean generate;
+  private final URI id;
+  private final URI uri;
+  private final JsonNode content;
+  private final Schema parent;
+  private final boolean generate;
 
-    public Schema(URI uri, JsonNode content, Schema parent, boolean generate) {
-        this.uri = uri;
-        this.content = content;
-        this.parent = parent;
-        this.generate = generate;
-        this.id = content.has("id") ? URI.create(content.get("id").asText()) : null;
-    }
+  /**
+   * Schema constructor.
+   * @param uri uri
+   * @param content JsonNode content
+   * @param parent Schema parent
+   * @param generate whether to generate
+   */
+  public Schema(URI uri, JsonNode content, Schema parent, boolean generate) {
+    this.uri = uri;
+    this.content = content;
+    this.parent = parent;
+    this.generate = generate;
+    this.id = content.has("id") ? URI.create(content.get("id").asText()) : null;
+  }
 
-    public URI getId() {
-        return id;
-    }
+  public URI getId() {
+    return id;
+  }
 
-    public URI getURI() {
-        return uri;
-    }
+  public URI getUri() {
+    return uri;
+  }
 
-    public JsonNode getContent() {
-        return content;
-    }
+  public JsonNode getContent() {
+    return content;
+  }
 
-    public JsonNode getParentContent() {
-        if( parent != null )
-            return parent.getContent();
-        else return null;
+  /**
+   * getParentContent.
+   * @return Parent.Content
+   */
+  public JsonNode getParentContent() {
+    if ( parent != null ) {
+      return parent.getContent();
+    } else {
+      return null;
     }
+  }
 
-    public URI getParentURI() {
-        if( parent != null ) return parent.getURI();
-        else return null;
+  /**
+   * getParentUri.
+   * @return Parent.Uri
+   */
+  public URI getParentUri() {
+    if ( parent != null ) {
+      return parent.getUri();
+    } else {
+      return null;
     }
+  }
 
-    public boolean isGenerated() {
-        return generate;
-    }
+  public boolean isGenerated() {
+    return generate;
+  }
 
-    public Schema getParent() {
-        return parent;
-    }
+  public Schema getParent() {
+    return parent;
+  }
 
 }

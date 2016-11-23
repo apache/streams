@@ -22,7 +22,7 @@ import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
 import org.apache.streams.util.api.requests.backoff.impl.ExponentialBackOffStrategy;
 import org.apache.streams.util.oauth.tokens.tokenmanager.SimpleTokenManager;
-import org.apache.streams.util.oauth.tokens.tokenmanager.impl.BasicTokenManger;
+import org.apache.streams.util.oauth.tokens.tokenmanager.impl.BasicTokenManager;
 
 import org.jinstagram.Instagram;
 import org.slf4j.Logger;
@@ -59,7 +59,7 @@ public abstract class InstagramDataCollector<T> implements Runnable {
     this.dataQueue = queue;
     this.config = config;
     this.isCompleted = new AtomicBoolean(false);
-    this.tokenManger = new BasicTokenManger<InstagramOauthToken>();
+    this.tokenManger = new BasicTokenManager<InstagramOauthToken>();
     for (String tokens : this.config.getUsersInfo().getAuthorizedTokens()) {
       this.tokenManger.addTokenToPool(new InstagramOauthToken(tokens));
     }
