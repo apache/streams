@@ -21,44 +21,45 @@ package org.apache.streams.pig.test;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+
 import org.slf4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to Test Pig processor wrapper - datum passthrough
+ * Used to Test Pig processor wrapper - datum passthrough.
  */
 public class DoNothingProcessor implements StreamsProcessor {
 
-    public final static String STREAMS_ID = "DoNothingProcessor";
+  public final static String STREAMS_ID = "DoNothingProcessor";
 
-    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(DoNothingProcessor.class);
+  private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(DoNothingProcessor.class);
 
-    List<StreamsDatum> result;
+  List<StreamsDatum> result;
 
-    public DoNothingProcessor() {
-    }
+  public DoNothingProcessor() {
+  }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        this.result = new LinkedList<StreamsDatum>();
-        result.add(entry);
-        return result;
-    }
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+    this.result = new LinkedList<StreamsDatum>();
+    result.add(entry);
+    return result;
+  }
 
-    @Override
-    public void prepare(Object configurationObject) {
-        LOGGER.info("Processor prepare");
-    }
+  @Override
+  public void prepare(Object configurationObject) {
+    LOGGER.info("Processor prepare");
+  }
 
-    @Override
-    public void cleanUp() {
-        LOGGER.info("Processor clean up");
-    }
+  @Override
+  public void cleanUp() {
+    LOGGER.info("Processor clean up");
+  }
 }

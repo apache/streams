@@ -19,94 +19,95 @@
 
 package org.apache.streams.pig.test;
 
-import org.apache.pig.pigunit.PigTest;
 import org.apache.streams.core.StreamsDatum;
+
+import org.apache.pig.pigunit.PigTest;
 import org.apache.tools.ant.util.StringUtils;
 import org.junit.Test;
 
 /**
- * These are tests for StreamsProcessDocumentExec
+ * These are tests for StreamsProcessDocumentExec.
  */
 public class PigProcessDocumentTest {
 
-    @Test
-    public void testPigProcessEmptyDocument() throws Exception {
+  @Test
+  public void testPigProcessEmptyDocument() throws Exception {
 
-        String[] input = {
-                "159475541894897679\ttwitter,statuses/user_timeline\t1384499359006\t{}"
-        };
+    String[] input = {
+        "159475541894897679\ttwitter,statuses/user_timeline\t1384499359006\t{}"
+    };
 
-        DoNothingProcessor processor = new DoNothingProcessor();
+    DoNothingProcessor processor = new DoNothingProcessor();
 
-        String doc = (String) StringUtils.split(input[0], '\t').get(3);
-        StreamsDatum inputDatum = new StreamsDatum(doc);
-        inputDatum.setId((String) StringUtils.split(input[0], '\t').get(0));
+    String doc = (String) StringUtils.split(input[0], '\t').get(3);
+    StreamsDatum inputDatum = new StreamsDatum(doc);
+    inputDatum.setId((String) StringUtils.split(input[0], '\t').get(0));
 
-        processor.prepare(null);
+    processor.prepare(null);
 
-        StreamsDatum resultDatum = processor.process(inputDatum).get(0);
-        String resultDocument = (String) resultDatum.getDocument();
+    StreamsDatum resultDatum = processor.process(inputDatum).get(0);
+    String resultDocument = (String) resultDatum.getDocument();
 
-        String[] output = new String[1];
-        output[0] = "(159475541894897679,twitter,statuses/user_timeline,1384499359006,"+resultDocument+")";
+    String[] output = new String[1];
+    output[0] = "(159475541894897679,twitter,statuses/user_timeline,1384499359006,"+resultDocument+")";
 
-        PigTest test;
-        test = new PigTest("src/test/resources/pigprocessdocumenttest.pig");
-        test.assertOutput("in", input, "out", output);
+    PigTest test;
+    test = new PigTest("src/test/resources/pigprocessdocumenttest.pig");
+    test.assertOutput("in", input, "out", output);
 
-    }
+  }
 
-    @Test
-    public void testPigProcessJsonDocument() throws Exception {
+  @Test
+  public void testPigProcessJsonDocument() throws Exception {
 
-        String[] input = {
-                "159475541894897679\ttwitter,statuses/user_timeline\t1384499359006\t{content:\"content\",[\"a\":1,\"b\":\"c\"}"
-        };
+    String[] input = {
+        "159475541894897679\ttwitter,statuses/user_timeline\t1384499359006\t{content:\"content\",[\"a\":1,\"b\":\"c\"}"
+    };
 
-        DoNothingProcessor processor = new DoNothingProcessor();
+    DoNothingProcessor processor = new DoNothingProcessor();
 
-        String doc = (String) StringUtils.split(input[0], '\t').get(3);
-        StreamsDatum inputDatum = new StreamsDatum(doc);
-        inputDatum.setId((String) StringUtils.split(input[0], '\t').get(0));
+    String doc = (String) StringUtils.split(input[0], '\t').get(3);
+    StreamsDatum inputDatum = new StreamsDatum(doc);
+    inputDatum.setId((String) StringUtils.split(input[0], '\t').get(0));
 
-        processor.prepare(null);
+    processor.prepare(null);
 
-        StreamsDatum resultDatum = processor.process(inputDatum).get(0);
-        String resultDocument = (String) resultDatum.getDocument();
+    StreamsDatum resultDatum = processor.process(inputDatum).get(0);
+    String resultDocument = (String) resultDatum.getDocument();
 
-        String[] output = new String[1];
-        output[0] = "(159475541894897679,twitter,statuses/user_timeline,1384499359006,"+resultDocument+")";
+    String[] output = new String[1];
+    output[0] = "(159475541894897679,twitter,statuses/user_timeline,1384499359006,"+resultDocument+")";
 
-        PigTest test;
-        test = new PigTest("src/test/resources/pigprocessdocumenttest.pig");
-        test.assertOutput("in", input, "out", output);
+    PigTest test;
+    test = new PigTest("src/test/resources/pigprocessdocumenttest.pig");
+    test.assertOutput("in", input, "out", output);
 
-    }
+  }
 
-    @Test
-    public void testPigProcessAppendDocument() throws Exception {
+  @Test
+  public void testPigProcessAppendDocument() throws Exception {
 
-        String[] input = {
-                "159475541894897679\ttwitter,statuses/user_timeline\t1384499359006\thowdy"
-        };
+    String[] input = {
+        "159475541894897679\ttwitter,statuses/user_timeline\t1384499359006\thowdy"
+    };
 
-        AppendStringProcessor processor = new AppendStringProcessor();
+    AppendStringProcessor processor = new AppendStringProcessor();
 
-        String doc = (String) StringUtils.split(input[0], '\t').get(3);
-        StreamsDatum inputDatum = new StreamsDatum(doc);
-        inputDatum.setId((String) StringUtils.split(input[0], '\t').get(0));
+    String doc = (String) StringUtils.split(input[0], '\t').get(3);
+    StreamsDatum inputDatum = new StreamsDatum(doc);
+    inputDatum.setId((String) StringUtils.split(input[0], '\t').get(0));
 
-        processor.prepare(new String[]{"doody"});
+    processor.prepare(new String[]{"doody"});
 
-        StreamsDatum resultDatum = processor.process(inputDatum).get(0);
-        String resultDocument = (String) resultDatum.getDocument();
+    StreamsDatum resultDatum = processor.process(inputDatum).get(0);
+    String resultDocument = (String) resultDatum.getDocument();
 
-        String[] output = new String[1];
-        output[0] = "(159475541894897679,twitter,statuses/user_timeline,1384499359006,"+resultDocument+")";
+    String[] output = new String[1];
+    output[0] = "(159475541894897679,twitter,statuses/user_timeline,1384499359006,"+resultDocument+")";
 
-        PigTest test;
-        test = new PigTest("src/test/resources/pigprocessdocumentappendtest.pig");
-        test.assertOutput("in", input, "out", output);
+    PigTest test;
+    test = new PigTest("src/test/resources/pigprocessdocumentappendtest.pig");
+    test.assertOutput("in", input, "out", output);
 
-    }
+  }
 }

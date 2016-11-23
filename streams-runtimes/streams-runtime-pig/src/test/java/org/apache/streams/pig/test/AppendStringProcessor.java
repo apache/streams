@@ -21,46 +21,47 @@ package org.apache.streams.pig.test;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+
 import org.slf4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to Test Pig processor wrapper with arguments to prepare method
+ * Used to Test Pig processor wrapper with arguments to prepare method.
  */
 public class AppendStringProcessor implements StreamsProcessor {
 
-    public final static String STREAMS_ID = "AppendStringProcessor";
+  public final static String STREAMS_ID = "AppendStringProcessor";
 
-    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(AppendStringProcessor.class);
+  private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(AppendStringProcessor.class);
 
-    String append;
+  String append;
 
-    public AppendStringProcessor() {
-    }
+  public AppendStringProcessor() {
+  }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        List<StreamsDatum> resultSet;
-        resultSet = new LinkedList<StreamsDatum>();
-        String value = (String) entry.getDocument()+ new String(append);
-        resultSet.add(new StreamsDatum(value));
-        return resultSet;
-    }
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+    List<StreamsDatum> resultSet;
+    resultSet = new LinkedList<StreamsDatum>();
+    String value = (String) entry.getDocument()+ new String(append);
+    resultSet.add(new StreamsDatum(value));
+    return resultSet;
+  }
 
-    @Override
-    public void prepare(Object configurationObject) {
-        append = ((String[]) configurationObject)[0];
-    }
+  @Override
+  public void prepare(Object configurationObject) {
+    append = ((String[]) configurationObject)[0];
+  }
 
-    @Override
-    public void cleanUp() {
-        LOGGER.info("Processor clean up");
-    }
+  @Override
+  public void cleanUp() {
+    LOGGER.info("Processor clean up");
+  }
 }

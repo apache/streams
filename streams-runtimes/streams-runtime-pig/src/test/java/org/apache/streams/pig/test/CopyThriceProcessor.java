@@ -21,46 +21,47 @@ package org.apache.streams.pig.test;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+
 import org.slf4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Used to Test Pig processor wrapper when multiple datums are returned
+ * Used to Test Pig processor wrapper when multiple datums are returned.
  */
 public class CopyThriceProcessor implements StreamsProcessor {
 
-    public final static String STREAMS_ID = "CopyThriceProcessor";
+  public final static String STREAMS_ID = "CopyThriceProcessor";
 
-    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(CopyThriceProcessor.class);
+  private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(CopyThriceProcessor.class);
 
-    List<StreamsDatum> result;
+  List<StreamsDatum> result;
 
-    public CopyThriceProcessor() {
-    }
+  public CopyThriceProcessor() {
+  }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        this.result = new LinkedList<StreamsDatum>();
-        result.add(entry);
-        result.add(entry);
-        result.add(entry);
-        return result;
-    }
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+    this.result = new LinkedList<StreamsDatum>();
+    result.add(entry);
+    result.add(entry);
+    result.add(entry);
+    return result;
+  }
 
-    @Override
-    public void prepare(Object configurationObject) {
+  @Override
+  public void prepare(Object configurationObject) {
 
-    }
+  }
 
-    @Override
-    public void cleanUp() {
-        LOGGER.info("Processor clean up");
-    }
+  @Override
+  public void cleanUp() {
+    LOGGER.info("Processor clean up");
+  }
 }
