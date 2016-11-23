@@ -18,11 +18,11 @@
 
 package org.apache.streams.data.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,111 +30,128 @@ import java.util.Map;
 /**
  * Utility class for managing activities
  *
+ * <p/>
  * Deprecated: Use {@link org.apache.streams.pojo.extensions.ExtensionUtil}
  */
 @Deprecated
 public class ActivityUtil {
 
-    private ActivityUtil() {}
+  private ActivityUtil() {}
 
-    /**
-     * Property on the activity object to use for extensions
-     */
-    public static final String EXTENSION_PROPERTY = "extensions";
-    /**
-     * The number of +1, Like, favorites, etc that the post has received
-     */
-    public static final String LIKES_EXTENSION = "likes";
-    /**
-     * The number of retweets, shares, etc that the post has received
-     */
-    public static final String REBROADCAST_EXTENSION = "rebroadcasts";
-    /**
-     * The language of the post
-     */
-    public static final String LANGUAGE_EXTENSION = "language";
-    /**
-     * Location that the post was made or the actor's residence
-     */
-    public static final String LOCATION_EXTENSION = "location";
-    /**
-     * Country that the post was made
-     */
-    public static final String LOCATION_EXTENSION_COUNTRY = "country";
-    /**
-     * Specific JSON-geo coordinates (long,lat)
-     */
-    public static final String LOCATION_EXTENSION_COORDINATES = "coordinates";
+  /**
+   * Property on the activity object to use for extensions.
+   */
+  public static final String EXTENSION_PROPERTY = "extensions";
 
-    private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  /**
+   * The number of +1, Like, favorites, etc that the post has received.
+   */
+  public static final String LIKES_EXTENSION = "likes";
 
-    /**
-     * Creates a standard extension property
-     * @param activity activity to create the property in
-     * @return the Map representing the extensions property
-     */
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public static Map<String, Object> ensureExtensions(Activity activity) {
-        Map<String, Object> extensions = (Map)activity.getAdditionalProperties().get(EXTENSION_PROPERTY);
-        if(extensions == null) {
-            extensions = new HashMap<>();
-            activity.setAdditionalProperty(EXTENSION_PROPERTY, extensions);
-        }
-        return extensions;
+  /**
+   * The number of retweets, shares, etc that the post has received.
+   */
+  public static final String REBROADCAST_EXTENSION = "rebroadcasts";
+
+  /**
+   * The language of the post.
+   */
+  public static final String LANGUAGE_EXTENSION = "language";
+
+  /**
+   * Location that the post was made or the actor's residence.
+   */
+  public static final String LOCATION_EXTENSION = "location";
+
+  /**
+   * Country that the post was made.
+   */
+  public static final String LOCATION_EXTENSION_COUNTRY = "country";
+
+  /**
+   * Specific JSON-geo coordinates (long,lat).
+   */
+  public static final String LOCATION_EXTENSION_COORDINATES = "coordinates";
+
+  private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+
+  /**
+   * Creates a standard extension property.
+   * @param activity activity to create the property in
+   * @return the Map representing the extensions property
+   */
+  @SuppressWarnings("unchecked")
+  @Deprecated
+  public static Map<String, Object> ensureExtensions(Activity activity) {
+    Map<String, Object> extensions = (Map)activity.getAdditionalProperties().get(EXTENSION_PROPERTY);
+    if (extensions == null) {
+      extensions = new HashMap<>();
+      activity.setAdditionalProperty(EXTENSION_PROPERTY, extensions);
     }
+    return extensions;
+  }
 
-    /**
-     * Gets a formatted ID
-     * @param providerName name of the provider
-     * @param personId ID of the person within the system
-     * @return id:<providerName>:people:<personId>
-     */
-    public static String getPersonId(String providerName, String personId) {
-        return String.format("id:%s:people:%s", providerName, personId);
-    }
+  /**
+   * Gets a formatted ID.
+   * @param providerName name of the provider
+   * @param personId ID of the person within the system
+   * @return id:{providerName}:people:{personId}
+   */
+  public static String getPersonId(String providerName, String personId) {
+    return String.format("id:%s:people:%s", providerName, personId);
+  }
 
-    /**
-     * Gets a formatted provider ID
-     * @param providerName name of the provider
-     * @return id:providers:<providerName>
-     */
-    public static String getProviderId(String providerName) {
-        return String.format("id:providers:%s", providerName);
-    }
+  /**
+   * Gets a formatted provider ID.
+   * @param providerName name of the provider
+   * @return id:providers:{providerName}
+   */
+  public static String getProviderId(String providerName) {
+    return String.format("id:providers:%s", providerName);
+  }
 
-    /**
-     * Gets a formatted object ID
-     * @param provider name of the provider
-     * @param objectType type of the object
-     * @param objectId the ID of the object
-     * @return id:<provider>:<objectType>s:<objectId>
-     */
-    public static String getObjectId(String provider, String objectType, String objectId) {
-        return String.format("id:%s:%ss:%s", provider, objectType, objectId);
-    }
+  /**
+   * Gets a formatted object ID.
+   * @param provider name of the provider
+   * @param objectType type of the object
+   * @param objectId the ID of the object
+   * @return id:{provider}:{objectType}s:{objectId}
+   */
+  public static String getObjectId(String provider, String objectType, String objectId) {
+    return String.format("id:%s:%ss:%s", provider, objectType, objectId);
+  }
 
-    /**
-     * Gets a formatted activity ID
-     * @param providerName name of the provider
-     * @param activityId ID of the provider
-     * @return id:<providerName>:activities:<activityId>
-     */
-    public static String getActivityId(String providerName, String activityId) {
-        return String.format("id:%s:activities:%s", providerName, activityId);
-    }
+  /**
+   * Gets a formatted activity ID.
+   * @param providerName name of the provider
+   * @param activityId ID of the provider
+   * @return id:{providerName}:activities:{activityId}
+   */
+  public static String getActivityId(String providerName, String activityId) {
+    return String.format("id:%s:activities:%s", providerName, activityId);
+  }
 
-    public static boolean isValid(Activity activity) {
-        return activity != null
-                && activity.getId() != null
-                && activity.getVerb() != null
-                && activity.getProvider() != null
-                && activity.getProvider().getId() != null;
-    }
+  /**
+   * Check validity of Activity.
+   * @param activity Activity
+   * @return isValid
+   */
+  public static boolean isValid(Activity activity) {
+    return activity != null
+        && activity.getId() != null
+        && activity.getVerb() != null
+        && activity.getProvider() != null
+        && activity.getProvider().getId() != null;
+  }
 
-    public static boolean isValid(ActivityObject activityObject) {
-        return activityObject != null
-            && activityObject.getId() != null
-            && activityObject.getObjectType() != null;
-    }
+  /**
+   * Check validity of ActivityObject.
+   * @param activityObject ActivityObject
+   * @return isValid
+   */
+  public static boolean isValid(ActivityObject activityObject) {
+    return activityObject != null
+        && activityObject.getId() != null
+        && activityObject.getObjectType() != null;
+  }
 }

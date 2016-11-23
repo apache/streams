@@ -26,37 +26,38 @@ import java.util.List;
 /**
  * Serializes and deserializes Activities
  *
+ * <p/>
  * Deprecated: Switch all modules to use {@link org.apache.streams.data.ActivityConverter}
  */
 @Deprecated
 public interface ActivitySerializer<T> {
 
-    /**
-     * Gets the supported content type that can be deserialized/serialized
-     *
-     * @return A string representing the format name.  Can be an IETF MIME type or other
-     */
-    String serializationFormat();
+  /**
+   * Gets the supported content type that can be deserialized/serialized.
+   *
+   * @return A string representing the format name.  Can be an IETF MIME type or other
+   */
+  String serializationFormat();
 
-    /**
-     * Converts the activity to a POJO representation.
-     *
-     * @param deserialized the string
-     * @return a fully populated Activity object
-     */
-    T serialize(Activity deserialized) throws ActivitySerializerException;
+  /**
+   * Converts the activity to a POJO representation.
+   *
+   * @param deserialized the string
+   * @return a fully populated Activity object
+   */
+  T serialize(Activity deserialized) throws ActivitySerializerException;
 
-    /**
-     * Converts a POJO into an Activity
-     * @param serialized the string representation
-     * @return a fully populated Activity object
-     */
-    Activity deserialize(T serialized) throws ActivitySerializerException;
+  /**
+   * Converts a POJO into an Activity.
+   * @param serialized the string representation
+   * @return a fully populated Activity object
+   */
+  Activity deserialize(T serialized) throws ActivitySerializerException;
 
-    /**
-     * Converts multiple documents into a list of Activity objects
-     * @param serializedList a typed List of documents
-     * @return a list of fully populated activities
-     */
-    List<Activity> deserializeAll(List<T> serializedList);
+  /**
+   * Converts multiple documents into a list of Activity objects.
+   * @param serializedList a typed List of documents
+   * @return a list of fully populated activities
+   */
+  List<Activity> deserializeAll(List<T> serializedList);
 }

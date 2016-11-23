@@ -19,24 +19,24 @@
 package org.apache.streams.exceptions;
 
 /**
- *  ActivityConversionException is a typed exception appropriate when a valid Activity
- *  cannot be created from a given document.
+ * ActivityConversionException is a typed exception appropriate when a valid Activity
+ * cannot be created from a given document.
  */
 public class ActivityConversionException extends Exception {
 
-    public ActivityConversionException() {
-    }
+  public ActivityConversionException() {
+  }
 
-    public ActivityConversionException(String message) {
-        super(message);
-    }
+  public ActivityConversionException(String message) {
+    super(message);
+  }
 
-    public ActivityConversionException(Throwable cause) {
-        super(cause);
-    }
+  public ActivityConversionException(Throwable cause) {
+    super(cause);
+  }
 
-    public ActivityConversionException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public ActivityConversionException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
 }

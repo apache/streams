@@ -19,12 +19,13 @@
 package org.apache.streams.jackson;
 
 /**
- * Supplies a custom date-time format to StreamsJacksonModule
+ * Supplies a custom date-time format to StreamsJacksonModule.
  *
+ * <p/>
  * Implementations must have a no-argument constructor
  */
 public interface StreamsDateTimeFormat {
 
-    public String getFormat();
+  public String getFormat();
 
 }

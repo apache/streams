@@ -27,13 +27,13 @@ import java.util.List;
  */
 public interface DocumentClassifier extends Serializable {
 
-    /**
-     * Assess the structure of the document, and identify whether the provided document is
-     * a structural match for one or more typed forms.
-     *
-     * @param document the document
-     * @return a serializable pojo class this document matches
-     */
-    List<Class> detectClasses(Object document);
+  /**
+   * Assess the structure of the document, and identify whether the provided document is
+   * a structural match for one or more typed forms.
+   *
+   * @param document the document
+   * @return a serializable pojo class this document matches
+   */
+  List<Class> detectClasses(Object document);
 
 }

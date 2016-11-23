@@ -27,61 +27,67 @@ import java.util.List;
 /**
  * Converts non-Activity documents to Activities and back.
  *
+ * <p/>
  * Each converter may one, several, or zero activities.
  *
+ * <p/>
  * The recommended approach for deriving multiple activities from a source document is:
  *
+ * <p/>
  *   1) Return one activity for each occurance of a verb, from the same ActivityConverter, if the activities are of like type.
  *
+ * <p/>
  *      For example, BlogShareConverter would convert a blog containing two shares into two Activities with verb: share
  *
+ * <p/>
  *   2) Create multiple ActivityConverters, if the activities are not of like type.
  *
+ * <p/>
  *      For example, a blog post that is both a post and a share should be transformed by two seperate Converters, individually
  *      or simultaneously applied.
  */
 public interface ActivityConverter<T> extends Serializable {
 
-    /**
-     * What class does this ActivityConverter require?
-     *
-     * @return The class the ActivityConverter requires.  Should always return the templated class.
-     */
-    Class requiredClass();
+  /**
+   * What class does this ActivityConverter require?
+   *
+   * @return The class the ActivityConverter requires.  Should always return the templated class.
+   */
+  Class requiredClass();
 
-    /**
-     * Gets the supported content type that can be deserialized/serialized
-     *
-     * @return A string representing the format name.  Can be an IETF MIME type or other
-     */
-    String serializationFormat();
+  /**
+   * Gets the supported content type that can be deserialized/serialized
+   *
+   * @return A string representing the format name.  Can be an IETF MIME type or other
+   */
+  String serializationFormat();
 
-    /**
-     * Converts the activity to a POJO representation.
-     *
-     * @param deserialized the string
-     * @return a fully populated Activity object
-     */
-    T fromActivity(Activity deserialized) throws ActivityConversionException;
+  /**
+   * Converts the activity to a POJO representation.
+   *
+   * @param deserialized the string
+   * @return a fully populated Activity object
+   */
+  T fromActivity(Activity deserialized) throws ActivityConversionException;
 
-    /**
-     * Converts a POJO into one or more Activities
-     * @param serialized the string representation
-     * @return a fully populated Activity object
-     */
-    List<Activity> toActivityList(T serialized) throws ActivityConversionException;
+  /**
+   * Converts multiple Activities into a list of source documents.
+   * @param list a typed List of documents
+   * @return a list of source documents
+   */
+  List<T> fromActivityList(List<Activity> list) throws ActivityConversionException;
 
-    /**
-     * Converts multiple Activities into a list of source documents
-     * @param list a typed List of documents
-     * @return a list of source documents
-     */
-    List<T> fromActivityList(List<Activity> list) throws ActivityConversionException;
+  /**
+   * Converts a POJO into one or more Activities.
+   * @param serialized the string representation
+   * @return a fully populated Activity object
+   */
+  List<Activity> toActivityList(T serialized) throws ActivityConversionException;
 
-    /**
-     * Converts multiple documents into a list of Activity objects
-     * @param list a typed List of documents
-     * @return a list of fully populated activities
-     */
-    List<Activity> toActivityList(List<T> list) throws ActivityConversionException;
+  /**
+   * Converts multiple documents into a list of Activity objects.
+   * @param list a typed List of documents
+   * @return a list of fully populated activities
+   */
+  List<Activity> toActivityList(List<T> list) throws ActivityConversionException;
 }

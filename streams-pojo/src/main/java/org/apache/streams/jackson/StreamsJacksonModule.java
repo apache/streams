@@ -21,7 +21,6 @@ package org.apache.streams.jackson;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
@@ -35,46 +34,47 @@ import java.util.Set;
 
 /**
  * StreamsJacksonModule is a supporting class for
- * @see {@link org.apache.streams.jackson.StreamsJacksonMapper}
+ * @see {@link org.apache.streams.jackson.StreamsJacksonMapper}.
  *
+ * <p/>
  * RFC3339 dates are supported by default.
  */
 public class StreamsJacksonModule extends SimpleModule {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsJacksonModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StreamsJacksonModule.class);
 
-    public StreamsJacksonModule() {
-        super();
+  public StreamsJacksonModule() {
+    super();
 
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                                                  .setUrls(ClasspathHelper.forPackage("org.apache.streams.jackson"))
-                                                  .setScanners(new SubTypesScanner()));
+    Reflections reflections = new Reflections(new ConfigurationBuilder()
+        .setUrls(ClasspathHelper.forPackage("org.apache.streams.jackson"))
+        .setScanners(new SubTypesScanner()));
 
-        Set<Class<? extends StreamsDateTimeFormat>> dateTimeFormatClasses = reflections.getSubTypesOf(StreamsDateTimeFormat.class);
+    Set<Class<? extends StreamsDateTimeFormat>> dateTimeFormatClasses = reflections.getSubTypesOf(StreamsDateTimeFormat.class);
 
-        List<String> dateTimeFormats = new ArrayList<>();
-        for (Class dateTimeFormatClass : dateTimeFormatClasses) {
-            try {
-                dateTimeFormats.add(((StreamsDateTimeFormat) (dateTimeFormatClass.newInstance())).getFormat());
-            } catch (Exception e) {
-                LOGGER.warn("Exception getting format from " + dateTimeFormatClass);
-            }
-        }
-
-        addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
-        addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class, dateTimeFormats));
-
-        addSerializer(Period.class, new StreamsPeriodSerializer(Period.class));
-        addDeserializer(Period.class, new StreamsPeriodDeserializer(Period.class));
+    List<String> dateTimeFormats = new ArrayList<>();
+    for (Class dateTimeFormatClass : dateTimeFormatClasses) {
+      try {
+        dateTimeFormats.add(((StreamsDateTimeFormat) (dateTimeFormatClass.newInstance())).getFormat());
+      } catch (Exception ex) {
+        LOGGER.warn("Exception getting format from " + dateTimeFormatClass);
+      }
     }
 
-    public StreamsJacksonModule(List<String> formats) {
-        super();
+    addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
+    addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class, dateTimeFormats));
 
-        addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
-        addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class, formats));
+    addSerializer(Period.class, new StreamsPeriodSerializer(Period.class));
+    addDeserializer(Period.class, new StreamsPeriodDeserializer(Period.class));
+  }
 
-        addSerializer(Period.class, new StreamsPeriodSerializer(Period.class));
-        addDeserializer(Period.class, new StreamsPeriodDeserializer(Period.class));
-    }
+  public StreamsJacksonModule(List<String> formats) {
+    super();
+
+    addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
+    addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class, formats));
+
+    addSerializer(Period.class, new StreamsPeriodSerializer(Period.class));
+    addDeserializer(Period.class, new StreamsPeriodDeserializer(Period.class));
+  }
 }

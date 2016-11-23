@@ -18,11 +18,12 @@
 
 package org.apache.streams.jackson;
 
+import org.apache.streams.data.util.RFC3339Utils;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.google.common.collect.Lists;
-import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -38,42 +39,43 @@ import java.util.List;
  * StreamsDateTimeDeserializer is a supporting class for
  * @see {@link org.apache.streams.jackson.StreamsJacksonMapper}
  *
+ * <p/>
  * Converting date-time strings other than RFC3339 to joda DateTime objects requires
  * additional formats to be provided when instantiating StreamsJacksonMapper.
  */
 public class StreamsDateTimeDeserializer extends StdDeserializer<DateTime> implements Serializable {
 
-    List<DateTimeFormatter> formatters = Lists.newArrayList();
+  List<DateTimeFormatter> formatters = Lists.newArrayList();
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsDateTimeDeserializer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StreamsDateTimeDeserializer.class);
 
-    protected StreamsDateTimeDeserializer(Class<DateTime> dateTimeClass) {
-        super(dateTimeClass);
+  protected StreamsDateTimeDeserializer(Class<DateTime> dateTimeClass) {
+    super(dateTimeClass);
+  }
+
+  protected StreamsDateTimeDeserializer(Class<DateTime> dateTimeClass, List<String> formats) {
+    super(dateTimeClass);
+    for ( String format : formats ) {
+      try {
+        formatters.add(DateTimeFormat.forPattern(format));
+      } catch (Exception ex) {
+        LOGGER.warn("Exception parsing format " + format);
+      }
     }
+  }
 
-    protected StreamsDateTimeDeserializer(Class<DateTime> dateTimeClass, List<String> formats) {
-        super(dateTimeClass);
-        for( String format : formats ) {
-            try {
-                formatters.add(DateTimeFormat.forPattern(format));
-            } catch (Exception e) {
-                LOGGER.warn("Exception parsing format " + format);
-            }
-        }
+  /**
+   * Applies each additional format in turn, until it can provide a non-null DateTime
+   */
+  @Override
+  public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException {
+
+    DateTime result = RFC3339Utils.parseToUTC(jpar.getValueAsString());
+    Iterator<DateTimeFormatter> iterator = formatters.iterator();
+    while ( result == null && iterator.hasNext()) {
+      DateTimeFormatter formatter = iterator.next();
+      result = formatter.parseDateTime(jpar.getValueAsString());
     }
-
-    /**
-     * Applies each additional format in turn, until it can provide a non-null DateTime
-     */
-    @Override
-    public DateTime deserialize(JsonParser jpar, DeserializationContext context) throws IOException {
-
-        DateTime result = RFC3339Utils.parseToUTC(jpar.getValueAsString());
-        Iterator<DateTimeFormatter> iterator = formatters.iterator();
-        while( result == null && iterator.hasNext()) {
-            DateTimeFormatter formatter = iterator.next();
-            result = formatter.parseDateTime(jpar.getValueAsString());
-        }
-        return result;
-    }
+    return result;
+  }
 }
