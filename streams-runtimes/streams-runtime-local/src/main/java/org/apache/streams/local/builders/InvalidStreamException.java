@@ -23,19 +23,19 @@ package org.apache.streams.local.builders;
  */
 public class InvalidStreamException extends RuntimeException {
 
-    public InvalidStreamException() {
-        super();
-    }
+  public InvalidStreamException() {
+    super();
+  }
 
-    public InvalidStreamException(String s) {
-        super(s);
-    }
+  public InvalidStreamException(String string) {
+    super(string);
+  }
 
-    public InvalidStreamException(String s, Throwable throwable) {
-        super(s, throwable);
-    }
+  public InvalidStreamException(String string, Throwable throwable) {
+    super(string, throwable);
+  }
 
-    public InvalidStreamException(Throwable throwable) {
-        super(throwable);
-    }
+  public InvalidStreamException(Throwable throwable) {
+    super(throwable);
+  }
 }

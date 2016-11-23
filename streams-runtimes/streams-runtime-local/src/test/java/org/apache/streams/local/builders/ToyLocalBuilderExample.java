@@ -30,16 +30,16 @@ import org.apache.streams.local.test.writer.DoNothingWriter;
  */
 public class ToyLocalBuilderExample {
 
-    /**
-     * A simple example of how to run a stream in local mode.
-     * @param args
-     */
-    public static void main(String[] args) {
-        StreamBuilder builder = new LocalStreamBuilder();
-        builder.newReadCurrentStream("prov", new NumericMessageProvider(1000000))
-                .addStreamsProcessor("proc", new DoNothingProcessor(), 100, "prov")
-                .addStreamsPersistWriter("writer", new DoNothingWriter(), 3, "proc");
-        builder.start();
-    }
+  /**
+   * A simple example of how to run a stream in local mode.
+   * @param args
+   */
+  public static void main(String[] args) {
+    StreamBuilder builder = new LocalStreamBuilder();
+    builder.newReadCurrentStream("prov", new NumericMessageProvider(1000000))
+        .addStreamsProcessor("proc", new DoNothingProcessor(), 100, "prov")
+        .addStreamsPersistWriter("writer", new DoNothingWriter(), 3, "proc");
+    builder.start();
+  }
 
 }

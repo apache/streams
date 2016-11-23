@@ -22,22 +22,22 @@ package org.apache.streams.local.counters;
  */
 public interface DatumStatusCounterMXBean {
 
-    /**
-     * Get number of failed datums
-     * @return number of failed datums
-     */
-    public long getNumFailed();
+  /**
+   * Get number of failed datums
+   * @return number of failed datums
+   */
+  public long getNumFailed();
 
-    /**
-     * Get number of passed datums
-     * @return number of passed datums
-     */
-    public long getNumPassed();
+  /**
+   * Get number of passed datums
+   * @return number of passed datums
+   */
+  public long getNumPassed();
 
-    /**
-     * Get the failure rate.  Calculated by num failed divided by (num passed + num failed)
-     * @return the failure rate
-     */
-    public double getFailRate();
+  /**
+   * Get the failure rate.  Calculated by num failed divided by (num passed + num failed)
+   * @return the failure rate
+   */
+  public double getFailRate();
 
 }

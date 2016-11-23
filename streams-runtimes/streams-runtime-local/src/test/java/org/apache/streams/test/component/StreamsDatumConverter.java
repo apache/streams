@@ -27,5 +27,5 @@ import java.io.Serializable;
  */
 public interface StreamsDatumConverter extends Serializable {
 
-    public StreamsDatum convert(String s);
+  public StreamsDatum convert(String s);
 }

@@ -18,93 +18,91 @@
 
 package org.apache.streams.local.test.providers;
 
-import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
+
+import com.google.common.collect.Queues;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
-import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Test StreamsProvider that sends out StreamsDatums numbered from 0 to numMessages.
  */
 public class NumericMessageProvider implements StreamsProvider {
 
-    @Override
-    public String getId() {
-        return "NumericMessageProvider";
+  @Override
+  public String getId() {
+    return "NumericMessageProvider";
+  }
+
+  private static final int DEFAULT_BATCH_SIZE = 100;
+
+  private int numMessages;
+  private BlockingQueue<StreamsDatum> data;
+  private volatile boolean complete = false;
+
+  public NumericMessageProvider(int numMessages) {
+    this.numMessages = numMessages;
+  }
+
+  @Override
+  public void startStream() {
+    this.data = constructQueue();
+  }
+
+  @Override
+  public StreamsResultSet readCurrent() {
+    int batchSize = 0;
+    Queue<StreamsDatum> batch = Queues.newLinkedBlockingQueue();
+    try {
+      while (!this.data.isEmpty() && batchSize < DEFAULT_BATCH_SIZE) {
+        batch.add(this.data.take());
+        ++batchSize;
+      }
+    } catch (InterruptedException ie) {
+      Thread.currentThread().interrupt();
     }
-
-    private static final int DEFAULT_BATCH_SIZE = 100;
-
-    private int numMessages;
-    private BlockingQueue<StreamsDatum> data;
-    private volatile boolean complete = false;
-
-    public NumericMessageProvider(int numMessages) {
-        this.numMessages = numMessages;
-    }
-
-    @Override
-    public void startStream() {
-        this.data = constructQueue();
-    }
-
-    @Override
-    public StreamsResultSet readCurrent() {
-        int batchSize = 0;
-        Queue<StreamsDatum> batch = Queues.newLinkedBlockingQueue();
-        try {
-            while (!this.data.isEmpty() && batchSize < DEFAULT_BATCH_SIZE) {
-                batch.add(this.data.take());
-                ++batchSize;
-            }
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
 //        System.out.println("******************\n**\tBatchSize="+batch.size()+"\n******************");
-        this.complete = batch.isEmpty() && this.data.isEmpty();
-        return new StreamsResultSet(batch);
-    }
+    this.complete = batch.isEmpty() && this.data.isEmpty();
+    return new StreamsResultSet(batch);
+  }
 
-    @Override
-    public StreamsResultSet readNew(BigInteger sequence) {
-        return new StreamsResultSet(constructQueue());
-    }
+  @Override
+  public StreamsResultSet readNew(BigInteger sequence) {
+    return new StreamsResultSet(constructQueue());
+  }
 
-    @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return new StreamsResultSet(constructQueue());
-    }
+  @Override
+  public StreamsResultSet readRange(DateTime start, DateTime end) {
+    return new StreamsResultSet(constructQueue());
+  }
 
-    @Override
-    public boolean isRunning() {
-        return !this.complete;
-    }
+  @Override
+  public boolean isRunning() {
+    return !this.complete;
+  }
 
-    @Override
-    public void prepare(Object configurationObject) {
-        this.data = constructQueue();
-    }
+  @Override
+  public void prepare(Object configurationObject) {
+    this.data = constructQueue();
+  }
 
-    @Override
-    public void cleanUp() {
+  @Override
+  public void cleanUp() {
 
-    }
+  }
 
-    private BlockingQueue<StreamsDatum> constructQueue() {
-        BlockingQueue<StreamsDatum> datums = Queues.newArrayBlockingQueue(numMessages);
-        for(int i=0;i<numMessages;i++) {
-            datums.add(new StreamsDatum(i));
-        }
-        return datums;
+  private BlockingQueue<StreamsDatum> constructQueue() {
+    BlockingQueue<StreamsDatum> datums = Queues.newArrayBlockingQueue(numMessages);
+    for(int i=0;i<numMessages;i++) {
+      datums.add(new StreamsDatum(i));
     }
+    return datums;
+  }
 }
 
 

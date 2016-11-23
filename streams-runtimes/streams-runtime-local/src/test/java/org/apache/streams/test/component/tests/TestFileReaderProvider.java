@@ -23,41 +23,39 @@ import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.test.component.FileReaderProvider;
 import org.apache.streams.test.component.StringToDocumentConverter;
 import org.apache.streams.util.ComponentUtils;
+
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.InputStream;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
  */
 public class TestFileReaderProvider {
 
-    @After
-    public void removeLocalMBeans() {
-        try {
-            ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
-        } catch (Exception e) {
-            //No op.  proceed to next test
-        }
+  @After
+  public void removeLocalMBeans() {
+    try {
+      ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
+    } catch (Exception e) {
+      //No op.  proceed to next test
     }
+  }
 
-    @Test
-    public void testFileReaderProviderFileName() {
-        String fileName = "/TestFile.txt";
-        FileReaderProvider provider = new FileReaderProvider(fileName, new StringToDocumentConverter());
-        provider.prepare(null);
-        StreamsResultSet resultSet = provider.readCurrent();
-        int count = 0;
-        for(StreamsDatum datum : resultSet) {
-            ++count;
-        }
-        assertEquals(4, count);
-        provider.cleanUp();
+  @Test
+  public void testFileReaderProviderFileName() {
+    String fileName = "/TestFile.txt";
+    FileReaderProvider provider = new FileReaderProvider(fileName, new StringToDocumentConverter());
+    provider.prepare(null);
+    StreamsResultSet resultSet = provider.readCurrent();
+    int count = 0;
+    for(StreamsDatum datum : resultSet) {
+      ++count;
     }
+    assertEquals(4, count);
+    provider.cleanUp();
+  }
 
 
 
