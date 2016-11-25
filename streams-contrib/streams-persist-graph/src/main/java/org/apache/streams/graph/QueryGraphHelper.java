@@ -18,28 +18,27 @@
 
 package org.apache.streams.graph;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
+
 import org.javatuples.Pair;
 
 import java.util.Map;
 
 /**
  * Interface for methods allowing persistance to a graph database which uses a combination
- * DSL
+ * DSL.
  */
 public interface QueryGraphHelper {
 
-    public Pair<String, Map<String, Object>> getVertexRequest(String streamsId);
+  public Pair<String, Map<String, Object>> getVertexRequest(String streamsId);
 
-    public Pair<String, Map<String, Object>> getVertexRequest(Long vertexId);
+  public Pair<String, Map<String, Object>> getVertexRequest(Long vertexId);
 
-    public Pair<String, Map<String, Object>> createVertexRequest(ActivityObject activityObject);
+  public Pair<String, Map<String, Object>> createVertexRequest(ActivityObject activityObject);
 
-    public Pair<String, Map<String, Object>> mergeVertexRequest(ActivityObject activityObject);
+  public Pair<String, Map<String, Object>> mergeVertexRequest(ActivityObject activityObject);
 
-    public Pair<String, Map<String, Object>> createEdgeRequest(Activity activity);
+  public Pair<String, Map<String, Object>> createEdgeRequest(Activity activity);
 
 }

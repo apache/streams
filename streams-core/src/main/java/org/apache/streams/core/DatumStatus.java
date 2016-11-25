@@ -18,8 +18,11 @@
 
 package org.apache.streams.core;
 
+/**
+ * Status of StreamsDatum.
+ */
 public enum DatumStatus {
-    SUCCESS,
-    PARTIAL,
-    FAIL
+  SUCCESS,
+  PARTIAL,
+  FAIL
 }

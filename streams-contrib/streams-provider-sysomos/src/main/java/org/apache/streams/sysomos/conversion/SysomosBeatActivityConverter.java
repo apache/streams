@@ -19,12 +19,13 @@
 
 package org.apache.streams.sysomos.conversion;
 
-import com.sysomos.xml.BeatApi;
-import org.apache.commons.lang.StringUtils;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Provider;
+
+import com.sysomos.xml.BeatApi;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
 import java.util.HashMap;
@@ -42,103 +43,109 @@ import static org.apache.streams.data.util.ActivityUtil.getProviderId;
  */
 public class SysomosBeatActivityConverter {
 
-    private static final String LANGUAGE_KEY = "LANGUAGE";
+  private static final String LANGUAGE_KEY = "LANGUAGE";
 
-    public Activity convert(BeatApi.BeatResponse.Beat beat) {
-        Activity converted = new Activity();
-        converted.setId(beat.getDocid());
-        converted.setVerb("post");
-        converted.setContent(beat.getContent());
-        converted.setTitle(beat.getTitle());
-        converted.setPublished(new DateTime(beat.getTime()));
-        converted.setUrl(beat.getLink());
-        converted.setActor(new ActivityObject());
-        Map<String, BeatApi.BeatResponse.Beat.Tag> mappedTags = mapTags(beat);
-        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(converted);
-        extensions.put("keywords", beat.getContent());
-        setLocation(beat, extensions);
-        setObject(beat, converted);
-        setProvider(beat, converted);
-        setLanguage(mappedTags, extensions);
-        extensions.put("sysomos", beat);
+  /**
+   * convert BeatApi.BeatResponse.Beat to Activity
+   * @param beat BeatApi.BeatResponse.Beat
+   * @return Activity
+   */
+  public Activity convert(BeatApi.BeatResponse.Beat beat) {
+    Activity converted = new Activity();
+    converted.setId(beat.getDocid());
+    converted.setVerb("post");
+    converted.setContent(beat.getContent());
+    converted.setTitle(beat.getTitle());
+    converted.setPublished(new DateTime(beat.getTime()));
+    converted.setUrl(beat.getLink());
+    converted.setActor(new ActivityObject());
+    Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(converted);
+    extensions.put("keywords", beat.getContent());
+    setLocation(beat, extensions);
+    setObject(beat, converted);
+    setProvider(beat, converted);
+    Map<String, BeatApi.BeatResponse.Beat.Tag> mappedTags = mapTags(beat);
+    setLanguage(mappedTags, extensions);
+    extensions.put("sysomos", beat);
 
-        setChannelSpecificValues(beat, converted, mappedTags);
+    setChannelSpecificValues(beat, converted, mappedTags);
 
-        return converted;
+    return converted;
+  }
+
+  protected void setChannelSpecificValues(
+      BeatApi.BeatResponse.Beat beat,
+      Activity converted, Map<String, BeatApi.BeatResponse.Beat.Tag> mappedTags) {
+    String mediaType = beat.getMediaType();
+    String lowerMediaType = mediaType.toLowerCase();
+    ActivityObject actor = converted.getActor();
+    ActivityObject object = converted.getObject();
+    if ("TWITTER".equals(mediaType)) {
+      actor.setId(getPersonId(lowerMediaType, beat.getHost()));
+      actor.setDisplayName(beat.getHost());
+      actor.setUrl("http://twitter.com/" + beat.getHost());
+      object.setObjectType("tweet");
+      object.setId(getObjectId(lowerMediaType, "tweet", beat.getTweetid()));
+    } else if ("FACEBOOK".equals(mediaType)) {
+      String fbid = mappedTags.containsKey("FBID") ? mappedTags.get("FBID").getValue() : "";
+      actor.setId(getPersonId(lowerMediaType, fbid));
+      actor.setDisplayName(beat.getTitle());
+      actor.setUrl(beat.getHost());
+      object.setObjectType("post");
+      object.setId(getObjectId(lowerMediaType, "post", String.valueOf(converted.getContent().hashCode())));
+    } else {
+      actor.setId(null);
+      actor.setDisplayName(null);
+      actor.setUrl(null);
+      object.setObjectType("post");
+      object.setId(getObjectId(lowerMediaType, "post", String.valueOf(converted.getContent().hashCode())));
     }
+  }
 
-    protected void setChannelSpecificValues(BeatApi.BeatResponse.Beat beat, Activity converted, Map<String, BeatApi.BeatResponse.Beat.Tag> mappedTags) {
-        String mediaType = beat.getMediaType();
-        String lowerMediaType = mediaType.toLowerCase();
-        ActivityObject actor = converted.getActor();
-        ActivityObject object = converted.getObject();
-        if ("TWITTER".equals(mediaType)) {
-            actor.setId(getPersonId(lowerMediaType, beat.getHost()));
-            actor.setDisplayName(beat.getHost());
-            actor.setUrl("http://twitter.com/" + beat.getHost());
-            object.setObjectType("tweet");
-            object.setId(getObjectId(lowerMediaType, "tweet", beat.getTweetid()));
-        } else if ("FACEBOOK".equals(mediaType)) {
-            String fbid = mappedTags.containsKey("FBID") ? mappedTags.get("FBID").getValue() : "";
-            actor.setId(getPersonId(lowerMediaType, fbid));
-            actor.setDisplayName(beat.getTitle());
-            actor.setUrl(beat.getHost());
-            object.setObjectType("post");
-            object.setId(getObjectId(lowerMediaType, "post", String.valueOf(converted.getContent().hashCode())));
-        } else {
-            actor.setId(null);
-            actor.setDisplayName(null);
-            actor.setUrl(null);
-            object.setObjectType("post");
-            object.setId(getObjectId(lowerMediaType, "post", String.valueOf(converted.getContent().hashCode())));
-        }
+  protected void setLanguage(Map<String, BeatApi.BeatResponse.Beat.Tag> mappedTags, Map<String, Object> extensions) {
+    if (mappedTags.containsKey(LANGUAGE_KEY)) {
+      extensions.put(LANGUAGE_EXTENSION, mappedTags.get(LANGUAGE_KEY).getValue());
     }
+  }
 
-    protected void setLanguage(Map<String, BeatApi.BeatResponse.Beat.Tag> mappedTags, Map<String, Object> extensions) {
-        if(mappedTags.containsKey(LANGUAGE_KEY)) {
-            extensions.put(LANGUAGE_EXTENSION, mappedTags.get(LANGUAGE_KEY).getValue());
-        }
+  protected void setObject(BeatApi.BeatResponse.Beat beat, Activity converted) {
+    ActivityObject object = new ActivityObject();
+    converted.setObject(object);
+    object.setUrl(beat.getLink());
+    object.setContent(beat.getContent());
+  }
+
+  @SuppressWarnings("unchecked")
+  protected void setLocation(BeatApi.BeatResponse.Beat beat, Map<String, Object> extensions) {
+    Map<String, Object> location;
+    String country = beat.getLocation().getCountry();
+    if (StringUtils.isNotBlank(country)) {
+      if (extensions.containsKey(LOCATION_EXTENSION)) {
+        location = (Map<String, Object>) extensions.get(LOCATION_EXTENSION);
+      } else {
+        location = new HashMap<>();
+        extensions.put(LOCATION_EXTENSION, location);
+      }
+      location.put(LOCATION_EXTENSION_COUNTRY, country);
     }
+  }
 
-    protected void setObject(BeatApi.BeatResponse.Beat beat, Activity converted) {
-        ActivityObject object = new ActivityObject();
-        converted.setObject(object);
-        object.setUrl(beat.getLink());
-        object.setContent(beat.getContent());
+  protected void setProvider(BeatApi.BeatResponse.Beat beat, Activity converted) {
+    Provider provider = new Provider();
+    String mediaType = beat.getMediaType().toLowerCase();
+    provider.setId(getProviderId(mediaType));
+    provider.setDisplayName(StringUtils.capitalize(mediaType));
+    converted.setProvider(provider);
+  }
+
+  protected Map<String, BeatApi.BeatResponse.Beat.Tag> mapTags(BeatApi.BeatResponse.Beat beat) {
+    Map<String, BeatApi.BeatResponse.Beat.Tag> tags = new HashMap<>();
+    for (BeatApi.BeatResponse.Beat.Tag tag : beat.getTag()) {
+      if (tag.getSystemType() != null) {
+        tags.put(tag.getSystemType().trim(), tag);
+      }
     }
-
-    @SuppressWarnings("unchecked")
-    protected void setLocation(BeatApi.BeatResponse.Beat beat, Map<String, Object> extensions) {
-        Map<String, Object> location;
-        String country = beat.getLocation().getCountry();
-        if(StringUtils.isNotBlank(country)) {
-            if (extensions.containsKey(LOCATION_EXTENSION)) {
-                location = (Map<String, Object>) extensions.get(LOCATION_EXTENSION);
-            } else {
-                location = new HashMap<>();
-                extensions.put(LOCATION_EXTENSION, location);
-            }
-            location.put(LOCATION_EXTENSION_COUNTRY, country);
-        }
-    }
-
-    protected void setProvider(BeatApi.BeatResponse.Beat beat, Activity converted) {
-        Provider provider = new Provider();
-        String mediaType = beat.getMediaType().toLowerCase();
-        provider.setId(getProviderId(mediaType));
-        provider.setDisplayName(StringUtils.capitalize(mediaType));
-        converted.setProvider(provider);
-    }
-
-    protected Map<String, BeatApi.BeatResponse.Beat.Tag> mapTags(BeatApi.BeatResponse.Beat beat) {
-        Map<String, BeatApi.BeatResponse.Beat.Tag> tags = new HashMap<>();
-        for(BeatApi.BeatResponse.Beat.Tag tag : beat.getTag()) {
-            if(tag.getSystemType() != null) {
-                tags.put(tag.getSystemType().trim(), tag);
-            }
-        }
-        return tags;
-    }
-
+    return tags;
+  }
 
 }

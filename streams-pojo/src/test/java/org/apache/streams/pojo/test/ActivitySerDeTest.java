@@ -18,11 +18,12 @@
 
 package org.apache.streams.pojo.test;
 
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.json.Activity;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
 import org.junit.Test;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -41,64 +42,64 @@ import java.util.Set;
  */
 public class ActivitySerDeTest {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ActivitySerDeTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ActivitySerDeTest.class);
 
-    private final static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+  private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-    /**
-     * Tests that all example activities can be loaded into Activity beans
-     * @throws Exception
-     */
-    @Test
-    public void testActivitySerDe() throws Exception {
+  /**
+   * Tests that all example activities can be loaded into Activity beans.
+   * @throws Exception Exception
+   */
+  @Test
+  public void testActivitySerDe() throws Exception {
 
-        InputStream testActivityFolderStream = ActivitySerDeTest.class.getClassLoader()
-                .getResourceAsStream("activitystreams-testdocs/activities");
-        List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    InputStream testActivityFolderStream = ActivitySerDeTest.class.getClassLoader()
+        .getResourceAsStream("activitystreams-testdocs/activities");
+    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
 
-        for( String file : files) {
-            LOGGER.info("File: " + file );
-            LOGGER.info("Serializing: activities/" + file );
-            InputStream testActivityFileStream = ActivitySerDeTest.class.getClassLoader()
-                    .getResourceAsStream("activities/" + file);
-            Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
-            activity.setGenerator(null);
-            activity.setLinks(new LinkedList<String>());
-            String activityString = MAPPER.writeValueAsString(activity);
-            LOGGER.info("Deserialized: " + activityString );
-            assert( !activityString.contains("null") );
-            assert( !activityString.contains("[]") );
-        }
+    for ( String file : files) {
+      LOGGER.info("File: " + file );
+      LOGGER.info("Serializing: activities/" + file );
+      InputStream testActivityFileStream = ActivitySerDeTest.class.getClassLoader()
+          .getResourceAsStream("activities/" + file);
+      Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
+      activity.setGenerator(null);
+      activity.setLinks(new LinkedList<String>());
+      String activityString = MAPPER.writeValueAsString(activity);
+      LOGGER.info("Deserialized: " + activityString );
+      assert ( !activityString.contains("null") );
+      assert ( !activityString.contains("[]") );
     }
+  }
 
-    /**
-     * Tests that defined activity verbs have an example which can be loaded into
-     * Activity beans and into verb-specific beans
-     * @throws Exception
-     */
-    @Test
-    public void testVerbSerDe() throws Exception {
+  /**
+   * Tests that defined activity verbs have an example which can be loaded into
+   * Activity beans and into verb-specific beans.
+   * @throws Exception Exception
+   */
+  @Test
+  public void testVerbSerDe() throws Exception {
 
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage("org.apache.streams.pojo.json"))
-                .setScanners(new SubTypesScanner()));
-        Set<Class<? extends Activity>> verbs = reflections.getSubTypesOf(Activity.class);
+    Reflections reflections = new Reflections(new ConfigurationBuilder()
+        .setUrls(ClasspathHelper.forPackage("org.apache.streams.pojo.json"))
+        .setScanners(new SubTypesScanner()));
+    Set<Class<? extends Activity>> verbs = reflections.getSubTypesOf(Activity.class);
 
-        for( Class verbClass : verbs) {
-            LOGGER.info("Verb: " + verbClass.getSimpleName() );
-            Activity activity = (Activity) verbClass.newInstance();
-            String verbName = activity.getVerb();
-            String testfile = verbName.toLowerCase() + ".json";
-            LOGGER.info("Serializing: activities/" + testfile );
-            assert(ActivitySerDeTest.class.getClassLoader().getResource("activities/" + testfile) != null);
-            InputStream testActivityFileStream = ActivitySerDeTest.class.getClassLoader()
-                    .getResourceAsStream("activities/" + testfile);
-            assert(testActivityFileStream != null);
-            activity = MAPPER.convertValue(MAPPER.readValue(testActivityFileStream, verbClass), Activity.class);
-            String activityString = MAPPER.writeValueAsString(activity);
-            LOGGER.info("Deserialized: " + activityString );
-            assert( !activityString.contains("null") );
-            assert( !activityString.contains("[]") );
-        }
+    for ( Class verbClass : verbs) {
+      LOGGER.info("Verb: " + verbClass.getSimpleName() );
+      Activity activity = (Activity) verbClass.newInstance();
+      String verbName = activity.getVerb();
+      String testfile = verbName.toLowerCase() + ".json";
+      LOGGER.info("Serializing: activities/" + testfile );
+      assert (ActivitySerDeTest.class.getClassLoader().getResource("activities/" + testfile) != null);
+      InputStream testActivityFileStream = ActivitySerDeTest.class.getClassLoader()
+          .getResourceAsStream("activities/" + testfile);
+      assert (testActivityFileStream != null);
+      activity = MAPPER.convertValue(MAPPER.readValue(testActivityFileStream, verbClass), Activity.class);
+      String activityString = MAPPER.writeValueAsString(activity);
+      LOGGER.info("Deserialized: " + activityString );
+      assert ( !activityString.contains("null") );
+      assert ( !activityString.contains("[]") );
     }
+  }
 }

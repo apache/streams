@@ -18,67 +18,69 @@
 
 package org.apache.streams.twitter.converter;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Provider;
-import org.apache.streams.twitter.pojo.Follow;
 import org.apache.streams.twitter.converter.util.TwitterActivityUtil;
+import org.apache.streams.twitter.pojo.Follow;
+
+import com.google.common.collect.Lists;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.List;
 
 public class TwitterFollowActivityConverter implements ActivityConverter<Follow>, Serializable {
 
-    public TwitterFollowActivityConverter() {
-    }
+  public TwitterFollowActivityConverter() {
+  }
 
-    private static TwitterFollowActivityConverter instance = new TwitterFollowActivityConverter();
+  private static TwitterFollowActivityConverter instance = new TwitterFollowActivityConverter();
 
-    public static TwitterFollowActivityConverter getInstance() {
-        return instance;
-    }
+  public static TwitterFollowActivityConverter getInstance() {
+    return instance;
+  }
 
-    public static Class requiredClass = Follow.class;
+  public static Class requiredClass = Follow.class;
 
-    @Override
-    public Class requiredClass() {
-        return requiredClass;
-    }
+  @Override
+  public Class requiredClass() {
+    return requiredClass;
+  }
 
-    @Override
-    public String serializationFormat() {
-        return null;
-    }
+  @Override
+  public String serializationFormat() {
+    return null;
+  }
 
-    @Override
-    public Follow fromActivity(Activity deserialized) throws ActivityConversionException {
-        throw new NotImplementedException();
-    }
+  @Override
+  public Follow fromActivity(Activity deserialized) throws ActivityConversionException {
+    throw new NotImplementedException();
+  }
 
-    @Override
-    public List<Activity> toActivityList(Follow event) throws ActivityConversionException {
+  @Override
+  public List<Follow> fromActivityList(List<Activity> list) {
+    throw new NotImplementedException();
+  }
 
-        Activity activity = new Activity();
-        activity.setVerb("follow");
-        activity.setActor(TwitterActivityUtil.buildActor(event.getFollower()));
-        activity.setObject(TwitterActivityUtil.buildActor(event.getFollowee()));
-        activity.setId(activity.getActor().getId() + "-follow->" + activity.getObject().getId());
-        activity.setProvider((Provider) new Provider().withId("twitter"));
-        return Lists.newArrayList(activity);
-    }
+  @Override
+  public List<Activity> toActivityList(Follow event) throws ActivityConversionException {
 
-    @Override
-    public List<Follow> fromActivityList(List<Activity> list) {
-        throw new NotImplementedException();
-    }
+    Activity activity = new Activity();
+    activity.setVerb("follow");
+    activity.setActor(TwitterActivityUtil.buildActor(event.getFollower()));
+    activity.setObject(TwitterActivityUtil.buildActor(event.getFollowee()));
+    activity.setId(activity.getActor().getId() + "-follow->" + activity.getObject().getId());
+    activity.setProvider((Provider) new Provider().withId("twitter"));
+    return Lists.newArrayList(activity);
+  }
 
-    @Override
-    public List<Activity> toActivityList(List<Follow> list) {
-        throw new NotImplementedException();
-    }
+  @Override
+  public List<Activity> toActivityList(List<Follow> list) {
+    throw new NotImplementedException();
+  }
+
+
 }
 

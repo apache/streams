@@ -18,40 +18,50 @@
 
 package com.google.gplus.serializer.util;
 
+import org.apache.streams.jackson.StreamsJacksonMapper;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.api.services.plus.model.Activity;
 import com.google.api.services.plus.model.Person;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import java.io.IOException;
 import java.io.Serializable;
 
+/**
+ * GPlusEventClassifier classifies GPlus Events.
+ */
 public class GPlusEventClassifier implements Serializable {
-    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
-    private static final String ACTIVITY_IDENTIFIER = "\"plus#activity\"";
-    private static final String PERSON_IDENTIFIER = "\"plus#person\"";
 
-    public static Class detectClass(String json) {
-        Preconditions.checkNotNull(json);
-        Preconditions.checkArgument(StringUtils.isNotEmpty(json));
+  private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  private static final String ACTIVITY_IDENTIFIER = "\"plus#activity\"";
+  private static final String PERSON_IDENTIFIER = "\"plus#person\"";
 
-        ObjectNode objectNode;
-        try {
-            objectNode = (ObjectNode) mapper.readTree(json);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+  /**
+   * Detect likely class of String json.
+   * @param json String json
+   * @return likely class
+   */
+  public static Class detectClass(String json) {
+    Preconditions.checkNotNull(json);
+    Preconditions.checkArgument(StringUtils.isNotEmpty(json));
 
-        if (objectNode.findValue("kind") != null && objectNode.get("kind").toString().equals(ACTIVITY_IDENTIFIER)) {
-            return Activity.class;
-        } else if(objectNode.findValue("kind") != null && objectNode.get("kind").toString().equals(PERSON_IDENTIFIER)) {
-            return Person.class;
-        } else  {
-            return ObjectNode.class;
-        }
+    ObjectNode objectNode;
+    try {
+      objectNode = (ObjectNode) mapper.readTree(json);
+    } catch (IOException ex) {
+      ex.printStackTrace();
+      return null;
     }
+
+    if (objectNode.findValue("kind") != null && objectNode.get("kind").toString().equals(ACTIVITY_IDENTIFIER)) {
+      return Activity.class;
+    } else if (objectNode.findValue("kind") != null && objectNode.get("kind").toString().equals(PERSON_IDENTIFIER)) {
+      return Person.class;
+    } else  {
+      return ObjectNode.class;
+    }
+  }
 }

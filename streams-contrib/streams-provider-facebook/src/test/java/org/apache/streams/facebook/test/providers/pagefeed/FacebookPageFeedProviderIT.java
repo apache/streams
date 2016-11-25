@@ -19,6 +19,7 @@
 package org.apache.streams.facebook.test.providers.pagefeed;
 
 import org.apache.streams.facebook.provider.pagefeed.FacebookPageFeedProvider;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,39 +30,39 @@ import java.io.LineNumberReader;
 
 public class FacebookPageFeedProviderIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FacebookPageFeedProviderIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FacebookPageFeedProviderIT.class);
 
-    @Test
-    public void testFacebookPageFeedProvider() throws Exception {
+  @Test
+  public void testFacebookPageFeedProvider() throws Exception {
 
-        String configfile = "./target/test-classes/FacebookPageFeedProviderIT.conf";
-        String outfile = "./target/test-classes/FacebookPageFeedProviderIT.stdout.txt";
+    String configfile = "./target/test-classes/FacebookPageFeedProviderIT.conf";
+    String outfile = "./target/test-classes/FacebookPageFeedProviderIT.stdout.txt";
 
-        String[] args = new String[2];
-        args[0] = configfile;
-        args[1] = outfile;
+    String[] args = new String[2];
+    args[0] = configfile;
+    args[1] = outfile;
 
-        Thread testThread = new Thread((Runnable) () -> {
-            try {
-                FacebookPageFeedProvider.main(args);
-            } catch( Exception e ) {
-                LOGGER.error("Test Exception!", e);
-            }
-        });
-        testThread.start();
-        testThread.join(60000);
+    Thread testThread = new Thread((Runnable) () -> {
+      try {
+        FacebookPageFeedProvider.main(args);
+      } catch( Exception e ) {
+        LOGGER.error("Test Exception!", e);
+      }
+    });
+    testThread.start();
+    testThread.join(60000);
 
-        File out = new File(outfile);
-        assert (out.exists());
-        assert (out.canRead());
-        assert (out.isFile());
+    File out = new File(outfile);
+    assert (out.exists());
+    assert (out.canRead());
+    assert (out.isFile());
 
-        FileReader outReader = new FileReader(out);
-        LineNumberReader outCounter = new LineNumberReader(outReader);
+    FileReader outReader = new FileReader(out);
+    LineNumberReader outCounter = new LineNumberReader(outReader);
 
-        while(outCounter.readLine() != null) {}
+    while(outCounter.readLine() != null) {}
 
-        assert (outCounter.getLineNumber() >= 1000);
+    assert (outCounter.getLineNumber() >= 1000);
 
-    }
+  }
 }

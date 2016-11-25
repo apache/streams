@@ -20,6 +20,7 @@ package org.apache.streams.local.test.processors;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,34 +32,34 @@ import java.util.List;
  */
 public class DoNothingProcessor implements StreamsProcessor {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(DoNothingProcessor.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(DoNothingProcessor.class);
 
-    public final static String STREAMS_ID = "DoNothingProcessor";
+  public final static String STREAMS_ID = "DoNothingProcessor";
 
-    List<StreamsDatum> result;
+  List<StreamsDatum> result;
 
-    public DoNothingProcessor() {
-    }
+  public DoNothingProcessor() {
+  }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        this.result = new LinkedList<StreamsDatum>();
-        result.add(entry);
-        return result;
-    }
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+    this.result = new LinkedList<StreamsDatum>();
+    result.add(entry);
+    return result;
+  }
 
-    @Override
-    public void prepare(Object configurationObject) {
+  @Override
+  public void prepare(Object configurationObject) {
 
-    }
+  }
 
-    @Override
-    public void cleanUp() {
-        LOGGER.debug("Processor clean up!");
-    }
+  @Override
+  public void cleanUp() {
+    LOGGER.debug("Processor clean up!");
+  }
 }

@@ -18,53 +18,58 @@
 
 package com.google.gplus.serializer.util;
 
+import org.apache.streams.jackson.StreamsJacksonMapper;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.api.services.plus.model.Activity;
 import com.google.api.services.plus.model.Person;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * GPlusEventClassifierTest tests GPlusEventClassifier.
+ */
 public class GPlusEventClassifierTest {
-    private static StreamsJacksonMapper mapper = StreamsJacksonMapper.getInstance();
 
-    @Test
-    public void classifyActivityTest() {
-        try {
-            Activity activity = new Activity();
-            activity.setKind("plus#activity");
-            Class retClass = GPlusEventClassifier.detectClass(mapper.writeValueAsString(activity));
+  private static StreamsJacksonMapper mapper = StreamsJacksonMapper.getInstance();
 
-            assertEquals(retClass, Activity.class);
-        } catch(Exception e) {
-            //
-        }
+  @Test
+  public void classifyActivityTest() {
+    try {
+      Activity activity = new Activity();
+      activity.setKind("plus#activity");
+      Class retClass = GPlusEventClassifier.detectClass(mapper.writeValueAsString(activity));
+
+      assertEquals(retClass, Activity.class);
+    } catch (Exception ex) {
+      //
     }
+  }
 
-    @Test
-    public void classifyPersonTest() {
-        try {
-            Person person = new Person();
-            person.setKind("plus#person");
-            Class retClass = GPlusEventClassifier.detectClass(mapper.writeValueAsString(person));
+  @Test
+  public void classifyPersonTest() {
+    try {
+      Person person = new Person();
+      person.setKind("plus#person");
+      Class retClass = GPlusEventClassifier.detectClass(mapper.writeValueAsString(person));
 
-            assertEquals(retClass, Person.class);
-        } catch(Exception e) {
-            //
-        }
+      assertEquals(retClass, Person.class);
+    } catch (Exception ex) {
+      //
     }
+  }
 
-    @Test
-    public void classifObjectNodeTest() {
-        try {
-            Person person = new Person();
-            person.setKind("fake");
-            Class retClass = GPlusEventClassifier.detectClass(mapper.writeValueAsString(person));
+  @Test
+  public void classifyObjectNodeTest() {
+    try {
+      Person person = new Person();
+      person.setKind("fake");
+      Class retClass = GPlusEventClassifier.detectClass(mapper.writeValueAsString(person));
 
-            assertEquals(retClass, ObjectNode.class);
-        } catch(Exception e) {
-            //
-        }
+      assertEquals(retClass, ObjectNode.class);
+    } catch (Exception ex) {
+      //
     }
+  }
 }

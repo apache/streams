@@ -26,15 +26,17 @@ import org.joda.time.Period;
 import java.io.IOException;
 import java.io.Serializable;
 
-public class StreamsPeriodSerializer extends StdSerializer<Period> implements Serializable
-{
-    protected StreamsPeriodSerializer(Class<Period> dateTimeClass) {
-        super(dateTimeClass);
-    }
+/**
+ * StdSerializer of Period.
+ */
+public class StreamsPeriodSerializer extends StdSerializer<Period> implements Serializable {
 
-    @Override
-    public void serialize(Period value, JsonGenerator jgen, SerializerProvider provider) throws IOException
-    {
-        jgen.writeString(Integer.toString(value.getMillis()));
-    }
+  protected StreamsPeriodSerializer(Class<Period> dateTimeClass) {
+    super(dateTimeClass);
+  }
+
+  @Override
+  public void serialize(Period value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+    jgen.writeString(Integer.toString(value.getMillis()));
+  }
 }

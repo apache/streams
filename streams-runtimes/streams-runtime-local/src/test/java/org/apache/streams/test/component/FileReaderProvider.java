@@ -18,10 +18,11 @@
 
 package org.apache.streams.test.component;
 
-import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
+
+import com.google.common.collect.Queues;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
@@ -37,64 +38,64 @@ import java.util.Scanner;
  */
 public class FileReaderProvider implements StreamsProvider {
 
-    private String fileName;
-    private Scanner scanner;
-    private StreamsDatumConverter converter;
+  private String fileName;
+  private Scanner scanner;
+  private StreamsDatumConverter converter;
 
-    public FileReaderProvider(String filePathInResources, StreamsDatumConverter converter) {
-        this.fileName = filePathInResources;
-        this.converter = converter;
+  public FileReaderProvider(String filePathInResources, StreamsDatumConverter converter) {
+    this.fileName = filePathInResources;
+    this.converter = converter;
+  }
+
+  @Override
+  public String getId() {
+    return "FileReaderProvider";
+  }
+
+  @Override
+  public void startStream() {
+
+  }
+
+  @Override
+  public StreamsResultSet readCurrent() {
+    return new StreamsResultSet(constructQueue(this.scanner));
+  }
+
+  @Override
+  public StreamsResultSet readNew(BigInteger sequence) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public StreamsResultSet readRange(DateTime start, DateTime end) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean isRunning() {
+    return this.scanner != null && this.scanner.hasNextLine();
+  }
+
+  @Override
+  public void prepare(Object configurationObject) {
+    this.scanner = new Scanner(FileReaderProvider.class.getResourceAsStream(this.fileName));
+  }
+
+  @Override
+  public void cleanUp() {
+    if(this.scanner!= null) {
+      this.scanner.close();
+      this.scanner = null;
     }
+  }
 
-    @Override
-    public String getId() {
-        return "FileReaderProvider";
+  private Queue<StreamsDatum> constructQueue(Scanner scanner) {
+    Queue<StreamsDatum> data = Queues.newLinkedBlockingQueue();
+    while(scanner.hasNextLine()) {
+      data.add(converter.convert(scanner.nextLine()));
     }
-
-    @Override
-    public void startStream() {
-
-    }
-
-    @Override
-    public StreamsResultSet readCurrent() {
-        return new StreamsResultSet(constructQueue(this.scanner));
-    }
-
-    @Override
-    public StreamsResultSet readNew(BigInteger sequence) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isRunning() {
-        return this.scanner != null && this.scanner.hasNextLine();
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-        this.scanner = new Scanner(FileReaderProvider.class.getResourceAsStream(this.fileName));
-    }
-
-    @Override
-    public void cleanUp() {
-        if(this.scanner!= null) {
-            this.scanner.close();
-            this.scanner = null;
-        }
-    }
-
-    private Queue<StreamsDatum> constructQueue(Scanner scanner) {
-        Queue<StreamsDatum> data = Queues.newLinkedBlockingQueue();
-        while(scanner.hasNextLine()) {
-            data.add(converter.convert(scanner.nextLine()));
-        }
-        cleanUp();
-        return data;
-    }
+    cleanUp();
+    return data;
+  }
 }

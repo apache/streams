@@ -19,45 +19,66 @@
 
 package org.apache.streams.verbs;
 
-import com.google.common.base.Strings;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
+
+import com.google.common.base.Strings;
 import org.stringtemplate.v4.ST;
 
 /**
- * Transforms VerbDefinition templates into readable strings
+ * Transforms VerbDefinition templates into readable strings.
  */
 public class VerbDefinitionTemplateUtil {
 
-    public static String asString(Activity activity, ObjectCombination objectCombination) {
+  /**
+   * Transform Activity into readable string using ObjectCombination title.
+   * @param activity Activity
+   * @param objectCombination ObjectCombination
+   * @return String
+   */
+  public static String asString(Activity activity, ObjectCombination objectCombination) {
 
-        return asString("*", activity, objectCombination);
+    return asString("*", activity, objectCombination);
 
+  }
+
+  /**
+   * Transform Activity into readable string using ObjectCombination title and specified language.
+   * @param language language
+   * @param activity Activity
+   * @param objectCombination ObjectCombination
+   * @return String
+   */
+  public static String asString(String language, Activity activity, ObjectCombination objectCombination) {
+
+    String template = (String) objectCombination.getTemplates().getAdditionalProperties().get(language);
+    template = template.replace('{', '<');
+    template = template.replace('}', '>');
+    ST st = new ST(template);
+    st.add("actor", displayName(activity.getActor()));
+    st.add("provider", displayName(activity.getProvider()));
+    st.add("object", displayName(activity.getObject()));
+    st.add("target", displayName(activity.getTarget()));
+
+    return st.render();
+  }
+
+  /**
+   * Readable display Name for ActivityObject.
+   * @param activityObject ActivityObject
+   * @return displayName
+   */
+  public static String displayName(ActivityObject activityObject) {
+    if ( activityObject == null ) {
+      return "";
+    } else if ( !Strings.isNullOrEmpty(activityObject.getDisplayName())) {
+      return activityObject.getDisplayName();
+    } else if ( !Strings.isNullOrEmpty(activityObject.getObjectType())) {
+      return activityObject.getObjectType();
+    } else if ( !Strings.isNullOrEmpty(activityObject.toString())) {
+      return activityObject.toString();
+    } else {
+      return "";
     }
-
-    public static String asString(String language, Activity activity, ObjectCombination objectCombination) {
-
-        String template = (String) objectCombination.getTemplates().getAdditionalProperties().get(language);
-        template = template.replace('{', '<');
-        template = template.replace('}', '>');
-        ST st = new ST(template);
-        st.add("actor", displayName(activity.getActor()));
-        st.add("provider", displayName(activity.getProvider()));
-        st.add("object", displayName(activity.getObject()));
-        st.add("target", displayName(activity.getTarget()));
-
-        return st.render();
-    }
-
-    public static String displayName(ActivityObject activityObject) {
-        if( activityObject == null )
-            return "";
-        if( !Strings.isNullOrEmpty(activityObject.getDisplayName()))
-            return activityObject.getDisplayName();
-        if( !Strings.isNullOrEmpty(activityObject.getObjectType()))
-            return activityObject.getObjectType();
-        if( !Strings.isNullOrEmpty(activityObject.toString()))
-            return activityObject.toString();
-        else return "";
-    }
+  }
 }

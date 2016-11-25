@@ -20,6 +20,7 @@
 package org.apache.streams.plugins.hbase;
 
 import org.apache.streams.util.schema.GenerationConfig;
+
 import org.jsonschema2pojo.DefaultGenerationConfig;
 import org.jsonschema2pojo.util.URLUtil;
 
@@ -33,77 +34,80 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Configures StreamsHiveResourceGenerator
- *
- *
+ * Configures StreamsHiveResourceGenerator.
  */
 public class StreamsHbaseGenerationConfig extends DefaultGenerationConfig implements GenerationConfig {
 
-    public String getSourceDirectory() {
-        return sourceDirectory;
+  public String getSourceDirectory() {
+    return sourceDirectory;
+  }
+
+  public List<String> getSourcePaths() {
+    return sourcePaths;
+  }
+
+  private String columnFamily;
+  private String sourceDirectory;
+  private List<String> sourcePaths = new ArrayList<String>();
+  private String targetDirectory;
+  private int maxDepth = 1;
+
+  public Set<String> getExclusions() {
+    return exclusions;
+  }
+
+  public void setExclusions(Set<String> exclusions) {
+    this.exclusions = exclusions;
+  }
+
+  private Set<String> exclusions = new HashSet<String>();
+
+  public int getMaxDepth() {
+    return maxDepth;
+  }
+
+  public void setSourceDirectory(String sourceDirectory) {
+    this.sourceDirectory = sourceDirectory;
+  }
+
+  public void setSourcePaths(List<String> sourcePaths) {
+    this.sourcePaths = sourcePaths;
+  }
+
+  public void setTargetDirectory(String targetDirectory) {
+    this.targetDirectory = targetDirectory;
+  }
+
+  public File getTargetDirectory() {
+    return new File(targetDirectory);
+  }
+
+  /**
+   * get all sources.
+   * @return Iterator of URL
+   */
+  public Iterator<URL> getSource() {
+    if (null != sourceDirectory) {
+      return Collections.singleton(URLUtil.parseURL(sourceDirectory)).iterator();
     }
-
-    public List<String> getSourcePaths() {
-        return sourcePaths;
+    List<URL> sourceUrls = new ArrayList<URL>();
+    if ( sourcePaths != null && sourcePaths.size() > 0) {
+      for (String source : sourcePaths) {
+        sourceUrls.add(URLUtil.parseURL(source));
+      }
     }
+    return sourceUrls.iterator();
+  }
 
-    private String columnFamily;
-    private String sourceDirectory;
-    private List<String> sourcePaths = new ArrayList<String>();
-    private String targetDirectory;
-    private int maxDepth = 1;
+  public void setMaxDepth(int maxDepth) {
+    this.maxDepth = maxDepth;
+  }
 
-    public Set<String> getExclusions() {
-        return exclusions;
-    }
+  public String getColumnFamily() {
+    return columnFamily;
+  }
 
-    public void setExclusions(Set<String> exclusions) {
-        this.exclusions = exclusions;
-    }
-
-    private Set<String> exclusions = new HashSet<String>();
-
-    public int getMaxDepth() {
-        return maxDepth;
-    }
-
-    public void setSourceDirectory(String sourceDirectory) {
-        this.sourceDirectory = sourceDirectory;
-    }
-
-    public void setSourcePaths(List<String> sourcePaths) {
-        this.sourcePaths = sourcePaths;
-    }
-
-    public void setTargetDirectory(String targetDirectory) {
-        this.targetDirectory = targetDirectory;
-    }
-
-    public File getTargetDirectory() {
-        return new File(targetDirectory);
-    }
-
-    public Iterator<URL> getSource() {
-        if (null != sourceDirectory) {
-            return Collections.singleton(URLUtil.parseURL(sourceDirectory)).iterator();
-        }
-        List<URL> sourceURLs = new ArrayList<URL>();
-        if( sourcePaths != null && sourcePaths.size() > 0)
-            for (String source : sourcePaths) {
-                sourceURLs.add(URLUtil.parseURL(source));
-            }
-        return sourceURLs.iterator();
-    }
-
-    public void setMaxDepth(int maxDepth) {
-        this.maxDepth = maxDepth;
-    }
-
-    public String getColumnFamily() {
-        return columnFamily;
-    }
-
-    public void setColumnFamily(String columnFamily) {
-        this.columnFamily = columnFamily;
-    }
+  public void setColumnFamily(String columnFamily) {
+    this.columnFamily = columnFamily;
+  }
 }

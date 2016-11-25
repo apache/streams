@@ -22,42 +22,42 @@ package org.apache.streams.local.counters;
  */
 public interface StreamsTaskCounterMXBean {
 
-    /**
-     * Get the error rate of the streams process calculated by the number of errors not handled by the {@link org.apache.streams.local.tasks.StreamsTask}
-     * divided by the number of datums received.
-     * @return error rate
-     */
-    public double getErrorRate();
+  /**
+   * Get the error rate of the streams process calculated by the number of errors not handled by the {@link org.apache.streams.local.tasks.StreamsTask}
+   * divided by the number of datums received.
+   * @return error rate
+   */
+  public double getErrorRate();
 
-    /**
-     * Get the number of {@link org.apache.streams.core.StreamsDatum}s emitted by the streams process
-     * @return number of emitted datums
-     */
-    public long getNumEmitted();
+  /**
+   * Get the number of {@link org.apache.streams.core.StreamsDatum}s emitted by the streams process
+   * @return number of emitted datums
+   */
+  public long getNumEmitted();
 
-    /**
-     * Get the number of {@link org.apache.streams.core.StreamsDatum}s received by the streams process
-     * @return number of received datums
-     */
-    public long getNumReceived();
+  /**
+   * Get the number of {@link org.apache.streams.core.StreamsDatum}s received by the streams process
+   * @return number of received datums
+   */
+  public long getNumReceived();
 
-    /**
-     * Get the number of errors that the process had to catch because the executing Provider/Processor/Writer did not
-     * catch and handle the exception
-     * @return number of handled errors
-     */
-    public long getNumUnhandledErrors();
+  /**
+   * Get the number of errors that the process had to catch because the executing Provider/Processor/Writer did not
+   * catch and handle the exception
+   * @return number of handled errors
+   */
+  public long getNumUnhandledErrors();
 
-    /**
-     * Returns the average time in milliseconds it takes the task to readCurrent, process, or write to return.
-     * @return
-     */
-    public double getAvgTime();
+  /**
+   * Returns the average time in milliseconds it takes the task to readCurrent, process, or write to return.
+   * @return
+   */
+  public double getAvgTime();
 
-    /**
-     * Returns the max time in milliseconds it takes the task to readCurrent, process, or write to return.
-     * @return
-     */
-    public long getMaxTime();
+  /**
+   * Returns the max time in milliseconds it takes the task to readCurrent, process, or write to return.
+   * @return
+   */
+  public long getMaxTime();
 
 }

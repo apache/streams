@@ -18,10 +18,11 @@
 
 package org.apache.streams.jackson;
 
+import org.apache.streams.data.util.RFC3339Utils;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.apache.streams.data.util.RFC3339Utils;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
@@ -29,16 +30,16 @@ import java.io.Serializable;
 
 /**
  * StreamsDateTimeSerializer is a supporting class for
- * @see {@link org.apache.streams.jackson.StreamsJacksonMapper}
+ * @see {@link org.apache.streams.jackson.StreamsJacksonMapper}.
  */
 public class StreamsDateTimeSerializer extends StdSerializer<DateTime> implements Serializable {
 
-    protected StreamsDateTimeSerializer(Class<DateTime> dateTimeClass) {
-        super(dateTimeClass);
-    }
+  protected StreamsDateTimeSerializer(Class<DateTime> dateTimeClass) {
+    super(dateTimeClass);
+  }
 
-    @Override
-    public void serialize(DateTime value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        jgen.writeString(RFC3339Utils.getInstance().format(value));
-    }
+  @Override
+  public void serialize(DateTime value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+    jgen.writeString(RFC3339Utils.getInstance().format(value));
+  }
 }

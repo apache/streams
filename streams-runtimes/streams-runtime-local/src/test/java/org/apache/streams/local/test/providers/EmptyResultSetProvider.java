@@ -19,10 +19,11 @@
 
 package org.apache.streams.local.test.providers;
 
-import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
+
+import com.google.common.collect.Queues;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
@@ -32,43 +33,43 @@ import java.math.BigInteger;
  */
 public class EmptyResultSetProvider implements StreamsProvider {
 
-    @Override
-    public String getId() {
-        return "EmptyResultSetProvider";
-    }
+  @Override
+  public String getId() {
+    return "EmptyResultSetProvider";
+  }
 
-    @Override
-    public void startStream() {
-        //NOP
-    }
+  @Override
+  public void startStream() {
+    //NOP
+  }
 
-    @Override
-    public StreamsResultSet readCurrent() {
-        return new StreamsResultSet(Queues.<StreamsDatum>newLinkedBlockingQueue());
-    }
+  @Override
+  public StreamsResultSet readCurrent() {
+    return new StreamsResultSet(Queues.<StreamsDatum>newLinkedBlockingQueue());
+  }
 
-    @Override
-    public StreamsResultSet readNew(BigInteger sequence) {
-        return new StreamsResultSet(Queues.<StreamsDatum>newLinkedBlockingQueue());
-    }
+  @Override
+  public StreamsResultSet readNew(BigInteger sequence) {
+    return new StreamsResultSet(Queues.<StreamsDatum>newLinkedBlockingQueue());
+  }
 
-    @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return new StreamsResultSet(Queues.<StreamsDatum>newLinkedBlockingQueue());
-    }
+  @Override
+  public StreamsResultSet readRange(DateTime start, DateTime end) {
+    return new StreamsResultSet(Queues.<StreamsDatum>newLinkedBlockingQueue());
+  }
 
-    @Override
-    public boolean isRunning() {
-        return true;
-    }
+  @Override
+  public boolean isRunning() {
+    return true;
+  }
 
-    @Override
-    public void prepare(Object configurationObject) {
-        //NOP
-    }
+  @Override
+  public void prepare(Object configurationObject) {
+    //NOP
+  }
 
-    @Override
-    public void cleanUp() {
-        //NOP
-    }
+  @Override
+  public void cleanUp() {
+    //NOP
+  }
 }

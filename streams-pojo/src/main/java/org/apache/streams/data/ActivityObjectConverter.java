@@ -22,44 +22,42 @@ import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.ActivityObject;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Converts non-ActivityObject documents to ActivityObjects and back.
  *
+ * <p/>
  * Each converter may return zero or one alternative representations.
- *
  */
-
 public interface ActivityObjectConverter<T> extends Serializable {
 
-    /**
-     * What class does this ActivityConverter require?
-     *
-     * @return The class the ActivityConverter requires.  Should always return the templated class.
-     */
-    Class requiredClass();
+  /**
+   * What class does this ActivityConverter require?
+   *
+   * @return The class the ActivityConverter requires.  Should always return the templated class.
+   */
+  Class requiredClass();
 
-    /**
-     * Gets the supported content type that can be deserialized/serialized
-     *
-     * @return A string representing the format name.  Can be an IETF MIME type or other
-     */
-    String serializationFormat();
+  /**
+   * Gets the supported content type that can be deserialized/serialized.
+   *
+   * @return A string representing the format name.  Can be an IETF MIME type or other
+   */
+  String serializationFormat();
 
-    /**
-     * Converts the activity to a POJO representation.
-     *
-     * @param deserialized the string
-     * @return a fully populated Activity object
-     */
-    T fromActivityObject(ActivityObject deserialized) throws ActivityConversionException;
+  /**
+   * Converts the activity to a POJO representation.
+   *
+   * @param deserialized the string
+   * @return a fully populated Activity object
+   */
+  T fromActivityObject(ActivityObject deserialized) throws ActivityConversionException;
 
-    /**
-     * Converts a POJO into an ActivityObject
-     * @param serialized the string representation
-     * @return a fully populated Activity object
-     */
-    ActivityObject toActivityObject(T serialized) throws ActivityConversionException;
+  /**
+   * Converts a POJO into an ActivityObject.
+   * @param serialized the string representation
+   * @return a fully populated Activity object
+   */
+  ActivityObject toActivityObject(T serialized) throws ActivityConversionException;
 
 }

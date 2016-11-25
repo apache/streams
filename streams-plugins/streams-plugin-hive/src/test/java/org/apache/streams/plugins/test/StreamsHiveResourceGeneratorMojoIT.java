@@ -36,48 +36,47 @@ import java.util.List;
 import static org.apache.streams.plugins.test.StreamsHiveResourceGeneratorTest.hqlFilter;
 
 /**
- * Tests that streams-plugin-hive running via maven generates hql resources
+ * Tests that streams-plugin-hive running via maven generates txt resources.
  */
 public class StreamsHiveResourceGeneratorMojoIT extends TestCase {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsHiveResourceGeneratorMojoIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StreamsHiveResourceGeneratorMojoIT.class);
 
-    protected void setUp() throws Exception
-    {
-        // required for mojo lookups to work
-        super.setUp();
-    }
+  protected void setUp() throws Exception {
+    // required for mojo lookups to work
+    super.setUp();
+  }
 
 
-    @Test
-    public void testStreamsHiveResourceGeneratorMojo() throws Exception {
+  @Test
+  public void testStreamsHiveResourceGeneratorMojo() throws Exception {
 
-        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-hive" );
+    File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-hive" );
 
-        Verifier verifier;
+    Verifier verifier;
 
-        verifier = new Verifier( testDir.getAbsolutePath() );
+    verifier = new Verifier( testDir.getAbsolutePath() );
 
-        List cliOptions = new ArrayList();
-        cliOptions.add( "-N" );
-        verifier.executeGoals( Lists.<String>newArrayList(
-                "clean",
-                "dependency:unpack-dependencies",
-                "generate-resources"));
+    List cliOptions = new ArrayList();
+    cliOptions.add( "-N" );
+    verifier.executeGoals( Lists.<String>newArrayList(
+        "clean",
+        "dependency:unpack-dependencies",
+        "generate-resources"));
 
-        verifier.verifyErrorFreeLog();
+    verifier.verifyErrorFreeLog();
 
-        verifier.resetStreams();
+    verifier.resetStreams();
 
-        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/hive-mojo");
+    File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/hive-mojo");
 
-        assert( testOutput != null );
-        assert( testOutput.exists() == true );
-        assert( testOutput.isDirectory() == true );
+    assert ( testOutput != null );
+    assert ( testOutput.exists() == true );
+    assert ( testOutput.isDirectory() == true );
 
-        Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-                .filter(hqlFilter);
-        Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-        assert( outputCollection.size() == 133 );
-    }
+    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
+        .filter(hqlFilter);
+    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
+    assert ( outputCollection.size() == 133 );
+  }
 }

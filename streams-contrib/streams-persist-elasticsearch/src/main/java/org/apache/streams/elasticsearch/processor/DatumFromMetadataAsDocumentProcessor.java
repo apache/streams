@@ -18,15 +18,6 @@
 
 package org.apache.streams.elasticsearch.processor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
-import com.typesafe.config.Config;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
@@ -35,90 +26,104 @@ import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.elasticsearch.ElasticsearchMetadataUtil;
 import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
+import com.typesafe.config.Config;
+
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.joda.time.DateTime;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
- * Uses index and type in metadata map stored in datum document to populate current document into datums
+ * Uses index and type in metadata map stored in datum document to populate current document into datums.
  */
 public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, Serializable {
 
-    private final static String STREAMS_ID = "DatumFromMetadataProcessor";
+  private static final String STREAMS_ID = "DatumFromMetadataProcessor";
 
-    private ElasticsearchClientManager elasticsearchClientManager;
-    private ElasticsearchReaderConfiguration config;
+  private ElasticsearchClientManager elasticsearchClientManager;
+  private ElasticsearchReaderConfiguration config;
 
-    private ObjectMapper mapper;
+  private ObjectMapper mapper;
 
-    public DatumFromMetadataAsDocumentProcessor() {
-        this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
-          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch"));
+  public DatumFromMetadataAsDocumentProcessor() {
+    this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
+        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch"));
+  }
+
+  public DatumFromMetadataAsDocumentProcessor(Config config) {
+    this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
+        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch"));
+  }
+
+  public DatumFromMetadataAsDocumentProcessor(ElasticsearchReaderConfiguration config) {
+    this.config = config;
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+    List<StreamsDatum> result = new ArrayList<>();
+
+    ObjectNode metadataObjectNode;
+    try {
+      metadataObjectNode = mapper.readValue((String) entry.getDocument(), ObjectNode.class);
+    } catch (IOException ex) {
+      return result;
     }
 
-    public DatumFromMetadataAsDocumentProcessor(Config config) {
-        this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
-          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch"));
+    Map<String, Object> metadata = ElasticsearchMetadataUtil.asMap(metadataObjectNode);
+
+    if (entry.getMetadata() == null) {
+      return result;
     }
 
-    public DatumFromMetadataAsDocumentProcessor(ElasticsearchReaderConfiguration config) {
-        this.config = config;
+    String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
+    String type = ElasticsearchMetadataUtil.getType(metadata, config);
+    String id = ElasticsearchMetadataUtil.getId(metadata);
+
+    GetRequestBuilder getRequestBuilder = elasticsearchClientManager.getClient().prepareGet(index, type, id);
+    getRequestBuilder.setFields("*", "_timestamp");
+    getRequestBuilder.setFetchSource(true);
+    GetResponse getResponse = getRequestBuilder.get();
+
+    if ( getResponse == null || !getResponse.isExists() || getResponse.isSourceEmpty()) {
+      return result;
     }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
+    entry.setDocument(getResponse.getSource());
+    if ( getResponse.getField("_timestamp") != null) {
+      DateTime timestamp = new DateTime(((Long) getResponse.getField("_timestamp").getValue()).longValue());
+      entry.setTimestamp(timestamp);
     }
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        List<StreamsDatum> result = new ArrayList<>();
+    result.add(entry);
 
-        ObjectNode metadataObjectNode;
-        try {
-            metadataObjectNode = mapper.readValue((String) entry.getDocument(), ObjectNode.class);
-        } catch (IOException e) {
-            return result;
-        }
+    return result;
+  }
 
-        Map<String, Object> metadata = ElasticsearchMetadataUtil.asMap(metadataObjectNode);
+  @Override
+  public void prepare(Object configurationObject) {
+    this.elasticsearchClientManager = new ElasticsearchClientManager(config);
+    mapper = StreamsJacksonMapper.getInstance();
+    mapper.registerModule(new JsonOrgModule());
+  }
 
-        if(entry.getMetadata() == null)
-            return result;
-
-        String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
-        String type = ElasticsearchMetadataUtil.getType(metadata, config);
-        String id = ElasticsearchMetadataUtil.getId(metadata);
-
-        GetRequestBuilder getRequestBuilder = elasticsearchClientManager.getClient().prepareGet(index, type, id);
-        getRequestBuilder.setFields("*", "_timestamp");
-        getRequestBuilder.setFetchSource(true);
-        GetResponse getResponse = getRequestBuilder.get();
-
-        if( getResponse == null || !getResponse.isExists() || getResponse.isSourceEmpty())
-            return result;
-
-        entry.setDocument(getResponse.getSource());
-        if( getResponse.getField("_timestamp") != null) {
-            DateTime timestamp = new DateTime(((Long) getResponse.getField("_timestamp").getValue()).longValue());
-            entry.setTimestamp(timestamp);
-        }
-
-        result.add(entry);
-
-        return result;
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-        this.elasticsearchClientManager = new ElasticsearchClientManager(config);
-        mapper = StreamsJacksonMapper.getInstance();
-        mapper.registerModule(new JsonOrgModule());
-    }
-
-    @Override
-    public void cleanUp() {
-        this.elasticsearchClientManager.getClient().close();
-    }
+  @Override
+  public void cleanUp() {
+    this.elasticsearchClientManager.getClient().close();
+  }
 
 }

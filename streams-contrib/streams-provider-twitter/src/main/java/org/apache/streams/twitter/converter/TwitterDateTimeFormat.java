@@ -20,12 +20,15 @@ package org.apache.streams.twitter.converter;
 
 import org.apache.streams.jackson.StreamsDateTimeFormat;
 
+/**
+ * TwitterDateTimeFormat.
+ */
 public class TwitterDateTimeFormat implements StreamsDateTimeFormat {
 
-    public static final String TWITTER_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
+  public static final String TWITTER_FORMAT = "EEE MMM dd HH:mm:ss Z yyyy";
 
-    @Override
-    public String getFormat() {
-        return TWITTER_FORMAT;
-    }
+  @Override
+  public String getFormat() {
+    return TWITTER_FORMAT;
+  }
 }

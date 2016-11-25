@@ -16,13 +16,16 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 */
+
 package org.apache.streams.converter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,65 +35,68 @@ import java.util.List;
 /**
  * TypeConverterProcessor converts between String json and jackson-compatible POJO objects.
  *
+ * <p/>
  * Activity is one supported jackson-compatible POJO, so JSON String and objects with structual similarities
  *   to Activity can be converted to Activity objects.
  *
+ * <p/>
  * However, conversion to Activity should probably use {@link org.apache.streams.converter.ActivityConverterProcessor}
  *
  */
 public class TypeConverterProcessor implements StreamsProcessor, Serializable {
 
-    public static final String STREAMS_ID = "TypeConverterProcessor";
+  public static final String STREAMS_ID = "TypeConverterProcessor";
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TypeConverterProcessor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TypeConverterProcessor.class);
 
-    private List<String> formats = Lists.newArrayList();
+  private List<String> formats = Lists.newArrayList();
 
-    protected ObjectMapper mapper;
+  protected ObjectMapper mapper;
 
-    protected Class outClass;
+  protected Class outClass;
 
-    public TypeConverterProcessor(Class outClass) {
-        this.outClass = outClass;
+  public TypeConverterProcessor(Class outClass) {
+    this.outClass = outClass;
+  }
+
+  public TypeConverterProcessor(Class outClass, List<String> formats) {
+    this(outClass);
+    this.formats = formats;
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+
+    List<StreamsDatum> result = Lists.newLinkedList();
+    Object inDoc = entry.getDocument();
+
+    Object outDoc = TypeConverterUtil.getInstance().convert(inDoc, outClass, mapper);
+
+    if ( outDoc != null ) {
+      entry.setDocument(outDoc);
+      result.add(entry);
     }
 
-    public TypeConverterProcessor(Class outClass, List<String> formats) {
-        this(outClass);
-        this.formats = formats;
+    return result;
+  }
+
+  @Override
+  public void prepare(Object configurationObject) {
+    if ( formats.size() > 0 ) {
+      this.mapper = StreamsJacksonMapper.getInstance(formats);
+    } else {
+      this.mapper = StreamsJacksonMapper.getInstance();
     }
+  }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+  @Override
+  public void cleanUp() {
+    this.mapper = null;
+  }
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-
-        List<StreamsDatum> result = Lists.newLinkedList();
-        Object inDoc = entry.getDocument();
-
-        Object outDoc = TypeConverterUtil.getInstance().convert(inDoc, outClass, mapper);
-
-        if( outDoc != null ) {
-            entry.setDocument(outDoc);
-            result.add(entry);
-        }
-
-        return result;
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-        if( formats.size() > 0 )
-            this.mapper = StreamsJacksonMapper.getInstance(formats);
-        else
-            this.mapper = StreamsJacksonMapper.getInstance();
-    }
-
-    @Override
-    public void cleanUp() {
-        this.mapper = null;
-    }
-
-};
+}

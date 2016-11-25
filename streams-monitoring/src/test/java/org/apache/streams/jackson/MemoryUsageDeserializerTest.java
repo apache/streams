@@ -15,13 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.jackson;
+
+import org.apache.streams.pojo.json.MemoryUsageBroadcast;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.streams.pojo.json.MemoryUsageBroadcast;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -35,43 +37,46 @@ import static org.junit.Assert.assertNotNull;
 
 public class MemoryUsageDeserializerTest {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(MemoryUsageDeserializerTest.class);
-    private ObjectMapper objectMapper;
+  private static final Logger LOGGER = LoggerFactory.getLogger(MemoryUsageDeserializerTest.class);
+  private ObjectMapper objectMapper;
 
-    @Before
-    public void setup() {
-        objectMapper = StreamsJacksonMapper.getInstance();
-        SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addDeserializer(MemoryUsageBroadcast.class, new MemoryUsageDeserializer());
-        objectMapper.registerModule(simpleModule);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
+  /**
+   * setup.
+   */
+  @Before
+  public void setup() {
+    objectMapper = StreamsJacksonMapper.getInstance();
+    SimpleModule simpleModule = new SimpleModule();
+    simpleModule.addDeserializer(MemoryUsageBroadcast.class, new MemoryUsageDeserializer());
+    objectMapper.registerModule(simpleModule);
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+  }
 
-    @Test
-    public void serDeTest() {
-        InputStream is = MemoryUsageDeserializerTest.class.getResourceAsStream("/MemoryUsageObjects.json");
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
+  @Test
+  public void serDeTest() {
+    InputStream is = MemoryUsageDeserializerTest.class.getResourceAsStream("/MemoryUsageObjects.json");
+    InputStreamReader isr = new InputStreamReader(is);
+    BufferedReader br = new BufferedReader(isr);
 
-        try {
-            while (br.ready()) {
-                String line = br.readLine();
-                if (!StringUtils.isEmpty(line)) {
-                    LOGGER.info("raw: {}", line);
-                    MemoryUsageBroadcast broadcast = objectMapper.readValue(line, MemoryUsageBroadcast.class);
+    try {
+      while (br.ready()) {
+        String line = br.readLine();
+        if (!StringUtils.isEmpty(line)) {
+          LOGGER.info("raw: {}", line);
+          MemoryUsageBroadcast broadcast = objectMapper.readValue(line, MemoryUsageBroadcast.class);
 
-                    LOGGER.info("activity: {}", broadcast);
+          LOGGER.info("activity: {}", broadcast);
 
-                    assertNotNull(broadcast);
-                    assertNotNull(broadcast.getVerbose());
-                    assertNotNull(broadcast.getObjectPendingFinalizationCount());
-                    assertNotNull(broadcast.getHeapMemoryUsage());
-                    assertNotNull(broadcast.getNonHeapMemoryUsage());
-                    assertNotNull(broadcast.getName());
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("Exception while testing serializability: {}", e);
+          assertNotNull(broadcast);
+          assertNotNull(broadcast.getVerbose());
+          assertNotNull(broadcast.getObjectPendingFinalizationCount());
+          assertNotNull(broadcast.getHeapMemoryUsage());
+          assertNotNull(broadcast.getNonHeapMemoryUsage());
+          assertNotNull(broadcast.getName());
         }
+      }
+    } catch (Exception ex) {
+      LOGGER.error("Exception while testing serializability: {}", ex);
     }
+  }
 }

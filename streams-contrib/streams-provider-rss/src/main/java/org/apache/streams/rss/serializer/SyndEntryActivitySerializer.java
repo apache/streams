@@ -18,11 +18,6 @@
 
 package org.apache.streams.rss.serializer;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.data.util.RFC3339Utils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -30,6 +25,12 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Author;
 import org.apache.streams.pojo.json.Provider;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
@@ -40,194 +41,200 @@ import java.util.List;
 
 public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNode> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SyndEntryActivitySerializer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SyndEntryActivitySerializer.class);
 
-    private boolean includeRomeExtension;
+  private boolean includeRomeExtension;
 
-    public SyndEntryActivitySerializer() {
-        this(true);
+  public SyndEntryActivitySerializer() {
+    this(true);
+  }
+
+  public SyndEntryActivitySerializer(boolean includeRomeExtension) {
+    this.includeRomeExtension = includeRomeExtension;
+  }
+
+  @Override
+  public List<Activity> deserializeAll(List<ObjectNode> objectNodes) {
+    List<Activity> result = new LinkedList<>();
+    for (ObjectNode node : objectNodes) {
+      result.add(deserialize(node));
+    }
+    return result;
+  }
+
+  @Override
+  public String serializationFormat() {
+    return "application/streams-provider-rss";
+  }
+
+  @Override
+  public ObjectNode serialize(Activity deserialized) {
+    throw new UnsupportedOperationException("Cannot currently serialize to Rome");
+  }
+
+  @Override
+  public Activity deserialize(ObjectNode syndEntry) {
+    return deserializeWithRomeExtension(syndEntry, this.includeRomeExtension);
+  }
+
+  /**
+   * deserializeWithRomeExtension ObjectNode entry withExtension.
+   * @param entry ObjectNode
+   * @param withExtension whether to add Rome Extension
+   * @return Activity
+   */
+  public Activity deserializeWithRomeExtension(ObjectNode entry, boolean withExtension) {
+    Preconditions.checkNotNull(entry);
+
+    Activity activity = new Activity();
+    Provider provider = buildProvider(entry);
+    ActivityObject actor = buildActor(entry);
+    ActivityObject activityObject = buildActivityObject(entry);
+
+    activityObject.setUrl(provider.getUrl());
+    activityObject.setAuthor(actor.getAuthor());
+
+    activity.setUrl(provider.getUrl());
+    activity.setProvider(provider);
+    activity.setActor(actor);
+    activity.setVerb("post");
+    activity.setId("id:rss:post:" + activity.getUrl());
+
+    JsonNode published = entry.get("publishedDate");
+    if (published != null) {
+      try {
+        activity.setPublished(RFC3339Utils.parseToUTC(published.textValue()));
+      } catch (Exception ex) {
+        LOGGER.warn("Failed to parse date : {}", published.textValue());
+
+        DateTime now = DateTime.now().withZone(DateTimeZone.UTC);
+        activity.setPublished(now);
+      }
     }
 
-    public SyndEntryActivitySerializer(boolean includeRomeExtension) {
-        this.includeRomeExtension = includeRomeExtension;
+    activity.setUpdated(activityObject.getUpdated());
+    activity.setObject(activityObject);
+
+    if (withExtension) {
+      activity = addRomeExtension(activity, entry);
     }
 
+    return activity;
+  }
 
-    @Override
-    public List<Activity> deserializeAll(List<ObjectNode> objectNodes) {
-        List<Activity> result = new LinkedList<>();
-        for (ObjectNode node : objectNodes) {
-            result.add(deserialize(node));
-        }
-        return result;
+  /**
+   * Given an RSS entry, extra out the author and actor information and return it
+   * in an actor object
+   *
+   * @param entry entry
+   * @return $.actor
+   */
+  private ActivityObject buildActor(ObjectNode entry) {
+    ActivityObject actor = new ActivityObject();
+    Author author = new Author();
+
+    if (entry.get("author") != null) {
+      author.setId(entry.get("author").textValue());
+      author.setDisplayName(entry.get("author").textValue());
+
+      actor.setAuthor(author);
+      String uriToSet = entry.get("rssFeed") != null ? entry.get("rssFeed").asText() : null;
+
+      actor.setId("id:rss:" + uriToSet + ":" + author.getId());
+      actor.setDisplayName(author.getDisplayName());
     }
 
-    @Override
-    public String serializationFormat() {
-        return "application/streams-provider-rss";
+    return actor;
+  }
+
+  /**
+   * Given an RSS object, build the ActivityObject.
+   *
+   * @param entry ObjectNode
+   * @return $.object
+   */
+  private ActivityObject buildActivityObject(ObjectNode entry) {
+    ActivityObject activityObject = new ActivityObject();
+
+    JsonNode summary = entry.get("description");
+    if (summary != null) {
+      activityObject.setSummary(summary.textValue());
+    } else if ((summary = entry.get("title")) != null) {
+      activityObject.setSummary(summary.textValue());
     }
 
-    @Override
-    public ObjectNode serialize(Activity deserialized) {
-        throw new UnsupportedOperationException("Cannot currently serialize to Rome");
+    return activityObject;
+  }
+
+  /**
+   * Given an RSS object, build and return the Provider object.
+   *
+   * @param entry ObjectNode
+   * @return $.provider
+   */
+  private Provider buildProvider(ObjectNode entry) {
+    Provider provider = new Provider();
+
+    String link = null;
+    String uri = null;
+    String resourceLocation = null;
+
+    if (entry.get("link") != null) {
+      link = entry.get("link").textValue();
     }
-
-    @Override
-    public Activity deserialize(ObjectNode syndEntry) {
-        return deserializeWithRomeExtension(syndEntry, this.includeRomeExtension);
+    if (entry.get("uri") != null) {
+      uri = entry.get("uri").textValue();
     }
-
-    public Activity deserializeWithRomeExtension(ObjectNode entry, boolean withExtension) {
-        Preconditions.checkNotNull(entry);
-
-        Activity activity = new Activity();
-        Provider provider = buildProvider(entry);
-        ActivityObject actor = buildActor(entry);
-        ActivityObject activityObject = buildActivityObject(entry);
-
-        activityObject.setUrl(provider.getUrl());
-        activityObject.setAuthor(actor.getAuthor());
-
-        activity.setUrl(provider.getUrl());
-        activity.setProvider(provider);
-        activity.setActor(actor);
-        activity.setVerb("post");
-        activity.setId("id:rss:post:" + activity.getUrl());
-
-        JsonNode published = entry.get("publishedDate");
-        if (published != null) {
-            try {
-                activity.setPublished(RFC3339Utils.parseToUTC(published.textValue()));
-            } catch (Exception e) {
-                LOGGER.warn("Failed to parse date : {}", published.textValue());
-
-                DateTime now = DateTime.now().withZone(DateTimeZone.UTC);
-                activity.setPublished(now);
-            }
-        }
-
-        activity.setUpdated(activityObject.getUpdated());
-        activity.setObject(activityObject);
-
-        if (withExtension) {
-            activity = addRomeExtension(activity, entry);
-        }
-
-        return activity;
-    }
-
-    /**
-     * Given an RSS entry, extra out the author and actor information and return it
-     * in an actor object
+    /*
+     * Order of precedence for resourceLocation selection
      *
-     * @param entry
-     * @return
+     * 1. Valid URI
+     * 2. Valid Link
+     * 3. Non-null URI
+     * 4. Non-null Link
      */
-    private ActivityObject buildActor(ObjectNode entry) {
-        ActivityObject actor = new ActivityObject();
-        Author author = new Author();
-
-        if (entry.get("author") != null) {
-            author.setId(entry.get("author").textValue());
-            author.setDisplayName(entry.get("author").textValue());
-
-            actor.setAuthor(author);
-            String uriToSet = entry.get("rssFeed") != null ? entry.get("rssFeed").asText() : null;
-
-            actor.setId("id:rss:" + uriToSet + ":" + author.getId());
-            actor.setDisplayName(author.getDisplayName());
-        }
-
-        return actor;
+    if (isValidResource(uri)) {
+      resourceLocation = uri;
+    } else if (isValidResource(link)) {
+      resourceLocation = link;
+    } else if (uri != null || link != null) {
+      resourceLocation = (uri != null) ? uri : link;
     }
 
-    /**
-     * Given an RSS object, build the ActivityObject
-     *
-     * @param entry
-     * @return
-     */
-    private ActivityObject buildActivityObject(ObjectNode entry) {
-        ActivityObject activityObject = new ActivityObject();
+    provider.setId("id:providers:rss");
+    provider.setUrl(resourceLocation);
+    provider.setDisplayName("RSS");
 
-        JsonNode summary = entry.get("description");
-        if (summary != null)
-            activityObject.setSummary(summary.textValue());
-        else if((summary = entry.get("title")) != null) {
-            activityObject.setSummary(summary.textValue());
-        }
+    return provider;
+  }
 
-        return activityObject;
-    }
+  /**
+   * Tests whether or not the passed in resource is a valid URI.
+   * @param resource resource
+   * @return boolean of whether or not the resource is valid
+   */
+  private boolean isValidResource(String resource) {
+    return resource != null && (resource.startsWith("http") || resource.startsWith("www"));
+  }
 
-    /**
-     * Given an RSS object, build and return the Provider object
-     *
-     * @param entry
-     * @return
-     */
-    private Provider buildProvider(ObjectNode entry) {
-        Provider provider = new Provider();
+  /**
+   * Given an RSS object and an existing activity,
+   * add the Rome extension to that activity and return it.
+   *
+   * @param activity Activity
+   * @param entry ObjectNode
+   * @return Activity
+   */
+  private Activity addRomeExtension(Activity activity, ObjectNode entry) {
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    ObjectNode activityRoot = mapper.convertValue(activity, ObjectNode.class);
+    ObjectNode extensions = JsonNodeFactory.instance.objectNode();
 
-        String link = null;
-        String uri = null;
-        String resourceLocation = null;
+    extensions.put("rome", entry);
+    activityRoot.put("extensions", extensions);
 
-        if (entry.get("link") != null)
-            link = entry.get("link").textValue();
-        if (entry.get("uri") != null)
-            uri = entry.get("uri").textValue();
+    activity = mapper.convertValue(activityRoot, Activity.class);
 
-        /*
-         * Order of precedence for resourceLocation selection
-         *
-         * 1. Valid URI
-         * 2. Valid Link
-         * 3. Non-null URI
-         * 4. Non-null Link
-         */
-        if(isValidResource(uri))
-            resourceLocation = uri;
-        else if(isValidResource(link))
-            resourceLocation = link;
-        else if(uri != null || link != null) {
-            resourceLocation = (uri != null) ? uri : link;
-        }
-
-        provider.setId("id:providers:rss");
-        provider.setUrl(resourceLocation);
-        provider.setDisplayName("RSS");
-
-        return provider;
-    }
-
-    /**
-     * Tests whether or not the passed in resource is a valid URI
-     * @param resource
-     * @return boolean of whether or not the resource is valid
-     */
-    private boolean isValidResource(String resource) {
-        return resource != null && (resource.startsWith("http") || resource.startsWith("www"));
-    }
-
-    /**
-     * Given an RSS object and an existing activity,
-     * add the Rome extension to that activity and return it
-     *
-     * @param activity
-     * @param entry
-     * @return
-     */
-    private Activity addRomeExtension(Activity activity, ObjectNode entry) {
-        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
-        ObjectNode activityRoot = mapper.convertValue(activity, ObjectNode.class);
-        ObjectNode extensions = JsonNodeFactory.instance.objectNode();
-
-        extensions.put("rome", entry);
-        activityRoot.put("extensions", extensions);
-
-        activity = mapper.convertValue(activityRoot, Activity.class);
-
-        return activity;
-    }
+    return activity;
+  }
 }

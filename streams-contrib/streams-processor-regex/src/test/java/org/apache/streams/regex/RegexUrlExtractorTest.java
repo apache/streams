@@ -19,7 +19,6 @@
 
 package org.apache.streams.regex;
 
-
 import com.google.common.collect.Sets;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.pojo.json.Activity;

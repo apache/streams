@@ -33,103 +33,106 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Tests that activities matching core-ex* can be parsed by apache streams.
+ */
 public class ExamplesSerDeIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ExamplesSerDeIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ExamplesSerDeIT.class);
 
-    private final static ObjectMapper MAPPER = new ObjectMapper();
+  private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    /**
-     * Tests that activities matching core-ex* can be parsed by apache streams
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testCoreSerDe() throws Exception {
+  /**
+   * Tests that activities matching core-ex* can be parsed by apache streams.
+   *
+   * @throws Exception test exception
+   */
+  @Test
+  public void testCoreSerDe() throws Exception {
 
-        InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
-                .getResourceAsStream("w3c/activitystreams-master/test");
-        List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
+        .getResourceAsStream("w3c/activitystreams-master/test");
+    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
 
-        for (String file : files) {
-            if( !file.startsWith(".") && file.contains("core-ex") ) {
-                LOGGER.info("File: activitystreams-master/test/" + file);
-                String testFileString = new String(Files.readAllBytes(Paths.get("target/test-classes/w3c/activitystreams-master/test/" + file)));
-                LOGGER.info("Content: " + testFileString);
-                ObjectNode testFileObjectNode = MAPPER.readValue(testFileString, ObjectNode.class);
-                LOGGER.info("Object:" + testFileObjectNode);
-            }
-        }
+    for (String file : files) {
+      if ( !file.startsWith(".") && file.contains("core-ex") ) {
+        LOGGER.info("File: activitystreams-master/test/" + file);
+        String testFileString = new String(Files.readAllBytes(Paths.get("target/test-classes/w3c/activitystreams-master/test/" + file)));
+        LOGGER.info("Content: " + testFileString);
+        ObjectNode testFileObjectNode = MAPPER.readValue(testFileString, ObjectNode.class);
+        LOGGER.info("Object:" + testFileObjectNode);
+      }
     }
+  }
 
-    /**
-     * Tests that activities matching simple* can be parsed by apache streams
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testSimpleSerDe() throws Exception {
+  /**
+   * Tests that activities matching simple* can be parsed by apache streams.
+   *
+   * @throws Exception test exception
+   */
+  @Test
+  public void testSimpleSerDe() throws Exception {
 
-        InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
-                .getResourceAsStream("w3c/activitystreams-master/test");
-        List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
+        .getResourceAsStream("w3c/activitystreams-master/test");
+    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
 
-        for (String file : files) {
-            if( !file.startsWith(".") && file.contains("simple") ) {
-                LOGGER.info("File: activitystreams-master/test/" + file);
-                String testFileString = new String(Files.readAllBytes(Paths.get("target/test-classes/w3c/activitystreams-master/test/" + file)));
-                LOGGER.info("Content: " + testFileString);
-                ObjectNode testFileObjectNode = MAPPER.readValue(testFileString, ObjectNode.class);
-                LOGGER.info("Object:" + testFileObjectNode);
-            }
-        }
+    for (String file : files) {
+      if ( !file.startsWith(".") && file.contains("simple") ) {
+        LOGGER.info("File: activitystreams-master/test/" + file);
+        String testFileString = new String(Files.readAllBytes(Paths.get("target/test-classes/w3c/activitystreams-master/test/" + file)));
+        LOGGER.info("Content: " + testFileString);
+        ObjectNode testFileObjectNode = MAPPER.readValue(testFileString, ObjectNode.class);
+        LOGGER.info("Object:" + testFileObjectNode);
+      }
     }
+  }
 
-    /**
-     * Tests that activities matching vocabulary-ex* can be parsed by apache streams
-     *
-     * @throws Exception
-     */
-    @Ignore
-    @Test
-    public void testVocabularySerDe() throws Exception {
+  /**
+   * Tests that activities matching vocabulary-ex* can be parsed by apache streams.
+   *
+   * @throws Exception test exception
+   */
+  @Ignore
+  @Test
+  public void testVocabularySerDe() throws Exception {
 
-        InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
-                .getResourceAsStream("w3c/activitystreams-master/test");
-        List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
+        .getResourceAsStream("w3c/activitystreams-master/test");
+    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
 
-        for (String file : files) {
-            if( !file.startsWith(".") && file.contains("vocabulary-ex") ) {
-                LOGGER.info("File: activitystreams-master/test/" + file);
-                String testFileString = new String(Files.readAllBytes(Paths.get("target/test-classes/w3c/activitystreams-master/test/" + file)));
-                LOGGER.info("Content: " + testFileString);
-                ObjectNode testFileObjectNode = MAPPER.readValue(testFileString, ObjectNode.class);
-                LOGGER.info("Object:" + testFileObjectNode);
-            }
-        }
+    for (String file : files) {
+      if ( !file.startsWith(".") && file.contains("vocabulary-ex") ) {
+        LOGGER.info("File: activitystreams-master/test/" + file);
+        String testFileString = new String(Files.readAllBytes(Paths.get("target/test-classes/w3c/activitystreams-master/test/" + file)));
+        LOGGER.info("Content: " + testFileString);
+        ObjectNode testFileObjectNode = MAPPER.readValue(testFileString, ObjectNode.class);
+        LOGGER.info("Object:" + testFileObjectNode);
+      }
     }
+  }
 
-    /**
-     * Tests that activities expect to fail cannot be parsed by apache streams
-     *
-     * @throws Exception
-     */
-    @Ignore
-    @Test
-    public void testFailSerDe() throws Exception {
+  /**
+   * Tests that activities expect to fail cannot be parsed by apache streams.
+   *
+   * @throws Exception test exception
+   */
+  @Ignore
+  @Test
+  public void testFailSerDe() throws Exception {
 
-        InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
-                .getResourceAsStream("w3c/activitystreams-master/test/fail");
-        List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
+        .getResourceAsStream("w3c/activitystreams-master/test/fail");
+    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
 
-        for (String file : files) {
-            if( !file.startsWith(".") && file.contains("vocabulary-ex") ) {
-                LOGGER.info("File: activitystreams-master/test/fail/" + file);
-                String testFileString = new String(Files.readAllBytes(Paths.get("target/test-classes/w3c/activitystreams-master/test/" + file)));
-                LOGGER.info("Content: " + testFileString);
-                ObjectNode testFileObjectNode = MAPPER.readValue(testFileString, ObjectNode.class);
-                LOGGER.info("Object:" + testFileObjectNode);
-            }
-        }
+    for (String file : files) {
+      if ( !file.startsWith(".") && file.contains("vocabulary-ex") ) {
+        LOGGER.info("File: activitystreams-master/test/fail/" + file);
+        String testFileString = new String(Files.readAllBytes(Paths.get("target/test-classes/w3c/activitystreams-master/test/" + file)));
+        LOGGER.info("Content: " + testFileString);
+        ObjectNode testFileObjectNode = MAPPER.readValue(testFileString, ObjectNode.class);
+        LOGGER.info("Object:" + testFileObjectNode);
+      }
     }
+  }
 }

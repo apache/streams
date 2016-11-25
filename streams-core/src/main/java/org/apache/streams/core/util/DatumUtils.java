@@ -21,39 +21,40 @@ package org.apache.streams.core.util;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsOperation;
+
 import org.joda.time.DateTime;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Provides common utilities for managing and manipulating StreamsDatums
+ * Provides common utilities for managing and manipulating StreamsDatums.
  */
 public class DatumUtils {
 
-    /**
-     * Adds an error occurred during a StreamsOperation step to the StreamsDatum's metadata.  By convention, errors are
-     * placed in the metadata under the "errors" and are organized by class simple name where the failure occurred.
-     *
-     * @param datum the datum on which the operation step errored
-     * @param e the error encountered
-     * @param operationClass the class of the operation
-     */
-    @SuppressWarnings("all")
-    public static void addErrorToMetadata(StreamsDatum datum, Throwable e, Class<? extends StreamsOperation> operationClass) {
-        if(!datum.getMetadata().containsKey("errors")) {
-            datum.getMetadata().put("errors", new HashMap<String, Throwable>());
-        }
-        Map<String, Throwable> errors = (Map)datum.getMetadata().get("errors");
-        errors.put(operationClass.getCanonicalName(), e);
+  /**
+   * Adds an error occurred during a StreamsOperation step to the StreamsDatum's metadata.  By convention, errors are
+   * placed in the metadata under the "errors" and are organized by class simple name where the failure occurred.
+   *
+   * @param datum the datum on which the operation step errored
+   * @param throwable the throwable encountered
+   * @param operationClass the class of the operation
+   */
+  @SuppressWarnings("all")
+  public static void addErrorToMetadata(StreamsDatum datum, Throwable throwable, Class<? extends StreamsOperation> operationClass) {
+    if (!datum.getMetadata().containsKey("errors")) {
+      datum.getMetadata().put("errors", new HashMap<String, Throwable>());
     }
+    Map<String, Throwable> errors = (Map)datum.getMetadata().get("errors");
+    errors.put(operationClass.getCanonicalName(), throwable);
+  }
 
-    public static StreamsDatum cloneDatum(StreamsDatum datum) {
-        StreamsDatum clone = new StreamsDatum(datum.getDocument());
-        clone.setId(datum.getId() == null ? null : datum.getId());
-        clone.setTimestamp(datum.getTimestamp() == null ? null : new DateTime(datum.getTimestamp()));
-        clone.setSequenceid(datum.getSequenceid() == null ? null : datum.getSequenceid());
-        clone.setMetadata(datum.getMetadata() == null ? null : new HashMap<>(datum.getMetadata()));
-        return clone;
-    }
+  public static StreamsDatum cloneDatum(StreamsDatum datum) {
+    StreamsDatum clone = new StreamsDatum(datum.getDocument());
+    clone.setId(datum.getId() == null ? null : datum.getId());
+    clone.setTimestamp(datum.getTimestamp() == null ? null : new DateTime(datum.getTimestamp()));
+    clone.setSequenceid(datum.getSequenceid() == null ? null : datum.getSequenceid());
+    clone.setMetadata(datum.getMetadata() == null ? null : new HashMap<>(datum.getMetadata()));
+    return clone;
+  }
 }

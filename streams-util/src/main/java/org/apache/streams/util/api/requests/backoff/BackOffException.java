@@ -21,43 +21,49 @@ package org.apache.streams.util.api.requests.backoff;
  */
 public class BackOffException extends Exception {
 
-    private int attemptCount;
-    private long sleepTime;
+  private int attemptCount;
+  private long sleepTime;
 
-    public BackOffException() {
-        this(-1, -1);
-    }
+  public BackOffException() {
+    this(-1, -1);
+  }
 
-    public BackOffException(String message) {
-        this(message, -1, -1);
-    }
+  public BackOffException(String message) {
+    this(message, -1, -1);
+  }
 
-    public BackOffException(int attemptCount, long maxSleepTime) {
-        this.attemptCount = attemptCount;
-        this.sleepTime = maxSleepTime;
-    }
+  public BackOffException(int attemptCount, long maxSleepTime) {
+    this.attemptCount = attemptCount;
+    this.sleepTime = maxSleepTime;
+  }
 
-    public BackOffException(String message, int attemptCount, long maxSleepTime) {
-        super(message);
-        this.attemptCount = attemptCount;
-        this.sleepTime = maxSleepTime;
-    }
+  /**
+   * BackOffException constructor.
+   * @param message message
+   * @param attemptCount attemptCount
+   * @param maxSleepTime maxSleepTime (in millis)
+   */
+  public BackOffException(String message, int attemptCount, long maxSleepTime) {
+    super(message);
+    this.attemptCount = attemptCount;
+    this.sleepTime = maxSleepTime;
+  }
 
-    /**
-     * Gets the number of back off attempts that happened before the exception was thrown. If the function that
-     * initialized this exception does not set the number of attempts, -1 will be returned.
-     * @return number of attempts
-     */
-    public int getNumberOfBackOffsAttempted() {
-        return this.attemptCount;
-    }
+  /**
+   * Gets the number of back off attempts that happened before the exception was thrown. If the function that
+   * initialized this exception does not set the number of attempts, -1 will be returned.
+   * @return number of back off attempts
+   */
+  public int getNumberOfBackOffsAttempted() {
+    return this.attemptCount;
+  }
 
-    /**
-     * Gets the longest sleep period that the strategy attempted. If the function that
-     * initialized this exception does not set the longest sleep period, -1 will be returned.
-     * @return
-     */
-    public long getLongestBackOff() {
-        return this.sleepTime;
-    }
+  /**
+   * Gets the longest sleep period that the strategy attempted. If the function that
+   * initialized this exception does not set the longest sleep period, -1 will be returned.
+   * @return longest sleep period that the strategy attempted
+   */
+  public long getLongestBackOff() {
+    return this.sleepTime;
+  }
 }

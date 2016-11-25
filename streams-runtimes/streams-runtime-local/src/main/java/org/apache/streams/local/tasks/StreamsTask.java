@@ -23,8 +23,6 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -33,53 +31,53 @@ import java.util.concurrent.BlockingQueue;
  */
 public interface StreamsTask extends Runnable{
 
-    /**
-     * Informs the task to stop. Tasks may or may not try to empty its inbound queue before halting.
-     */
-    public void stopTask();
+  /**
+   * Informs the task to stop. Tasks may or may not try to empty its inbound queue before halting.
+   */
+  public void stopTask();
 
-    /**
-     * Returns true if the task is waiting on more data to process
-     * @return true, if waiting on more data to process
-     */
-    public boolean isWaiting();
-    /**
-     * Add an input {@link java.util.Queue} for this task.
-     * @param inputQueue
-     */
-    public void addInputQueue(BlockingQueue<StreamsDatum> inputQueue);
+  /**
+   * Returns true if the task is waiting on more data to process
+   * @return true, if waiting on more data to process
+   */
+  public boolean isWaiting();
+  /**
+   * Add an input {@link java.util.Queue} for this task.
+   * @param inputQueue
+   */
+  public void addInputQueue(BlockingQueue<StreamsDatum> inputQueue);
 
-    /**
-     * Add an output {@link java.util.Queue} for this task.
-     * @param outputQueue
-     */
-    public void addOutputQueue(BlockingQueue<StreamsDatum> outputQueue);
+  /**
+   * Add an output {@link java.util.Queue} for this task.
+   * @param outputQueue
+   */
+  public void addOutputQueue(BlockingQueue<StreamsDatum> outputQueue);
 
-    /**
-     * Set the configuration object that will shared and passed to all instances of StreamsTask.
-     * @param config optional configuration information
-     */
-    public void setStreamConfig(StreamsConfiguration config);
+  /**
+   * Set the configuration object that will shared and passed to all instances of StreamsTask.
+   * @param config optional configuration information
+   */
+  public void setStreamConfig(StreamsConfiguration config);
 
-    /**
-     * Returns true when the task has not completed. Returns false otherwise
-     * @return true when the task has not completed. Returns false otherwise
-     */
-    public boolean isRunning();
+  /**
+   * Returns true when the task has not completed. Returns false otherwise
+   * @return true when the task has not completed. Returns false otherwise
+   */
+  public boolean isRunning();
 
-    /**
-     * Returns the input queues that have been set for this task.
-     * @return list of input queues
-     */
-    public List<BlockingQueue<StreamsDatum>> getInputQueues();
+  /**
+   * Returns the input queues that have been set for this task.
+   * @return list of input queues
+   */
+  public List<BlockingQueue<StreamsDatum>> getInputQueues();
 
-    /**
-     * Returns the output queues that have been set for this task
-     * @return list of output queues
-     */
-    public List<BlockingQueue<StreamsDatum>> getOutputQueues();
+  /**
+   * Returns the output queues that have been set for this task
+   * @return list of output queues
+   */
+  public List<BlockingQueue<StreamsDatum>> getOutputQueues();
 
 
-    public void setStreamsTaskCounter(StreamsTaskCounter counter);
+  public void setStreamsTaskCounter(StreamsTaskCounter counter);
 
 }

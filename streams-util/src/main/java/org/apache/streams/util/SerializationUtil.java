@@ -20,7 +20,11 @@ package org.apache.streams.util;
 
 import org.apache.commons.io.input.ClassLoaderObjectInputStream;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * SerializationUtil contains methods for serializing, deserializing, and cloning
@@ -28,47 +32,62 @@ import java.io.*;
  */
 public class SerializationUtil {
 
-    /**
-     * BORROwED FROM APACHE STORM PROJECT
-     * @param obj
-     * @return
-     */
-    public static byte[] serialize(Object obj) {
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            oos.writeObject(obj);
-            oos.close();
-            return bos.toByteArray();
-        } catch(IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
+  /**
+   * serialize Object as byte array.
+   *
+   * <p/>
+   * BORROwED FROM APACHE STORM PROJECT
+   *
+   * @param obj Object
+   * @return byte[]
+   */
+  public static byte[] serialize(Object obj) {
+    try {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(bos);
+      oos.writeObject(obj);
+      oos.close();
+      return bos.toByteArray();
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
     }
+  }
 
-    /**
-     * BORROwED FROM APACHE STORM PROJECT
-     * @param serialized
-     * @return
-     */
-    public static Object deserialize(byte[] serialized) {
-        try {
-            ByteArrayInputStream bis = new ByteArrayInputStream(serialized);
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            ObjectInputStream ois = new ClassLoaderObjectInputStream(classLoader, bis);
-            Object ret = ois.readObject();
-            ois.close();
-            return ret;
-        } catch(IOException ioe) {
-            throw new RuntimeException(ioe);
-        } catch(ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+  /**
+   * deserialize byte array as Object.
+   *
+   * <p/>
+   * BORROwED FROM APACHE STORM PROJECT
+   *
+   * @param serialized byte[]
+   * @return Object
+   */
+  public static Object deserialize(byte[] serialized) {
+    try {
+      ByteArrayInputStream bis = new ByteArrayInputStream(serialized);
+      ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+      ObjectInputStream ois = new ClassLoaderObjectInputStream(classLoader, bis);
+      Object ret = ois.readObject();
+      ois.close();
+      return ret;
+    } catch (IOException ioe) {
+      throw new RuntimeException(ioe);
+    } catch (ClassNotFoundException ex) {
+      throw new RuntimeException(ex);
     }
+  }
 
-
-    public static <T> T cloneBySerialization(T obj) {
-        if( obj != null )
-            return (T) deserialize(serialize(obj));
-        else return null;
+  /**
+   * clone Object by serialization.
+   * @param obj Object
+   * @param <T> type
+   * @return cloned Object
+   */
+  public static <T> T cloneBySerialization(T obj) {
+    if ( obj != null ) {
+      return (T) deserialize(serialize(obj));
+    } else {
+      return null;
     }
+  }
 }

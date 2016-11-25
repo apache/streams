@@ -27,48 +27,67 @@ import com.google.common.collect.Ordering;
  */
 public class ObjectCombinationGenericOrdering extends Ordering<ObjectCombination> {
 
-    public ObjectCombinationGenericOrdering() {}
+  public ObjectCombinationGenericOrdering() {}
 
-    @Override
-    public int compare(ObjectCombination left, ObjectCombination right) {
-        if( wildcardCount(left) < wildcardCount(right))
-            return -1;
-        if( wildcardCount(left) > wildcardCount(right))
-            return 1;
-        if( !wildcard(left.getActor()) && wildcard(right.getActor()))
-            return -1;
-        if( wildcard(left.getActor()) && !wildcard(right.getActor()))
-            return 1;
-        if( !wildcard(left.getObject()) && wildcard(right.getObject()))
-            return -1;
-        if( wildcard(left.getObject()) && !wildcard(right.getObject()))
-            return 1;
-        if( !wildcard(left.getTarget()) && wildcard(right.getTarget()))
-            return -1;
-        if( wildcard(left.getTarget()) && !wildcard(right.getTarget()))
-            return 1;
-        if( !wildcard(left.getProvider()) && wildcard(right.getProvider()))
-            return -1;
-        if( wildcard(left.getProvider()) && !wildcard(right.getProvider()))
-            return 1;
-        return 0;
+  @Override
+  public int compare(ObjectCombination left, ObjectCombination right) {
+    if ( wildcardCount(left) < wildcardCount(right)) {
+      return -1;
+    } else if ( wildcardCount(left) > wildcardCount(right)) {
+      return 1;
+    } else if ( !wildcard(left.getActor()) && wildcard(right.getActor())) {
+      return -1;
+    } else if ( wildcard(left.getActor()) && !wildcard(right.getActor())) {
+      return 1;
+    } else if ( !wildcard(left.getObject()) && wildcard(right.getObject())) {
+      return -1;
+    } else if ( wildcard(left.getObject()) && !wildcard(right.getObject())) {
+      return 1;
+    } else if ( !wildcard(left.getTarget()) && wildcard(right.getTarget())) {
+      return -1;
+    } else if ( wildcard(left.getTarget()) && !wildcard(right.getTarget())) {
+      return 1;
+    } else if ( !wildcard(left.getProvider()) && wildcard(right.getProvider())) {
+      return -1;
+    } else if ( wildcard(left.getProvider()) && !wildcard(right.getProvider())) {
+      return 1;
+    } else {
+      return 0;
     }
+  }
 
-    public int wildcardCount(ObjectCombination objectCombination) {
-        int wildcardCount = 0;
-        if( wildcard(objectCombination.getActor()))
-            wildcardCount++;
-        if( wildcard(objectCombination.getObject()))
-            wildcardCount++;
-        if( wildcard(objectCombination.getTarget()))
-            wildcardCount++;
-        if( wildcard(objectCombination.getProvider()))
-            wildcardCount++;
-        return wildcardCount;
+  /**
+   * count wildcards in this ObjectCombination.
+   * @param objectCombination ObjectCombination
+   * @return count
+   */
+  public int wildcardCount(ObjectCombination objectCombination) {
+    int wildcardCount = 0;
+    if ( wildcard(objectCombination.getActor())) {
+      wildcardCount++;
     }
+    if ( wildcard(objectCombination.getObject())) {
+      wildcardCount++;
+    }
+    if ( wildcard(objectCombination.getTarget())) {
+      wildcardCount++;
+    }
+    if ( wildcard(objectCombination.getProvider())) {
+      wildcardCount++;
+    }
+    return wildcardCount;
+  }
 
-    public boolean wildcard(String pattern) {
-        if( pattern.equals("*")) return true;
-        else return false;
+  /**
+   * is pattern a wildcard.
+   * @param pattern String
+   * @return true or false
+   */
+  public boolean wildcard(String pattern) {
+    if ( pattern.equals("*")) {
+      return true;
+    } else {
+      return false;
     }
+  }
 }

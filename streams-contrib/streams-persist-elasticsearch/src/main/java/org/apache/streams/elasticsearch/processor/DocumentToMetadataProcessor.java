@@ -18,13 +18,15 @@
 
 package org.apache.streams.elasticsearch.processor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.elasticsearch.ElasticsearchMetadataUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,60 +38,62 @@ import java.util.Map;
 /**
  * Moves a json representation of metadata out of the document to the metadata field.
  *
+ * <p/>
  * This is useful if you have a list of document metadata references in the document field,
  * for example loaded from a file, and need them in the metadata field.
  */
 public class DocumentToMetadataProcessor implements StreamsProcessor, Serializable {
 
-    private final static String STREAMS_ID = "DatumFromMetadataProcessor";
+  private static final String STREAMS_ID = "DatumFromMetadataProcessor";
 
-    private ObjectMapper mapper;
+  private ObjectMapper mapper;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentToMetadataProcessor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentToMetadataProcessor.class);
 
-    public DocumentToMetadataProcessor() {
+  public DocumentToMetadataProcessor() {
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+    List<StreamsDatum> result = new ArrayList<>();
+
+    Object object = entry.getDocument();
+    ObjectNode metadataObjectNode;
+    try {
+      String docAsJson = (object instanceof String) ? object.toString() : mapper.writeValueAsString(object);
+      metadataObjectNode = mapper.readValue(docAsJson, ObjectNode.class);
+    } catch (Throwable ex) {
+      LOGGER.warn("Exception: %s", ex.getMessage());
+      return result;
     }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
+    Map<String, Object> metadata = ElasticsearchMetadataUtil.asMap(metadataObjectNode);
+
+    if ( metadata == null ) {
+      return result;
     }
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        List<StreamsDatum> result = new ArrayList<>();
+    entry.setMetadata(metadata);
 
-        Object object = entry.getDocument();
-        ObjectNode metadataObjectNode;
-        try {
-            String docAsJson = (object instanceof String) ? object.toString() : mapper.writeValueAsString(object);
-            metadataObjectNode = mapper.readValue(docAsJson, ObjectNode.class);
-        } catch (Throwable e) {
-            LOGGER.warn("Exception: %s", e.getMessage());
-            return result;
-        }
+    result.add(entry);
 
-        Map<String, Object> metadata = ElasticsearchMetadataUtil.asMap(metadataObjectNode);
+    return result;
+  }
 
-        if(metadata == null)
-            return result;
+  @Override
+  public void prepare(Object configurationObject) {
+    mapper = StreamsJacksonMapper.getInstance();
+    mapper.registerModule(new JsonOrgModule());
+  }
 
-        entry.setMetadata(metadata);
-
-        result.add(entry);
-
-        return result;
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-        mapper = StreamsJacksonMapper.getInstance();
-        mapper.registerModule(new JsonOrgModule());
-    }
-
-    @Override
-    public void cleanUp() {
-        mapper = null;
-    }
+  @Override
+  public void cleanUp() {
+    mapper = null;
+  }
 
 }

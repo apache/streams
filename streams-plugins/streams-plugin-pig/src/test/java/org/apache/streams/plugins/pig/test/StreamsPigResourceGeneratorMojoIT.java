@@ -36,48 +36,47 @@ import java.util.List;
 import static org.apache.streams.plugins.pig.test.StreamsPigResourceGeneratorTest.pigFilter;
 
 /**
- * Tests that streams-plugin-hive running via maven generates hql resources
+ * Tests that streams-plugin-pig running via maven generates pig resources.
  */
 public class StreamsPigResourceGeneratorMojoIT extends TestCase {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsPigResourceGeneratorMojoIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StreamsPigResourceGeneratorMojoIT.class);
 
-    protected void setUp() throws Exception
-    {
-        // required for mojo lookups to work
-        super.setUp();
-    }
+  protected void setUp() throws Exception {
+    // required for mojo lookups to work
+    super.setUp();
+  }
 
 
-    @Test
-    public void testStreamsPigResourceGeneratorMojo() throws Exception {
+  @Test
+  public void testStreamsPigResourceGeneratorMojo() throws Exception {
 
-        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-pig" );
+    File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-pig" );
 
-        Verifier verifier;
+    Verifier verifier;
 
-        verifier = new Verifier( testDir.getAbsolutePath() );
+    verifier = new Verifier( testDir.getAbsolutePath() );
 
-        List cliOptions = new ArrayList();
-        cliOptions.add( "-N" );
-        verifier.executeGoals( Lists.<String>newArrayList(
-                "clean",
-                "dependency:unpack-dependencies",
-                "generate-resources"));
+    List cliOptions = new ArrayList();
+    cliOptions.add( "-N" );
+    verifier.executeGoals( Lists.<String>newArrayList(
+        "clean",
+        "dependency:unpack-dependencies",
+        "generate-resources"));
 
-        verifier.verifyErrorFreeLog();
+    verifier.verifyErrorFreeLog();
 
-        verifier.resetStreams();
+    verifier.resetStreams();
 
-        File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/pig-mojo");
+    File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-resources/pig-mojo");
 
-        assert( testOutput != null );
-        assert( testOutput.exists() == true );
-        assert( testOutput.isDirectory() == true );
+    assert ( testOutput != null );
+    assert ( testOutput.exists() == true );
+    assert ( testOutput.isDirectory() == true );
 
-        Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-                .filter(pigFilter);
-        Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-        assert( outputCollection.size() == 133 );
-    }
+    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
+        .filter(pigFilter);
+    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
+    assert ( outputCollection.size() == 133 );
+  }
 }

@@ -15,20 +15,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.monitoring.persist;
 
 import java.util.List;
 
 /**
- * Interface to define how we persist messages (JMX/monitoring related)
+ * Interface to define how we persist messages (JMX/monitoring related).
  */
 public interface MessagePersister {
 
-    /**
-     * Given a list of messages, persist them out through whatever appropriate
-     * broadcast mechanism (HTTP request, SLF4J log, etc.)
-     * @param messages
-     * @return statusCode represents whether or not the persist was successful
-     */
-    int persistMessages(List<String> messages);
+  /**
+   * Given a list of messages, persist them out through whatever appropriate
+   * broadcast mechanism (HTTP request, SLF4J log, etc.).
+   * @param messages List of String messages
+   * @return statusCode represents whether or not the persist was successful
+   */
+  int persistMessages(List<String> messages);
 }

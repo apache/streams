@@ -16,17 +16,26 @@
  * under the License.
  */
 
-package org.apache.streams.moreover;
+package org.apache.streams.util.api.requests.backoff;
 
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.util.api.requests.backoff.impl.LinearTimeBackOffStrategy;
 
-import java.util.Queue;
+import org.junit.Test;
 
-public class MoreoverResultSetWrapper extends StreamsResultSet {
+import static org.junit.Assert.assertEquals;
 
-    public MoreoverResultSetWrapper(MoreoverResult underlying) {
-        super((Queue<StreamsDatum>)underlying);
-    }
+/**
+ * Unit Test for LinearTimeBackOffStrategy.
+ */
+public class LinearTimeBackOffStrategyTest {
 
+  @Test
+  public void linearTimeBackOffStrategyTest() {
+    AbstractBackOffStrategy backOff = new LinearTimeBackOffStrategy(1);
+    assertEquals(1000, backOff.calculateBackOffTime(1,1));
+    assertEquals(2000, backOff.calculateBackOffTime(2,1));
+    assertEquals(3000, backOff.calculateBackOffTime(3,1));
+    assertEquals(4000, backOff.calculateBackOffTime(4,1));
+    assertEquals(25000, backOff.calculateBackOffTime(5,5));
+  }
 }

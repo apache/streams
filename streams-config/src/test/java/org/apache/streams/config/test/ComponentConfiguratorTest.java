@@ -40,7 +40,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest(StreamsConfigurator.class)
 public class ComponentConfiguratorTest {
 
-    private final static ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     public void testDetectDefaults() throws Exception {

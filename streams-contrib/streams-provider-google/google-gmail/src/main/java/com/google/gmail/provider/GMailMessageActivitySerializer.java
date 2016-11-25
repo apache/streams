@@ -18,6 +18,14 @@
 
 package com.google.gmail.provider;
 
+import org.apache.streams.data.ActivitySerializer;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
+import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
+import org.apache.streams.pojo.json.Generator;
+import org.apache.streams.pojo.json.Icon;
+import org.apache.streams.pojo.json.Provider;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -33,85 +41,83 @@ import com.googlecode.gmail4j.javamail.JavaMailGmailMessage;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPMessage;
 import com.sun.mail.imap.IMAPSSLStore;
+
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.streams.data.ActivitySerializer;
-import org.apache.streams.pojo.extensions.ExtensionUtil;
-import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Generator;
-import org.apache.streams.pojo.json.Icon;
-import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.mail.internet.MimeMultipart;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.internet.MimeMultipart;
+
+/**
+ * GMailMessageActivitySerializer converts a GMail message to Activity.
+ */
 public class GMailMessageActivitySerializer implements ActivitySerializer<GmailMessage> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GMailMessageActivitySerializer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GMailMessageActivitySerializer.class);
 
-    private GMailProvider provider;
+  private GMailProvider provider;
 
-    public GMailMessageActivitySerializer(GMailProvider provider) {
+  public GMailMessageActivitySerializer(GMailProvider provider) {
 
-        this.provider = provider;
+    this.provider = provider;
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, Boolean.FALSE);
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, Boolean.FALSE);
 
-        mapper.addMixInAnnotations(IMAPSSLStore.class, MessageMixIn.class);
-        mapper.addMixInAnnotations(IMAPFolder.class, MessageMixIn.class);
-        mapper.addMixInAnnotations(IMAPMessage.class, MessageMixIn.class);
-        mapper.addMixInAnnotations(MimeMultipart.class, MessageMixIn.class);
-        mapper.addMixInAnnotations(JavaMailGmailMessage.class, MessageMixIn.class);
+    mapper.addMixInAnnotations(IMAPSSLStore.class, MessageMixIn.class);
+    mapper.addMixInAnnotations(IMAPFolder.class, MessageMixIn.class);
+    mapper.addMixInAnnotations(IMAPMessage.class, MessageMixIn.class);
+    mapper.addMixInAnnotations(MimeMultipart.class, MessageMixIn.class);
+    mapper.addMixInAnnotations(JavaMailGmailMessage.class, MessageMixIn.class);
 
+  }
+
+  public GMailMessageActivitySerializer() {
+  }
+
+  @Override
+  public String serializationFormat() {
+    return "gmail.v1";
+  }
+
+  @Override
+  public GmailMessage serialize(Activity activity) {
+    return null;
+  }
+
+  @Override
+  public Activity deserialize(GmailMessage gmailMessage) {
+
+    Activity activity = new Activity();
+    activity.setId(formatId(this.provider.getConfig().getUserName(), String.valueOf(gmailMessage.getMessageNumber())));
+    activity.setPublished(new DateTime(gmailMessage.getSendDate()));
+    Provider provider = new Provider();
+    provider.setId("http://gmail.com");
+    provider.setDisplayName("GMail");
+    activity.setProvider(provider);
+    ActivityObject actor = new ActivityObject();
+    actor.setId(gmailMessage.getFrom().getEmail());
+    actor.setDisplayName(gmailMessage.getFrom().getName());
+    activity.setActor(actor);
+    activity.setVerb("email");
+    ActivityObject object = new ActivityObject();
+    try {
+      object.setId(gmailMessage.getTo().get(0).getEmail());
+      object.setDisplayName(gmailMessage.getTo().get(0).getName());
+    } catch( GmailException e ) {
+      LOGGER.warn(e.getMessage());
     }
-
-    public GMailMessageActivitySerializer() {
+    activity.setTitle(gmailMessage.getSubject());
+    try {
+      activity.setContent(gmailMessage.getContentText());
+    } catch( GmailException e ) {
+      LOGGER.warn(e.getMessage());
     }
-
-    @Override
-    public String serializationFormat() {
-        return "gmail.v1";
-    }
-
-    @Override
-    public GmailMessage serialize(Activity activity) {
-        return null;
-    }
-
-    @Override
-    public Activity deserialize(GmailMessage gmailMessage) {
-
-        Activity activity = new Activity();
-        activity.setId(formatId(this.provider.getConfig().getUserName(), String.valueOf(gmailMessage.getMessageNumber())));
-        activity.setPublished(new DateTime(gmailMessage.getSendDate()));
-        Provider provider = new Provider();
-        provider.setId("http://gmail.com");
-        provider.setDisplayName("GMail");
-        activity.setProvider(provider);
-        ActivityObject actor = new ActivityObject();
-        actor.setId(gmailMessage.getFrom().getEmail());
-        actor.setDisplayName(gmailMessage.getFrom().getName());
-        activity.setActor(actor);
-        activity.setVerb("email");
-        ActivityObject object = new ActivityObject();
-        try {
-            object.setId(gmailMessage.getTo().get(0).getEmail());
-            object.setDisplayName(gmailMessage.getTo().get(0).getName());
-        } catch( GmailException e ) {
-            LOGGER.warn(e.getMessage());
-        }
-        activity.setTitle(gmailMessage.getSubject());
-        try {
-            activity.setContent(gmailMessage.getContentText());
-        } catch( GmailException e ) {
-            LOGGER.warn(e.getMessage());
-        }
-        activity.setObject(object);
+    activity.setObject(object);
 
 //        try {
 //            // if jackson can't serialize the object, find out now
@@ -126,72 +132,72 @@ public class GMailMessageActivitySerializer implements ActivitySerializer<GmailM
 //            e.printStackTrace();
 //        }
 
-        return activity;
-    }
+    return activity;
+  }
 
-    @Override
-    public List<Activity> deserializeAll(List<GmailMessage> serializedList) {
-        throw new NotImplementedException("Not currently implemented");
-    }
+  @Override
+  public List<Activity> deserializeAll(List<GmailMessage> serializedList) {
+    throw new NotImplementedException("Not currently implemented");
+  }
 
-    public Activity convert(ObjectNode event) {
-        return null;
-    }
+  public Activity convert(ObjectNode event) {
+    return null;
+  }
 
-    public static Generator buildGenerator(ObjectNode event) {
-        return null;
-    }
+  public static Generator buildGenerator(ObjectNode event) {
+    return null;
+  }
 
-    public static Icon getIcon(ObjectNode event) {
-        return null;
-    }
+  public static Icon getIcon(ObjectNode event) {
+    return null;
+  }
 
-    public static Provider buildProvider(ObjectNode event) {
-        Provider provider = new Provider();
-        provider.setId("id:providers:gmail");
-        return provider;
-    }
+  public static Provider buildProvider(ObjectNode event) {
+    Provider provider = new Provider();
+    provider.setId("id:providers:gmail");
+    return provider;
+  }
 
-    public static List<Object> getLinks(ObjectNode event) {
-        return null;
-    }
+  public static List<Object> getLinks(ObjectNode event) {
+    return null;
+  }
 
-    public static String getUrls(ObjectNode event) {
-        return null;
-    }
+  public static String getUrls(ObjectNode event) {
+    return null;
+  }
 
-    public static void addGMailExtension(Activity activity, GmailMessage gmailMessage) {
-        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
-        extensions.put("gmail", gmailMessage);
-    }
+  public static void addGMailExtension(Activity activity, GmailMessage gmailMessage) {
+    Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
+    extensions.put("gmail", gmailMessage);
+  }
 
-    public static String formatId(String... idparts) {
-        return Joiner.on(":").join(Lists.asList("id:gmail", idparts));
-    }
+  public static String formatId(String... idparts) {
+    return Joiner.on(":").join(Lists.asList("id:gmail", idparts));
+  }
 
-    interface MessageMixIn {
-        @JsonManagedReference
-        @JsonIgnore
-        IMAPSSLStore getDefaultFolder(); // we don't need it!
-        @JsonManagedReference
-        @JsonIgnore
-        IMAPSSLStore getPersonalNamespaces(); // we don't need it!
-        @JsonManagedReference
-        @JsonIgnore
-        IMAPFolder getStore(); // we don't need it!
-        //        @JsonManagedReference
+  interface MessageMixIn {
+    @JsonManagedReference
+    @JsonIgnore
+    IMAPSSLStore getDefaultFolder(); // we don't need it!
+    @JsonManagedReference
+    @JsonIgnore
+    IMAPSSLStore getPersonalNamespaces(); // we don't need it!
+    @JsonManagedReference
+    @JsonIgnore
+    IMAPFolder getStore(); // we don't need it!
+    //        @JsonManagedReference
 //        @JsonIgnore
 //        @JsonBackReference
-        //IMAPFolder getParent(); // we don't need it!
-        @JsonManagedReference
-        @JsonIgnore
-        @JsonBackReference
-        IMAPMessage getFolder(); // we don't need it!
-        @JsonManagedReference
-        @JsonIgnore
-        @JsonProperty("parent")
-        @JsonBackReference
-        MimeMultipart getParent();
-    }
+    //IMAPFolder getParent(); // we don't need it!
+    @JsonManagedReference
+    @JsonIgnore
+    @JsonBackReference
+    IMAPMessage getFolder(); // we don't need it!
+    @JsonManagedReference
+    @JsonIgnore
+    @JsonProperty("parent")
+    @JsonBackReference
+    MimeMultipart getParent();
+  }
 
 }

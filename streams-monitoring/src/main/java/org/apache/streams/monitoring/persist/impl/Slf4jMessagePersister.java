@@ -16,13 +16,34 @@
  * under the License.
  */
 
-package org.apache.streams.core;
+package org.apache.streams.monitoring.persist.impl;
 
-public enum StreamState {
-    RUNNING,  //Stream is currently connected and running
-    STOPPED,  // Stream has been shut down and is stopped
-    CONNECTING, //Stream is attempting to connect to server
-    SHUTTING_DOWN, //Stream has initialized shutdown
-    DISCONNECTED //Stream has unintentionally lost connection
+import org.apache.streams.monitoring.persist.MessagePersister;
+
+import org.slf4j.Logger;
+
+import java.util.List;
+
+/**
+ * Persist montoring messages to SLF4J.
+ */
+public class Slf4jMessagePersister implements MessagePersister {
+
+  private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(Slf4jMessagePersister.class);
+  private static final int SUCCESS_STATUS = 0;
+  private static final int FAILURE_STATUS = -1;
+
+  public Slf4jMessagePersister() {
+
+  }
+
+  @Override
+  public int persistMessages(List<String> messages) {
+
+    for (String message : messages) {
+      LOGGER.info(message);
+    }
+
+    return SUCCESS_STATUS;
+  }
 }
-

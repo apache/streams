@@ -18,9 +18,10 @@
 
 package org.apache.streams.pojo.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,44 +33,44 @@ import static org.junit.Assert.assertEquals;
  */
 public class CustomDateTimeFormatTest {
 
-    @Test
-    public void testCustomDateTimeFormatExplicit() {
-        String format = "EEE MMM dd HH:mm:ss Z yyyy";
-        String input = "Tue Jan 17 21:21:46 Z 2012";
-        Long outputMillis = 1326835306000L;
-        ObjectMapper mapper = StreamsJacksonMapper.getInstance(format);
-        try {
-            String json = "{\"published\":\"" + input + "\"}";
-            Activity activity = mapper.readValue(json, Activity.class);
+  @Test
+  public void testCustomDateTimeFormatExplicit() {
+    String format = "EEE MMM dd HH:mm:ss Z yyyy";
+    String input = "Tue Jan 17 21:21:46 Z 2012";
+    Long outputMillis = 1326835306000L;
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance(format);
+    try {
+      String json = "{\"published\":\"" + input + "\"}";
+      Activity activity = mapper.readValue(json, Activity.class);
 
-            //Writes out value as a String including quotes
-            Long result = activity.getPublished().getMillis();
+      //Writes out value as a String including quotes
+      Long result = activity.getPublished().getMillis();
 
-            assertEquals(result, outputMillis);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail();
-        }
+      assertEquals(result, outputMillis);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      Assert.fail();
     }
+  }
 
-    @Test
-    public void testCustomDateTimeFormatReflection() {
-        String input = "Tue Jan 17 21:21:46 Z 2012";
-        Long outputMillis = 1326835306000L;
-        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
-        try {
-            String json = "{\"published\":\"" + input + "\"}";
-            Activity activity = mapper.readValue(json, Activity.class);
+  @Test
+  public void testCustomDateTimeFormatReflection() {
+    String input = "Tue Jan 17 21:21:46 Z 2012";
+    Long outputMillis = 1326835306000L;
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    try {
+      String json = "{\"published\":\"" + input + "\"}";
+      Activity activity = mapper.readValue(json, Activity.class);
 
-            //Writes out value as a String including quotes
-            Long result = activity.getPublished().getMillis();
+      //Writes out value as a String including quotes
+      Long result = activity.getPublished().getMillis();
 
-            assertEquals(result, outputMillis);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail();
-        }
+      assertEquals(result, outputMillis);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      Assert.fail();
     }
+  }
 
 
 }

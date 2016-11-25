@@ -18,19 +18,26 @@
 
 package org.apache.streams.dropwizard;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Queues;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.ComponentUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Queues;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Pattern;
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -40,17 +47,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.regex.Pattern;
 
 /**
  * GenericWebhookResource provides basic webhook connectivity.
  *
+ * <p/>
  * Add processors / persistWriters that read from "GenericWebhookResource" to
  * consume data posted to streams.
  */
@@ -60,205 +61,222 @@ import java.util.regex.Pattern;
 @Consumes(MediaType.APPLICATION_JSON)
 public class GenericWebhookResource implements StreamsProvider {
 
-    public static final String STREAMS_ID = "GenericWebhookResource";
+  public static final String STREAMS_ID = "GenericWebhookResource";
 
-    public GenericWebhookResource() {
+  public GenericWebhookResource() {
+  }
+
+  private static final Logger log = LoggerFactory
+      .getLogger(GenericWebhookResource.class);
+
+  private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+
+  protected Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<>();
+
+  protected final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+  private static Pattern newLinePattern = Pattern.compile("(\\r\\n?|\\n)", Pattern.MULTILINE);
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  /**
+   * push a String json datum into a stream.
+   * @param headers HttpHeaders
+   * @param body String json
+   * @return Response
+   */
+  @POST
+  @Path("json")
+  public Response json(@Context HttpHeaders headers,
+                       String body) {
+
+    ObjectNode response = mapper.createObjectNode();
+    int responseCode = Response.Status.BAD_REQUEST.getStatusCode();
+
+    try {
+      ObjectNode item = mapper.readValue(body, ObjectNode.class);
+
+      StreamsDatum datum = new StreamsDatum(body);
+
+      lock.writeLock().lock();
+      ComponentUtils.offerUntilSuccess(datum, providerQueue);
+      lock.writeLock().unlock();
+
+      Boolean success = true;
+
+      response.put("success", success);
+
+      responseCode = Response.Status.OK.getStatusCode();
+
+    } catch (Exception ex) {
+      log.warn(ex.toString(), ex);
+
+      Boolean success = false;
+
+      response.put("success", success);
+      responseCode = Response.Status.BAD_REQUEST.getStatusCode();
+
+    } finally {
+      return Response.status(responseCode).entity(response).build();
+    }
+  }
+
+  /**
+   * push multiple String json datums into a stream.
+   * @param headers HttpHeaders
+   * @param body String json
+   * @return Response
+   */
+  @POST
+  @Path("json_new_line")
+  public Response json_new_line(@Context HttpHeaders headers,
+                                String body) {
+
+    ObjectNode response = mapper.createObjectNode();
+    int responseCode = Response.Status.BAD_REQUEST.getStatusCode();
+
+    if (body.equalsIgnoreCase("{}")) {
+
+      Boolean success = true;
+
+      response.put("success", success);
+      responseCode = Response.Status.OK.getStatusCode();
+      return Response.status(responseCode).entity(response).build();
     }
 
-    private static final Logger log = LoggerFactory
-            .getLogger(GenericWebhookResource.class);
+    try {
 
-    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+      for ( String line : Splitter.on(newLinePattern).split(body)) {
+        ObjectNode item = mapper.readValue(line, ObjectNode.class);
 
-    protected Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<>();
-
-    protected final ReadWriteLock lock = new ReentrantReadWriteLock();
-
-    private static Pattern newLinePattern = Pattern.compile("(\\r\\n?|\\n)", Pattern.MULTILINE);
-
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
-
-    @POST
-    @Path("json")
-    public Response json(@Context HttpHeaders headers,
-                                  String body) {
-
-        ObjectNode response = mapper.createObjectNode();
-        int responseCode = Response.Status.BAD_REQUEST.getStatusCode();
-
-        try {
-            ObjectNode item = mapper.readValue(body, ObjectNode.class);
-
-            StreamsDatum datum = new StreamsDatum(body);
-
-            lock.writeLock().lock();
-            ComponentUtils.offerUntilSuccess(datum, providerQueue);
-            lock.writeLock().unlock();
-
-            Boolean success = true;
-
-            response.put("success", success);
-
-            responseCode = Response.Status.OK.getStatusCode();
-
-        } catch (Exception e) {
-            log.warn(e.toString(), e);
-
-            Boolean success = false;
-
-            response.put("success", success);
-            responseCode = Response.Status.BAD_REQUEST.getStatusCode();
-
-        } finally {
-            return Response.status(responseCode).entity(response).build();
-
-        }
-    }
-
-    @POST
-    @Path("json_new_line")
-    public Response json_new_line(@Context HttpHeaders headers,
-                                           String body) {
-
-        ObjectNode response = mapper.createObjectNode();
-        int responseCode = Response.Status.BAD_REQUEST.getStatusCode();
-
-        if (body.equalsIgnoreCase("{}")) {
-
-            Boolean success = true;
-
-            response.put("success", success);
-            responseCode = Response.Status.OK.getStatusCode();
-            return Response.status(responseCode).entity(response).build();
-        }
-
-        try {
-
-            for( String line : Splitter.on(newLinePattern).split(body)) {
-                ObjectNode item = mapper.readValue(line, ObjectNode.class);
-
-                StreamsDatum datum = new StreamsDatum(item);
-
-                lock.writeLock().lock();
-                ComponentUtils.offerUntilSuccess(datum, providerQueue);
-                lock.writeLock().unlock();
-
-            }
-
-            Boolean success = true;
-
-            response.put("success", success);
-            responseCode = Response.Status.OK.getStatusCode();
-
-        } catch (Exception e) {
-            log.warn(e.toString(), e);
-
-            Boolean success = false;
-
-            response.put("success", success);
-            responseCode = Response.Status.BAD_REQUEST.getStatusCode();
-
-        } finally {
-            return Response.status(responseCode).entity(response).build();
-
-        }
-
-    }
-
-    @POST
-    @Path("json_meta")
-    public Response json_meta(@Context HttpHeaders headers,
-                                       String body) {
-
-        ObjectNode response = mapper.createObjectNode();
-        int responseCode = Response.Status.BAD_REQUEST.getStatusCode();
-
-        if (body.equalsIgnoreCase("{}")) {
-
-            Boolean success = true;
-
-            response.put("success", success);
-            responseCode = Response.Status.OK.getStatusCode();
-
-            return Response.status(responseCode).entity(response).build();
-        }
-
-        try {
-
-            GenericWebhookData objectWrapper = mapper.readValue(body, GenericWebhookData.class);
-
-            for( ObjectNode item : objectWrapper.getData()) {
-
-                StreamsDatum datum = new StreamsDatum(item);
-
-                lock.writeLock().lock();
-                ComponentUtils.offerUntilSuccess(datum, providerQueue);
-                lock.writeLock().unlock();
-            }
-
-            Boolean success = true;
-
-            response.put("success", success);
-            responseCode = Response.Status.OK.getStatusCode();
-
-        } catch (Exception e) {
-            log.warn(e.toString(), e);
-
-            Boolean success = false;
-
-            response.put("success", success);
-            responseCode = Response.Status.BAD_REQUEST.getStatusCode();
-        } finally {
-            return Response.status(responseCode).entity(response).build();
-        }
-
-    }
-
-    @Override
-    public void startStream() {
-        return;
-    }
-
-    @Override
-    public StreamsResultSet readCurrent() {
-
-        StreamsResultSet current;
+        StreamsDatum datum = new StreamsDatum(item);
 
         lock.writeLock().lock();
-        current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(providerQueue));
-        providerQueue.clear();
+        ComponentUtils.offerUntilSuccess(datum, providerQueue);
         lock.writeLock().unlock();
 
-        return current;
+      }
+
+      Boolean success = true;
+
+      response.put("success", success);
+      responseCode = Response.Status.OK.getStatusCode();
+
+    } catch (Exception ex) {
+      log.warn(ex.toString(), ex);
+
+      Boolean success = false;
+
+      response.put("success", success);
+      responseCode = Response.Status.BAD_REQUEST.getStatusCode();
+
+    } finally {
+      return Response.status(responseCode).entity(response).build();
 
     }
 
-    @Override
-    public StreamsResultSet readNew(BigInteger sequence) {
-        return null;
+  }
+
+  /**
+   * push multiple ObjectNode json datums into a stream.
+   * @param headers HttpHeaders
+   * @param body String json
+   * @return Response
+   */
+  @POST
+  @Path("json_meta")
+  public Response json_meta(@Context HttpHeaders headers,
+                            String body) {
+
+    ObjectNode response = mapper.createObjectNode();
+    int responseCode = Response.Status.BAD_REQUEST.getStatusCode();
+
+    if (body.equalsIgnoreCase("{}")) {
+
+      Boolean success = true;
+
+      response.put("success", success);
+      responseCode = Response.Status.OK.getStatusCode();
+
+      return Response.status(responseCode).entity(response).build();
     }
 
-    @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return null;
+    try {
+
+      GenericWebhookData objectWrapper = mapper.readValue(body, GenericWebhookData.class);
+
+      for ( ObjectNode item : objectWrapper.getData()) {
+
+        StreamsDatum datum = new StreamsDatum(item);
+
+        lock.writeLock().lock();
+        ComponentUtils.offerUntilSuccess(datum, providerQueue);
+        lock.writeLock().unlock();
+      }
+
+      Boolean success = true;
+
+      response.put("success", success);
+      responseCode = Response.Status.OK.getStatusCode();
+
+    } catch (Exception ex) {
+      log.warn(ex.toString(), ex);
+
+      Boolean success = false;
+
+      response.put("success", success);
+      responseCode = Response.Status.BAD_REQUEST.getStatusCode();
+    } finally {
+      return Response.status(responseCode).entity(response).build();
     }
 
-    @Override
-    public boolean isRunning() {
-        return true;
-    }
+  }
 
-    @Override
-    public void prepare(Object configurationObject) {
+  @Override
+  public void startStream() {
+    return;
+  }
 
-    }
+  @Override
+  public StreamsResultSet readCurrent() {
 
-    @Override
-    public void cleanUp() {
+    StreamsResultSet current;
 
-    }
+    lock.writeLock().lock();
+    current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(providerQueue));
+    providerQueue.clear();
+    lock.writeLock().unlock();
+
+    return current;
+
+  }
+
+  @Override
+  public StreamsResultSet readNew(BigInteger sequence) {
+    return null;
+  }
+
+  @Override
+  public StreamsResultSet readRange(DateTime start, DateTime end) {
+    return null;
+  }
+
+  @Override
+  public boolean isRunning() {
+    return true;
+  }
+
+  @Override
+  public void prepare(Object configurationObject) {
+
+  }
+
+  @Override
+  public void cleanUp() {
+
+  }
 
 }

@@ -23,6 +23,7 @@ import org.apache.streams.test.component.ExpectedDatumsPersistWriter;
 import org.apache.streams.test.component.FileReaderProvider;
 import org.apache.streams.test.component.StringToDocumentConverter;
 import org.apache.streams.util.ComponentUtils;
+
 import org.junit.After;
 import org.junit.Test;
 
@@ -31,22 +32,22 @@ import org.junit.Test;
  */
 public class TestComponentsLocalStream {
 
-    @After
-    public void removeLocalMBeans() {
-        try {
-            ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
-        } catch (Exception e) {
-            //No op.  proceed to next test
-        }
+  @After
+  public void removeLocalMBeans() {
+    try {
+      ComponentUtils.removeAllMBeansOfDomain("org.apache.streams.local");
+    } catch (Exception e) {
+      //No op.  proceed to next test
     }
+  }
 
-    @Test
-    public void testLocalStreamWithComponent() {
-        LocalStreamBuilder builder = new LocalStreamBuilder();
-        builder.newReadCurrentStream("provider", new FileReaderProvider("/TestFile.txt",
-                                                                        new StringToDocumentConverter()));
-        builder.addStreamsPersistWriter("writer", new ExpectedDatumsPersistWriter(new StringToDocumentConverter(),
-                "/TestFile.txt"), 1, "provider")
+  @Test
+  public void testLocalStreamWithComponent() {
+    LocalStreamBuilder builder = new LocalStreamBuilder();
+    builder.newReadCurrentStream("provider", new FileReaderProvider("/TestFile.txt",
+        new StringToDocumentConverter()));
+    builder.addStreamsPersistWriter("writer", new ExpectedDatumsPersistWriter(new StringToDocumentConverter(),
+        "/TestFile.txt"), 1, "provider")
         .start();
-    }
+  }
 }

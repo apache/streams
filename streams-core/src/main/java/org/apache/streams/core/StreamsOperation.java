@@ -21,26 +21,26 @@ package org.apache.streams.core;
 import java.io.Serializable;
 
 /**
- *
+ * Each step in a pipeline is a StreamsOperation.
  */
 public interface StreamsOperation extends Serializable {
 
-    /**
-     * Each operation must publish an identifier.
-     */
-    public String getId();
+  /**
+   * Each operation must publish an identifier.
+   */
+  public String getId();
 
-    /**
-     * This method will be called after initialization/serialization. Initialize any non-serializable objects here.
-     * @param configurationObject Any object to help intialize the operation. ie. Map, JobContext, Properties, etc. The type
-     *                            will be based on where the operation is being run (ie. hadoop, storm, locally, etc.)
-     */
-    public void prepare(Object configurationObject);
+  /**
+   * This method will be called after initialization/serialization. Initialize any non-serializable objects here.
+   * @param configurationObject Any object to help intialize the operation. ie. Map, JobContext, Properties, etc. The type
+   *                            will be based on where the operation is being run (ie. hadoop, storm, locally, etc.)
+   */
+  public void prepare(Object configurationObject);
 
-    /**
-     * No guarantee that this method will ever be called.  But upon shutdown of the stream, an attempt to call this method
-     * will be made.
-     * Use this method to terminate connections, etc.
-     */
-    public void cleanUp();
+  /**
+   * No guarantee that this method will ever be called.  But upon shutdown of the stream, an attempt to call this method
+   * will be made.
+   * Use this method to terminate connections, etc.
+   */
+  public void cleanUp();
 }

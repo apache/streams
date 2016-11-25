@@ -18,47 +18,42 @@
 
 package org.apache.streams.twitter.converter;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.data.ActivityObjectConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
-import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.twitter.pojo.User;
 
-import java.util.List;
+import org.apache.commons.lang.NotImplementedException;
 
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.buildActor;
-import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.updateActivity;
 
 public class TwitterJsonUserActivityObjectConverter implements ActivityObjectConverter<User> {
 
-    public static Class requiredClass = User.class;
+  public static Class requiredClass = User.class;
 
-    @Override
-    public Class requiredClass() {
-        return requiredClass;
-    }
+  @Override
+  public Class requiredClass() {
+    return requiredClass;
+  }
 
-    private static TwitterJsonUserActivityObjectConverter instance = new TwitterJsonUserActivityObjectConverter();
+  private static TwitterJsonUserActivityObjectConverter instance = new TwitterJsonUserActivityObjectConverter();
 
-    public static TwitterJsonUserActivityObjectConverter getInstance() {
-        return instance;
-    }
+  public static TwitterJsonUserActivityObjectConverter getInstance() {
+    return instance;
+  }
 
-    @Override
-    public String serializationFormat() {
-        return null;
-    }
+  @Override
+  public String serializationFormat() {
+    return null;
+  }
 
-    @Override
-    public User fromActivityObject(ActivityObject deserialized) throws ActivityConversionException {
-        throw new NotImplementedException();
-    }
+  @Override
+  public User fromActivityObject(ActivityObject deserialized) throws ActivityConversionException {
+    throw new NotImplementedException();
+  }
 
-    @Override
-    public ActivityObject toActivityObject(User serialized) throws ActivityConversionException {
-        return buildActor(serialized);
-    }
+  @Override
+  public ActivityObject toActivityObject(User serialized) throws ActivityConversionException {
+    return buildActor(serialized);
+  }
 }

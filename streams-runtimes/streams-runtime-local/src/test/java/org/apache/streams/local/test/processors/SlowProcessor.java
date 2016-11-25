@@ -19,9 +19,10 @@
 
 package org.apache.streams.local.test.processors;
 
-import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+
+import com.google.common.collect.Lists;
 
 import java.util.List;
 
@@ -29,30 +30,30 @@ import java.util.List;
  */
 public class SlowProcessor  implements StreamsProcessor {
 
-    public final static String STREAMS_ID = "DoNothingProcessor";
+  public final static String STREAMS_ID = "DoNothingProcessor";
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
     }
+    return Lists.newArrayList(entry);
+  }
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        return Lists.newArrayList(entry);
-    }
+  @Override
+  public void prepare(Object configurationObject) {
 
-    @Override
-    public void prepare(Object configurationObject) {
+  }
 
-    }
+  @Override
+  public void cleanUp() {
 
-    @Override
-    public void cleanUp() {
-
-    }
+  }
 }

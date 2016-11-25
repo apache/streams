@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.elasticsearch.test;
 
 import org.junit.runner.RunWith;
@@ -28,7 +29,10 @@ import org.junit.runners.Suite;
         ElasticsearchParentChildUpdaterIT.class,
         DatumFromMetadataProcessorIT.class
 })
-
+/**
+ * Integration Test Suite for
+ * @see org.apache.streams.elasticsearch
+ */
 public class ElasticsearchITs {
     // the class remains empty,
     // used only as a holder for the above annotations

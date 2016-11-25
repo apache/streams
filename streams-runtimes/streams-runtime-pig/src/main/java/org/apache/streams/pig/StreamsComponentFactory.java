@@ -19,54 +19,47 @@
 
 package org.apache.streams.pig;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.data.ActivityConverter;
-import org.apache.streams.data.ActivitySerializer;
+
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
- * Static reflection wrappers for instantiating StreamsComponents
+ * Static reflection wrappers for instantiating StreamsComponents.
  */
 public class StreamsComponentFactory {
 
-    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StreamsComponentFactory.class);
+  private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StreamsComponentFactory.class);
 
-    public static ActivityConverter getConverterInstance(Class<?> converterClazz) {
+  public static ActivityConverter getConverterInstance(Class<?> converterClazz) {
 
-        Object object = null;
-        try {
-            object = converterClazz.getConstructor().newInstance();
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
-
-        Preconditions.checkNotNull(object);
-
-        ActivityConverter converter = (ActivityConverter) object;
-
-        return converter;
-
+    Object object = null;
+    try {
+      object = converterClazz.getConstructor().newInstance();
+    } catch (Exception e) {
+      LOGGER.error(e.getMessage());
     }
 
-    public static StreamsProcessor getProcessorInstance(Class<?> processorClazz) {
+    Preconditions.checkNotNull(object);
 
-        Object object = null;
-        try {
-            object = processorClazz.getConstructor().newInstance();
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
-        StreamsProcessor processor = (StreamsProcessor) object;
-        return processor;
+    ActivityConverter converter = (ActivityConverter) object;
 
+    return converter;
+
+  }
+
+  public static StreamsProcessor getProcessorInstance(Class<?> processorClazz) {
+
+    Object object = null;
+    try {
+      object = processorClazz.getConstructor().newInstance();
+    } catch (Exception e) {
+      LOGGER.error(e.getMessage());
     }
+    StreamsProcessor processor = (StreamsProcessor) object;
+    return processor;
+
+  }
 
 }

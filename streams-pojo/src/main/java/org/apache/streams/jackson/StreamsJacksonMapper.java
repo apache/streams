@@ -18,6 +18,8 @@
 
 package org.apache.streams.jackson;
 
+import org.apache.streams.pojo.StreamsJacksonMapperConfiguration;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -28,7 +30,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.scala.DefaultScalaModule;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.streams.pojo.StreamsJacksonMapperConfiguration;
 
 import java.util.List;
 import java.util.Map;
@@ -36,99 +37,128 @@ import java.util.Map;
 /**
  * StreamsJacksonMapper is the recommended interface to jackson for any streams component.
  *
+ * <p/>
  * Date-time formats that must be supported can be specified with constructor arguments.
  *
+ * <p/>
  * If no Date-time formats are specified, streams will use reflection to find formats.
  */
 public class StreamsJacksonMapper extends ObjectMapper {
 
-    private static Map<StreamsJacksonMapperConfiguration, StreamsJacksonMapper> INSTANCE_MAP = Maps.newConcurrentMap();
+  private static Map<StreamsJacksonMapperConfiguration, StreamsJacksonMapper> INSTANCE_MAP = Maps.newConcurrentMap();
 
-    private StreamsJacksonMapperConfiguration configuration = new StreamsJacksonMapperConfiguration();
+  private StreamsJacksonMapperConfiguration configuration = new StreamsJacksonMapperConfiguration();
 
-    public static StreamsJacksonMapper getInstance() {
-        return getInstance(new StreamsJacksonMapperConfiguration());
+  /**
+   * get default StreamsJacksonMapper.
+   * @return StreamsJacksonMapper
+   */
+  public static StreamsJacksonMapper getInstance() {
+    return getInstance(new StreamsJacksonMapperConfiguration());
+  }
+
+  /**
+   * get custom StreamsJacksonMapper.
+   * @param configuration StreamsJacksonMapperConfiguration
+   * @return StreamsJacksonMapper
+   */
+  public static StreamsJacksonMapper getInstance(StreamsJacksonMapperConfiguration configuration) {
+    if ( INSTANCE_MAP.containsKey(configuration)
+         &&
+         INSTANCE_MAP.get(configuration) != null) {
+      return INSTANCE_MAP.get(configuration);
+    } else {
+      INSTANCE_MAP.put(configuration, new StreamsJacksonMapper(configuration));
+      return INSTANCE_MAP.get(configuration);
     }
+  }
 
-    public static StreamsJacksonMapper getInstance(StreamsJacksonMapperConfiguration configuration) {
-        if( INSTANCE_MAP.containsKey(configuration) &&
-                INSTANCE_MAP.get(configuration) != null)
-            return INSTANCE_MAP.get(configuration);
-        else {
-            INSTANCE_MAP.put(configuration, new StreamsJacksonMapper(configuration));
-            return INSTANCE_MAP.get(configuration);
-        }
+  /**
+   * get custom StreamsJacksonMapper.
+   * @param format format
+   * @return StreamsJacksonMapper
+   */
+  @Deprecated
+  public static StreamsJacksonMapper getInstance(String format) {
+
+    StreamsJacksonMapper instance = new StreamsJacksonMapper(Lists.newArrayList(format));
+
+    return instance;
+
+  }
+
+  /**
+   * get custom StreamsJacksonMapper.
+   * @param formats formats
+   * @return StreamsJacksonMapper
+   */
+  @Deprecated
+  public static StreamsJacksonMapper getInstance(List<String> formats) {
+
+    StreamsJacksonMapper instance = new StreamsJacksonMapper(formats);
+
+    return instance;
+
+  }
+
+  /*
+    Use getInstance to get a globally shared thread-safe ObjectMapper,
+    rather than call this constructor.  Reflection-based resolution of
+    date-time formats across all modules can be slow and should only happen
+    once per JVM.
+   */
+  protected StreamsJacksonMapper() {
+    super();
+    registerModule(new StreamsJacksonModule(configuration.getDateFormats()));
+    if ( configuration.getEnableScala()) {
+      registerModule(new DefaultScalaModule());
     }
+    configure();
+  }
 
-    public static StreamsJacksonMapper getInstance(String format){
-
-        StreamsJacksonMapper instance = new StreamsJacksonMapper(Lists.newArrayList(format));
-
-        return instance;
-
+  @Deprecated
+  public StreamsJacksonMapper(String format) {
+    super();
+    registerModule(new StreamsJacksonModule(Lists.newArrayList(format)));
+    if ( configuration.getEnableScala()) {
+      registerModule(new DefaultScalaModule());
     }
-    public static StreamsJacksonMapper getInstance(List<String> formats){
+    configure();
+  }
 
-        StreamsJacksonMapper instance = new StreamsJacksonMapper(formats);
-
-        return instance;
-
+  @Deprecated
+  public StreamsJacksonMapper(List<String> formats) {
+    super();
+    registerModule(new StreamsJacksonModule(formats));
+    if ( configuration.getEnableScala()) {
+      registerModule(new DefaultScalaModule());
     }
+    configure();
+  }
 
-    /*
-      Use getInstance to get a globally shared thread-safe ObjectMapper,
-      rather than call this constructor.  Reflection-based resolution of
-      date-time formats across all modules can be slow and should only happen
-      once per JVM.
-     */
-    protected StreamsJacksonMapper() {
-        super();
-        registerModule(new StreamsJacksonModule(configuration.getDateFormats()));
-        if( configuration.getEnableScala())
-            registerModule(new DefaultScalaModule());
-        configure();
+  public StreamsJacksonMapper(StreamsJacksonMapperConfiguration configuration) {
+    super();
+    registerModule(new StreamsJacksonModule(configuration.getDateFormats()));
+    if ( configuration.getEnableScala()) {
+      registerModule(new DefaultScalaModule());
     }
+    configure();
+  }
 
-    @Deprecated
-    public StreamsJacksonMapper(String format) {
-        super();
-        registerModule(new StreamsJacksonModule(Lists.newArrayList(format)));
-        if( configuration.getEnableScala())
-            registerModule(new DefaultScalaModule());
-        configure();
-    }
-
-    @Deprecated
-    public StreamsJacksonMapper(List<String> formats) {
-        super();
-        registerModule(new StreamsJacksonModule(formats));
-        if( configuration.getEnableScala())
-            registerModule(new DefaultScalaModule());
-        configure();
-    }
-
-    public StreamsJacksonMapper(StreamsJacksonMapperConfiguration configuration) {
-        super();
-        registerModule(new StreamsJacksonModule(configuration.getDateFormats()));
-        if( configuration.getEnableScala())
-            registerModule(new DefaultScalaModule());
-        configure();
-    }
-
-    public void configure() {
-        disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
-        configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, Boolean.TRUE);
-        configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
-        configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
-        configure(DeserializationFeature.WRAP_EXCEPTIONS, Boolean.FALSE);
-        configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, Boolean.TRUE);
-        // If a user has an 'object' that does not have an explicit mapping, don't cause the serialization to fail.
-        configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, Boolean.FALSE);
-        configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, Boolean.FALSE);
-        configure(SerializationFeature.WRITE_NULL_MAP_VALUES, Boolean.FALSE);
-        setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.DEFAULT);
-        setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-    }
+  public void configure() {
+    disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);
+    configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, Boolean.TRUE);
+    configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
+    configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
+    configure(DeserializationFeature.WRAP_EXCEPTIONS, Boolean.FALSE);
+    configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, Boolean.TRUE);
+    // If a user has an 'object' that does not have an explicit mapping, don't cause the serialization to fail.
+    configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, Boolean.FALSE);
+    configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, Boolean.FALSE);
+    configure(SerializationFeature.WRITE_NULL_MAP_VALUES, Boolean.FALSE);
+    setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.DEFAULT);
+    setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+  }
 
 }

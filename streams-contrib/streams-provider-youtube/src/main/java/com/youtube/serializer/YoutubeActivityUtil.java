@@ -19,6 +19,13 @@
 
 package com.youtube.serializer;
 
+import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
+import org.apache.streams.pojo.json.Activity;
+import org.apache.streams.pojo.json.ActivityObject;
+import org.apache.streams.pojo.json.Image;
+import org.apache.streams.pojo.json.Provider;
+
 import com.google.api.client.util.Maps;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.Thumbnail;
@@ -27,12 +34,6 @@ import com.google.api.services.youtube.model.Video;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.apache.streams.exceptions.ActivitySerializerException;
-import org.apache.streams.pojo.extensions.ExtensionUtil;
-import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Image;
-import org.apache.streams.pojo.json.Provider;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,153 +42,160 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class YoutubeActivityUtil {
-    private static final Logger LOGGER = LoggerFactory.getLogger(YoutubeActivityUtil.class);
 
-    /**
-     * Given a {@link com.google.api.services.youtube.YouTube.Videos} object and an
-     * {@link org.apache.streams.pojo.json.Activity} object, fill out the appropriate details
-     *
-     * @param video
-     * @param activity
-     * @throws org.apache.streams.exceptions.ActivitySerializerException
-     */
-    public static void updateActivity(Video video, Activity activity, String channelId) throws ActivitySerializerException {
-        activity.setActor(buildActor(video, video.getSnippet().getChannelId()));
-        activity.setVerb("post");
+  private static final Logger LOGGER = LoggerFactory.getLogger(YoutubeActivityUtil.class);
 
-        activity.setId(formatId(activity.getVerb(),
-                Optional.fromNullable(
-                        video.getId())
-                        .orNull()));
+  /**
+   * Given a {@link com.google.api.services.youtube.YouTube.Videos} object and an
+   * {@link org.apache.streams.pojo.json.Activity} object, fill out the appropriate details
+   *
+   * @param video Video
+   * @param activity Activity
+   * @throws ActivitySerializerException ActivitySerializerException
+   */
+  public static void updateActivity(Video video, Activity activity, String channelId) throws ActivitySerializerException {
+    activity.setActor(buildActor(video, video.getSnippet().getChannelId()));
+    activity.setVerb("post");
 
-        activity.setPublished(new DateTime(video.getSnippet().getPublishedAt().getValue()));
-        activity.setTitle(video.getSnippet().getTitle());
-        activity.setContent(video.getSnippet().getDescription());
-        activity.setUrl("https://www.youtube.com/watch?v=" + video.getId());
+    activity.setId(formatId(activity.getVerb(),
+        Optional.fromNullable(
+            video.getId())
+            .orNull()));
 
-        activity.setProvider(getProvider());
+    activity.setPublished(new DateTime(video.getSnippet().getPublishedAt().getValue()));
+    activity.setTitle(video.getSnippet().getTitle());
+    activity.setContent(video.getSnippet().getDescription());
+    activity.setUrl("https://www.youtube.com/watch?v=" + video.getId());
 
-        activity.setObject(buildActivityObject(video));
+    activity.setProvider(getProvider());
 
-        addYoutubeExtensions(activity, video);
+    activity.setObject(buildActivityObject(video));
+
+    addYoutubeExtensions(activity, video);
+  }
+
+
+  /**
+   * Given a {@link com.google.api.services.youtube.model.Channel} object and an
+   * {@link org.apache.streams.pojo.json.Activity} object, fill out the appropriate details
+   *
+   * @param channel Channel
+   * @param activity Activity
+   * @throws ActivitySerializerException ActivitySerializerException
+   */
+  public static void updateActivity(Channel channel, Activity activity, String channelId) throws ActivitySerializerException {
+    try {
+      activity.setProvider(getProvider());
+      activity.setVerb("post");
+      activity.setActor(createActorForChannel(channel));
+      Map<String, Object> extensions = Maps.newHashMap();
+      extensions.put("youtube", channel);
+      activity.setAdditionalProperty("extensions", extensions);
+    } catch (Throwable throwable) {
+      throw new ActivitySerializerException(throwable);
+    }
+  }
+
+  /**
+   * createActorForChannel.
+   * @param channel Channel
+   * @return $.actor
+   */
+  public static ActivityObject createActorForChannel(Channel channel) {
+    ActivityObject actor = new ActivityObject();
+    // TODO: use generic provider id concatenator
+    actor.setId("id:youtube:" + channel.getId());
+    actor.setSummary(channel.getSnippet().getDescription());
+    actor.setDisplayName(channel.getSnippet().getTitle());
+    Image image = new Image();
+    image.setUrl(channel.getSnippet().getThumbnails().getHigh().getUrl());
+    actor.setImage(image);
+    actor.setUrl("https://youtube.com/user/" + channel.getId());
+    Map<String, Object> actorExtensions = Maps.newHashMap();
+    actorExtensions.put("followers", channel.getStatistics().getSubscriberCount());
+    actorExtensions.put("posts", channel.getStatistics().getVideoCount());
+    actor.setAdditionalProperty("extensions", actorExtensions);
+    return actor;
+  }
+
+  /**
+   * Given a video object, create the appropriate activity object with a valid image
+   * (thumbnail) and video URL.
+   * @param video Video
+   * @return Activity Object with Video URL and a thumbnail image
+   */
+  private static ActivityObject buildActivityObject(Video video) {
+    ActivityObject activityObject = new ActivityObject();
+
+    ThumbnailDetails thumbnailDetails = video.getSnippet().getThumbnails();
+    Thumbnail thumbnail = thumbnailDetails.getDefault();
+
+    if (thumbnail != null) {
+      Image image = new Image();
+      image.setUrl(thumbnail.getUrl());
+      image.setHeight(thumbnail.getHeight());
+      image.setWidth(thumbnail.getWidth());
+
+      activityObject.setImage(image);
     }
 
+    activityObject.setUrl("https://www.youtube.com/watch?v=" + video.getId());
+    activityObject.setObjectType("video");
 
-    /**
-     * Given a {@link com.google.api.services.youtube.model.Channel} object and an
-     * {@link org.apache.streams.pojo.json.Activity} object, fill out the appropriate details
-     *
-     * @param channel
-     * @param activity
-     * @throws org.apache.streams.exceptions.ActivitySerializerException
-     */
-    public static void updateActivity(Channel channel, Activity activity, String channelId) throws ActivitySerializerException {
-        try {
-            activity.setProvider(getProvider());
-            activity.setVerb("post");
-            activity.setActor(createActorForChannel(channel));
-            Map<String, Object> extensions = Maps.newHashMap();
-            extensions.put("youtube", channel);
-            activity.setAdditionalProperty("extensions", extensions);
-        } catch (Throwable t) {
-            throw new ActivitySerializerException(t);
-        }
+    return activityObject;
+  }
+
+  /**
+   * Add the Youtube extensions to the Activity object that we're building.
+   * @param activity Activity
+   * @param video Video
+   */
+  private static void addYoutubeExtensions(Activity activity, Video video) {
+    Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
+
+    extensions.put("youtube", video);
+
+    if (video.getStatistics() != null) {
+      Map<String, Object> likes = new HashMap<>();
+      likes.put("count", video.getStatistics().getCommentCount());
+      extensions.put("likes", likes);
     }
+  }
 
-    public static ActivityObject createActorForChannel(Channel channel) {
-        ActivityObject actor = new ActivityObject();
-        actor.setId("id:youtube:"+channel.getId());
-        actor.setSummary(channel.getSnippet().getDescription());
-        actor.setDisplayName(channel.getSnippet().getTitle());
-        Image image = new Image();
-        image.setUrl(channel.getSnippet().getThumbnails().getHigh().getUrl());
-        actor.setImage(image);
-        actor.setUrl("https://youtube.com/user/" + channel.getId());
-        Map<String, Object> actorExtensions = Maps.newHashMap();
-        actorExtensions.put("followers", channel.getStatistics().getSubscriberCount());
-        actorExtensions.put("posts", channel.getStatistics().getVideoCount());
-        actor.setAdditionalProperty("extensions", actorExtensions);
-        return actor;
-    }
+  /**
+   * Build an {@link org.apache.streams.pojo.json.ActivityObject} actor given the video object
+   * @param video Video
+   * @param id id
+   * @return Actor object
+   */
+  private static ActivityObject buildActor(Video video, String id) {
+    ActivityObject actor = new ActivityObject();
 
-    /**
-     * Given a video object, create the appropriate activity object with a valid image
-     * (thumbnail) and video URL
-     * @param video
-     * @return Activity Object with Video URL and a thumbnail image
-     */
-    private static ActivityObject buildActivityObject(Video video) {
-        ActivityObject activityObject = new ActivityObject();
+    actor.setId("id:youtube:" + id);
+    actor.setDisplayName(video.getSnippet().getChannelTitle());
+    actor.setSummary(video.getSnippet().getDescription());
+    actor.setAdditionalProperty("handle", video.getSnippet().getChannelTitle());
 
-        ThumbnailDetails thumbnailDetails = video.getSnippet().getThumbnails();
-        Thumbnail thumbnail = thumbnailDetails.getDefault();
+    return actor;
+  }
 
-        if(thumbnail != null) {
-            Image image = new Image();
-            image.setUrl(thumbnail.getUrl());
-            image.setHeight(thumbnail.getHeight());
-            image.setWidth(thumbnail.getWidth());
+  /**
+   * Gets the common youtube {@link org.apache.streams.pojo.json.Provider} object
+   * @return a provider object representing YouTube
+   */
+  public static Provider getProvider() {
+    Provider provider = new Provider();
+    provider.setId("id:providers:youtube");
+    provider.setDisplayName("YouTube");
+    return provider;
+  }
 
-            activityObject.setImage(image);
-        }
-
-        activityObject.setUrl("https://www.youtube.com/watch?v=" + video.getId());
-        activityObject.setObjectType("video");
-
-        return activityObject;
-    }
-
-    /**
-     * Add the Youtube extensions to the Activity object that we're building
-     * @param activity
-     * @param video
-     */
-    private static void addYoutubeExtensions(Activity activity, Video video) {
-        Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
-
-        extensions.put("youtube", video);
-
-        if(video.getStatistics() != null) {
-            Map<String, Object> likes = new HashMap<>();
-            likes.put("count", video.getStatistics().getCommentCount());
-            extensions.put("likes", likes);
-        }
-    }
-
-    /**
-     * Build an {@link org.apache.streams.pojo.json.ActivityObject} actor given the video object
-     * @param video
-     * @param id
-     * @return Actor object
-     */
-    private static ActivityObject buildActor(Video video, String id) {
-        ActivityObject actor = new ActivityObject();
-
-        actor.setId("id:youtube:" + id);
-        actor.setDisplayName(video.getSnippet().getChannelTitle());
-        actor.setSummary(video.getSnippet().getDescription());
-        actor.setAdditionalProperty("handle", video.getSnippet().getChannelTitle());
-
-        return actor;
-    }
-
-    /**
-     * Gets the common youtube {@link org.apache.streams.pojo.json.Provider} object
-     * @return a provider object representing YouTube
-     */
-    public static Provider getProvider() {
-        Provider provider = new Provider();
-        provider.setId("id:providers:youtube");
-        provider.setDisplayName("YouTube");
-        return provider;
-    }
-
-    /**
-     * Formats the ID to conform with the Apache Streams activity ID convention
-     * @param idparts the parts of the ID to join
-     * @return a valid Activity ID in format "id:youtube:part1:part2:...partN"
-     */
-    public static String formatId(String... idparts) {
-        return Joiner.on(":").join(Lists.asList("id:youtube", idparts));
-    }
+  /**
+   * Formats the ID to conform with the Apache Streams activity ID convention
+   * @param idparts the parts of the ID to join
+   * @return a valid Activity ID in format "id:youtube:part1:part2:...partN"
+   */
+  public static String formatId(String... idparts) {
+    return Joiner.on(":").join(Lists.asList("id:youtube", idparts));
+  }
 }

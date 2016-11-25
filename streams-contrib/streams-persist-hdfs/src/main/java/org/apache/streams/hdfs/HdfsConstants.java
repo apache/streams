@@ -19,13 +19,13 @@
 package org.apache.streams.hdfs;
 
 /**
- * Predefined field symbols for streams-persist-hdfs
+ * Predefined field symbols for streams-persist-hdfs.
  */
 public class HdfsConstants {
 
-    protected static final String ID = "ID";
-    protected static final String TS = "TS";
-    protected static final String META = "META";
-    protected static final String DOC = "DOC";
+  protected static final String ID = "ID";
+  protected static final String TS = "TS";
+  protected static final String META = "META";
+  protected static final String DOC = "DOC";
 
 }

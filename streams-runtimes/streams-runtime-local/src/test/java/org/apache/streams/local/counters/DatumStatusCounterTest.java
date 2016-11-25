@@ -23,112 +23,112 @@ import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 
+import java.lang.management.ManagementFactory;
 import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
-import java.lang.management.ManagementFactory;
 
 /**
  *
  */
 public class DatumStatusCounterTest extends RandomizedTest {
 
-    private static final String MBEAN_ID = "test_id";
-    private static final String STREAM_ID = "test_stream";
-    private static long STREAM_START_TIME = (new DateTime()).getMillis();
+  private static final String MBEAN_ID = "test_id";
+  private static final String STREAM_ID = "test_stream";
+  private static long STREAM_START_TIME = (new DateTime()).getMillis();
 
 
-    /**
-     * Remove registered mbeans from previous tests
-     * @throws Exception
-     */
-    @After
-    public void unregisterMXBean() throws Exception {
-        try {
-            ManagementFactory.getPlatformMBeanServer().unregisterMBean(new ObjectName(String.format(DatumStatusCounter.NAME_TEMPLATE, MBEAN_ID, STREAM_ID, STREAM_START_TIME)));
-        } catch (InstanceNotFoundException ife) {
-            //No-op
-        }
+  /**
+   * Remove registered mbeans from previous tests
+   * @throws Exception
+   */
+  @After
+  public void unregisterMXBean() throws Exception {
+    try {
+      ManagementFactory.getPlatformMBeanServer().unregisterMBean(new ObjectName(String.format(DatumStatusCounter.NAME_TEMPLATE, MBEAN_ID, STREAM_ID, STREAM_START_TIME)));
+    } catch (InstanceNotFoundException ife) {
+      //No-op
     }
+  }
 
-    /**
-     * Test Constructor can register the counter as an mxbean with throwing an exception.
-     */
-    @Test
-    public void testConstructor() {
-        try {
-            new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        } catch (Throwable t) {
-            fail("Constructor Threw Exception : "+t.getMessage());
-        }
+  /**
+   * Test Constructor can register the counter as an mxbean with throwing an exception.
+   */
+  @Test
+  public void testConstructor() {
+    try {
+      new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    } catch (Throwable t) {
+      fail("Constructor Threw Exception : "+t.getMessage());
     }
+  }
 
-    /**
-     * Test that you can increment passes and it returns the correct count
-     * @throws Exception
-     */
-    @Test
-    @Repeat(iterations = 3)
-    public void testPassed() throws Exception {
-        DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        int numIncrements = randomIntBetween(1, 100000);
-        for(int i=0; i < numIncrements; ++i) {
-            counter.incrementPassedCount();
-        }
-        assertEquals(numIncrements, counter.getNumPassed());
-
-        unregisterMXBean();
-
-        counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        numIncrements = randomIntBetween(1, 100000);
-        long total = 0;
-        for(int i=0; i < numIncrements; ++i) {
-            long delta = randomIntBetween(1, 100);
-            total += delta;
-            counter.incrementPassedCount(delta);
-        }
-        assertEquals(total, counter.getNumPassed());
+  /**
+   * Test that you can increment passes and it returns the correct count
+   * @throws Exception
+   */
+  @Test
+  @Repeat(iterations = 3)
+  public void testPassed() throws Exception {
+    DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    int numIncrements = randomIntBetween(1, 100000);
+    for(int i=0; i < numIncrements; ++i) {
+      counter.incrementPassedCount();
     }
+    assertEquals(numIncrements, counter.getNumPassed());
 
-    /**
-     * Test that you can increment failed and it returns the correct count
-     * @throws Exception
-     */
-    @Test
-    @Repeat(iterations = 3)
-    public void testFailed() throws Exception {
-        DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        int numIncrements = randomIntBetween(1, 100000);
-        for(int i=0; i < numIncrements; ++i) {
-            counter.incrementFailedCount();
-        }
-        assertEquals(numIncrements, counter.getNumFailed());
+    unregisterMXBean();
 
-        unregisterMXBean();
-
-        counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        numIncrements = randomIntBetween(1, 100000);
-        long total = 0;
-        for(int i=0; i < numIncrements; ++i) {
-            long delta = randomIntBetween(1, 100);
-            total += delta;
-            counter.incrementFailedCount(delta);
-        }
-        assertEquals(total, counter.getNumFailed());
+    counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    numIncrements = randomIntBetween(1, 100000);
+    long total = 0;
+    for(int i=0; i < numIncrements; ++i) {
+      long delta = randomIntBetween(1, 100);
+      total += delta;
+      counter.incrementPassedCount(delta);
     }
+    assertEquals(total, counter.getNumPassed());
+  }
 
-
-    /**
-     * Test failure rate returns expected values
-     */
-    @Test
-    @Repeat(iterations = 3)
-    public void testFailureRate() {
-        DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        assertEquals(0.0, counter.getFailRate(), 0);
-        int failures = randomIntBetween(0, 100000);
-        int passes = randomIntBetween(0, 100000);
-        counter.incrementPassedCount(passes);
-        counter.incrementFailedCount(failures);
-        assertEquals((double)failures / (double)(passes + failures), counter.getFailRate(), 0);
+  /**
+   * Test that you can increment failed and it returns the correct count
+   * @throws Exception
+   */
+  @Test
+  @Repeat(iterations = 3)
+  public void testFailed() throws Exception {
+    DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    int numIncrements = randomIntBetween(1, 100000);
+    for(int i=0; i < numIncrements; ++i) {
+      counter.incrementFailedCount();
     }
+    assertEquals(numIncrements, counter.getNumFailed());
+
+    unregisterMXBean();
+
+    counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    numIncrements = randomIntBetween(1, 100000);
+    long total = 0;
+    for(int i=0; i < numIncrements; ++i) {
+      long delta = randomIntBetween(1, 100);
+      total += delta;
+      counter.incrementFailedCount(delta);
+    }
+    assertEquals(total, counter.getNumFailed());
+  }
+
+
+  /**
+   * Test failure rate returns expected values
+   */
+  @Test
+  @Repeat(iterations = 3)
+  public void testFailureRate() {
+    DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    assertEquals(0.0, counter.getFailRate(), 0);
+    int failures = randomIntBetween(0, 100000);
+    int passes = randomIntBetween(0, 100000);
+    counter.incrementPassedCount(passes);
+    counter.incrementFailedCount(failures);
+    assertEquals((double)failures / (double)(passes + failures), counter.getFailRate(), 0);
+  }
 }

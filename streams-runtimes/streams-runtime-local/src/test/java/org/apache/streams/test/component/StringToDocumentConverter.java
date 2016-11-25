@@ -25,9 +25,9 @@ import org.apache.streams.core.StreamsDatum;
  */
 public class StringToDocumentConverter implements StreamsDatumConverter {
 
-    @Override
-    public StreamsDatum convert(String s) {
-        return new StreamsDatum(s);
-    }
+  @Override
+  public StreamsDatum convert(String s) {
+    return new StreamsDatum(s);
+  }
 
 }

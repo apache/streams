@@ -28,43 +28,43 @@ import java.io.FileReader;
 import java.io.LineNumberReader;
 
 /**
- * Created by sblackmon on 10/13/16.
+ * YoutubeChannelProviderIT integration test for YoutubeChannelProvider.
  */
 public class YoutubeChannelProviderIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(YoutubeChannelProviderIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(YoutubeChannelProviderIT.class);
 
-    @Test
-    public void testYoutubeChannelProvider() throws Exception {
+  @Test
+  public void testYoutubeChannelProvider() throws Exception {
 
-        String configfile = "./target/test-classes/YoutubeChannelProviderIT.conf";
-        String outfile = "./target/test-classes/YoutubeChannelProviderIT.stdout.txt";
+    String configfile = "./target/test-classes/YoutubeChannelProviderIT.conf";
+    String outfile = "./target/test-classes/YoutubeChannelProviderIT.stdout.txt";
 
-        String[] args = new String[2];
-        args[0] = configfile;
-        args[1] = outfile;
+    String[] args = new String[2];
+    args[0] = configfile;
+    args[1] = outfile;
 
-        Thread testThread = new Thread((Runnable) () -> {
-            try {
-                YoutubeChannelProvider.main(args);
-            } catch( Exception e ) {
-                LOGGER.error("Test Exception!", e);
-            }
-        });
-        testThread.start();
-        testThread.join(60000);
+    Thread testThread = new Thread((Runnable) () -> {
+      try {
+        YoutubeChannelProvider.main(args);
+      } catch ( Exception ex ) {
+        LOGGER.error("Test Exception!", ex);
+      }
+    });
+    testThread.start();
+    testThread.join(60000);
 
-        File out = new File(outfile);
-        assert (out.exists());
-        assert (out.canRead());
-        assert (out.isFile());
+    File out = new File(outfile);
+    assert (out.exists());
+    assert (out.canRead());
+    assert (out.isFile());
 
-        FileReader outReader = new FileReader(out);
-        LineNumberReader outCounter = new LineNumberReader(outReader);
+    FileReader outReader = new FileReader(out);
+    LineNumberReader outCounter = new LineNumberReader(outReader);
 
-        while(outCounter.readLine() != null) {}
+    while (outCounter.readLine() != null) {}
 
-        assert (outCounter.getLineNumber() >= 1);
+    assert (outCounter.getLineNumber() >= 1);
 
-    }
+  }
 }

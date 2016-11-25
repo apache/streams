@@ -19,9 +19,10 @@
 
 package org.apache.streams.sysomos.util;
 
+import org.apache.streams.sysomos.SysomosException;
+
 import com.google.common.base.Strings;
 import org.apache.commons.io.IOUtils;
-import org.apache.streams.sysomos.SysomosException;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -36,49 +37,53 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Provides utilities for working with Sysomos
+ * Provides utilities for working with Sysomos.
  */
 public class SysomosUtils {
 
-    public static final Pattern CODE_PATTERN = Pattern.compile("code: ([0-9]+)");
-    public static final DateTimeFormatter SYSOMOS_DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC();
-    private final static Logger LOGGER = LoggerFactory.getLogger(SysomosUtils.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SysomosUtils.class);
 
-    private SysomosUtils() {}
+  public static final Pattern CODE_PATTERN = Pattern.compile("code: ([0-9]+)");
+  public static final DateTimeFormatter SYSOMOS_DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC();
 
-    /**
-     * Queries the sysomos URL and provides the response as a String
-     *
-     * @param url the Sysomos URL to query
-     * @return valid XML String
-     */
-    public static String queryUrl(URL url) {
-        try {
-            HttpURLConnection cn = (HttpURLConnection) url.openConnection();
-            cn.setRequestMethod("GET");
-            cn.addRequestProperty("Content-Type", "text/xml;charset=UTF-8");
-            cn.setDoInput(true);
-            cn.setDoOutput(false);
-            StringWriter writer = new StringWriter();
-            IOUtils.copy(new InputStreamReader(cn.getInputStream()), writer);
-            writer.flush();
+  private SysomosUtils() {}
 
-            String xmlResponse = writer.toString();
-            if (Strings.isNullOrEmpty(xmlResponse)) {
-                throw new SysomosException("XML Response from Sysomos was empty : " + xmlResponse + "\n" + cn.getResponseMessage(), cn.getResponseCode());
-            }
-            return xmlResponse;
-        } catch (IOException e) {
-            LOGGER.error("Error executing request : {}", e, url.toString());
-            String message = e.getMessage();
-            Matcher match = CODE_PATTERN.matcher(message);
-            if(match.find()) {
-                int errorCode = Integer.parseInt(match.group(1));
-                throw new SysomosException(message, e, errorCode);
-            }
-            else {
-                throw new SysomosException(e.getMessage(), e);
-            }
-        }
+  /**
+   * Queries the sysomos URL and provides the response as a String.
+   *
+   * @param url the Sysomos URL to query
+   * @return valid XML String
+   */
+  public static String queryUrl(URL url) {
+    try {
+      HttpURLConnection cn = (HttpURLConnection) url.openConnection();
+      cn.setRequestMethod("GET");
+      cn.addRequestProperty("Content-Type", "text/xml;charset=UTF-8");
+      cn.setDoInput(true);
+      cn.setDoOutput(false);
+      StringWriter writer = new StringWriter();
+      IOUtils.copy(new InputStreamReader(cn.getInputStream()), writer);
+      writer.flush();
+
+      String xmlResponse = writer.toString();
+      if (Strings.isNullOrEmpty(xmlResponse)) {
+        throw new SysomosException("XML Response from Sysomos was empty : "
+            + xmlResponse
+            + "\n"
+            + cn.getResponseMessage(),
+            cn.getResponseCode());
+      }
+      return xmlResponse;
+    } catch (IOException ex) {
+      LOGGER.error("Error executing request : {}", ex, url.toString());
+      String message = ex.getMessage();
+      Matcher match = CODE_PATTERN.matcher(message);
+      if (match.find()) {
+        int errorCode = Integer.parseInt(match.group(1));
+        throw new SysomosException(message, ex, errorCode);
+      } else {
+        throw new SysomosException(ex.getMessage(), ex);
+      }
     }
+  }
 }

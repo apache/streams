@@ -42,185 +42,219 @@ import java.util.Map;
  */
 public class LineReadWriteUtil {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TypeConverterUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TypeConverterUtil.class);
 
-    private static Map<LineReadWriteConfiguration, LineReadWriteUtil> INSTANCE_MAP = Maps.newConcurrentMap();
+  private static Map<LineReadWriteConfiguration, LineReadWriteUtil> INSTANCE_MAP = Maps.newConcurrentMap();
 
-    private final static List<String> DEFAULT_FIELDS = Lists.newArrayList("ID", "SEQ", "TS", "META", "DOC");
+  private static final List<String> DEFAULT_FIELDS = Lists.newArrayList("ID", "SEQ", "TS", "META", "DOC");
 
-    private List<String> fields;
-    private String fieldDelimiter = "\t";
-    private String lineDelimiter = "\n";
-    private String encoding = "UTF-8";
+  private List<String> fields;
+  private String fieldDelimiter = "\t";
+  private String lineDelimiter = "\n";
+  private String encoding = "UTF-8";
 
-    private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+  private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-    private LineReadWriteUtil() {
+  private LineReadWriteUtil() {
+  }
+
+  private LineReadWriteUtil(LineReadWriteConfiguration configuration) {
+    this.fields = configuration.getFields();
+    this.fieldDelimiter = configuration.getFieldDelimiter();
+    this.lineDelimiter = configuration.getLineDelimiter();
+    this.encoding = configuration.getEncoding();
+  }
+
+  public static LineReadWriteUtil getInstance() {
+    return getInstance(new LineReadWriteConfiguration());
+  }
+
+  /**
+   * getInstance.
+   * @param configuration
+   * @return result
+   */
+  public static LineReadWriteUtil getInstance(LineReadWriteConfiguration configuration) {
+    if ( INSTANCE_MAP.containsKey(configuration)
+        &&
+        INSTANCE_MAP.get(configuration) != null) {
+      return INSTANCE_MAP.get(configuration);
+    } else {
+      INSTANCE_MAP.put(configuration, new LineReadWriteUtil(configuration));
+      return INSTANCE_MAP.get(configuration);
+    }
+  }
+
+  /**
+   * processLine
+   * @param line
+   * @return result
+   */
+  public StreamsDatum processLine(String line) {
+
+    List<String> expectedFields = fields;
+    if ( line.endsWith(lineDelimiter)) {
+      line = trimLineDelimiter(line);
+    }
+    String[] parsedFields = line.split(fieldDelimiter);
+
+    if ( parsedFields.length == 0) {
+      return null;
     }
 
-    private LineReadWriteUtil(LineReadWriteConfiguration configuration) {
-        this.fields = configuration.getFields();
-        this.fieldDelimiter = configuration.getFieldDelimiter();
-        this.lineDelimiter = configuration.getLineDelimiter();
-        this.encoding = configuration.getEncoding();
+    String id = null;
+    DateTime ts = null;
+    BigInteger seq = null;
+    Map<String, Object> metadata = null;
+    String json = null;
+
+    if ( expectedFields.contains( FieldConstants.DOC )
+        && parsedFields.length > expectedFields.indexOf(FieldConstants.DOC)) {
+      json = parsedFields[expectedFields.indexOf(FieldConstants.DOC)];
     }
 
-    public static LineReadWriteUtil getInstance() {
-        return getInstance(new LineReadWriteConfiguration());
+    if ( expectedFields.contains( FieldConstants.ID )
+        && parsedFields.length > expectedFields.indexOf(FieldConstants.ID)) {
+      id = parsedFields[expectedFields.indexOf(FieldConstants.ID)];
+    }
+    if ( expectedFields.contains( FieldConstants.SEQ )
+        && parsedFields.length > expectedFields.indexOf(FieldConstants.SEQ)) {
+      try {
+        seq = new BigInteger(parsedFields[expectedFields.indexOf(FieldConstants.SEQ)]);
+      } catch ( NumberFormatException nfe ) {
+        LOGGER.warn("invalid sequence number {}", nfe);
+      }
+    }
+    if ( expectedFields.contains( FieldConstants.TS )
+        && parsedFields.length > expectedFields.indexOf(FieldConstants.TS)) {
+      ts = parseTs(parsedFields[expectedFields.indexOf(FieldConstants.TS)]);
+    }
+    if ( expectedFields.contains( FieldConstants.META )
+        && parsedFields.length > expectedFields.indexOf(FieldConstants.META)) {
+      metadata = parseMap(parsedFields[expectedFields.indexOf(FieldConstants.META)]);
     }
 
-    public static LineReadWriteUtil getInstance(LineReadWriteConfiguration configuration) {
-        if( INSTANCE_MAP.containsKey(configuration) &&
-            INSTANCE_MAP.get(configuration) != null)
-            return INSTANCE_MAP.get(configuration);
-        else {
-            INSTANCE_MAP.put(configuration, new LineReadWriteUtil(configuration));
-            return INSTANCE_MAP.get(configuration);
-        }
+    StreamsDatum datum = new StreamsDatum(json);
+    datum.setId(id);
+    datum.setTimestamp(ts);
+    datum.setMetadata(metadata);
+    datum.setSequenceid(seq);
+    return datum;
+
+  }
+
+  /**
+   * convertResultToString
+   * @param entry
+   * @return result
+   */
+  public String convertResultToString(StreamsDatum entry) {
+    String metadataJson = null;
+    try {
+      metadataJson = MAPPER.writeValueAsString(entry.getMetadata());
+    } catch (JsonProcessingException ex) {
+      LOGGER.warn("Error converting metadata to a string", ex);
     }
 
-    public StreamsDatum processLine(String line) {
-
-        List<String> expectedFields = fields;
-        if( line.endsWith(lineDelimiter)) line = trimLineDelimiter(line);
-        String[] parsedFields = line.split(fieldDelimiter);
-
-        if( parsedFields.length == 0)
-            return null;
-
-        String id = null;
-        DateTime ts = null;
-        BigInteger seq = null;
-        Map<String, Object> metadata = null;
-        String json = null;
-
-        if( expectedFields.contains( FieldConstants.DOC )
-                && parsedFields.length > expectedFields.indexOf(FieldConstants.DOC)) {
-            json = parsedFields[expectedFields.indexOf(FieldConstants.DOC)];
-        }
-
-        if( expectedFields.contains( FieldConstants.ID )
-                && parsedFields.length > expectedFields.indexOf(FieldConstants.ID)) {
-            id = parsedFields[expectedFields.indexOf(FieldConstants.ID)];
-        }
-        if( expectedFields.contains( FieldConstants.SEQ )
-                && parsedFields.length > expectedFields.indexOf(FieldConstants.SEQ)) {
-            try {
-                seq = new BigInteger(parsedFields[expectedFields.indexOf(FieldConstants.SEQ)]);
-            } catch( NumberFormatException nfe )
-            { LOGGER.warn("invalid sequence number {}", nfe); }
-        }
-        if( expectedFields.contains( FieldConstants.TS )
-                && parsedFields.length > expectedFields.indexOf(FieldConstants.TS)) {
-            ts = parseTs(parsedFields[expectedFields.indexOf(FieldConstants.TS)]);
-        }
-        if( expectedFields.contains( FieldConstants.META )
-                && parsedFields.length > expectedFields.indexOf(FieldConstants.META)) {
-            metadata = parseMap(parsedFields[expectedFields.indexOf(FieldConstants.META)]);
-        }
-
-        StreamsDatum datum = new StreamsDatum(json);
-        datum.setId(id);
-        datum.setTimestamp(ts);
-        datum.setMetadata(metadata);
-        datum.setSequenceid(seq);
-        return datum;
-
+    String documentJson = null;
+    try {
+      if ( entry.getDocument() instanceof String ) {
+        documentJson = (String) entry.getDocument();
+      } else {
+        documentJson = MAPPER.writeValueAsString(entry.getDocument());
+      }
+    } catch (JsonProcessingException ex) {
+      LOGGER.warn("Error converting document to string", ex);
     }
 
-    public String convertResultToString(StreamsDatum entry) {
-        String metadataJson = null;
+    if (Strings.isNullOrEmpty(documentJson)) {
+      return null;
+    } else {
+      StringBuilder stringBuilder = new StringBuilder();
+      Iterator<String> fields = this.fields.iterator();
+      List<String> fielddata = Lists.newArrayList();
+      Joiner joiner = Joiner.on(fieldDelimiter).useForNull("");
+      while( fields.hasNext() ) {
+        String field = fields.next();
+        if ( field.equals(FieldConstants.DOC) ) {
+          fielddata.add(documentJson);
+        } else if ( field.equals(FieldConstants.ID) ) {
+          fielddata.add(entry.getId());
+        } else if ( field.equals(FieldConstants.SEQ) ) {
+          if (entry.getSequenceid() != null) {
+            fielddata.add(entry.getSequenceid().toString());
+          } else {
+            fielddata.add("null");
+          }
+        } else if ( field.equals(FieldConstants.TS) ) {
+          if (entry.getTimestamp() != null) {
+            fielddata.add(entry.getTimestamp().toString());
+          } else {
+            fielddata.add(DateTime.now().toString());
+          }
+        } else if ( field.equals(FieldConstants.META) ) {
+          fielddata.add(metadataJson);
+        } else if ( entry.getMetadata().containsKey(field)) {
+          fielddata.add(entry.getMetadata().get(field).toString());
+        } else {
+          fielddata.add(null);
+        }
+      }
+      joiner.appendTo(stringBuilder, fielddata);
+      return stringBuilder.toString();
+    }
+  }
+
+  /**
+   * parseTs
+   * @param field
+   * @return
+   */
+  public DateTime parseTs(String field) {
+
+    DateTime timestamp = null;
+    try {
+      long longts = Long.parseLong(field);
+      timestamp = new DateTime(longts);
+    } catch ( Exception e1 ) {
+      try {
+        timestamp = DateTime.parse(field);
+      } catch ( Exception e2 ) {
         try {
-            metadataJson = MAPPER.writeValueAsString(entry.getMetadata());
-        } catch (JsonProcessingException e) {
-            LOGGER.warn("Error converting metadata to a string", e);
+          timestamp = MAPPER.readValue(field, DateTime.class);
+        } catch ( Exception e3 ) {
+          LOGGER.warn("Could not parse timestamp:{} ", field);
         }
-
-        String documentJson = null;
-        try {
-            if( entry.getDocument() instanceof String )
-                documentJson = (String)entry.getDocument();
-            else
-                documentJson = MAPPER.writeValueAsString(entry.getDocument());
-        } catch (JsonProcessingException e) {
-            LOGGER.warn("Error converting document to string", e);
-        }
-
-        if (Strings.isNullOrEmpty(documentJson))
-            return null;
-        else {
-            StringBuilder stringBuilder = new StringBuilder();
-            Iterator<String> fields = this.fields.iterator();
-            List<String> fielddata = Lists.newArrayList();
-            Joiner joiner = Joiner.on(fieldDelimiter).useForNull("");
-            while( fields.hasNext() ) {
-                String field = fields.next();
-                if( field.equals(FieldConstants.DOC) )
-                    fielddata.add(documentJson);
-                else if( field.equals(FieldConstants.ID) )
-                    fielddata.add(entry.getId());
-                else if( field.equals(FieldConstants.SEQ) )
-                    if( entry.getSequenceid() != null)
-                        fielddata.add(entry.getSequenceid().toString());
-                    else
-                        fielddata.add("null");
-                else if( field.equals(FieldConstants.TS) )
-                    if( entry.getTimestamp() != null )
-                        fielddata.add(entry.getTimestamp().toString());
-                    else
-                        fielddata.add(DateTime.now().toString());
-                else if( field.equals(FieldConstants.META) )
-                    fielddata.add(metadataJson);
-                else if( entry.getMetadata().containsKey(field)) {
-                    fielddata.add(entry.getMetadata().get(field).toString());
-                } else {
-                    fielddata.add(null);
-                }
-
-            }
-            joiner.appendTo(stringBuilder, fielddata);
-            return stringBuilder.toString();
-        }
+      }
     }
 
-    public DateTime parseTs(String field) {
+    return timestamp;
+  }
 
-        DateTime timestamp = null;
-        try {
-            long longts = Long.parseLong(field);
-            timestamp = new DateTime(longts);
-        } catch ( Exception e ) {
-            try {
-                timestamp = DateTime.parse(field);
-            } catch ( Exception e2 ) {
-                try {
-                    timestamp = MAPPER.readValue(field, DateTime.class);
-                } catch ( Exception e3 ) {
-                    LOGGER.warn("Could not parse timestamp:{} ", field);
-                }
-            }
-        }
+  /**
+   * parseMap
+   * @param field
+   * @return result
+   */
+  public Map<String, Object> parseMap(String field) {
 
-        return timestamp;
+    Map<String, Object> metadata = null;
+
+    try {
+      JsonNode jsonNode = MAPPER.readValue(field, JsonNode.class);
+      metadata = MAPPER.convertValue(jsonNode, Map.class);
+    } catch (Exception ex) {
+      LOGGER.warn("failed in parseMap: " + ex.getMessage());
     }
+    return metadata;
+  }
 
-    public Map<String, Object> parseMap(String field) {
-
-        Map<String, Object> metadata = null;
-
-        try {
-            JsonNode jsonNode = MAPPER.readValue(field, JsonNode.class);
-            metadata = MAPPER.convertValue(jsonNode, Map.class);
-        } catch (Exception e) {
-            LOGGER.warn("failed in parseMap: " + e.getMessage());
-        }
-        return metadata;
+  private String trimLineDelimiter(String str) {
+    if ( !Strings.isNullOrEmpty(str)) {
+      if (str.endsWith(lineDelimiter)) {
+        return str.substring(0, str.length() - 1);
+      }
     }
-
-    private String trimLineDelimiter(String str) {
-        if( !Strings.isNullOrEmpty(str))
-            if( str.endsWith(lineDelimiter))
-                return str.substring(0,str.length()-1);
-        return str;
-    }
+    return str;
+  }
 }

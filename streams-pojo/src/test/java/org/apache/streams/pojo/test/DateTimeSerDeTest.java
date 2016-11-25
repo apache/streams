@@ -18,8 +18,9 @@
 
 package org.apache.streams.pojo.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -35,47 +36,47 @@ import static org.junit.Assert.assertEquals;
  */
 public class DateTimeSerDeTest {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(DateTimeSerDeTest.class);
-    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeSerDeTest.class);
+  private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    @Ignore
-    @Test
-    // this really needs to be able to pass...
-    public void testActivityStringSer() {
-        String input = "2012-01-17T21:21:46.000Z";
-        try {
-            DateTime output = mapper.readValue(input, DateTime.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail();
-        }
+  @Ignore
+  @Test
+  // this really needs to be able to pass...
+  public void testActivityStringSer() {
+    String input = "2012-01-17T21:21:46.000Z";
+    try {
+      DateTime output = mapper.readValue(input, DateTime.class);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      Assert.fail();
     }
+  }
 
-    @Test
-    public void testMillisDeser() {
-        Long input = 1326856906000l;
-        try {
-            DateTime output = mapper.readValue(input.toString(), DateTime.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail();
-        }
+  @Test
+  public void testMillisDeser() {
+    Long input = 1326856906000L;
+    try {
+      DateTime output = mapper.readValue(input.toString(), DateTime.class);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      Assert.fail();
     }
+  }
 
-    @Test
-    public void testActivityStringDeser() {
-        String output = "2012-01-17T21:21:46.000Z";
-        long inputMillis = 1326835306000L;
-        DateTime input;
-        try {
-            input = new DateTime(inputMillis);
-            //Writes out value as a String including quotes
-            String result = mapper.writeValueAsString(input);
-            assertEquals(result.replace("\"", ""), output);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail();
-        }
+  @Test
+  public void testActivityStringDeser() {
+    String output = "2012-01-17T21:21:46.000Z";
+    long inputMillis = 1326835306000L;
+    DateTime input;
+    try {
+      input = new DateTime(inputMillis);
+      //Writes out value as a String including quotes
+      String result = mapper.writeValueAsString(input);
+      assertEquals(result.replace("\"", ""), output);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      Assert.fail();
     }
+  }
 
 }

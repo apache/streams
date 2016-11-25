@@ -20,14 +20,14 @@ package org.apache.streams.core;
 
 import java.util.List;
 
-public interface StreamsProcessor extends StreamsOperation{
+public interface StreamsProcessor extends StreamsOperation {
 
-    /**
-     * Process/Analyze the {@link org.apache.streams.core.StreamsDatum} and return the the StreamsDatums that will
-     * passed to every down stream operation that reads from this processor.
-     * @param entry StreamsDatum to be process
-     * @return resulting StreamDatums from process. Should never be null or contain null object.  Empty list OK.
-     */
-    List<StreamsDatum> process( StreamsDatum entry );
+  /**
+   * Process/Analyze the {@link org.apache.streams.core.StreamsDatum} and return the the StreamsDatums that will
+   * passed to every down stream operation that reads from this processor.
+   * @param entry StreamsDatum to be processed
+   * @return resulting StreamDatums from processing. Should never be null or contain null object.  Empty list OK.
+   */
+  List<StreamsDatum> process( StreamsDatum entry );
 
 }

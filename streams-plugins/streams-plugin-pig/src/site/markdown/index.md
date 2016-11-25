@@ -22,7 +22,7 @@ Embed within your own java code
     StreamsPigGenerationConfig config = new StreamsPigGenerationConfig();
     config.setSourceDirectory("src/main/jsonschema");
     config.setTargetDirectory("target/generated-resources");
-    StreamsPigGenerationConfig generator = new StreamsPigGenerationConfig(config);
+    StreamsPigResourceGenerator generator = new StreamsPigResourceGenerator(config);
     generator.run();
   
 ##### CLI

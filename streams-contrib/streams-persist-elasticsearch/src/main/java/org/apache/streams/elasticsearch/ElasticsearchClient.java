@@ -21,21 +21,24 @@ package org.apache.streams.elasticsearch;
 import org.elasticsearch.Version;
 import org.elasticsearch.client.Client;
 
+/**
+ * Wrapper class for a client with a known version.
+ */
 public class ElasticsearchClient {
 
-    private Client client;
-    private Version version;
+  private Client client;
+  private Version version;
 
-    public ElasticsearchClient(Client client, Version version) {
-        this.client = client;
-        this.version = version;
-    }
+  public ElasticsearchClient(Client client, Version version) {
+    this.client = client;
+    this.version = version;
+  }
 
-    public Client getClient() {
-        return client;
-    }
+  public Client getClient() {
+    return client;
+  }
 
-    public Version getVersion() {
-        return version;
-    }
+  public Version getVersion() {
+    return version;
+  }
 }

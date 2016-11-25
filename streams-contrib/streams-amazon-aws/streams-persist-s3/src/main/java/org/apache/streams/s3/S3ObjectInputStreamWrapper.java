@@ -15,10 +15,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.s3;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,125 +36,129 @@ import java.io.InputStream;
  * and transfer the entire file. If you are only reading the first 50 lines of a 5,000,000 line file
  * this becomes problematic.
  *
+ * <p/>
  * This class operates as a wrapper to fix the aforementioned nuances.
  *
+ * <p/>
  * Reference:
  * http://stackoverflow.com/questions/17782937/connectionpooltimeoutexception-when-iterating-objects-in-s3
  */
-public class S3ObjectInputStreamWrapper extends InputStream
-{
-    private final static Logger LOGGER = LoggerFactory.getLogger(S3ObjectInputStreamWrapper.class);
+public class S3ObjectInputStreamWrapper extends InputStream {
 
-    private final S3Object s3Object;
-    private final S3ObjectInputStream is;
-    private boolean isClosed = false;
+  private static final Logger LOGGER = LoggerFactory.getLogger(S3ObjectInputStreamWrapper.class);
 
-    /**
-     * Create an input stream safely from
-     * @param s3Object
-     */
-    public S3ObjectInputStreamWrapper(S3Object s3Object) {
-        this.s3Object = s3Object;
-        this.is = this.s3Object.getObjectContent();
+  private final S3Object s3Object;
+  private final S3ObjectInputStream is;
+  private boolean isClosed = false;
+
+  /**
+   * Create an input stream safely.
+   * @param s3Object s3Object
+   */
+  public S3ObjectInputStreamWrapper(S3Object s3Object) {
+    this.s3Object = s3Object;
+    this.is = this.s3Object.getObjectContent();
+  }
+
+  public int hashCode() {
+    return this.is.hashCode();
+  }
+
+  public boolean equals(Object obj) {
+    return this.is.equals(obj);
+  }
+
+  public String toString() {
+    return this.is.toString();
+  }
+
+  public int read() throws IOException {
+    return this.is.read();
+  }
+
+  public int read(byte[] byt) throws IOException {
+    return this.is.read(byt);
+  }
+
+  public int read(byte[] byt, int off, int len) throws IOException {
+    return this.is.read(byt, off, len);
+  }
+
+  public long skip(long skip) throws IOException {
+    return this.is.skip(skip);
+  }
+
+  public int available() throws IOException {
+    return this.is.available();
+  }
+
+  public boolean markSupported() {
+    return this.is.markSupported();
+  }
+
+  public synchronized void mark(int readlimit) {
+    this.is.mark(readlimit);
+  }
+
+  public synchronized void reset() throws IOException {
+    this.is.reset();
+  }
+
+  public void close() throws IOException {
+    ensureEverythingIsReleased();
+  }
+
+  /**
+   * ensureEverythingIsReleased as part of close process.
+   */
+  public void ensureEverythingIsReleased() {
+    if (this.isClosed) {
+      return;
     }
 
-    public int hashCode() {
-        return this.is.hashCode();
+    try {
+      // ensure that the S3 Object is closed properly.
+      this.s3Object.close();
+    } catch (Throwable ex) {
+      LOGGER.warn("Problem Closing the S3Object[{}]: {}", s3Object.getKey(), ex.getMessage());
     }
 
-    public boolean equals(Object obj) {
-        return this.is.equals(obj);
+
+    try {
+      // Abort the stream
+      this.is.abort();
+    } catch (Throwable ex) {
+      LOGGER.warn("Problem Aborting S3Object[{}]: {}", s3Object.getKey(), ex.getMessage());
     }
 
-    public String toString() {
-        return this.is.toString();
+    // close the input Stream Safely
+    closeSafely(this.is);
+
+    // This corrects the issue with Open HTTP connections
+    closeSafely(this.s3Object);
+    this.isClosed = true;
+  }
+
+  private static void closeSafely(Closeable is) {
+    try {
+      if (is != null) {
+        is.close();
+      }
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      LOGGER.warn("S3InputStreamWrapper: Issue Closing Closeable - {}", ex.getMessage());
     }
+  }
 
-    public int read() throws IOException {
-        return this.is.read();
+  protected void finalize() throws Throwable {
+    try {
+      // If there is an accidental leak where the user did not close, call this on the classes destructor
+      ensureEverythingIsReleased();
+      super.finalize();
+    } catch (Exception ex) {
+      // this should never be called, just being very cautious
+      LOGGER.warn("S3InputStreamWrapper: Issue Releasing Connections on Finalize - {}", ex.getMessage());
     }
-
-    public int read(byte[] b) throws IOException {
-        return this.is.read(b);
-    }
-
-    public int read(byte[] b, int off, int len) throws IOException {
-        return this.is.read(b, off, len);
-    }
-
-    public long skip(long n) throws IOException {
-        return this.is.skip(n);
-    }
-
-    public int available() throws IOException {
-        return this.is.available();
-    }
-
-    public boolean markSupported() {
-        return this.is.markSupported();
-    }
-
-    public synchronized void mark(int readlimit) {
-        this.is.mark(readlimit);
-    }
-
-    public synchronized void reset() throws IOException {
-        this.is.reset();
-    }
-
-    public void close() throws IOException {
-        ensureEverythingIsReleased();
-    }
-
-    public void ensureEverythingIsReleased() {
-        if(this.isClosed)
-            return;
-
-
-        try {
-            // ensure that the S3 Object is closed properly.
-            this.s3Object.close();
-        } catch(Throwable e) {
-            LOGGER.warn("Problem Closing the S3Object[{}]: {}", s3Object.getKey(), e.getMessage());
-        }
-
-
-        try {
-            // Abort the stream
-            this.is.abort();
-        }
-        catch(Throwable e) {
-            LOGGER.warn("Problem Aborting S3Object[{}]: {}", s3Object.getKey(), e.getMessage());
-        }
-
-        // close the input Stream Safely
-        closeSafely(this.is);
-
-        // This corrects the issue with Open HTTP connections
-        closeSafely(this.s3Object);
-        this.isClosed = true;
-    }
-
-    private static void closeSafely(Closeable is) {
-        try {
-            if(is != null)
-                is.close();
-        } catch(Exception e) {
-            e.printStackTrace();
-            LOGGER.warn("S3InputStreamWrapper: Issue Closing Closeable - {}", e.getMessage());
-        }
-    }
-
-    protected void finalize( ) throws Throwable
-    {
-        try {
-            // If there is an accidental leak where the user did not close, call this on the classes destructor
-            ensureEverythingIsReleased();
-            super.finalize();
-        } catch(Exception e) {
-            // this should never be called, just being very cautious
-            LOGGER.warn("S3InputStreamWrapper: Issue Releasing Connections on Finalize - {}", e.getMessage());
-        }
-    }
+  }
 
 }

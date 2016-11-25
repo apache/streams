@@ -80,9 +80,8 @@ public class FacebookPageProvider extends FacebookProvider {
 
   private FacebookPageProviderConfiguration configuration;
 
-  public FacebookPageProvider(FacebookPageProviderConfiguration facebookConfiguration) {
+  public FacebookPageProvider(FacebookConfiguration facebookConfiguration) {
     super(facebookConfiguration);
-    configuration = facebookConfiguration;
   }
 
   @VisibleForTesting
@@ -92,7 +91,7 @@ public class FacebookPageProvider extends FacebookProvider {
 
   @Override
   protected FacebookDataCollector getDataCollector() {
-    return new FacebookPageDataCollector(super.datums, configuration);
+    return new FacebookPageDataCollector(super.datums, super.configuration);
   }
 
   /**
@@ -115,7 +114,7 @@ public class FacebookPageProvider extends FacebookProvider {
     Config typesafe  = conf.withFallback(reference).resolve();
 
     StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    FacebookPageProviderConfiguration config = new ComponentConfigurator<>(FacebookPageProviderConfiguration.class).detectConfiguration(typesafe, "facebook");
+    FacebookConfiguration config = new ComponentConfigurator<>(FacebookConfiguration.class).detectConfiguration(typesafe, "facebook");
     FacebookPageProvider provider = new FacebookPageProvider(config);
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));

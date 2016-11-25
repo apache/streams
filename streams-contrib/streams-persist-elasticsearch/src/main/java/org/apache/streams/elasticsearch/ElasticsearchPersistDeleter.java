@@ -18,90 +18,106 @@
 
 package org.apache.streams.elasticsearch;
 
-import com.google.common.base.Preconditions;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
+
+import com.google.common.base.Preconditions;
+
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+/**
+ * ElasticsearchPersistDeleter deletes documents from elasticsearch.
+ */
 public class ElasticsearchPersistDeleter extends ElasticsearchPersistWriter implements StreamsPersistWriter {
 
-    public static final String STREAMS_ID = ElasticsearchPersistDeleter.class.getCanonicalName();
+  public static final String STREAMS_ID = ElasticsearchPersistDeleter.class.getCanonicalName();
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistDeleter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistDeleter.class);
 
-    public ElasticsearchPersistDeleter() {
-        super();
+  public ElasticsearchPersistDeleter() {
+    super();
+  }
+
+  public ElasticsearchPersistDeleter(ElasticsearchWriterConfiguration config) {
+    super(config);
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public void write(StreamsDatum streamsDatum) {
+
+    if ( streamsDatum == null || streamsDatum.getDocument() == null) {
+      return;
     }
 
-    public ElasticsearchPersistDeleter(ElasticsearchWriterConfiguration config) {
-        super(config);
+    LOGGER.debug("Delete Document: {}", streamsDatum.getDocument());
+
+    Map<String, Object> metadata = streamsDatum.getMetadata();
+
+    LOGGER.debug("Delete Metadata: {}", metadata);
+
+    String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
+    String type = ElasticsearchMetadataUtil.getType(metadata, config);
+    String id = ElasticsearchMetadataUtil.getId(streamsDatum);
+
+    try {
+      delete(index, type, id);
+    } catch (Throwable ex) {
+      LOGGER.warn("Unable to Delete Document from ElasticSearch: {}", ex.getMessage());
+    }
+  }
+
+  /**
+   * Prepare and en-queue @see org.elasticsearch.action.delete.DeleteRequest
+   * @param index index
+   * @param type type
+   * @param id id
+   */
+  public void delete(String index, String type, String id) {
+    DeleteRequest deleteRequest;
+
+    Preconditions.checkNotNull(index);
+    Preconditions.checkNotNull(id);
+    Preconditions.checkNotNull(type);
+
+    // They didn't specify an ID, so we will create one for them.
+    deleteRequest = new DeleteRequest()
+        .index(index)
+        .type(type)
+        .id(id);
+
+    add(deleteRequest);
+
+  }
+
+  /**
+   * Enqueue DeleteRequest.
+   * @param request request
+   */
+  public void add(DeleteRequest request) {
+
+    Preconditions.checkNotNull(request);
+    Preconditions.checkNotNull(request.index());
+
+    // If our queue is larger than our flush threshold, then we should flush the queue.
+    synchronized (this) {
+      checkIndexImplications(request.index());
+
+      bulkRequest.add(request);
+
+      currentBatchItems.incrementAndGet();
+
+      checkForFlush();
     }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
-
-    @Override
-    public void write(StreamsDatum streamsDatum) {
-
-        if(streamsDatum == null || streamsDatum.getDocument() == null)
-            return;
-
-        LOGGER.debug("Delete Document: {}", streamsDatum.getDocument());
-
-        Map<String, Object> metadata = streamsDatum.getMetadata();
-
-        LOGGER.debug("Delete Metadata: {}", metadata);
-
-        String index = ElasticsearchMetadataUtil.getIndex(metadata, config);
-        String type = ElasticsearchMetadataUtil.getType(metadata, config);
-        String id = ElasticsearchMetadataUtil.getId(streamsDatum);
-
-        try {
-            delete(index, type, id);
-        } catch (Throwable e) {
-            LOGGER.warn("Unable to Delete Document from ElasticSearch: {}", e.getMessage());
-        }
-    }
-
-    public void delete(String index, String type, String id) {
-        DeleteRequest deleteRequest;
-
-        Preconditions.checkNotNull(index);
-        Preconditions.checkNotNull(id);
-        Preconditions.checkNotNull(type);
-
-        // They didn't specify an ID, so we will create one for them.
-        deleteRequest = new DeleteRequest()
-                .index(index)
-                .type(type)
-                .id(id);
-
-        add(deleteRequest);
-
-    }
-
-    public void add(DeleteRequest request) {
-
-        Preconditions.checkNotNull(request);
-        Preconditions.checkNotNull(request.index());
-
-        // If our queue is larger than our flush threshold, then we should flush the queue.
-        synchronized (this) {
-            checkIndexImplications(request.index());
-
-            bulkRequest.add(request);
-
-            currentBatchItems.incrementAndGet();
-
-            checkForFlush();
-        }
-
-    }
+  }
 
 }

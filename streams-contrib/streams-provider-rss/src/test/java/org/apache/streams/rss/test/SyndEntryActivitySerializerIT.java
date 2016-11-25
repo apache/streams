@@ -18,15 +18,16 @@
 
 package org.apache.streams.rss.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Author;
 import org.apache.streams.pojo.json.Provider;
 import org.apache.streams.rss.serializer.SyndEntryActivitySerializer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
@@ -37,88 +38,94 @@ import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests ability to convert SyndEntry ObjectNode form to {@link org.apache.streams.rss.processor.RssTypeConverter} form
  */
 public class SyndEntryActivitySerializerIT {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(SyndEntryActivitySerializerIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SyndEntryActivitySerializerIT.class);
 
-    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    @Test
-    public void testJsonData() throws Exception {
-        Scanner scanner = new Scanner(this.getClass().getResourceAsStream("/TestSyndEntryJson.txt"));
-        List<Activity> activities = Lists.newLinkedList();
-        List<ObjectNode> objects = Lists.newLinkedList();
+  @Test
+  public void testJsonData() throws Exception {
+    Scanner scanner = new Scanner(this.getClass().getResourceAsStream("/TestSyndEntryJson.txt"));
+    List<Activity> activities = Lists.newLinkedList();
+    List<ObjectNode> objects = Lists.newLinkedList();
 
-        SyndEntryActivitySerializer serializer = new SyndEntryActivitySerializer();
+    SyndEntryActivitySerializer serializer = new SyndEntryActivitySerializer();
 
-        while(scanner.hasNext()) {
-            String line = scanner.nextLine();
-            LOGGER.debug(line);
-            ObjectNode node = (ObjectNode) mapper.readTree(line);
+    while (scanner.hasNext()) {
+      String line = scanner.nextLine();
+      LOGGER.debug(line);
+      ObjectNode node = (ObjectNode) mapper.readTree(line);
 
-            objects.add(node);
-            activities.add(serializer.deserialize(node));
-        }
-
-        assertEquals(11, activities.size());
-
-        for(int x = 0; x < activities.size(); x ++) {
-            ObjectNode n = objects.get(x);
-            Activity a = activities.get(x);
-
-            testActor(n.get("author").asText(), a.getActor());
-            testAuthor(n.get("author").asText(), a.getObject().getAuthor());
-            testProvider("id:providers:rss", "RSS", a.getProvider());
-            testProviderUrl(a.getProvider());
-            testVerb("post", a.getVerb());
-            testPublished(n.get("publishedDate").asText(), a.getPublished());
-            testUrl(n.get("uri").asText(), n.get("link").asText(), a);
-        }
+      objects.add(node);
+      activities.add(serializer.deserialize(node));
     }
 
-    public void testVerb(String expected, String verb) {
-        assertEquals(expected, verb);
+    assertEquals(11, activities.size());
+
+    for (int x = 0; x < activities.size(); x++) {
+      ObjectNode objectNode = objects.get(x);
+      Activity activity = activities.get(x);
+
+      testActor(objectNode.get("author").asText(), activity.getActor());
+      testAuthor(objectNode.get("author").asText(), activity.getObject().getAuthor());
+      testProvider("id:providers:rss", "RSS", activity.getProvider());
+      validateProviderUrl(activity.getProvider());
+      testVerb("post", activity.getVerb());
+      testPublished(objectNode.get("publishedDate").asText(), activity.getPublished());
+      testUrl(objectNode.get("uri").asText(), objectNode.get("link").asText(), activity);
+    }
+  }
+
+  public void testVerb(String expected, String verb) {
+    assertEquals(expected, verb);
+  }
+
+  public void testPublished(String expected, DateTime published) {
+    assertEquals(new DateTime(expected, DateTimeZone.UTC), published);
+  }
+
+  public void testActor(String expected, ActivityObject actor) {
+    assertEquals("id:rss:null" + ":" + expected, actor.getId());
+    assertEquals(expected, actor.getDisplayName());
+  }
+
+  public void testAuthor(String expected, Author author) {
+    assertEquals(expected, author.getDisplayName());
+    assertEquals(expected, author.getId());
+  }
+
+  public void testProvider(String expectedId, String expectedDisplay, Provider provider) {
+    assertEquals(expectedId, provider.getId());
+    assertEquals(expectedDisplay, provider.getDisplayName());
+  }
+
+  /**
+   * validate Provider Url.
+   * @param provider Provider
+   */
+  public void validateProviderUrl(Provider provider) {
+    URL url = null;
+
+    try {
+      url = new URL(provider.getUrl());
+      url.toURI();
+    } catch (Exception ex) {
+      LOGGER.error("Threw an exception while trying to validate URL: {} - {}", provider.getUrl(), ex);
     }
 
-    public void testPublished(String expected, DateTime published) {
-        assertEquals(new DateTime(expected, DateTimeZone.UTC), published);
-    }
+    assertNotNull(url);
+  }
 
-    public void testActor(String expected, ActivityObject actor) {
-        assertEquals("id:rss:null" + ":" + expected, actor.getId());
-        assertEquals(expected, actor.getDisplayName());
-    }
-
-    public void testAuthor(String expected, Author author) {
-        assertEquals(expected, author.getDisplayName());
-        assertEquals(expected, author.getId());
-    }
-
-    public void testProvider(String expectedId, String expectedDisplay, Provider provider) {
-        assertEquals(expectedId, provider.getId());
-        assertEquals(expectedDisplay, provider.getDisplayName());
-    }
-
-    public void testProviderUrl(Provider provider) {
-        URL url = null;
-
-        try {
-            url = new URL(provider.getUrl());
-            url.toURI();
-        } catch(Exception e) {
-            LOGGER.error("Threw an exception while trying to validate URL: {} - {}", provider.getUrl(), e);
-        }
-
-        assertNotNull(url);
-    }
-
-    public void testUrl(String expectedURI, String expectedLink, Activity activity) {
-        assertTrue((expectedURI == activity.getUrl() || expectedLink == activity.getUrl()));
-        assertTrue((expectedURI == activity.getObject().getUrl() || expectedLink == activity.getObject().getUrl()));
-    }
+  public void testUrl(String expectedUri, String expectedLink, Activity activity) {
+    assertTrue((expectedUri == activity.getUrl() || expectedLink == activity.getUrl()));
+    assertTrue((expectedUri == activity.getObject().getUrl() || expectedLink == activity.getObject().getUrl()));
+  }
 }

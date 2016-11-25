@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.sysomos.data;
 
 import java.util.ArrayList;
@@ -26,66 +27,75 @@ import java.util.List;
  */
 public class SysomosTagDefinition {
 
-    private String tagName;
-    private String displayName;
-    private List<String> queries;
+  private String tagName;
+  private String displayName;
+  private List<String> queries;
 
-    public SysomosTagDefinition(String tagName, String displayName) {
-        this.tagName = tagName;
-        this.displayName = displayName;
-        this.queries = new ArrayList<String>();
-    }
+  /**
+   * SysomosTagDefinition constructor.
+   * @param tagName tagName
+   * @param displayName displayName
+   */
+  public SysomosTagDefinition(String tagName, String displayName) {
+    this.tagName = tagName;
+    this.displayName = displayName;
+    this.queries = new ArrayList<String>();
+  }
 
-    public String getTagName() {
-        return this.tagName;
-    }
+  public String getTagName() {
+    return this.tagName;
+  }
 
-    public String getDisplayName() {
-        return this.displayName;
-    }
+  public String getDisplayName() {
+    return this.displayName;
+  }
 
-    public List<String> getQueries() {
-        List<String> result = new ArrayList<String>();
-        result.addAll(this.queries);
-        return result;
-    }
+  /**
+   * getQueries.
+   * @return Queries
+   */
+  public List<String> getQueries() {
+    List<String> result = new ArrayList<String>();
+    result.addAll(this.queries);
+    return result;
+  }
 
-    public void addQuery(String query) {
-        this.queries.add(query);
-    }
+  public void addQuery(String query) {
+    this.queries.add(query);
+  }
 
-    public boolean hasTagName(String tagName) {
-        return this.tagName.equals(tagName);
-    }
+  public boolean hasTagName(String tagName) {
+    return this.tagName.equals(tagName);
+  }
 
-    public boolean hasQuery(String query) {
-        return this.queries.contains(query);
-    }
+  public boolean hasQuery(String query) {
+    return this.queries.contains(query);
+  }
 
-    public boolean hasDisplayName(String displayName) {
-        return this.displayName.equals(displayName);
-    }
+  public boolean hasDisplayName(String displayName) {
+    return this.displayName.equals(displayName);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if(!(o instanceof SysomosTagDefinition)) {
-            return false;
-        }
-        SysomosTagDefinition that = (SysomosTagDefinition) o;
-        if(!this.tagName.equals(that.tagName)) {
-            return false;
-        }
-        if(!this.displayName.equals(that.displayName)) {
-            return false;
-        }
-        if(this.queries.size() != that.queries.size()) {
-            return false;
-        }
-        for(int i=0; i < this.queries.size(); ++i) {
-            if(!that.queries.contains(this.queries.get(i))) {
-                return false;
-            }
-        }
-        return true;
+  @Override
+  public boolean equals(Object object) {
+    if (!(object instanceof SysomosTagDefinition)) {
+      return false;
     }
+    SysomosTagDefinition that = (SysomosTagDefinition) object;
+    if (!this.tagName.equals(that.tagName)) {
+      return false;
+    }
+    if (!this.displayName.equals(that.displayName)) {
+      return false;
+    }
+    if (this.queries.size() != that.queries.size()) {
+      return false;
+    }
+    for (int i = 0; i < this.queries.size(); ++i) {
+      if (!that.queries.contains(this.queries.get(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

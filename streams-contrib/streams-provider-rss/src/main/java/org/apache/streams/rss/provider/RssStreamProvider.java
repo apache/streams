@@ -18,14 +18,6 @@
 
 package org.apache.streams.rss.provider;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.Uninterruptibles;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigParseOptions;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
@@ -37,6 +29,15 @@ import org.apache.streams.rss.FeedDetails;
 import org.apache.streams.rss.RssStreamConfiguration;
 import org.apache.streams.rss.provider.perpetual.RssFeedScheduler;
 import org.apache.streams.util.ComponentUtils;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Uninterruptibles;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigParseOptions;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,173 +62,159 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * RSS {@link org.apache.streams.core.StreamsProvider} that provides content from rss feeds in boilerpipe format
- *
- *  To use from command line:
- *
- *  Supply configuration similar to src/test/resources/rss.conf
- *
- *  Launch using:
- *
- *  mvn exec:java -Dexec.mainClass=org.apache.streams.rss.provider.RssStreamProvider -Dexec.args="rss.conf articles.json"
  */
 public class RssStreamProvider implements StreamsProvider {
 
-    public static final String STREAMS_ID = "RssStreamProvider";
+  public static final String STREAMS_ID = "RssStreamProvider";
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(RssStreamProvider.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RssStreamProvider.class);
 
-    private final static int MAX_SIZE = 1000;
+  private static final int MAX_SIZE = 1000;
 
-    private RssStreamConfiguration config;
-    private boolean perpetual;
-    private ExecutorService executor;
-    private BlockingQueue<StreamsDatum> dataQueue;
-    private AtomicBoolean isComplete;
+  private RssStreamConfiguration config;
+  private boolean perpetual;
+  private ExecutorService executor;
+  private BlockingQueue<StreamsDatum> dataQueue;
+  private AtomicBoolean isComplete;
 
-    @VisibleForTesting
-    protected RssFeedScheduler scheduler;
+  @VisibleForTesting
+  protected RssFeedScheduler scheduler;
 
-    public RssStreamProvider() {
-        this(new ComponentConfigurator<>(RssStreamConfiguration.class)
-          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("rss")), false);
+  public RssStreamProvider() {
+    this(new ComponentConfigurator<>(RssStreamConfiguration.class)
+        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("rss")), false);
+  }
+
+  public RssStreamProvider(boolean perpetual) {
+    this(new ComponentConfigurator<>(RssStreamConfiguration.class)
+        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("rss")), perpetual);
+  }
+
+  public RssStreamProvider(RssStreamConfiguration config) {
+    this(config, false);
+  }
+
+  public RssStreamProvider(RssStreamConfiguration config, boolean perpetual) {
+    this.perpetual = perpetual;
+    this.config = config;
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public void startStream() {
+    LOGGER.trace("Starting Rss Scheduler");
+    this.executor.submit(this.scheduler);
+  }
+
+  @Override
+  public StreamsResultSet readCurrent() {
+    Queue<StreamsDatum> batch = new ConcurrentLinkedQueue<>();
+    int batchSize = 0;
+    while (!this.dataQueue.isEmpty() && batchSize < MAX_SIZE) {
+      StreamsDatum datum = ComponentUtils.pollWhileNotEmpty(this.dataQueue);
+      if (datum != null) {
+        ++batchSize;
+        batch.add(datum);
+      }
     }
+    this.isComplete.set(this.scheduler.isComplete() && batch.isEmpty() && this.dataQueue.isEmpty());
+    return new StreamsResultSet(batch);
+  }
 
-    public RssStreamProvider(boolean perpetual) {
-        this(new ComponentConfigurator<>(RssStreamConfiguration.class)
-          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("rss")), perpetual);
+  @Override
+  public StreamsResultSet readNew(BigInteger sequence) {
+    return null;
+  }
+
+  @Override
+  public StreamsResultSet readRange(DateTime start, DateTime end) {
+    return null;
+  }
+
+  @Override
+  public boolean isRunning() {
+    return !this.isComplete.get();
+  }
+
+  @Override
+  public void prepare(Object configurationObject) {
+    this.executor = new ThreadPoolExecutor(1, 4, 15L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+    this.dataQueue = new LinkedBlockingQueue<>();
+    this.scheduler = getScheduler(this.dataQueue);
+    this.isComplete = new AtomicBoolean(false);
+    int consecutiveEmptyReads = 0;
+  }
+
+  @VisibleForTesting
+  protected RssFeedScheduler getScheduler(BlockingQueue<StreamsDatum> queue) {
+    if (this.perpetual) {
+      return new RssFeedScheduler(this.executor, this.config.getFeeds(), queue);
+    } else {
+      return new RssFeedScheduler(this.executor, this.config.getFeeds(), queue, 0);
     }
+  }
 
-    public RssStreamProvider(RssStreamConfiguration config) {
-        this(config, false);
-    }
+  @Override
+  public void cleanUp() {
+    this.scheduler.stop();
+    ComponentUtils.shutdownExecutor(this.executor, 10, 10);
+  }
 
-    public RssStreamProvider(RssStreamConfiguration config, boolean perpetual) {
-        this.perpetual = perpetual;
-        this.config = config;
-    }
+  /**
+   * To use from command line:
+   *
+   * <p/>
+   * Supply configuration similar to src/test/resources/rss.conf
+   *
+   * <p/>
+   * Launch using:
+   *
+   * <p/>
+   * mvn exec:java -Dexec.mainClass=org.apache.streams.rss.provider.RssStreamProvider -Dexec.args="rss.conf articles.json"
+   * @param args args
+   * @throws Exception Exception
+   */
+  public static void main(String[] args) throws Exception {
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+    Preconditions.checkArgument(args.length >= 2);
 
-    public void setConfig(RssStreamConfiguration config) {
-        this.config = config;
-    }
+    String configfile = args[0];
+    String outfile = args[1];
 
-    public void setRssFeeds(Set<String> urlFeeds) {
-    }
+    Config reference = ConfigFactory.load();
+    File file = new File(configfile);
+    assert (file.exists());
+    Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
 
-    public void setRssFeeds(Map<String, Long> feeds) {
-        if(this.config == null) {
-            this.config = new RssStreamConfiguration();
+    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
+
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
+    RssStreamConfiguration config = new ComponentConfigurator<>(RssStreamConfiguration.class).detectConfiguration(typesafe, "rss");
+    RssStreamProvider provider = new RssStreamProvider(config);
+
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+
+    PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
+    provider.prepare(config);
+    provider.startStream();
+    do {
+      Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
+      for (StreamsDatum datum : provider.readCurrent()) {
+        String json;
+        try {
+          json = mapper.writeValueAsString(datum.getDocument());
+          outStream.println(json);
+        } catch (JsonProcessingException ex) {
+          System.err.println(ex.getMessage());
         }
-        List<FeedDetails> feedDetails = new ArrayList<>();
-        for(String feed : feeds.keySet()) {
-            Long delay = feeds.get(feed);
-            FeedDetails detail = new FeedDetails();
-            detail.setUrl(feed);
-            detail.setPollIntervalMillis(delay);
-            feedDetails.add(detail);
-        }
-        this.config.setFeeds(feedDetails);
+      }
     }
-
-    @Override
-    public void startStream() {
-        LOGGER.trace("Starting Rss Scheduler");
-        this.executor.submit(this.scheduler);
-    }
-
-    @Override
-    public StreamsResultSet readCurrent() {
-        Queue<StreamsDatum> batch = new ConcurrentLinkedQueue<>();
-        int batchSize = 0;
-        while(!this.dataQueue.isEmpty() && batchSize < MAX_SIZE) {
-            StreamsDatum datum = ComponentUtils.pollWhileNotEmpty(this.dataQueue);
-            if(datum != null) {
-                ++batchSize;
-                batch.add(datum);
-            }
-        }
-        this.isComplete.set(this.scheduler.isComplete() && batch.isEmpty() && this.dataQueue.isEmpty());
-        return new StreamsResultSet(batch);
-    }
-
-    @Override
-    public StreamsResultSet readNew(BigInteger sequence) {
-        return null;
-    }
-
-    @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return null;
-    }
-
-    @Override
-    public boolean isRunning() {
-        return !this.isComplete.get();
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-        this.executor = new ThreadPoolExecutor(1, 4, 15L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-        this.dataQueue = new LinkedBlockingQueue<>();
-        this.scheduler = getScheduler(this.dataQueue);
-        this.isComplete = new AtomicBoolean(false);
-        int consecutiveEmptyReads = 0;
-    }
-
-    @VisibleForTesting
-    protected RssFeedScheduler getScheduler(BlockingQueue<StreamsDatum> queue) {
-        if(this.perpetual)
-            return new RssFeedScheduler(this.executor, this.config.getFeeds(), queue);
-        else
-            return new RssFeedScheduler(this.executor, this.config.getFeeds(), queue, 0);
-    }
-
-    @Override
-    public void cleanUp() {
-        this.scheduler.stop();
-        ComponentUtils.shutdownExecutor(this.executor, 10, 10);
-    }
-
-    public static void main(String[] args) throws Exception {
-
-        Preconditions.checkArgument(args.length >= 2);
-
-        String configfile = args[0];
-        String outfile = args[1];
-
-        Config reference = ConfigFactory.load();
-        File conf_file = new File(configfile);
-        assert(conf_file.exists());
-        Config testResourceConfig = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-
-        Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-
-        StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-        RssStreamConfiguration config = new ComponentConfigurator<>(RssStreamConfiguration.class).detectConfiguration(typesafe, "rss");
-        RssStreamProvider provider = new RssStreamProvider(config);
-
-        ObjectMapper mapper = StreamsJacksonMapper.getInstance();
-
-        PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
-        provider.prepare(config);
-        provider.startStream();
-        do {
-            Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-            for (StreamsDatum datum : provider.readCurrent()) {
-                String json;
-                try {
-                    json = mapper.writeValueAsString(datum.getDocument());
-                    outStream.println(json);
-                } catch (JsonProcessingException e) {
-                    System.err.println(e.getMessage());
-                }
-            }
-        } while( provider.isRunning());
-        provider.cleanUp();
-        outStream.flush();
-    }
+    while ( provider.isRunning());
+    provider.cleanUp();
+    outStream.flush();
+  }
 }

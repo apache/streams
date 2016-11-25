@@ -18,50 +18,54 @@
 
 package com.google.gplus.provider;
 
-import com.google.gplus.serializer.util.GooglePlusActivityUtil;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.pojo.json.Activity;
+
+import com.google.gplus.serializer.util.GooglePlusActivityUtil;
+
+import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-
+/**
+ * GPlusActivitySerializer converts gplus activities to as1 activities.
+ */
 public class GPlusActivitySerializer implements ActivitySerializer<com.google.api.services.plus.model.Activity> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GPlusActivitySerializer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GPlusActivitySerializer.class);
 
-    AbstractGPlusProvider provider;
+  AbstractGPlusProvider provider;
 
-    public GPlusActivitySerializer(AbstractGPlusProvider provider) {
+  public GPlusActivitySerializer(AbstractGPlusProvider provider) {
 
-        this.provider = provider;
-    }
+    this.provider = provider;
+  }
 
-    public GPlusActivitySerializer() {
-    }
+  public GPlusActivitySerializer() {
+  }
 
-    @Override
-    public String serializationFormat() {
-        return "gplus.v1";
-    }
+  @Override
+  public String serializationFormat() {
+    return "gplus.v1";
+  }
 
-    @Override
-    public com.google.api.services.plus.model.Activity serialize(Activity deserialized) {
-        throw new NotImplementedException("Not currently implemented");
-    }
+  @Override
+  public com.google.api.services.plus.model.Activity serialize(Activity deserialized) {
+    throw new NotImplementedException("Not currently implemented");
+  }
 
-    @Override
-    public Activity deserialize(com.google.api.services.plus.model.Activity gplusActivity) {
-        Activity activity = new Activity();
+  @Override
+  public Activity deserialize(com.google.api.services.plus.model.Activity gplusActivity) {
+    Activity activity = new Activity();
 
-        GooglePlusActivityUtil.updateActivity(gplusActivity, activity);
-        return activity;
-    }
+    GooglePlusActivityUtil.updateActivity(gplusActivity, activity);
+    return activity;
+  }
 
-    @Override
-    public List<Activity> deserializeAll(List<com.google.api.services.plus.model.Activity> serializedList) {
-        throw new NotImplementedException("Not currently implemented");
-    }
+  @Override
+  public List<Activity> deserializeAll(List<com.google.api.services.plus.model.Activity> serializedList) {
+    throw new NotImplementedException("Not currently implemented");
+  }
 }

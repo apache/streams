@@ -15,90 +15,93 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.monitoring.persist.impl;
 
 import org.apache.streams.monitoring.persist.MessagePersister;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 public class LogstashUdpMessagePersister implements MessagePersister {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(LogstashUdpMessagePersister.class);
-    private String broadcastURI;
-    URI uri;
+  private static final Logger LOGGER = LoggerFactory.getLogger(LogstashUdpMessagePersister.class);
+  private String broadcastUri;
+  URI uri;
 
-    public LogstashUdpMessagePersister(String broadcastURI) {
-        this.broadcastURI = broadcastURI;
-        setup();
+  public LogstashUdpMessagePersister(String broadcastUri) {
+    this.broadcastUri = broadcastUri;
+    setup();
+  }
+
+  /**
+   * setup.
+   */
+  public void setup() {
+
+    try {
+      uri = new URI(broadcastUri);
+    } catch (URISyntaxException ex) {
+      LOGGER.error(ex.getMessage());
     }
 
-    public void setup() {
+  }
 
-        try {
-            uri = new URI(broadcastURI);
-        } catch (URISyntaxException e) {
-            LOGGER.error(e.getMessage());
-        }
+  @Override
+  /**
+   * Given a list of messages as Strings, broadcast them to the broadcastUri
+   * (if one is defined)
+   * @param messages
+   * @return int status code from POST response
+   */
+  public int persistMessages(List<String> messages) {
+    int responseCode = -1;
 
-    }
-    @Override
-    /**
-     * Given a list of messages as Strings, broadcast them to the broadcastURI
-     * (if one is defined)
-     * @param messages
-     * @return int status code from POST response
-     */
-    public int persistMessages(List<String> messages) {
-        int responseCode = -1;
-
-        if(broadcastURI != null) {
-            DatagramSocket socket = null;
-            try {
-                socket = new DatagramSocket();
-            } catch (SocketException e) {
-                LOGGER.error("Metrics Broadcast Setup Failed: " + e.getMessage());
-            }
-            try {
-                ByteBuffer toWrite = ByteBuffer.wrap(serializeMessages(messages).getBytes());
-                byte[] byteArray = toWrite.array();
-                DatagramPacket packet = new DatagramPacket(byteArray, byteArray.length);
-                socket.connect(new InetSocketAddress(uri.getHost(), uri.getPort()));
-                socket.send(packet);
-            } catch( Exception e ) {
-                LOGGER.error("Metrics Broadcast Failed: " + e.getMessage());
-            } finally {
-                socket.close();
-            }
-        }
-
-        return responseCode;
+    if (broadcastUri != null) {
+      DatagramSocket socket = null;
+      try {
+        socket = new DatagramSocket();
+      } catch (SocketException ex) {
+        LOGGER.error("Metrics Broadcast Setup Failed: " + ex.getMessage());
+      }
+      try {
+        ByteBuffer toWrite = ByteBuffer.wrap(serializeMessages(messages).getBytes());
+        byte[] byteArray = toWrite.array();
+        DatagramPacket packet = new DatagramPacket(byteArray, byteArray.length);
+        socket.connect(new InetSocketAddress(uri.getHost(), uri.getPort()));
+        socket.send(packet);
+      } catch ( Exception ex ) {
+        LOGGER.error("Metrics Broadcast Failed: " + ex.getMessage());
+      } finally {
+        socket.close();
+      }
     }
 
-    /**
-     * Given a List of String messages, convert them to a JSON array
-     * @param messages
-     * @return Serialized version of this JSON array
-     */
-    private String serializeMessages(List<String> messages) {
+    return responseCode;
+  }
 
-        StringBuilder json_lines = new StringBuilder();
-        for(String message : messages) {
-            json_lines.append(message).append('\n');
-        }
+  /**
+   * Given a List of String messages, convert them to a JSON array.
+   * @param messages List of String messages
+   * @return Serialized version of this JSON array
+   */
+  private String serializeMessages(List<String> messages) {
 
-        return json_lines.toString();
+    StringBuilder jsonLines = new StringBuilder();
+    for (String message : messages) {
+      jsonLines.append(message).append('\n');
     }
+
+    return jsonLines.toString();
+  }
 
 }

@@ -21,9 +21,9 @@ package org.apache.streams.local.tasks;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.local.counters.StreamsTaskCounter;
+
 import org.apache.commons.lang.NotImplementedException;
 
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -34,57 +34,57 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Deprecated
 public class StreamsMergeTask extends BaseStreamsTask {
 
-    private AtomicBoolean keepRunning;
-    private long sleepTime;
+  private AtomicBoolean keepRunning;
+  private long sleepTime;
 
-    public StreamsMergeTask() {
-        this(null);
-    }
+  public StreamsMergeTask() {
+    this(null);
+  }
 
-    public StreamsMergeTask(StreamsConfiguration streamConfig) {
-        super(streamConfig);
-        this.sleepTime = sleepTime;
-        this.keepRunning = new AtomicBoolean(true);
-    }
+  public StreamsMergeTask(StreamsConfiguration streamConfig) {
+    super(streamConfig);
+    this.sleepTime = sleepTime;
+    this.keepRunning = new AtomicBoolean(true);
+  }
 
-    @Override
-    public void stopTask() {
-        this.keepRunning.set(false);
-    }
+  @Override
+  public void stopTask() {
+    this.keepRunning.set(false);
+  }
 
-    @Override
-    public void setStreamConfig(StreamsConfiguration config) {
+  @Override
+  public void setStreamConfig(StreamsConfiguration config) {
 
-    }
+  }
 
-    @Override
-    public boolean isRunning() {
-        return false;
-    }
+  @Override
+  public boolean isRunning() {
+    return false;
+  }
 
-    @Override
-    public void run() {
-        while(this.keepRunning.get()) {
-            StreamsDatum datum = super.getNextDatum();
-            if(datum != null) {
-                try {
-                    super.addToOutgoingQueue(datum);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-            else {
-                try {
-                    Thread.sleep(this.sleepTime);
-                } catch (InterruptedException e) {
-                    this.keepRunning.set(false);
-                }
-            }
+  @Override
+  public void run() {
+    while(this.keepRunning.get()) {
+      StreamsDatum datum = super.getNextDatum();
+      if(datum != null) {
+        try {
+          super.addToOutgoingQueue(datum);
+        } catch (InterruptedException ie) {
+          Thread.currentThread().interrupt();
         }
+      }
+      else {
+        try {
+          Thread.sleep(this.sleepTime);
+        } catch (InterruptedException e) {
+          this.keepRunning.set(false);
+        }
+      }
     }
+  }
 
-    @Override
-    public void setStreamsTaskCounter(StreamsTaskCounter counter) {
-        throw new NotImplementedException();
-    }
+  @Override
+  public void setStreamsTaskCounter(StreamsTaskCounter counter) {
+    throw new NotImplementedException();
+  }
 }

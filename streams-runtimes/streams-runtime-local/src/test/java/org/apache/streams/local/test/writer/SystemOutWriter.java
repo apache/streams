@@ -20,6 +20,7 @@ package org.apache.streams.local.test.writer;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,25 +29,25 @@ import org.slf4j.LoggerFactory;
  */
 public class SystemOutWriter implements StreamsPersistWriter {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(SystemOutWriter.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(SystemOutWriter.class);
 
-    @Override
-    public String getId() {
-        return "SystemOutWriter";
-    }
+  @Override
+  public String getId() {
+    return "SystemOutWriter";
+  }
 
-    @Override
-    public void write(StreamsDatum entry) {
-        System.out.println(entry.document);
-    }
+  @Override
+  public void write(StreamsDatum entry) {
+    System.out.println(entry.document);
+  }
 
-    @Override
-    public void prepare(Object configurationObject) {
+  @Override
+  public void prepare(Object configurationObject) {
 
-    }
+  }
 
-    @Override
-    public void cleanUp() {
-        LOGGER.debug("Clean up called writer!");
-    }
+  @Override
+  public void cleanUp() {
+    LOGGER.debug("Clean up called writer!");
+  }
 }

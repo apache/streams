@@ -18,7 +18,6 @@
 
 package org.apache.streams.util.files;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -28,12 +27,17 @@ import java.util.regex.Pattern;
  */
 public class StreamsScannerUtil {
 
-    protected static Pattern newLinePattern = Pattern.compile("(\\r\\n?|\\n)", Pattern.MULTILINE);
+  protected static Pattern newLinePattern = Pattern.compile("(\\r\\n?|\\n)", Pattern.MULTILINE);
 
-    public static Scanner getInstance(String resourcePath) {
+  /**
+   * get instance of Scanner using resource path.
+   * @param resourcePath resourcePath
+   * @return Scanner
+   */
+  public static Scanner getInstance(String resourcePath) {
 
-        InputStream testFileStream = StreamsScannerUtil.class.getResourceAsStream(resourcePath);
-        return new Scanner(testFileStream, "UTF-8").useDelimiter(newLinePattern);
+    InputStream testFileStream = StreamsScannerUtil.class.getResourceAsStream(resourcePath);
+    return new Scanner(testFileStream, "UTF-8").useDelimiter(newLinePattern);
 
-    };
+  }
 }

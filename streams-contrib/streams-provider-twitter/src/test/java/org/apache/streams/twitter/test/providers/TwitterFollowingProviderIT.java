@@ -19,6 +19,7 @@
 package org.apache.streams.twitter.test.providers;
 
 import org.apache.streams.twitter.provider.TwitterFollowingProvider;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,39 +30,39 @@ import java.io.LineNumberReader;
 
 public class TwitterFollowingProviderIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFollowingProviderIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFollowingProviderIT.class);
 
-    @Test
-    public void testTwitterFollowingProvider() throws Exception {
+  @Test
+  public void testTwitterFollowingProvider() throws Exception {
 
-        String configfile = "./target/test-classes/TwitterFollowingProviderIT.conf";
-        String outfile = "./target/test-classes/TwitterFollowingProviderIT.stdout.txt";
+    String configfile = "./target/test-classes/TwitterFollowingProviderIT.conf";
+    String outfile = "./target/test-classes/TwitterFollowingProviderIT.stdout.txt";
 
-        String[] args = new String[2];
-        args[0] = configfile;
-        args[1] = outfile;
+    String[] args = new String[2];
+    args[0] = configfile;
+    args[1] = outfile;
 
-        Thread testThread = new Thread((Runnable) () -> {
-            try {
-                TwitterFollowingProvider.main(args);
-            } catch( Exception e ) {
-                LOGGER.error("Test Exception!", e);
-            }
-        });
-        testThread.start();
-        testThread.join(60000);
+    Thread testThread = new Thread((Runnable) () -> {
+      try {
+        TwitterFollowingProvider.main(args);
+      } catch ( Exception ex ) {
+        LOGGER.error("Test Exception!", ex);
+      }
+    });
+    testThread.start();
+    testThread.join(60000);
 
-        File out = new File(outfile);
-        assert (out.exists());
-        assert (out.canRead());
-        assert (out.isFile());
+    File out = new File(outfile);
+    assert (out.exists());
+    assert (out.canRead());
+    assert (out.isFile());
 
-        FileReader outReader = new FileReader(out);
-        LineNumberReader outCounter = new LineNumberReader(outReader);
+    FileReader outReader = new FileReader(out);
+    LineNumberReader outCounter = new LineNumberReader(outReader);
 
-        while(outCounter.readLine() != null) {}
+    while (outCounter.readLine() != null) {}
 
-        assert (outCounter.getLineNumber() == 10000);
+    assert (outCounter.getLineNumber() == 10000);
 
-    }
+  }
 }

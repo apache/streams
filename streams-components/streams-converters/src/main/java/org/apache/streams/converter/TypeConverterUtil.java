@@ -18,9 +18,11 @@
 
 package org.apache.streams.converter;
 
+import org.apache.streams.jackson.StreamsJacksonMapper;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.streams.jackson.StreamsJacksonMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,49 +30,56 @@ import java.io.IOException;
 
 /**
  * TypeConverterUtil supports TypeConverterProcessor in converting between String json and
- * jackson-compatible POJO objects
+ * jackson-compatible POJO objects.
  */
 public class TypeConverterUtil {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TypeConverterUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TypeConverterUtil.class);
 
-    private static final TypeConverterUtil INSTANCE = new TypeConverterUtil();
+  private static final TypeConverterUtil INSTANCE = new TypeConverterUtil();
 
-    public static TypeConverterUtil getInstance(){
-        return INSTANCE;
+  public static TypeConverterUtil getInstance() {
+    return INSTANCE;
+  }
+
+  public Object convert(Object object, Class outClass) {
+    return TypeConverterUtil.getInstance().convert(object, outClass, StreamsJacksonMapper.getInstance());
+  }
+
+  /**
+   * convert
+   * @param object
+   * @param outClass
+   * @param mapper
+   * @return
+   */
+  public Object convert(Object object, Class outClass, ObjectMapper mapper) {
+    ObjectNode node = null;
+    Object outDoc = null;
+    if ( object instanceof String ) {
+      try {
+        node = mapper.readValue((String)object, ObjectNode.class);
+      } catch (IOException ex) {
+        LOGGER.warn(ex.getMessage());
+        LOGGER.warn(object.toString());
+      }
+    } else {
+      node = mapper.convertValue(object, ObjectNode.class);
     }
 
-    public Object convert(Object object, Class outClass) {
-        return TypeConverterUtil.getInstance().convert(object, outClass, StreamsJacksonMapper.getInstance());
-    }
-
-    public Object convert(Object object, Class outClass, ObjectMapper mapper) {
-        ObjectNode node = null;
-        Object outDoc = null;
-        if( object instanceof String ) {
-            try {
-                node = mapper.readValue((String)object, ObjectNode.class);
-            } catch (IOException e) {
-               LOGGER.warn(e.getMessage());
-                LOGGER.warn(object.toString());
-            }
+    if(node != null) {
+      try {
+        if ( outClass == String.class ) {
+          outDoc = mapper.writeValueAsString(node);
         } else {
-            node = mapper.convertValue(object, ObjectNode.class);
+          outDoc = mapper.convertValue(node, outClass);
         }
-
-        if(node != null) {
-            try {
-                if( outClass == String.class )
-                    outDoc = mapper.writeValueAsString(node);
-                else
-                    outDoc = mapper.convertValue(node, outClass);
-
-            } catch (Throwable e) {
-                LOGGER.warn(e.getMessage());
-                LOGGER.warn(node.toString());
-            }
-        }
-
-        return outDoc;
+      } catch (Throwable ex) {
+        LOGGER.warn(ex.getMessage());
+        LOGGER.warn(node.toString());
+      }
     }
+
+    return outDoc;
+  }
 }

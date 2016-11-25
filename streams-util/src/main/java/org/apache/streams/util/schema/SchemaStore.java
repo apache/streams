@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.util.schema;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -27,33 +28,34 @@ import java.util.Iterator;
 /**
  * A SchemaStore resolves and indexes json schemas and makes their properties available.
  *
+ * <p/>
  * Implementations include
  * - SchemaStoreImpl
  */
 public interface SchemaStore extends Comparator<Schema> {
-    
-    Schema create(URI uri);
 
-    Schema create(Schema parent, String path);
+  Schema create(URI uri);
 
-    void clearCache();
+  Schema create(Schema parent, String path);
 
-    Integer getSize();
+  void clearCache();
 
-    Optional<Schema> getById(URI id);
+  Integer getSize();
 
-    Optional<Schema> getByUri(URI uri);
+  Optional<Schema> getById(URI id);
 
-    Integer getFileUriCount();
+  Optional<Schema> getByUri(URI uri);
 
-    Integer getHttpUriCount();
+  Integer getFileUriCount();
 
-    Iterator<Schema> getSchemaIterator();
+  Integer getHttpUriCount();
 
-    ObjectNode resolveProperties(Schema schema, ObjectNode fieldNode, String resourceId);
+  Iterator<Schema> getSchemaIterator();
 
-    ObjectNode resolveItems(Schema schema, ObjectNode fieldNode, String resourceId);
+  ObjectNode resolveProperties(Schema schema, ObjectNode fieldNode, String resourceId);
 
-    @Override
-    int compare(Schema left, Schema right);
+  ObjectNode resolveItems(Schema schema, ObjectNode fieldNode, String resourceId);
+
+  @Override
+  int compare(Schema left, Schema right);
 }

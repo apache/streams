@@ -19,9 +19,6 @@
 
 package org.apache.streams.twitter.processor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-import java.util.List;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
@@ -31,11 +28,14 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.TwitterConfiguration;
 import org.apache.streams.twitter.TwitterStreamConfiguration;
+import org.apache.streams.twitter.converter.TwitterDocumentClassifier;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.twitter.provider.TwitterEventClassifier;
 import org.apache.streams.twitter.provider.TwitterProviderUtil;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Status;
@@ -44,6 +44,8 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.TwitterObjectFactory;
 import twitter4j.conf.ConfigurationBuilder;
+
+import java.util.List;
 
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.getProvider;
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.updateActivity;
@@ -54,132 +56,132 @@ import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.upda
  */
 public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
 
-    private static final String PROVIDER_ID = getProvider().getId();
-    private static final Logger LOGGER = LoggerFactory.getLogger(FetchAndReplaceTwitterProcessor.class);
+  private static final String PROVIDER_ID = getProvider().getId();
+  private static final Logger LOGGER = LoggerFactory.getLogger(FetchAndReplaceTwitterProcessor.class);
 
-    //Default number of attempts before allowing the document through
-    private static final int MAX_ATTEMPTS = 5;
-    //Start the backoff at 4 minutes.  This results in a wait period of 4, 8, 12, 16 & 20 min with an attempt of 5
-    public static final int BACKOFF = 1000 * 60 * 4;
+  //Default number of attempts before allowing the document through
+  private static final int MAX_ATTEMPTS = 5;
+  //Start the backoff at 4 minutes.  This results in a wait period of 4, 8, 12, 16 & 20 min with an attempt of 5
+  public static final int BACKOFF = 1000 * 60 * 4;
 
-    private final TwitterConfiguration config;
-    private Twitter client;
-    private ObjectMapper mapper;
-    private int retryCount;
+  private final TwitterConfiguration config;
+  private Twitter client;
+  private ObjectMapper mapper;
+  private int retryCount;
 
-    public FetchAndReplaceTwitterProcessor() {
-        this(new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration(StreamsConfigurator.config, "twitter"));
+  public FetchAndReplaceTwitterProcessor() {
+    this(new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration(StreamsConfigurator.config, "twitter"));
+  }
+
+  public FetchAndReplaceTwitterProcessor(TwitterStreamConfiguration config) {
+    this.config = config;
+  }
+
+  @Override
+  public String getId() {
+    return getProvider().getId();
+  }
+
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+    if (entry.getDocument() instanceof Activity) {
+      Activity doc = (Activity)entry.getDocument();
+      String originalId = doc.getId();
+      if (PROVIDER_ID.equals(doc.getProvider().getId())) {
+        fetchAndReplace(doc, originalId);
+      }
+    } else {
+      throw new IllegalStateException("Requires an activity document");
     }
+    return Lists.newArrayList(entry);
+  }
 
-    public FetchAndReplaceTwitterProcessor(TwitterStreamConfiguration config) {
-        this.config = config;
+
+  @Override
+  public void prepare(Object configurationObject) {
+    this.client = getTwitterClient();
+    this.mapper = StreamsJacksonMapper.getInstance();
+  }
+
+  @Override
+  public void cleanUp() {
+
+  }
+
+  protected void fetchAndReplace(Activity doc, String originalId) {
+    try {
+      String json = fetch(doc);
+      replace(doc, json);
+      doc.setId(originalId);
+      retryCount = 0;
+    } catch (TwitterException tw) {
+      if (tw.exceededRateLimitation()) {
+        sleepAndTryAgain(doc, originalId);
+      }
+    } catch (Exception ex) {
+      LOGGER.warn("Error fetching and replacing tweet for activity {}", doc.getId());
     }
+  }
 
-    @Override
-    public String getId() {
-        return getProvider().getId();
+  protected void replace(Activity doc, String json) throws java.io.IOException, ActivityConversionException {
+    Class documentSubType = new TwitterDocumentClassifier().detectClasses(json).get(0);
+    Object object = mapper.readValue(json, documentSubType);
+
+    if (documentSubType.equals(Retweet.class) || documentSubType.equals(Tweet.class)) {
+      updateActivity((Tweet)object, doc);
+    } else if (documentSubType.equals(Delete.class)) {
+      updateActivity((Delete)object, doc);
+    } else {
+      LOGGER.info("Could not determine the correct update method for {}", documentSubType);
     }
+  }
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        if(entry.getDocument() instanceof Activity) {
-            Activity doc = (Activity)entry.getDocument();
-            String originalId = doc.getId();
-            if(PROVIDER_ID.equals(doc.getProvider().getId())) {
-                fetchAndReplace(doc, originalId);
-            }
-        } else {
-            throw new IllegalStateException("Requires an activity document");
-        }
-        return Lists.newArrayList(entry);
+  protected String fetch(Activity doc) throws TwitterException {
+    String id = doc.getObject().getId();
+    LOGGER.debug("Fetching status from Twitter for {}", id);
+    Long tweetId = Long.valueOf(id.replace("id:twitter:tweets:", ""));
+    Status status = getTwitterClient().showStatus(tweetId);
+    return TwitterObjectFactory.getRawJSON(status);
+  }
+
+
+  protected Twitter getTwitterClient() {
+
+    if (this.client == null) {
+
+      String baseUrl = TwitterProviderUtil.baseUrl(config);
+
+      ConfigurationBuilder builder = new ConfigurationBuilder()
+          .setOAuthConsumerKey(config.getOauth().getConsumerKey())
+          .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
+          .setOAuthAccessToken(config.getOauth().getAccessToken())
+          .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
+          .setIncludeEntitiesEnabled(true)
+          .setJSONStoreEnabled(true)
+          .setAsyncNumThreads(1)
+          .setRestBaseURL(baseUrl)
+          .setIncludeMyRetweetEnabled(Boolean.TRUE)
+          .setPrettyDebugEnabled(Boolean.TRUE);
+
+      this.client = new TwitterFactory(builder.build()).getInstance();
     }
+    return this.client;
+  }
 
-
-    @Override
-    public void prepare(Object configurationObject) {
-        this.client = getTwitterClient();
-        this.mapper = StreamsJacksonMapper.getInstance();
+  //Hardcore sleep to allow for catch up
+  protected void sleepAndTryAgain(Activity doc, String originalId) {
+    try {
+      //Attempt to fetchAndReplace with a backoff up to the limit then just reset the count and let the process continue
+      if (retryCount < MAX_ATTEMPTS) {
+        retryCount++;
+        LOGGER.debug("Sleeping for {} min due to excessive calls to Twitter API", (retryCount * 4));
+        Thread.sleep(BACKOFF * retryCount);
+        fetchAndReplace(doc, originalId);
+      } else {
+        retryCount = 0;
+      }
+    } catch (InterruptedException ex) {
+      LOGGER.warn("Thread sleep interrupted while waiting for twitter backoff");
     }
-
-    @Override
-    public void cleanUp() {
-
-    }
-
-    protected void fetchAndReplace(Activity doc, String originalId) {
-        try {
-            String json = fetch(doc);
-            replace(doc, json);
-            doc.setId(originalId);
-            retryCount = 0;
-        } catch(TwitterException tw) {
-            if(tw.exceededRateLimitation()) {
-                sleepAndTryAgain(doc, originalId);
-            }
-        } catch (Exception e) {
-            LOGGER.warn("Error fetching and replacing tweet for activity {}", doc.getId());
-        }
-    }
-
-    protected void replace(Activity doc, String json) throws java.io.IOException, ActivityConversionException {
-        Class documentSubType = TwitterEventClassifier.detectClass(json);
-        Object object = mapper.readValue(json, documentSubType);
-
-        if(documentSubType.equals(Retweet.class) || documentSubType.equals(Tweet.class)) {
-            updateActivity((Tweet)object, doc);
-        } else if(documentSubType.equals(Delete.class)) {
-            updateActivity((Delete)object, doc);
-        } else {
-            LOGGER.info("Could not determine the correct update method for {}", documentSubType);
-        }
-    }
-
-    protected String fetch(Activity doc) throws TwitterException {
-        String id = doc.getObject().getId();
-        LOGGER.debug("Fetching status from Twitter for {}", id);
-        Long tweetId = Long.valueOf(id.replace("id:twitter:tweets:", ""));
-        Status status = getTwitterClient().showStatus(tweetId);
-        return TwitterObjectFactory.getRawJSON(status);
-    }
-
-
-    protected Twitter getTwitterClient()
-    {
-        if(this.client == null) {
-
-            String baseUrl = TwitterProviderUtil.baseUrl(config);
-
-            ConfigurationBuilder builder = new ConfigurationBuilder()
-                    .setOAuthConsumerKey(config.getOauth().getConsumerKey())
-                    .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
-                    .setOAuthAccessToken(config.getOauth().getAccessToken())
-                    .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
-                    .setIncludeEntitiesEnabled(true)
-                    .setJSONStoreEnabled(true)
-                    .setAsyncNumThreads(1)
-                    .setRestBaseURL(baseUrl)
-                    .setIncludeMyRetweetEnabled(Boolean.TRUE)
-                    .setPrettyDebugEnabled(Boolean.TRUE);
-
-            this.client = new TwitterFactory(builder.build()).getInstance();
-        }
-        return this.client;
-    }
-
-    //Hardcore sleep to allow for catch up
-    protected void sleepAndTryAgain(Activity doc, String originalId) {
-        try {
-            //Attempt to fetchAndReplace with a backoff up to the limit then just reset the count and let the process continue
-            if(retryCount < MAX_ATTEMPTS) {
-                retryCount++;
-                LOGGER.debug("Sleeping for {} min due to excessive calls to Twitter API", (retryCount * 4));
-                Thread.sleep(BACKOFF * retryCount);
-                fetchAndReplace(doc, originalId);
-            } else {
-                retryCount = 0;
-            }
-        } catch (InterruptedException e) {
-            LOGGER.warn("Thread sleep interrupted while waiting for twitter backoff");
-        }
-    }
+  }
 }

@@ -19,8 +19,7 @@
 package org.apache.streams.graph;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.ActivityObject;
+
 import org.javatuples.Pair;
 
 import java.util.Map;
@@ -31,6 +30,6 @@ import java.util.Map;
  */
 public interface HttpGraphHelper {
 
-    public ObjectNode createHttpRequest(Pair<String, Map<String, Object>> queryPlusParameters);
+  public ObjectNode createHttpRequest(Pair<String, Map<String, Object>> queryPlusParameters);
 
 }

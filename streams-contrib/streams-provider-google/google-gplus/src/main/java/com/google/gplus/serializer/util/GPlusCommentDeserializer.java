@@ -19,6 +19,8 @@
 
 package com.google.gplus.serializer.util;
 
+import org.apache.streams.jackson.StreamsJacksonMapper;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -28,71 +30,76 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.util.DateTime;
 import com.google.api.client.util.Lists;
 import com.google.api.services.plus.model.Comment;
-import org.apache.streams.jackson.StreamsJacksonMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * GPlusCommentDeserializer converts gplus comments to as1 comments.
+ */
 public class GPlusCommentDeserializer  extends JsonDeserializer<Comment> {
-    private final static Logger LOGGER = LoggerFactory.getLogger(GPlusActivityDeserializer.class);
 
-    /**
-     * Because the GooglePlus Comment object {@link com.google.api.services.plus.model.Comment} contains complex objects
-     * within its hierarchy, we have to use a custom deserializer
-     *
-     * @param jsonParser
-     * @param deserializationContext
-     * @return The deserialized {@link com.google.api.services.plus.model.Comment} object
-     * @throws java.io.IOException
-     * @throws com.fasterxml.jackson.core.JsonProcessingException
-     */
-    @Override
-    public Comment deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+  private static final Logger LOGGER = LoggerFactory.getLogger(GPlusActivityDeserializer.class);
 
-        JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        ObjectMapper objectMapper = StreamsJacksonMapper.getInstance();
-        Comment comment = new Comment();
+  /**
+   * Because the GooglePlus Comment object {@link com.google.api.services.plus.model.Comment} contains complex objects
+   * within its hierarchy, we have to use a custom deserializer
+   *
+   * @param jsonParser jsonParser
+   * @param deserializationContext deserializationContext
+   * @return The deserialized {@link com.google.api.services.plus.model.Comment} object
+   * @throws java.io.IOException IOException
+   * @throws com.fasterxml.jackson.core.JsonProcessingException JsonProcessingException
+   */
+  @Override
+  public Comment deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
+      throws IOException, JsonProcessingException {
 
-        try {
-            comment.setEtag(node.get("etag").asText());
-            comment.setVerb(node.get("verb").asText());
-            comment.setId(node.get("id").asText());
-            comment.setPublished(DateTime.parseRfc3339(node.get("published").asText()));
-            comment.setUpdated(DateTime.parseRfc3339(node.get("updated").asText()));
+    JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+    ObjectMapper objectMapper = StreamsJacksonMapper.getInstance();
+    Comment comment = new Comment();
 
-            Comment.Actor actor = new Comment.Actor();
-            JsonNode actorNode = node.get("actor");
-            actor.setDisplayName(actorNode.get("displayName").asText());
-            actor.setUrl(actorNode.get("url").asText());
+    try {
+      comment.setEtag(node.get("etag").asText());
+      comment.setVerb(node.get("verb").asText());
+      comment.setId(node.get("id").asText());
+      comment.setPublished(DateTime.parseRfc3339(node.get("published").asText()));
+      comment.setUpdated(DateTime.parseRfc3339(node.get("updated").asText()));
 
-            Comment.Actor.Image image = new Comment.Actor.Image();
-            JsonNode imageNode = actorNode.get("image");
-            image.setUrl(imageNode.get("url").asText());
+      Comment.Actor actor = new Comment.Actor();
+      JsonNode actorNode = node.get("actor");
+      actor.setDisplayName(actorNode.get("displayName").asText());
+      actor.setUrl(actorNode.get("url").asText());
 
-            actor.setImage(image);
+      Comment.Actor.Image image = new Comment.Actor.Image();
+      JsonNode imageNode = actorNode.get("image");
+      image.setUrl(imageNode.get("url").asText());
 
-            comment.setObject(objectMapper.readValue(objectMapper.writeValueAsString(node.get("object")), Comment.PlusObject.class));
+      actor.setImage(image);
 
-            comment.setSelfLink(node.get("selfLink").asText());
+      comment.setObject(objectMapper.readValue(objectMapper.writeValueAsString(node.get("object")), Comment.PlusObject.class));
 
-            List<Comment.InReplyTo> replies = Lists.newArrayList();
-            for(JsonNode reply : node.get("inReplyTo")) {
-                Comment.InReplyTo r = objectMapper.readValue(objectMapper.writeValueAsString(reply), Comment.InReplyTo.class);
-                replies.add(r);
-            }
+      comment.setSelfLink(node.get("selfLink").asText());
 
-            comment.setInReplyTo(replies);
+      List<Comment.InReplyTo> replies = Lists.newArrayList();
+      for (JsonNode reply : node.get("inReplyTo")) {
+        Comment.InReplyTo irt = objectMapper.readValue(objectMapper.writeValueAsString(reply), Comment.InReplyTo.class);
+        replies.add(irt);
+      }
 
-            Comment.Plusoners plusoners = new Comment.Plusoners();
-            JsonNode plusonersNode = node.get("plusoners");
-            plusoners.setTotalItems(plusonersNode.get("totalItems").asLong());
-            comment.setPlusoners(plusoners);
-        } catch (Exception e) {
-            LOGGER.error("Exception while trying to deserialize activity object: {}", e);
-        }
+      comment.setInReplyTo(replies);
 
-        return comment;
+      Comment.Plusoners plusoners = new Comment.Plusoners();
+      JsonNode plusonersNode = node.get("plusoners");
+      plusoners.setTotalItems(plusonersNode.get("totalItems").asLong());
+      comment.setPlusoners(plusoners);
+    } catch (Exception ex) {
+      LOGGER.error("Exception while trying to deserialize activity object: {}", ex);
     }
+
+    return comment;
+  }
 }

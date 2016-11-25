@@ -20,6 +20,7 @@
 package org.apache.streams.regex;
 
 import org.apache.streams.core.StreamsProcessor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,27 +28,27 @@ import org.slf4j.LoggerFactory;
  * Processes the content of an {@link org.apache.streams.pojo.json.Activity} object to extract the Hashtags and add
  * them to the appropriate extensions object
  */
-public class RegexHashtagExtractor extends AbstractRegexExtensionExtractor<String> implements StreamsProcessor{
+public class RegexHashtagExtractor extends AbstractRegexExtensionExtractor<String> implements StreamsProcessor {
 
-    private final static String STREAMS_ID = "RegexHashtagExtractor";
+  private static final String STREAMS_ID = "RegexHashtagExtractor";
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(RegexHashtagExtractor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RegexHashtagExtractor.class);
 
-    public final static String DEFAULT_PATTERN = "#\\w+";
-    public final static String PATTERN_CONFIG_KEY = "HashtagPattern";
-    public final static String EXTENSION_KEY = "hashtags";
+  public static final String DEFAULT_PATTERN = "#\\w+";
+  public static final String PATTERN_CONFIG_KEY = "HashtagPattern";
+  public static final String EXTENSION_KEY = "hashtags";
 
-    public RegexHashtagExtractor() {
-        super(PATTERN_CONFIG_KEY, EXTENSION_KEY, DEFAULT_PATTERN);
-    }
+  public RegexHashtagExtractor() {
+    super(PATTERN_CONFIG_KEY, EXTENSION_KEY, DEFAULT_PATTERN);
+  }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
 
-    @Override
-    protected String prepareObject(String extracted) {
-        return extracted.substring(1);
-    }
+  @Override
+  protected String prepareObject(String extracted) {
+    return extracted.substring(1);
+  }
 }

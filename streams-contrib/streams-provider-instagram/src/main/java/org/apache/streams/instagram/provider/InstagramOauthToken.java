@@ -12,8 +12,8 @@ software distributed under the License is distributed on an
 KIND, either express or implied. See the License for the
 specific language governing permissions and limitations
 under the License. */
-package org.apache.streams.instagram.provider;
 
+package org.apache.streams.instagram.provider;
 
 import org.jinstagram.auth.model.Token;
 
@@ -23,21 +23,21 @@ import org.jinstagram.auth.model.Token;
  */
 public class InstagramOauthToken extends Token {
 
-    public InstagramOauthToken(String token) {
-        this(token, null);
-    }
+  public InstagramOauthToken(String token) {
+    this(token, null);
+  }
 
-    public InstagramOauthToken(String token, String secret) {
-        super(token, secret);
-    }
+  public InstagramOauthToken(String token, String secret) {
+    super(token, secret);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if(!(o instanceof InstagramOauthToken)) {
-            return false;
-        }
-        InstagramOauthToken that = (InstagramOauthToken) o;
-        return this.getToken().equals(that.getToken());
+  @Override
+  public boolean equals(Object object) {
+    if (!(object instanceof InstagramOauthToken)) {
+      return false;
     }
+    InstagramOauthToken that = (InstagramOauthToken) object;
+    return this.getToken().equals(that.getToken());
+  }
 
 }

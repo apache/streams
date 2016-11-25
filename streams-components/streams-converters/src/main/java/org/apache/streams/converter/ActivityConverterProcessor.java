@@ -19,11 +19,13 @@ under the License.
 
 package org.apache.streams.converter;
 
-import com.google.common.collect.Lists;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.core.util.DatumUtils;
 import org.apache.streams.pojo.json.Activity;
+
+import com.google.common.collect.Lists;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,72 +35,74 @@ import java.util.List;
  * ActivityConverterProcessor is a utility processor for converting any datum document
  * to an Activity.
  *
+ * <p/>
  * By default it will handle string json and objectnode representation of existing Activities,
  * translating them into the POJO representation(s) preferred by each registered/detected
  * ActivityConverter.
  *
+ * <p/>
  * To use this capability without a dedicated stream processor, just use ActivityConverterUtil.
  */
 public class ActivityConverterProcessor implements StreamsProcessor {
 
-    public static final String STREAMS_ID = "ActivityConverterProcessor";
+  public static final String STREAMS_ID = "ActivityConverterProcessor";
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(ActivityConverterProcessor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ActivityConverterProcessor.class);
 
-    private ActivityConverterUtil converterUtil;
+  private ActivityConverterUtil converterUtil;
 
-    private ActivityConverterProcessorConfiguration configuration;
+  private ActivityConverterProcessorConfiguration configuration;
 
-    public ActivityConverterProcessor() {
+  public ActivityConverterProcessor() {
+  }
+
+  public ActivityConverterProcessor(ActivityConverterProcessorConfiguration configuration) {
+    this.configuration = configuration;
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+
+    List<StreamsDatum> result = Lists.newLinkedList();
+    Object document = entry.getDocument();
+
+    try {
+
+      // first determine which classes this document might actually be
+      List<Activity> activityList = converterUtil.convert(document);
+
+      for (Activity activity : activityList) {
+        StreamsDatum datum = DatumUtils.cloneDatum(entry);
+        datum.setId(activity.getId());
+        datum.setDocument(activity);
+        result.add(datum);
+      }
+
+    } catch (Exception ex) {
+      LOGGER.warn("General exception in process! " + ex.getMessage());
+    } finally {
+      return result;
     }
 
-    public ActivityConverterProcessor(ActivityConverterProcessorConfiguration configuration) {
-        this.configuration = configuration;
+  }
+
+  @Override
+  public void prepare(Object configurationObject) {
+    if (configurationObject instanceof ActivityConverterProcessorConfiguration) {
+      converterUtil = ActivityConverterUtil.getInstance((ActivityConverterProcessorConfiguration) configurationObject);
+    } else {
+      converterUtil = ActivityConverterUtil.getInstance();
     }
+  }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
-    }
+  @Override
+  public void cleanUp() {
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
+  }
 
-        List<StreamsDatum> result = Lists.newLinkedList();
-        Object document = entry.getDocument();
-
-        try {
-
-            // first determine which classes this document might actually be
-            List<Activity> activityList = converterUtil.convert(document);
-
-            for (Activity activity : activityList) {
-                StreamsDatum datum = DatumUtils.cloneDatum(entry);
-                datum.setId(activity.getId());
-                datum.setDocument(activity);
-                result.add(datum);
-            }
-
-        } catch( Exception e ) {
-            LOGGER.warn("General exception in process! " + e.getMessage());
-        } finally {
-            return result;
-        }
-
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-        if( configurationObject instanceof ActivityConverterProcessorConfiguration)
-            converterUtil = ActivityConverterUtil.getInstance((ActivityConverterProcessorConfiguration)configurationObject);
-        else
-            converterUtil = ActivityConverterUtil.getInstance();
-
-    }
-
-    @Override
-    public void cleanUp() {
-
-    }
-
-};
+}

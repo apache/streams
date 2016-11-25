@@ -18,38 +18,44 @@
 
 package com.youtube.serializer;
 
+import org.apache.streams.jackson.StreamsJacksonMapper;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.api.services.youtube.model.Video;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import java.io.IOException;
 
 public class YoutubeEventClassifier {
-    private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
-    private static final String VIDEO_IDENTIFIER = "\"youtube#video\"";
-    private static final String CHANNEL_IDENTIFIER = "youtube#channel";
+  private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  private static final String VIDEO_IDENTIFIER = "\"youtube#video\"";
+  private static final String CHANNEL_IDENTIFIER = "youtube#channel";
 
-    public static Class detectClass(String json) {
-        Preconditions.checkNotNull(json);
-        Preconditions.checkArgument(StringUtils.isNotEmpty(json));
+  /**
+   * detect probable Class of a json String from YouTube.
+   * @param json json
+   * @return Class
+   */
+  public static Class detectClass(String json) {
+    Preconditions.checkNotNull(json);
+    Preconditions.checkArgument(StringUtils.isNotEmpty(json));
 
-        ObjectNode objectNode;
-        try {
-            objectNode = (ObjectNode) mapper.readTree(json);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        if (objectNode.findValue("kind") != null && objectNode.get("kind").toString().equals(VIDEO_IDENTIFIER)) {
-            return Video.class;
-        }  else if (objectNode.findValue("kind") != null && objectNode.get("kind").toString().contains(CHANNEL_IDENTIFIER)){
-            return com.google.api.services.youtube.model.Channel.class;
-        }  else {
-            return ObjectNode.class;
-        }
+    ObjectNode objectNode;
+    try {
+      objectNode = (ObjectNode) mapper.readTree(json);
+    } catch (IOException ex) {
+      ex.printStackTrace();
+      return null;
     }
+
+    if (objectNode.findValue("kind") != null && objectNode.get("kind").toString().equals(VIDEO_IDENTIFIER)) {
+      return Video.class;
+    } else if (objectNode.findValue("kind") != null && objectNode.get("kind").toString().contains(CHANNEL_IDENTIFIER)) {
+      return com.google.api.services.youtube.model.Channel.class;
+    } else {
+      return ObjectNode.class;
+    }
+  }
 }

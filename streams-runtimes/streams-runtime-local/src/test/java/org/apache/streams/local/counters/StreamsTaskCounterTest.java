@@ -23,139 +23,139 @@ import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Test;
 
+import java.lang.management.ManagementFactory;
 import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
-import java.lang.management.ManagementFactory;
 
 /**
  * Unit tests for {@link org.apache.streams.local.counters.StreamsTaskCounter}
  */
 public class StreamsTaskCounterTest extends RandomizedTest {
 
-    private static final String MBEAN_ID = "test_id";
-    private static final String STREAM_ID = "test_stream";
-    private static long STREAM_START_TIME = (new DateTime()).getMillis();
+  private static final String MBEAN_ID = "test_id";
+  private static final String STREAM_ID = "test_stream";
+  private static long STREAM_START_TIME = (new DateTime()).getMillis();
 
-    /**
-     * Remove registered mbeans from previous tests
-     * @throws Exception
-     */
-    @After
-    public void unregisterMXBean() throws Exception {
-        try {
-            ManagementFactory.getPlatformMBeanServer().unregisterMBean(new ObjectName(String.format(StreamsTaskCounter.NAME_TEMPLATE, MBEAN_ID, STREAM_ID, STREAM_START_TIME)));
-        } catch (InstanceNotFoundException ife) {
-            //No-op
-        }
+  /**
+   * Remove registered mbeans from previous tests
+   * @throws Exception
+   */
+  @After
+  public void unregisterMXBean() throws Exception {
+    try {
+      ManagementFactory.getPlatformMBeanServer().unregisterMBean(new ObjectName(String.format(StreamsTaskCounter.NAME_TEMPLATE, MBEAN_ID, STREAM_ID, STREAM_START_TIME)));
+    } catch (InstanceNotFoundException ife) {
+      //No-op
     }
+  }
 
-    /**
-     * Test constructor does not throw errors
-     */
-    @Test
-    public void testConstructor() {
-        try {
-            new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        } catch (Throwable t) {
-            fail("Constructor threw error : "+t.getMessage());
-        }
+  /**
+   * Test constructor does not throw errors
+   */
+  @Test
+  public void testConstructor() {
+    try {
+      new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    } catch (Throwable t) {
+      fail("Constructor threw error : "+t.getMessage());
     }
+  }
 
-    /**
-     * Test emitted increments correctly and returns expected value
-     * @throws Exception
-     */
-    @Test
-    @Repeat(iterations = 3)
-    public void testEmitted() throws Exception {
-        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        int numIncrements = randomIntBetween(1, 100000);
-        for(int i=0; i < numIncrements; ++i) {
-            counter.incrementEmittedCount();
-        }
-        assertEquals(numIncrements, counter.getNumEmitted());
-
-        unregisterMXBean();
-
-        counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        numIncrements = randomIntBetween(1, 100000);
-        long total = 0;
-        for(int i=0; i < numIncrements; ++i) {
-            long delta = randomIntBetween(1, 100);
-            total += delta;
-            counter.incrementEmittedCount(delta);
-        }
-        assertEquals(total, counter.getNumEmitted());
+  /**
+   * Test emitted increments correctly and returns expected value
+   * @throws Exception
+   */
+  @Test
+  @Repeat(iterations = 3)
+  public void testEmitted() throws Exception {
+    StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    int numIncrements = randomIntBetween(1, 100000);
+    for(int i=0; i < numIncrements; ++i) {
+      counter.incrementEmittedCount();
     }
+    assertEquals(numIncrements, counter.getNumEmitted());
 
-    /**
-     * Test received increments correctly and returns expected value
-     * @throws Exception
-     */
-    @Test
-    @Repeat(iterations = 3)
-    public void testReceived() throws Exception {
-        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        int numIncrements = randomIntBetween(1, 100000);
-        for(int i=0; i < numIncrements; ++i) {
-            counter.incrementReceivedCount();
-        }
-        assertEquals(numIncrements, counter.getNumReceived());
+    unregisterMXBean();
 
-        unregisterMXBean();
-
-        counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        numIncrements = randomIntBetween(1, 100000);
-        long total = 0;
-        for(int i=0; i < numIncrements; ++i) {
-            long delta = randomIntBetween(1, 100);
-            total += delta;
-            counter.incrementReceivedCount(delta);
-        }
-        assertEquals(total, counter.getNumReceived());
+    counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    numIncrements = randomIntBetween(1, 100000);
+    long total = 0;
+    for(int i=0; i < numIncrements; ++i) {
+      long delta = randomIntBetween(1, 100);
+      total += delta;
+      counter.incrementEmittedCount(delta);
     }
+    assertEquals(total, counter.getNumEmitted());
+  }
 
-    /**
-     * Test errors increments correctly and returns expected value
-     * @throws Exception
-     */
-    @Test
-    @Repeat(iterations = 3)
-    public void testError() throws Exception {
-        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        int numIncrements = randomIntBetween(1, 100000);
-        for(int i=0; i < numIncrements; ++i) {
-            counter.incrementErrorCount();
-        }
-        assertEquals(numIncrements, counter.getNumUnhandledErrors());
-
-        unregisterMXBean();
-
-        counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        numIncrements = randomIntBetween(1, 100000);
-        long total = 0;
-        for(int i=0; i < numIncrements; ++i) {
-            long delta = randomIntBetween(1, 100);
-            total += delta;
-            counter.incrementErrorCount(delta);
-        }
-        assertEquals(total, counter.getNumUnhandledErrors());
+  /**
+   * Test received increments correctly and returns expected value
+   * @throws Exception
+   */
+  @Test
+  @Repeat(iterations = 3)
+  public void testReceived() throws Exception {
+    StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    int numIncrements = randomIntBetween(1, 100000);
+    for(int i=0; i < numIncrements; ++i) {
+      counter.incrementReceivedCount();
     }
+    assertEquals(numIncrements, counter.getNumReceived());
 
-    /**
-     * Test error rate returns expected value
-     * @throws Exception
-     */
-    @Test
-    @Repeat(iterations = 3)
-    public void testErrorRate() throws Exception {
-        StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-        assertEquals(0.0, counter.getErrorRate(), 0);
-        int failures = randomIntBetween(0, 100000);
-        int received = randomIntBetween(0, 100000);
-        counter.incrementReceivedCount(received);
-        counter.incrementErrorCount(failures);
-        assertEquals((double)failures / (double)(received), counter.getErrorRate(), 0);
+    unregisterMXBean();
+
+    counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    numIncrements = randomIntBetween(1, 100000);
+    long total = 0;
+    for(int i=0; i < numIncrements; ++i) {
+      long delta = randomIntBetween(1, 100);
+      total += delta;
+      counter.incrementReceivedCount(delta);
     }
+    assertEquals(total, counter.getNumReceived());
+  }
+
+  /**
+   * Test errors increments correctly and returns expected value
+   * @throws Exception
+   */
+  @Test
+  @Repeat(iterations = 3)
+  public void testError() throws Exception {
+    StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    int numIncrements = randomIntBetween(1, 100000);
+    for(int i=0; i < numIncrements; ++i) {
+      counter.incrementErrorCount();
+    }
+    assertEquals(numIncrements, counter.getNumUnhandledErrors());
+
+    unregisterMXBean();
+
+    counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    numIncrements = randomIntBetween(1, 100000);
+    long total = 0;
+    for(int i=0; i < numIncrements; ++i) {
+      long delta = randomIntBetween(1, 100);
+      total += delta;
+      counter.incrementErrorCount(delta);
+    }
+    assertEquals(total, counter.getNumUnhandledErrors());
+  }
+
+  /**
+   * Test error rate returns expected value
+   * @throws Exception
+   */
+  @Test
+  @Repeat(iterations = 3)
+  public void testErrorRate() throws Exception {
+    StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
+    assertEquals(0.0, counter.getErrorRate(), 0);
+    int failures = randomIntBetween(0, 100000);
+    int received = randomIntBetween(0, 100000);
+    counter.incrementReceivedCount(received);
+    counter.incrementErrorCount(failures);
+    assertEquals((double)failures / (double)(received), counter.getErrorRate(), 0);
+  }
 
 }

@@ -18,15 +18,17 @@
 
 package org.apache.streams.filebuffer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Queues;
-import com.squareup.tape.QueueFile;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistReader;
 import org.apache.streams.core.StreamsResultSet;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Queues;
+import com.squareup.tape.QueueFile;
+
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,135 +50,135 @@ import java.util.concurrent.Executors;
  */
 public class FileBufferPersistReader implements StreamsPersistReader, Serializable {
 
-    public static final String STREAMS_ID = "FileBufferPersistReader";
+  public static final String STREAMS_ID = "FileBufferPersistReader";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileBufferPersistReader.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileBufferPersistReader.class);
 
-    protected volatile Queue<StreamsDatum> persistQueue;
+  protected volatile Queue<StreamsDatum> persistQueue;
 
-    private ObjectMapper mapper;
+  private ObjectMapper mapper;
 
-    private FileBufferConfiguration config;
+  private FileBufferConfiguration config;
 
-    private QueueFile queueFile;
+  private QueueFile queueFile;
 
-    private boolean isStarted = false;
-    private boolean isStopped = false;
+  private boolean isStarted = false;
+  private boolean isStopped = false;
 
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+  private ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public FileBufferPersistReader() {
-        this(new ComponentConfigurator<>(FileBufferConfiguration.class)
-          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("filebuffer")));
+  public FileBufferPersistReader() {
+    this(new ComponentConfigurator<>(FileBufferConfiguration.class)
+        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("filebuffer")));
+  }
+
+  public FileBufferPersistReader(FileBufferConfiguration config) {
+    this.config = config;
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public StreamsResultSet readAll() {
+    return readCurrent();
+  }
+
+  @Override
+  public void startStream() {
+    isStarted = true;
+  }
+
+  @Override
+  public StreamsResultSet readCurrent() {
+
+    while (!queueFile.isEmpty()) {
+      try {
+        byte[] bytes = queueFile.peek();
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        BufferedReader buf = new BufferedReader(new InputStreamReader(bais));
+        String line = buf.readLine();
+        LOGGER.debug(line);
+        write(new StreamsDatum(line));
+        queueFile.remove();
+      } catch (IOException ex) {
+        ex.printStackTrace();
+      }
     }
 
-    public FileBufferPersistReader(FileBufferConfiguration config) {
-        this.config = config;
+    StreamsResultSet current;
+    current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(persistQueue));
+    persistQueue.clear();
+
+    return current;
+  }
+
+  private void write( StreamsDatum entry ) {
+    persistQueue.offer(entry);
+  }
+
+  @Override
+  public StreamsResultSet readNew(BigInteger bigInteger) {
+    return null;
+  }
+
+  @Override
+  public StreamsResultSet readRange(DateTime dateTime, DateTime dateTime2) {
+    return null;
+  }
+
+  @Override
+  public boolean isRunning() {
+    return isStarted && !isStopped;
+  }
+
+  @Override
+  public void prepare(Object configurationObject) {
+
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException ie) {
+      //Handle exception
     }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
+    mapper = new ObjectMapper();
+
+    File file = new File( config.getPath());
+
+    if ( !file.exists() ) {
+      try {
+        file.createNewFile();
+      } catch (IOException ex) {
+        LOGGER.error(ex.getMessage());
+      }
     }
 
-    @Override
-    public StreamsResultSet readAll() {
-        return readCurrent();
+    Preconditions.checkArgument(file.exists());
+    Preconditions.checkArgument(file.canRead());
+
+    try {
+      queueFile = new QueueFile(file);
+    } catch (IOException ex) {
+      LOGGER.error(ex.getMessage());
     }
 
-    @Override
-    public void startStream() {
-        isStarted = true;
+    Preconditions.checkNotNull(queueFile);
+
+    this.persistQueue = new ConcurrentLinkedQueue<>();
+
+  }
+
+  @Override
+  public void cleanUp() {
+    try {
+      queueFile.close();
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    } finally {
+      queueFile = null;
+      isStopped = true;
     }
-
-    @Override
-    public StreamsResultSet readCurrent() {
-
-        while (!queueFile.isEmpty()) {
-            try {
-                byte[] bytes = queueFile.peek();
-                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-                BufferedReader buf = new BufferedReader(new InputStreamReader(bais));
-                String s = buf.readLine();
-                LOGGER.debug(s);
-                write(new StreamsDatum(s));
-                queueFile.remove();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        StreamsResultSet current;
-        current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(persistQueue));
-        persistQueue.clear();
-
-        return current;
-    }
-
-    private void write( StreamsDatum entry ) {
-        persistQueue.offer(entry);
-    }
-
-    @Override
-    public StreamsResultSet readNew(BigInteger bigInteger) {
-        return null;
-    }
-
-    @Override
-    public StreamsResultSet readRange(DateTime dateTime, DateTime dateTime2) {
-        return null;
-    }
-
-    @Override
-    public boolean isRunning() {
-        return isStarted && !isStopped;
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ie) {
-            //Handle exception
-        }
-
-        mapper = new ObjectMapper();
-
-        File file = new File( config.getPath());
-
-        if( !file.exists() ) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                LOGGER.error(e.getMessage());
-            }
-        }
-
-        Preconditions.checkArgument(file.exists());
-        Preconditions.checkArgument(file.canRead());
-
-        try {
-            queueFile = new QueueFile(file);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
-
-        Preconditions.checkNotNull(queueFile);
-
-        this.persistQueue = new ConcurrentLinkedQueue<>();
-
-    }
-
-        @Override
-    public void cleanUp() {
-        try {
-            queueFile.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            queueFile = null;
-            isStopped = true;
-        }
-    }
+  }
 }

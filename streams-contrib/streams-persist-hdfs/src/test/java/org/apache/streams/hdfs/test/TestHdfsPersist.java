@@ -46,7 +46,7 @@ import java.util.List;
  */
 public class TestHdfsPersist {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(TestHdfsPersist.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestHdfsPersist.class);
 
     ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 

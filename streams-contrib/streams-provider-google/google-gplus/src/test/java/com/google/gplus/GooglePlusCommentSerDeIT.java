@@ -19,6 +19,9 @@
 
 package com.google.gplus;
 
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.json.Activity;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -26,10 +29,9 @@ import com.google.api.client.util.Lists;
 import com.google.api.services.plus.model.Comment;
 import com.google.gplus.serializer.util.GPlusCommentDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
-import org.junit.*;
+import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,74 +46,77 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Tests conversion of gplus inputs to Activity
+ * Tests conversion of gplus inputs to Activity.
  */
 public class GooglePlusCommentSerDeIT {
-    private final static Logger LOGGER = LoggerFactory.getLogger(GooglePlusCommentSerDeIT.class);
-    private ObjectMapper objectMapper;
-    private GooglePlusActivityUtil googlePlusActivityUtil;
+  private static final Logger LOGGER = LoggerFactory.getLogger(GooglePlusCommentSerDeIT.class);
+  private ObjectMapper objectMapper;
+  private GooglePlusActivityUtil googlePlusActivityUtil;
 
-    @Before
-    public void setup() {
-        objectMapper = StreamsJacksonMapper.getInstance();
-        SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addDeserializer(Comment.class, new GPlusCommentDeserializer());
-        objectMapper.registerModule(simpleModule);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+  /**
+   * setup.
+   */
+  @Before
+  public void setup() {
+    objectMapper = StreamsJacksonMapper.getInstance();
+    SimpleModule simpleModule = new SimpleModule();
+    simpleModule.addDeserializer(Comment.class, new GPlusCommentDeserializer());
+    objectMapper.registerModule(simpleModule);
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        googlePlusActivityUtil = new GooglePlusActivityUtil();
-    }
+    googlePlusActivityUtil = new GooglePlusActivityUtil();
+  }
 
-    @org.junit.Test
-    public void testCommentObjects() {
-        InputStream is = GooglePlusCommentSerDeIT.class.getResourceAsStream("/google_plus_comments_jsons.txt");
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
+  @org.junit.Test
+  public void testCommentObjects() {
+    InputStream is = GooglePlusCommentSerDeIT.class.getResourceAsStream("/google_plus_comments_jsons.txt");
+    InputStreamReader isr = new InputStreamReader(is);
+    BufferedReader br = new BufferedReader(isr);
 
-        Activity activity = new Activity();
-        List<Comment> comments = Lists.newArrayList();
+    Activity activity = new Activity();
+    List<Comment> comments = Lists.newArrayList();
 
-        try {
-            while (br.ready()) {
-                String line = br.readLine();
-                if (!StringUtils.isEmpty(line)) {
-                    LOGGER.info("raw: {}", line);
-                    Comment comment = objectMapper.readValue(line, Comment.class);
+    try {
+      while (br.ready()) {
+        String line = br.readLine();
+        if (!StringUtils.isEmpty(line)) {
+          LOGGER.info("raw: {}", line);
+          Comment comment = objectMapper.readValue(line, Comment.class);
 
-                    LOGGER.info("comment: {}", comment);
+          LOGGER.info("comment: {}", comment);
 
-                    assertNotNull(comment);
-                    assertNotNull(comment.getEtag());
-                    assertNotNull(comment.getId());
-                    assertNotNull(comment.getInReplyTo());
-                    assertNotNull(comment.getObject());
-                    assertNotNull(comment.getPlusoners());
-                    assertNotNull(comment.getPublished());
-                    assertNotNull(comment.getUpdated());
-                    assertNotNull(comment.getSelfLink());
-                    assertEquals(comment.getVerb(), "post");
+          assertNotNull(comment);
+          assertNotNull(comment.getEtag());
+          assertNotNull(comment.getId());
+          assertNotNull(comment.getInReplyTo());
+          assertNotNull(comment.getObject());
+          assertNotNull(comment.getPlusoners());
+          assertNotNull(comment.getPublished());
+          assertNotNull(comment.getUpdated());
+          assertNotNull(comment.getSelfLink());
+          assertEquals(comment.getVerb(), "post");
 
-                    comments.add(comment);
-                }
-            }
-
-            assertEquals(comments.size(), 3);
-
-            googlePlusActivityUtil.updateActivity(comments, activity);
-            assertNotNull(activity);
-            assertNotNull(activity.getObject());
-            assertEquals(activity.getObject().getAttachments().size(), 3);
-        } catch (Exception e) {
-            LOGGER.error("Exception while testing serializability: {}", e);
+          comments.add(comment);
         }
+      }
+
+      assertEquals(comments.size(), 3);
+
+      googlePlusActivityUtil.updateActivity(comments, activity);
+      assertNotNull(activity);
+      assertNotNull(activity.getObject());
+      assertEquals(activity.getObject().getAttachments().size(), 3);
+    } catch (Exception ex) {
+      LOGGER.error("Exception while testing serializability: {}", ex);
     }
+  }
 
-    @org.junit.Test
-    public void testEmptyComments() {
-        Activity activity = new Activity();
+  @org.junit.Test
+  public void testEmptyComments() {
+    Activity activity = new Activity();
 
-        googlePlusActivityUtil.updateActivity(new ArrayList<Comment>(), activity);
+    googlePlusActivityUtil.updateActivity(new ArrayList<Comment>(), activity);
 
-        assertNull(activity.getObject());
-    }
+    assertNull(activity.getObject());
+  }
 }

@@ -18,8 +18,9 @@
 
 package org.apache.streams.core;
 
-import java.math.BigInteger;
 import org.joda.time.DateTime;
+
+import java.math.BigInteger;
 
 /**
  * A StreamsProvider represents the entry point into the Streams pipeline.  Providers are responsible for inserting
@@ -27,36 +28,36 @@ import org.joda.time.DateTime;
  */
 public interface StreamsProvider extends StreamsOperation {
 
-    /**
-     * Start the operation of the stream
-     */
-    void startStream();
+  /**
+   * Start the operation of the stream.
+   */
+  void startStream();
 
-    /**
-     * Read the current items available from the provider
-     * @return a non-null {@link org.apache.streams.core.StreamsResultSet}
-     */
-    StreamsResultSet readCurrent();
+  /**
+   * Read the current items available from the provider.
+   * @return a non-null {@link org.apache.streams.core.StreamsResultSet}
+   */
+  StreamsResultSet readCurrent();
 
-    /**
-     * TODO: Define how this operates or eliminate
-     * @param sequence
-     * @return {@link StreamsResultSet}
-     */
-    StreamsResultSet readNew(BigInteger sequence);
+  /**
+   * Read data with sequenceId greater than sequence.
+   * @param sequence BigInteger sequence
+   * @return {@link StreamsResultSet}
+   */
+  StreamsResultSet readNew(BigInteger sequence);
 
-    /**
-     * TODO: Define how this operates or eliminate
-     * @param start
-     * @param end
-     * @return {@link StreamsResultSet}
-     */
-    StreamsResultSet readRange(DateTime start, DateTime end);
+  /**
+   * Read data with event time between start DateTime and end DateTime.
+   * @param start start DateTime
+   * @param end end DateTime
+   * @return {@link StreamsResultSet}
+   */
+  StreamsResultSet readRange(DateTime start, DateTime end);
 
-    /**
-     * Flag to indicate whether the provider is producing data
-     * @return true if the processor is actively awaiting or producing data.  False otherwise.
-     */
-    boolean isRunning();
+  /**
+   * Flag to indicate whether the provider is still producing data.
+   * @return true if the processor is actively awaiting or producing data.  False otherwise.
+   */
+  boolean isRunning();
 }
 

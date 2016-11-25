@@ -20,10 +20,15 @@ package org.apache.streams.local.test.processors;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -32,76 +37,76 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class PassthroughDatumCounterProcessor implements StreamsProcessor {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(PassthroughDatumCounterProcessor.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(PassthroughDatumCounterProcessor.class);
 
-    public final static String STREAMS_ID = "PassthroughDatumCounterProcessor";
+  public final static String STREAMS_ID = "PassthroughDatumCounterProcessor";
 
-    /**
-     * Set of all ids that have been claimed.  Ensures all instances are assigned unique ids
-     */
-    public static Set<Integer> CLAIMED_ID = new HashSet<Integer>();
-    /**
-     * Random instance to generate ids
-     */
-    public static final Random RAND = new Random();
-    /**
-     * Set of instance ids that received data. Usefully for testing parrallelization is actually working.
-     */
-    public final static Set<Integer> SEEN_DATA = new HashSet<Integer>();
-    /**
-     * The total count of data seen by a all instances of a processor.
-     */
-    public static final ConcurrentHashMap<String, AtomicLong> COUNTS = new ConcurrentHashMap<>();
+  /**
+   * Set of all ids that have been claimed.  Ensures all instances are assigned unique ids
+   */
+  public static Set<Integer> CLAIMED_ID = new HashSet<Integer>();
+  /**
+   * Random instance to generate ids
+   */
+  public static final Random RAND = new Random();
+  /**
+   * Set of instance ids that received data. Usefully for testing parrallelization is actually working.
+   */
+  public final static Set<Integer> SEEN_DATA = new HashSet<Integer>();
+  /**
+   * The total count of data seen by a all instances of a processor.
+   */
+  public static final ConcurrentHashMap<String, AtomicLong> COUNTS = new ConcurrentHashMap<>();
 
-    private int count = 0;
-    private int id;
-    private String procId;
+  private int count = 0;
+  private int id;
+  private String procId;
 
-    public PassthroughDatumCounterProcessor(String procId) {
-        this.procId = procId;
+  public PassthroughDatumCounterProcessor(String procId) {
+    this.procId = procId;
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  @Override
+  public List<StreamsDatum> process(StreamsDatum entry) {
+    ++this.count;
+    List<StreamsDatum> result = new LinkedList<StreamsDatum>();
+    result.add(entry);
+    synchronized (SEEN_DATA) {
+      SEEN_DATA.add(this.id);
     }
+    return result;
+  }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
+  @Override
+  public void prepare(Object configurationObject) {
+    synchronized (CLAIMED_ID) {
+      this.id = RAND.nextInt();
+      while(!CLAIMED_ID.add(this.id)) {
+        this.id = RAND.nextInt();
+      }
     }
+  }
 
-    @Override
-    public List<StreamsDatum> process(StreamsDatum entry) {
-        ++this.count;
-        List<StreamsDatum> result = new LinkedList<StreamsDatum>();
-        result.add(entry);
-        synchronized (SEEN_DATA) {
-            SEEN_DATA.add(this.id);
-        }
-        return result;
+  @Override
+  public void cleanUp() {
+    LOGGER.debug("Clean up {}", this.procId);
+    synchronized (COUNTS) {
+      AtomicLong count = COUNTS.get(this.procId);
+      if(count == null) {
+        COUNTS.put(this.procId, new AtomicLong(this.count));
+      } else {
+        count.addAndGet(this.count);
+      }
     }
+    LOGGER.debug("{}\t{}", this.procId, this.count);
+  }
 
-    @Override
-    public void prepare(Object configurationObject) {
-        synchronized (CLAIMED_ID) {
-            this.id = RAND.nextInt();
-            while(!CLAIMED_ID.add(this.id)) {
-                this.id = RAND.nextInt();
-            }
-        }
-    }
-
-    @Override
-    public void cleanUp() {
-        LOGGER.debug("Clean up {}", this.procId);
-        synchronized (COUNTS) {
-            AtomicLong count = COUNTS.get(this.procId);
-            if(count == null) {
-                COUNTS.put(this.procId, new AtomicLong(this.count));
-            } else {
-                count.addAndGet(this.count);
-            }
-        }
-        LOGGER.debug("{}\t{}", this.procId, this.count);
-    }
-
-    public int getMessageCount() {
-        return this.count;
-    }
+  public int getMessageCount() {
+    return this.count;
+  }
 }

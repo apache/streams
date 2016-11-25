@@ -19,40 +19,41 @@
 
 package org.apache.streams.sysomos.provider;
 
-import com.sysomos.xml.BeatApi;
-import com.sysomos.xml.ObjectFactory;
 import org.apache.streams.sysomos.SysomosException;
 import org.apache.streams.sysomos.util.SysomosUtils;
+
+import com.sysomos.xml.BeatApi;
+import com.sysomos.xml.ObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.StringReader;
+import java.net.URL;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.StringReader;
-import java.net.URL;
 
 /**
  * Defines a common pattern for requesting data from the Sysomos API.
  */
 public abstract class AbstractRequestBuilder implements RequestBuilder {
-    private final static Logger LOGGER = LoggerFactory.getLogger(AbstractRequestBuilder.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRequestBuilder.class);
 
-    /**
-     * Executes the request to the Sysomos Heartbeat API and returns a valid response
-     */
-    public BeatApi.BeatResponse execute() {
-        URL url = this.getRequestUrl();
-        try {
-            String xmlResponse = SysomosUtils.queryUrl(url);
-            JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-            BeatApi beatApi = (BeatApi) unmarshaller.unmarshal(new StringReader(xmlResponse));
-            return beatApi.getBeatResponse();
-        } catch (JAXBException e) {
-            LOGGER.error("Unable to unmarshal XML content");
-            throw new SysomosException("Unable to unmarshal XML content", e);
-        }
+  /**
+   * Executes the request to the Sysomos Heartbeat API and returns a valid response.
+   */
+  public BeatApi.BeatResponse execute() {
+    URL url = this.getRequestUrl();
+    try {
+      String xmlResponse = SysomosUtils.queryUrl(url);
+      JAXBContext context = JAXBContext.newInstance(ObjectFactory.class);
+      Unmarshaller unmarshaller = context.createUnmarshaller();
+      BeatApi beatApi = (BeatApi) unmarshaller.unmarshal(new StringReader(xmlResponse));
+      return beatApi.getBeatResponse();
+    } catch (JAXBException ex) {
+      LOGGER.error("Unable to unmarshal XML content");
+      throw new SysomosException("Unable to unmarshal XML content", ex);
     }
+  }
 
 }

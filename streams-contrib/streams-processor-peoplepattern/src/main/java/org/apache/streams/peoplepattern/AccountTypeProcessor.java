@@ -26,6 +26,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,42 +34,49 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Enrich actor with account type
+ * Enrich actor with account type.
  */
 public class AccountTypeProcessor extends SimpleHTTPGetProcessor {
 
-    private final static String STREAMS_ID = "AccountTypeProcessor";
+  private static final String STREAMS_ID = "AccountTypeProcessor";
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(AccountTypeProcessor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AccountTypeProcessor.class);
 
-    public AccountTypeProcessor() {
-        this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
-          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("peoplepattern")));
-    }
+  /**
+   * AccountTypeProcessor constructor - resolves HttpProcessorConfiguration from JVM 'peoplepattern'.
+   */
+  public AccountTypeProcessor() {
+    this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
+        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("peoplepattern")));
+  }
 
-    public AccountTypeProcessor(HttpProcessorConfiguration peoplePatternConfiguration) {
-        super(peoplePatternConfiguration);
-        LOGGER.info("creating AccountTypeProcessor");
-        configuration.setProtocol("https");
-        configuration.setHostname("api.peoplepattern.com");
-        configuration.setResourcePath("/v0.2/account_type/");
-        configuration.setEntity(HttpProcessorConfiguration.Entity.ACTOR);
-        configuration.setExtension("account_type");
-    }
+  /**
+   * AccountTypeProcessor constructor - uses supplied HttpProcessorConfiguration.
+   * @param peoplePatternConfiguration peoplePatternConfiguration
+   */
+  public AccountTypeProcessor(HttpProcessorConfiguration peoplePatternConfiguration) {
+    super(peoplePatternConfiguration);
+    LOGGER.info("creating AccountTypeProcessor");
+    configuration.setProtocol("https");
+    configuration.setHostname("api.peoplepattern.com");
+    configuration.setResourcePath("/v0.2/account_type/");
+    configuration.setEntity(HttpProcessorConfiguration.Entity.ACTOR);
+    configuration.setExtension("account_type");
+  }
 
-    /**
-     Override this to add parameters to the request
-     */
-    @Override
-    protected Map<String, String> prepareParams(StreamsDatum entry) {
-        Activity activity = mapper.convertValue(entry.getDocument(), Activity.class);
-        ActivityObject actor = mapper.convertValue(activity.getActor(), ActivityObject.class);
-        String username = (String) ExtensionUtil.getInstance().getExtension(actor, "screenName");
-        Map<String, String> params = new HashMap<>();
-        params.put("id", actor.getId());
-        params.put("name", actor.getDisplayName());
-        params.put("username", username);
-        params.put("description", actor.getSummary());
-        return params;
-    }
+  /**
+   Override this to add parameters to the request.
+   */
+  @Override
+  protected Map<String, String> prepareParams(StreamsDatum entry) {
+    Activity activity = mapper.convertValue(entry.getDocument(), Activity.class);
+    ActivityObject actor = mapper.convertValue(activity.getActor(), ActivityObject.class);
+    String username = (String) ExtensionUtil.getInstance().getExtension(actor, "screenName");
+    Map<String, String> params = new HashMap<>();
+    params.put("id", actor.getId());
+    params.put("name", actor.getDisplayName());
+    params.put("username", username);
+    params.put("description", actor.getSummary());
+    return params;
+  }
 }

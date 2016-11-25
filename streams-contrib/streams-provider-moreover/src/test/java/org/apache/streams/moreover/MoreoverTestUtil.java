@@ -19,25 +19,35 @@
 package org.apache.streams.moreover;
 
 import org.apache.streams.pojo.json.Activity;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static java.util.regex.Pattern.matches;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+/**
+ * MoreoverTestUtil.
+ */
 public class MoreoverTestUtil {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(MoreoverTestUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MoreoverTestUtil.class);
 
-    public static void test(Activity activity) {
-        assertThat(activity, is(not(nullValue())));
-        assertThat(activity.getActor(), is(not(nullValue())));
-        assertThat(activity.getObject(), is(not(nullValue())));
-        if(activity.getObject().getId() != null) {
-            assertThat(matches("id:.*:[a-z]*s:[a-zA-Z0-9]*", activity.getObject().getId()), is(true));
-        }
-        assertThat(activity.getObject().getObjectType(), is(not(nullValue())));
-        LOGGER.debug(activity.getPublished().toString());
+  /**
+   *
+   * @param activity
+   */
+  public static void validate(Activity activity) {
+    assertThat(activity, is(not(nullValue())));
+    assertThat(activity.getActor(), is(not(nullValue())));
+    assertThat(activity.getObject(), is(not(nullValue())));
+    if(activity.getObject().getId() != null) {
+      assertThat(matches("id:.*:[a-z]*s:[a-zA-Z0-9]*", activity.getObject().getId()), is(true));
     }
+    assertThat(activity.getObject().getObjectType(), is(not(nullValue())));
+    LOGGER.debug(activity.getPublished().toString());
+  }
 }

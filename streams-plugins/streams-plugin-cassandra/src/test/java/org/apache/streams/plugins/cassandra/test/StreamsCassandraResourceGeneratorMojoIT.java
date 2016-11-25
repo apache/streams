@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.streams.plugins.cassandra.test;
 
 import com.google.common.collect.Lists;
@@ -38,59 +39,58 @@ import java.util.List;
 import static org.apache.streams.plugins.cassandra.test.StreamsCassandraResourceGeneratorTest.cqlFilter;
 
 /**
- * Tests that streams-plugin-hive running via maven generates hql resources
+ * Tests that streams-plugin-cassandra running via maven generates cql resources.
  */
 public class StreamsCassandraResourceGeneratorMojoIT extends TestCase {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(StreamsCassandraResourceGeneratorMojoIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StreamsCassandraResourceGeneratorMojoIT.class);
 
-    protected void setUp() throws Exception
-    {
-        // required for mojo lookups to work
-        super.setUp();
-    }
+  protected void setUp() throws Exception {
+    // required for mojo lookups to work
+    super.setUp();
+  }
 
-    @Test
-    public void testStreamsCassandraResourceGeneratorMojo() throws Exception {
+  @Test
+  public void testStreamsCassandraResourceGeneratorMojo() throws Exception {
 
-        File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-cassandra" );
+    File testDir = ResourceExtractor.simpleExtractResources( getClass(), "/streams-plugin-cassandra" );
 
-        Verifier verifier;
+    Verifier verifier;
 
-        verifier = new Verifier( testDir.getAbsolutePath() );
+    verifier = new Verifier( testDir.getAbsolutePath() );
 
-        List cliOptions = new ArrayList();
-        cliOptions.add( "-N" );
-        verifier.executeGoals( Lists.<String>newArrayList(
-                "clean",
-                "dependency:unpack-dependencies",
-                "generate-resources"));
+    List cliOptions = new ArrayList();
+    cliOptions.add( "-N" );
+    verifier.executeGoals( Lists.<String>newArrayList(
+        "clean",
+        "dependency:unpack-dependencies",
+        "generate-resources"));
 
-        verifier.verifyErrorFreeLog();
+    verifier.verifyErrorFreeLog();
 
-        verifier.resetStreams();
+    verifier.resetStreams();
 
-        Path testOutputPath = Paths.get(testDir.getAbsolutePath()).resolve("target/generated-resources/test-mojo");
+    Path testOutputPath = Paths.get(testDir.getAbsolutePath()).resolve("target/generated-resources/test-mojo");
 
-        File testOutput = testOutputPath.toFile();
+    File testOutput = testOutputPath.toFile();
 
-        assert( testOutput != null );
-        assert( testOutput.exists() == true );
-        assert( testOutput.isDirectory() == true );
+    assert ( testOutput != null );
+    assert ( testOutput.exists() == true );
+    assert ( testOutput.isDirectory() == true );
 
-        Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-                .filter(cqlFilter);
-        Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-        assert( outputCollection.size() == 1 );
+    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
+        .filter(cqlFilter);
+    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
+    assert ( outputCollection.size() == 1 );
 
-        Path path = testOutputPath.resolve("types.cql");
+    Path path = testOutputPath.resolve("types.cql");
 
-        assert( path.toFile().exists() );
+    assert ( path.toFile().exists() );
 
-        String typesCqlBytes = new String(
-                java.nio.file.Files.readAllBytes(path));
+    String typesCqlBytes = new String(
+        java.nio.file.Files.readAllBytes(path));
 
-        assert( StringUtils.countMatches(typesCqlBytes, "CREATE TYPE") == 133 );
+    assert ( StringUtils.countMatches(typesCqlBytes, "CREATE TYPE") == 133 );
 
-    }
+  }
 }

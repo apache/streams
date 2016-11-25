@@ -32,17 +32,17 @@ import java.net.URL;
  */
 public class StreamsApplicationIT {
 
-    @Before
-    public void setupTest() throws Exception {
-        String[] testArgs = Lists.newArrayList("server", "src/test/resources/configuration.yml").toArray(new String[2]);
-        TestStreamsApplication.main(testArgs);
-    }
+  @Before
+  public void setupTest() throws Exception {
+    String[] testArgs = Lists.newArrayList("server", "src/test/resources/configuration.yml").toArray(new String[2]);
+    TestStreamsApplication.main(testArgs);
+  }
 
-    @Test
-    public void testApplicationStarted() throws Exception {
+  @Test
+  public void testApplicationStarted() throws Exception {
 
-        final URL url = new URL("http://localhost:8003/admin/ping");
-        final String response = new BufferedReader(new InputStreamReader(url.openStream())).readLine();
-        Assert.assertEquals("pong", response);
-    }
+    final URL url = new URL("http://localhost:8003/admin/ping");
+    final String response = new BufferedReader(new InputStreamReader(url.openStream())).readLine();
+    Assert.assertEquals("pong", response);
+  }
 }

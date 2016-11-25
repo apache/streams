@@ -18,34 +18,31 @@
 
 package org.apache.streams.pojo.extensions.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.pojo.json.ActivityObject;
+
+import com.google.common.base.Strings;
 import org.junit.Test;
 
 import java.util.Map;
 
 /**
- *  Test ExtensionUtil methods
+ * Test ExtensionUtil methods.
  */
 public class ExtensionUtilTest {
 
-    @Test
-    public void testActivitySetCustomExtension() throws Exception {
-        ExtensionUtil customExtensionUtil = ExtensionUtil.getInstance("ext");
-        Activity activity = new Activity();
-        Map<String, Object> extensions = customExtensionUtil.ensureExtensions(activity);
-        String value = "value";
-        extensions.put("extension", value);
-        customExtensionUtil.setExtensions(activity, extensions);
-        assert(!Strings.isNullOrEmpty((String)customExtensionUtil.getExtension(activity, "extension")));
-        extensions = customExtensionUtil.getExtensions(activity);
-        assert(value.equals((String)extensions.get("extension")));
-        assert(activity.getAdditionalProperties().get("ext") != null);
-    }
+  @Test
+  public void testActivitySetCustomExtension() throws Exception {
+    ExtensionUtil customExtensionUtil = ExtensionUtil.getInstance("ext");
+    Activity activity = new Activity();
+    Map<String, Object> extensions = customExtensionUtil.ensureExtensions(activity);
+    String value = "value";
+    extensions.put("extension", value);
+    customExtensionUtil.setExtensions(activity, extensions);
+    assert (!Strings.isNullOrEmpty((String)customExtensionUtil.getExtension(activity, "extension")));
+    extensions = customExtensionUtil.getExtensions(activity);
+    assert (value.equals((String)extensions.get("extension")));
+    assert (activity.getAdditionalProperties().get("ext") != null);
+  }
 
 }

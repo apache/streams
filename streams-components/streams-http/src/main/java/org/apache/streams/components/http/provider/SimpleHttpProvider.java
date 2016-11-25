@@ -69,269 +69,287 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Provider retrieves contents from an known set of urls and passes all resulting objects downstream
+ * Provider retrieves contents from an known set of urls and passes all resulting objects downstream.
  */
 public class SimpleHttpProvider implements StreamsProvider {
 
-    private final static String STREAMS_ID = "SimpleHttpProvider";
+  private static final String STREAMS_ID = "SimpleHttpProvider";
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(SimpleHttpProvider.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleHttpProvider.class);
 
-    protected ObjectMapper mapper;
+  protected ObjectMapper mapper;
 
-    protected URIBuilder uriBuilder;
+  protected URIBuilder uriBuilder;
 
-    protected CloseableHttpClient httpclient;
+  protected CloseableHttpClient httpclient;
 
-    protected HttpProviderConfiguration configuration;
+  protected HttpProviderConfiguration configuration;
 
-    protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<>();
+  protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<>();
 
-    protected final ReadWriteLock lock = new ReentrantReadWriteLock();
+  protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    private ExecutorService executor;
+  private ExecutorService executor;
 
-    public SimpleHttpProvider() {
-        this(new ComponentConfigurator<>(HttpProviderConfiguration.class)
-          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("http")));
+  /**
+   * SimpleHttpProvider constructor - resolves HttpProcessorConfiguration from JVM 'http'.
+   */
+  public SimpleHttpProvider() {
+    this(new ComponentConfigurator<>(HttpProviderConfiguration.class)
+        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("http")));
+  }
+
+  /**
+   * SimpleHttpProvider constructor - uses provided HttpProviderConfiguration.
+   */
+  public SimpleHttpProvider(HttpProviderConfiguration providerConfiguration) {
+    LOGGER.info("creating SimpleHttpProvider");
+    LOGGER.info(providerConfiguration.toString());
+    this.configuration = providerConfiguration;
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
+  }
+
+  /**
+   Override this to add parameters to the request.
+   */
+  protected Map<String, String> prepareParams(StreamsDatum entry) {
+    return new HashMap<>();
+  }
+
+  /**
+   * prepareHttpRequest
+   * @param uri uri
+   * @return result
+   */
+  public HttpRequestBase prepareHttpRequest(URI uri) {
+    HttpRequestBase request;
+    if ( configuration.getRequestMethod().equals(HttpProviderConfiguration.RequestMethod.GET)) {
+      request = new HttpGet(uri);
+    } else if ( configuration.getRequestMethod().equals(HttpProviderConfiguration.RequestMethod.POST)) {
+      request = new HttpPost(uri);
+    } else {
+      // this shouldn't happen because of the default
+      request = new HttpGet(uri);
     }
 
-    public SimpleHttpProvider(HttpProviderConfiguration providerConfiguration) {
-        LOGGER.info("creating SimpleHttpProvider");
-        LOGGER.info(providerConfiguration.toString());
-        this.configuration = providerConfiguration;
+    request.addHeader("content-type", this.configuration.getContentType());
+
+    return request;
+
+  }
+
+  @Override
+  public void prepare(Object configurationObject) {
+
+    mapper = StreamsJacksonMapper.getInstance();
+
+    uriBuilder = new URIBuilder()
+        .setScheme(this.configuration.getProtocol())
+        .setHost(this.configuration.getHostname())
+        .setPort(this.configuration.getPort().intValue())
+        .setPath(this.configuration.getResourcePath());
+
+    SSLContextBuilder builder = new SSLContextBuilder();
+    SSLConnectionSocketFactory sslsf = null;
+    try {
+      builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+      sslsf = new SSLConnectionSocketFactory(
+          builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+    } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException ex) {
+      LOGGER.warn(ex.getMessage());
     }
 
-    @Override
-    public String getId() {
-        return STREAMS_ID;
+    httpclient = HttpClients.custom().setSSLSocketFactory(
+        sslsf).build();
+
+    executor = Executors.newSingleThreadExecutor();
+
+  }
+
+  @Override
+  public void cleanUp() {
+
+    LOGGER.info("shutting down SimpleHttpProvider");
+    this.shutdownAndAwaitTermination(executor);
+    try {
+      httpclient.close();
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    } finally {
+      try {
+        httpclient.close();
+      } catch (IOException ex) {
+        ex.printStackTrace();
+      } finally {
+        httpclient = null;
+      }
+    }
+  }
+
+  @Override
+  public void startStream() {
+
+    executor.execute(new Runnable() {
+      @Override
+      public void run() {
+
+        readCurrent();
+
+        Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+
+      }
+    });
+  }
+
+  @Override
+  public StreamsResultSet readCurrent() {
+    StreamsResultSet current;
+
+    uriBuilder = uriBuilder.setPath(
+        Joiner.on("/").skipNulls().join(uriBuilder.getPath(), configuration.getResource(), configuration.getResourcePostfix())
+    );
+
+    URI uri;
+    try {
+      uri = uriBuilder.build();
+    } catch (URISyntaxException ex) {
+      uri = null;
     }
 
-    /**
-      Override this to add parameters to the request
-     */
-    protected Map<String, String> prepareParams(StreamsDatum entry) {
-        return new HashMap<>();
+    List<ObjectNode> results = execute(uri);
+
+    lock.writeLock().lock();
+
+    for ( ObjectNode item : results ) {
+      providerQueue.add(newDatum(item));
     }
 
-    public HttpRequestBase prepareHttpRequest(URI uri) {
-        HttpRequestBase request;
-        if( configuration.getRequestMethod().equals(HttpProviderConfiguration.RequestMethod.GET)) {
-            request = new HttpGet(uri);
-        } else if( configuration.getRequestMethod().equals(HttpProviderConfiguration.RequestMethod.POST)) {
-            request = new HttpPost(uri);
-        } else {
-            // this shouldn't happen because of the default
-            request = new HttpGet(uri);
+    LOGGER.debug("Creating new result set for {} items", providerQueue.size());
+    current = new StreamsResultSet(providerQueue);
+
+    return current;
+  }
+
+  protected List<ObjectNode> execute(URI uri) {
+
+    Preconditions.checkNotNull(uri);
+
+    List<ObjectNode> results = new ArrayList<>();
+
+    HttpRequestBase httpRequest = prepareHttpRequest(uri);
+
+    CloseableHttpResponse response = null;
+
+    String entityString;
+    try {
+      response = httpclient.execute(httpRequest);
+      HttpEntity entity = response.getEntity();
+      // TODO: handle retry
+      if (response.getStatusLine().getStatusCode() == 200 && entity != null) {
+        entityString = EntityUtils.toString(entity);
+        if ( !entityString.equals("{}") && !entityString.equals("[]") ) {
+          JsonNode jsonNode = mapper.readValue(entityString, JsonNode.class);
+          results = parse(jsonNode);
         }
-
-        request.addHeader("content-type", this.configuration.getContentType());
-
-        return request;
-
-    }
-
-    @Override
-    public void prepare(Object configurationObject) {
-
-        mapper = StreamsJacksonMapper.getInstance();
-
-        uriBuilder = new URIBuilder()
-            .setScheme(this.configuration.getProtocol())
-            .setHost(this.configuration.getHostname())
-            .setPort(this.configuration.getPort().intValue())
-            .setPath(this.configuration.getResourcePath());
-
-        SSLContextBuilder builder = new SSLContextBuilder();
-        SSLConnectionSocketFactory sslsf = null;
-        try {
-            builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-            sslsf = new SSLConnectionSocketFactory(
-                    builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-        } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
-            LOGGER.warn(e.getMessage());
+      }
+    } catch (IOException ex) {
+      LOGGER.error("IO error:\n{}\n{}\n{}", uri.toString(), response, ex.getMessage());
+    } finally {
+      try {
+        if (response != null) {
+          response.close();
         }
+      } catch (IOException ignored) {
+        LOGGER.trace("IOException", ignored);
+      }
+    }
+    return results;
+  }
 
-        httpclient = HttpClients.custom().setSSLSocketFactory(
-                sslsf).build();
+  /**
+   Override this to change how entity gets converted to objects.
+   */
+  protected List<ObjectNode> parse(JsonNode jsonNode) {
 
-        executor = Executors.newSingleThreadExecutor();
+    List<ObjectNode> results = new ArrayList<>();
 
+    if (jsonNode != null && jsonNode instanceof ObjectNode ) {
+      results.add((ObjectNode) jsonNode);
+    } else if (jsonNode != null && jsonNode instanceof ArrayNode) {
+      ArrayNode arrayNode = (ArrayNode) jsonNode;
+      Iterator<JsonNode> iterator = arrayNode.elements();
+      while (iterator.hasNext()) {
+        ObjectNode element = (ObjectNode) iterator.next();
+
+        results.add(element);
+      }
     }
 
-    @Override
-    public void cleanUp() {
+    return results;
+  }
 
-        LOGGER.info("shutting down SimpleHttpProvider");
-        this.shutdownAndAwaitTermination(executor);
-        try {
-            httpclient.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                httpclient.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                httpclient = null;
-            }
+  /**
+   Override this to change how metadata is derived from object.
+   */
+  protected StreamsDatum newDatum(ObjectNode item) {
+    try {
+      String id = null;
+      if ( item.get("id") != null ) {
+        id = item.get("id").asText();
+      }
+      DateTime timestamp = null;
+      if ( item.get("timestamp") != null ) {
+        timestamp = new DateTime(item.get("timestamp").asText());
+      }
+      if ( id != null && timestamp != null ) {
+        return new StreamsDatum(item, id, timestamp);
+      } else if ( id != null ) {
+        return new StreamsDatum(item, id);
+      } else if ( timestamp != null ) {
+        return new StreamsDatum(item, null, timestamp);
+      } else {
+        return new StreamsDatum(item);
+      }
+    } catch ( Exception ex ) {
+      return new StreamsDatum(item);
+    }
+  }
+
+  @Override
+  public StreamsResultSet readNew(BigInteger sequence) {
+    return null;
+  }
+
+  @Override
+  public StreamsResultSet readRange(DateTime start, DateTime end) {
+    return null;
+  }
+
+  @Override
+  public boolean isRunning() {
+    return true;
+  }
+
+  protected void shutdownAndAwaitTermination(ExecutorService pool) {
+    pool.shutdown(); // Disable new tasks from being submitted
+    try {
+      // Wait a while for existing tasks to terminate
+      if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
+        pool.shutdownNow(); // Cancel currently executing tasks
+        // Wait a while for tasks to respond to being cancelled
+        if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
+          LOGGER.error("Pool did not terminate");
         }
+      }
+    } catch (InterruptedException ie) {
+      // (Re-)Cancel if current thread also interrupted
+      pool.shutdownNow();
+      // Preserve interrupt status
+      Thread.currentThread().interrupt();
     }
-
-    @Override
-    public void startStream() {
-
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-
-                readCurrent();
-
-                Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
-
-            }
-        });
-    }
-
-    @Override
-    public StreamsResultSet readCurrent() {
-        StreamsResultSet current;
-
-        uriBuilder = uriBuilder.setPath(
-                Joiner.on("/").skipNulls().join(uriBuilder.getPath(), configuration.getResource(), configuration.getResourcePostfix())
-        );
-
-        URI uri;
-        try {
-            uri = uriBuilder.build();
-        } catch (URISyntaxException e) {
-            uri = null;
-        }
-
-        List<ObjectNode> results = execute(uri);
-
-        lock.writeLock().lock();
-
-        for( ObjectNode item : results ) {
-            providerQueue.add(newDatum(item));
-        }
-
-        LOGGER.debug("Creating new result set for {} items", providerQueue.size());
-        current = new StreamsResultSet(providerQueue);
-
-        return current;
-    }
-
-    protected List<ObjectNode> execute(URI uri) {
-
-        Preconditions.checkNotNull(uri);
-
-        List<ObjectNode> results = new ArrayList<>();
-
-        HttpRequestBase httpRequest = prepareHttpRequest(uri);
-
-        CloseableHttpResponse response = null;
-
-        String entityString;
-        try {
-            response = httpclient.execute(httpRequest);
-            HttpEntity entity = response.getEntity();
-            // TODO: handle retry
-            if (response.getStatusLine().getStatusCode() == 200 && entity != null) {
-                entityString = EntityUtils.toString(entity);
-                if( !entityString.equals("{}") && !entityString.equals("[]") ) {
-                    JsonNode jsonNode = mapper.readValue(entityString, JsonNode.class);
-                    results = parse(jsonNode);
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.error("IO error:\n{}\n{}\n{}", uri.toString(), response, e.getMessage());
-        } finally {
-            try {
-                if (response != null) {
-                    response.close();
-                }
-            } catch (IOException ignored) {}
-        }
-        return results;
-    }
-
-    /**
-     Override this to change how entity gets converted to objects
-     */
-    protected List<ObjectNode> parse(JsonNode jsonNode) {
-
-        List<ObjectNode> results = new ArrayList<>();
-
-        if (jsonNode != null && jsonNode instanceof ObjectNode ) {
-            results.add((ObjectNode) jsonNode);
-        } else if (jsonNode != null && jsonNode instanceof ArrayNode) {
-            ArrayNode arrayNode = (ArrayNode) jsonNode;
-            Iterator<JsonNode> iterator = arrayNode.elements();
-            while (iterator.hasNext()) {
-                ObjectNode element = (ObjectNode) iterator.next();
-
-                results.add(element);
-            }
-        }
-
-        return results;
-    }
-
-    /**
-     Override this to change how metadata is derived from object
-     */
-    protected StreamsDatum newDatum(ObjectNode item) {
-        try {
-            String id = null;
-            if( item.get("id") != null )
-                id = item.get("id").asText();
-            DateTime timestamp = null;
-            if( item.get("timestamp") != null )
-                timestamp = new DateTime(item.get("timestamp").asText());
-            if( id != null && timestamp != null )
-                return new StreamsDatum(item, id, timestamp);
-            else if( id != null )
-                return new StreamsDatum(item, id);
-            else if( timestamp != null )
-                return new StreamsDatum(item, null, timestamp);
-            else return new StreamsDatum(item);
-        } catch( Exception e ) {
-            return new StreamsDatum(item);
-        }
-    }
-
-    @Override
-    public StreamsResultSet readNew(BigInteger sequence) {
-        return null;
-    }
-
-    @Override
-    public StreamsResultSet readRange(DateTime start, DateTime end) {
-        return null;
-    }
-
-    @Override
-    public boolean isRunning() {
-        return true;
-    }
-
-    protected void shutdownAndAwaitTermination(ExecutorService pool) {
-        pool.shutdown(); // Disable new tasks from being submitted
-        try {
-            // Wait a while for existing tasks to terminate
-            if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
-                pool.shutdownNow(); // Cancel currently executing tasks
-                // Wait a while for tasks to respond to being cancelled
-                if (!pool.awaitTermination(10, TimeUnit.SECONDS))
-                    LOGGER.error("Pool did not terminate");
-            }
-        } catch (InterruptedException ie) {
-            // (Re-)Cancel if current thread also interrupted
-            pool.shutdownNow();
-            // Preserve interrupt status
-            Thread.currentThread().interrupt();
-        }
-    }
+  }
 }
