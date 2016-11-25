@@ -305,11 +305,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-master</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
     <reporting>
