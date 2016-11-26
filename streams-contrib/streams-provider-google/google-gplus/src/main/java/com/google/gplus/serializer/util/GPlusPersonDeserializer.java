@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.util.Lists;
 import com.google.api.services.plus.model.Person;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,18 +60,23 @@ public class GPlusPersonDeserializer extends JsonDeserializer<Person> {
     JsonNode node = jsonParser.getCodec().readTree(jsonParser);
     Person person = new Person();
     try {
-
-      person.setCircledByCount((Integer) (node.get("circledByCount")).numberValue());
-      person.setDisplayName(node.get("displayName").asText());
-      person.setEtag(node.get("etag").asText());
-      person.setGender(node.get("gender").asText());
       person.setId(node.get("id").asText());
+      person.setCircledByCount((Integer) ((IntNode) node.get("circledByCount")).numberValue());
+      person.setDisplayName(node.get("displayName").asText());
+      if( node.has("etag")) {
+        person.setEtag(node.get("etag").asText());
+      }
+      if( node.has("gender")) {
+        person.setGender(node.get("gender").asText());
+      }
 
       Person.Image image = new Person.Image();
-      JsonNode imageNode = node.get("image");
-      image.setIsDefault(imageNode.get("isDefault").asBoolean());
-      image.setUrl(imageNode.get("url").asText());
-      person.setImage(image);
+      if( node.has("image") ) {
+        JsonNode imageNode = node.get("image");
+        image.setIsDefault(imageNode.get("isDefault").asBoolean());
+        image.setUrl(imageNode.get("url").asText());
+        person.setImage(image);
+      }
 
       person.setIsPlusUser(node.get("isPlusUser").asBoolean());
       person.setKind(node.get("kind").asText());
@@ -82,11 +88,13 @@ public class GPlusPersonDeserializer extends JsonDeserializer<Person> {
       person.setObjectType(node.get("objectType").asText());
 
       List<Person.Organizations> organizations = Lists.newArrayList();
-      for (JsonNode orgNode : node.get("organizations")) {
-        Person.Organizations org = mapper.readValue(mapper.writeValueAsString(orgNode), Person.Organizations.class);
-        organizations.add(org);
+      if( node.has("organizations")) {
+        for (JsonNode orgNode : node.get("organizations")) {
+          Person.Organizations org = mapper.readValue(mapper.writeValueAsString(orgNode), Person.Organizations.class);
+          organizations.add(org);
+        }
+        person.setOrganizations(organizations);
       }
-      person.setOrganizations(organizations);
 
       person.setUrl(node.get("url").asText());
       person.setVerified(node.get("verified").asBoolean());
