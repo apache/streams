@@ -64,7 +64,7 @@ public class ActivitySerDeTest {
           .getResourceAsStream("activities/" + file);
       Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
       activity.setGenerator(null);
-      activity.setLinks(new LinkedList<String>());
+      activity.setLinks(new LinkedList<>());
       String activityString = MAPPER.writeValueAsString(activity);
       LOGGER.info("Deserialized: " + activityString );
       assert ( !activityString.contains("null") );

@@ -36,7 +36,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.ConfigRenderOptions;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +85,7 @@ public abstract class FacebookProvider implements StreamsProvider {
    * FacebookProvider constructor - uses supplied FacebookConfiguration.
    */
   public FacebookProvider(FacebookConfiguration configuration) {
-    this.configuration = (FacebookConfiguration) SerializationUtil.cloneBySerialization(configuration);
+    this.configuration = SerializationUtil.cloneBySerialization(configuration);
   }
 
   @Override

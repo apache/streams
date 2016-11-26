@@ -28,15 +28,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.JsonPath;
-
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -107,15 +104,13 @@ public class JsonPathExtractor implements StreamsProcessor {
         } else if (readResult instanceof JSONArray) {
           LOGGER.info("Matched Array:");
           JSONArray array = (JSONArray) readResult;
-          Iterator iterator = array.iterator();
-          while (iterator.hasNext()) {
-            Object item = iterator.next();
-            if ( item instanceof String ) {
+          for (Object item : array) {
+            if (item instanceof String) {
               LOGGER.info("String Item:" + item);
               String match = (String) item;
               StreamsDatum matchDatum = new StreamsDatum(match);
               result.add(matchDatum);
-            } else if ( item instanceof JSONObject ) {
+            } else if (item instanceof JSONObject) {
               LOGGER.info("Object Item:" + item);
               JSONObject match = (JSONObject) item;
               ObjectNode objectNode = mapper.readValue(mapper.writeValueAsString(match), ObjectNode.class);

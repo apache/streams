@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +60,9 @@ public class StreamsCassandraResourceGeneratorMojoIT extends TestCase {
 
     verifier = new Verifier( testDir.getAbsolutePath() );
 
-    List cliOptions = new ArrayList();
+    List cliOptions = new ArrayList<>();
     cliOptions.add( "-N" );
-    verifier.executeGoals( Lists.<String>newArrayList(
+    verifier.executeGoals( Lists.newArrayList(
         "clean",
         "dependency:unpack-dependencies",
         "generate-resources"));
@@ -74,9 +75,9 @@ public class StreamsCassandraResourceGeneratorMojoIT extends TestCase {
 
     File testOutput = testOutputPath.toFile();
 
-    assert ( testOutput != null );
-    assert ( testOutput.exists() == true );
-    assert ( testOutput.isDirectory() == true );
+    Assert.assertNotNull(testOutput);
+    Assert.assertTrue(testOutput.exists());
+    Assert.assertTrue(testOutput.isDirectory());
 
     Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
         .filter(cqlFilter);

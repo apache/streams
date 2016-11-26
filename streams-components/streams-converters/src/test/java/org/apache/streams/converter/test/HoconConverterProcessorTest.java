@@ -18,27 +18,22 @@
 
 package org.apache.streams.converter.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import org.apache.streams.converter.HoconConverterProcessor;
-import org.apache.streams.converter.HoconConverterUtil;
-import org.apache.streams.converter.TypeConverterProcessor;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.data.util.ActivityUtil;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.List;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for
- * @see {@link HoconConverterProcessor}
+ * Tests for {@link HoconConverterProcessor}
  */
 public class HoconConverterProcessorTest {
 

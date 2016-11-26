@@ -28,8 +28,6 @@ import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import org.jinstagram.entity.comments.CommentData;
 import org.jinstagram.entity.common.Comments;
 import org.jinstagram.entity.common.ImageData;
@@ -44,9 +42,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Provides utilities for working with Activity objects within the context of Instagram.
@@ -70,9 +70,7 @@ public class InstagramActivityUtil {
     }
 
     activity.setId(formatId(activity.getVerb(),
-        Optional.fromNullable(
-            item.getId())
-            .orNull()));
+        Optional.ofNullable(item.getId()).orElse(null)));
 
     activity.setProvider(getProvider());
     activity.setUrl(item.getLink());
@@ -298,7 +296,7 @@ public class InstagramActivityUtil {
   }
 
   /**
-   * Gets the common instagram {@link org.apache.streams.pojo.json.Provider} object.
+   * Gets the common instagram {@link Provider} object.
    * @return a provider object representing Instagram
    */
   public static Provider getProvider() {
@@ -314,7 +312,7 @@ public class InstagramActivityUtil {
    * @return a valid Activity ID in format "id:instagram:part1:part2:...partN"
    */
   public static String formatId(String... idparts) {
-    return Joiner.on(":").join(Lists.asList("id:instagram", idparts));
+    return Joiner.on(":").join(Arrays.asList("id:instagram", idparts));
   }
 
   /**

@@ -30,7 +30,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.api.services.plus.model.Person;
 import com.google.gplus.serializer.util.GPlusPersonDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
-
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,7 +80,7 @@ public class GooglePlusPersonSerDeIT {
 
           Person person = objectMapper.readValue(line, Person.class);
 
-          googlePlusActivityUtil.updateActivity(person, activity);
+          GooglePlusActivityUtil.updateActivity(person, activity);
           LOGGER.info("activity: {}", activity);
 
           assertNotNull(activity);

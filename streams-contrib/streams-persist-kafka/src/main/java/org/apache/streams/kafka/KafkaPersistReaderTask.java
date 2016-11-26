@@ -20,14 +20,12 @@ package org.apache.streams.kafka;
 
 import org.apache.streams.core.StreamsDatum;
 
+import kafka.consumer.KafkaStream;
+import kafka.message.MessageAndMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
-
-import kafka.consumer.ConsumerIterator;
-import kafka.consumer.KafkaStream;
-import kafka.message.MessageAndMetadata;
 
 /**
  * KafkaPersistReaderTask reads documents from kafka on behalf of
@@ -51,9 +49,8 @@ public class KafkaPersistReaderTask implements Runnable {
     MessageAndMetadata<String,String> item;
     while (true) {
 
-      ConsumerIterator<String, String> it = stream.iterator();
-      while (it.hasNext()) {
-        item = it.next();
+      for (MessageAndMetadata<String, String> aStream : stream) {
+        item = aStream;
         reader.persistQueue.add(new StreamsDatum(item.message()));
       }
       try {

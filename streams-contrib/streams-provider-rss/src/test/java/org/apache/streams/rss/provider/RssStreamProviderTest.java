@@ -24,13 +24,13 @@ import org.apache.streams.rss.RssStreamConfiguration;
 import org.apache.streams.rss.provider.perpetual.RssFeedScheduler;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
-import com.google.common.collect.Queues;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Unit tests for {@link org.apache.streams.rss.provider.RssStreamProvider}
@@ -44,7 +44,7 @@ public class RssStreamProviderTest extends RandomizedTest {
     RssStreamProvider provider = null;
     try {
       final CountDownLatch latch = new CountDownLatch(1);
-      BlockingQueue<StreamsDatum> datums = Queues.newLinkedBlockingQueue();
+      BlockingQueue<StreamsDatum> datums = new LinkedBlockingQueue<>();
       provider = new RssStreamProvider(new RssStreamConfiguration()) {
         @Override
         protected RssFeedScheduler getScheduler(BlockingQueue<StreamsDatum> queue) {

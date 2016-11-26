@@ -26,13 +26,12 @@ import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
 
-import com.google.api.client.util.Maps;
+import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.Thumbnail;
 import com.google.api.services.youtube.model.ThumbnailDetails;
 import com.google.api.services.youtube.model.Video;
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -40,14 +39,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class YoutubeActivityUtil {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(YoutubeActivityUtil.class);
 
   /**
-   * Given a {@link com.google.api.services.youtube.YouTube.Videos} object and an
-   * {@link org.apache.streams.pojo.json.Activity} object, fill out the appropriate details
+   * Given a {@link YouTube.Videos} object and an
+   * {@link Activity} object, fill out the appropriate details
    *
    * @param video Video
    * @param activity Activity
@@ -57,10 +57,7 @@ public class YoutubeActivityUtil {
     activity.setActor(buildActor(video, video.getSnippet().getChannelId()));
     activity.setVerb("post");
 
-    activity.setId(formatId(activity.getVerb(),
-        Optional.fromNullable(
-            video.getId())
-            .orNull()));
+    activity.setId(formatId(activity.getVerb(), Optional.ofNullable(video.getId()).orElse(null)));
 
     activity.setPublished(new DateTime(video.getSnippet().getPublishedAt().getValue()));
     activity.setTitle(video.getSnippet().getTitle());
@@ -76,8 +73,8 @@ public class YoutubeActivityUtil {
 
 
   /**
-   * Given a {@link com.google.api.services.youtube.model.Channel} object and an
-   * {@link org.apache.streams.pojo.json.Activity} object, fill out the appropriate details
+   * Given a {@link Channel} object and an
+   * {@link Activity} object, fill out the appropriate details
    *
    * @param channel Channel
    * @param activity Activity
@@ -88,7 +85,7 @@ public class YoutubeActivityUtil {
       activity.setProvider(getProvider());
       activity.setVerb("post");
       activity.setActor(createActorForChannel(channel));
-      Map<String, Object> extensions = Maps.newHashMap();
+      Map<String, Object> extensions = new HashMap<>();
       extensions.put("youtube", channel);
       activity.setAdditionalProperty("extensions", extensions);
     } catch (Throwable throwable) {
@@ -111,7 +108,7 @@ public class YoutubeActivityUtil {
     image.setUrl(channel.getSnippet().getThumbnails().getHigh().getUrl());
     actor.setImage(image);
     actor.setUrl("https://youtube.com/user/" + channel.getId());
-    Map<String, Object> actorExtensions = Maps.newHashMap();
+    Map<String, Object> actorExtensions = new HashMap<>();
     actorExtensions.put("followers", channel.getStatistics().getSubscriberCount());
     actorExtensions.put("posts", channel.getStatistics().getVideoCount());
     actor.setAdditionalProperty("extensions", actorExtensions);
@@ -163,7 +160,7 @@ public class YoutubeActivityUtil {
   }
 
   /**
-   * Build an {@link org.apache.streams.pojo.json.ActivityObject} actor given the video object
+   * Build an {@link ActivityObject} actor given the video object
    * @param video Video
    * @param id id
    * @return Actor object
@@ -180,7 +177,7 @@ public class YoutubeActivityUtil {
   }
 
   /**
-   * Gets the common youtube {@link org.apache.streams.pojo.json.Provider} object
+   * Gets the common youtube {@link Provider} object
    * @return a provider object representing YouTube
    */
   public static Provider getProvider() {

@@ -27,7 +27,6 @@ import org.apache.streams.pojo.json.Activity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,9 +81,8 @@ public class BaseObjectNodeActivityConverter implements ActivityConverter<Object
       activityList.add(mapper.convertValue(serialized, Activity.class));
     } catch (Exception ex) {
       throw new ActivityConversionException();
-    } finally {
-      return activityList;
     }
+    return activityList;
   }
 
   @Override

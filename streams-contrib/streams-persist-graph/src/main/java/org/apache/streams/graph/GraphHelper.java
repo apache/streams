@@ -18,9 +18,10 @@
 
 package org.apache.streams.graph;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Interface for methods allowing persistance to a graph database wrapped with
@@ -28,14 +29,14 @@ import org.apache.streams.pojo.json.ActivityObject;
  */
 public interface GraphHelper {
 
-    public ObjectNode getVertexRequest(String streamsId);
+    ObjectNode getVertexRequest(String streamsId);
 
-    public ObjectNode getVertexRequest(Long vertexId);
+    ObjectNode getVertexRequest(Long vertexId);
 
-    public ObjectNode createVertexRequest(ActivityObject activityObject);
+    ObjectNode createVertexRequest(ActivityObject activityObject);
 
-    public ObjectNode mergeVertexRequest(ActivityObject activityObject);
+    ObjectNode mergeVertexRequest(ActivityObject activityObject);
 
-    public ObjectNode createEdgeRequest(Activity activity, ActivityObject source, ActivityObject destination);
+    ObjectNode createEdgeRequest(Activity activity, ActivityObject source, ActivityObject destination);
 
 }

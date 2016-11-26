@@ -31,7 +31,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
-
+import facebook4j.Facebook;
+import facebook4j.FacebookException;
+import facebook4j.FacebookFactory;
+import facebook4j.Friend;
+import facebook4j.Paging;
+import facebook4j.ResponseList;
+import facebook4j.User;
+import facebook4j.conf.ConfigurationBuilder;
 import org.apache.commons.lang.NotImplementedException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -51,15 +58,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import facebook4j.Facebook;
-import facebook4j.FacebookException;
-import facebook4j.FacebookFactory;
-import facebook4j.Friend;
-import facebook4j.Paging;
-import facebook4j.ResponseList;
-import facebook4j.User;
-import facebook4j.conf.ConfigurationBuilder;
-
 
 public class FacebookUserInformationProvider implements StreamsProvider, Serializable {
 
@@ -73,7 +71,7 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
   private FacebookUserInformationConfiguration facebookUserInformationConfiguration;
 
   private Class klass;
-  protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
+  protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<>();
 
   public FacebookUserInformationConfiguration getConfig() {
     return facebookUserInformationConfiguration;
@@ -95,7 +93,7 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
   private static ExecutorService newFixedThreadPoolWithQueueSize(int numThreads, int queueSize) {
     return new ThreadPoolExecutor(numThreads, numThreads,
         5000L, TimeUnit.MILLISECONDS,
-        new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
+        new ArrayBlockingQueue<>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
   }
 
   /**
@@ -108,7 +106,6 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
       facebookUserInformationConfiguration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
     } catch (IOException ex) {
       ex.printStackTrace();
-      return;
     }
   }
 
@@ -166,9 +163,7 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
       providerQueue.add(
           new StreamsDatum(json, DateTime.now())
       );
-    } catch (JsonProcessingException ex) {
-      ex.printStackTrace();
-    } catch (FacebookException ex) {
+    } catch (JsonProcessingException | FacebookException ex) {
       ex.printStackTrace();
     }
 
@@ -247,8 +242,7 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
     this.start = start;
     this.end = end;
     readCurrent();
-    StreamsResultSet result = (StreamsResultSet)providerQueue.iterator();
-    return result;
+    return (StreamsResultSet)providerQueue.iterator();
   }
 
   @Override
@@ -287,8 +281,8 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
     Preconditions.checkNotNull(facebookUserInformationConfiguration.getOauth().getUserAccessToken());
     Preconditions.checkNotNull(facebookUserInformationConfiguration.getInfo());
 
-    List<String> ids = new ArrayList<String>();
-    List<String[]> idsBatches = new ArrayList<String[]>();
+    List<String> ids = new ArrayList<>();
+    List<String[]> idsBatches = new ArrayList<>();
 
     for (String s : facebookUserInformationConfiguration.getInfo()) {
       if (s != null) {
@@ -298,7 +292,7 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
           // add the batch
           idsBatches.add(ids.toArray(new String[ids.size()]));
           // reset the Ids
-          ids = new ArrayList<String>();
+          ids = new ArrayList<>();
         }
 
       }
@@ -322,9 +316,8 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
         .setClientVersion("v1.0");
 
     FacebookFactory ff = new FacebookFactory(cb.build());
-    Facebook facebook = ff.getInstance();
 
-    return facebook;
+    return ff.getInstance();
   }
 
   @Override

@@ -21,20 +21,19 @@ package org.apache.streams.elasticsearch;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 
-import com.google.common.base.Preconditions;
-
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * ElasticsearchPersistDeleter deletes documents from elasticsearch.
  */
 public class ElasticsearchPersistDeleter extends ElasticsearchPersistWriter implements StreamsPersistWriter {
 
-  public static final String STREAMS_ID = ElasticsearchPersistDeleter.class.getCanonicalName();
+  private static final String STREAMS_ID = ElasticsearchPersistDeleter.class.getCanonicalName();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistDeleter.class);
 
@@ -84,9 +83,9 @@ public class ElasticsearchPersistDeleter extends ElasticsearchPersistWriter impl
   public void delete(String index, String type, String id) {
     DeleteRequest deleteRequest;
 
-    Preconditions.checkNotNull(index);
-    Preconditions.checkNotNull(id);
-    Preconditions.checkNotNull(type);
+    Objects.requireNonNull(index);
+    Objects.requireNonNull(id);
+    Objects.requireNonNull(type);
 
     // They didn't specify an ID, so we will create one for them.
     deleteRequest = new DeleteRequest()
@@ -104,8 +103,8 @@ public class ElasticsearchPersistDeleter extends ElasticsearchPersistWriter impl
    */
   public void add(DeleteRequest request) {
 
-    Preconditions.checkNotNull(request);
-    Preconditions.checkNotNull(request.index());
+    Objects.requireNonNull(request);
+    Objects.requireNonNull(request.index());
 
     // If our queue is larger than our flush threshold, then we should flush the queue.
     synchronized (this) {

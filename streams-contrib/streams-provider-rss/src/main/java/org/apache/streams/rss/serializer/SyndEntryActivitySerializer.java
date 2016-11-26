@@ -30,7 +30,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
@@ -38,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNode> {
 
@@ -84,7 +84,7 @@ public class SyndEntryActivitySerializer implements ActivitySerializer<ObjectNod
    * @return Activity
    */
   public Activity deserializeWithRomeExtension(ObjectNode entry, boolean withExtension) {
-    Preconditions.checkNotNull(entry);
+    Objects.requireNonNull(entry);
 
     Activity activity = new Activity();
     Provider provider = buildProvider(entry);

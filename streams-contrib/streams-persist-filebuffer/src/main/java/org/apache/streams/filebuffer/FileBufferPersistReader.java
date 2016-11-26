@@ -26,9 +26,7 @@ import org.apache.streams.core.StreamsResultSet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Queues;
 import com.squareup.tape.QueueFile;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -50,11 +49,11 @@ import java.util.concurrent.Executors;
  */
 public class FileBufferPersistReader implements StreamsPersistReader, Serializable {
 
-  public static final String STREAMS_ID = "FileBufferPersistReader";
+  private static final String STREAMS_ID = "FileBufferPersistReader";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FileBufferPersistReader.class);
 
-  protected volatile Queue<StreamsDatum> persistQueue;
+  private volatile Queue<StreamsDatum> persistQueue;
 
   private ObjectMapper mapper;
 
@@ -109,7 +108,7 @@ public class FileBufferPersistReader implements StreamsPersistReader, Serializab
     }
 
     StreamsResultSet current;
-    current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(persistQueue));
+    current = new StreamsResultSet(new ConcurrentLinkedQueue<>(persistQueue));
     persistQueue.clear();
 
     return current;
@@ -164,7 +163,7 @@ public class FileBufferPersistReader implements StreamsPersistReader, Serializab
       LOGGER.error(ex.getMessage());
     }
 
-    Preconditions.checkNotNull(queueFile);
+    Objects.requireNonNull(queueFile);
 
     this.persistQueue = new ConcurrentLinkedQueue<>();
 

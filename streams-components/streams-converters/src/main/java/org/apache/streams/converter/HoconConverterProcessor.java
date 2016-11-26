@@ -23,11 +23,10 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.core.util.DatumUtils;
 
-import com.google.common.collect.Lists;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -71,7 +70,7 @@ public class HoconConverterProcessor implements StreamsProcessor {
   @Override
   public List<StreamsDatum> process(StreamsDatum entry) {
 
-    List<StreamsDatum> result = Lists.newLinkedList();
+    List<StreamsDatum> result = new LinkedList<>();
     Object document = entry.getDocument();
 
     Object outDoc = HoconConverterUtil.getInstance().convert(document, outClass, hocon, inPath, outPath);

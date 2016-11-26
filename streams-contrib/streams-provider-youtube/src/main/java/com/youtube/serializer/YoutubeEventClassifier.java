@@ -27,6 +27,7 @@ import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class YoutubeEventClassifier {
   private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
@@ -39,7 +40,7 @@ public class YoutubeEventClassifier {
    * @return Class
    */
   public static Class detectClass(String json) {
-    Preconditions.checkNotNull(json);
+    Objects.requireNonNull(json);
     Preconditions.checkArgument(StringUtils.isNotEmpty(json));
 
     ObjectNode objectNode;

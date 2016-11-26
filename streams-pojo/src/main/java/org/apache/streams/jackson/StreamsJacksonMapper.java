@@ -28,11 +28,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.scala.DefaultScalaModule;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * StreamsJacksonMapper is the recommended interface to jackson for any streams component.
@@ -45,7 +45,7 @@ import java.util.Map;
  */
 public class StreamsJacksonMapper extends ObjectMapper {
 
-  private static Map<StreamsJacksonMapperConfiguration, StreamsJacksonMapper> INSTANCE_MAP = Maps.newConcurrentMap();
+  private static Map<StreamsJacksonMapperConfiguration, StreamsJacksonMapper> INSTANCE_MAP = new ConcurrentHashMap<>();
 
   private StreamsJacksonMapperConfiguration configuration = new StreamsJacksonMapperConfiguration();
 
@@ -81,9 +81,7 @@ public class StreamsJacksonMapper extends ObjectMapper {
   @Deprecated
   public static StreamsJacksonMapper getInstance(String format) {
 
-    StreamsJacksonMapper instance = new StreamsJacksonMapper(Lists.newArrayList(format));
-
-    return instance;
+    return new StreamsJacksonMapper(Collections.singletonList(format));
 
   }
 
@@ -95,9 +93,7 @@ public class StreamsJacksonMapper extends ObjectMapper {
   @Deprecated
   public static StreamsJacksonMapper getInstance(List<String> formats) {
 
-    StreamsJacksonMapper instance = new StreamsJacksonMapper(formats);
-
-    return instance;
+    return new StreamsJacksonMapper(formats);
 
   }
 
@@ -119,7 +115,7 @@ public class StreamsJacksonMapper extends ObjectMapper {
   @Deprecated
   public StreamsJacksonMapper(String format) {
     super();
-    registerModule(new StreamsJacksonModule(Lists.newArrayList(format)));
+    registerModule(new StreamsJacksonModule(Collections.singletonList(format)));
     if ( configuration.getEnableScala()) {
       registerModule(new DefaultScalaModule());
     }

@@ -25,16 +25,15 @@ import org.apache.streams.jackson.TypeConverterProcessor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
-
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -48,7 +47,7 @@ public class TypeConverterProcessorTest {
   @Test
   public void testTypeConverterStringToString() {
     final String ID = "1";
-    StreamsProcessor processor = new TypeConverterProcessor(String.class, String.class, Lists.newArrayList(DATASIFT_FORMAT));
+    StreamsProcessor processor = new TypeConverterProcessor(String.class, String.class, Collections.singletonList(DATASIFT_FORMAT));
     processor.prepare(null);
     StreamsDatum datum = new StreamsDatum(DATASIFT_JSON, ID);
     List<StreamsDatum> result = processor.process(datum);
@@ -64,7 +63,7 @@ public class TypeConverterProcessorTest {
   @Test
   public void testTypeConverterStringToObjectNode() {
     final String ID = "1";
-    StreamsProcessor processor = new TypeConverterProcessor(String.class, ObjectNode.class, Lists.newArrayList(DATASIFT_FORMAT));
+    StreamsProcessor processor = new TypeConverterProcessor(String.class, ObjectNode.class, Collections.singletonList(DATASIFT_FORMAT));
     processor.prepare(null);
     StreamsDatum datum = new StreamsDatum(DATASIFT_JSON, ID);
     List<StreamsDatum> result = processor.process(datum);
@@ -80,9 +79,9 @@ public class TypeConverterProcessorTest {
   @Test
   public void testTypeConverterObjectNodeToString() throws IOException {
     final String ID = "1";
-    StreamsProcessor processor = new TypeConverterProcessor(ObjectNode.class, String.class, Lists.newArrayList(DATASIFT_FORMAT));
+    StreamsProcessor processor = new TypeConverterProcessor(ObjectNode.class, String.class, Collections.singletonList(DATASIFT_FORMAT));
     processor.prepare(null);
-    ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(DATASIFT_FORMAT));
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance(Collections.singletonList(DATASIFT_FORMAT));
     ObjectNode node = mapper.readValue(DATASIFT_JSON, ObjectNode.class);
     StreamsDatum datum = new StreamsDatum(node, ID);
     List<StreamsDatum> result = processor.process(datum);

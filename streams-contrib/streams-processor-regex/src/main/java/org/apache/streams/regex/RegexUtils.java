@@ -21,7 +21,6 @@ package org.apache.streams.regex;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

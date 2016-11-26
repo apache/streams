@@ -28,10 +28,8 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -50,6 +48,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
 
@@ -113,7 +112,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
    */
   protected URI prepareURI(Map<String, String> params) {
     URI uri = null;
-    for ( Map.Entry<String,String> param : params.entrySet()) {
+    for (Map.Entry<String,String> param : params.entrySet()) {
       uriBuilder = uriBuilder.setParameter(param.getKey(), param.getValue());
     }
     try {
@@ -154,7 +153,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
     HttpPost httppost = new HttpPost(uri);
     httppost.addHeader("content-type", this.configuration.getContentType());
     httppost.addHeader("accept-charset", "UTF-8");
-    if ( !Strings.isNullOrEmpty(authHeader)) {
+    if (StringUtils.isNotBlank(authHeader)) {
       httppost.addHeader("Authorization", "Basic " + authHeader);
     }
     try {
@@ -168,7 +167,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
 
   protected ObjectNode executePost(HttpPost httpPost) {
 
-    Preconditions.checkNotNull(httpPost);
+    Objects.requireNonNull(httpPost);
 
     ObjectNode result = null;
 
@@ -208,10 +207,10 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
         .setPort(this.configuration.getPort().intValue())
         .setPath(this.configuration.getResourcePath());
 
-    if ( !Strings.isNullOrEmpty(configuration.getAccessToken()) ) {
+    if (StringUtils.isNotBlank(configuration.getAccessToken()) ) {
       uriBuilder = uriBuilder.addParameter("access_token", configuration.getAccessToken());
     }
-    if ( !Strings.isNullOrEmpty(configuration.getUsername())        && !Strings.isNullOrEmpty(configuration.getPassword())) {
+    if (StringUtils.isNotBlank(configuration.getUsername()) && StringUtils.isNotBlank(configuration.getPassword())) {
       String string = configuration.getUsername() + ":" + configuration.getPassword();
       authHeader = Base64.encodeBase64String(string.getBytes());
     }

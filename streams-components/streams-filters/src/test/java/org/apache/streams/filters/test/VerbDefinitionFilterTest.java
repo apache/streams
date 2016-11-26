@@ -18,16 +18,15 @@
 
 package org.apache.streams.filters.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.filters.VerbDefinitionDropFilter;
 import org.apache.streams.filters.VerbDefinitionKeepFilter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.verbs.VerbDefinition;
-import org.apache.streams.verbs.VerbDefinitionResolver;
-import org.junit.Ignore;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
 import org.junit.Test;
 
 import java.util.List;
@@ -37,7 +36,7 @@ import java.util.List;
  */
 public class VerbDefinitionFilterTest {
 
-    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+    private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
     /**
      * Test verb match filter alone

@@ -27,12 +27,10 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.ActivityObject;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Strings;
-
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -118,9 +116,6 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
           ? (String) datum.getDocument()
           : mapper.writeValueAsString(datum.getDocument());
       return mapper.readValue(json, ObjectNode.class);
-    } catch (JsonProcessingException ex) {
-      LOGGER.warn(ex.getMessage());
-      return null;
     } catch (IOException ex) {
       LOGGER.warn(ex.getMessage());
       return null;
@@ -252,7 +247,7 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
   public HttpGet prepareHttpGet(URI uri) {
     HttpGet httpget = new HttpGet(uri);
     httpget.addHeader("content-type", this.configuration.getContentType());
-    if ( !Strings.isNullOrEmpty(authHeader)) {
+    if (StringUtils.isNotBlank(authHeader)) {
       httpget.addHeader("Authorization", String.format("Basic %s", authHeader));
     }
     return httpget;
@@ -268,12 +263,12 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
         .setHost(this.configuration.getHostname())
         .setPath(this.configuration.getResourcePath());
 
-    if ( !Strings.isNullOrEmpty(configuration.getAccessToken()) ) {
+    if (StringUtils.isNotBlank(configuration.getAccessToken()) ) {
       uriBuilder = uriBuilder.addParameter("access_token", configuration.getAccessToken());
     }
-    if ( !Strings.isNullOrEmpty(configuration.getUsername())
+    if (StringUtils.isNotBlank(configuration.getUsername())
          &&
-         !Strings.isNullOrEmpty(configuration.getPassword())) {
+        StringUtils.isNotBlank(configuration.getPassword())) {
       String string = configuration.getUsername() + ":" + configuration.getPassword();
       authHeader = Base64.encodeBase64String(string.getBytes());
     }

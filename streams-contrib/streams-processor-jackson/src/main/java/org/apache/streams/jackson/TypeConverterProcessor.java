@@ -24,12 +24,12 @@ import org.apache.streams.core.StreamsProcessor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -42,7 +42,7 @@ public class TypeConverterProcessor implements StreamsProcessor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TypeConverterProcessor.class);
 
-  private List<String> formats = Lists.newArrayList();
+  private List<String> formats = new ArrayList<>();
 
   private ObjectMapper mapper;
 
@@ -91,7 +91,7 @@ public class TypeConverterProcessor implements StreamsProcessor {
 
   @Override
   public List<StreamsDatum> process(StreamsDatum entry) {
-    List<StreamsDatum> result = Lists.newLinkedList();
+    List<StreamsDatum> result = new LinkedList<>();
     Object inDoc = entry.getDocument();
     ObjectNode node = null;
     if ( inClass == String.class

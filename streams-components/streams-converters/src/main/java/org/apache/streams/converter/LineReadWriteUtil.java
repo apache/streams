@@ -18,23 +18,24 @@
 
 package org.apache.streams.converter;
 
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * LineReadWriteUtil converts Datums to/from character array appropriate for writing to
@@ -44,14 +45,11 @@ public class LineReadWriteUtil {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TypeConverterUtil.class);
 
-  private static Map<LineReadWriteConfiguration, LineReadWriteUtil> INSTANCE_MAP = Maps.newConcurrentMap();
-
-  private static final List<String> DEFAULT_FIELDS = Lists.newArrayList("ID", "SEQ", "TS", "META", "DOC");
+  private static Map<LineReadWriteConfiguration, LineReadWriteUtil> INSTANCE_MAP = new ConcurrentHashMap<>();
 
   private List<String> fields;
   private String fieldDelimiter = "\t";
   private String lineDelimiter = "\n";
-  private String encoding = "UTF-8";
 
   private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
@@ -62,7 +60,7 @@ public class LineReadWriteUtil {
     this.fields = configuration.getFields();
     this.fieldDelimiter = configuration.getFieldDelimiter();
     this.lineDelimiter = configuration.getLineDelimiter();
-    this.encoding = configuration.getEncoding();
+    String encoding = configuration.getEncoding();
   }
 
   public static LineReadWriteUtil getInstance() {
@@ -167,12 +165,12 @@ public class LineReadWriteUtil {
       LOGGER.warn("Error converting document to string", ex);
     }
 
-    if (Strings.isNullOrEmpty(documentJson)) {
+    if (StringUtils.isBlank(documentJson)) {
       return null;
     } else {
       StringBuilder stringBuilder = new StringBuilder();
       Iterator<String> fields = this.fields.iterator();
-      List<String> fielddata = Lists.newArrayList();
+      List<String> fielddata = new ArrayList<>();
       Joiner joiner = Joiner.on(fieldDelimiter).useForNull("");
       while( fields.hasNext() ) {
         String field = fields.next();
@@ -207,8 +205,8 @@ public class LineReadWriteUtil {
 
   /**
    * parseTs
-   * @param field
-   * @return
+   * @param field - dateTime string to be parsed
+   * @return {@link DateTime}
    */
   public DateTime parseTs(String field) {
 
@@ -250,7 +248,7 @@ public class LineReadWriteUtil {
   }
 
   private String trimLineDelimiter(String str) {
-    if ( !Strings.isNullOrEmpty(str)) {
+    if ( !StringUtils.isNotBlank(str)) {
       if (str.endsWith(lineDelimiter)) {
         return str.substring(0, str.length() - 1);
       }

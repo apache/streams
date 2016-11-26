@@ -26,15 +26,13 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
-
+import facebook4j.FacebookException;
+import facebook4j.Page;
+import facebook4j.json.DataObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
-
-import facebook4j.FacebookException;
-import facebook4j.Page;
-import facebook4j.json.DataObjectFactory;
 
 /**
  * Collects the page data from public Facebook pages.
@@ -64,8 +62,7 @@ public class FacebookPageDataCollector extends FacebookDataCollector {
     while (attempt < MAX_ATTEMPTS) {
       ++attempt;
       try {
-        Page page = getNextFacebookClient().getPage(pageId);
-        return page;
+        return getNextFacebookClient().getPage(pageId);
       } catch (FacebookException fe) {
         LOGGER.error("Facebook returned an exception : {}", fe);
         LOGGER.error("Facebook returned an exception while trying to get feed for page, {} : {}", pageId, fe.getMessage());

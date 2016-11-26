@@ -18,19 +18,13 @@
 
 package org.apache.streams.converter.test;
 
-import com.google.common.collect.Lists;
-import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.data.ActivityObjectConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
-import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
-import org.apache.streams.pojo.json.Provider;
-
-import java.util.List;
 
 /**
  * Support class for
- * @see {@link CustomActivityObjectConverterProcessorTest}
+ * {@link CustomActivityObjectConverterProcessorTest}
  */
 public class CustomActivityObjectConverter implements ActivityObjectConverter<CustomType> {
 

@@ -21,7 +21,6 @@ package org.apache.streams.plugins.hbase;
 
 import org.apache.streams.util.schema.FieldType;
 import org.apache.streams.util.schema.FieldUtil;
-import org.apache.streams.util.schema.GenerationConfig;
 import org.apache.streams.util.schema.Schema;
 import org.apache.streams.util.schema.SchemaStore;
 import org.apache.streams.util.schema.SchemaStoreImpl;
@@ -48,9 +47,6 @@ import static org.apache.streams.util.schema.FileUtil.resolveRecursive;
 import static org.apache.streams.util.schema.FileUtil.swapExtension;
 import static org.apache.streams.util.schema.FileUtil.writeFile;
 
-/**
- * Created by sblackmon on 5/3/16.
- */
 public class StreamsHbaseResourceGenerator implements Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsHbaseResourceGenerator.class);
@@ -111,7 +107,7 @@ public class StreamsHbaseResourceGenerator implements Runnable {
    */
   public void generate(StreamsHbaseGenerationConfig config) {
 
-    LinkedList<File> sourceFiles = new LinkedList<File>();
+    LinkedList<File> sourceFiles = new LinkedList<>();
 
     for (Iterator<URL> sources = config.getSource(); sources.hasNext();) {
       URL source = sources.next();
@@ -120,12 +116,11 @@ public class StreamsHbaseResourceGenerator implements Runnable {
 
     LOGGER.info("Seeded with {} source paths:", sourceFiles.size());
 
-    resolveRecursive((GenerationConfig)config, sourceFiles);
+    resolveRecursive(config, sourceFiles);
 
     LOGGER.info("Resolved {} schema files:", sourceFiles.size());
 
-    for (Iterator<File> iterator = sourceFiles.iterator(); iterator.hasNext();) {
-      File item = iterator.next();
+    for (File item : sourceFiles) {
       schemaStore.create(item.toURI());
     }
 

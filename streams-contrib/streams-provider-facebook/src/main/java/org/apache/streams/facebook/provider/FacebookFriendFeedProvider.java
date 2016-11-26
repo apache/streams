@@ -34,7 +34,15 @@ import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
-
+import facebook4j.Facebook;
+import facebook4j.FacebookException;
+import facebook4j.FacebookFactory;
+import facebook4j.Friend;
+import facebook4j.Paging;
+import facebook4j.Post;
+import facebook4j.ResponseList;
+import facebook4j.conf.ConfigurationBuilder;
+import facebook4j.json.DataObjectFactory;
 import org.apache.commons.lang.NotImplementedException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -54,16 +62,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import facebook4j.Facebook;
-import facebook4j.FacebookException;
-import facebook4j.FacebookFactory;
-import facebook4j.Friend;
-import facebook4j.Paging;
-import facebook4j.Post;
-import facebook4j.ResponseList;
-import facebook4j.conf.ConfigurationBuilder;
-import facebook4j.json.DataObjectFactory;
-
 public class FacebookFriendFeedProvider implements StreamsProvider, Serializable {
 
   public static final String STREAMS_ID = "FacebookFriendFeedProvider";
@@ -78,7 +76,7 @@ public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
   private Class klass;
   protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-  protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
+  protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<>();
 
   public FacebookUserstreamConfiguration getConfig() {
     return configuration;
@@ -103,7 +101,7 @@ public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
   private static ExecutorService newFixedThreadPoolWithQueueSize(int numThreads, int queueSize) {
     return new ThreadPoolExecutor(numThreads, numThreads,
         5000L, TimeUnit.MILLISECONDS,
-        new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
+        new ArrayBlockingQueue<>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
   }
 
   /**
@@ -116,7 +114,6 @@ public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
       configuration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
     } catch (IOException ex) {
       ex.printStackTrace();
-      return;
     }
   }
 
@@ -193,8 +190,7 @@ public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
     this.start = start;
     this.end = end;
     readCurrent();
-    StreamsResultSet result = (StreamsResultSet)providerQueue.iterator();
-    return result;
+    return (StreamsResultSet)providerQueue.iterator();
   }
 
   @Override
@@ -266,9 +262,8 @@ public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
         .setClientVersion("v1.0");
 
     FacebookFactory ff = new FacebookFactory(cb.build());
-    Facebook facebook = ff.getInstance();
 
-    return facebook;
+    return ff.getInstance();
   }
 
   @Override

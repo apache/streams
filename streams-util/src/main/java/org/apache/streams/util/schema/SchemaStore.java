@@ -19,11 +19,11 @@
 package org.apache.streams.util.schema;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Optional;
 
 import java.net.URI;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Optional;
 
 /**
  * A SchemaStore resolves and indexes json schemas and makes their properties available.

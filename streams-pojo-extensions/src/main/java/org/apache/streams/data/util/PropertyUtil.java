@@ -27,9 +27,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,26 +42,26 @@ public class PropertyUtil {
   private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
   public static Map<String, Object> flattenToMap(ObjectNode object) {
-    Map<String, Object> flatObject = Maps.newHashMap();
-    addKeys(new String(), object, flatObject, '.');
+    Map<String, Object> flatObject = new HashMap<>();
+    addKeys("", object, flatObject, '.');
     return flatObject;
   }
 
   public static Map<String, Object> flattenToMap(ObjectNode object, char seperator) {
-    Map<String, Object> flatObject = Maps.newHashMap();
-    addKeys(new String(), object, flatObject, seperator);
+    Map<String, Object> flatObject = new HashMap<>();
+    addKeys("", object, flatObject, seperator);
     return flatObject;
   }
 
   public static ObjectNode flattenToObjectNode(ObjectNode object) {
     Map<String, Object> flatObject = flattenToMap(object, '.');
-    addKeys(new String(), object, flatObject, '.');
+    addKeys("", object, flatObject, '.');
     return mapper.convertValue(flatObject, ObjectNode.class);
   }
 
   public static ObjectNode flattenToObjectNode(ObjectNode object, char seperator) {
     Map<String, Object> flatObject = flattenToMap(object, seperator);
-    addKeys(new String(), object, flatObject, seperator);
+    addKeys("", object, flatObject, seperator);
     return mapper.convertValue(flatObject, ObjectNode.class);
   }
 
@@ -102,12 +102,10 @@ public class PropertyUtil {
         root.put(item.getKey(), item.getValue());
       } else {
         ObjectNode currentNode = root;
-        List<String> keyParts = Lists.newArrayList();
+        List<String> keyParts = new ArrayList<>();
         Iterables.addAll(keyParts, Splitter.on(seperator).split(item.getKey()));
-        Iterator<String> keyPartIterator = Iterables.limit(Splitter.on(seperator).split(item.getKey()), keyParts.size() - 1).iterator();
-        while ( keyPartIterator.hasNext()) {
-          String part = keyPartIterator.next();
-          if ( currentNode.has(part) && currentNode.get(part).isObject() ) {
+        for (String part : Iterables.limit(Splitter.on(seperator).split(item.getKey()), keyParts.size() - 1)) {
+          if (currentNode.has(part) && currentNode.get(part).isObject()) {
             currentNode = (ObjectNode) currentNode.get(part);
           } else {
             ObjectNode newNode = mapper.createObjectNode();

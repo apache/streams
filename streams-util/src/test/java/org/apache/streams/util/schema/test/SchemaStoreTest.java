@@ -26,9 +26,6 @@ import org.junit.Test;
 
 import java.io.File;
 
-/**
- * Created by sblackmon on 5/2/16.
- */
 public class SchemaStoreTest {
 
   @Test

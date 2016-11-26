@@ -20,7 +20,6 @@ package org.apache.streams.s3;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

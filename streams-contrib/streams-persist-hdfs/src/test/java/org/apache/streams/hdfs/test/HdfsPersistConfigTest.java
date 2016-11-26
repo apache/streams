@@ -19,14 +19,21 @@
 
 package org.apache.streams.hdfs.test;
 
-import org.apache.streams.hdfs.*;
+import org.apache.streams.hdfs.HdfsConfiguration;
+import org.apache.streams.hdfs.HdfsReaderConfiguration;
+import org.apache.streams.hdfs.HdfsWriterConfiguration;
+import org.apache.streams.hdfs.WebHdfsPersistReader;
+import org.apache.streams.hdfs.WebHdfsPersistWriter;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Test for checking that strings append to FS paths as expected
@@ -63,7 +70,7 @@ public class HdfsPersistConfigTest {
         HdfsWriterConfiguration writerConfiguration = new HdfsWriterConfiguration();
         writerConfiguration.setScheme(HdfsConfiguration.Scheme.HDFS);
         writerConfiguration.setHost("localhost");
-        writerConfiguration.setPort(9000l);
+        writerConfiguration.setPort(9000L);
         writerConfiguration.setPath("path");
         writerConfiguration.setWriterPath("writerPath");
         writerConfiguration.setUser("cloudera");
@@ -86,7 +93,7 @@ public class HdfsPersistConfigTest {
         HdfsWriterConfiguration writerConfiguration = new HdfsWriterConfiguration();
         writerConfiguration.setScheme(HdfsConfiguration.Scheme.WEBHDFS);
         writerConfiguration.setHost("localhost");
-        writerConfiguration.setPort(57000l);
+        writerConfiguration.setPort(57000L);
         writerConfiguration.setPath("path");
         writerConfiguration.setWriterPath("writerPath");
         writerConfiguration.setUser("cloudera");
@@ -128,7 +135,7 @@ public class HdfsPersistConfigTest {
         HdfsReaderConfiguration readerConfiguration = new HdfsReaderConfiguration();
         readerConfiguration.setScheme(HdfsConfiguration.Scheme.HDFS);
         readerConfiguration.setHost("localhost");
-        readerConfiguration.setPort(9000l);
+        readerConfiguration.setPort(9000L);
         readerConfiguration.setPath("path");
         readerConfiguration.setReaderPath("readerPath");
 
@@ -150,7 +157,7 @@ public class HdfsPersistConfigTest {
         HdfsReaderConfiguration readerConfiguration = new HdfsReaderConfiguration();
         readerConfiguration.setScheme(HdfsConfiguration.Scheme.WEBHDFS);
         readerConfiguration.setHost("localhost");
-        readerConfiguration.setPort(57000l);
+        readerConfiguration.setPort(57000L);
         readerConfiguration.setPath("path");
         readerConfiguration.setReaderPath("readerPath");
 

@@ -39,7 +39,6 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Queues;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,15 +146,15 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
 
     ObjectListing listing = this.amazonS3Client.listObjects(request);
 
-    this.files = new ArrayList<String>();
+    this.files = new ArrayList<>();
 
-    /**
+    /*
      * If you can list files that are in this path, then you must be dealing with a directory
      * if you cannot list files that are in this path, then you are most likely dealing with
      * a simple file.
      */
-    boolean hasCommonPrefixes = listing.getCommonPrefixes().size() > 0 ? true : false;
-    boolean hasObjectSummaries = listing.getObjectSummaries().size() > 0 ? true : false;
+    boolean hasCommonPrefixes = listing.getCommonPrefixes().size() > 0;
+    boolean hasObjectSummaries = listing.getObjectSummaries().size() > 0;
 
     if (hasCommonPrefixes || hasObjectSummaries) {
       // Handle the 'directory' use case

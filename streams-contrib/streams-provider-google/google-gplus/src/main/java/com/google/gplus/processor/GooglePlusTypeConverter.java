@@ -30,7 +30,6 @@ import com.google.gplus.serializer.util.GPlusActivityDeserializer;
 import com.google.gplus.serializer.util.GPlusEventClassifier;
 import com.google.gplus.serializer.util.GPlusPersonDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +47,6 @@ public class GooglePlusTypeConverter implements StreamsProcessor {
   private StreamsJacksonMapper mapper;
   private Queue<Person> inQueue;
   private Queue<StreamsDatum> outQueue;
-  private GooglePlusActivityUtil googlePlusActivityUtil;
   private int count = 0;
 
   public GooglePlusTypeConverter() {}
@@ -82,10 +80,10 @@ public class GooglePlusTypeConverter implements StreamsProcessor {
 
       if (item instanceof Person) {
         activity = new Activity();
-        googlePlusActivityUtil.updateActivity((Person)item, activity);
+        GooglePlusActivityUtil.updateActivity((Person)item, activity);
       } else if (item instanceof com.google.api.services.plus.model.Activity) {
         activity = new Activity();
-        googlePlusActivityUtil.updateActivity((com.google.api.services.plus.model.Activity)item, activity);
+        GooglePlusActivityUtil.updateActivity((com.google.api.services.plus.model.Activity)item, activity);
       }
 
       if (activity != null) {
@@ -122,7 +120,6 @@ public class GooglePlusTypeConverter implements StreamsProcessor {
 
   @Override
   public void prepare(Object configurationObject) {
-    googlePlusActivityUtil = new GooglePlusActivityUtil();
     mapper = StreamsJacksonMapper.getInstance();
 
     SimpleModule simpleModule = new SimpleModule();

@@ -23,7 +23,6 @@ import org.apache.streams.core.StreamsDatum;
 
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.Uninterruptibles;
-
 import org.apache.hadoop.fs.FileStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

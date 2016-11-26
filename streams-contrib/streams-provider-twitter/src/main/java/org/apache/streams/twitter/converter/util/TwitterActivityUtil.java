@@ -32,15 +32,14 @@ import org.apache.streams.twitter.pojo.Entities;
 import org.apache.streams.twitter.pojo.Hashtag;
 import org.apache.streams.twitter.pojo.Place;
 import org.apache.streams.twitter.pojo.Retweet;
+import org.apache.streams.twitter.pojo.TargetObject;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.pojo.UserMentions;
-import org.apache.streams.twitter.provider.TwitterErrorHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
@@ -50,6 +49,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.math.DoubleMath.mean;
 
@@ -71,13 +71,11 @@ public class TwitterActivityUtil {
   public static void updateActivity(Tweet tweet, Activity activity) throws ActivityConversionException {
     activity.setActor(buildActor(tweet));
     activity.setId(formatId(activity.getVerb(),
-        Optional.fromNullable(
-            tweet.getIdStr())
-            .or(Optional.of(tweet.getId().toString()))
-            .orNull()));
+        Optional.ofNullable(Optional.ofNullable(tweet.getIdStr())
+            .orElseGet(Optional.of(tweet.getId().toString())::get)).orElse(null)));
 
     if (tweet instanceof Retweet) {
-      updateActivityContent(activity,  ((Retweet) tweet).getRetweetedStatus(), "share");
+      updateActivityContent(activity,  (tweet).getRetweetedStatus(), "share");
     } else {
       updateActivityContent(activity, tweet, "post");
     }
@@ -127,7 +125,7 @@ public class TwitterActivityUtil {
   }
 
   /**
-   * Builds the activity {@link org.apache.streams.pojo.json.ActivityObject} actor from the tweet
+   * Builds the activity {@link ActivityObject} actor from the tweet
    * @param tweet the object to use as the source
    * @return a valid Actor populated from the Tweet
    */
@@ -139,17 +137,15 @@ public class TwitterActivityUtil {
   }
 
   /**
-   * Builds the activity {@link org.apache.streams.pojo.json.ActivityObject} actor from the User
+   * Builds the activity {@link ActivityObject} actor from the User
    * @param user the object to use as the source
    * @return a valid Actor populated from the Tweet
    */
   public static ActivityObject buildActor(User user) {
     ActivityObject actor = new ActivityObject();
     actor.setId(formatId(
-        Optional.fromNullable(
-            user.getIdStr())
-            .or(Optional.of(user.getId().toString()))
-            .orNull()
+        Optional.ofNullable(Optional.ofNullable(user.getIdStr())
+            .orElseGet(Optional.of(user.getId().toString())::get)).orElse(null)
     ));
     actor.setObjectType("page");
     actor.setDisplayName(user.getName());
@@ -189,16 +185,14 @@ public class TwitterActivityUtil {
   }
 
   /**
-   * Creates an {@link org.apache.streams.pojo.json.ActivityObject} for the tweet
+   * Creates an {@link ActivityObject} for the tweet
    * @param tweet the object to use as the source
    * @return a valid ActivityObject
    */
   public static ActivityObject buildActivityObject(Tweet tweet) {
     ActivityObject actObj = new ActivityObject();
-    String id =  Optional.fromNullable(
-        tweet.getIdStr())
-        .or(Optional.of(tweet.getId().toString()))
-        .orNull();
+    String id = Optional.ofNullable(Optional.ofNullable(tweet.getIdStr())
+        .orElseGet(Optional.of(tweet.getId().toString())::get)).orElse(null);
     if ( id != null ) {
       actObj.setId(id);
     }
@@ -261,7 +255,7 @@ public class TwitterActivityUtil {
   }
 
   /**
-   * Builds the {@link org.apache.streams.twitter.pojo.TargetObject} from the tweet.
+   * Builds the {@link TargetObject} from the tweet.
    * @param tweet the object to use as the source
    * @return currently returns null for all activities
    */
@@ -278,17 +272,15 @@ public class TwitterActivityUtil {
     Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
     Map<String, Object> location = new HashMap<>();
     location.put("id", formatId(
-        Optional.fromNullable(
-            tweet.getIdStr())
-            .or(Optional.of(tweet.getId().toString()))
-            .orNull()
+        Optional.ofNullable(Optional.ofNullable(tweet.getIdStr())
+            .orElseGet(Optional.of(tweet.getId().toString())::get)).orElse(null)
     ));
     location.put("coordinates", boundingBoxCenter(tweet.getPlace()));
     extensions.put("location", location);
   }
 
   /**
-   * Gets the common twitter {@link org.apache.streams.pojo.json.Provider} object
+   * Gets the common twitter {@link Provider} object
    * @return a provider object representing Twitter
    */
   public static Provider getProvider() {

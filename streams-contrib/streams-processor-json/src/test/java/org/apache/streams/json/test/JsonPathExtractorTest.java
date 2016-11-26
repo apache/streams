@@ -23,7 +23,6 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.json.JsonPathExtractor;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;

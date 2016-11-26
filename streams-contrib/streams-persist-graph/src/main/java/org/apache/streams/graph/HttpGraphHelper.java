@@ -19,7 +19,6 @@
 package org.apache.streams.graph;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.javatuples.Pair;
 
 import java.util.Map;
@@ -30,6 +29,6 @@ import java.util.Map;
  */
 public interface HttpGraphHelper {
 
-  public ObjectNode createHttpRequest(Pair<String, Map<String, Object>> queryPlusParameters);
+  ObjectNode createHttpRequest(Pair<String, Map<String, Object>> queryPlusParameters);
 
 }

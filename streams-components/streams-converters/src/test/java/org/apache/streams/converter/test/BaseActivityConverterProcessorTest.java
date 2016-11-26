@@ -18,24 +18,27 @@
 
 package org.apache.streams.converter.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.converter.ActivityConverterProcessor;
 import org.apache.streams.converter.ActivityConverterProcessorConfiguration;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test for
- * @see {@link org.apache.streams.converter.ActivityConverterProcessor}
+ * {@link org.apache.streams.converter.ActivityConverterProcessor}
  *
  * Test that default String & ObjectNode conversion works.
  */
@@ -45,7 +48,7 @@ public class BaseActivityConverterProcessorTest {
 
     private static final String ACTIVITY_JSON = "{\"id\":\"id\",\"published\":\"Tue Jan 17 21:21:46 Z 2012\",\"verb\":\"post\",\"provider\":{\"id\":\"providerid\"}}";
 
-    ActivityConverterProcessor processor;
+    private ActivityConverterProcessor processor;
 
     @Before
     public void setup() {

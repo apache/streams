@@ -61,7 +61,7 @@ public class ObjectCombinationGenericOrdering extends Ordering<ObjectCombination
    * @param objectCombination ObjectCombination
    * @return count
    */
-  public int wildcardCount(ObjectCombination objectCombination) {
+  private int wildcardCount(ObjectCombination objectCombination) {
     int wildcardCount = 0;
     if ( wildcard(objectCombination.getActor())) {
       wildcardCount++;
@@ -83,11 +83,7 @@ public class ObjectCombinationGenericOrdering extends Ordering<ObjectCombination
    * @param pattern String
    * @return true or false
    */
-  public boolean wildcard(String pattern) {
-    if ( pattern.equals("*")) {
-      return true;
-    } else {
-      return false;
-    }
+  private boolean wildcard(String pattern) {
+    return pattern.equals("*");
   }
 }

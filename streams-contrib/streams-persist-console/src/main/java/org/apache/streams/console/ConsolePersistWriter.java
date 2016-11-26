@@ -24,12 +24,11 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -42,14 +41,14 @@ public class ConsolePersistWriter implements StreamsPersistWriter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsolePersistWriter.class);
 
-  protected PrintStream printStream = System.out;
+  private PrintStream printStream = System.out;
 
   protected volatile Queue<StreamsDatum> persistQueue;
 
   private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
   public ConsolePersistWriter() {
-    this.persistQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+    this.persistQueue = new ConcurrentLinkedQueue<>();
   }
 
   public ConsolePersistWriter(PrintStream printStream) {
@@ -63,7 +62,7 @@ public class ConsolePersistWriter implements StreamsPersistWriter {
   }
 
   public void prepare(Object configuration) {
-    Preconditions.checkNotNull(persistQueue);
+    Objects.requireNonNull(persistQueue);
   }
 
   public void cleanUp() {

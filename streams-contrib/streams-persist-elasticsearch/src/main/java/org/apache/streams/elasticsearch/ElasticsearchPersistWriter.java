@@ -27,8 +27,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
-
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -52,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -425,9 +424,9 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
   public void add(String indexName, String type, String id, String parent, String routing, String ts, String json) {
 
     // make sure that these are not null
-    Preconditions.checkNotNull(indexName);
-    Preconditions.checkNotNull(type);
-    Preconditions.checkNotNull(json);
+    Objects.requireNonNull(indexName);
+    Objects.requireNonNull(type);
+    Objects.requireNonNull(json);
 
     IndexRequestBuilder indexRequestBuilder = manager.getClient()
         .prepareIndex(indexName, type)
@@ -451,8 +450,8 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
 
   protected void add(IndexRequest request) {
 
-    Preconditions.checkNotNull(request);
-    Preconditions.checkNotNull(request.index());
+    Objects.requireNonNull(request);
+    Objects.requireNonNull(request.index());
 
     // If our queue is larger than our flush threshold, then we should flush the queue.
     synchronized (this) {

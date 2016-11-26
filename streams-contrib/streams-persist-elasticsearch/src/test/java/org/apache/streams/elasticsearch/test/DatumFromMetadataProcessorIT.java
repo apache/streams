@@ -24,11 +24,9 @@ import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.apache.streams.elasticsearch.processor.DatumFromMetadataProcessor;
 
-import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
-
 import org.apache.commons.lang.SerializationUtils;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
@@ -36,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -70,7 +69,7 @@ public class DatumFromMetadataProcessorIT {
   @Test
   public void testDatumFromMetadataProcessor() {
 
-    Map<String, Object> metadata = Maps.newHashMap();
+    Map<String, Object> metadata = new HashMap<>();
 
     metadata.put("index", testConfiguration.getIndexes().get(0));
     metadata.put("type", testConfiguration.getTypes().get(0));

@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -37,7 +38,7 @@ public class LogstashUdpMessagePersisterTest {
 
   private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(LogstashUdpMessagePersisterTest.class);
 
-  DatagramSocket socket = null;
+  private DatagramSocket socket = null;
 
   /**
    * setup.
@@ -56,7 +57,7 @@ public class LogstashUdpMessagePersisterTest {
   public void testFailedPersist() {
     LogstashUdpMessagePersister persister = new LogstashUdpMessagePersister("udp://127.0.0.1:56789");
 
-    List<String> messageArray = Lists.newArrayList();
+    List<String> messageArray = new ArrayList<>();
     for (int x = 0; x < 10; x ++) {
       messageArray.add("Fake_message #" + x);
     }

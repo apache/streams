@@ -68,7 +68,7 @@ public class ObjectCombinationSpecificOrdering extends Ordering<ObjectCombinatio
    * @param objectCombination ObjectCombination
    * @return count
    */
-  public int matchCount(ObjectCombination objectCombination) {
+  private int matchCount(ObjectCombination objectCombination) {
     int matchCount = 0;
     if ( match(activity.getActor(), objectCombination.getActor())) {
       matchCount++;
@@ -92,12 +92,8 @@ public class ObjectCombinationSpecificOrdering extends Ordering<ObjectCombinatio
    * @return true or false
    */
   public boolean match(ActivityObject activityObject, String pattern) {
-    if ( activityObject != null
-         && activityObject.getObjectType() != null
-         && activityObject.getObjectType().equals(pattern)) {
-      return true;
-    } else {
-      return false;
-    }
+    return activityObject != null
+        && activityObject.getObjectType() != null
+        && activityObject.getObjectType().equals(pattern);
   }
 }

@@ -26,8 +26,6 @@ import org.apache.streams.pojo.json.ActivityObject;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
@@ -37,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,8 +73,8 @@ public class ActivityObjectConverterUtil {
     return new ActivityObjectConverterUtil(configuration);
   }
 
-  private List<DocumentClassifier> classifiers = Lists.newLinkedList();
-  private List<ActivityObjectConverter> converters = Lists.newLinkedList();
+  private List<DocumentClassifier> classifiers = new LinkedList<>();
+  private List<ActivityObjectConverter> converters = new LinkedList<>();
 
   /*
     Use getInstance to get a globally shared thread-safe ActivityConverterUtil,
@@ -135,9 +134,7 @@ public class ActivityObjectConverterUtil {
       convertedDocs.put(requiredClass, activityObject);
     }
 
-    ActivityObject result = deepestDescendant(convertedDocs);
-
-    return result;
+    return deepestDescendant(convertedDocs);
   }
 
   protected ActivityObject applyConverter(ActivityObjectConverter converter, Object typedDoc) {
@@ -192,7 +189,7 @@ public class ActivityObjectConverterUtil {
 
   private Map<Class, Object> convertToDetectedClasses(List<Class> datumClasses, Object document) {
 
-    Map<Class, Object> convertedDocuments = Maps.newHashMap();
+    Map<Class, Object> convertedDocuments = new HashMap<>();
     for (Class detectedClass : datumClasses) {
 
       Object typedDoc;
@@ -242,14 +239,9 @@ public class ActivityObjectConverterUtil {
   }
 
   private boolean isAncestor(Class possibleDescendant, Class possibleAncestor) {
-    if (possibleDescendant.equals(Object.class)) {
-      return false;
-    }
-    if (possibleDescendant.getSuperclass().equals(possibleAncestor)) {
-      return true;
-    } else {
-      return isAncestor(possibleDescendant.getSuperclass(), possibleAncestor);
-    }
+    return !possibleDescendant.equals(Object.class) &&
+      (possibleDescendant.getSuperclass().equals(possibleAncestor) ||
+        isAncestor(possibleDescendant.getSuperclass(), possibleAncestor));
   }
 
   // prefer the most specific ActivityObject sub-class returned by all converters

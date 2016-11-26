@@ -24,7 +24,6 @@ import org.apache.streams.google.gplus.configuration.UserInfo;
 import org.apache.streams.local.queues.ThroughputQueue;
 import org.apache.streams.util.api.requests.backoff.impl.ExponentialBackOffStrategy;
 
-import com.google.api.client.util.Lists;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Activity;
 import com.google.api.services.youtube.model.ActivityContentDetails;
@@ -41,6 +40,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
@@ -170,7 +171,7 @@ public class YoutubeUserActivityCollectorTest {
 
   private ActivityListResponse buildActivityListResponse(int num) {
     ActivityListResponse activityListResponse = new ActivityListResponse();
-    List<Activity> items = Lists.newArrayList();
+    List<Activity> items = new ArrayList<>();
 
     for ( int x = 0; x < num; x++ ) {
       Activity activity = new Activity();
@@ -193,21 +194,15 @@ public class YoutubeUserActivityCollectorTest {
 
   private YouTube buildYouTube(int numBeforeRange, int numAfterRange, int numInRange, DateTime afterDate, DateTime beforeDate) {
 
-    YouTube youtube = createYoutubeMock(numBeforeRange, numAfterRange, numInRange, afterDate, beforeDate);
+    return createYoutubeMock(numBeforeRange, numAfterRange, numInRange, afterDate, beforeDate);
 
-    return youtube;
   }
 
   private YouTube createYoutubeMock(int numBefore, int numAfter, int numInRange,  DateTime after, DateTime before) {
     YouTube youtube = mock(YouTube.class);
 
     final YouTube.Videos videos = createMockVideos(numBefore, numAfter, numInRange, after, before);
-    doAnswer(new Answer() {
-      @Override
-      public YouTube.Videos answer(InvocationOnMock invocationOnMock) throws Throwable {
-        return videos;
-      }
-    }).when(youtube).videos();
+    doAnswer(invocationOnMock -> videos).when(youtube).videos();
 
     return youtube;
   }
@@ -245,7 +240,7 @@ public class YoutubeUserActivityCollectorTest {
 
   private static VideoListResponse createMockVideoListResponse(int numBefore, int numAfter, int numInRange,  DateTime after, DateTime before, boolean page) {
     VideoListResponse feed = new VideoListResponse();
-    List<Video> list = com.google.common.collect.Lists.newLinkedList();
+    List<Video> list = new LinkedList<>();
 
     for (int i = 0; i < numAfter; ++i) {
       com.google.api.client.util.DateTime published = new com.google.api.client.util.DateTime(after.getMillis() + 1000000);
@@ -255,7 +250,7 @@ public class YoutubeUserActivityCollectorTest {
       list.add(video);
     }
     for (int i = 0; i < numInRange; ++i) {
-      DateTime published = null;
+      DateTime published;
       if ((before == null && after == null) || before == null) {
         published = DateTime.now(); // no date range or end time date range so just make the time now.
       } else if (after == null) {

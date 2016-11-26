@@ -35,8 +35,6 @@ import org.apache.streams.util.ComponentUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Constants;
@@ -67,25 +65,24 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * TwitterStreamProvider wraps a hosebird client and passes recieved documents
+ * TwitterStreamProvider wraps a hosebird client and passes received documents
  * to subscribing components.
  */
 public class TwitterStreamProvider implements StreamsProvider, Serializable, DatumStatusCountable {
 
-  public static final String STREAMS_ID = "TwitterStreamProvider";
+  private static final String STREAMS_ID = "TwitterStreamProvider";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterStreamProvider.class);
 
@@ -127,9 +124,9 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     TwitterStreamConfiguration config = new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration(typesafe, "twitter");
     TwitterStreamProvider provider = new TwitterStreamProvider(config);
 
-    ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance(Collections.singletonList(TwitterDateTimeFormat.TWITTER_FORMAT));
 
-    PrintStream outStream = null;
+    PrintStream outStream;
     try {
       outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
     } catch (FileNotFoundException ex) {
@@ -140,9 +137,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     provider.startStream();
     do {
       Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-      Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
-      while (iterator.hasNext()) {
-        StreamsDatum datum = iterator.next();
+      for (StreamsDatum datum : provider.readCurrent()) {
         String json;
         try {
           json = mapper.writeValueAsString(datum.getDocument());
@@ -157,7 +152,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     outStream.flush();
   }
 
-  public static final int MAX_BATCH = 1000;
+  private static final int MAX_BATCH = 1000;
 
   private TwitterStreamConfiguration config;
 
@@ -169,13 +164,12 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     this.config = config;
   }
 
-  protected volatile Queue<Future<List<StreamsDatum>>> providerQueue;
+  private volatile Queue<Future<List<StreamsDatum>>> providerQueue;
 
-  protected Hosts hosebirdHosts;
-  protected Authentication auth;
+  private Authentication auth;
   protected StreamingEndpoint endpoint;
-  protected BasicClient client;
-  protected AtomicBoolean running = new AtomicBoolean(false);
+  private BasicClient client;
+  private AtomicBoolean running = new AtomicBoolean(false);
   protected TwitterStreamHelper processor = new TwitterStreamHelper(this);
   private DatumStatusCounter countersCurrent = new DatumStatusCounter();
   private DatumStatusCounter countersTotal = new DatumStatusCounter();
@@ -204,7 +198,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
     StreamsResultSet current;
     synchronized (this) {
-      Queue<StreamsDatum> drain = Queues.newLinkedBlockingDeque();
+      Queue<StreamsDatum> drain = new LinkedBlockingDeque<>();
       drainTo(drain);
       current = new StreamsResultSet(drain);
       current.setCounter(new DatumStatusCounter());
@@ -234,8 +228,9 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
   @Override
   public void prepare(Object configurationObject) {
 
-    Preconditions.checkNotNull(config.getEndpoint());
+    Objects.requireNonNull(config.getEndpoint());
 
+    Hosts hosebirdHosts;
     if (config.getEndpoint().equals("userstream") ) {
 
       hosebirdHosts = new HttpHosts(Constants.USERSTREAM_HOST);
@@ -276,8 +271,8 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
     if ( config.getBasicauth() != null ) {
 
-      Preconditions.checkNotNull(config.getBasicauth().getUsername());
-      Preconditions.checkNotNull(config.getBasicauth().getPassword());
+      Objects.requireNonNull(config.getBasicauth().getUsername());
+      Objects.requireNonNull(config.getBasicauth().getPassword());
 
       auth = new BasicAuth(
           config.getBasicauth().getUsername(),
@@ -286,10 +281,10 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
 
     } else if ( config.getOauth() != null ) {
 
-      Preconditions.checkNotNull(config.getOauth().getConsumerKey());
-      Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
-      Preconditions.checkNotNull(config.getOauth().getAccessToken());
-      Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
+      Objects.requireNonNull(config.getOauth().getConsumerKey());
+      Objects.requireNonNull(config.getOauth().getConsumerSecret());
+      Objects.requireNonNull(config.getOauth().getAccessToken());
+      Objects.requireNonNull(config.getOauth().getAccessTokenSecret());
 
       auth = new OAuth1(config.getOauth().getConsumerKey(),
           config.getOauth().getConsumerSecret(),

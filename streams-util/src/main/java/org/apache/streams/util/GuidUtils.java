@@ -19,10 +19,12 @@
 package org.apache.streams.util;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * GuidUtils contains methods for generating guids from identifiers.
@@ -41,14 +43,12 @@ public class GuidUtils {
     StringBuilder seed = new StringBuilder();
 
     for ( String part : parts ) {
-      Preconditions.checkNotNull(part);
-      Preconditions.checkArgument(!Strings.isNullOrEmpty(part));
+      Objects.requireNonNull(part);
+      Preconditions.checkArgument(!StringUtils.isNotBlank(part));
       seed.append(part);
     }
 
-    String hash = Hashing.goodFastHash(24).hashString(seed, UTF8_CHARSET).asBytes().toString();
-
-    return hash;
+    return Arrays.toString(Hashing.goodFastHash(24).hashString(seed, UTF8_CHARSET).asBytes());
 
   }
 }

@@ -24,11 +24,10 @@ import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.core.util.DatumUtils;
 import org.apache.streams.pojo.json.Activity;
 
-import com.google.common.collect.Lists;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -68,7 +67,7 @@ public class ActivityConverterProcessor implements StreamsProcessor {
   @Override
   public List<StreamsDatum> process(StreamsDatum entry) {
 
-    List<StreamsDatum> result = Lists.newLinkedList();
+    List<StreamsDatum> result = new LinkedList<>();
     Object document = entry.getDocument();
 
     try {
@@ -85,9 +84,9 @@ public class ActivityConverterProcessor implements StreamsProcessor {
 
     } catch (Exception ex) {
       LOGGER.warn("General exception in process! " + ex.getMessage());
-    } finally {
-      return result;
     }
+
+    return result;
 
   }
 

@@ -62,7 +62,7 @@ public class VerbDefinitionResolver {
       VerbDefinition verbDefinitionCopy = SerializationUtil.cloneBySerialization(verbDefinition);
       if ( activity.getVerb().equals(verbDefinition.getValue())) {
         for ( ObjectCombination criteria : verbDefinitionCopy.getObjects()) {
-          if ( filter(activity, criteria) == false ) {
+          if (!filter(activity, criteria)) {
             verbDefinitionCopy.getObjects().remove(criteria);
           }
         }
@@ -88,14 +88,14 @@ public class VerbDefinitionResolver {
     for ( VerbDefinition verbDefinition : verbDefinitionSet ) {
       if ( activity.getVerb().equals(verbDefinition.getValue())) {
         for ( ObjectCombination criteria : verbDefinition.getObjects()) {
-          if ( filter(activity, criteria) == true ) {
+          if (filter(activity, criteria)) {
             results.add(criteria);
           }
         }
       }
     }
 
-    Collections.sort(results, new ObjectCombinationSpecificOrdering(activity));
+    results.sort(new ObjectCombinationSpecificOrdering(activity));
 
     return results;
   }
@@ -120,19 +120,11 @@ public class VerbDefinitionResolver {
   }
 
   public static boolean filterType(ActivityObject activityObject, boolean required, String pattern) {
-    if (required == true && activityObject == null) {
-      return false;
-    } else if (required == false && activityObject == null) {
-      return true;
-    } else if (pattern.equals("*")) {
-      return true;
-    } else if (activityObject.getObjectType() == null) {
-      return false;
-    } else if (activityObject.getObjectType().equals(pattern)) {
-      return true;
-    } else {
-      return false;
-    }
+    return !(required && activityObject == null) &&
+        (!required && activityObject == null ||
+            pattern.equals("*") ||
+            activityObject.getObjectType() != null &&
+                activityObject.getObjectType().equals(pattern));
   }
 
 

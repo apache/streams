@@ -22,7 +22,7 @@ package org.apache.streams.verbs;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 
-import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.stringtemplate.v4.ST;
 
 /**
@@ -71,11 +71,11 @@ public class VerbDefinitionTemplateUtil {
   public static String displayName(ActivityObject activityObject) {
     if ( activityObject == null ) {
       return "";
-    } else if ( !Strings.isNullOrEmpty(activityObject.getDisplayName())) {
+    } else if (StringUtils.isNotBlank(activityObject.getDisplayName())) {
       return activityObject.getDisplayName();
-    } else if ( !Strings.isNullOrEmpty(activityObject.getObjectType())) {
+    } else if (StringUtils.isNotBlank(activityObject.getObjectType())) {
       return activityObject.getObjectType();
-    } else if ( !Strings.isNullOrEmpty(activityObject.toString())) {
+    } else if (StringUtils.isNotBlank(activityObject.toString())) {
       return activityObject.toString();
     } else {
       return "";

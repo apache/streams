@@ -17,12 +17,12 @@
  */
 package org.apache.streams.facebook.test;
 
-import java.net.URL;
-import java.util.Date;
-
 import facebook4j.Cover;
 import facebook4j.Page;
 import facebook4j.Place;
+
+import java.net.URL;
+import java.util.Date;
 
 public class TestPage implements Page {
   private String id;

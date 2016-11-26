@@ -27,10 +27,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.IntNode;
 import com.google.api.client.util.Lists;
 import com.google.api.services.plus.model.Person;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +60,7 @@ public class GPlusPersonDeserializer extends JsonDeserializer<Person> {
     Person person = new Person();
     try {
 
-      person.setCircledByCount((Integer) ((IntNode) node.get("circledByCount")).numberValue());
+      person.setCircledByCount((Integer) (node.get("circledByCount")).numberValue());
       person.setDisplayName(node.get("displayName").asText());
       person.setEtag(node.get("etag").asText());
       person.setGender(node.get("gender").asText());

@@ -34,7 +34,15 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
-
+import facebook4j.Facebook;
+import facebook4j.FacebookException;
+import facebook4j.FacebookFactory;
+import facebook4j.Friend;
+import facebook4j.Paging;
+import facebook4j.Post;
+import facebook4j.ResponseList;
+import facebook4j.conf.ConfigurationBuilder;
+import facebook4j.json.DataObjectFactory;
 import org.apache.commons.lang.NotImplementedException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -44,6 +52,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -55,22 +64,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import facebook4j.Facebook;
-import facebook4j.FacebookException;
-import facebook4j.FacebookFactory;
-import facebook4j.Friend;
-import facebook4j.Paging;
-import facebook4j.Post;
-import facebook4j.ResponseList;
-import facebook4j.conf.ConfigurationBuilder;
-import facebook4j.json.DataObjectFactory;
-
 /**
  * FacebookFriendUpdatesProvider provides updates from friend feed.
  */
 public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializable {
 
-  public static final String STREAMS_ID = "FacebookFriendPostsProvider";
+  private static final String STREAMS_ID = "FacebookFriendPostsProvider";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FacebookFriendUpdatesProvider.class);
 
@@ -84,7 +83,7 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
   private Class klass;
   protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-  protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
+  protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<>();
 
   public FacebookUserstreamConfiguration getConfig() {
     return configuration;
@@ -110,7 +109,7 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
   private static ExecutorService newFixedThreadPoolWithQueueSize(int numThreads, int queueSize) {
     return new ThreadPoolExecutor(numThreads, numThreads,
         5000L, TimeUnit.MILLISECONDS,
-        new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
+        new ArrayBlockingQueue<>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
   }
 
   /**
@@ -123,7 +122,6 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
       configuration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
     } catch (IOException ex) {
       ex.printStackTrace();
-      return;
     }
   }
 
@@ -209,8 +207,7 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
     this.start = start;
     this.end = end;
     readCurrent();
-    StreamsResultSet result = (StreamsResultSet)providerQueue.iterator();
-    return result;
+    return (StreamsResultSet)providerQueue.iterator();
   }
 
   @Override
@@ -242,11 +239,11 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
 
     executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
-    Preconditions.checkNotNull(providerQueue);
-    Preconditions.checkNotNull(this.klass);
-    Preconditions.checkNotNull(configuration.getOauth().getAppId());
-    Preconditions.checkNotNull(configuration.getOauth().getAppSecret());
-    Preconditions.checkNotNull(configuration.getOauth().getUserAccessToken());
+    Objects.requireNonNull(providerQueue);
+    Objects.requireNonNull(this.klass);
+    Objects.requireNonNull(configuration.getOauth().getAppId());
+    Objects.requireNonNull(configuration.getOauth().getAppSecret());
+    Objects.requireNonNull(configuration.getOauth().getUserAccessToken());
 
     Facebook client = getFacebookClient();
 
@@ -254,11 +251,6 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
       ResponseList<Friend> friendResponseList = client.friends().getFriends();
       Paging<Friend> friendPaging;
       do {
-
-        for ( Friend friend : friendResponseList ) {
-          // client.rawAPI().callPostAPI();
-          // add a subscription
-        }
         friendPaging = friendResponseList.getPaging();
         friendResponseList = client.fetchNext(friendPaging);
       }
@@ -283,9 +275,8 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
         .setClientVersion("v1.0");
 
     FacebookFactory ff = new FacebookFactory(cb.build());
-    Facebook facebook = ff.getInstance();
 
-    return facebook;
+    return ff.getInstance();
   }
 
   @Override

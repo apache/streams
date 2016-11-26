@@ -26,12 +26,11 @@ import org.apache.streams.pojo.json.Activity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +38,7 @@ import java.util.List;
  *
  * <p/>
  * BaseObjectNodeActivityConverter is included by default in all
- * @see {@link org.apache.streams.converter.ActivityConverterProcessor}
+ * {@link org.apache.streams.converter.ActivityConverterProcessor}
  *
  */
 public class BaseStringActivityConverter implements ActivityConverter<String> {
@@ -76,19 +75,18 @@ public class BaseStringActivityConverter implements ActivityConverter<String> {
 
   @Override
   public List<Activity> toActivityList(String serialized) throws ActivityConversionException {
-    List<Activity> activityList = Lists.newArrayList();
+    List<Activity> activityList = new ArrayList<>();
     try {
       activityList.add(mapper.readValue(serialized, Activity.class));
     } catch (Exception ex) {
       throw new ActivityConversionException();
-    } finally {
-      return activityList;
     }
+    return activityList;
   }
 
   @Override
   public List<Activity> toActivityList(List<String> list) {
-    List<Activity> result = Lists.newArrayList();
+    List<Activity> result = new ArrayList<>();
     for ( String item : list ) {
       try {
         result.addAll(toActivityList(item));

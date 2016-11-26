@@ -38,8 +38,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.google.api.services.youtube.YouTube;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -54,9 +52,11 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
@@ -65,24 +65,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class YoutubeProvider implements StreamsProvider {
 
-  public static final String STREAMS_ID = "YoutubeProvider";
+  private static final String STREAMS_ID = "YoutubeProvider";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(YoutubeProvider.class);
   private static final int MAX_BATCH_SIZE = 1000;
 
   // This OAuth 2.0 access scope allows for full read/write access to the
   // authenticated user's account.
-  private List<String> scopes = Lists.newArrayList("https://www.googleapis.com/auth/youtube");
+  private List<String> scopes = Collections.singletonList("https://www.googleapis.com/auth/youtube");
 
   /**
    * Define a global instance of the HTTP transport.
    */
-  public static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+  private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
 
   /**
    * Define a global instance of the JSON factory.
    */
-  public static final JsonFactory JSON_FACTORY = new JacksonFactory();
+  private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
   private static final int DEFAULT_THREAD_POOL_SIZE = 5;
 
@@ -104,7 +104,7 @@ public abstract class YoutubeProvider implements StreamsProvider {
     this.config = new ComponentConfigurator<>(YoutubeConfiguration.class)
         .detectConfiguration(StreamsConfigurator.getConfig().getConfig("youtube"));
 
-    Preconditions.checkNotNull(this.config.getApiKey());
+    Objects.requireNonNull(this.config.getApiKey());
   }
 
   /**
@@ -114,7 +114,7 @@ public abstract class YoutubeProvider implements StreamsProvider {
   public YoutubeProvider(YoutubeConfiguration config) {
     this.config = config;
 
-    Preconditions.checkNotNull(this.config.getApiKey());
+    Objects.requireNonNull(this.config.getApiKey());
   }
 
   @Override

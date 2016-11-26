@@ -23,7 +23,6 @@ import org.apache.streams.data.util.RFC3339Utils;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -32,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,7 +45,7 @@ import java.util.List;
  */
 public class StreamsDateTimeDeserializer extends StdDeserializer<DateTime> implements Serializable {
 
-  List<DateTimeFormatter> formatters = Lists.newArrayList();
+  private List<DateTimeFormatter> formatters = new ArrayList<>();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsDateTimeDeserializer.class);
 

@@ -18,24 +18,22 @@
 
 package org.apache.streams.urls;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.jackson.StreamsJacksonModule;
 import org.apache.streams.pojo.json.Activity;
+
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Created by rebanks on 2/27/14.
- */
 public class TestLinkUnwinderProcessor {
 
     private static String activityString;
@@ -73,44 +71,44 @@ public class TestLinkUnwinderProcessor {
     @Ignore
     @Test
     public void testActivityLinkUnwinderProcessorBitly() throws Exception{
-        testActivityUnwinderHelper(Lists.newArrayList("http://bit.ly/1cX5Rh4"), Lists.newArrayList("http://www.wcgworld.com/"));
-        testStringActivityUnwinderHelper(Lists.newArrayList("http://bit.ly/1cX5Rh4"), Lists.newArrayList("http://www.wcgworld.com/"));
+        testActivityUnwinderHelper(Collections.singletonList("http://bit.ly/1cX5Rh4"), Collections.singletonList("http://www.wcgworld.com/"));
+        testStringActivityUnwinderHelper(Collections.singletonList("http://bit.ly/1cX5Rh4"), Collections.singletonList("http://www.wcgworld.com/"));
     }
 
     @Ignore
     @Test
     public void testActivityLinkUnwinderProcessorTdotCo() throws Exception{
-        testActivityUnwinderHelper(Lists.newArrayList("http://t.co/lLFgFynv2G"), Lists.newArrayList("http://www.holmesreport.com/latest"));
-        testStringActivityUnwinderHelper(Lists.newArrayList("http://t.co/lLFgFynv2G"), Lists.newArrayList("http://www.holmesreport.com/latest"));
+        testActivityUnwinderHelper(Collections.singletonList("http://t.co/lLFgFynv2G"), Collections.singletonList("http://www.holmesreport.com/latest"));
+        testStringActivityUnwinderHelper(Collections.singletonList("http://t.co/lLFgFynv2G"), Collections.singletonList("http://www.holmesreport.com/latest"));
     }
 
     @Ignore
     @Test
     public void testActivityLinkUnwinderProcessorGoogle() throws Exception{
-        testActivityUnwinderHelper(Lists.newArrayList("http://goo.gl/wSrHDA"), Lists.newArrayList("http://www.wcgworld.com/"));
-        testStringActivityUnwinderHelper(Lists.newArrayList("http://goo.gl/wSrHDA"), Lists.newArrayList("http://www.wcgworld.com/"));
+        testActivityUnwinderHelper(Collections.singletonList("http://goo.gl/wSrHDA"), Collections.singletonList("http://www.wcgworld.com/"));
+        testStringActivityUnwinderHelper(Collections.singletonList("http://goo.gl/wSrHDA"), Collections.singletonList("http://www.wcgworld.com/"));
     }
 
     @Ignore
     @Test
     public void testActivityLinkUnwinderProcessorOwly() throws Exception{
-        testActivityUnwinderHelper(Lists.newArrayList("http://ow.ly/u4Kte"), Lists.newArrayList("http://www.wcgworld.com/"));
-        testStringActivityUnwinderHelper(Lists.newArrayList("http://ow.ly/u4Kte"), Lists.newArrayList("http://www.wcgworld.com/"));
+        testActivityUnwinderHelper(Collections.singletonList("http://ow.ly/u4Kte"), Collections.singletonList("http://www.wcgworld.com/"));
+        testStringActivityUnwinderHelper(Collections.singletonList("http://ow.ly/u4Kte"), Collections.singletonList("http://www.wcgworld.com/"));
     }
 
     @Ignore
     @Test
     public void testActivityLinkUnwinderProcessorGoDaddy() throws Exception{
-        testActivityUnwinderHelper(Lists.newArrayList("http://x.co/3yapt"), Lists.newArrayList("http://www.wcgworld.com/"));
-        testStringActivityUnwinderHelper(Lists.newArrayList("http://x.co/3yapt"), Lists.newArrayList("http://www.wcgworld.com/"));
+        testActivityUnwinderHelper(Collections.singletonList("http://x.co/3yapt"), Collections.singletonList("http://www.wcgworld.com/"));
+        testStringActivityUnwinderHelper(Collections.singletonList("http://x.co/3yapt"), Collections.singletonList("http://www.wcgworld.com/"));
     }
 
     @Ignore
     @Test
     public void testActivityLinkUnwinderProcessorMulti() throws Exception{
         // changed these tests because the processor now guarantees each result returned only once
-        testActivityUnwinderHelper(Lists.newArrayList("http://x.co/3yapt", "http://ow.ly/u4Kte", "http://goo.gl/wSrHDA"), Lists.newArrayList("http://www.wcgworld.com/"));
-        testStringActivityUnwinderHelper(Lists.newArrayList("http://x.co/3yapt", "http://ow.ly/u4Kte", "http://goo.gl/wSrHDA"), Lists.newArrayList("http://www.wcgworld.com/"));
+        testActivityUnwinderHelper(Arrays.asList("http://x.co/3yapt", "http://ow.ly/u4Kte", "http://goo.gl/wSrHDA"), Collections.singletonList("http://www.wcgworld.com/"));
+        testStringActivityUnwinderHelper(Arrays.asList("http://x.co/3yapt", "http://ow.ly/u4Kte", "http://goo.gl/wSrHDA"), Collections.singletonList("http://www.wcgworld.com/"));
     }
 
     public void testActivityUnwinderHelper(List<String> input, List<String> expected) throws Exception{
@@ -137,7 +135,7 @@ public class TestLinkUnwinderProcessor {
         assertNotNull(resultActivity.getLinks());
         List<String> resultLinks = resultActivity.getLinks();
         assertEquals(expected.size(), resultLinks.size());
-        assertEquals(Sets.newHashSet(expected), Sets.newHashSet(resultLinks));
+        assertEquals(expected, resultLinks);
     }
 
     public void testStringActivityUnwinderHelper(List<String> input, List<String> expected) throws Exception{
@@ -159,7 +157,7 @@ public class TestLinkUnwinderProcessor {
         assertNotNull(resultActivity.getLinks());
         List<String> resultLinks = resultActivity.getLinks();
         assertEquals(expected.size(), resultLinks.size());
-        assertEquals(Sets.newHashSet(expected), Sets.newHashSet(resultLinks));
+        assertEquals(expected, resultLinks);
     }
 
 }

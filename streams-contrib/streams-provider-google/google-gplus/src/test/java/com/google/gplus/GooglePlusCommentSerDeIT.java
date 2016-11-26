@@ -29,7 +29,6 @@ import com.google.api.client.util.Lists;
 import com.google.api.services.plus.model.Comment;
 import com.google.gplus.serializer.util.GPlusCommentDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
-
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.slf4j.Logger;
@@ -102,7 +101,7 @@ public class GooglePlusCommentSerDeIT {
 
       assertEquals(comments.size(), 3);
 
-      googlePlusActivityUtil.updateActivity(comments, activity);
+      GooglePlusActivityUtil.updateActivity(comments, activity);
       assertNotNull(activity);
       assertNotNull(activity.getObject());
       assertEquals(activity.getObject().getAttachments().size(), 3);
@@ -115,7 +114,7 @@ public class GooglePlusCommentSerDeIT {
   public void testEmptyComments() {
     Activity activity = new Activity();
 
-    googlePlusActivityUtil.updateActivity(new ArrayList<Comment>(), activity);
+    GooglePlusActivityUtil.updateActivity(new ArrayList<>(), activity);
 
     assertNull(activity.getObject());
   }

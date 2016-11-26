@@ -32,9 +32,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
@@ -53,9 +50,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 
@@ -124,7 +122,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
   @Override
   public List<StreamsDatum> process(StreamsDatum entry) {
 
-    List<StreamsDatum> result = Lists.newArrayList();
+    List<StreamsDatum> result = new ArrayList<>();
 
     String json;
     ObjectNode node;
@@ -172,9 +170,8 @@ public class PercolateTagProcessor implements StreamsProcessor {
 
     ArrayNode tagArray = JsonNodeFactory.instance.arrayNode();
 
-    Iterator<PercolateResponse.Match> matchIterator = response.iterator();
-    while (matchIterator.hasNext()) {
-      tagArray.add(matchIterator.next().getId().string());
+    for (PercolateResponse.Match aResponse : response) {
+      tagArray.add(aResponse.getId().string());
     }
 
     LOGGER.trace("Percolate matches: {}", tagArray);
@@ -202,14 +199,14 @@ public class PercolateTagProcessor implements StreamsProcessor {
 
     mapper = StreamsJacksonMapper.getInstance();
 
-    Preconditions.checkNotNull(config);
+    Objects.requireNonNull(config);
 
     manager = new ElasticsearchClientManager(config);
 
     if ( config.getTags() != null && config.getTags().getAdditionalProperties().size() > 0) {
       // initial write tags to index
       createIndexIfMissing(config.getIndex());
-      if ( config.getReplaceTags() == true ) {
+      if (config.getReplaceTags()) {
         deleteOldQueries(config.getIndex());
       }
       for (String tag : config.getTags().getAdditionalProperties().keySet()) {
@@ -219,7 +216,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
       }
       bulkBuilder = manager.getClient().prepareBulk();
 
-      if (writePercolateRules() == true) {
+      if (writePercolateRules()) {
         LOGGER.info("wrote " + bulkBuilder.numberOfActions() + " tags to " + config.getIndex() + " _percolator");
       } else {
         LOGGER.error("FAILED writing " + bulkBuilder.numberOfActions() + " tags to " + config.getIndex() + " _percolator");
@@ -230,7 +227,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
 
   @Override
   public void cleanUp() {
-    if ( config.getCleanupTags() == true ) {
+    if (config.getCleanupTags()) {
       deleteOldQueries(config.getIndex());
     }
     manager.getClient().close();
@@ -311,7 +308,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
    * @return result
    */
   public Set<String> getActivePercolateTags(String index) {
-    Set<String> tags = new HashSet<String>();
+    Set<String> tags = new HashSet<>();
     SearchRequestBuilder searchBuilder = manager.getClient().prepareSearch("*").setIndices(index).setTypes(".percolator").setSize(1000);
     SearchResponse response = searchBuilder.setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
     SearchHits hits = response.getHits();

@@ -35,7 +35,6 @@ import org.apache.streams.util.ComponentUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -47,7 +46,6 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Twitter;
-import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.json.DataObjectFactory;
@@ -59,8 +57,10 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -78,9 +78,9 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
  */
 public class TwitterUserInformationProvider implements StreamsProvider, Serializable {
 
-  public static final String STREAMS_ID = "TwitterUserInformationProvider";
+  private static final String STREAMS_ID = "TwitterUserInformationProvider";
 
-  private static ObjectMapper MAPPER = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+  private static ObjectMapper MAPPER = new StreamsJacksonMapper(Collections.singletonList(TwitterDateTimeFormat.TWITTER_FORMAT));
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterUserInformationProvider.class);
 
@@ -133,9 +133,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     provider.startStream();
     do {
       Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-      Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
-      while (iterator.hasNext()) {
-        StreamsDatum datum = iterator.next();
+      for (StreamsDatum datum : provider.readCurrent()) {
         String json;
         try {
           json = MAPPER.writeValueAsString(datum.getDocument());
@@ -176,7 +174,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
   public static ExecutorService newFixedThreadPoolWithQueueSize(int numThreads, int queueSize) {
     return new ThreadPoolExecutor(numThreads, numThreads,
         5000L, TimeUnit.MILLISECONDS,
-        new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
+        new ArrayBlockingQueue<>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
   }
 
   /**
@@ -207,13 +205,13 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
       config = (TwitterUserInformationConfiguration) configurationObject;
     }
 
-    Preconditions.checkNotNull(config);
-    Preconditions.checkNotNull(config.getOauth());
-    Preconditions.checkNotNull(config.getOauth().getConsumerKey());
-    Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
-    Preconditions.checkNotNull(config.getOauth().getAccessToken());
-    Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
-    Preconditions.checkNotNull(config.getInfo());
+    Objects.requireNonNull(config);
+    Objects.requireNonNull(config.getOauth());
+    Objects.requireNonNull(config.getOauth().getConsumerKey());
+    Objects.requireNonNull(config.getOauth().getConsumerSecret());
+    Objects.requireNonNull(config.getOauth().getAccessToken());
+    Objects.requireNonNull(config.getOauth().getAccessTokenSecret());
+    Objects.requireNonNull(config.getInfo());
 
     try {
       lock.writeLock().lock();
@@ -222,13 +220,13 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
       lock.writeLock().unlock();
     }
 
-    Preconditions.checkNotNull(providerQueue);
+    Objects.requireNonNull(providerQueue);
 
-    List<String> screenNames = new ArrayList<String>();
-    List<String[]> screenNameBatches = new ArrayList<String[]>();
+    List<String> screenNames = new ArrayList<>();
+    List<String[]> screenNameBatches = new ArrayList<>();
 
-    List<Long> ids = new ArrayList<Long>();
-    List<Long[]> idsBatches = new ArrayList<Long[]>();
+    List<Long> ids = new ArrayList<>();
+    List<Long[]> idsBatches = new ArrayList<>();
 
     for (String s : config.getInfo()) {
       if (s != null) {
@@ -248,14 +246,14 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
           // add the batch
           idsBatches.add(ids.toArray(new Long[ids.size()]));
           // reset the Ids
-          ids = new ArrayList<Long>();
+          ids = new ArrayList<>();
         }
 
         if (screenNames.size() >= 100) {
           // add the batch
           screenNameBatches.add(screenNames.toArray(new String[ids.size()]));
           // reset the Ids
-          screenNames = new ArrayList<String>();
+          screenNames = new ArrayList<>();
         }
       }
     }
@@ -275,7 +273,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
       executor = MoreExecutors.listeningDecorator(newSingleThreadExecutor());
     }
 
-    Preconditions.checkNotNull(executor);
+    Objects.requireNonNull(executor);
 
     this.idsBatches = idsBatches.iterator();
     this.screenNameBatches = screenNameBatches.iterator();
@@ -284,7 +282,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
   @Override
   public void startStream() {
 
-    Preconditions.checkNotNull(executor);
+    Objects.requireNonNull(executor);
 
     Preconditions.checkArgument(idsBatches.hasNext() || screenNameBatches.hasNext());
 
@@ -327,8 +325,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
           }
         }
         keepTrying = 10;
-      } catch (TwitterException twitterException) {
-        keepTrying += TwitterErrorHandler.handleTwitterError(client, twitterException);
       } catch (Exception ex) {
         keepTrying += TwitterErrorHandler.handleTwitterError(client, ex);
       }
@@ -353,8 +349,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
           }
         }
         keepTrying = 10;
-      } catch (TwitterException twitterException) {
-        keepTrying += TwitterErrorHandler.handleTwitterError(client, twitterException);
       } catch (Exception ex) {
         keepTrying += TwitterErrorHandler.handleTwitterError(client, ex);
       }
@@ -383,7 +377,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
   }
 
   protected Queue<StreamsDatum> constructQueue() {
-    return new LinkedBlockingQueue<StreamsDatum>();
+    return new LinkedBlockingQueue<>();
   }
 
   public StreamsResultSet readNew(BigInteger sequence) {
@@ -397,8 +391,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     this.start = start;
     this.end = end;
     readCurrent();
-    StreamsResultSet result = (StreamsResultSet)providerQueue.iterator();
-    return result;
+    return (StreamsResultSet)providerQueue.iterator();
   }
 
   @Override

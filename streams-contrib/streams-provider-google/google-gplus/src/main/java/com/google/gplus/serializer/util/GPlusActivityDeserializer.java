@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.api.client.util.DateTime;
 import com.google.api.client.util.Lists;
 import com.google.api.services.plus.model.Activity;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

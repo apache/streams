@@ -18,16 +18,13 @@
 
 package org.apache.streams.rss.provider.perpetual;
 
-import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.rss.FeedDetails;
 import org.apache.streams.rss.provider.RssStreamProviderTask;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -51,15 +48,12 @@ public class RssFeedSchedulerTest {
   public void testScheduleFeeds() {
     ExecutorService mockService = mock(ExecutorService.class);
     final List<String> queuedTasks = new ArrayList<>(5);
-    doAnswer(new Answer() {
-      @Override
-      public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-        queuedTasks.add(((RssStreamProviderTask) invocationOnMock.getArguments()[0]).getRssFeed());
-        return null;
-      }
+    doAnswer(invocationOnMock -> {
+      queuedTasks.add(((RssStreamProviderTask) invocationOnMock.getArguments()[0]).getRssFeed());
+      return null;
     }).when(mockService).execute(any(Runnable.class));
 
-    RssFeedScheduler scheduler = new RssFeedScheduler(mockService, createFeedList(), new LinkedBlockingQueue<StreamsDatum>(), 1);
+    RssFeedScheduler scheduler = new RssFeedScheduler(mockService, createFeedList(), new LinkedBlockingQueue<>(), 1);
     scheduler.scheduleFeeds();
     assertEquals("Expected 2 Feeds to be scheduled", 2, queuedTasks.size());
     assertEquals("Expected Feed 1 to be queued first",  "1", queuedTasks.get(0));
@@ -78,7 +72,7 @@ public class RssFeedSchedulerTest {
   }
 
   private List<FeedDetails> createFeedList() {
-    List<FeedDetails> list = Lists.newLinkedList();
+    List<FeedDetails> list = new LinkedList<>();
     FeedDetails fd = new FeedDetails();
     fd.setPollIntervalMillis(1L);
     fd.setUrl("1");

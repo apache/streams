@@ -29,13 +29,11 @@ import org.apache.streams.facebook.provider.FacebookEventClassifier;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +63,7 @@ public class FacebookTypeConverter implements StreamsProcessor {
 
   private int count = 0;
 
-  public static final String TERMINATE = new String("TERMINATE");
+  public static final String TERMINATE = "TERMINATE";
 
   public FacebookTypeConverter(Class inClass, Class outClass) {
     this.inClass = inClass;
@@ -138,8 +136,6 @@ public class FacebookTypeConverter implements StreamsProcessor {
       while (parser.nextToken() != null) {
       }
       valid = true;
-    } catch (JsonParseException jpe) {
-      LOGGER.warn("validate: {}", jpe);
     } catch (IOException ioe) {
       LOGGER.warn("validate: {}", ioe);
     }

@@ -34,9 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -45,7 +43,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -60,10 +60,10 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
   private static final Logger LOGGER = LoggerFactory.getLogger(GraphHttpPersistWriter.class);
   private static final long MAX_WRITE_LATENCY = 1000;
 
-  protected GraphHttpConfiguration configuration;
+  private GraphHttpConfiguration configuration;
 
-  protected QueryGraphHelper queryGraphHelper;
-  protected HttpGraphHelper httpGraphHelper;
+  private QueryGraphHelper queryGraphHelper;
+  private HttpGraphHelper httpGraphHelper;
 
   private static ObjectMapper mapper;
 
@@ -73,7 +73,7 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
    * GraphHttpPersistWriter constructor - resolve GraphHttpConfiguration from JVM 'graph'.
    */
   public GraphHttpPersistWriter() {
-    this(new ComponentConfigurator<GraphHttpConfiguration>(GraphHttpConfiguration.class).detectConfiguration(StreamsConfigurator.config.getConfig("graph")));
+    this(new ComponentConfigurator<>(GraphHttpConfiguration.class).detectConfiguration(StreamsConfigurator.config.getConfig("graph")));
   }
 
   /**
@@ -94,7 +94,7 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
   protected ObjectNode preparePayload(StreamsDatum entry) throws Exception {
 
     Activity activity = null;
-    ActivityObject activityObject = null;
+    ActivityObject activityObject;
     Object document = entry.getDocument();
 
     if (document instanceof Activity) {
@@ -137,7 +137,7 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
 
     // always add vertices first
 
-    List<String> labels = Lists.newArrayList("streams");
+    List<String> labels = Collections.singletonList("streams");
 
     if ( activityObject != null ) {
       if ( activityObject.getObjectType() != null ) {
@@ -151,20 +151,17 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
       ActivityObject actor = activity.getActor();
       Provider provider = activity.getProvider();
 
-      if ( provider != null
-          && !Strings.isNullOrEmpty(provider.getId()) ) {
+      if (provider != null && StringUtils.isNotBlank(provider.getId())) {
         labels.add(provider.getId());
       }
-      if (actor != null
-          && !Strings.isNullOrEmpty(actor.getId())) {
+      if (actor != null && StringUtils.isNotBlank(actor.getId())) {
         if (actor.getObjectType() != null) {
           labels.add(actor.getObjectType());
         }
         statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.mergeVertexRequest(actor)));
       }
 
-      if (activityObject != null
-          && !Strings.isNullOrEmpty(activityObject.getId())) {
+      if (activityObject != null && StringUtils.isNotBlank(activityObject.getId())) {
         if (activityObject.getObjectType() != null) {
           labels.add(activityObject.getObjectType());
         }
@@ -173,7 +170,7 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
 
       // then add edge
 
-      if (!Strings.isNullOrEmpty(activity.getVerb())) {
+      if (StringUtils.isNotBlank(activity.getVerb())) {
         statements.add(httpGraphHelper.createHttpRequest(queryGraphHelper.createEdgeRequest(activity)));
       }
     }
@@ -186,7 +183,7 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
   @Override
   protected ObjectNode executePost(HttpPost httpPost) {
 
-    Preconditions.checkNotNull(httpPost);
+    Objects.requireNonNull(httpPost);
 
     ObjectNode result = null;
 
@@ -239,8 +236,8 @@ public class GraphHttpPersistWriter extends SimpleHTTPPostPersistWriter {
       httpGraphHelper = new Neo4jHttpGraphHelper();
     }
 
-    Preconditions.checkNotNull(queryGraphHelper);
-    Preconditions.checkNotNull(httpGraphHelper);
+    Objects.requireNonNull(queryGraphHelper);
+    Objects.requireNonNull(httpGraphHelper);
   }
 
   @Override

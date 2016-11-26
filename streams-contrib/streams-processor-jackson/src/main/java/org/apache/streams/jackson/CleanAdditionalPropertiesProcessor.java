@@ -26,12 +26,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
-import com.google.common.collect.Lists;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +56,7 @@ public class CleanAdditionalPropertiesProcessor implements StreamsProcessor {
 
   @Override
   public List<StreamsDatum> process(StreamsDatum datum) {
-    List<StreamsDatum> result = Lists.newLinkedList();
+    List<StreamsDatum> result = new LinkedList<>();
     ObjectNode activity = this.mapper.convertValue(datum.getDocument(), ObjectNode.class);
     cleanAdditionalProperties(activity);
     datum.setDocument(activity);

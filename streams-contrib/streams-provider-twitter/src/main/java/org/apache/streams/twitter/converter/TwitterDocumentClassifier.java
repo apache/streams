@@ -30,12 +30,12 @@ import org.apache.streams.twitter.pojo.UserstreamEvent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static org.apache.streams.twitter.converter.TwitterDateTimeFormat.TWITTER_FORMAT;
 
@@ -47,9 +47,9 @@ public class TwitterDocumentClassifier implements DocumentClassifier {
   @Override
   public List<Class> detectClasses(Object document) {
 
-    Preconditions.checkNotNull(document);
+    Objects.requireNonNull(document);
 
-    ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(TWITTER_FORMAT));
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance(Collections.singletonList(TWITTER_FORMAT));
 
     ObjectNode objectNode;
     try {

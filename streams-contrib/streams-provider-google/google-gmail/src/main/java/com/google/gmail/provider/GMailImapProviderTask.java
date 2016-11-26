@@ -23,7 +23,6 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.util.ComponentUtils;
 
 import com.googlecode.gmail4j.GmailMessage;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

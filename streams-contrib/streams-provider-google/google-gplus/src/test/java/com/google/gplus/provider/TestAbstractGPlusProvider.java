@@ -28,11 +28,10 @@ import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.Repeat;
 import com.google.api.services.plus.Plus;
-import com.google.common.collect.Lists;
-
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
@@ -50,7 +49,7 @@ public class TestAbstractGPlusProvider extends RandomizedTest {
   @Repeat(iterations = 3)
   public void testDataCollectorRunsPerUser() {
     int numUsers = randomIntBetween(1, 1000);
-    List<UserInfo> userList = Lists.newLinkedList();
+    List<UserInfo> userList = new LinkedList<>();
     for (int i = 0; i < numUsers; ++i) {
       userList.add(new UserInfo());
     }
@@ -71,14 +70,11 @@ public class TestAbstractGPlusProvider extends RandomizedTest {
       @Override
       protected Runnable getDataCollector(BackOffStrategy strategy, BlockingQueue<StreamsDatum> queue, Plus plus, UserInfo userInfo) {
         final BlockingQueue<StreamsDatum> q = queue;
-        return new Runnable() {
-          @Override
-          public void run() {
-            try {
-              q.put(new StreamsDatum(null));
-            } catch (InterruptedException ie) {
-              fail("Test was interrupted");
-            }
+        return () -> {
+          try {
+            q.put(new StreamsDatum(null));
+          } catch (InterruptedException ie) {
+            fail("Test was interrupted");
           }
         };
       }

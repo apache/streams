@@ -22,7 +22,6 @@ package org.apache.streams.plugins.elasticsearch;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.schema.FieldType;
 import org.apache.streams.util.schema.FieldUtil;
-import org.apache.streams.util.schema.GenerationConfig;
 import org.apache.streams.util.schema.Schema;
 import org.apache.streams.util.schema.SchemaStore;
 import org.apache.streams.util.schema.SchemaStoreImpl;
@@ -32,8 +31,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.jsonschema2pojo.util.URLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.apache.streams.util.schema.FileUtil.dropExtension;
 import static org.apache.streams.util.schema.FileUtil.dropSourcePathPrefix;
@@ -124,7 +123,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
 
     LOGGER.info("Seeded with {} source paths:", sourceFiles.size());
 
-    resolveRecursive((GenerationConfig)config, sourceFiles);
+    resolveRecursive(config, sourceFiles);
 
     LOGGER.info("Resolved {} schema files:", sourceFiles.size());
 
@@ -133,8 +132,6 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
     }
 
     LOGGER.info("Identified {} objects:", schemaStore.getSize());
-
-    StringBuilder typesContent = new StringBuilder();
 
     for (Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator(); schemaIterator.hasNext(); ) {
       Schema schema = schemaIterator.next();
@@ -153,7 +150,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
 
         String resourceContent = generateResource(schema, resourceId);
 
-        if ( !Strings.isNullOrEmpty(resourceContent)) {
+        if (StringUtils.isNotBlank(resourceContent)) {
           writeFile(outputFile, resourceContent);
         }
 
@@ -283,7 +280,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
     // safe to append nothing
     Objects.requireNonNull(builder);
     String schemaSymbol = schemaSymbol(schema);
-    if ( !Strings.isNullOrEmpty(fieldId) && schemaSymbol != null ) {
+    if (StringUtils.isNotBlank(fieldId) && schemaSymbol != null ) {
       builder.append(cqlEscape(fieldId));
       builder.append(seperator);
       builder.append("list<").append(schemaSymbol).append(">");
@@ -297,7 +294,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
     // safe to append nothing
     Objects.requireNonNull(builder);
     String schemaSymbol = schemaSymbol(schema);
-    if ( !Strings.isNullOrEmpty(fieldId) && schemaSymbol != null ) {
+    if (StringUtils.isNotBlank(fieldId) && schemaSymbol != null ) {
       builder.append(cqlEscape(fieldId));
       builder.append(seperator);
       builder.append(schemaSymbol);
@@ -330,7 +327,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
               ObjectNode itemsNode = (ObjectNode) fieldNode.get("items");
               if ( currentDepth <= config.getMaxDepth()) {
                 StringBuilder arrayItemsBuilder = appendArrayItems(new StringBuilder(), schema, fieldId, itemsNode, seperator);
-                if ( !Strings.isNullOrEmpty(arrayItemsBuilder.toString())) {
+                if (StringUtils.isNotBlank(arrayItemsBuilder.toString())) {
                   fieldStrings.add(arrayItemsBuilder.toString());
                 }
               }
@@ -365,14 +362,14 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
               //ObjectNode childProperties = schemaStore.resolveProperties(schema, fieldNode, fieldId);
               if ( currentDepth < config.getMaxDepth()) {
                 StringBuilder structFieldBuilder = appendSchemaField(new StringBuilder(), objectSchema, fieldId, seperator);
-                if ( !Strings.isNullOrEmpty(structFieldBuilder.toString())) {
+                if (StringUtils.isNotBlank(structFieldBuilder.toString())) {
                   fieldStrings.add(structFieldBuilder.toString());
                 }
               }
               break;
             default:
               StringBuilder valueFieldBuilder = appendValueField(new StringBuilder(), schema, fieldId, fieldType, seperator);
-              if ( !Strings.isNullOrEmpty(valueFieldBuilder.toString())) {
+              if (StringUtils.isNotBlank(valueFieldBuilder.toString())) {
                 fieldStrings.add(valueFieldBuilder.toString());
               }
           }

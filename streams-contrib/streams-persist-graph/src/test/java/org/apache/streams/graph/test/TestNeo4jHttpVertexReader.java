@@ -26,7 +26,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,8 +37,7 @@ import java.io.InputStream;
 import java.util.List;
 
 /**
- * Unit test for
- * @see {@link org.apache.streams.graph.GraphVertexReader}
+ * Unit test for {@link org.apache.streams.graph.GraphVertexReader}
  *
  * Test that graph db responses can be converted to streams data.
  */

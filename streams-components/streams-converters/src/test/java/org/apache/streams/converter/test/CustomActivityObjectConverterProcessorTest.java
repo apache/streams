@@ -18,27 +18,26 @@
 
 package org.apache.streams.converter.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.streams.converter.ActivityConverterProcessor;
-import org.apache.streams.converter.ActivityConverterProcessorConfiguration;
 import org.apache.streams.converter.ActivityObjectConverterProcessor;
 import org.apache.streams.converter.ActivityObjectConverterProcessorConfiguration;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Test for
- * @see {@link ActivityConverterProcessor}
+ * Test for {@link ActivityObjectConverterProcessor}
  *
  * Test that arbitrary POJO conversion works, including when POJO represented as String & ObjectNode.
  */
@@ -46,15 +45,13 @@ public class CustomActivityObjectConverterProcessorTest {
 
     private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    ActivityObjectConverterProcessor processor;
+    private ActivityObjectConverterProcessor processor;
 
-    ActivityObjectConverterProcessorConfiguration configuration;
-
-    CustomType testDocument;
+    private CustomType testDocument;
 
     @Before
     public void setup() {
-        configuration = new ActivityObjectConverterProcessorConfiguration();
+        ActivityObjectConverterProcessorConfiguration configuration = new ActivityObjectConverterProcessorConfiguration();
         configuration.getClassifiers().add(new CustomDocumentClassifier());
         configuration.getConverters().add(new CustomActivityObjectConverter());
         processor = new ActivityObjectConverterProcessor(configuration);

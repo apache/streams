@@ -26,7 +26,6 @@ import org.apache.streams.pojo.json.ActivityObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
-
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SerializationUtils;

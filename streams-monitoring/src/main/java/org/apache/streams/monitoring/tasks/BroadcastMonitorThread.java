@@ -40,11 +40,11 @@ import org.apache.streams.pojo.json.ThroughputQueueBroadcast;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 
 import java.lang.management.ManagementFactory;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -128,7 +128,7 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
     LOGGER.info("BroadcastMonitorThread running");
     while (keepRunning) {
       try {
-        List<String> messages = Lists.newArrayList();
+        List<String> messages = new ArrayList<>();
         Set<ObjectName> beans = server.queryNames(null, null);
 
         for (ObjectName name : beans) {
@@ -185,13 +185,16 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
       }
 
       if (broadcastUri != null) {
-        if (broadcastUri.getScheme().equals("http")) {
-          messagePersister = new BroadcastMessagePersister(broadcastUri.toString());
-        } else if (broadcastUri.getScheme().equals("udp")) {
-          messagePersister = new LogstashUdpMessagePersister(broadcastUri.toString());
-        } else {
-          LOGGER.error("You need to specify a broadcast URI with either a HTTP or UDP protocol defined.");
-          throw new RuntimeException();
+        switch (broadcastUri.getScheme()) {
+          case "http":
+            messagePersister = new BroadcastMessagePersister(broadcastUri.toString());
+            break;
+          case "udp":
+            messagePersister = new LogstashUdpMessagePersister(broadcastUri.toString());
+            break;
+          default:
+            LOGGER.error("You need to specify a broadcast URI with either a HTTP or UDP protocol defined.");
+            throw new RuntimeException();
         }
       } else {
         messagePersister = new Slf4jMessagePersister();

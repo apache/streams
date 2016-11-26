@@ -27,7 +27,7 @@ import org.junit.Test;
  */
 public class VerbDefinitionTest {
 
-  ObjectMapper mapper = new ObjectMapper();
+  private ObjectMapper mapper = new ObjectMapper();
 
   /**
    * Test read verb definition from json.
@@ -59,7 +59,7 @@ public class VerbDefinitionTest {
     assert combination.getObject().equals("*");
     assert combination.getTarget().equals("*");
     assert combination.getProvider().equals("*");
-    assert combination.getTargetRequired() == false;
+    assert !combination.getTargetRequired();
 
   }
 

@@ -22,7 +22,6 @@ import org.apache.streams.util.api.requests.backoff.BackOffException;
 import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

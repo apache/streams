@@ -34,8 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Iterator;
-import javax.annotation.Nullable;
 
 import static org.apache.streams.util.schema.FileUtil.dropSourcePathPrefix;
 
@@ -46,16 +44,7 @@ public class StreamsHbaseResourceGeneratorTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsHbaseResourceGeneratorTest.class);
 
-  public static final Predicate<File> txtFilter = new Predicate<File>() {
-    @Override
-    public boolean apply(@Nullable File file) {
-      if ( file.getName().endsWith(".txt") ) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  };
+  public static final Predicate<File> txtFilter = file -> file.getName().endsWith(".txt");
 
   /**
    * Tests that all example activities can be loaded into Activity beans.
@@ -83,9 +72,9 @@ public class StreamsHbaseResourceGeneratorTest {
 
     File testOutput = config.getTargetDirectory();
 
-    assert ( testOutput != null );
-    assert ( testOutput.exists() == true );
-    assert ( testOutput.isDirectory() == true );
+    Assert.assertNotNull(testOutput);
+    Assert.assertTrue(testOutput.exists());
+    Assert.assertTrue(testOutput.isDirectory());
 
     Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
         .filter(txtFilter);
@@ -101,14 +90,12 @@ public class StreamsHbaseResourceGeneratorTest {
 
     int fails = 0;
 
-    Iterator<File> iterator = expectedCollection.iterator();
-    while ( iterator.hasNext() ) {
-      File objectExpected = iterator.next();
-      String expectedEnd = dropSourcePathPrefix(objectExpected.getAbsolutePath(),  expectedDirectory);
+    for (File objectExpected : expectedCollection) {
+      String expectedEnd = dropSourcePathPrefix(objectExpected.getAbsolutePath(), expectedDirectory);
       File objectActual = new File(config.getTargetDirectory() + "/" + expectedEnd);
       LOGGER.info("Comparing: {} and {}", objectExpected.getAbsolutePath(), objectActual.getAbsolutePath());
-      assert ( objectActual.exists());
-      if ( FileUtils.contentEquals(objectActual, objectExpected) == true ) {
+      assert (objectActual.exists());
+      if (FileUtils.contentEquals(objectActual, objectExpected)) {
         LOGGER.info("Exact Match!");
       } else {
         LOGGER.info("No Match!");

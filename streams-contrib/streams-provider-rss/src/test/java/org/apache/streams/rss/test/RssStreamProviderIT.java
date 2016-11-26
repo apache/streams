@@ -26,7 +26,6 @@ import org.apache.streams.rss.provider.RssStreamProvider;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,13 +42,11 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.number.OrderingComparison.greaterThan;
 
-/**
- * Created by sblackmon on 2/5/14.
- */
 public class RssStreamProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RssStreamProviderIT.class);
@@ -67,7 +64,7 @@ public class RssStreamProviderIT {
     BufferedReader br = new BufferedReader(isr);
 
     RssStreamConfiguration configuration = new RssStreamConfiguration();
-    List<FeedDetails> feedArray = Lists.newArrayList();
+    List<FeedDetails> feedArray = new ArrayList<>();
     try {
       while (br.ready()) {
         String line = br.readLine();
@@ -77,7 +74,6 @@ public class RssStreamProviderIT {
       }
       configuration.setFeeds(feedArray);
     } catch ( Exception ex ) {
-      System.out.println(ex);
       ex.printStackTrace();
       Assert.fail();
     }
@@ -101,7 +97,7 @@ public class RssStreamProviderIT {
     assert (config.canRead());
     assert (config.isFile());
 
-    RssStreamProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
+    RssStreamProvider.main(new String[]{configfile, outfile});
 
     File out = new File(outfile);
     assert (out.exists());

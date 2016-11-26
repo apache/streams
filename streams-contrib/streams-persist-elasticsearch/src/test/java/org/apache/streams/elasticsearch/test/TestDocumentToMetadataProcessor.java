@@ -18,24 +18,17 @@
 
 package org.apache.streams.elasticsearch.test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.SerializationUtils;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration;
 import org.apache.streams.elasticsearch.processor.DocumentToMetadataProcessor;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang.SerializationUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.concurrent.TimeUnit;
-
-/**
- * Created by sblackmon on 10/20/14.
- */
 public class TestDocumentToMetadataProcessor {
 
     private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();

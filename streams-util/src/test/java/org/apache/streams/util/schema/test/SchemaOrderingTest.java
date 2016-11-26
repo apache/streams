@@ -25,16 +25,14 @@ import org.apache.streams.util.schema.SchemaStoreImpl;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by sblackmon on 5/3/16.
- */
 public class SchemaOrderingTest {
 
   @Test
@@ -44,11 +42,11 @@ public class SchemaOrderingTest {
     schemaStore.create(update.toURI());
     File activity = new File("target/test-classes/activitystreams-schemas/activity.json");
     schemaStore.create(activity.toURI());
-    assert ( schemaStore.compare( schemaStore.getByUri(update.toURI()).get(), schemaStore.getByUri(activity.toURI()).get()) == 1);
+    assert (schemaStore.compare( schemaStore.getByUri(update.toURI()).get(), schemaStore.getByUri(activity.toURI()).get()) == 1);
     Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
     assertContainsItemsEndingWithInOrder(
         schemaIterator,
-        Lists.newArrayList(
+        Arrays.asList(
             "activity.json",
             "update.json"
         )
@@ -62,11 +60,11 @@ public class SchemaOrderingTest {
     schemaStore.create(alert.toURI());
     File object = new File("target/test-classes/activitystreams-schemas/object.json");
     schemaStore.create(object.toURI());
-    assert ( schemaStore.compare( schemaStore.getByUri(object.toURI()).get(), schemaStore.getByUri(alert.toURI()).get()) == -1);
+    assert (schemaStore.compare( schemaStore.getByUri(object.toURI()).get(), schemaStore.getByUri(alert.toURI()).get()) == -1);
     Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
     assertContainsItemsEndingWithInOrder(
         schemaIterator,
-        Lists.newArrayList(
+        Arrays.asList(
             "object.json",
             "alert.json"
         )
@@ -80,7 +78,7 @@ public class SchemaOrderingTest {
     schemaStore.create(alert.toURI());
     File update = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
     schemaStore.create(update.toURI());
-    assert ( schemaStore.compare( schemaStore.getByUri(alert.toURI()).get(), schemaStore.getByUri(update.toURI()).get()) == 0);
+    assert (schemaStore.compare( schemaStore.getByUri(alert.toURI()).get(), schemaStore.getByUri(update.toURI()).get()) == 0);
   }
 
   @Test
@@ -94,7 +92,7 @@ public class SchemaOrderingTest {
     Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
     assertContainsItemsEndingWithInOrder(
         schemaIterator,
-        Lists.newArrayList(
+        Arrays.asList(
             "object.json",
             "update.json"
         )
@@ -112,7 +110,7 @@ public class SchemaOrderingTest {
     Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
     assertContainsItemsEndingWithInOrder(
         schemaIterator,
-        Lists.newArrayList(
+        Arrays.asList(
             "media_link.json",
             "object.json",
             "alert.json"
@@ -127,13 +125,14 @@ public class SchemaOrderingTest {
     schemaStore.create(update.toURI());
     File mediaLink = new File("target/test-classes/activitystreams-schemas/media_link.json");
     schemaStore.create(mediaLink.toURI());
-    assert ( schemaStore.getByUri(mediaLink.toURI()).isPresent());
-    assert ( schemaStore.getByUri(update.toURI()).isPresent());
-    assert ( schemaStore.compare( schemaStore.getByUri(mediaLink.toURI()).get(), schemaStore.getByUri(update.toURI()).get()) == -1);
+    Assert.assertTrue(schemaStore.getByUri(mediaLink.toURI()).isPresent());
+    Assert.assertTrue(schemaStore.getByUri(update.toURI()).isPresent());
+    Assert.assertTrue(schemaStore.compare( schemaStore.getByUri(mediaLink.toURI()).get(),
+        schemaStore.getByUri(update.toURI()).get()) == -1);
     Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
     assertContainsItemsEndingWithInOrder(
         schemaIterator,
-        Lists.newArrayList(
+        Arrays.asList(
             "media_link.json",
             "update.json"
         )
@@ -148,7 +147,7 @@ public class SchemaOrderingTest {
   public void assertContainsItemsEndingWithInOrder(Iterator<Schema> iterator, List<String> items) {
     for ( String item : items ) {
       Optional<Schema> tryFind = Iterators.tryFind( iterator, new SchemaUriEndsWithPredicate(item) );
-      assert ( tryFind.isPresent() );
+      Assert.assertTrue(tryFind.isPresent());
     }
   }
 

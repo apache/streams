@@ -23,13 +23,12 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
-
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Supporting class for interacting with neo4j via rest API.
@@ -40,9 +39,9 @@ public class Neo4jHttpGraphHelper implements HttpGraphHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Neo4jHttpGraphHelper.class);
 
-  public static final String statementKey = "statement";
-  public static final String paramsKey = "parameters";
-  public static final String propsKey = "props";
+  private static final String statementKey = "statement";
+  private static final String paramsKey = "parameters";
+  private static final String propsKey = "props";
 
   /**
    * createHttpRequest neo4j rest json payload.
@@ -54,9 +53,9 @@ public class Neo4jHttpGraphHelper implements HttpGraphHelper {
 
     LOGGER.debug("createHttpRequest: ", queryPlusParameters);
 
-    Preconditions.checkNotNull(queryPlusParameters);
-    Preconditions.checkNotNull(queryPlusParameters.getValue0());
-    Preconditions.checkNotNull(queryPlusParameters.getValue1());
+    Objects.requireNonNull(queryPlusParameters);
+    Objects.requireNonNull(queryPlusParameters.getValue0());
+    Objects.requireNonNull(queryPlusParameters.getValue1());
 
     ObjectNode request = MAPPER.createObjectNode();
 

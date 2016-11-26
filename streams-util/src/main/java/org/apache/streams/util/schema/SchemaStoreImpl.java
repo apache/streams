@@ -21,7 +21,6 @@ package org.apache.streams.util.schema;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import org.apache.commons.lang3.StringUtils;
@@ -31,11 +30,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.apache.streams.util.schema.UriUtil.safeResolve;
 
@@ -47,7 +46,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
   private static final Logger LOGGER = LoggerFactory.getLogger(SchemaStore.class);
   private static final JsonNodeFactory NODE_FACTORY = JsonNodeFactory.instance;
 
-  protected Map<URI, Schema> schemas = new HashMap();
+  protected Map<URI, Schema> schemas = new HashMap<>();
   protected FragmentResolver fragmentResolver = new FragmentResolver();
   protected ContentResolver contentResolver = new ContentResolver();
 
@@ -66,7 +65,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
         this.schemas.put(uri, new Schema(uri, childContent, newSchema, false));
       } else {
         if ( baseNode.has("extends") && baseNode.get("extends").isObject()) {
-          URI ref = URI.create(((ObjectNode)baseNode.get("extends")).get("$ref").asText());
+          URI ref = URI.create((baseNode.get("extends")).get("$ref").asText());
           URI absoluteUri;
           if ( ref.isAbsolute()) {
             absoluteUri = ref;
@@ -74,7 +73,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
             absoluteUri = baseUri.resolve(ref);
           }
           JsonNode parentNode = this.contentResolver.resolve(absoluteUri);
-          Schema parentSchema = null;
+          Schema parentSchema;
           if ( this.schemas.get(absoluteUri) != null ) {
             parentSchema = this.schemas.get(absoluteUri);
           } else {
@@ -148,7 +147,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
         return Optional.of(schema);
       }
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
   @Override
@@ -158,7 +157,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
         return Optional.of(schema);
       }
     }
-    return Optional.absent();
+    return Optional.empty();
   }
 
   @Override
@@ -186,7 +185,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
   @Override
   public Iterator<Schema> getSchemaIterator() {
     List<Schema> schemaList = Lists.newArrayList(schemas.values());
-    Collections.sort(schemaList, this);
+    schemaList.sort(this);
     return schemaList.iterator();
   }
 

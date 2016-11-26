@@ -28,7 +28,6 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigRenderOptions;
 import com.typesafe.config.ConfigValue;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +78,7 @@ public class HoconConverterUtil {
    * @return result
    */
   public Object convert(Object object, Class outClass, Config hocon, String inPath, String outPath) {
-    String json = null;
+    String json;
     Object outDoc = null;
     if ( object instanceof String ) {
       json = (String) object;

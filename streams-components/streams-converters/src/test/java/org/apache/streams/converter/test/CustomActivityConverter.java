@@ -18,20 +18,17 @@
 
 package org.apache.streams.converter.test;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import org.apache.streams.converter.ActivityConverterProcessor;
-import org.apache.streams.converter.ActivityConverterProcessorConfiguration;
 import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.Provider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Support class for
- * @see {@link org.apache.streams.converter.test.CustomActivityConverterProcessorTest}
+ * {@link org.apache.streams.converter.test.CustomActivityConverterProcessorTest}
  */
 public class CustomActivityConverter implements ActivityConverter<CustomType> {
 
@@ -57,7 +54,9 @@ public class CustomActivityConverter implements ActivityConverter<CustomType> {
         customActivity.setId(document.getTest());
         customActivity.setVerb(document.getTest());
         customActivity.setProvider((Provider)new Provider().withId(document.getTest()));
-        return Lists.newArrayList(customActivity);
+        List<Activity> activityList = new ArrayList<>();
+        activityList.add(customActivity);
+        return activityList;
     }
 
     @Override

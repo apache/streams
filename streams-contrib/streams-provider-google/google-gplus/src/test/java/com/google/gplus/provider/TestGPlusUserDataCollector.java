@@ -27,7 +27,6 @@ import org.apache.streams.util.api.requests.backoff.impl.ConstantTimeBackOffStra
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Person;
-
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -95,24 +94,14 @@ public class TestGPlusUserDataCollector {
 
   private Plus createMockPlus(final int succedOnTry, final Throwable throwable) {
     Plus plus = mock(Plus.class);
-    doAnswer(new Answer() {
-      @Override
-      public Plus.People answer(InvocationOnMock invocationOnMock) throws Throwable {
-        return createMockPeople(succedOnTry, throwable);
-      }
-    }).when(plus).people();
+    doAnswer(invocationOnMock -> createMockPeople(succedOnTry, throwable)).when(plus).people();
     return plus;
   }
 
   private Plus.People createMockPeople(final int succedOnTry, final Throwable throwable) {
     Plus.People people = mock(Plus.People.class);
     try {
-      when(people.get(anyString())).thenAnswer(new Answer<Plus.People.Get>() {
-        @Override
-        public Plus.People.Get answer(InvocationOnMock invocationOnMock) throws Throwable {
-          return createMockGetNoError(succedOnTry, throwable);
-        }
-      });
+      when(people.get(anyString())).thenAnswer(invocationOnMock -> createMockGetNoError(succedOnTry, throwable));
     } catch (IOException ioe) {
       fail("No Excpetion should have been thrown while creating mocks");
     }

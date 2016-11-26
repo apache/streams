@@ -30,15 +30,15 @@ import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -49,6 +49,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.PrivilegedExceptionAction;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
@@ -62,7 +63,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCountable {
 
-  public static final String STREAMS_ID = "WebHdfsPersistReader";
+  private static final String STREAMS_ID = "WebHdfsPersistReader";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WebHdfsPersistReader.class);
 
@@ -110,7 +111,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
     StringBuilder uriBuilder = new StringBuilder();
     uriBuilder.append(hdfsConfiguration.getScheme());
     uriBuilder.append("://");
-    if ( !Strings.isNullOrEmpty(hdfsConfiguration.getHost())) {
+    if (StringUtils.isNotBlank(hdfsConfiguration.getHost())) {
       uriBuilder.append(hdfsConfiguration.getHost());
       if (hdfsConfiguration.getPort() != null) {
         uriBuilder.append(":" + hdfsConfiguration.getPort());
@@ -148,36 +149,34 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
       UserGroupInformation ugi = UserGroupInformation.createRemoteUser(this.hdfsConfiguration.getUser());
       ugi.setAuthenticationMethod(UserGroupInformation.AuthenticationMethod.SIMPLE);
 
-      ugi.doAs(new PrivilegedExceptionAction<Void>() {
-        public Void run() throws Exception {
-          Configuration conf = new Configuration();
-          conf.set(CommonConfigurationKeysPublic.HADOOP_SECURITY_AUTHENTICATION, "kerberos");
-          conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-          conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-          LOGGER.info("WebURI : {}", getURI().toString());
-          client = FileSystem.get(getURI(), conf);
-          LOGGER.info("Connected to WebHDFS");
+      ugi.doAs((PrivilegedExceptionAction<Void>) () -> {
+        Configuration conf = new Configuration();
+        conf.set(CommonConfigurationKeysPublic.HADOOP_SECURITY_AUTHENTICATION, "kerberos");
+        conf.set("fs.hdfs.impl", DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", LocalFileSystem.class.getName());
+        LOGGER.info("WebURI : {}", getURI().toString());
+        client = FileSystem.get(getURI(), conf);
+        LOGGER.info("Connected to WebHDFS");
 
-          /*
-          * ************************************************************************************************
-          * This code is an example of how you would work with HDFS and you weren't going over
-          * the webHDFS protocol.
-          *
-          * Smashew: 2013-10-01
-          * ************************************************************************************************
-          conf.set("fs.defaultFS", "hdfs://hadoop.mdigitallife.com:8020/user/" + userName);
-          conf.set("namenode.host","0.0.0.0");
-          conf.set("hadoop.job.ugi", userName);
-          conf.set(DFSConfigKeys.DFS_NAMENODE_USER_NAME_KEY, "runner");
-          fileSystem.createNewFile(new Path("/user/"+ userName + "/test"));
-          FileStatus[] status = fs.listStatus(new Path("/user/" + userName));
-          for(int i=0;i<status.length;i++)
-          {
-              LOGGER.info("Directory: {}", status[i].getPath());
-          }
-          */
-          return null;
+        /*
+        * ************************************************************************************************
+        * This code is an example of how you would work with HDFS and you weren't going over
+        * the webHDFS protocol.
+        *
+        * Smashew: 2013-10-01
+        * ************************************************************************************************
+        conf.set("fs.defaultFS", "hdfs://hadoop.mdigitallife.com:8020/user/" + userName);
+        conf.set("namenode.host","0.0.0.0");
+        conf.set("hadoop.job.ugi", userName);
+        conf.set(DFSConfigKeys.DFS_NAMENODE_USER_NAME_KEY, "runner");
+        fileSystem.createNewFile(new Path("/user/"+ userName + "/test"));
+        FileStatus[] status = fs.listStatus(new Path("/user/" + userName));
+        for(int i=0;i<status.length;i++)
+        {
+            LOGGER.info("Directory: {}", status[i].getPath());
         }
+        */
+        return null;
       });
     } catch (Exception ex) {
       LOGGER.error("There was an error connecting to WebHDFS, please check your settings and try again");
@@ -206,7 +205,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
         status[0] = fileStatus;
       } else if ( client.isDirectory(path)) {
         status = client.listStatus(path);
-        List<FileStatus> statusList = Lists.newArrayList(status);
+        List<FileStatus> statusList = Arrays.asList(status);
         Collections.sort(statusList);
         status = statusList.toArray(new FileStatus[0]);
         LOGGER.info("Found Directory : {} files", status.length);
@@ -287,11 +286,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
 
   @Override
   public boolean isRunning() {
-    if ( task != null) {
-      return !task.isDone() && !task.isCancelled();
-    } else {
-      return true;
-    }
+    return task == null || !task.isDone() && !task.isCancelled();
   }
 
   @Override

@@ -29,14 +29,19 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.ComponentUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
-
+import facebook4j.Facebook;
+import facebook4j.FacebookException;
+import facebook4j.FacebookFactory;
+import facebook4j.Post;
+import facebook4j.ResponseList;
+import facebook4j.conf.ConfigurationBuilder;
+import facebook4j.json.DataObjectFactory;
 import org.apache.commons.lang.NotImplementedException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -47,6 +52,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -58,17 +64,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import facebook4j.Facebook;
-import facebook4j.FacebookException;
-import facebook4j.FacebookFactory;
-import facebook4j.Post;
-import facebook4j.ResponseList;
-import facebook4j.conf.ConfigurationBuilder;
-import facebook4j.json.DataObjectFactory;
-
 public class FacebookUserstreamProvider implements StreamsProvider, Serializable {
 
-  public static final String STREAMS_ID = "FacebookUserstreamProvider";
+  private static final String STREAMS_ID = "FacebookUserstreamProvider";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FacebookUserstreamProvider.class);
 
@@ -80,7 +78,7 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
   private Class klass;
   protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-  protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<StreamsDatum>();
+  protected volatile Queue<StreamsDatum> providerQueue = new LinkedBlockingQueue<>();
 
   public FacebookUserstreamConfiguration getConfig() {
     return configuration;
@@ -105,7 +103,7 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
   private static ExecutorService newFixedThreadPoolWithQueueSize(int numThreads, int queueSize) {
     return new ThreadPoolExecutor(numThreads, numThreads,
         5000L, TimeUnit.MILLISECONDS,
-        new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
+        new ArrayBlockingQueue<>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
   }
 
   /**
@@ -118,7 +116,6 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
       facebookUserInformationConfiguration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
     } catch (IOException ex) {
       ex.printStackTrace();
-      return;
     }
   }
 
@@ -214,8 +211,7 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
     this.start = start;
     this.end = end;
     readCurrent();
-    StreamsResultSet result = (StreamsResultSet) providerQueue.iterator();
-    return result;
+    return (StreamsResultSet) providerQueue.iterator();
   }
 
   @Override
@@ -247,11 +243,11 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
 
     executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
-    Preconditions.checkNotNull(providerQueue);
-    Preconditions.checkNotNull(this.klass);
-    Preconditions.checkNotNull(configuration.getOauth().getAppId());
-    Preconditions.checkNotNull(configuration.getOauth().getAppSecret());
-    Preconditions.checkNotNull(configuration.getOauth().getUserAccessToken());
+    Objects.requireNonNull(providerQueue);
+    Objects.requireNonNull(this.klass);
+    Objects.requireNonNull(configuration.getOauth().getAppId());
+    Objects.requireNonNull(configuration.getOauth().getAppSecret());
+    Objects.requireNonNull(configuration.getOauth().getUserAccessToken());
 
     client = getFacebookClient();
 
@@ -259,8 +255,8 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
          &&
          configuration.getInfo().size() > 0 ) {
 
-      List<String> ids = new ArrayList<String>();
-      List<String[]> idsBatches = new ArrayList<String[]>();
+      List<String> ids = new ArrayList<>();
+      List<String[]> idsBatches = new ArrayList<>();
 
       for (String s : configuration.getInfo()) {
         if (s != null) {
@@ -270,7 +266,7 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
             // add the batch
             idsBatches.add(ids.toArray(new String[ids.size()]));
             // reset the Ids
-            ids = new ArrayList<String>();
+            ids = new ArrayList<>();
           }
 
         }
@@ -288,9 +284,8 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
         .setJSONStoreEnabled(true);
 
     FacebookFactory ff = new FacebookFactory(cb.build());
-    Facebook facebook = ff.getInstance();
 
-    return facebook;
+    return ff.getInstance();
   }
 
   @Override

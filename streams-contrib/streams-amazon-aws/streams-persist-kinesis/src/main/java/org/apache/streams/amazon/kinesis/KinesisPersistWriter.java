@@ -37,7 +37,6 @@ import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.typesafe.config.Config;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +76,7 @@ public class KinesisPersistWriter implements StreamsPersistWriter {
   public KinesisPersistWriter() {
     Config config = StreamsConfigurator.config.getConfig("kinesis");
     this.config = new ComponentConfigurator<>(KinesisWriterConfiguration.class).detectConfiguration(config);
-    this.persistQueue  = new ConcurrentLinkedQueue<StreamsDatum>();
+    this.persistQueue  = new ConcurrentLinkedQueue<>();
   }
 
   /**
@@ -85,7 +84,7 @@ public class KinesisPersistWriter implements StreamsPersistWriter {
    */
   public KinesisPersistWriter(KinesisWriterConfiguration config) {
     this.config = config;
-    this.persistQueue  = new ConcurrentLinkedQueue<StreamsDatum>();
+    this.persistQueue  = new ConcurrentLinkedQueue<>();
   }
 
   public void setConfig(KinesisWriterConfiguration config) {

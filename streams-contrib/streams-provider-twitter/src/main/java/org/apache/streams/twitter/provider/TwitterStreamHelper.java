@@ -24,7 +24,6 @@ import org.apache.streams.twitter.converter.TwitterDocumentClassifier;
 import org.apache.streams.util.ComponentUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +99,9 @@ public class TwitterStreamHelper extends StringDelimitedProcessor {
         Class itemClass = TWITTER_DOCUMENT_CLASSIFIER.detectClasses(item).get(0);
         Object document = mapper.readValue(item, itemClass);
         StreamsDatum rawDatum = new StreamsDatum(document);
-        return Lists.newArrayList(rawDatum);
+        List<StreamsDatum> streamsDatumList = new ArrayList<>();
+        streamsDatumList.add(rawDatum);
+        return streamsDatumList;
       }
       return new ArrayList<>();
     }
