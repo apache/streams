@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * <p/>
  * BaseObjectNodeActivityConverter is included by default in all
- * @see {@link ActivityConverterProcessor}
+ * {@link ActivityConverterProcessor}
  *
  */
 public class BaseStringActivityObjectConverter implements ActivityObjectConverter<String> {

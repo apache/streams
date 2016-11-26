@@ -23,7 +23,7 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -124,7 +124,7 @@ public class ExtensionUtil {
     if (additionalProperties == null) {
       additionalProperties = new HashMap<>();
     }
-    if ( !Strings.isNullOrEmpty(extensionProperty) ) {
+    if (StringUtils.isNotBlank(extensionProperty) ) {
       extensions = (Map<String, Object>) additionalProperties.get(extensionProperty);
       if (extensions == null) {
         extensions = new HashMap<>();
@@ -148,7 +148,7 @@ public class ExtensionUtil {
     if (additionalProperties == null) {
       additionalProperties = new HashMap<>();
     }
-    if ( !Strings.isNullOrEmpty(extensionProperty) ) {
+    if (StringUtils.isNotBlank(extensionProperty) ) {
       extensions = (Map<String, Object>) additionalProperties.get(extensionProperty);
       if (extensions == null) {
         extensions = new HashMap<>();

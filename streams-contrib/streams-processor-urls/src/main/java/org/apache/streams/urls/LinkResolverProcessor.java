@@ -18,16 +18,19 @@
 
 package org.apache.streams.urls;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class LinkResolverProcessor implements StreamsProcessor {
 
@@ -102,7 +105,7 @@ public class LinkResolverProcessor implements StreamsProcessor {
 
 
     protected Set<String> unwind(List<String> inputLinks) {
-        Set<String> outputLinks = new HashSet<String>();
+        Set<String> outputLinks = new HashSet<>();
         for (String link : inputLinks) {
             try {
                 LinkResolver unwinder = new LinkResolver(link);

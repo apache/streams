@@ -23,7 +23,6 @@ import org.apache.streams.moreover.MoreoverTestUtil;
 import org.apache.streams.moreover.MoreoverXmlActivitySerializer;
 import org.apache.streams.pojo.json.Activity;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,7 +49,7 @@ public class MoreoverXmlActivitySerializerIT {
 
   @Test
   public void loadData() throws Exception {
-    List<Activity> activities = serializer.deserializeAll(Lists.newArrayList(xml));
+    List<Activity> activities = serializer.deserializeAll(Collections.singletonList(xml));
     for (Activity activity : activities) {
       MoreoverTestUtil.validate(activity);
     }

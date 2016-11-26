@@ -23,7 +23,6 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.util.ComponentUtils;
 
 import com.google.common.base.Strings;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +54,7 @@ public class S3PersistReaderTask implements Runnable {
       BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
       LOGGER.info("Reading: {} ", file);
 
-      String line = "";
+      String line;
       try {
         while ((line = bufferedReader.readLine()) != null) {
           if ( !Strings.isNullOrEmpty(line) ) {

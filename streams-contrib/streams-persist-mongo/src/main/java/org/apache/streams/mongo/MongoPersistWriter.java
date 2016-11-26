@@ -35,7 +35,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.util.JSON;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

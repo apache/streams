@@ -19,22 +19,19 @@ under the License.
 
 package org.apache.streams.converter.test;
 
+import org.apache.streams.data.DocumentClassifier;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import org.apache.streams.converter.ActivityConverterProcessorConfiguration;
-import org.apache.streams.data.DocumentClassifier;
-import org.apache.streams.data.util.ActivityUtil;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.json.Activity;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Support class for
- * @see {@link org.apache.streams.converter.test.CustomActivityConverterProcessorTest}
+ * {@link org.apache.streams.converter.test.CustomActivityConverterProcessorTest}
  */
 public class CustomDocumentClassifier implements DocumentClassifier {
 
@@ -43,10 +40,10 @@ public class CustomDocumentClassifier implements DocumentClassifier {
     @Override
     public List<Class> detectClasses(Object document) {
 
-        CustomType possibleMatchDocument = null;
+        CustomType possibleMatchDocument;
         ObjectNode node = null;
 
-        List<Class> classes = Lists.newArrayList();
+        List<Class> classes = new ArrayList<>();
 
         if( document instanceof String ) {
             classes.add(String.class);
@@ -58,11 +55,11 @@ public class CustomDocumentClassifier implements DocumentClassifier {
                 try {
                     node = this.mapper.readValue((String)document, ObjectNode.class);
                     classes.add(ObjectNode.class);
-                } catch (IOException e2) { }
+                } catch (IOException ignored) { }
             }
         } else if( document instanceof ObjectNode ){
             classes.add(ObjectNode.class);
-            possibleMatchDocument = this.mapper.convertValue((ObjectNode)document, CustomType.class);
+            possibleMatchDocument = this.mapper.convertValue(document, CustomType.class);
             if(possibleMatchDocument != null && possibleMatchDocument.getTest() != null) {
                 classes.add(CustomType.class);
             }

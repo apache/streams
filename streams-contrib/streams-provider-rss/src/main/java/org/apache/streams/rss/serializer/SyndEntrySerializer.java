@@ -21,7 +21,6 @@ package org.apache.streams.rss.serializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import com.sun.syndication.feed.module.Module;
 import com.sun.syndication.feed.rss.Category;
 import com.sun.syndication.feed.rss.Content;
@@ -37,7 +36,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -250,9 +248,7 @@ public class SyndEntrySerializer {
   }
 
   private void serializeLinks(ObjectNode root, JsonNodeFactory factory, List links) {
-    if (links == null || links.size() == 0) {
-      return;
-    } else if (links.get(0) instanceof String) {
+    if (links.get(0) instanceof String) {
       serializeListOfStrings(links, "links", root, factory);
     } else if (links.get(0) instanceof SyndLinkImpl) {
       ArrayNode linksArray = factory.arrayNode();

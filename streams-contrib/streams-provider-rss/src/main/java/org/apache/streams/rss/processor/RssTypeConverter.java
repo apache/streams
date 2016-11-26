@@ -24,13 +24,13 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.rss.serializer.SyndEntryActivitySerializer;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -53,7 +53,7 @@ public class RssTypeConverter implements StreamsProcessor {
 
   @Override
   public List<StreamsDatum> process(StreamsDatum datum) {
-    List<StreamsDatum> datums = Lists.newLinkedList();
+    List<StreamsDatum> datums = new LinkedList<>();
     if (datum.getDocument() instanceof ObjectNode) {
       Activity activity = this.serializer.deserialize((ObjectNode) datum.getDocument());
       datums.add(new StreamsDatum(activity, activity.getId(), DateTime.now().withZone(DateTimeZone.UTC)));

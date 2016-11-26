@@ -23,16 +23,17 @@ import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.User;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.updateActivity;
 
 public class TwitterJsonUserActivityConverter implements ActivityConverter<User> {
 
-  public static Class requiredClass = User.class;
+  private static Class requiredClass = User.class;
 
   @Override
   public Class requiredClass() {
@@ -67,12 +68,12 @@ public class TwitterJsonUserActivityConverter implements ActivityConverter<User>
     Activity activity = new Activity();
     updateActivity(user, activity);
 
-    return Lists.newArrayList(activity);
+    return Collections.singletonList(activity);
   }
 
   @Override
   public List<Activity> toActivityList(List<User> serializedList) {
-    List<Activity> result = Lists.newArrayList();
+    List<Activity> result = new ArrayList<>();
     for ( User item : serializedList ) {
       try {
         List<Activity> activities = toActivityList(item);

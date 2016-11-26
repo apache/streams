@@ -18,26 +18,17 @@
 
 package org.apache.streams.converter.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import org.apache.streams.converter.HoconConverterUtil;
-import org.apache.streams.converter.TypeConverterProcessor;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.data.util.ActivityUtil;
-import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.List;
-
-import static junit.framework.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for
- * @see {@link HoconConverterUtil}
+ * Tests for {@link HoconConverterUtil}
  */
 public class HoconConverterTest {
 
@@ -48,9 +39,7 @@ public class HoconConverterTest {
     public void testHoconConverter1() {
 
         final String TEST_JSON_1 = "{\"race\":\"klingon\",\"gender\":\"male\"}";
-
         String result1 = (String) HoconConverterUtil.getInstance().convert(TEST_JSON_1, String.class, "test1.conf");
-
         assertNotNull(result1);
         assertTrue(result1.contains("race"));
         assertTrue(result1.contains("18"));
@@ -64,9 +53,7 @@ public class HoconConverterTest {
     public void testHoconConverter2() {
 
         final String TEST_JSON_2 = "{\"race\":\"klingon\",\"gender\":\"male\",\"age\":18}";
-
         ObjectNode result2 = (ObjectNode) HoconConverterUtil.getInstance().convert(TEST_JSON_2, ObjectNode.class, "test2.conf", "demographics");
-
         assertNotNull(result2);
         assertTrue(result2.get("race") != null);
         assertTrue(result2.get("age").asDouble() == 18);
@@ -80,9 +67,7 @@ public class HoconConverterTest {
     public void testHoconConverter3() {
 
         final String TEST_JSON_3 = "{\"id\":\"123\",\"text\":\"buncha stuff\",\"user\":{\"name\":\"guy\"}}";
-
         Activity result3 = (Activity) HoconConverterUtil.getInstance().convert(TEST_JSON_3, Activity.class, "test3a.conf", null, "activity");
-
         assertNotNull(result3);
         assertTrue(result3.getProvider() != null);
         assertTrue(result3.getId().equals("id:123"));
@@ -98,9 +83,7 @@ public class HoconConverterTest {
     public void testHoconConverter4() {
 
         final String TEST_JSON_4 = "{\"id\":\"123\",\"name\":\"nahme\",\"screenName\":\"screeny\",\"summary\":\"sumar\"}";
-
         String result4 = (String) HoconConverterUtil.getInstance().convert(TEST_JSON_4, String.class, "test4.conf", "actor", "profile");
-
         assertNotNull(result4);
         assertTrue(result4.contains("123"));
         assertTrue(result4.contains("\"nahme\""));

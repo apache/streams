@@ -27,13 +27,13 @@ import org.apache.streams.util.api.requests.backoff.impl.LinearTimeBackOffStrate
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
 import org.apache.youtube.pojo.YoutubeConfiguration;
 import org.junit.Test;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -51,7 +51,7 @@ public class YoutubeChannelDataCollectorTest {
   @Test
   public void testDataCollector() throws Exception {
     YouTube youTube = createMockYoutube();
-    BlockingQueue<StreamsDatum> queue = Queues.newLinkedBlockingQueue();
+    BlockingQueue<StreamsDatum> queue = new LinkedBlockingQueue<>();
     BackOffStrategy strategy = new LinearTimeBackOffStrategy(1);
     UserInfo userInfo = new UserInfo();
     userInfo.setUserId(ID);
@@ -91,7 +91,7 @@ public class YoutubeChannelDataCollectorTest {
 
   private ChannelListResponse createMockResponse() {
     ChannelListResponse response = new ChannelListResponse();
-    List<Channel> channelList = Lists.newLinkedList();
+    List<Channel> channelList = new LinkedList<>();
     response.setItems(channelList);
     Channel channel = new Channel();
     channel.setId(ID);

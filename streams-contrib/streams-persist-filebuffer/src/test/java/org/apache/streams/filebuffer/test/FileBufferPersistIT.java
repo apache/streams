@@ -18,9 +18,6 @@
 
 package org.apache.streams.filebuffer.test;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Queues;
 import org.apache.streams.console.ConsolePersistReader;
 import org.apache.streams.console.ConsolePersistWriter;
 import org.apache.streams.core.StreamBuilder;
@@ -30,19 +27,18 @@ import org.apache.streams.filebuffer.FileBufferConfiguration;
 import org.apache.streams.filebuffer.FileBufferPersistReader;
 import org.apache.streams.filebuffer.FileBufferPersistWriter;
 import org.apache.streams.local.builders.LocalStreamBuilder;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 
-import static org.mockito.Mockito.mock;
-
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
-
-import static org.mockito.Mockito.mock;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Tests {@link org.apache.streams.filebuffer.FileBufferPersistWriter }
@@ -52,12 +48,12 @@ public class FileBufferPersistIT {
 
     private FileBufferConfiguration testConfiguration;
 
-    ConsolePersistReader reader = Mockito.mock(ConsolePersistReader.class);
-    ConsolePersistWriter writer = Mockito.mock(ConsolePersistWriter.class);
+    private ConsolePersistReader reader = Mockito.mock(ConsolePersistReader.class);
+    private ConsolePersistWriter writer = Mockito.mock(ConsolePersistWriter.class);
 
-    StreamsDatum testDatum1 = new StreamsDatum("{\"datum\":1}");
-    StreamsDatum testDatum2 = new StreamsDatum("{\"datum\":2}");
-    StreamsDatum testDatum3 = new StreamsDatum("{\"datum\":3}");
+    private StreamsDatum testDatum1 = new StreamsDatum("{\"datum\":1}");
+    private StreamsDatum testDatum2 = new StreamsDatum("{\"datum\":2}");
+    private StreamsDatum testDatum3 = new StreamsDatum("{\"datum\":3}");
 
     @Before
     public void prepareTest() {
@@ -71,8 +67,8 @@ public class FileBufferPersistIT {
 
         PowerMockito.when(reader.readCurrent())
                 .thenReturn(
-                        new StreamsResultSet(Queues.newConcurrentLinkedQueue(
-                                Lists.newArrayList(testDatum1, testDatum2, testDatum3)))
+                        new StreamsResultSet(new ConcurrentLinkedQueue<>(
+                            Arrays.asList(testDatum1, testDatum2, testDatum3)))
                 ).thenReturn(null);
     }
 
@@ -81,7 +77,7 @@ public class FileBufferPersistIT {
 
         assert(testConfiguration != null);
 
-        Map<String, Object> streamConfig = Maps.newHashMap();
+        Map<String, Object> streamConfig = new HashMap<>();
         streamConfig.put(LocalStreamBuilder.TIMEOUT_KEY, 1000);
 
         StreamBuilder builder = new LocalStreamBuilder(1, streamConfig);

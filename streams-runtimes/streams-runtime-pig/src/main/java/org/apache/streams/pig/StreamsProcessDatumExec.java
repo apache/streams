@@ -26,7 +26,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import datafu.pig.util.AliasableEvalFunc;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -42,8 +41,10 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -59,13 +60,13 @@ public class StreamsProcessDatumExec extends AliasableEvalFunc<DataBag> {
 
   StreamsProcessor streamsProcessor;
 
-  ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
   public StreamsProcessDatumExec(String... execArgs) throws ClassNotFoundException{
-    Preconditions.checkNotNull(execArgs);
+    Objects.requireNonNull(execArgs);
     Preconditions.checkArgument(execArgs.length > 0);
     String classFullName = execArgs[0];
-    Preconditions.checkNotNull(classFullName);
+    Objects.requireNonNull(classFullName);
     String[] prepareArgs = (String[]) ArrayUtils.remove(execArgs, 0);
     streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(classFullName));
     if( execArgs.length == 1 ) {
@@ -112,7 +113,7 @@ public class StreamsProcessDatumExec extends AliasableEvalFunc<DataBag> {
     StreamsDatum entry = new StreamsDatum(object, id, new DateTime(timestamp));
 
     List<StreamsDatum> resultSet = streamsProcessor.process(entry);
-    List<Tuple> resultTupleList = Lists.newArrayList();
+    List<Tuple> resultTupleList = new ArrayList<>();
 
     for( StreamsDatum resultDatum : resultSet ) {
       Tuple tuple = mTupleFactory.newTuple();
@@ -127,9 +128,7 @@ public class StreamsProcessDatumExec extends AliasableEvalFunc<DataBag> {
       resultTupleList.add(tuple);
     }
 
-    DataBag result = mBagFactory.newDefaultBag(resultTupleList);
-
-    return result;
+    return mBagFactory.newDefaultBag(resultTupleList);
 
   }
 

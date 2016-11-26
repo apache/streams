@@ -20,7 +20,6 @@
 package com.youtube.serializer;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,10 +32,9 @@ import com.google.api.services.youtube.model.ChannelStatistics;
 import com.google.api.services.youtube.model.ChannelTopicDetails;
 import com.google.api.services.youtube.model.Thumbnail;
 import com.google.api.services.youtube.model.ThumbnailDetails;
-import com.google.common.collect.Lists;
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -45,7 +43,7 @@ import java.util.List;
 public class YoutubeChannelDeserializer extends JsonDeserializer<Channel> {
 
   @Override
-  public Channel deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+  public Channel deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
     JsonNode node = jp.getCodec().readTree(jp);
     try {
       Channel channel = new Channel();
@@ -144,10 +142,9 @@ public class YoutubeChannelDeserializer extends JsonDeserializer<Channel> {
     if (node == null) {
       return details;
     }
-    List<String> topicIds = Lists.newLinkedList();
-    Iterator<JsonNode> it = node.get("topicIds").iterator();
-    while (it.hasNext()) {
-      topicIds.add(it.next().asText());
+    List<String> topicIds = new LinkedList<>();
+    for (JsonNode jsonNode : node.get("topicIds")) {
+      topicIds.add(jsonNode.asText());
     }
     details.setTopicIds(topicIds);
     return  details;

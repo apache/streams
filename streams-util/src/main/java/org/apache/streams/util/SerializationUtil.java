@@ -70,10 +70,8 @@ public class SerializationUtil {
       Object ret = ois.readObject();
       ois.close();
       return ret;
-    } catch (IOException ioe) {
+    } catch (IOException | ClassNotFoundException ioe) {
       throw new RuntimeException(ioe);
-    } catch (ClassNotFoundException ex) {
-      throw new RuntimeException(ex);
     }
   }
 

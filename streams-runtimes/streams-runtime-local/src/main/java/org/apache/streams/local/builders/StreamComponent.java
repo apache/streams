@@ -146,8 +146,8 @@ public class StreamComponent implements Serializable {
   }
 
   private void initializePrivateVariables() {
-    this.inBound = new HashSet<StreamComponent>();
-    this.outBound = new HashMap<StreamComponent, BlockingQueue<StreamsDatum>>();
+    this.inBound = new HashSet<>();
+    this.outBound = new HashMap<>();
     this.tasks = Lists.newArrayList();
   }
 
@@ -211,7 +211,7 @@ public class StreamComponent implements Serializable {
     StreamsTask task;
     if(this.processor != null) {
       if(this.numTasks > 1) {
-        task =  new StreamsProcessorTask((StreamsProcessor)SerializationUtil.cloneBySerialization(this.processor), streamConfig);
+        task =  new StreamsProcessorTask(SerializationUtil.cloneBySerialization(this.processor), streamConfig);
         task.addInputQueue(this.inQueue);
         for(BlockingQueue<StreamsDatum> q : this.outBound.values()) {
           task.addOutputQueue(q);
@@ -226,7 +226,7 @@ public class StreamComponent implements Serializable {
     }
     else if(this.writer != null) {
       if(this.numTasks > 1) {
-        task = new StreamsPersistWriterTask((StreamsPersistWriter) SerializationUtil.cloneBySerialization(this.writer), streamConfig);
+        task = new StreamsPersistWriterTask(SerializationUtil.cloneBySerialization(this.writer), streamConfig);
         task.addInputQueue(this.inQueue);
       } else {
         task = new StreamsPersistWriterTask(this.writer, streamConfig);
@@ -236,7 +236,7 @@ public class StreamComponent implements Serializable {
     else if(this.provider != null) {
       StreamsProvider prov;
       if(this.numTasks > 1) {
-        prov = (StreamsProvider)SerializationUtil.cloneBySerialization(this.provider);
+        prov = SerializationUtil.cloneBySerialization(this.provider);
       } else {
         prov = this.provider;
       }
@@ -284,21 +284,18 @@ public class StreamComponent implements Serializable {
 
   @Override
   public boolean equals(Object o) {
-    if(o instanceof StreamComponent)
-      return this.id.equals(((StreamComponent) o).id);
-    else
-      return false;
+    return o instanceof StreamComponent && this.id.equals(((StreamComponent) o).id);
   }
 
   protected StreamsOperation getOperation() {
     if(this.processor != null) {
-      return (StreamsOperation) this.processor;
+      return this.processor;
     }
     else if(this.writer != null) {
-      return (StreamsOperation) this.writer;
+      return this.writer;
     }
     else if(this.provider != null) {
-      return (StreamsOperation) this.provider;
+      return this.provider;
     }
     else {
       throw new InvalidStreamException("Underlying StreamComponoent was NULL.");

@@ -18,9 +18,8 @@
 
 package org.apache.streams.urls;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import org.apache.commons.codec.net.URLCodec;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -28,12 +27,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class LinkResolver implements Serializable {
 
@@ -73,7 +76,7 @@ public class LinkResolver implements Serializable {
 
     // To help canonicalize the URL, these parts are 'known' to be 'ok' to remove
     private static final Collection<String> URL_TRACKING_TO_REMOVE = new ArrayList<String>() {{
-        /******************************************************************
+        /*
          * Google uses parameters in the URL string to track referrers
          * on their Google Analytics and promotions. These are the
          * identified URL patterns.
@@ -102,7 +105,7 @@ public class LinkResolver implements Serializable {
     // This element holds all the information about all the re-directs that have taken place
     // and the steps and HTTP codes that occurred inside of each step.
     private final LinkDetails linkDetails;
-    private Collection<String> domainsSensitiveTo = new HashSet<String>();
+    private Collection<String> domainsSensitiveTo = new HashSet<>();
 
     /**
      * Get the link details
@@ -125,7 +128,7 @@ public class LinkResolver implements Serializable {
 
     public void run() {
 
-        Preconditions.checkNotNull(linkDetails.getOriginalURL());
+        Objects.requireNonNull(linkDetails.getOriginalURL());
 
         linkDetails.setStartTime(DateTime.now());
 
@@ -140,22 +143,22 @@ public class LinkResolver implements Serializable {
             this.linkDetails.setRedirected(false);
 
         linkDetails.setFinalURL(cleanURL(linkDetails.getFinalURL()));
-        if( !Strings.isNullOrEmpty(linkDetails.getFinalURL()))
+        if(StringUtils.isNotBlank(linkDetails.getFinalURL()))
             linkDetails.setNormalizedURL(normalizeURL(linkDetails.getFinalURL()));
-        if( !Strings.isNullOrEmpty(linkDetails.getNormalizedURL()))
+        if(StringUtils.isNotBlank(linkDetails.getNormalizedURL()))
             linkDetails.setUrlParts(tokenizeURL(linkDetails.getNormalizedURL()));
 
         this.updateTookInMillis();
     }
 
     protected void updateTookInMillis() {
-        Preconditions.checkNotNull(linkDetails.getStartTime());
+        Objects.requireNonNull(linkDetails.getStartTime());
         linkDetails.setTookInMills(DateTime.now().minus(linkDetails.getStartTime().getMillis()).getMillis());
     }
 
     public void unwindLink(String url) {
-        Preconditions.checkNotNull(linkDetails);
-        Preconditions.checkNotNull(url);
+        Objects.requireNonNull(linkDetails);
+        Objects.requireNonNull(url);
 
         // Check url validity
         UrlValidator urlValidator = new UrlValidator();
@@ -238,7 +241,7 @@ public class LinkResolver implements Serializable {
             linkDetails.setFinalResponseCode((long) connection.getResponseCode());
 
             Map<String, List<String>> headers = createCaseInsensitiveMap(connection.getHeaderFields());
-            /******************************************************************
+            /*
              * If they want us to set cookies, well, then we will set cookies
              * Example URL:
              * http://nyti.ms/1bCpesx
@@ -247,7 +250,7 @@ public class LinkResolver implements Serializable {
                 linkDetails.getCookies().add(headers.get(SET_COOKIE_IDENTIFIER).get(0));
 
             switch (linkDetails.getFinalResponseCode().intValue()) {
-                /**
+                /*
                  * W3C HTTP Response Codes:
                  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
                  */
@@ -263,7 +266,7 @@ public class LinkResolver implements Serializable {
                 case 304: // Not Modified
                 case 306: // This status code is unused but in the redirect block.
                 case 307: // Temporary re-direct
-                    /*******************************************************************
+                    /*
                      * Author:
                      * Smashew
                      *
@@ -338,7 +341,7 @@ public class LinkResolver implements Serializable {
     }
 
     private Map<String, List<String>> createCaseInsensitiveMap(Map<String, List<String>> input) {
-        Map<String, List<String>> toReturn = new HashMap<String, List<String>>();
+        Map<String, List<String>> toReturn = new HashMap<>();
         for (String k : input.keySet())
             if (k != null && input.get(k) != null)
                 toReturn.put(k.toLowerCase(), input.get(k));
@@ -418,7 +421,7 @@ public class LinkResolver implements Serializable {
         // If you want to just look in the GET parameters, or you want to ignore the domain
         // or you want to use the domain as a token itself, that would have to be
         // processed above the next line, and only the remaining parts split
-        List<String> toReturn = new ArrayList<String>();
+        List<String> toReturn = new ArrayList<>();
 
         // Split the URL by forward slashes. Most modern browsers will accept a URL
         // this malformed such as http://www.smashew.com/hello//how////are/you

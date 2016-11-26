@@ -26,6 +26,6 @@ package org.apache.streams.jackson;
  */
 public interface StreamsDateTimeFormat {
 
-  public String getFormat();
+  String getFormat();
 
 }

@@ -28,7 +28,6 @@ import org.apache.streams.pojo.json.Activity;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -87,7 +86,7 @@ public class SimplePageTest {
   public void TestDeserialization() throws Exception {
     Page page = mapper.convertValue(event, Page.class);
 
-    Activity activity = null;
+    Activity activity;
     activity = facebookPageActivitySerializer.deserialize(page);
 
     assertThat(activity, is(not(nullValue())));

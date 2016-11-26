@@ -18,13 +18,14 @@
 
 package org.apache.streams.config.test;
 
+import org.apache.streams.config.ComponentConfiguration;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
-import org.apache.streams.config.ComponentConfiguration;
-import org.apache.streams.config.ComponentConfigurator;
-import org.apache.streams.config.StreamsConfigurator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

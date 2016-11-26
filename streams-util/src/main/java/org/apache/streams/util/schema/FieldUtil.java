@@ -36,20 +36,21 @@ public class FieldUtil {
       return null;
     }
     String typeSchemaFieldValue = fieldNode.get(typeSchemaField).asText();
-    if ( typeSchemaFieldValue.equals("string")) {
-      return FieldType.STRING;
-    } else if ( typeSchemaFieldValue.equals("integer")) {
-      return FieldType.INTEGER;
-    } else if ( typeSchemaFieldValue.equals("number")) {
-      return FieldType.NUMBER;
-    } else if ( typeSchemaFieldValue.equals("object")) {
-      return FieldType.OBJECT;
-    } else if ( typeSchemaFieldValue.equals("boolean")) {
-      return FieldType.BOOLEAN;
-    } else if ( typeSchemaFieldValue.equals("array")) {
-      return FieldType.ARRAY;
-    } else {
-      return null;
+    switch (typeSchemaFieldValue) {
+      case "string":
+        return FieldType.STRING;
+      case "integer":
+        return FieldType.INTEGER;
+      case "number":
+        return FieldType.NUMBER;
+      case "object":
+        return FieldType.OBJECT;
+      case "boolean":
+        return FieldType.BOOLEAN;
+      case "array":
+        return FieldType.ARRAY;
+      default:
+        return null;
     }
   }
 

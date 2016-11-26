@@ -30,7 +30,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.typesafe.config.Config;
@@ -45,8 +44,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -63,7 +62,7 @@ public class MoreoverProvider implements StreamsProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MoreoverProvider.class);
 
-  protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<StreamsDatum>();
+  protected volatile Queue<StreamsDatum> providerQueue = new ConcurrentLinkedQueue<>();
 
   private List<MoreoverKeyData> keys;
 
@@ -77,7 +76,7 @@ public class MoreoverProvider implements StreamsProvider {
    */
   public MoreoverProvider(MoreoverConfiguration moreoverConfiguration) {
     this.config = moreoverConfiguration;
-    this.keys = Lists.newArrayList();
+    this.keys = new ArrayList<>();
     for ( MoreoverKeyData apiKey : config.getApiKeys()) {
       this.keys.add(apiKey);
     }
@@ -104,7 +103,7 @@ public class MoreoverProvider implements StreamsProvider {
 
     LOGGER.debug("readCurrent: {}", providerQueue.size());
 
-    Collection<StreamsDatum> currentIterator = Lists.newArrayList();
+    Collection<StreamsDatum> currentIterator = new ArrayList<>();
     Iterators.addAll(currentIterator, providerQueue.iterator());
 
     StreamsResultSet current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(currentIterator));
@@ -180,9 +179,7 @@ public class MoreoverProvider implements StreamsProvider {
     provider.startStream();
     do {
       Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-      Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
-      while (iterator.hasNext()) {
-        StreamsDatum datum = iterator.next();
+      for (StreamsDatum datum : provider.readCurrent()) {
         String json;
         try {
           json = mapper.writeValueAsString(datum.getDocument());

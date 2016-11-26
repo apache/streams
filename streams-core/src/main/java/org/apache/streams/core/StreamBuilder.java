@@ -40,9 +40,9 @@ import java.math.BigInteger;
  */
 public interface StreamBuilder extends Serializable {
 
-  public StreamBuilder setStreamsConfiguration(StreamsConfiguration configuration);
+  StreamBuilder setStreamsConfiguration(StreamsConfiguration configuration);
 
-  public StreamsConfiguration getStreamsConfiguration();
+  StreamsConfiguration getStreamsConfiguration();
 
   /**
    * Add a {@link org.apache.streams.core.StreamsProcessor} to the data processing stream.
@@ -53,7 +53,7 @@ public interface StreamBuilder extends Serializable {
    *                     receive data from.
    * @return this
    */
-  public StreamBuilder addStreamsProcessor(String processorId, StreamsProcessor processor, int numTasks, String... connectToIds);
+  StreamBuilder addStreamsProcessor(String processorId, StreamsProcessor processor, int numTasks, String... connectToIds);
 
   /**
    * Add a {@link org.apache.streams.core.StreamsPersistWriter} to the data processing stream.
@@ -64,7 +64,7 @@ public interface StreamBuilder extends Serializable {
    *                     receive data from.
    * @return this
    */
-  public StreamBuilder addStreamsPersistWriter(String persistWriterId, StreamsPersistWriter writer, int numTasks, String... connectToIds);
+  StreamBuilder addStreamsPersistWriter(String persistWriterId, StreamsPersistWriter writer, int numTasks, String... connectToIds);
 
   /**
    * Add a {@link org.apache.streams.core.StreamsProvider} to the data processing stream.  The provider will execute
@@ -73,7 +73,7 @@ public interface StreamBuilder extends Serializable {
    * @param provider provider to execute
    * @return this
    */
-  public StreamBuilder newPerpetualStream(String streamId, StreamsProvider provider);
+  StreamBuilder newPerpetualStream(String streamId, StreamsProvider provider);
 
   /**
    * Add a {@link org.apache.streams.core.StreamsProvider} to the data processing stream.  The provider will execute
@@ -82,7 +82,7 @@ public interface StreamBuilder extends Serializable {
    * @param provider provider to execute
    * @return this
    */
-  public StreamBuilder newReadCurrentStream(String streamId, StreamsProvider provider);
+  StreamBuilder newReadCurrentStream(String streamId, StreamsProvider provider);
 
   /**
    * Add a {@link org.apache.streams.core.StreamsProvider} to the data processing stream.  The provider will execute
@@ -92,7 +92,7 @@ public interface StreamBuilder extends Serializable {
    * @param sequence sequence to pass to {@link org.apache.streams.core.StreamsProvider:readNext(BigInteger)} method
    * @return this
    */
-  public StreamBuilder newReadNewStream(String streamId, StreamsProvider provider, BigInteger sequence);
+  StreamBuilder newReadNewStream(String streamId, StreamsProvider provider, BigInteger sequence);
 
   /**
    * Add a {@link org.apache.streams.core.StreamsProvider} to the data processing stream.  The provider will execute
@@ -104,25 +104,17 @@ public interface StreamBuilder extends Serializable {
    * @param end end date
    * @return this
    */
-  public StreamBuilder newReadRangeStream(String streamId, StreamsProvider provider, DateTime start, DateTime end);
+  StreamBuilder newReadRangeStream(String streamId, StreamsProvider provider, DateTime start, DateTime end);
 
   /**
    * Builds the stream, and starts it or submits it based on implementation.
    */
-  public void start();
+  void start();
 
   /**
    * Stops the streams processing.  No guarantee on a smooth shutdown. Optional method, may not be implemented in
    * all cases.
    */
-  public void stop();
-
-
-
-
-
-
-
-
+  void stop();
 
 }

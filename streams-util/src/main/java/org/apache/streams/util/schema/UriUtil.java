@@ -18,10 +18,10 @@
 
 package org.apache.streams.util.schema;
 
-import com.google.common.base.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
+import java.util.Optional;
 
 /**
  * UriUtil contains methods to assist in resolving URIs and URI fragments.
@@ -44,12 +44,12 @@ public class UriUtil {
    */
   public static Optional<URI> safeResolve(URI absolute, String relativePart) {
     if ( !absolute.isAbsolute()) {
-      return Optional.absent();
+      return Optional.empty();
     }
     try {
       return Optional.of(absolute.resolve(relativePart));
     } catch ( IllegalArgumentException ex ) {
-      return Optional.absent();
+      return Optional.empty();
     }
   }
 

@@ -22,11 +22,11 @@ import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 import static org.apache.streams.instagram.serializer.util.InstagramActivityUtil.updateActivity;
@@ -66,7 +66,7 @@ public class InstagramMediaFeedDataConverter implements ActivityConverter<MediaF
 
     updateActivity(item, activity);
 
-    return Lists.newArrayList(activity);
+    return Collections.singletonList(activity);
   }
 
   @Override

@@ -56,7 +56,7 @@ public class VerbDefinitionMatchUtil {
     if ( verbDefinition.getValue() != null
           && verbDefinition.getValue().equals(activity.getVerb())) {
       for (ObjectCombination objectCombination : verbDefinition.getObjects()) {
-        if (VerbDefinitionResolver.filter(activity, objectCombination) == true) {
+        if (VerbDefinitionResolver.filter(activity, objectCombination)) {
           return true;
         }
       }

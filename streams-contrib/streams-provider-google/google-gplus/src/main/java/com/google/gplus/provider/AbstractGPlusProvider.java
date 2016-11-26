@@ -29,20 +29,17 @@ import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
 import org.apache.streams.util.api.requests.backoff.impl.ExponentialBackOffStrategy;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.plus.Plus;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gson.Gson;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +53,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
@@ -88,11 +86,9 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
   private ListeningExecutorService executor;
 
   private BlockingQueue<StreamsDatum> datumQueue;
-  private BlockingQueue<Runnable> runnables;
   private AtomicBoolean isComplete;
   private boolean previousPullWasEmpty;
 
-  protected GoogleClientSecrets clientSecrets;
   protected GoogleCredential credential;
   protected Plus plus;
 
@@ -108,9 +104,9 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
   @Override
   public void prepare(Object configurationObject) {
 
-    Preconditions.checkNotNull(config.getOauth().getPathToP12KeyFile());
-    Preconditions.checkNotNull(config.getOauth().getAppName());
-    Preconditions.checkNotNull(config.getOauth().getServiceAccountEmailAddress());
+    Objects.requireNonNull(config.getOauth().getPathToP12KeyFile());
+    Objects.requireNonNull(config.getOauth().getAppName());
+    Objects.requireNonNull(config.getOauth().getServiceAccountEmailAddress());
 
     try {
       this.plus = createPlusClient();

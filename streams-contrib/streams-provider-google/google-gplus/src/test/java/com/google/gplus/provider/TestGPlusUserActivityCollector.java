@@ -33,15 +33,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Activity;
 import com.google.api.services.plus.model.ActivityFeed;
-import com.google.common.collect.Lists;
 import com.google.gplus.serializer.util.GPlusActivityDeserializer;
-
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -142,12 +141,7 @@ public class TestGPlusUserActivityCollector extends RandomizedTest {
   private Plus createMockPlus(final int numBefore, final int numAfter, final int numInRange, final DateTime after, final DateTime before) {
     Plus plus = mock(Plus.class);
     final Plus.Activities activities = createMockPlusActivities(numBefore, numAfter, numInRange, after, before);
-    doAnswer(new Answer() {
-      @Override
-      public Plus.Activities answer(InvocationOnMock invocationOnMock) throws Throwable {
-        return activities;
-      }
-    }).when(plus).activities();
+    doAnswer(invocationOnMock -> activities).when(plus).activities();
     return plus;
   }
 
@@ -194,14 +188,14 @@ public class TestGPlusUserActivityCollector extends RandomizedTest {
       DateTime before,
       boolean page) {
     ActivityFeed feed = new ActivityFeed();
-    List<Activity> list = Lists.newLinkedList();
+    List<Activity> list = new LinkedList<>();
     for (int i = 0; i < numAfter; ++i) {
       DateTime published = before.plus(randomIntBetween(0, Integer.MAX_VALUE));
       Activity activity = createActivityWithPublishedDate(published);
       list.add(activity);
     }
     for (int i = 0; i < numInRange; ++i) {
-      DateTime published = null;
+      DateTime published;
       if ((before == null && after == null) || before == null) {
         published = DateTime.now(); // no date range or end time date range so just make the time now.
       } else if (after == null) {

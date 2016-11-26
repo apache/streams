@@ -26,7 +26,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;

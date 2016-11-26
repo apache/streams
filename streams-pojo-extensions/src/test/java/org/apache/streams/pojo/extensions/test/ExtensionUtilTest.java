@@ -21,7 +21,7 @@ package org.apache.streams.pojo.extensions.test;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 
-import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.Map;
@@ -39,7 +39,7 @@ public class ExtensionUtilTest {
     String value = "value";
     extensions.put("extension", value);
     customExtensionUtil.setExtensions(activity, extensions);
-    assert (!Strings.isNullOrEmpty((String)customExtensionUtil.getExtension(activity, "extension")));
+    assert (StringUtils.isNotBlank((String) customExtensionUtil.getExtension(activity, "extension")));
     extensions = customExtensionUtil.getExtensions(activity);
     assert (value.equals((String)extensions.get("extension")));
     assert (activity.getAdditionalProperties().get("ext") != null);

@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
-
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
@@ -53,7 +52,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -120,7 +119,7 @@ public class ElasticsearchPersistUpdaterIT {
       Activity update = new Activity();
       update.setAdditionalProperty("updated", Boolean.TRUE);
       update.setAdditionalProperty("str", "str");
-      update.setAdditionalProperty("long", 10l);
+      update.setAdditionalProperty("long", 10L);
       update.setActor(
           new ActivityObject()
               .withAdditionalProperty("updated", Boolean.TRUE)

@@ -23,6 +23,7 @@ import org.apache.streams.plugins.hbase.StreamsHbaseResourceGenerator;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -47,9 +48,9 @@ public class StreamsHbaseResourceGeneratorCLITest {
 
     File testOutput = new File(targetDirectory);
 
-    assert ( testOutput != null );
-    assert ( testOutput.exists() == true );
-    assert ( testOutput.isDirectory() == true );
+    Assert.assertNotNull(testOutput);
+    Assert.assertTrue(testOutput.exists());
+    Assert.assertTrue(testOutput.isDirectory());
 
     Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
         .filter(txtFilter);

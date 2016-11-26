@@ -26,7 +26,6 @@ import org.apache.streams.pojo.json.Activity;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.Video;
-import com.google.common.collect.Lists;
 import com.youtube.serializer.YoutubeActivityUtil;
 import com.youtube.serializer.YoutubeChannelDeserializer;
 import com.youtube.serializer.YoutubeEventClassifier;
@@ -35,6 +34,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
@@ -47,7 +47,6 @@ public class YoutubeTypeConverter implements StreamsProcessor {
   private StreamsJacksonMapper mapper;
   private Queue<Video> inQueue;
   private Queue<StreamsDatum> outQueue;
-  private YoutubeActivityUtil youtubeActivityUtil;
   private int count = 0;
 
   public YoutubeTypeConverter() {}
@@ -65,7 +64,7 @@ public class YoutubeTypeConverter implements StreamsProcessor {
       Object item = streamsDatum.getDocument();
 
       LOGGER.debug("{} processing {}", STREAMS_ID, item.getClass());
-      Activity activity = null;
+      Activity activity;
 
       if (item instanceof String) {
         item = deserializeItem(item);
@@ -73,10 +72,10 @@ public class YoutubeTypeConverter implements StreamsProcessor {
 
       if (item instanceof Video) {
         activity = new Activity();
-        youtubeActivityUtil.updateActivity((Video)item, activity, streamsDatum.getId());
+        YoutubeActivityUtil.updateActivity((Video)item, activity, streamsDatum.getId());
       } else if (item instanceof Channel) {
         activity = new Activity();
-        this.youtubeActivityUtil.updateActivity((Channel)item, activity, null);
+        YoutubeActivityUtil.updateActivity((Channel)item, activity, null);
       } else {
         throw new NotImplementedException("Type conversion not implement for type : " + item.getClass().getName());
       }
@@ -90,9 +89,11 @@ public class YoutubeTypeConverter implements StreamsProcessor {
     }
 
     if ( result != null ) {
-      return Lists.newArrayList(result);
+      List<StreamsDatum> streamsDatumList = new ArrayList<>();
+      streamsDatumList.add(result);
+      return streamsDatumList;
     } else {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
   }
 
@@ -113,7 +114,6 @@ public class YoutubeTypeConverter implements StreamsProcessor {
 
   @Override
   public void prepare(Object configurationObject) {
-    youtubeActivityUtil = new YoutubeActivityUtil();
     mapper = StreamsJacksonMapper.getInstance();
 
     SimpleModule simpleModule = new SimpleModule();

@@ -37,7 +37,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Queues;
 import com.typesafe.config.Config;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +79,7 @@ public class KinesisPersistReader implements StreamsPersistReader, Serializable 
   public KinesisPersistReader() {
     Config config = StreamsConfigurator.config.getConfig("kinesis");
     this.config = new ComponentConfigurator<>(KinesisReaderConfiguration.class).detectConfiguration(config);
-    this.persistQueue  = new ConcurrentLinkedQueue<StreamsDatum>();
+    this.persistQueue  = new ConcurrentLinkedQueue<>();
   }
 
   /**
@@ -88,7 +87,7 @@ public class KinesisPersistReader implements StreamsPersistReader, Serializable 
    */
   public KinesisPersistReader(KinesisReaderConfiguration config) {
     this.config = config;
-    this.persistQueue  = new ConcurrentLinkedQueue<StreamsDatum>();
+    this.persistQueue  = new ConcurrentLinkedQueue<>();
   }
 
   public void setConfig(KinesisReaderConfiguration config) {
@@ -176,7 +175,7 @@ public class KinesisPersistReader implements StreamsPersistReader, Serializable 
     while( !executor.isTerminated()) {
       try {
         executor.awaitTermination(5, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {}
+      } catch (InterruptedException ignored) {}
     }
   }
 }

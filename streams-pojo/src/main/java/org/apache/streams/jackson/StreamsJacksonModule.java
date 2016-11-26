@@ -34,7 +34,7 @@ import java.util.Set;
 
 /**
  * StreamsJacksonModule is a supporting class for
- * @see {@link org.apache.streams.jackson.StreamsJacksonMapper}.
+ * @link org.apache.streams.jackson.StreamsJacksonMapper
  *
  * <p/>
  * RFC3339 dates are supported by default.

@@ -29,20 +29,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.jayway.jsonpath.JsonPath;
-
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Provides a base implementation for filtering datums which
@@ -77,7 +75,7 @@ public class JsonPathFilter implements StreamsProcessor {
   @Override
   public List<StreamsDatum> process(StreamsDatum entry) {
 
-    List<StreamsDatum> result = Lists.newArrayList();
+    List<StreamsDatum> result = new ArrayList<>();
 
     String json = null;
 
@@ -102,7 +100,7 @@ public class JsonPathFilter implements StreamsProcessor {
       }
     }
 
-    Preconditions.checkNotNull(document);
+    Objects.requireNonNull(document);
 
     if ( StringUtils.isNotEmpty(json)) {
 
@@ -114,7 +112,7 @@ public class JsonPathFilter implements StreamsProcessor {
         LOGGER.warn(ex.getMessage());
       }
 
-      Preconditions.checkNotNull(srcResult);
+      Objects.requireNonNull(srcResult);
 
       String[] path = StringUtils.split(pathExpression, '.');
       ObjectNode node = document;
@@ -122,7 +120,7 @@ public class JsonPathFilter implements StreamsProcessor {
         node = (ObjectNode) document.get(path[i]);
       }
 
-      Preconditions.checkNotNull(node);
+      Objects.requireNonNull(node);
 
       if ( srcResult instanceof JSONArray ) {
         try {

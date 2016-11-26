@@ -18,11 +18,20 @@
 
 package org.apache.streams.components.http.processor;
 
+import org.apache.streams.components.http.HttpProcessorConfiguration;
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.extensions.ExtensionUtil;
+import org.apache.streams.pojo.json.ActivityObject;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Strings;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -32,14 +41,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.apache.streams.components.http.HttpProcessorConfiguration;
-import org.apache.streams.config.ComponentConfigurator;
-import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.pojo.extensions.ExtensionUtil;
-import org.apache.streams.pojo.json.ActivityObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -244,7 +245,7 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
   public HttpPost prepareHttpPost(URI uri, HttpEntity entity) {
     HttpPost httpPost = new HttpPost(uri);
     httpPost.addHeader("content-type", this.configuration.getContentType());
-    if ( !Strings.isNullOrEmpty(authHeader)) {
+    if (StringUtils.isNotBlank(authHeader)) {
       httpPost.addHeader("Authorization", String.format("Basic %s", authHeader));
     }
     httpPost.setEntity(entity);
@@ -261,11 +262,11 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
         .setHost(this.configuration.getHostname())
         .setPath(this.configuration.getResourcePath());
 
-    if ( !Strings.isNullOrEmpty(configuration.getAccessToken()) ) {
+    if (StringUtils.isNotBlank(configuration.getAccessToken()) ) {
       uriBuilder = uriBuilder.addParameter("access_token", configuration.getAccessToken());
     }
-    if ( !Strings.isNullOrEmpty(configuration.getUsername())
-        && !Strings.isNullOrEmpty(configuration.getPassword())) {
+    if (StringUtils.isNotBlank(configuration.getUsername())
+        && StringUtils.isNotBlank(configuration.getPassword())) {
       String string = configuration.getUsername() + ":" + configuration.getPassword();
       authHeader = Base64.encodeBase64String(string.getBytes());
     }

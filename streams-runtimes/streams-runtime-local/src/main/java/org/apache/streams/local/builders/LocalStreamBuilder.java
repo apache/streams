@@ -22,7 +22,6 @@ import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.DatumStatusCountable;
 import org.apache.streams.core.StreamBuilder;
-import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.core.StreamsProvider;
@@ -130,7 +129,7 @@ public class LocalStreamBuilder implements StreamBuilder {
   @Deprecated
   public LocalStreamBuilder(int maxQueueCapacity, Map<String, Object> streamConfig) {
     this(new LocalRuntimeConfiguration());
-    this.streamConfig.setQueueSize(new Long(maxQueueCapacity));
+    this.streamConfig.setQueueSize((long) maxQueueCapacity);
     if( streamConfig != null && streamConfig.get(LocalStreamBuilder.TIMEOUT_KEY) != null )
       this.streamConfig.setProviderTimeoutMs(new Long((Integer) (streamConfig.get(LocalStreamBuilder.TIMEOUT_KEY))));
     if( streamConfig != null && streamConfig.get(LocalStreamBuilder.STREAM_IDENTIFIER_KEY) != null )
@@ -146,8 +145,8 @@ public class LocalStreamBuilder implements StreamBuilder {
 
   public LocalStreamBuilder(LocalRuntimeConfiguration streamConfig) {
     this.streamConfig = streamConfig;
-    this.providers = new HashMap<String, StreamComponent>();
-    this.components = new HashMap<String, StreamComponent>();
+    this.providers = new HashMap<>();
+    this.components = new HashMap<>();
     this.totalTasks = 0;
     this.monitorTasks = 0;
     this.futures = new HashMap<>();
@@ -157,13 +156,10 @@ public class LocalStreamBuilder implements StreamBuilder {
     this.streamIdentifier = streamConfig.getIdentifier();
     this.streamConfig.setStartedAt(startedAt.getMillis());
     final LocalStreamBuilder self = this;
-    this.shutdownHook = new Thread() {
-      @Override
-      public void run() {
-        LOGGER.debug("Shutdown hook received.  Beginning shutdown");
-        self.stopInternal(true);
-      }
-    };
+    this.shutdownHook = new Thread(() -> {
+      LOGGER.debug("Shutdown hook received.  Beginning shutdown");
+      self.stopInternal(true);
+    });
     this.useDeprecatedMonitors = false;
     this.broadcastMonitor = new BroadcastMonitorThread(this.streamConfig.getMonitoring());
   }
@@ -226,7 +222,7 @@ public class LocalStreamBuilder implements StreamBuilder {
   @Override
   public StreamBuilder addStreamsProcessor(String id, StreamsProcessor processor, int numTasks, String... inBoundIds) {
     validateId(id);
-    StreamComponent comp = new StreamComponent(id, processor, new ThroughputQueue<StreamsDatum>(this.maxQueueCapacity, id, streamIdentifier, startedAt.getMillis()), numTasks, streamConfig);
+    StreamComponent comp = new StreamComponent(id, processor, new ThroughputQueue<>(this.maxQueueCapacity, id, streamIdentifier, startedAt.getMillis()), numTasks, streamConfig);
     this.components.put(id, comp);
     connectToOtherComponents(inBoundIds, comp);
     this.totalTasks += numTasks;
@@ -238,7 +234,7 @@ public class LocalStreamBuilder implements StreamBuilder {
   @Override
   public StreamBuilder addStreamsPersistWriter(String id, StreamsPersistWriter writer, int numTasks, String... inBoundIds) {
     validateId(id);
-    StreamComponent comp = new StreamComponent(id, writer, new ThroughputQueue<StreamsDatum>(this.maxQueueCapacity, id, streamIdentifier, startedAt.getMillis()), numTasks, streamConfig);
+    StreamComponent comp = new StreamComponent(id, writer, new ThroughputQueue<>(this.maxQueueCapacity, id, streamIdentifier, startedAt.getMillis()), numTasks, streamConfig);
     this.components.put(id, comp);
     connectToOtherComponents(inBoundIds, comp);
     this.totalTasks += numTasks;
@@ -257,8 +253,8 @@ public class LocalStreamBuilder implements StreamBuilder {
     boolean isRunning = true;
     this.executor = new ShutdownStreamOnUnhandleThrowableThreadPoolExecutor(this.totalTasks, this);
     this.monitor = Executors.newCachedThreadPool();
-    Map<String, StreamsProviderTask> provTasks = new HashMap<String, StreamsProviderTask>();
-    tasks = new HashMap<String, List<StreamsTask>>();
+    Map<String, StreamsProviderTask> provTasks = new HashMap<>();
+    tasks = new HashMap<>();
     boolean forcedShutDown = false;
 
     try {
@@ -279,7 +275,7 @@ public class LocalStreamBuilder implements StreamBuilder {
           boolean tasksRunning = false;
           for(StreamsTask t : task.getStreamsTasks()) {
             if(t instanceof BaseStreamsTask) {
-              tasksRunning = tasksRunning || ((BaseStreamsTask) t).isRunning();
+              tasksRunning = tasksRunning || t.isRunning();
             }
           }
           isRunning = isRunning || (tasksRunning && task.getInBoundQueue().size() > 0);
@@ -376,7 +372,7 @@ public class LocalStreamBuilder implements StreamBuilder {
   protected void setupComponentTasks(Map<String, List<StreamsTask>> streamsTasks) {
     for(StreamComponent comp : this.components.values()) {
       int tasks = comp.getNumTasks();
-      List<StreamsTask> compTasks = new LinkedList<StreamsTask>();
+      List<StreamsTask> compTasks = new LinkedList<>();
       StreamsTaskCounter counter = new StreamsTaskCounter(comp.getId(), streamIdentifier, startedAt.getMillis());
       for(int i=0; i < tasks; ++i) {
         StreamsTask task = comp.createConnectedTask(getTimeout());
@@ -472,7 +468,7 @@ public class LocalStreamBuilder implements StreamBuilder {
 
   private void connectToOtherComponents(String[] conntectToIds, StreamComponent toBeConnected) {
     for(String id : conntectToIds) {
-      StreamComponent upStream = null;
+      StreamComponent upStream;
       if(this.providers.containsKey(id)) {
         upStream = this.providers.get(id);
       }

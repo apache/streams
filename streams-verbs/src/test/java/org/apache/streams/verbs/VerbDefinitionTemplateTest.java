@@ -31,7 +31,7 @@ import org.junit.Test;
  */
 public class VerbDefinitionTemplateTest {
 
-  ObjectMapper mapper = new ObjectMapper();
+  private ObjectMapper mapper = new ObjectMapper();
 
   /**
    * Test application of template with no field.

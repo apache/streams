@@ -22,7 +22,6 @@ import org.apache.streams.data.ActivitySerializer;
 import org.apache.streams.pojo.json.Activity;
 
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
-
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

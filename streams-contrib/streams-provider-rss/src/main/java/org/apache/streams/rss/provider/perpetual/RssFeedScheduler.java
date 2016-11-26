@@ -22,10 +22,10 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.rss.FeedDetails;
 import org.apache.streams.rss.provider.RssStreamProviderTask;
 
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -64,7 +64,7 @@ public class RssFeedScheduler implements Runnable {
     this.feedDetailsList = feedDetailsList;
     this.peroid = peroid;
     this.keepRunning = new AtomicBoolean(true);
-    this.lastScheduled = Maps.newHashMap();
+    this.lastScheduled = new HashMap<>();
     this.dataQueue = dataQueue;
     this.complete = new AtomicBoolean(false);
   }
@@ -116,7 +116,7 @@ public class RssFeedScheduler implements Runnable {
       }
       if (currentTime - lastTime > pollInterval) {
         this.service.execute(new RssStreamProviderTask(this.dataQueue, detail.getUrl()));
-        this.LOGGER.trace("Scheduled data collection on rss feed, {}", detail.getUrl());
+        LOGGER.trace("Scheduled data collection on rss feed, {}", detail.getUrl());
         this.lastScheduled.put(detail.getUrl(), currentTime);
       }
     }

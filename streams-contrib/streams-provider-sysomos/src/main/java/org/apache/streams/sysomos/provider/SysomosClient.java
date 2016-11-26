@@ -19,11 +19,7 @@
 
 package org.apache.streams.sysomos.provider;
 
-import org.apache.streams.sysomos.data.HeartbeatInfo;
-import org.apache.streams.sysomos.util.SysomosUtils;
-
 import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * Wrapper for the Sysomos API.

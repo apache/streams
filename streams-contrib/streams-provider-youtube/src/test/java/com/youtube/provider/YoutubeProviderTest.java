@@ -23,15 +23,15 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.google.gplus.configuration.UserInfo;
 import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
 
-import com.google.api.client.util.Maps;
-import com.google.api.client.util.Sets;
 import com.google.api.services.youtube.YouTube;
-import com.google.common.collect.Lists;
 import org.apache.youtube.pojo.YoutubeConfiguration;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -54,7 +54,7 @@ public class YoutubeProviderTest {
   public void testDataCollectorRunsPerUser() {
     Random random = new Random(System.currentTimeMillis());
     int numUsers = random.nextInt(1000);
-    List<UserInfo> userList = Lists.newLinkedList();
+    List<UserInfo> userList = new LinkedList<>();
 
     for ( int i = 0; i < numUsers; ++i ) {
       userList.add(new UserInfo());
@@ -107,7 +107,7 @@ public class YoutubeProviderTest {
     provider.setDefaultAfterDate(afterDate);
     provider.setDefaultBeforeDate(beforeDate);
 
-    Set<String> users = Sets.newHashSet();
+    Set<String> users = new HashSet<>();
     users.add("test_user_1");
     users.add("test_user_2");
     users.add("test_user_3");
@@ -128,7 +128,7 @@ public class YoutubeProviderTest {
     config.setApiKey("API_KEY");
     YoutubeProvider provider = buildProvider(config);
 
-    Map<String, DateTime> users = Maps.newHashMap();
+    Map<String, DateTime> users = new HashMap<>();
     users.put("user1", new DateTime(System.currentTimeMillis()));
     users.put("user3", new DateTime(System.currentTimeMillis()));
     users.put("user4", new DateTime(System.currentTimeMillis()));

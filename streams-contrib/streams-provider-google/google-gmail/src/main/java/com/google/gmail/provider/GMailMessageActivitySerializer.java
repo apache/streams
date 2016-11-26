@@ -41,7 +41,6 @@ import com.googlecode.gmail4j.javamail.JavaMailGmailMessage;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPMessage;
 import com.sun.mail.imap.IMAPSSLStore;
-
 import org.apache.commons.lang.NotImplementedException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -49,7 +48,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
-
 import javax.mail.internet.MimeMultipart;
 
 /**

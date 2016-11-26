@@ -53,9 +53,9 @@ public class StreamsElasticsearchResourceGeneratorMojoIT extends TestCase {
 
     verifier = new Verifier( testDir.getAbsolutePath() );
 
-    List cliOptions = new ArrayList();
+    List cliOptions = new ArrayList<>();
     cliOptions.add( "-N" );
-    verifier.executeGoals( Lists.<String>newArrayList(
+    verifier.executeGoals( Lists.newArrayList(
         "clean",
         "dependency:unpack-dependencies",
         "generate-resources"));

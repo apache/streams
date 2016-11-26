@@ -24,6 +24,7 @@ import com.google.common.io.Files;
 import junit.framework.TestCase;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,9 +59,9 @@ public class StreamsPojoSourceGeneratorMojoIT extends TestCase {
 
     verifier = new Verifier( testDir.getAbsolutePath() );
 
-    List cliOptions = new ArrayList();
+    List cliOptions = new ArrayList<>();
     cliOptions.add( "-N" );
-    verifier.executeGoals( Lists.<String>newArrayList(
+    verifier.executeGoals( Lists.newArrayList(
         "clean",
         "dependency:unpack-dependencies",
         "generate-sources",
@@ -72,14 +73,13 @@ public class StreamsPojoSourceGeneratorMojoIT extends TestCase {
 
     File testOutput = new File(testDir.getAbsolutePath() + "/target/generated-sources/pojo-mojo");
 
-    assert ( testOutput != null );
-    assert ( testOutput.exists() == true );
-    assert ( testOutput.isDirectory() == true );
+    Assert.assertNotNull(testOutput);
+    Assert.assertTrue(testOutput.exists());
+    Assert.assertTrue(testOutput.isDirectory());
 
-    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-        .filter(javaFilter);
+    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput).filter(javaFilter);
     Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-    assert ( outputCollection.size() > 133 );
+    Assert.assertTrue( outputCollection.size() > 133);
 
   }
 }

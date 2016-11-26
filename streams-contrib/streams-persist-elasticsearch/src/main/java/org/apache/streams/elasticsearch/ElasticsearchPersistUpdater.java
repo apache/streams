@@ -21,21 +21,20 @@ package org.apache.streams.elasticsearch;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * ElasticsearchPersistUpdater updates documents to elasticsearch.
  */
 public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter implements StreamsPersistWriter {
 
-  public static final String STREAMS_ID = ElasticsearchPersistUpdater.class.getCanonicalName();
+  private static final String STREAMS_ID = ElasticsearchPersistUpdater.class.getCanonicalName();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistUpdater.class);
 
@@ -97,8 +96,8 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
   public void update(String indexName, String type, String id, String parent, String routing, String json) {
     UpdateRequest updateRequest;
 
-    Preconditions.checkNotNull(id);
-    Preconditions.checkNotNull(json);
+    Objects.requireNonNull(id);
+    Objects.requireNonNull(json);
 
     // They didn't specify an ID, so we will create one for them.
     updateRequest = new UpdateRequest()
@@ -107,11 +106,11 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
         .id(id)
         .doc(json);
 
-    if (!Strings.isNullOrEmpty(parent)) {
+    if (StringUtils.isNotBlank(parent)) {
       updateRequest = updateRequest.parent(parent);
     }
 
-    if (!Strings.isNullOrEmpty(routing)) {
+    if (StringUtils.isNotBlank(routing)) {
       updateRequest = updateRequest.routing(routing);
     }
 
@@ -128,8 +127,8 @@ public class ElasticsearchPersistUpdater extends ElasticsearchPersistWriter impl
    */
   public void add(UpdateRequest request) {
 
-    Preconditions.checkNotNull(request);
-    Preconditions.checkNotNull(request.index());
+    Objects.requireNonNull(request);
+    Objects.requireNonNull(request.index());
 
     // If our queue is larger than our flush threshold, then we should flush the queue.
     synchronized (this) {

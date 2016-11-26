@@ -29,9 +29,7 @@ import org.apache.streams.pojo.json.Provider;
 import com.google.api.services.plus.model.Comment;
 import com.google.api.services.plus.model.Person;
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * GooglePlusActivityUtil helps convert c.g.Person and c.g.Activity into o.a.s.p.j.o.Page and o.a.s.p.j.Activity.
@@ -49,8 +48,8 @@ public class GooglePlusActivityUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(GooglePlusActivityUtil.class);
 
   /**
-   * Given a {@link com.google.api.services.plus.model.Person} object and an
-   * {@link org.apache.streams.pojo.json.Activity} object, fill out the appropriate details.
+   * Given a {@link Person} object and an
+   * {@link Activity} object, fill out the appropriate details.
    *
    * @param item Person
    * @param activity Activity
@@ -60,17 +59,14 @@ public class GooglePlusActivityUtil {
     activity.setActor(buildActor(item));
     activity.setVerb("update");
 
-    activity.setId(formatId(activity.getVerb(),
-        Optional.fromNullable(
-            item.getId())
-            .orNull()));
+    activity.setId(formatId(activity.getVerb(), Optional.ofNullable(item.getId()).orElse(null)));
 
     activity.setProvider(getProvider());
   }
 
   /**
-   * Given a {@link List} of {@link com.google.api.services.plus.model.Comment} objects and an
-   * {@link org.apache.streams.pojo.json.Activity}, update that Activity to contain all comments
+   * Given a {@link List} of {@link Comment} objects and an
+   * {@link Activity}, update that Activity to contain all comments
    *
    * @param comments input List of Comment
    * @param activity output Activity
@@ -86,7 +82,7 @@ public class GooglePlusActivityUtil {
 
   /**
    * Given a Google Plus {@link com.google.api.services.plus.model.Activity},
-   * convert that into an Activity streams formatted {@link org.apache.streams.pojo.json.Activity}
+   * convert that into an Activity streams formatted {@link Activity}
    *
    * @param gPlusActivity input c.g.a.s.p.m.Activity
    * @param activity output o.a.s.p.j.Activity
@@ -102,10 +98,7 @@ public class GooglePlusActivityUtil {
       activity.setContent(gPlusActivity.getObject().getContent());
     }
 
-    activity.setId(formatId(activity.getVerb(),
-        Optional.fromNullable(
-            gPlusActivity.getId())
-            .orNull()));
+    activity.setId(formatId(activity.getVerb(), Optional.ofNullable(gPlusActivity.getId()).orElse(null)));
 
     DateTime published = new DateTime(String.valueOf(gPlusActivity.getPublished()));
     activity.setPublished(published);
@@ -115,8 +108,8 @@ public class GooglePlusActivityUtil {
   }
 
   /**
-   * Adds a single {@link com.google.api.services.plus.model.Comment} to the Object.Attachments
-   * section of the passed in {@link org.apache.streams.pojo.json.Activity}
+   * Adds a single {@link Comment} to the Object.Attachments
+   * section of the passed in {@link Activity}
    *
    * @param activity output o.a.s.p.j.Activity
    * @param comment input c.g.a.s.p.m.Comment
@@ -139,7 +132,7 @@ public class GooglePlusActivityUtil {
       activity.setObject(new ActivityObject());
     }
     if (activity.getObject().getAttachments() == null) {
-      activity.getObject().setAttachments(new ArrayList<ActivityObject>());
+      activity.getObject().setAttachments(new ArrayList<>());
     }
 
     activity.getObject().getAttachments().add(obj);
@@ -147,7 +140,7 @@ public class GooglePlusActivityUtil {
 
   /**
    * Add in necessary extensions from the passed in {@link com.google.api.services.plus.model.Activity} to the
-   * {@link org.apache.streams.pojo.json.Activity} object
+   * {@link Activity} object
    *
    * @param activity output o.a.s.p.j.Activity
    * @param gPlusActivity input c.g.a.s.p.m.Activity
@@ -180,7 +173,7 @@ public class GooglePlusActivityUtil {
   }
 
   /**
-   * Set the {@link org.apache.streams.pojo.json.ActivityObject} field given the passed in
+   * Set the {@link ActivityObject} field given the passed in
    * {@link com.google.api.services.plus.model.Activity.PlusObject}
    *
    * @param activity output $.object as o.a.s.p.j.ActivityObject
@@ -193,7 +186,7 @@ public class GooglePlusActivityUtil {
       activityObject.setContent(plusObject.getContent());
       activityObject.setObjectType(plusObject.getObjectType());
 
-      java.util.List<ActivityObject> attachmentsList = new ArrayList<>();
+      List<ActivityObject> attachmentsList = new ArrayList<>();
       for (com.google.api.services.plus.model.Activity.PlusObject.Attachments attachments : plusObject.getAttachments()) {
         ActivityObject attach = new ActivityObject();
 
@@ -221,7 +214,7 @@ public class GooglePlusActivityUtil {
 
   /**
    * Given a {@link com.google.api.services.plus.model.Activity.Actor} object, return a fully fleshed
-   * out {@link org.apache.streams.pojo.json.ActivityObject} actor
+   * out {@link ActivityObject} actor
    *
    * @param gPlusActor input c.g.a.s.p.m.Activity.Actor
    * @return {@link ActivityObject} output $.actor as o.a.s.p.j.ActivityObject
@@ -245,7 +238,7 @@ public class GooglePlusActivityUtil {
   }
 
   /**
-   * Extract the relevant details from the passed in {@link com.google.api.services.plus.model.Person} object and build
+   * Extract the relevant details from the passed in {@link Person} object and build
    * an actor with them
    *
    * @param person Person
@@ -282,7 +275,7 @@ public class GooglePlusActivityUtil {
   }
 
   /**
-   * Gets the common googleplus {@link org.apache.streams.pojo.json.Provider} object
+   * Gets the common googleplus {@link Provider} object
    * @return a provider object representing GooglePlus
    */
   public static Provider getProvider() {

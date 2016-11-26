@@ -18,10 +18,6 @@
 
 package org.apache.streams.hdfs.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.hdfs.HdfsConfiguration;
@@ -31,6 +27,11 @@ import org.apache.streams.hdfs.WebHdfsPersistReader;
 import org.apache.streams.hdfs.WebHdfsPersistWriter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -39,6 +40,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,7 +51,7 @@ public class TestHdfsPersist {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestHdfsPersist.class);
 
-    ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+    private ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
     @Before
     public void setup() {
@@ -60,12 +63,12 @@ public class TestHdfsPersist {
     @Test
     public void TestHdfsPersist() throws Exception {
 
-        List<List<String>> fieldArrays = Lists.newArrayList();
-        fieldArrays.add(new ArrayList<String>());
-        fieldArrays.add(Lists.newArrayList("ID"));
-        fieldArrays.add(Lists.newArrayList("ID", "DOC"));
-        fieldArrays.add(Lists.newArrayList("ID", "TS", "DOC"));
-        fieldArrays.add(Lists.newArrayList("ID", "TS", "META", "DOC"));
+        List<List<String>> fieldArrays = new ArrayList<>();
+        fieldArrays.add(new ArrayList<>());
+        fieldArrays.add(Collections.singletonList("ID"));
+        fieldArrays.add(Arrays.asList("ID", "DOC"));
+        fieldArrays.add(Arrays.asList("ID", "TS", "DOC"));
+        fieldArrays.add(Arrays.asList("ID", "TS", "META", "DOC"));
 
         for( List<String> fields : fieldArrays )
             TestHdfsPersistCase(fields);
@@ -108,13 +111,13 @@ public class TestHdfsPersist {
         HdfsReaderConfiguration hdfsReaderConfiguration = MAPPER.convertValue(hdfsConfiguration, HdfsReaderConfiguration.class);
 
         WebHdfsPersistReader reader = new WebHdfsPersistReader(hdfsReaderConfiguration);
-        hdfsReaderConfiguration.setReaderPath(new Integer(fields.size()).toString());
+        hdfsReaderConfiguration.setReaderPath(Integer.toString(fields.size()));
 
         reader.prepare(null);
 
         StreamsResultSet resultSet = reader.readAll();
 
-        assert( resultSet.size() == count);
+        Assert.assertEquals(resultSet.size(), count);
 
     }
 }

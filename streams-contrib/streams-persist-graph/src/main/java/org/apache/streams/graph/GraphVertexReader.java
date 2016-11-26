@@ -33,11 +33,10 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,7 +57,7 @@ public class GraphVertexReader extends SimpleHttpProvider implements StreamsPers
    * GraphVertexReader constructor - resolve GraphReaderConfiguration from JVM 'graph'.
    */
   public GraphVertexReader() {
-    this(new ComponentConfigurator<GraphReaderConfiguration>(GraphReaderConfiguration.class).detectConfiguration(StreamsConfigurator.config.getConfig("graph")));
+    this(new ComponentConfigurator<>(GraphReaderConfiguration.class).detectConfiguration(StreamsConfigurator.config.getConfig("graph")));
   }
 
   /**
@@ -83,7 +82,7 @@ public class GraphVertexReader extends SimpleHttpProvider implements StreamsPers
    * @return result
    */
   public List<ObjectNode> parse(JsonNode jsonNode) {
-    List<ObjectNode> results = Lists.newArrayList();
+    List<ObjectNode> results = new ArrayList<>();
 
     ObjectNode root = (ObjectNode) jsonNode;
 

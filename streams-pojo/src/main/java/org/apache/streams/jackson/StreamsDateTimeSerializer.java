@@ -30,7 +30,7 @@ import java.io.Serializable;
 
 /**
  * StreamsDateTimeSerializer is a supporting class for
- * @see {@link org.apache.streams.jackson.StreamsJacksonMapper}.
+ * @link org.apache.streams.jackson.StreamsJacksonMapper.
  */
 public class StreamsDateTimeSerializer extends StdSerializer<DateTime> implements Serializable {
 
@@ -40,6 +40,6 @@ public class StreamsDateTimeSerializer extends StdSerializer<DateTime> implement
 
   @Override
   public void serialize(DateTime value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-    jgen.writeString(RFC3339Utils.getInstance().format(value));
+    jgen.writeString(RFC3339Utils.format(value));
   }
 }

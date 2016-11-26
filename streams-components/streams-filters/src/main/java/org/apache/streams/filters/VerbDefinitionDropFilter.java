@@ -26,12 +26,12 @@ import org.apache.streams.verbs.VerbDefinitionMatchUtil;
 import org.apache.streams.verbs.VerbDefinitionResolver;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -64,7 +64,7 @@ public class VerbDefinitionDropFilter implements StreamsProcessor {
   @Override
   public List<StreamsDatum> process(StreamsDatum entry) {
 
-    List<StreamsDatum> result = Lists.newArrayList();
+    List<StreamsDatum> result = new ArrayList<>();
 
     LOGGER.debug("{} filtering {}", STREAMS_ID, entry.getDocument().getClass());
 
@@ -74,7 +74,7 @@ public class VerbDefinitionDropFilter implements StreamsProcessor {
 
     activity = (Activity) entry.getDocument();
 
-    if ( VerbDefinitionMatchUtil.match(activity, this.verbDefinitionSet) == false ) {
+    if (!VerbDefinitionMatchUtil.match(activity, this.verbDefinitionSet)) {
       result.add(entry);
     }
 
@@ -88,7 +88,7 @@ public class VerbDefinitionDropFilter implements StreamsProcessor {
     } else {
       resolver = new VerbDefinitionResolver();
     }
-    Preconditions.checkNotNull(resolver);
+    Objects.requireNonNull(resolver);
   }
 
   @Override

@@ -28,16 +28,14 @@ import org.apache.streams.util.oauth.tokens.tokenmanager.impl.BasicTokenManager;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
-
+import facebook4j.Facebook;
+import facebook4j.FacebookFactory;
+import facebook4j.conf.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import facebook4j.Facebook;
-import facebook4j.FacebookFactory;
-import facebook4j.conf.ConfigurationBuilder;
 
 /**
  * Abstract data collector for Facebook.  Iterates over ids and queues data to be output
@@ -66,7 +64,7 @@ public abstract class FacebookDataCollector implements Runnable {
     this.queue = queue;
     this.isComplete = new AtomicBoolean(false);
     this.backOff = new ExponentialBackOffStrategy(5);
-    this.authTokens = new BasicTokenManager<String>();
+    this.authTokens = new BasicTokenManager<>();
     if (config.getUserAccessTokens() != null) {
       for (String token : config.getUserAccessTokens()) {
         this.authTokens.addTokenToPool(token);

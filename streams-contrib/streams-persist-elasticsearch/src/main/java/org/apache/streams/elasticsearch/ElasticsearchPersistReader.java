@@ -27,7 +27,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Queues;
-
 import org.elasticsearch.search.SearchHit;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -200,7 +199,7 @@ public class ElasticsearchPersistReader implements StreamsPersistReader, Seriali
       StreamsDatum item;
       while (query.hasNext()) {
         SearchHit hit = query.next();
-        ObjectNode jsonObject = null;
+        ObjectNode jsonObject;
         try {
           jsonObject = mapper.readValue(hit.getSourceAsString(), ObjectNode.class);
           item = new StreamsDatum(jsonObject, hit.getId());

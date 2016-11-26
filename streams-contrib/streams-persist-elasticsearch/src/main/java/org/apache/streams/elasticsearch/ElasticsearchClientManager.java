@@ -19,7 +19,6 @@
 package org.apache.streams.elasticsearch;
 
 import com.google.common.net.InetAddresses;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;

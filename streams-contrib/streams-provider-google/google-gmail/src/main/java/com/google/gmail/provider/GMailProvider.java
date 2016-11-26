@@ -25,7 +25,6 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 
-import com.google.common.base.Preconditions;
 import com.google.gmail.GMailConfiguration;
 import com.googlecode.gmail4j.GmailClient;
 import com.googlecode.gmail4j.GmailConnection;
@@ -33,13 +32,13 @@ import com.googlecode.gmail4j.http.HttpGmailConnection;
 import com.googlecode.gmail4j.javamail.ImapGmailClient;
 import com.googlecode.gmail4j.javamail.ImapGmailConnection;
 import com.googlecode.gmail4j.rss.RssGmailClient;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -89,7 +88,7 @@ public class GMailProvider implements StreamsProvider, Serializable {
   private static ExecutorService newFixedThreadPoolWithQueueSize(int nThreads, int queueSize) {
     return new ThreadPoolExecutor(nThreads, nThreads,
         5000L, TimeUnit.MILLISECONDS,
-        new ArrayBlockingQueue<Runnable>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
+        new ArrayBlockingQueue<>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
   }
 
   public GMailProvider() {
@@ -162,10 +161,10 @@ public class GMailProvider implements StreamsProvider, Serializable {
   @Override
   public void prepare(Object configurationObject) {
 
-    Preconditions.checkNotNull(this.klass);
+    Objects.requireNonNull(this.klass);
 
-    Preconditions.checkNotNull(config.getUserName());
-    Preconditions.checkNotNull(config.getPassword());
+    Objects.requireNonNull(config.getUserName());
+    Objects.requireNonNull(config.getPassword());
 
     rssClient = new RssGmailClient();
     GmailConnection rssConnection = new HttpGmailConnection(config.getUserName(), config.getPassword().toCharArray());

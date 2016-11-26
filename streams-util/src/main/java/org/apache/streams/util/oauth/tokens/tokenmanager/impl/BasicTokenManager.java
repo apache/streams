@@ -47,21 +47,17 @@ public class BasicTokenManager<T> implements SimpleTokenManager<T> {
    */
   public BasicTokenManager(Collection<T> tokens) {
     if (tokens != null) {
-      this.availableTokens = new ArrayList<T>(tokens.size());
+      this.availableTokens = new ArrayList<>(tokens.size());
       this.addAllTokensToPool(tokens);
     } else {
-      this.availableTokens = new ArrayList<T>();
+      this.availableTokens = new ArrayList<>();
     }
     this.nextToken = 0;
   }
 
   @Override
   public synchronized boolean addTokenToPool(T token) {
-    if (token == null || this.availableTokens.contains(token)) {
-      return false;
-    } else {
-      return this.availableTokens.add(token);
-    }
+    return !(token == null || this.availableTokens.contains(token)) && this.availableTokens.add(token);
   }
 
   @Override
@@ -75,9 +71,9 @@ public class BasicTokenManager<T> implements SimpleTokenManager<T> {
 
   @Override
   public synchronized T getNextAvailableToken() {
-    T token = null;
+    T token;
     if (this.availableTokens.size() == 0) {
-      return token;
+      return null;
     } else {
       token = this.availableTokens.get(nextToken++);
       if (nextToken == this.availableTokens.size()) {

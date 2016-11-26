@@ -20,7 +20,6 @@ package com.google.gmail.test;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

@@ -18,18 +18,19 @@
 
 package org.apache.streams.converter.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
+import org.apache.streams.converter.TypeConverterProcessor;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
-import org.apache.streams.converter.TypeConverterProcessor;
 import org.apache.streams.data.util.ActivityUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -55,7 +56,7 @@ public class TypeConverterProcessorTest {
     @Test
     public void testTypeConverterStringToString() {
         final String ID = "1";
-        StreamsProcessor processor = new TypeConverterProcessor(String.class, Lists.newArrayList(DATASIFT_FORMAT));
+        StreamsProcessor processor = new TypeConverterProcessor(String.class, Collections.singletonList(DATASIFT_FORMAT));
         processor.prepare(null);
         StreamsDatum datum = new StreamsDatum(DATASIFT_JSON, ID);
         List<StreamsDatum> result = processor.process(datum);
@@ -74,7 +75,7 @@ public class TypeConverterProcessorTest {
     @Test
     public void testTypeConverterStringToObjectNode() {
         final String ID = "1";
-        StreamsProcessor processor = new TypeConverterProcessor(ObjectNode.class, Lists.newArrayList(DATASIFT_FORMAT));
+        StreamsProcessor processor = new TypeConverterProcessor(ObjectNode.class, Collections.singletonList(DATASIFT_FORMAT));
         processor.prepare(null);
         StreamsDatum datum = new StreamsDatum(DATASIFT_JSON, ID);
         List<StreamsDatum> result = processor.process(datum);
@@ -93,7 +94,7 @@ public class TypeConverterProcessorTest {
     @Test
     public void testTypeConverterObjectNodeToString() throws IOException {
         final String ID = "1";
-        StreamsProcessor processor = new TypeConverterProcessor(String.class, Lists.newArrayList(DATASIFT_FORMAT));
+        StreamsProcessor processor = new TypeConverterProcessor(String.class, Collections.singletonList(DATASIFT_FORMAT));
         processor.prepare(null);
         ObjectMapper mapper = StreamsJacksonMapper.getInstance(DATASIFT_FORMAT);
         ObjectNode node = mapper.readValue(DATASIFT_JSON, ObjectNode.class);
@@ -114,7 +115,7 @@ public class TypeConverterProcessorTest {
     @Test
     public void testTypeConverterStringToActivity() {
         final String ID = "1";
-        StreamsProcessor processor = new TypeConverterProcessor(Activity.class, Lists.newArrayList(DATASIFT_FORMAT));
+        StreamsProcessor processor = new TypeConverterProcessor(Activity.class, Collections.singletonList(DATASIFT_FORMAT));
         processor.prepare(null);
         StreamsDatum datum = new StreamsDatum(ACTIVITY_JSON, ID);
         List<StreamsDatum> result = processor.process(datum);
@@ -134,7 +135,7 @@ public class TypeConverterProcessorTest {
     @Test
     public void testTypeConverterObjectNodeToActivity() throws IOException {
         final String ID = "1";
-        StreamsProcessor processor = new TypeConverterProcessor(Activity.class, Lists.newArrayList(DATASIFT_FORMAT));
+        StreamsProcessor processor = new TypeConverterProcessor(Activity.class, Collections.singletonList(DATASIFT_FORMAT));
         processor.prepare(null);
         ObjectMapper mapper = StreamsJacksonMapper.getInstance(DATASIFT_FORMAT);
         ObjectNode node = mapper.readValue(ACTIVITY_JSON, ObjectNode.class);
@@ -156,7 +157,7 @@ public class TypeConverterProcessorTest {
     @Test
     public void testTypeConverterActivityToString() throws IOException {
         final String ID = "1";
-        StreamsProcessor processor = new TypeConverterProcessor(String.class, Lists.newArrayList(DATASIFT_FORMAT));
+        StreamsProcessor processor = new TypeConverterProcessor(String.class, Collections.singletonList(DATASIFT_FORMAT));
         processor.prepare(null);
         ObjectMapper mapper = StreamsJacksonMapper.getInstance(DATASIFT_FORMAT);
         Activity node = mapper.readValue(ACTIVITY_JSON, Activity.class);
@@ -174,7 +175,7 @@ public class TypeConverterProcessorTest {
     @Test
     public void testTypeConverterActivityToObjectNode() throws IOException {
         final String ID = "1";
-        StreamsProcessor processor = new TypeConverterProcessor(ObjectNode.class, Lists.newArrayList(DATASIFT_FORMAT));
+        StreamsProcessor processor = new TypeConverterProcessor(ObjectNode.class, Collections.singletonList(DATASIFT_FORMAT));
         processor.prepare(null);
         ObjectMapper mapper = StreamsJacksonMapper.getInstance(DATASIFT_FORMAT);
         Activity node = mapper.readValue(ACTIVITY_JSON, Activity.class);

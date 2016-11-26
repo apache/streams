@@ -30,7 +30,6 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.model.Person;
 import com.google.gplus.serializer.util.GPlusPersonDeserializer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +72,7 @@ public  class GPlusUserDataCollector extends GPlusDataCollector {
 
   protected void queueUserHistory() {
     try {
-      boolean tryAgain = false;
+      boolean tryAgain;
       int attempts = 0;
       com.google.api.services.plus.model.Person person = null;
       do {

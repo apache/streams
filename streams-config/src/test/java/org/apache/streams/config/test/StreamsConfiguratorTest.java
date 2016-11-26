@@ -18,33 +18,18 @@
 
 package org.apache.streams.config.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import org.apache.streams.config.ComponentConfiguration;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
+
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.Serializable;
-import java.util.Map;
-import java.util.Scanner;
-
 /**
- * Test for
- * @see {@link org.apache.streams.config.StreamsConfigurator}
+ * Test for {@link org.apache.streams.config.StreamsConfigurator}
  */
 public class StreamsConfiguratorTest {
-
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     public void testDetectConfiguration() throws Exception {
@@ -53,7 +38,7 @@ public class StreamsConfiguratorTest {
 
         Config detected = StreamsConfigurator.getConfig();
 
-        junit.framework.Assert.assertEquals(config, detected);
+        Assert.assertEquals(config, detected);
 
         StreamsConfiguration defaultPojo = StreamsConfigurator.detectConfiguration();
 
@@ -63,7 +48,7 @@ public class StreamsConfiguratorTest {
 
         assert(configuredPojo != null);
 
-        junit.framework.Assert.assertEquals(configuredPojo, defaultPojo);
+        Assert.assertEquals(configuredPojo, defaultPojo);
 
     }
 }

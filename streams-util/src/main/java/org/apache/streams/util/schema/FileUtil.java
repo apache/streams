@@ -19,7 +19,7 @@
 package org.apache.streams.util.schema;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ public class FileUtil {
    * @return without path prefix
    */
   public static String dropSourcePathPrefix(String inputFile, String sourceDirectory) {
-    if (Strings.isNullOrEmpty(sourceDirectory)) {
+    if (StringUtils.isBlank(sourceDirectory)) {
       return inputFile;
     } else {
       try {

@@ -22,6 +22,7 @@ import org.apache.streams.data.util.ActivityUtil;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.facebook.Cover;
 import org.apache.streams.facebook.Datum;
+import org.apache.streams.facebook.Like;
 import org.apache.streams.facebook.Location;
 import org.apache.streams.facebook.Page;
 import org.apache.streams.facebook.Place;
@@ -37,9 +38,7 @@ import org.apache.streams.pojo.json.Provider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +46,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * FacebookActivityUtil helps convert facebook data to activity formats.
@@ -93,9 +93,9 @@ public class FacebookActivityUtil {
   }
 
   /**
-   * Builds out the {@link org.apache.streams.pojo.json.ActivityObject} from the given {@link Post}.
+   * Builds out the {@link ActivityObject} from the given {@link Post}.
    * @param post
-   * @return {@link org.apache.streams.pojo.json.ActivityObject}
+   * @return {@link ActivityObject}
    */
   public static ActivityObject buildObject(Post post) {
     ActivityObject activityObject = new ActivityObject();
@@ -122,7 +122,7 @@ public class FacebookActivityUtil {
   }
 
   /**
-   * Gets the common facebook {@link org.apache.streams.pojo.json.Provider} object.
+   * Gets the common facebook {@link Provider} object.
    * @return a provider object representing Facebook
    */
   public static Provider getProvider() {
@@ -134,17 +134,15 @@ public class FacebookActivityUtil {
   }
 
   /**
-   * Builds the activity {@link org.apache.streams.pojo.json.ActivityObject} actor from the Page.
+   * Builds the activity {@link ActivityObject} actor from the Page.
    * @param page the object to use as the source
    * @return a valid Actor populated from the Page
    */
   public static ActivityObject buildActor(Page page) {
     ActivityObject actor = new ActivityObject();
     actor.setId(formatId(
-        Optional.fromNullable(
-            page.getId())
-            .or(Optional.of(page.getId().toString()))
-            .orNull()
+        Optional.ofNullable(Optional.ofNullable(page.getId())
+            .orElseGet(Optional.of(page.getId())::get)).orElse(null)
     ));
 
     actor.setDisplayName(page.getName());
@@ -169,19 +167,17 @@ public class FacebookActivityUtil {
   }
 
   /**
-   * Builds an {@link org.apache.streams.pojo.json.ActivityObject} object from the {@link Post}.
+   * Builds an {@link ActivityObject} object from the {@link Post}.
    * @param post post
-   * @return {@link org.apache.streams.pojo.json.ActivityObject}
+   * @return {@link ActivityObject}
    */
   public static ActivityObject buildActor(Post post) {
     ActivityObject actor = new ActivityObject();
 
     try {
       actor.setId(formatId(
-          Optional.fromNullable(
-              post.getFrom().getId())
-              .or(Optional.of(post.getFrom().getId()))
-              .orNull()
+          Optional.ofNullable(Optional.ofNullable(post.getFrom().getId())
+              .orElseGet(Optional.of(post.getFrom().getId())::get)).orElse(null)
       ));
 
       actor.setDisplayName(post.getFrom().getName());
@@ -215,7 +211,7 @@ public class FacebookActivityUtil {
     }
 
     /**
-     * Fills out the extensions attribute of the passed in {@link org.apache.streams.pojo.json.Activity}
+     * Fills out the extensions attribute of the passed in {@link Activity}
      * @param activity
      * @param post
      */
@@ -226,7 +222,7 @@ public class FacebookActivityUtil {
 
         if(post.getLikes() != null && post.getLikes().size() > 0) {
             Map<String, Object> likes = new HashMap<>();
-            org.apache.streams.facebook.Like like = post.getLikes().get(0);
+            Like like = post.getLikes().get(0);
 
             if(like.getAdditionalProperties().containsKey("data")) {
                 extensions.put("likes", likes);

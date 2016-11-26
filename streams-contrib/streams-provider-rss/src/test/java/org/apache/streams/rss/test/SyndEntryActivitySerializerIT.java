@@ -27,7 +27,6 @@ import org.apache.streams.rss.serializer.SyndEntryActivitySerializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
@@ -35,7 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 import static org.junit.Assert.assertEquals;
@@ -54,8 +55,8 @@ public class SyndEntryActivitySerializerIT {
   @Test
   public void testJsonData() throws Exception {
     Scanner scanner = new Scanner(this.getClass().getResourceAsStream("/TestSyndEntryJson.txt"));
-    List<Activity> activities = Lists.newLinkedList();
-    List<ObjectNode> objects = Lists.newLinkedList();
+    List<Activity> activities = new LinkedList<>();
+    List<ObjectNode> objects = new LinkedList<>();
 
     SyndEntryActivitySerializer serializer = new SyndEntryActivitySerializer();
 
@@ -125,7 +126,8 @@ public class SyndEntryActivitySerializerIT {
   }
 
   public void testUrl(String expectedUri, String expectedLink, Activity activity) {
-    assertTrue((expectedUri == activity.getUrl() || expectedLink == activity.getUrl()));
-    assertTrue((expectedUri == activity.getObject().getUrl() || expectedLink == activity.getObject().getUrl()));
+    assertTrue((Objects.equals(expectedUri, activity.getUrl()) || Objects.equals(expectedLink, activity.getUrl())));
+    assertTrue((Objects.equals(expectedUri, activity.getObject().getUrl()) ||
+      Objects.equals(expectedLink, activity.getObject().getUrl())));
   }
 }

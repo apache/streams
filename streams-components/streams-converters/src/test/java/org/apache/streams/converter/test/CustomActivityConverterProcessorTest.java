@@ -18,24 +18,27 @@
 
 package org.apache.streams.converter.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.streams.converter.ActivityConverterProcessor;
 import org.apache.streams.converter.ActivityConverterProcessorConfiguration;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test for
- * @see {@link org.apache.streams.converter.ActivityConverterProcessor}
+ * {@link org.apache.streams.converter.ActivityConverterProcessor}
  *
  * Test that arbitrary POJO conversion works, including when POJO represented as String & ObjectNode.
  */
@@ -43,15 +46,13 @@ public class CustomActivityConverterProcessorTest {
 
     private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-    ActivityConverterProcessor processor;
+    private ActivityConverterProcessor processor;
 
-    ActivityConverterProcessorConfiguration configuration;
-
-    CustomType testDocument;
+    private CustomType testDocument;
 
     @Before
     public void setup() {
-        configuration = new ActivityConverterProcessorConfiguration();
+        ActivityConverterProcessorConfiguration configuration = new ActivityConverterProcessorConfiguration();
         configuration.getClassifiers().add(new CustomDocumentClassifier());
         configuration.getConverters().add(new CustomActivityConverter());
         processor = new ActivityConverterProcessor(configuration);

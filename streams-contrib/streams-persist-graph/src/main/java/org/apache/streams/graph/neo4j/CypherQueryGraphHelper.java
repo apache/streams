@@ -27,17 +27,17 @@ import org.apache.streams.pojo.json.ActivityObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.ST;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Supporting class for interacting with neo4j via rest API
@@ -48,10 +48,10 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Neo4jHttpGraphHelper.class);
 
-  public static final String getVertexLongIdStatementTemplate = "MATCH (v) WHERE ID(v) = <id> RETURN v";
-  public static final String getVertexStringIdStatementTemplate = "MATCH (v {id: '<id>'} ) RETURN v";
+  private static final String getVertexLongIdStatementTemplate = "MATCH (v) WHERE ID(v) = <id> RETURN v";
+  private static final String getVertexStringIdStatementTemplate = "MATCH (v {id: '<id>'} ) RETURN v";
 
-  public static final String createVertexStatementTemplate =
+  private static final String createVertexStatementTemplate =
       "MATCH (x {id: '<id>'}) "
           + "CREATE UNIQUE (v:<type> { props }) "
           + "ON CREATE SET v <labels> "
@@ -59,13 +59,13 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
 
 
 
-  public static final String mergeVertexStatementTemplate =
+  private static final String mergeVertexStatementTemplate =
       "MERGE (v:<type> {id: '<id>'}) "
           + "ON CREATE SET v <labels>, v = { props }, v.`@timestamp` = timestamp() "
           + "ON MATCH SET v <labels>, v = { props }, v.`@timestamp` = timestamp() "
           + "RETURN v";
 
-  public static final String createEdgeStatementTemplate =
+  private static final String createEdgeStatementTemplate =
       "MATCH (s:<s_type> {id: '<s_id>'}),(d:<d_type> {id: '<d_id>'}) "
           + "CREATE UNIQUE (s)-[r:<r_type> <r_props>]->(d) "
           + "RETURN r";
@@ -113,7 +113,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
    */
   public Pair<String, Map<String, Object>> createVertexRequest(ActivityObject activityObject) {
 
-    Preconditions.checkNotNull(activityObject.getObjectType());
+    Objects.requireNonNull(activityObject.getObjectType());
 
     List<String> labels = getLabels(activityObject);
 
@@ -144,9 +144,9 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
    */
   public Pair<String, Map<String, Object>> mergeVertexRequest(ActivityObject activityObject) {
 
-    Preconditions.checkNotNull(activityObject.getObjectType());
+    Objects.requireNonNull(activityObject.getObjectType());
 
-    Pair queryPlusParameters = new Pair(null, Maps.newHashMap());
+    Pair queryPlusParameters = new Pair(null, new HashMap<>());
 
     List<String> labels = getLabels(activityObject);
 
@@ -176,7 +176,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
    */
   public Pair<String, Map<String, Object>> createEdgeRequest(Activity activity) {
 
-    Pair queryPlusParameters = new Pair(null, Maps.newHashMap());
+    Pair queryPlusParameters = new Pair(null, new HashMap<>());
 
     ObjectNode object = MAPPER.convertValue(activity, ObjectNode.class);
     Map<String, Object> props = PropertyUtil.flattenToMap(object, '.');
@@ -213,7 +213,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
   public static String getPropertyCreater(Map<String, Object> map) {
     StringBuilder builder = new StringBuilder();
     builder.append("{");
-    List<String> parts = Lists.newArrayList();
+    List<String> parts = new ArrayList<>();
     for ( Map.Entry<String, Object> entry : map.entrySet()) {
       if ( entry.getValue() instanceof String ) {
         String propVal = (String) (entry.getValue());
@@ -226,7 +226,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
   }
 
   private List<String> getLabels(ActivityObject activityObject) {
-    List<String> labels = Lists.newArrayList(":streams");
+    List<String> labels = Collections.singletonList(":streams");
     if ( activityObject.getAdditionalProperties().containsKey("labels") ) {
       List<String> extraLabels = (List<String>)activityObject.getAdditionalProperties().get("labels");
       for ( String extraLabel : extraLabels ) {

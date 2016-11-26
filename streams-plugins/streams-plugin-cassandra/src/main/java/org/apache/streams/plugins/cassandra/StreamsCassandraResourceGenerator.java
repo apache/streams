@@ -21,7 +21,6 @@ package org.apache.streams.plugins.cassandra;
 
 import org.apache.streams.util.schema.FieldType;
 import org.apache.streams.util.schema.FieldUtil;
-import org.apache.streams.util.schema.GenerationConfig;
 import org.apache.streams.util.schema.Schema;
 import org.apache.streams.util.schema.SchemaStore;
 import org.apache.streams.util.schema.SchemaStoreImpl;
@@ -29,10 +28,7 @@ import org.apache.streams.util.schema.SchemaStoreImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.jsonschema2pojo.util.URLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +36,13 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.streams.util.schema.FileUtil.dropExtension;
@@ -113,7 +112,7 @@ public class StreamsCassandraResourceGenerator implements Runnable {
    */
   public void generate(StreamsCassandraGenerationConfig config) {
 
-    LinkedList<File> sourceFiles = new LinkedList<File>();
+    LinkedList<File> sourceFiles = new LinkedList<>();
 
     for (Iterator<URL> sources = config.getSource(); sources.hasNext();) {
       URL source = sources.next();
@@ -122,12 +121,11 @@ public class StreamsCassandraResourceGenerator implements Runnable {
 
     LOGGER.info("Seeded with {} source paths:", sourceFiles.size());
 
-    resolveRecursive((GenerationConfig)config, sourceFiles);
+    resolveRecursive(config, sourceFiles);
 
     LOGGER.info("Resolved {} schema files:", sourceFiles.size());
 
-    for (Iterator<File> iterator = sourceFiles.iterator(); iterator.hasNext();) {
-      File item = iterator.next();
+    for (File item : sourceFiles) {
       schemaStore.create(item.toURI());
     }
 
@@ -273,7 +271,7 @@ public class StreamsCassandraResourceGenerator implements Runnable {
     // safe to append nothing
     checkNotNull(builder);
     String schemaSymbol = schemaSymbol(schema);
-    if ( !Strings.isNullOrEmpty(fieldId) && schemaSymbol != null ) {
+    if (StringUtils.isNotBlank(fieldId) && schemaSymbol != null ) {
       builder.append(cqlEscape(fieldId));
       builder.append(seperator);
       builder.append("list<" + schemaSymbol + ">");
@@ -287,7 +285,7 @@ public class StreamsCassandraResourceGenerator implements Runnable {
     // safe to append nothing
     checkNotNull(builder);
     String schemaSymbol = schemaSymbol(schema);
-    if ( !Strings.isNullOrEmpty(fieldId) && schemaSymbol != null ) {
+    if (StringUtils.isNotBlank(fieldId) && schemaSymbol != null ) {
       builder.append(cqlEscape(fieldId));
       builder.append(seperator);
       builder.append(schemaSymbol);
@@ -307,7 +305,7 @@ public class StreamsCassandraResourceGenerator implements Runnable {
     checkNotNull(propertiesNode);
     Iterator<Map.Entry<String, JsonNode>> fields = propertiesNode.fields();
     Joiner joiner = Joiner.on("," + LS).skipNulls();
-    List<String> fieldStrings = Lists.newArrayList();
+    List<String> fieldStrings = new ArrayList<>();
     for ( ; fields.hasNext(); ) {
       Map.Entry<String, JsonNode> field = fields.next();
       String fieldId = field.getKey();
@@ -320,7 +318,7 @@ public class StreamsCassandraResourceGenerator implements Runnable {
               ObjectNode itemsNode = (ObjectNode) fieldNode.get("items");
               if ( currentDepth <= config.getMaxDepth()) {
                 StringBuilder arrayItemsBuilder = appendArrayItems(new StringBuilder(), schema, fieldId, itemsNode, seperator);
-                if ( !Strings.isNullOrEmpty(arrayItemsBuilder.toString())) {
+                if (StringUtils.isNotBlank(arrayItemsBuilder.toString())) {
                   fieldStrings.add(arrayItemsBuilder.toString());
                 }
               }
@@ -355,14 +353,14 @@ public class StreamsCassandraResourceGenerator implements Runnable {
               //ObjectNode childProperties = schemaStore.resolveProperties(schema, fieldNode, fieldId);
               if ( currentDepth < config.getMaxDepth()) {
                 StringBuilder structFieldBuilder = appendSchemaField(new StringBuilder(), objectSchema, fieldId, seperator);
-                if ( !Strings.isNullOrEmpty(structFieldBuilder.toString())) {
+                if (StringUtils.isNotBlank(structFieldBuilder.toString())) {
                   fieldStrings.add(structFieldBuilder.toString());
                 }
               }
               break;
             default:
               StringBuilder valueFieldBuilder = appendValueField(new StringBuilder(), schema, fieldId, fieldType, seperator);
-              if ( !Strings.isNullOrEmpty(valueFieldBuilder.toString())) {
+              if (StringUtils.isNotBlank(valueFieldBuilder.toString())) {
                 fieldStrings.add(valueFieldBuilder.toString());
               }
           }
@@ -370,7 +368,7 @@ public class StreamsCassandraResourceGenerator implements Runnable {
       }
     }
     builder.append(joiner.join(fieldStrings)).append(LS);
-    Preconditions.checkNotNull(builder);
+    Objects.requireNonNull(builder);
     return builder;
   }
 

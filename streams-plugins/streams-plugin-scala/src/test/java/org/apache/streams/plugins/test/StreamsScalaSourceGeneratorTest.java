@@ -30,9 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileFilter;
-import javax.annotation.Nullable;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -43,16 +42,7 @@ public class StreamsScalaSourceGeneratorTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorTest.class);
 
-  public static final Predicate<File> scalaFilter = new Predicate<File>() {
-    @Override
-    public boolean apply(@Nullable File file) {
-      if ( file.getName().endsWith(".scala") ) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  };
+  public static final Predicate<File> scalaFilter = file -> file.getName().endsWith(".scala");
 
   /**
    * Tests that StreamsScalaSourceGenerator via SDK generates scala sources.
@@ -71,16 +61,7 @@ public class StreamsScalaSourceGeneratorTest {
     streamsScalaSourceGenerator.run();
 
     File testOutput = new File( "./target/generated-sources/scala-test/org/apache/streams/scala");
-    FileFilter scalaFilter = new FileFilter() {
-      @Override
-      public boolean accept(File pathname) {
-        if ( pathname.getName().endsWith(".scala") ) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    };
+    FileFilter scalaFilter = pathname -> pathname.getName().endsWith(".scala");
 
     assertNotNull( testOutput );
     assertTrue( testOutput.exists() );

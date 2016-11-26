@@ -18,7 +18,11 @@
 
 package org.apache.streams.urls;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
@@ -57,7 +61,7 @@ public final class LinkResolverHelperFunctions {
     public static final long DEFAULT_STAGGER = RECENT_DOMAINS_BACKOFF / 10;
 
     // Map to store the information of recent domains, with the last time they were accessed.
-    private static final ConcurrentMap<String, Date> RECENT_DOMAINS = new ConcurrentHashMap<String, Date>();
+    private static final ConcurrentMap<String, Date> RECENT_DOMAINS = new ConcurrentHashMap<>();
 
     private static Timer timer;
 
@@ -142,7 +146,7 @@ public final class LinkResolverHelperFunctions {
             // see if there is any work that 'can' be done
             if(RECENT_DOMAINS.size() != 0) {
                 // create a temporary list of the items that can be removed
-                Collection<String> ableToRemove = new HashSet<String>();
+                Collection<String> ableToRemove = new HashSet<>();
 
 
                 // iterate through all the domains (keys)

@@ -25,7 +25,6 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.rss.FeedDetails;
 import org.apache.streams.rss.RssStreamConfiguration;
 import org.apache.streams.rss.provider.perpetual.RssFeedScheduler;
 import org.apache.streams.util.ComponentUtils;
@@ -47,11 +46,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -65,7 +60,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class RssStreamProvider implements StreamsProvider {
 
-  public static final String STREAMS_ID = "RssStreamProvider";
+  private static final String STREAMS_ID = "RssStreamProvider";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RssStreamProvider.class);
 
@@ -142,7 +137,7 @@ public class RssStreamProvider implements StreamsProvider {
 
   @Override
   public void prepare(Object configurationObject) {
-    this.executor = new ThreadPoolExecutor(1, 4, 15L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+    this.executor = new ThreadPoolExecutor(1, 4, 15L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     this.dataQueue = new LinkedBlockingQueue<>();
     this.scheduler = getScheduler(this.dataQueue);
     this.isComplete = new AtomicBoolean(false);

@@ -39,7 +39,6 @@ import com.amazonaws.services.s3.S3ClientOptions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +69,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
   private ObjectMapper objectMapper;
   private AmazonS3Client amazonS3Client;
   private S3WriterConfiguration s3WriterConfiguration;
-  private final List<String> writtenFiles = new ArrayList<String>();
+  private final List<String> writtenFiles = new ArrayList<>();
   protected LineReadWriteUtil lineWriterUtil;
 
   private final AtomicLong totalBytesWritten = new AtomicLong();
@@ -79,7 +78,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
   private final AtomicInteger totalRecordsWritten = new AtomicInteger();
   private AtomicInteger fileLineCounter = new AtomicInteger();
 
-  private static Map<String, String> objectMetaData = new HashMap<String, String>();
+  private static Map<String, String> objectMetaData = new HashMap<>();
 
   static {
     objectMetaData.put("line[0]", "id");
@@ -103,7 +102,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
   }
 
   public Map<String, String> getObjectMetaData() {
-    return this.objectMetaData;
+    return objectMetaData;
   }
 
   public ObjectMapper getObjectMapper() {
@@ -115,7 +114,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
   }
 
   public void setObjectMetaData(Map<String, String> val) {
-    this.objectMetaData = val;
+    objectMetaData = val;
   }
 
   public S3PersistWriter() {
@@ -203,7 +202,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
           this.s3WriterConfiguration.getBucket(),
           this.s3WriterConfiguration.getWriterPath(),
           fileName,
-          this.objectMetaData);
+          objectMetaData);
 
       // reset the counter
       this.fileLineCounter = new AtomicInteger();

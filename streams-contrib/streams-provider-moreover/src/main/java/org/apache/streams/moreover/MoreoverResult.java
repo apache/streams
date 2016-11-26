@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.google.common.collect.Lists;
 import com.moreover.api.Article;
 import com.moreover.api.ArticlesResponse;
 import org.slf4j.Logger;
@@ -36,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,7 +43,6 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
 
   private static final Logger logger = LoggerFactory.getLogger(MoreoverResult.class);
 
-  private ObjectMapper mapper;
   private XmlMapper xmlMapper;
 
   private String xmlString;
@@ -57,7 +56,7 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
   private BigInteger maxSequencedId = BigInteger.ZERO;
 
   protected ArticlesResponse response;
-  protected List<StreamsDatum> list = Lists.newArrayList();
+  protected List<StreamsDatum> list = new ArrayList<>();
 
   protected MoreoverResult(String clientId, String xmlString, long start, long end) {
     this.xmlString = xmlString;
@@ -92,7 +91,7 @@ public class MoreoverResult implements Iterable<StreamsDatum> {
         DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
         Boolean.FALSE);
 
-    mapper = new ObjectMapper();
+    ObjectMapper mapper = new ObjectMapper();
 
     mapper
         .configure(

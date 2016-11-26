@@ -30,7 +30,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
 import org.apache.hadoop.fs.FileSystem;
@@ -65,7 +64,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
   private Path path;
   private int linesPerFile;
   private int totalRecordsWritten = 0;
-  private final List<Path> writtenFiles = new ArrayList<Path>();
+  private final List<Path> writtenFiles = new ArrayList<>();
   private int fileLineCounter = 0;
   private OutputStreamWriter currentWriter = null;
 

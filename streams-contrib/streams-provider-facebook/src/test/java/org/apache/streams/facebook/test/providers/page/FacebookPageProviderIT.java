@@ -21,7 +21,6 @@ package org.apache.streams.facebook.test.providers.page;
 import org.apache.streams.facebook.provider.page.FacebookPageProvider;
 
 import com.google.common.collect.Lists;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +43,7 @@ public class FacebookPageProviderIT {
     args[0] = configfile;
     args[1] = outfile;
 
-    Thread testThread = new Thread((Runnable) () -> {
+    Thread testThread = new Thread(() -> {
       try {
         FacebookPageProvider.main(args);
       } catch( Exception e ) {
