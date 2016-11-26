@@ -20,7 +20,7 @@ package org.apache.streams.gplus.test.providers;
 
 import com.google.common.collect.Lists;
 import com.google.gplus.provider.GPlusUserDataProvider;
-import org.junit.Test;
+import org.testng.annotations.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ public class GPlusUserDataProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GPlusUserDataProviderIT.class);
 
-  @Test
+  @Test(groups={"testGPlusUserDataProvider"})
   public void testGPlusUserDataProvider() throws Exception {
 
     String configfile = "./target/test-classes/GPlusUserDataProviderIT.conf";

@@ -19,9 +19,9 @@
 package org.apache.streams.gplus.test.providers;
 
 import com.google.gplus.provider.GPlusUserActivityProvider;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileReader;
@@ -31,7 +31,7 @@ public class GPlusUserActivityProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GPlusUserActivityProviderIT.class);
 
-  @Test
+  @Test(groups={"testGPlusUserActivityProvider"})
   public void testGPlusUserActivityProvider() throws Exception {
 
     String configfile = "./target/test-classes/GPlusUserActivityProviderIT.conf";
