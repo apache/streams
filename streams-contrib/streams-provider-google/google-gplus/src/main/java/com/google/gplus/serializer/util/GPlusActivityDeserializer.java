@@ -158,10 +158,12 @@ public class GPlusActivityDeserializer extends JsonDeserializer<Activity> {
           attachments1.setUrl(attachmentNode.get("url").asText());
         }
 
-        Activity.PlusObject.Attachments.Image image1 = new Activity.PlusObject.Attachments.Image();
-        JsonNode imageNode1 = attachmentNode.get("image");
-        image1.setUrl(imageNode1.get("url").asText());
-        attachments1.setImage(image1);
+        if( attachmentNode.has("image")) {
+          Activity.PlusObject.Attachments.Image image1 = new Activity.PlusObject.Attachments.Image();
+          JsonNode imageNode1 = attachmentNode.get("image");
+          image1.setUrl(imageNode1.get("url").asText());
+          attachments1.setImage(image1);
+        }
 
         attachments.add(attachments1);
       }

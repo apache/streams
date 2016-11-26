@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package com.google.gplus.processor;
+package org.apache.streams.gplus.test.processors;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.exceptions.ActivitySerializerException;
@@ -27,39 +27,38 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.api.services.plus.model.Person;
+import com.google.gplus.processor.GooglePlusTypeConverter;
 import com.google.gplus.serializer.util.GPlusActivityDeserializer;
 import com.google.gplus.serializer.util.GPlusPersonDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
-
-import org.apache.commons.lang.StringUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
- * Tests conversion of gplus inputs to Activity.
+ * Tests conversion of gplus inputs to Activity
  */
-@Ignore("ignore until test resources are available.")
-public class GooglePlusTypeConverterTest {
-  private static final Logger LOGGER = LoggerFactory.getLogger(GooglePlusTypeConverterTest.class);
+public class GooglePlusTypeConverterIT {
+
+  private final static Logger LOGGER = LoggerFactory.getLogger(GooglePlusTypeConverterIT.class);
   private GooglePlusTypeConverter googlePlusTypeConverter;
   private ObjectMapper objectMapper;
 
-  /**
-   * setup.
-   */
-  @Before
+  @BeforeClass
   public void setup() {
     objectMapper = StreamsJacksonMapper.getInstance();
     SimpleModule simpleModule = new SimpleModule();
@@ -72,9 +71,11 @@ public class GooglePlusTypeConverterTest {
     googlePlusTypeConverter.prepare(null);
   }
 
-  @Test
+  @Test(dependsOnGroups={"testGPlusUserDataProvider"})
   public void testProcessPerson() throws IOException, ActivitySerializerException {
-    InputStream is = GooglePlusTypeConverterTest.class.getResourceAsStream("/google_plus_person_jsons.txt");
+
+    File file = new File("target/test-classes/GPlusUserDataProviderIT.stdout.txt");
+    InputStream is = new FileInputStream(file);
     InputStreamReader isr = new InputStreamReader(is);
     BufferedReader br = new BufferedReader(isr);
 
@@ -93,15 +94,17 @@ public class GooglePlusTypeConverterTest {
         GooglePlusActivityUtil.updateActivity(person, activity);
 
         assertEquals(retList.size(), 1);
-        assert (retList.get(0).getDocument() instanceof Activity);
+        assert(retList.get(0).getDocument() instanceof Activity);
         assertEquals(activity, retList.get(0).getDocument());
       }
     }
   }
 
-  @Test
-  public void testProcessActivity() throws IOException, ActivitySerializerException {
-    InputStream is = GooglePlusTypeConverterTest.class.getResourceAsStream("/google_plus_activity_jsons.txt");
+  @Test(dependsOnGroups={"testGPlusUserActivityProvider"})
+  public void testProcessActivity() throws IOException, ActivitySerializerException{
+
+    File file = new File("target/test-classes/GPlusUserActivityProviderIT.stdout.txt");
+    InputStream is = new FileInputStream(file);
     InputStreamReader isr = new InputStreamReader(is);
     BufferedReader br = new BufferedReader(isr);
 
@@ -111,8 +114,7 @@ public class GooglePlusTypeConverterTest {
         LOGGER.info("raw: {}", line);
         Activity activity = new Activity();
 
-        com.google.api.services.plus.model.Activity gPlusActivity =
-            objectMapper.readValue(line, com.google.api.services.plus.model.Activity.class);
+        com.google.api.services.plus.model.Activity gPlusActivity = objectMapper.readValue(line, com.google.api.services.plus.model.Activity.class);
         StreamsDatum streamsDatum = new StreamsDatum(gPlusActivity);
 
         assertNotNull(streamsDatum.getDocument());
@@ -121,16 +123,10 @@ public class GooglePlusTypeConverterTest {
         GooglePlusActivityUtil.updateActivity(gPlusActivity, activity);
 
         assertEquals(retList.size(), 1);
-        assert (retList.get(0).getDocument() instanceof Activity);
+        assertTrue(retList.get(0).getDocument() instanceof Activity);
         assertEquals(activity, retList.get(0).getDocument());
       }
     }
   }
 
-  @Test
-  public void testEmptyProcess() {
-    List<StreamsDatum> retList = googlePlusTypeConverter.process(null);
-
-    assertEquals(retList.size(), 0);
-  }
 }
