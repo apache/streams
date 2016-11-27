@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * GPlusEventClassifier classifies GPlus Events.
@@ -45,7 +46,7 @@ public class GPlusEventClassifier implements Serializable {
    * @return likely class
    */
   public static Class detectClass(String json) {
-    Preconditions.checkNotNull(json);
+    Objects.requireNonNull(json);
     Preconditions.checkArgument(StringUtils.isNotEmpty(json));
 
     ObjectNode objectNode;

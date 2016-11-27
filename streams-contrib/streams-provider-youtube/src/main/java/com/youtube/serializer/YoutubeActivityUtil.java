@@ -31,7 +31,6 @@ import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.Thumbnail;
 import com.google.api.services.youtube.model.ThumbnailDetails;
 import com.google.api.services.youtube.model.Video;
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -193,6 +192,6 @@ public class YoutubeActivityUtil {
    * @return a valid Activity ID in format "id:youtube:part1:part2:...partN"
    */
   public static String formatId(String... idparts) {
-    return Joiner.on(":").join(Lists.asList("id:youtube", idparts));
+    return String.join(":", Lists.asList("id:youtube", idparts));
   }
 }

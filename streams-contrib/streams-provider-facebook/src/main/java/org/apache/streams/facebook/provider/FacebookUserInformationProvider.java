@@ -50,6 +50,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -274,12 +275,12 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
 
     executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
-    Preconditions.checkNotNull(providerQueue);
-    Preconditions.checkNotNull(this.klass);
-    Preconditions.checkNotNull(facebookUserInformationConfiguration.getOauth().getAppId());
-    Preconditions.checkNotNull(facebookUserInformationConfiguration.getOauth().getAppSecret());
-    Preconditions.checkNotNull(facebookUserInformationConfiguration.getOauth().getUserAccessToken());
-    Preconditions.checkNotNull(facebookUserInformationConfiguration.getInfo());
+    Objects.requireNonNull(providerQueue);
+    Objects.requireNonNull(this.klass);
+    Objects.requireNonNull(facebookUserInformationConfiguration.getOauth().getAppId());
+    Objects.requireNonNull(facebookUserInformationConfiguration.getOauth().getAppSecret());
+    Objects.requireNonNull(facebookUserInformationConfiguration.getOauth().getUserAccessToken());
+    Objects.requireNonNull(facebookUserInformationConfiguration.getInfo());
 
     List<String> ids = new ArrayList<>();
     List<String[]> idsBatches = new ArrayList<>();

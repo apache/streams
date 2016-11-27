@@ -27,7 +27,6 @@ import org.apache.streams.util.schema.SchemaStoreImpl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
 import org.apache.commons.lang3.StringUtils;
 import org.jsonschema2pojo.util.URLUtil;
 import org.slf4j.Logger;
@@ -44,7 +43,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.streams.util.schema.FileUtil.dropExtension;
 import static org.apache.streams.util.schema.FileUtil.dropSourcePathPrefix;
 import static org.apache.streams.util.schema.FileUtil.resolveRecursive;
@@ -100,7 +98,7 @@ public class StreamsCassandraResourceGenerator implements Runnable {
   @Override
   public void run() {
 
-    checkNotNull(config);
+    Objects.requireNonNull(config);
 
     generate(config);
 
@@ -193,7 +191,7 @@ public class StreamsCassandraResourceGenerator implements Runnable {
 
   private StringBuilder appendValueField(StringBuilder builder, Schema schema, String fieldId, FieldType fieldType, Character seperator) {
     // safe to append nothing
-    checkNotNull(builder);
+    Objects.requireNonNull(builder);
     builder.append(cqlEscape(fieldId));
     builder.append(seperator);
     builder.append(cqlType(fieldType));
@@ -202,7 +200,7 @@ public class StreamsCassandraResourceGenerator implements Runnable {
 
   protected StringBuilder appendArrayItems(StringBuilder builder, Schema schema, String fieldId, ObjectNode itemsNode, Character seperator) {
     // not safe to append nothing
-    checkNotNull(builder);
+    Objects.requireNonNull(builder);
     if ( itemsNode == null ) {
       return builder;
     }
@@ -252,24 +250,24 @@ public class StreamsCassandraResourceGenerator implements Runnable {
         LOGGER.warn("No item type resolvable for {}", fieldId);
       }
     }
-    checkNotNull(builder);
+    Objects.requireNonNull(builder);
     return builder;
   }
 
   private StringBuilder appendArrayField(StringBuilder builder, Schema schema, String fieldId, FieldType fieldType, Character seperator) {
     // safe to append nothing
-    checkNotNull(builder);
-    checkNotNull(fieldId);
+    Objects.requireNonNull(builder);
+    Objects.requireNonNull(fieldId);
     builder.append(cqlEscape(fieldId));
     builder.append(seperator);
     builder.append("list<" + cqlType(fieldType) + ">");
-    checkNotNull(builder);
+    Objects.requireNonNull(builder);
     return builder;
   }
 
   private StringBuilder appendArrayObject(StringBuilder builder, Schema schema, String fieldId, Character seperator) {
     // safe to append nothing
-    checkNotNull(builder);
+    Objects.requireNonNull(builder);
     String schemaSymbol = schemaSymbol(schema);
     if (StringUtils.isNotBlank(fieldId) && schemaSymbol != null ) {
       builder.append(cqlEscape(fieldId));
@@ -277,20 +275,20 @@ public class StreamsCassandraResourceGenerator implements Runnable {
       builder.append("list<" + schemaSymbol + ">");
       builder.append(LS);
     }
-    checkNotNull(builder);
+    Objects.requireNonNull(builder);
     return builder;
   }
 
   private StringBuilder appendSchemaField(StringBuilder builder, Schema schema, String fieldId, Character seperator) {
     // safe to append nothing
-    checkNotNull(builder);
+    Objects.requireNonNull(builder);
     String schemaSymbol = schemaSymbol(schema);
     if (StringUtils.isNotBlank(fieldId) && schemaSymbol != null ) {
       builder.append(cqlEscape(fieldId));
       builder.append(seperator);
       builder.append(schemaSymbol);
     }
-    checkNotNull(builder);
+    Objects.requireNonNull(builder);
     return builder;
   }
 
@@ -301,10 +299,9 @@ public class StreamsCassandraResourceGenerator implements Runnable {
    however treatment is way different when resolving a type symbol vs resolving and listing fields .
    */
   private StringBuilder appendPropertiesNode(StringBuilder builder, Schema schema, ObjectNode propertiesNode, Character seperator) {
-    checkNotNull(builder);
-    checkNotNull(propertiesNode);
+    Objects.requireNonNull(builder);
+    Objects.requireNonNull(propertiesNode);
     Iterator<Map.Entry<String, JsonNode>> fields = propertiesNode.fields();
-    Joiner joiner = Joiner.on("," + LS).skipNulls();
     List<String> fieldStrings = new ArrayList<>();
     for ( ; fields.hasNext(); ) {
       Map.Entry<String, JsonNode> field = fields.next();
@@ -367,7 +364,7 @@ public class StreamsCassandraResourceGenerator implements Runnable {
         }
       }
     }
-    builder.append(joiner.join(fieldStrings)).append(LS);
+    builder.append(String.join("," + LS, fieldStrings)).append(LS);
     Objects.requireNonNull(builder);
     return builder;
   }

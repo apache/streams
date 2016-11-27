@@ -19,7 +19,6 @@
 
 package org.apache.streams.plugins;
 
-import com.google.common.base.Preconditions;
 import org.jsonschema2pojo.Jsonschema2Pojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +27,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Objects;
 
 /**
  * Embed within your own java code
@@ -79,8 +79,6 @@ public class StreamsPojoSourceGenerator implements Runnable {
 
     StreamsPojoSourceGenerator streamsPojoSourceGenerator = new StreamsPojoSourceGenerator(config);
     streamsPojoSourceGenerator.run();
-
-    return;
   }
 
   public StreamsPojoSourceGenerator(StreamsPojoGenerationConfig config) {
@@ -90,7 +88,7 @@ public class StreamsPojoSourceGenerator implements Runnable {
   @Override
   public void run() {
 
-    Preconditions.checkNotNull(config);
+    Objects.requireNonNull(config);
 
     try {
       Jsonschema2Pojo.generate(config);

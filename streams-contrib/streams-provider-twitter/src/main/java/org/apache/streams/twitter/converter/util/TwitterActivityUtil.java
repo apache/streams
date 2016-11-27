@@ -39,9 +39,8 @@ import org.apache.streams.twitter.pojo.UserMentions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +59,7 @@ public class TwitterActivityUtil {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterActivityUtil.class);
 
-  static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
   /**
    * Updates the given Activity object with the values from the Tweet.
@@ -80,7 +79,7 @@ public class TwitterActivityUtil {
       updateActivityContent(activity, tweet, "post");
     }
 
-    if (Strings.isNullOrEmpty(activity.getId())) {
+    if (StringUtils.isBlank(activity.getId())) {
       throw new ActivityConversionException("Unable to determine activity id");
     }
     try {
@@ -117,7 +116,7 @@ public class TwitterActivityUtil {
     activity.setVerb("delete");
     activity.setObject(buildActivityObject(delete));
     activity.setId(formatId(activity.getVerb(), delete.getDelete().getStatus().getIdStr()));
-    if (Strings.isNullOrEmpty(activity.getId())) {
+    if (StringUtils.isBlank(activity.getId())) {
       throw new ActivityConversionException("Unable to determine activity id");
     }
     activity.setProvider(getProvider());
@@ -231,12 +230,6 @@ public class TwitterActivityUtil {
     }
   }
 
-
-
-
-
-
-
   /**
    * Gets the links from the Twitter event
    * @param tweet the object to use as the source
@@ -307,7 +300,7 @@ public class TwitterActivityUtil {
    * @return a valid Activity ID in format "id:twitter:part1:part2:...partN"
    */
   public static String formatId(String... idparts) {
-    return Joiner.on(":").join(Lists.asList("id:twitter", idparts));
+    return String.join(":", Lists.asList("id:twitter", idparts));
   }
 
   /**

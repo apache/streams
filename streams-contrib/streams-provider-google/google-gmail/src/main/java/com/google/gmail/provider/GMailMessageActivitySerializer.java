@@ -33,7 +33,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.googlecode.gmail4j.GmailException;
 import com.googlecode.gmail4j.GmailMessage;
@@ -170,7 +169,7 @@ public class GMailMessageActivitySerializer implements ActivitySerializer<GmailM
   }
 
   public static String formatId(String... idparts) {
-    return Joiner.on(":").join(Lists.asList("id:gmail", idparts));
+    return String.join(":", Lists.asList("id:gmail", idparts));
   }
 
   interface MessageMixIn {

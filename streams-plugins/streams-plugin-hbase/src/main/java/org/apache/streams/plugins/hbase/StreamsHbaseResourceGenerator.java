@@ -27,20 +27,19 @@ import org.apache.streams.util.schema.SchemaStoreImpl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import org.jsonschema2pojo.util.URLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.streams.util.schema.FileUtil.dropExtension;
 import static org.apache.streams.util.schema.FileUtil.dropSourcePathPrefix;
 import static org.apache.streams.util.schema.FileUtil.resolveRecursive;
@@ -95,7 +94,7 @@ public class StreamsHbaseResourceGenerator implements Runnable {
   @Override
   public void run() {
 
-    checkNotNull(config);
+    Objects.requireNonNull(config);
 
     generate(config);
 
@@ -165,11 +164,11 @@ public class StreamsHbaseResourceGenerator implements Runnable {
   }
 
   protected StringBuilder appendRootObject(StringBuilder builder, Schema schema, String resourceId) {
-    checkNotNull(builder);
+    Objects.requireNonNull(builder);
     ObjectNode propertiesNode = schemaStore.resolveProperties(schema, null, resourceId);
     if ( propertiesNode != null && propertiesNode.isObject() && propertiesNode.size() > 0) {
 
-      List<String> fieldStrings = Lists.newArrayList();
+      List<String> fieldStrings = new ArrayList<>();
 
       // table
       fieldStrings.add(hbaseEscape(schemaSymbol(schema)));
@@ -186,7 +185,6 @@ public class StreamsHbaseResourceGenerator implements Runnable {
       if ( propertiesNode != null && propertiesNode.isObject() && propertiesNode.size() > 0 ) {
 
         Iterator<Map.Entry<String, JsonNode>> fields = propertiesNode.fields();
-        Joiner joiner = Joiner.on(", ").skipNulls();
         for ( ; fields.hasNext(); ) {
           Map.Entry<String, JsonNode> field = fields.next();
           String fieldId = field.getKey();
@@ -204,11 +202,11 @@ public class StreamsHbaseResourceGenerator implements Runnable {
             }
           }
         }
-        builder.append(joiner.join(fieldStrings));
+        builder.append(String.join(", ", fieldStrings));
 
       }
     }
-    checkNotNull(builder);
+    Objects.requireNonNull(builder);
     return builder;
   }
 

@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * FacebookEventClassifier classifies facebook events.
@@ -44,7 +45,7 @@ public class FacebookEventClassifier {
    */
   public static Class detectClass( String json ) {
 
-    Preconditions.checkNotNull(json);
+    Objects.requireNonNull(json);
     Preconditions.checkArgument(StringUtils.isNotEmpty(json));
 
     ObjectNode objectNode;

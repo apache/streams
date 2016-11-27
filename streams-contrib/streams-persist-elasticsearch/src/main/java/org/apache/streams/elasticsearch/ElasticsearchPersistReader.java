@@ -50,7 +50,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class ElasticsearchPersistReader implements StreamsPersistReader, Serializable {
 
-  public static final String STREAMS_ID = "ElasticsearchPersistReader";
+  private static final String STREAMS_ID = "ElasticsearchPersistReader";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistReader.class);
 

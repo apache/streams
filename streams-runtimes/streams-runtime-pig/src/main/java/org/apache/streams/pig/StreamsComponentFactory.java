@@ -22,8 +22,9 @@ package org.apache.streams.pig;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.data.ActivityConverter;
 
-import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
+
+import java.util.Objects;
 
 /**
  * Static reflection wrappers for instantiating StreamsComponents.
@@ -41,11 +42,9 @@ public class StreamsComponentFactory {
       LOGGER.error(e.getMessage());
     }
 
-    Preconditions.checkNotNull(object);
+    Objects.requireNonNull(object);
 
-    ActivityConverter converter = (ActivityConverter) object;
-
-    return converter;
+    return (ActivityConverter) object;
 
   }
 
@@ -57,8 +56,7 @@ public class StreamsComponentFactory {
     } catch (Exception e) {
       LOGGER.error(e.getMessage());
     }
-    StreamsProcessor processor = (StreamsProcessor) object;
-    return processor;
+    return (StreamsProcessor) object;
 
   }
 

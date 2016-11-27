@@ -25,7 +25,6 @@ import org.apache.streams.pojo.json.Activity;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Joiner;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.junit.Test;
@@ -33,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 /**
  * Tests conversion of Facebook Page inputs to Actor
@@ -51,11 +51,8 @@ public class FacebookActivityActorSerDeIT {
     mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
     InputStream is = FacebookActivityActorSerDeIT.class.getResourceAsStream("/testpage.json");
-    Joiner joiner = Joiner.on(" ").skipNulls();
     is = new BoundedInputStream(is, 10000);
-    String json;
-
-    json = joiner.join(IOUtils.readLines(is));
+    String json = String.join(" ", IOUtils.readLines(is, Charset.defaultCharset()));
     LOGGER.debug(json);
 
     Page page = mapper.readValue(json, Page.class);

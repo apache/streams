@@ -30,7 +30,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -39,10 +38,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -159,7 +158,7 @@ public class SimpleHttpProvider implements StreamsProvider {
     try {
       builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
       sslsf = new SSLConnectionSocketFactory(
-          builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+          builder.build(), SSLConnectionSocketFactory.getDefaultHostnameVerifier());
     } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException ex) {
       LOGGER.warn(ex.getMessage());
     }
@@ -211,7 +210,7 @@ public class SimpleHttpProvider implements StreamsProvider {
     StreamsResultSet current;
 
     uriBuilder = uriBuilder.setPath(
-        Joiner.on("/").skipNulls().join(uriBuilder.getPath(), configuration.getResource(), configuration.getResourcePostfix())
+        String.join("/", uriBuilder.getPath(), configuration.getResource(), configuration.getResourcePostfix())
     );
 
     URI uri;
@@ -235,7 +234,7 @@ public class SimpleHttpProvider implements StreamsProvider {
     return current;
   }
 
-  protected List<ObjectNode> execute(URI uri) {
+  private List<ObjectNode> execute(URI uri) {
 
     Objects.requireNonNull(uri);
 
@@ -296,7 +295,7 @@ public class SimpleHttpProvider implements StreamsProvider {
   /**
    Override this to change how metadata is derived from object.
    */
-  protected StreamsDatum newDatum(ObjectNode item) {
+  private StreamsDatum newDatum(ObjectNode item) {
     try {
       String id = null;
       if ( item.get("id") != null ) {

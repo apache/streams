@@ -26,7 +26,6 @@ import org.apache.streams.pojo.json.ActivityObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,7 +121,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
     createVertex.add("type", activityObject.getObjectType());
 
     if ( labels.size() > 0 ) {
-      createVertex.add("labels", Joiner.on(' ').join(labels));
+      createVertex.add("labels", String.join(" ", labels));
     }
 
     String query = createVertex.render();
@@ -154,7 +153,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
     mergeVertex.add("id", activityObject.getId());
     mergeVertex.add("type", activityObject.getObjectType());
     if ( labels.size() > 0 ) {
-      mergeVertex.add("labels", Joiner.on(' ').join(labels));
+      mergeVertex.add("labels", String.join(" ", labels));
     }
     String query = mergeVertex.render();
 
@@ -220,7 +219,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper {
         parts.add("`" + entry.getKey() + "`:'" + propVal + "'");
       }
     }
-    builder.append(Joiner.on(",").join(parts));
+    builder.append(String.join(",", parts));
     builder.append("}");
     return builder.toString();
   }

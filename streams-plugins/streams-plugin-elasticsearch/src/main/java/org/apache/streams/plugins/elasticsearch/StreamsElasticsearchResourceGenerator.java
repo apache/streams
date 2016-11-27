@@ -30,7 +30,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
 import org.apache.commons.lang3.StringUtils;
 import org.jsonschema2pojo.util.URLUtil;
 import org.slf4j.Logger;
@@ -313,7 +312,6 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
     Objects.requireNonNull(builder);
     Objects.requireNonNull(propertiesNode);
     Iterator<Map.Entry<String, JsonNode>> fields = propertiesNode.fields();
-    Joiner joiner = Joiner.on("," + LS).skipNulls();
     List<String> fieldStrings = new ArrayList<>();
     for ( ; fields.hasNext(); ) {
       Map.Entry<String, JsonNode> field = fields.next();
@@ -376,7 +374,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
         }
       }
     }
-    builder.append(joiner.join(fieldStrings)).append(LS);
+    builder.append(String.join("," + LS, fieldStrings)).append(LS);
     Objects.requireNonNull(builder);
     return builder;
   }

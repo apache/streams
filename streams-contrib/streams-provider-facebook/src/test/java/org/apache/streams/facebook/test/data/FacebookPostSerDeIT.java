@@ -25,7 +25,6 @@ import org.apache.streams.pojo.json.Activity;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Joiner;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.junit.Assert;
@@ -34,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -54,12 +54,11 @@ public class FacebookPostSerDeIT {
         mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
         InputStream is = FacebookPostSerDeIT.class.getResourceAsStream("/testpost.json");
-        Joiner joiner = Joiner.on(" ").skipNulls();
         is = new BoundedInputStream(is, 10000);
         String json;
 
         try {
-            json = joiner.join(IOUtils.readLines(is));
+            json = String.join(" ", IOUtils.readLines(is, Charset.defaultCharset()));
             LOGGER.debug(json);
 
             Post ser = mapper.readValue(json, Post.class);

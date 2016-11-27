@@ -28,7 +28,6 @@ import org.apache.streams.util.schema.SchemaStoreImpl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
 import org.apache.commons.lang3.StringUtils;
 import org.jsonschema2pojo.util.URLUtil;
 import org.slf4j.Logger;
@@ -119,7 +118,7 @@ public class StreamsPigResourceGenerator implements Runnable {
    */
   public void generate(StreamsPigGenerationConfig config) {
 
-    LinkedList<File> sourceFiles = new LinkedList<>();
+    List<File> sourceFiles = new LinkedList<>();
 
     for (Iterator<URL> sources = config.getSource(); sources.hasNext(); ) {
       URL source = sources.next();
@@ -190,7 +189,6 @@ public class StreamsPigResourceGenerator implements Runnable {
     Objects.requireNonNull(builder);
     Objects.requireNonNull(propertiesNode);
     Iterator<Map.Entry<String, JsonNode>> fields = propertiesNode.fields();
-    Joiner joiner = Joiner.on(", ").skipNulls();
     List<String> fieldStrings = new ArrayList<>();
     for ( ; fields.hasNext(); ) {
       Map.Entry<String, JsonNode> field = fields.next();
@@ -227,7 +225,7 @@ public class StreamsPigResourceGenerator implements Runnable {
         }
       }
     }
-    joiner.appendTo(builder, fieldStrings);
+    builder.append(String.join(", ", fieldStrings));
     Objects.requireNonNull(builder);
     return builder;
   }

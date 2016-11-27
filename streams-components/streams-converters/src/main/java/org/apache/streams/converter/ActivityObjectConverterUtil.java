@@ -262,5 +262,4 @@ public class ActivityObjectConverterUtil {
     return result;
   }
 
-
 }

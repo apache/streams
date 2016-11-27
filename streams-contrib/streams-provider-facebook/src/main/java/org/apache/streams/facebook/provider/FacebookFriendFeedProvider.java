@@ -29,7 +29,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.ComponentUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
@@ -52,6 +51,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -64,7 +64,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class FacebookFriendFeedProvider implements StreamsProvider, Serializable {
 
-  public static final String STREAMS_ID = "FacebookFriendFeedProvider";
+  private static final String STREAMS_ID = "FacebookFriendFeedProvider";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FacebookFriendFeedProvider.class);
 
@@ -222,11 +222,11 @@ public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
 
     executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
 
-    Preconditions.checkNotNull(providerQueue);
-    Preconditions.checkNotNull(this.klass);
-    Preconditions.checkNotNull(configuration.getOauth().getAppId());
-    Preconditions.checkNotNull(configuration.getOauth().getAppSecret());
-    Preconditions.checkNotNull(configuration.getOauth().getUserAccessToken());
+    Objects.requireNonNull(providerQueue);
+    Objects.requireNonNull(this.klass);
+    Objects.requireNonNull(configuration.getOauth().getAppId());
+    Objects.requireNonNull(configuration.getOauth().getAppSecret());
+    Objects.requireNonNull(configuration.getOauth().getUserAccessToken());
 
     Facebook client = getFacebookClient();
 

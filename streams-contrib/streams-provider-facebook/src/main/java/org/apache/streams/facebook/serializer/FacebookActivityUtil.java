@@ -37,7 +37,6 @@ import org.apache.streams.pojo.json.Provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -267,6 +266,6 @@ public class FacebookActivityUtil {
      * @return a valid Activity ID in format "id:facebook:part1:part2:...partN"
      */
     public static String formatId(String... idparts) {
-        return Joiner.on(":").join(Lists.asList("id:facebook", idparts));
+        return String.join(":", Lists.asList("id:facebook", idparts));
     }
 }

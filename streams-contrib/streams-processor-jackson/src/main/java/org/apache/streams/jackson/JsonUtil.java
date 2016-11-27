@@ -26,9 +26,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -101,7 +98,7 @@ public class JsonUtil {
   public static JsonNode getFromFile(String filePath) {
     JsonFactory factory = mapper.getFactory(); // since 2.1 use mapper.getFactory() instead
 
-    JsonNode node = null;
+    JsonNode node;
     try {
       InputStream stream = getStreamForLocation(filePath);
       JsonParser jp = factory.createParser(stream);
@@ -113,7 +110,7 @@ public class JsonUtil {
   }
 
   private static InputStream getStreamForLocation(String filePath) throws FileNotFoundException {
-    InputStream stream = null;
+    InputStream stream;
     if(filePath.startsWith("file:///")) {
       stream = new FileInputStream(filePath.replace("file:///", ""));
     } else if(filePath.startsWith("file:") || filePath.startsWith("/")) {
@@ -133,9 +130,9 @@ public class JsonUtil {
    * @return the Map representing the extensions property
    */
   public static ArrayNode ensureArray(ObjectNode node, String field) {
-    String[] path = Lists.newArrayList(Splitter.on('.').split(field)).toArray(new String[0]);
+    String[] path = field.split(".");
     ObjectNode current = node;
-    ArrayNode result = null;
+    ArrayNode result;
     for( int i = 0; i < path.length; i++) {
       current = ensureObject((ObjectNode) node.get(path[i]), path[i]);
     }
@@ -152,15 +149,15 @@ public class JsonUtil {
    * @return the Map representing the extensions property
    */
   public static ObjectNode ensureObject(ObjectNode node, String field) {
-    String[] path = Lists.newArrayList(Splitter.on('.').split(field)).toArray(new String[0]);
+    String[] path = field.split(".");
     ObjectNode current = node;
-    ObjectNode result = null;
+    ObjectNode result;
     for( int i = 0; i < path.length; i++) {
       if (node.get(field) == null)
         node.put(field, mapper.createObjectNode());
       current = (ObjectNode) node.get(field);
     }
-    result = ensureObject((ObjectNode) node.get(path[path.length]), Joiner.on('.').join(Arrays.copyOfRange(path, 1, path.length)));
+    result = ensureObject((ObjectNode) node.get(path[path.length]), String.join(".", Arrays.copyOfRange(path, 1, path.length)));
     return result;
   }
 

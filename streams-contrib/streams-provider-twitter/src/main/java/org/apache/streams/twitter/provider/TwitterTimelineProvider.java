@@ -78,7 +78,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
  */
 public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
-  public static final String STREAMS_ID = "TwitterTimelineProvider";
+  private static final String STREAMS_ID = "TwitterTimelineProvider";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProvider.class);
 
@@ -111,7 +111,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
   protected final AtomicBoolean running = new AtomicBoolean();
 
-  List<ListenableFuture<Object>> futures = new ArrayList<>();
+  private List<ListenableFuture<Object>> futures = new ArrayList<>();
 
   Boolean jsonStoreEnabled;
   Boolean includeEntitiesEnabled;
@@ -163,9 +163,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     provider.startStream();
     do {
       Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-      Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
-      while (iterator.hasNext()) {
-        StreamsDatum datum = iterator.next();
+      for (StreamsDatum datum : provider.readCurrent()) {
         String json;
         try {
           json = mapper.writeValueAsString(datum.getDocument());
@@ -203,12 +201,12 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
       lock.writeLock().unlock();
     }
 
-    Preconditions.checkNotNull(providerQueue);
-    Preconditions.checkNotNull(config.getOauth().getConsumerKey());
-    Preconditions.checkNotNull(config.getOauth().getConsumerSecret());
-    Preconditions.checkNotNull(config.getOauth().getAccessToken());
-    Preconditions.checkNotNull(config.getOauth().getAccessTokenSecret());
-    Preconditions.checkNotNull(config.getInfo());
+    Objects.requireNonNull(providerQueue);
+    Objects.requireNonNull(config.getOauth().getConsumerKey());
+    Objects.requireNonNull(config.getOauth().getConsumerSecret());
+    Objects.requireNonNull(config.getOauth().getAccessToken());
+    Objects.requireNonNull(config.getOauth().getAccessTokenSecret());
+    Objects.requireNonNull(config.getInfo());
 
     consolidateToIDs();
 

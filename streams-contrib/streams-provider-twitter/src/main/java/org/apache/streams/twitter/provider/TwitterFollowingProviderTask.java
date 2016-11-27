@@ -160,7 +160,7 @@ public class TwitterFollowingProviderTask implements Runnable {
                   .withFollower(mapper.readValue(userJson, User.class));
             }
 
-            Preconditions.checkNotNull(follow);
+            Objects.requireNonNull(follow);
 
             if ( count < provider.getConfig().getMaxItems()) {
               ComponentUtils.offerUntilSuccess(new StreamsDatum(follow), provider.providerQueue);
@@ -179,7 +179,7 @@ public class TwitterFollowingProviderTask implements Runnable {
         }
         curser = list.getNextCursor();
       } catch (Exception ex) {
-        keepTrying += TwitterErrorHandler.handleTwitterError(client, ex);
+        keepTrying += TwitterErrorHandler.handleTwitterError(client, null, ex);
       }
     }
     while (curser != 0 && keepTrying < provider.getConfig().getRetryMax() && count < provider.getConfig().getMaxItems());
@@ -236,7 +236,7 @@ public class TwitterFollowingProviderTask implements Runnable {
       } catch (TwitterException twitterException) {
         keepTrying += TwitterErrorHandler.handleTwitterError(client, id, twitterException);
       } catch (Exception ex) {
-        keepTrying += TwitterErrorHandler.handleTwitterError(client, ex);
+        keepTrying += TwitterErrorHandler.handleTwitterError(client, null, ex);
       }
     }
     while (curser != 0 && keepTrying < provider.getConfig().getRetryMax() && count < provider.getConfig().getMaxItems());

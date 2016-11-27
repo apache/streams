@@ -26,13 +26,14 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import datafu.pig.util.SimpleEvalFunc;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.pig.builtin.MonitoredUDF;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -46,15 +47,15 @@ public class StreamsProcessDocumentExec extends SimpleEvalFunc<String> {
 
   private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(StreamsProcessDocumentExec.class);
 
-  StreamsProcessor streamsProcessor;
-  ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  private StreamsProcessor streamsProcessor;
+  private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
   public StreamsProcessDocumentExec(String... execArgs) throws ClassNotFoundException{
-    Preconditions.checkNotNull(execArgs);
+    Objects.requireNonNull(execArgs);
     Preconditions.checkArgument(execArgs.length > 0);
     String classFullName = execArgs[0];
-    Preconditions.checkNotNull(classFullName);
-    String[] prepareArgs = (String[]) ArrayUtils.remove(execArgs, 0);
+    Objects.requireNonNull(classFullName);
+    String[] prepareArgs = ArrayUtils.remove(execArgs, 0);
     streamsProcessor = StreamsComponentFactory.getProcessorInstance(Class.forName(classFullName));
     if( execArgs.length == 1 ) {
       LOGGER.debug("prepare (null)");
@@ -67,14 +68,14 @@ public class StreamsProcessDocumentExec extends SimpleEvalFunc<String> {
 
   public String call(String document) throws IOException {
 
-    Preconditions.checkNotNull(streamsProcessor);
-    Preconditions.checkNotNull(document);
+    Objects.requireNonNull(streamsProcessor);
+    Objects.requireNonNull(document);
 
     LOGGER.debug(document);
 
     StreamsDatum entry = new StreamsDatum(document);
 
-    Preconditions.checkNotNull(entry);
+    Objects.requireNonNull(entry);
 
     LOGGER.debug(entry.toString());
 
@@ -87,7 +88,7 @@ public class StreamsProcessDocumentExec extends SimpleEvalFunc<String> {
       resultDoc = resultDatum.getDocument();
     }
 
-    Preconditions.checkNotNull(resultDoc);
+    Objects.requireNonNull(resultDoc);
 
     if( resultDoc instanceof String )
       return (String) resultDoc;

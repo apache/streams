@@ -31,10 +31,8 @@ import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.Uninterruptibles;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
@@ -47,9 +45,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -61,11 +59,11 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
   public static final String STREAMS_ID = "TwitterFollowingProvider";
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFollowingProvider.class);
 
-  protected final ReadWriteLock lock = new ReentrantReadWriteLock();
+  private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
   private TwitterFollowingConfiguration config;
 
-  List<ListenableFuture<Object>> futures = new ArrayList<>();
+  private List<ListenableFuture<Object>> futures = new ArrayList<>();
 
   /**
    * To use from command line:
@@ -107,16 +105,14 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
     TwitterFollowingConfiguration config = new ComponentConfigurator<>(TwitterFollowingConfiguration.class).detectConfiguration(typesafe, "twitter");
     TwitterFollowingProvider provider = new TwitterFollowingProvider(config);
 
-    ObjectMapper mapper = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+    ObjectMapper mapper = new StreamsJacksonMapper(Collections.singletonList(TwitterDateTimeFormat.TWITTER_FORMAT));
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
     provider.prepare(config);
     provider.startStream();
     do {
-      Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-      Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
-      while (iterator.hasNext()) {
-        StreamsDatum datum = iterator.next();
+      Thread.sleep(streamsConfiguration.getBatchFrequencyMs());
+      for (StreamsDatum datum : provider.readCurrent()) {
         String json;
         try {
           json = mapper.writeValueAsString(datum.getDocument());
@@ -149,15 +145,14 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
   @Override
   public void prepare(Object configurationObject) {
     super.prepare(config);
-    Preconditions.checkNotNull(getConfig().getEndpoint());
+    Objects.requireNonNull(getConfig().getEndpoint());
     Preconditions.checkArgument(getConfig().getEndpoint().equals("friends") || getConfig().getEndpoint().equals("followers"));
-    return;
   }
 
   @Override
   public void startStream() {
 
-    Preconditions.checkNotNull(executor);
+    Objects.requireNonNull(executor);
 
     Preconditions.checkArgument(idsBatches.hasNext() || screenNameBatches.hasNext());
 
