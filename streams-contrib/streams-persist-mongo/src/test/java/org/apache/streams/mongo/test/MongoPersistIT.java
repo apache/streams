@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -51,11 +51,11 @@ public class MongoPersistIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MongoPersistIT.class);
 
-  ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+  private ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-  MongoConfiguration testConfiguration;
+  private MongoConfiguration testConfiguration;
 
-  int count = 0;
+  private int count = 0;
 
   @Before
   public void setup() throws Exception {
@@ -78,7 +78,7 @@ public class MongoPersistIT {
 
     InputStream testActivityFolderStream = MongoPersistIT.class.getClassLoader()
         .getResourceAsStream("activities");
-    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
     for( String file : files) {
       LOGGER.info("File: " + file );

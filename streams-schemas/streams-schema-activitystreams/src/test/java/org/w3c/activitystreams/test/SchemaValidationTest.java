@@ -25,13 +25,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -61,7 +61,7 @@ public class SchemaValidationTest {
 
     InputStream testActivityFolderStream = SchemaValidationTest.class.getClassLoader()
         .getResourceAsStream("activities");
-    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
     for (String file : files) {
       if ( !file.startsWith(".") ) {

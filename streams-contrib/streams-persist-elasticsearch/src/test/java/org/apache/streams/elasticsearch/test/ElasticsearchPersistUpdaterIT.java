@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
@@ -50,11 +49,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration Test for
@@ -109,7 +109,7 @@ public class ElasticsearchPersistUpdaterIT {
 
     InputStream testActivityFolderStream = ElasticsearchPersistUpdaterIT.class.getClassLoader()
         .getResourceAsStream("activities");
-    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
     for( String file : files) {
       LOGGER.info("File: " + file );

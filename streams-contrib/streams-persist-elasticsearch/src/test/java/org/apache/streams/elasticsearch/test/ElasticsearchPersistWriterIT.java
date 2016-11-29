@@ -30,7 +30,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
@@ -50,11 +49,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration Test for
@@ -66,8 +66,8 @@ public class ElasticsearchPersistWriterIT {
 
   private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-  protected ElasticsearchWriterConfiguration testConfiguration;
-  protected Client testClient;
+  private ElasticsearchWriterConfiguration testConfiguration;
+  private Client testClient;
 
   @Before
   public void prepareTest() throws Exception {
@@ -102,7 +102,7 @@ public class ElasticsearchPersistWriterIT {
 
     InputStream testActivityFolderStream = ElasticsearchPersistWriterIT.class.getClassLoader()
         .getResourceAsStream("activities");
-    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
     for( String file : files) {
       LOGGER.info("File: " + file );

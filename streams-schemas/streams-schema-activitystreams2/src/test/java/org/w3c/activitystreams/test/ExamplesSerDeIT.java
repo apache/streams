@@ -21,7 +21,6 @@ package org.w3c.activitystreams.test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -52,7 +52,7 @@ public class ExamplesSerDeIT {
 
     InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
         .getResourceAsStream("w3c/activitystreams-master/test");
-    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
     for (String file : files) {
       if ( !file.startsWith(".") && file.contains("core-ex") ) {
@@ -75,7 +75,7 @@ public class ExamplesSerDeIT {
 
     InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
         .getResourceAsStream("w3c/activitystreams-master/test");
-    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
     for (String file : files) {
       if ( !file.startsWith(".") && file.contains("simple") ) {
@@ -99,7 +99,7 @@ public class ExamplesSerDeIT {
 
     InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
         .getResourceAsStream("w3c/activitystreams-master/test");
-    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
     for (String file : files) {
       if ( !file.startsWith(".") && file.contains("vocabulary-ex") ) {
@@ -123,7 +123,7 @@ public class ExamplesSerDeIT {
 
     InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
         .getResourceAsStream("w3c/activitystreams-master/test/fail");
-    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
     for (String file : files) {
       if ( !file.startsWith(".") && file.contains("vocabulary-ex") ) {

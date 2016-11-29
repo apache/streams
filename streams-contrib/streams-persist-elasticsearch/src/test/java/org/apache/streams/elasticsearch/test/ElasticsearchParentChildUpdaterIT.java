@@ -28,12 +28,11 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
@@ -55,12 +54,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration Test for
@@ -73,12 +73,12 @@ public class ElasticsearchParentChildUpdaterIT {
 
     private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-    protected ElasticsearchWriterConfiguration testConfiguration;
-    protected Client testClient;
+    private ElasticsearchWriterConfiguration testConfiguration;
+    private Client testClient;
 
-    Set<Class<? extends ActivityObject>> objectTypes;
+    private Set<Class<? extends ActivityObject>> objectTypes;
 
-    List<String> files;
+    private List<String> files;
 
     @Before
     public void prepareTest() throws Exception {
@@ -106,7 +106,7 @@ public class ElasticsearchParentChildUpdaterIT {
 
         InputStream testActivityFolderStream = ElasticsearchParentChildUpdaterIT.class.getClassLoader()
                 .getResourceAsStream("activities");
-        files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+        files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
     }
 
@@ -123,7 +123,7 @@ public class ElasticsearchParentChildUpdaterIT {
             Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
             activity.setAdditionalProperty("updated", Boolean.TRUE);
             StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
-            if( !Strings.isNullOrEmpty(activity.getObject().getObjectType())) {
+            if(StringUtils.isNotBlank(activity.getObject().getObjectType())) {
                 datum.getMetadata().put("parent", activity.getObject().getObjectType());
                 datum.getMetadata().put("type", "activity");
                 testPersistUpdater.write(datum);

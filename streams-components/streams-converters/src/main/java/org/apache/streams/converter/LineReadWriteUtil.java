@@ -73,9 +73,7 @@ public class LineReadWriteUtil {
    * @return result
    */
   public static LineReadWriteUtil getInstance(LineReadWriteConfiguration configuration) {
-    if ( INSTANCE_MAP.containsKey(configuration)
-        &&
-        INSTANCE_MAP.get(configuration) != null) {
+    if (INSTANCE_MAP.containsKey(configuration) && INSTANCE_MAP.get(configuration) != null) {
       return INSTANCE_MAP.get(configuration);
     } else {
       INSTANCE_MAP.put(configuration, new LineReadWriteUtil(configuration));
@@ -96,7 +94,7 @@ public class LineReadWriteUtil {
     }
     String[] parsedFields = line.split(fieldDelimiter);
 
-    if ( parsedFields.length == 0) {
+    if (parsedFields.length == 0) {
       return null;
     }
 
@@ -248,7 +246,7 @@ public class LineReadWriteUtil {
   }
 
   private String trimLineDelimiter(String str) {
-    if ( !StringUtils.isNotBlank(str)) {
+    if (!StringUtils.isNotBlank(str)) {
       if (str.endsWith(lineDelimiter)) {
         return str.substring(0, str.length() - 1);
       }
