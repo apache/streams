@@ -28,11 +28,10 @@ import org.apache.streams.filebuffer.FileBufferPersistReader;
 import org.apache.streams.filebuffer.FileBufferPersistWriter;
 import org.apache.streams.local.builders.LocalStreamBuilder;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.Arrays;
@@ -55,8 +54,8 @@ public class FileBufferPersistIT {
     private StreamsDatum testDatum2 = new StreamsDatum("{\"datum\":2}");
     private StreamsDatum testDatum3 = new StreamsDatum("{\"datum\":3}");
 
-    @Before
-    public void prepareTest() {
+    @BeforeClass
+    public void prepareTestPersistStream() {
 
         testConfiguration = new FileBufferConfiguration();
         testConfiguration.setPath("target/FilePersistIT.txt");
@@ -114,11 +113,6 @@ public class FileBufferPersistIT {
         Mockito.verify(writer).write(testDatum1);
         Mockito.verify(writer).write(testDatum2);
         Mockito.verify(writer).write(testDatum3);
-
-    }
-
-    @After
-    public void shutdownTest() {
 
     }
 

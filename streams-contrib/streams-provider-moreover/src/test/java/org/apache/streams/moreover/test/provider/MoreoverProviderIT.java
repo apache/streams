@@ -23,10 +23,9 @@ import org.apache.streams.moreover.MoreoverProvider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileReader;
@@ -34,19 +33,19 @@ import java.io.LineNumberReader;
 
 /**
  * Integration test for MoreoverProviderIT.
+ * @Ignore this is ignored because the project doesn't have credentials to test it with during CI
  */
-@Ignore("this is ignored because the project doesn't have credentials to test it with during CI")
 public class MoreoverProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MoreoverProviderIT.class);
 
   private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-  @Test
-  public void testRssStreamProvider() throws Exception {
+  @Test(enabled = false)
+  public void testMoreoverProvide() throws Exception {
 
-    String configfile = "./target/test-classes/RssStreamProviderIT.conf";
-    String outfile = "./target/test-classes/RssStreamProviderIT.stdout.txt";
+    String configfile = "./target/test-classes/MoreoverProviderIT.conf";
+    String outfile = "./target/test-classes/MoreoverProviderIT.stdout.txt";
 
     MoreoverProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
 

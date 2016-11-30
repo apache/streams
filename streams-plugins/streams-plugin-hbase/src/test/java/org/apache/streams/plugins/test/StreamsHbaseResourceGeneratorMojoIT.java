@@ -21,13 +21,13 @@ package org.apache.streams.plugins.test;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import junit.framework.TestCase;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-import org.junit.Assert;
-import org.junit.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,15 +39,9 @@ import static org.apache.streams.plugins.test.StreamsHbaseResourceGeneratorTest.
 /**
  * Tests that streams-plugin-hbase running via maven generates txt resources.
  */
-public class StreamsHbaseResourceGeneratorMojoIT extends TestCase {
+public class StreamsHbaseResourceGeneratorMojoIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsHbaseResourceGeneratorMojoIT.class);
-
-  protected void setUp() throws Exception {
-    // required for mojo lookups to work
-    super.setUp();
-  }
-
 
   @Test
   public void testStreamsHbaseResourceGeneratorMojo() throws Exception {

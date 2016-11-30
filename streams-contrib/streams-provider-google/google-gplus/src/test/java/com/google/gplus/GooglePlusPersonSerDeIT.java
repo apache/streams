@@ -31,17 +31,18 @@ import com.google.api.services.plus.model.Person;
 import com.google.gplus.serializer.util.GPlusPersonDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
 import org.apache.commons.lang.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Tests conversion of gplus inputs to Activity.
@@ -54,7 +55,7 @@ public class GooglePlusPersonSerDeIT {
   /**
    * setup.
    */
-  @Before
+  @BeforeClass
   public void setup() {
     objectMapper = StreamsJacksonMapper.getInstance();
     SimpleModule simpleModule = new SimpleModule();
@@ -84,7 +85,7 @@ public class GooglePlusPersonSerDeIT {
           LOGGER.info("activity: {}", activity);
 
           assertNotNull(activity);
-          assert (activity.getId().contains("id:googleplus:update"));
+          assertTrue (activity.getId().contains("id:googleplus:update"));
           assertEquals(activity.getVerb(), "update");
 
           Provider provider = activity.getProvider();
@@ -93,7 +94,7 @@ public class GooglePlusPersonSerDeIT {
 
           ActivityObject actor = activity.getActor();
           assertNotNull(actor.getImage());
-          assert (actor.getId().contains("id:googleplus:"));
+          assertTrue (actor.getId().contains("id:googleplus:"));
           assertNotNull(actor.getUrl());
 
         }

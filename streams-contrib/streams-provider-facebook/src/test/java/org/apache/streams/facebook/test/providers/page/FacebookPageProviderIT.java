@@ -21,13 +21,16 @@ package org.apache.streams.facebook.test.providers.page;
 import org.apache.streams.facebook.provider.page.FacebookPageProvider;
 
 import com.google.common.collect.Lists;
-import org.junit.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
+
+import static org.testng.Assert.assertTrue;
 
 public class FacebookPageProviderIT {
 
@@ -56,16 +59,16 @@ public class FacebookPageProviderIT {
     FacebookPageProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
 
     File out = new File(outfile);
-    assert (out.exists());
-    assert (out.canRead());
-    assert (out.isFile());
+    assertTrue (out.exists());
+    assertTrue (out.canRead());
+    assertTrue (out.isFile());
 
     FileReader outReader = new FileReader(out);
     LineNumberReader outCounter = new LineNumberReader(outReader);
 
     while(outCounter.readLine() != null) {}
 
-    assert (outCounter.getLineNumber() >= 1);
+    assertTrue (outCounter.getLineNumber() >= 1);
 
   }
 }

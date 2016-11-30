@@ -188,7 +188,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>target/generated-sources/test-mojo</source>
+                                <source>target/generated-sources/pojo-mojo</source>
                             </sources>
                         </configuration>
                     </execution>

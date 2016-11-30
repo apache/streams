@@ -27,10 +27,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
 import org.jinstagram.entity.users.basicinfo.UserInfoData;
-import org.junit.Assert;
-import org.junit.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;

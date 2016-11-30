@@ -44,8 +44,9 @@ public class GuidUtils {
 
     for ( String part : parts ) {
       Objects.requireNonNull(part);
-      Preconditions.checkArgument(!StringUtils.isNotBlank(part));
-      seed.append(part);
+      if(StringUtils.isNotBlank(part)) {
+        seed.append(part);
+      }
     }
 
     return Arrays.toString(Hashing.goodFastHash(24).hashString(seed, UTF8_CHARSET).asBytes());

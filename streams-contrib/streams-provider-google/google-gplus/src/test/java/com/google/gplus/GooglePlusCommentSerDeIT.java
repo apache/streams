@@ -30,9 +30,11 @@ import com.google.api.services.plus.model.Comment;
 import com.google.gplus.serializer.util.GPlusCommentDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
 import org.apache.commons.lang.StringUtils;
-import org.junit.Before;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -40,9 +42,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 
 /**
  * Tests conversion of gplus inputs to Activity.
@@ -55,8 +57,8 @@ public class GooglePlusCommentSerDeIT {
   /**
    * setup.
    */
-  @Before
-  public void setup() {
+  @BeforeClass
+  public void setupTestCommentObjects() {
     objectMapper = StreamsJacksonMapper.getInstance();
     SimpleModule simpleModule = new SimpleModule();
     simpleModule.addDeserializer(Comment.class, new GPlusCommentDeserializer());
@@ -66,7 +68,7 @@ public class GooglePlusCommentSerDeIT {
     googlePlusActivityUtil = new GooglePlusActivityUtil();
   }
 
-  @org.junit.Test
+  @Test
   public void testCommentObjects() {
     InputStream is = GooglePlusCommentSerDeIT.class.getResourceAsStream("/google_plus_comments_jsons.txt");
     InputStreamReader isr = new InputStreamReader(is);
@@ -110,7 +112,7 @@ public class GooglePlusCommentSerDeIT {
     }
   }
 
-  @org.junit.Test
+  @Test
   public void testEmptyComments() {
     Activity activity = new Activity();
 

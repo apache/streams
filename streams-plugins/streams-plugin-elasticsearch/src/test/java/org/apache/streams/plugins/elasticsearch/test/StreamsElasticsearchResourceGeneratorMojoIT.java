@@ -20,12 +20,13 @@
 package org.apache.streams.plugins.elasticsearch.test;
 
 import com.google.common.collect.Lists;
-import junit.framework.TestCase;
+
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-import org.junit.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,15 +35,9 @@ import java.util.List;
 /**
  * Tests that streams-plugin-elasticsearch running via maven generates elasticsearch mapping resources.
  */
-public class StreamsElasticsearchResourceGeneratorMojoIT extends TestCase {
+public class StreamsElasticsearchResourceGeneratorMojoIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsElasticsearchResourceGeneratorMojoIT.class);
-
-  protected void setUp() throws Exception {
-    // required for mojo lookups to work
-    super.setUp();
-  }
-
 
   @Test
   public void testStreamsElasticsearchResourceGeneratorMojo() throws Exception {

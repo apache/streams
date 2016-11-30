@@ -38,6 +38,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  * Unit Test for
  * @see org.apache.streams.elasticsearch.processor.MetadataFromDocumentProcessor
@@ -89,16 +92,16 @@ public class TestMetadataFromDocumentProcessor {
       StreamsDatum datum = new StreamsDatum(activity);
 
       List<StreamsDatum> resultList = processor.process(datum);
-      assert(resultList != null);
-      assert(resultList.size() == 1);
+      assertNotNull(resultList);
+      assertEquals(1, resultList.size());
 
       StreamsDatum result = resultList.get(0);
-      assert(result != null);
-      assert(result.getDocument() != null);
-      assert(result.getId() != null);
-      assert(result.getMetadata() != null);
-      assert(result.getMetadata().get("id") != null);
-      assert(result.getMetadata().get("type") != null);
+      assertNotNull(result);
+      assertNotNull(result.getDocument());
+      assertNotNull(result.getId());
+      assertNotNull(result.getMetadata());
+      assertNotNull(result.getMetadata().get("id"));
+      assertNotNull(result.getMetadata().get("type"));
 
       LOGGER.info("valid: " + activity.getVerb() );
     }
@@ -110,16 +113,16 @@ public class TestMetadataFromDocumentProcessor {
       StreamsDatum datum = new StreamsDatum(activityObject);
 
       List<StreamsDatum> resultList = processor.process(datum);
-      assert(resultList != null);
-      assert(resultList.size() == 1);
+      assertNotNull(resultList);
+      assertEquals(1, resultList.size());
 
       StreamsDatum result = resultList.get(0);
-      assert(result != null);
-      assert(result.getDocument() != null);
-      assert(result.getId() != null);
-      assert(result.getMetadata() != null);
-      assert(result.getMetadata().get("id") != null);
-      assert(result.getMetadata().get("type") != null);
+      assertNotNull(result);
+      assertNotNull(result.getDocument());
+      assertNotNull(result.getId());
+      assertNotNull(result.getMetadata());
+      assertNotNull(result.getMetadata().get("id"));
+      assertNotNull(result.getMetadata().get("type"));
 
       LOGGER.info("valid: " + activityObject.getObjectType() );
     }

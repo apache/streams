@@ -20,9 +20,9 @@ package org.apache.streams.instagram.test.providers;
 
 import org.apache.streams.instagram.provider.recentmedia.InstagramRecentMediaProvider;
 
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileReader;

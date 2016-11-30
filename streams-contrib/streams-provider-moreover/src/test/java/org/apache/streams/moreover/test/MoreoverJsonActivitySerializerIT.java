@@ -27,8 +27,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -47,7 +47,7 @@ public class MoreoverJsonActivitySerializerIT {
    * Before.
    * @throws Exception Exception
    */
-  @Before
+  @BeforeClass
   public void setup() throws Exception {
 
     StringWriter writer = new StringWriter();

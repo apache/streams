@@ -29,18 +29,23 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 import org.apache.commons.lang.SerializationUtils;
 import org.elasticsearch.client.Client;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.testng.Assert.assertTrue;
+
 /**
  * Integration Test for
  * @see org.apache.streams.elasticsearch.processor.DatumFromMetadataProcessor
  */
+@Test(  groups={"DatumFromMetadataProcessorIT"},
+        dependsOnGroups={"ElasticsearchPersistWriterIT"}
+     )
 public class DatumFromMetadataProcessorIT {
 
   private ElasticsearchReaderConfiguration testConfiguration;
@@ -53,12 +58,12 @@ public class DatumFromMetadataProcessorIT {
     DatumFromMetadataProcessor clone = (DatumFromMetadataProcessor) SerializationUtils.clone(processor);
   }
 
-  @Before
-  public void prepareTest() throws Exception {
+  @BeforeClass
+  public void prepareTestDatumFromMetadataProcessor() throws Exception {
 
     Config reference  = ConfigFactory.load();
     File conf_file = new File("target/test-classes/DatumFromMetadataProcessorIT.conf");
-    assert(conf_file.exists());
+    assertTrue(conf_file.exists());
     Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
     Config typesafe  = testResourceConfig.withFallback(reference).resolve();
     testConfiguration = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class).detectConfiguration(typesafe, "elasticsearch");
@@ -66,7 +71,7 @@ public class DatumFromMetadataProcessorIT {
 
   }
 
-  @Test
+  @Test()
   public void testDatumFromMetadataProcessor() {
 
     Map<String, Object> metadata = new HashMap<>();

@@ -210,10 +210,9 @@
                     <excludes>
                         <exclude>**/*Test.java</exclude>
                         <exclude>**/*Tests.java</exclude>
-                        <include>**/*IT.java</include>
                     </excludes>
                     <includes>
-                        <include>**/*ITs.java</include>
+                        <include>**/*IT.java</include>
                     </includes>
                 </configuration>
             </plugin>

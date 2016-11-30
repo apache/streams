@@ -46,14 +46,15 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
-import org.junit.Before;
-import org.junit.Test;
+
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.InputStream;
@@ -62,121 +63,125 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Integration Test for
  * @see org.apache.streams.elasticsearch.ElasticsearchPersistWriter
  * using parent/child associated documents.
  */
+@Test
+    (
+        groups={"ElasticsearchParentChildWriterIT"}
+    )
 public class ElasticsearchParentChildWriterIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchParentChildWriterIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchParentChildWriterIT.class);
 
-    private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+  private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-    private ElasticsearchWriterConfiguration testConfiguration;
-    private Client testClient;
+  protected ElasticsearchWriterConfiguration testConfiguration;
+  protected Client testClient;
 
-    private Set<Class<? extends ActivityObject>> objectTypes;
+  Set<Class<? extends ActivityObject>> objectTypes;
 
-    private List<String> files;
+  List<String> files;
 
-    @Before
-    public void prepareTest() throws Exception {
+  @BeforeClass
+  public void prepareTestParentChildPersistWriter() throws Exception {
 
-        Config reference  = ConfigFactory.load();
-        File conf_file = new File("target/test-classes/ElasticsearchParentChildWriterIT.conf");
-        assert(conf_file.exists());
-        Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-        Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-        testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration(typesafe, "elasticsearch");
-        testClient = new ElasticsearchClientManager(testConfiguration).getClient();
+    Config reference  = ConfigFactory.load();
+    File conf_file = new File("target/test-classes/ElasticsearchParentChildWriterIT.conf");
+    assertTrue(conf_file.exists());
+    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
+    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
+    testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration(typesafe, "elasticsearch");
+    testClient = new ElasticsearchClientManager(testConfiguration).getClient();
 
-        ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();
-        ClusterHealthResponse clusterHealthResponse = testClient.admin().cluster().health(clusterHealthRequest).actionGet();
-        assertNotEquals(clusterHealthResponse.getStatus(), ClusterHealthStatus.RED);
+    ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();
+    ClusterHealthResponse clusterHealthResponse = testClient.admin().cluster().health(clusterHealthRequest).actionGet();
+    assertNotEquals(clusterHealthResponse.getStatus(), ClusterHealthStatus.RED);
 
-        IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getIndex());
-        IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
-        if(indicesExistsResponse.isExists()) {
-            DeleteIndexRequest deleteIndexRequest = Requests.deleteIndexRequest(testConfiguration.getIndex());
-            DeleteIndexResponse deleteIndexResponse = testClient.admin().indices().delete(deleteIndexRequest).actionGet();
-            assertTrue(deleteIndexResponse.isAcknowledged());
-        }
-
-        PutIndexTemplateRequestBuilder putTemplateRequestBuilder = testClient.admin().indices().preparePutTemplate("mappings");
-        URL templateURL = ElasticsearchParentChildWriterIT.class.getResource("/ActivityChildObjectParent.json");
-        ObjectNode template = MAPPER.readValue(templateURL, ObjectNode.class);
-        String templateSource = MAPPER.writeValueAsString(template);
-        putTemplateRequestBuilder.setSource(templateSource);
-
-        testClient.admin().indices().putTemplate(putTemplateRequestBuilder.request()).actionGet();
-
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage("org.apache.streams.pojo.json"))
-                .setScanners(new SubTypesScanner()));
-        objectTypes = reflections.getSubTypesOf(ActivityObject.class);
-
-        InputStream testActivityFolderStream = ElasticsearchParentChildWriterIT.class.getClassLoader()
-                .getResourceAsStream("activities");
-        files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
-
+    IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getIndex());
+    IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
+    if(indicesExistsResponse.isExists()) {
+      DeleteIndexRequest deleteIndexRequest = Requests.deleteIndexRequest(testConfiguration.getIndex());
+      DeleteIndexResponse deleteIndexResponse = testClient.admin().indices().delete(deleteIndexRequest).actionGet();
+      assertTrue(deleteIndexResponse.isAcknowledged());
     }
 
-    @Test
-    public void testPersistWriter() throws Exception {
+    PutIndexTemplateRequestBuilder putTemplateRequestBuilder = testClient.admin().indices().preparePutTemplate("mappings");
+    URL templateURL = ElasticsearchParentChildWriterIT.class.getResource("/ActivityChildObjectParent.json");
+    ObjectNode template = MAPPER.readValue(templateURL, ObjectNode.class);
+    String templateSource = MAPPER.writeValueAsString(template);
+    putTemplateRequestBuilder.setSource(templateSource);
 
-        IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getIndex());
-        IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
-        if(indicesExistsResponse.isExists()) {
-            DeleteIndexRequest deleteIndexRequest = Requests.deleteIndexRequest(testConfiguration.getIndex());
-            DeleteIndexResponse deleteIndexResponse = testClient.admin().indices().delete(deleteIndexRequest).actionGet();
-        }
+    testClient.admin().indices().putTemplate(putTemplateRequestBuilder.request()).actionGet();
 
-        ElasticsearchPersistWriter testPersistWriter = new ElasticsearchPersistWriter(testConfiguration);
-        testPersistWriter.prepare(null);
+    Reflections reflections = new Reflections(new ConfigurationBuilder()
+        .setUrls(ClasspathHelper.forPackage("org.apache.streams.pojo.json"))
+        .setScanners(new SubTypesScanner()));
+    objectTypes = reflections.getSubTypesOf(ActivityObject.class);
 
-        for( Class objectType : objectTypes ) {
-            Object object = objectType.newInstance();
-            ActivityObject activityObject = MAPPER.convertValue(object, ActivityObject.class);
-            StreamsDatum datum = new StreamsDatum(activityObject, activityObject.getObjectType());
-            datum.getMetadata().put("type", "object");
-            testPersistWriter.write( datum );
-        }
+    InputStream testActivityFolderStream = ElasticsearchParentChildWriterIT.class.getClassLoader()
+        .getResourceAsStream("activities");
+    files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
-        for( String file : files) {
-            LOGGER.info("File: " + file );
-            InputStream testActivityFileStream = ElasticsearchParentChildWriterIT.class.getClassLoader()
-                    .getResourceAsStream("activities/" + file);
-            Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
-            StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
-            if(StringUtils.isNotBlank(activity.getObject().getObjectType())) {
-                datum.getMetadata().put("parent", activity.getObject().getObjectType());
-                datum.getMetadata().put("type", "activity");
-                testPersistWriter.write(datum);
-                LOGGER.info("Wrote: " + activity.getVerb());
-            }
-        }
+  }
 
-        testPersistWriter.cleanUp();
+  @Test
+  public void testParentChildPersistWriter() throws Exception {
 
-        SearchRequestBuilder countParentRequest = testClient
-                .prepareSearch(testConfiguration.getIndex())
-                .setTypes("object");
-        SearchResponse countParentResponse = countParentRequest.execute().actionGet();
-
-        assertEquals(41, countParentResponse.getHits().getTotalHits());
-
-        SearchRequestBuilder countChildRequest = testClient
-                .prepareSearch(testConfiguration.getIndex())
-                .setTypes("activity");
-        SearchResponse countChildResponse = countChildRequest.execute().actionGet();
-
-        assertEquals(84, countChildResponse.getHits().getTotalHits());
-
+    IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getIndex());
+    IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
+    if(indicesExistsResponse.isExists()) {
+      DeleteIndexRequest deleteIndexRequest = Requests.deleteIndexRequest(testConfiguration.getIndex());
+      DeleteIndexResponse deleteIndexResponse = testClient.admin().indices().delete(deleteIndexRequest).actionGet();
     }
+
+    ElasticsearchPersistWriter testPersistWriter = new ElasticsearchPersistWriter(testConfiguration);
+    testPersistWriter.prepare(null);
+
+    for( Class objectType : objectTypes ) {
+      Object object = objectType.newInstance();
+      ActivityObject activityObject = MAPPER.convertValue(object, ActivityObject.class);
+      StreamsDatum datum = new StreamsDatum(activityObject, activityObject.getObjectType());
+      datum.getMetadata().put("type", "object");
+      testPersistWriter.write( datum );
+    }
+
+    for( String file : files) {
+      LOGGER.info("File: " + file );
+      InputStream testActivityFileStream = ElasticsearchParentChildWriterIT.class.getClassLoader()
+          .getResourceAsStream("activities/" + file);
+      Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
+      StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
+      if( !StringUtils.isEmpty(activity.getObject().getObjectType())) {
+        datum.getMetadata().put("parent", activity.getObject().getObjectType());
+        datum.getMetadata().put("type", "activity");
+        testPersistWriter.write(datum);
+        LOGGER.info("Wrote: " + activity.getVerb());
+      }
+    }
+
+    testPersistWriter.cleanUp();
+
+    SearchRequestBuilder countParentRequest = testClient
+        .prepareSearch(testConfiguration.getIndex())
+        .setTypes("object");
+    SearchResponse countParentResponse = countParentRequest.execute().actionGet();
+
+    assertEquals(41, countParentResponse.getHits().getTotalHits());
+
+    SearchRequestBuilder countChildRequest = testClient
+        .prepareSearch(testConfiguration.getIndex())
+        .setTypes("activity");
+    SearchResponse countChildResponse = countChildRequest.execute().actionGet();
+
+    assertEquals(84, countChildResponse.getHits().getTotalHits());
+
+  }
 
 }

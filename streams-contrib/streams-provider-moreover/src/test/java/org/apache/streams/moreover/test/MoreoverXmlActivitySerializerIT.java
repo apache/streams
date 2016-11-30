@@ -24,8 +24,8 @@ import org.apache.streams.moreover.MoreoverXmlActivitySerializer;
 import org.apache.streams.pojo.json.Activity;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +41,7 @@ public class MoreoverXmlActivitySerializerIT {
   ActivitySerializer serializer;
   private String xml;
 
-  @Before
+  @BeforeClass
   public void setup() throws IOException {
     serializer = new MoreoverXmlActivitySerializer();
     xml = loadXml();

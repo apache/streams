@@ -19,9 +19,10 @@
 package org.apache.streams.youtube.test.providers;
 
 import com.youtube.provider.YoutubeUserActivityProvider;
-import org.junit.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileReader;

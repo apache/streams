@@ -29,6 +29,8 @@ import org.junit.Test;
 
 import java.io.File;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Tests @link:{ org.apache.streams.filebuffer.FileBufferWriter }
  * Tests @link:{ org.apache.streams.filebuffer.FileBufferReader }
@@ -68,7 +70,7 @@ public class TestFileBufferPersist {
 
         testPersistReader.cleanUp();
 
-        assert(testResult.size() == 1);
+        assertEquals(1, testResult.size());
 
     }
 

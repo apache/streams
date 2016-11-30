@@ -19,9 +19,9 @@
 package org.apache.streams.dropwizard.test;
 
 import com.google.common.collect.Lists;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -32,7 +32,7 @@ import java.net.URL;
  */
 public class StreamsApplicationIT {
 
-  @Before
+  @BeforeClass
   public void setupTest() throws Exception {
     String[] testArgs = Lists.newArrayList("server", "src/test/resources/configuration.yml").toArray(new String[2]);
     TestStreamsApplication.main(testArgs);

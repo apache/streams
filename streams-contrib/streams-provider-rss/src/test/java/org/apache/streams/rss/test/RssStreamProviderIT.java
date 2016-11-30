@@ -27,10 +27,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -78,7 +78,7 @@ public class RssStreamProviderIT {
       Assert.fail();
     }
 
-    Assert.assertThat(configuration.getFeeds().size(), greaterThan(70));
+    org.junit.Assert.assertThat(configuration.getFeeds().size(), greaterThan(70));
 
     OutputStream os = new FileOutputStream(configfile);
     OutputStreamWriter osw = new OutputStreamWriter(os);

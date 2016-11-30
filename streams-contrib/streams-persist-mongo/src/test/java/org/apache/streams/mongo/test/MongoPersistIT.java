@@ -32,10 +32,10 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.InputStream;
@@ -57,7 +57,7 @@ public class MongoPersistIT {
 
   private int count = 0;
 
-  @Before
+  @BeforeClass
   public void setup() throws Exception {
 
     Config reference  = ConfigFactory.load();

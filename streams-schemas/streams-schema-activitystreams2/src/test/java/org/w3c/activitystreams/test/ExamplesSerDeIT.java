@@ -22,10 +22,10 @@ package org.w3c.activitystreams.test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
-import org.junit.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.Test;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -93,8 +93,7 @@ public class ExamplesSerDeIT {
    *
    * @throws Exception test exception
    */
-  @Ignore
-  @Test
+  @Test( enabled = false )
   public void testVocabularySerDe() throws Exception {
 
     InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()
@@ -117,8 +116,7 @@ public class ExamplesSerDeIT {
    *
    * @throws Exception test exception
    */
-  @Ignore
-  @Test
+  @Test( enabled = false )
   public void testFailSerDe() throws Exception {
 
     InputStream testActivityFolderStream = ExamplesSerDeIT.class.getClassLoader()

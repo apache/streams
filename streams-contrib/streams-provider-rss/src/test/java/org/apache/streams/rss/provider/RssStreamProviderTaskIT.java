@@ -22,16 +22,16 @@ import org.apache.streams.core.StreamsDatum;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.net.URL;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Unit tests for {@link org.apache.streams.rss.provider.RssStreamProviderTask}
@@ -41,7 +41,7 @@ public class RssStreamProviderTaskIT {
   /**
    * clearPreviouslySeen.
    */
-  @Before
+  @BeforeClass
   public void clearPreviouslySeen() {
     //some test runners run in parallel so needs to be synchronized
     //if tests are run in parallel test will have undetermined results.
@@ -60,12 +60,12 @@ public class RssStreamProviderTaskIT {
     BlockingQueue<StreamsDatum> queue = new LinkedBlockingQueue<>();
     RssStreamProviderTask task = new RssStreamProviderTask(queue, "fake url");
     Set<String> batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
-    assertEquals("Expected batch size to be the same as amount of queued datums", batch.size(), queue.size());
+    assertEquals(batch.size(), queue.size(), "Expected batch size to be the same as amount of queued datums");
     RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake url", batch);
     //Test that  it will out previously seen articles
     queue.clear();
     batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
-    assertEquals("Expected batch size to be the same as amount of queued datums", batch.size(), queue.size());
+    assertEquals(batch.size(), queue.size(), "Expected batch size to be the same as amount of queued datums");
   }
 
   /**
@@ -78,20 +78,20 @@ public class RssStreamProviderTaskIT {
     BlockingQueue<StreamsDatum> queue = new LinkedBlockingQueue<>();
     RssStreamProviderTask task = new RssStreamProviderTask(queue, "fake url", new DateTime().minusYears(5), 10000, true);
     Set<String> batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
-    assertEquals("Expected batch size to be the same as amount of queued datums", batch.size(), queue.size());
+    assertEquals(batch.size(), queue.size(), "Expected batch size to be the same as amount of queued datums");
     RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake url", batch);
     //Test that it will not out previously seen articles
     queue.clear();
     batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist1.xml"));
-    assertEquals("Expected queue size to be 0", 0, queue.size());
-    assertEquals("Expected batch size to be 20", 20, batch.size());
+    assertEquals(0, queue.size(), "Expected queue size to be 0");
+    assertEquals(20, batch.size(), "Expected batch size to be 20");
     RssStreamProviderTask.PREVIOUSLY_SEEN.put("fake url", batch);
     //Test that not seen urls aren't blocked.
     queue.clear();
     batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist2.xml"));
     assertEquals(batch.size(), queue.size());
-    assertEquals("Expected queue size to be 25", 25, queue.size());
-    assertEquals("Expected batch size to be 25", 25, batch.size());
+    assertEquals(25, queue.size(), "Expected queue size to be 25");
+    assertEquals(25, batch.size(), "Expected batch size to be 25");
   }
 
   /**
@@ -142,8 +142,8 @@ public class RssStreamProviderTaskIT {
 
     batch = task.queueFeedEntries(new URL("resource:///test_rss_xml/economist2.xml"));
     assertTrue( queue.size() < batch.size());
-    assertEquals("Expected queue size to be 0", 3, queue.size());
-    assertEquals("Expected batch size to be 0", 25, batch.size());
+    assertEquals(3, queue.size(), "Expected queue size to be 0");
+    assertEquals(25, batch.size(), "Expected batch size to be 0");
   }
 
 

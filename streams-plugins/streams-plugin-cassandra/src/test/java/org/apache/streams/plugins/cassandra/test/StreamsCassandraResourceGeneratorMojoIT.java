@@ -21,14 +21,15 @@ package org.apache.streams.plugins.cassandra.test;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import junit.framework.TestCase;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-import org.junit.Assert;
-import org.junit.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -42,14 +43,9 @@ import static org.apache.streams.plugins.cassandra.test.StreamsCassandraResource
 /**
  * Tests that streams-plugin-cassandra running via maven generates cql resources.
  */
-public class StreamsCassandraResourceGeneratorMojoIT extends TestCase {
+public class StreamsCassandraResourceGeneratorMojoIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsCassandraResourceGeneratorMojoIT.class);
-
-  protected void setUp() throws Exception {
-    // required for mojo lookups to work
-    super.setUp();
-  }
 
   @Test
   public void testStreamsCassandraResourceGeneratorMojo() throws Exception {

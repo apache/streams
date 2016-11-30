@@ -20,13 +20,15 @@ package org.apache.streams.twitter.test.providers;
 
 import org.apache.streams.twitter.provider.TwitterStreamProvider;
 
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
+
+import static org.testng.Assert.assertTrue;
 
 public class TwitterStreamProviderIT {
 
@@ -53,16 +55,16 @@ public class TwitterStreamProviderIT {
     testThread.join(60000);
 
     File out = new File(outfile);
-    assert (out.exists());
-    assert (out.canRead());
-    assert (out.isFile());
+    assertTrue (out.exists());
+    assertTrue (out.canRead());
+    assertTrue (out.isFile());
 
     FileReader outReader = new FileReader(out);
     LineNumberReader outCounter = new LineNumberReader(outReader);
 
     while (outCounter.readLine() != null) {}
 
-    assert (outCounter.getLineNumber() > 25);
+    assertTrue (outCounter.getLineNumber() > 25);
 
   }
 }

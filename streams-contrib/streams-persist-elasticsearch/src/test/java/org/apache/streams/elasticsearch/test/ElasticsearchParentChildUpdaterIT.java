@@ -43,14 +43,14 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.junit.Before;
-import org.junit.Test;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.InputStream;
@@ -58,88 +58,93 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Integration Test for
  * @see org.apache.streams.elasticsearch.ElasticsearchPersistUpdater
  * using parent/child associated documents.
  */
+@Test
+    (
+        groups={"ElasticsearchParentChildUpdaterIT"},
+        dependsOnGroups={"ElasticsearchParentChildWriterIT"}
+    )
 public class ElasticsearchParentChildUpdaterIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchParentChildUpdaterIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchParentChildUpdaterIT.class);
 
-    private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+  private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-    private ElasticsearchWriterConfiguration testConfiguration;
-    private Client testClient;
+  protected ElasticsearchWriterConfiguration testConfiguration;
+  protected Client testClient;
 
-    private Set<Class<? extends ActivityObject>> objectTypes;
+  Set<Class<? extends ActivityObject>> objectTypes;
 
-    private List<String> files;
+  List<String> files;
 
-    @Before
-    public void prepareTest() throws Exception {
+  @BeforeClass
+  public void prepareTestParentChildPersistUpdater() throws Exception {
 
-        Config reference  = ConfigFactory.load();
-        File conf_file = new File("target/test-classes/ElasticsearchParentChildUpdaterIT.conf");
-        assert(conf_file.exists());
-        Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-        Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-        testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration(typesafe, "elasticsearch");
-        testClient = new ElasticsearchClientManager(testConfiguration).getClient();
+    Config reference  = ConfigFactory.load();
+    File conf_file = new File("target/test-classes/ElasticsearchParentChildUpdaterIT.conf");
+    assertTrue(conf_file.exists());
+    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
+    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
+    testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration(typesafe, "elasticsearch");
+    testClient = new ElasticsearchClientManager(testConfiguration).getClient();
 
-        ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();
-        ClusterHealthResponse clusterHealthResponse = testClient.admin().cluster().health(clusterHealthRequest).actionGet();
-        assertNotEquals(clusterHealthResponse.getStatus(), ClusterHealthStatus.RED);
+    ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();
+    ClusterHealthResponse clusterHealthResponse = testClient.admin().cluster().health(clusterHealthRequest).actionGet();
+    assertNotEquals(clusterHealthResponse.getStatus(), ClusterHealthStatus.RED);
 
-        IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getIndex());
-        IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
-        assertTrue(indicesExistsResponse.isExists());
+    IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getIndex());
+    IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
+    assertTrue(indicesExistsResponse.isExists());
 
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage("org.apache.streams.pojo.json"))
-                .setScanners(new SubTypesScanner()));
-        objectTypes = reflections.getSubTypesOf(ActivityObject.class);
+    Reflections reflections = new Reflections(new ConfigurationBuilder()
+        .setUrls(ClasspathHelper.forPackage("org.apache.streams.pojo.json"))
+        .setScanners(new SubTypesScanner()));
+    objectTypes = reflections.getSubTypesOf(ActivityObject.class);
 
-        InputStream testActivityFolderStream = ElasticsearchParentChildUpdaterIT.class.getClassLoader()
-                .getResourceAsStream("activities");
-        files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
+    InputStream testActivityFolderStream = ElasticsearchParentChildUpdaterIT.class.getClassLoader()
+        .getResourceAsStream("activities");
+    files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
+  }
+
+  @Test
+  public void testParentChildPersistUpdater() throws Exception {
+
+    ElasticsearchPersistUpdater testPersistUpdater = new ElasticsearchPersistUpdater(testConfiguration);
+    testPersistUpdater.prepare(null);
+
+    for( String file : files) {
+      LOGGER.info("File: " + file );
+      InputStream testActivityFileStream = ElasticsearchParentChildUpdaterIT.class.getClassLoader()
+          .getResourceAsStream("activities/" + file);
+      Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
+      activity.setAdditionalProperty("updated", Boolean.TRUE);
+      StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
+      if( !StringUtils.isEmpty(activity.getObject().getObjectType())) {
+        datum.getMetadata().put("parent", activity.getObject().getObjectType());
+        datum.getMetadata().put("type", "activity");
+        testPersistUpdater.write(datum);
+        LOGGER.info("Updated: " + activity.getVerb() );
+      }
     }
 
-    @Test
-    public void testPersistUpdater() throws Exception {
+    testPersistUpdater.cleanUp();
 
-        ElasticsearchPersistUpdater testPersistUpdater = new ElasticsearchPersistUpdater(testConfiguration);
-        testPersistUpdater.prepare(null);
+    SearchRequestBuilder countUpdatedRequest = testClient
+        .prepareSearch(testConfiguration.getIndex())
+        .setTypes("activity")
+        .setQuery(QueryBuilders.queryStringQuery("updated:true"));
+    SearchResponse countUpdatedResponse = countUpdatedRequest.execute().actionGet();
 
-        for( String file : files) {
-            LOGGER.info("File: " + file );
-            InputStream testActivityFileStream = ElasticsearchParentChildUpdaterIT.class.getClassLoader()
-                    .getResourceAsStream("activities/" + file);
-            Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
-            activity.setAdditionalProperty("updated", Boolean.TRUE);
-            StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
-            if(StringUtils.isNotBlank(activity.getObject().getObjectType())) {
-                datum.getMetadata().put("parent", activity.getObject().getObjectType());
-                datum.getMetadata().put("type", "activity");
-                testPersistUpdater.write(datum);
-                LOGGER.info("Updated: " + activity.getVerb() );
-            }
-        }
+    assertEquals(84, countUpdatedResponse.getHits().getTotalHits());
 
-        testPersistUpdater.cleanUp();
-
-        SearchRequestBuilder countUpdatedRequest = testClient
-                .prepareSearch(testConfiguration.getIndex())
-                .setTypes("activity")
-                .setQuery(QueryBuilders.queryStringQuery("updated:true"));
-        SearchResponse countUpdatedResponse = countUpdatedRequest.execute().actionGet();
-
-        assertEquals(84, countUpdatedResponse.getHits().getTotalHits());
-
-    }
+  }
 }

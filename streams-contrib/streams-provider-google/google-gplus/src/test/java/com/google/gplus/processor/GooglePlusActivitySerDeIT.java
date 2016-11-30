@@ -31,18 +31,18 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.gplus.serializer.util.GPlusActivityDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
 import org.apache.commons.lang.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 /**
  * Tests conversion of gplus inputs to Activity.
@@ -54,7 +54,7 @@ public class GooglePlusActivitySerDeIT {
   /**
    * setup.
    */
-  @Before
+  @BeforeClass
   public void setup() {
     objectMapper = StreamsJacksonMapper.getInstance();
     SimpleModule simpleModule = new SimpleModule();

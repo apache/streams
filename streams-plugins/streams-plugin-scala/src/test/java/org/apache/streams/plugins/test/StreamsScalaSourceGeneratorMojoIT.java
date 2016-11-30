@@ -21,13 +21,14 @@ package org.apache.streams.plugins.test;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import junit.framework.TestCase;
+
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-import org.junit.Assert;
-import org.junit.Test;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,15 +41,14 @@ import static org.apache.streams.plugins.test.StreamsScalaSourceGeneratorTest.sc
  * Tests that streams-plugin-pojo running via maven can convert activity schemas into pojos
  * which then compile.
  */
-public class StreamsScalaSourceGeneratorMojoIT extends TestCase {
+public class StreamsScalaSourceGeneratorMojoIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorMojoIT.class);
 
-  protected void setUp() throws Exception {
-    // required for mojo lookups to work
-    super.setUp();
-  }
-
+//  protected void setUp() throws Exception {
+//    // required for mojo lookups to work
+//    super.setUp();
+//  }
 
   @Test
   public void testStreamsScalaSourceGeneratorMojo() throws Exception {
