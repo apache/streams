@@ -26,6 +26,7 @@ import org.apache.streams.util.GuidUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.HConnection;
@@ -69,18 +70,17 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
   public HbasePersistWriter() {
     this.config = new ComponentConfigurator<>(HbaseConfiguration.class)
         .detectConfiguration(StreamsConfigurator.getConfig().getConfig("hbase"));
-    this.persistQueue  = new ConcurrentLinkedQueue<>();
+    this.persistQueue = new ConcurrentLinkedQueue<>();
   }
 
   /**
    * HbasePersistWriter constructor - use supplied persistQueue.
-   * @param persistQueue persistQueue
+   * @param hbaseConfiguration HbaseConfiguration
    */
   // TODO: refactor this to use HbaseConfiguration
-  public HbasePersistWriter(Queue<StreamsDatum> persistQueue) {
-    this.config = new ComponentConfigurator<>(HbaseConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("hbase"));
-    this.persistQueue = persistQueue;
+  public HbasePersistWriter(HbaseConfiguration hbaseConfiguration) {
+    this.config = hbaseConfiguration;
+    this.persistQueue = new ConcurrentLinkedQueue<>();
   }
 
   private synchronized void connectToHbase() {
@@ -90,8 +90,7 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
     configuration.set("hbase.rootdir", config.getRootdir());
     configuration.set("zookeeper.znode.parent", config.getParent());
     configuration.set("zookeeper.znode.rootserver", config.getRootserver());
-    //configuration.set("hbase.master", config.getRootserver());
-    //configuration.set("hbase.cluster.distributed", "false");
+    configuration.set("hbase.cluster.distributed", "false");
     configuration.set("hbase.zookeeper.quorum", config.getQuorum());
     configuration.set("hbase.zookeeper.property.clientPort", Long.toString(config.getClientPort()));
     configuration.setInt("zookeeper.session.timeout", 1000);
@@ -141,7 +140,13 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
   public void write(StreamsDatum streamsDatum) {
 
     ObjectNode node;
-    Put put = new Put();
+    byte[] row;
+    if (StringUtils.isNotBlank(streamsDatum.getId())) {
+      row = streamsDatum.getId().getBytes();
+    } else {
+      row = GuidUtils.generateGuid(streamsDatum.toString()).getBytes();
+    }
+    Put put = new Put(row);
     if ( streamsDatum.getDocument() instanceof String ) {
       try {
         node = mapper.readValue((String)streamsDatum.getDocument(), ObjectNode.class);
@@ -150,7 +155,6 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
         LOGGER.warn("Invalid json: {}", streamsDatum.getDocument().toString());
         return;
       }
-      put.setId(GuidUtils.generateGuid(node.toString()));
       try {
         byte[] value = node.binaryValue();
         put.add(config.getFamily().getBytes(), config.getQualifier().getBytes(), value);
@@ -176,6 +180,7 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
         LOGGER.warn("Failure preparing put: {}", streamsDatum.getDocument().toString());
         return;
       }
+
     }
     try {
       table.put(put);

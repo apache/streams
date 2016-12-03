@@ -30,8 +30,8 @@
     <description>HBase Module</description>
 
     <properties>
-        <hadoop-common.version>2.0.0-cdh4.5.0</hadoop-common.version>
-        <hbase.version>0.94.6-cdh4.5.0</hbase.version>
+        <hadoop-common.version>2.7.0</hadoop-common.version>
+        <hbase.version>1.2.3</hbase.version>
     </properties>
 
     <dependencies>
@@ -56,6 +56,10 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
             <version>${hadoop-common.version}</version>
@@ -74,7 +78,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase</artifactId>
+            <artifactId>hbase-client</artifactId>
             <version>${hbase.version}</version>
             <type>jar</type>
             <scope>compile</scope>
@@ -145,4 +149,69 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dockerITs</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>skipITs</name>
+                    <value>false</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <configuration combine.self="override">
+                            <watchInterval>500</watchInterval>
+                            <logDate>default</logDate>
+                            <verbose>true</verbose>
+                            <autoPull>on</autoPull>
+                            <images>
+                                <image>
+                                    <name>nerdammer/hbase</name>
+                                    <alias>hbase</alias>
+                                    <run>
+                                        <namingStrategy>none</namingStrategy>
+                                        <ports>
+                                            <port>${zookeeper.tcp.host}:${zookeeper.tcp.port}:2181</port>
+                                            <port>${hbase.tcp.host}:${hbase.tcp.port}:60000</port>
+                                            <port>${hbase.http.host}:${hbase.http.port}:60010</port>
+                                        </ports>
+                                        <portPropertyFile>hbase.properties</portPropertyFile> -->
+                                        <wait>
+                                            <log>hbase startup</log>
+                                            <http>
+                                                <url>http://${hbase.http.host}:${hbase.http.port}</url>
+                                                <method>GET</method>
+                                                <status>200</status>
+                                            </http>
+                                            <time>20000</time>
+                                            <kill>1000</kill>
+                                            <shutdown>500</shutdown>
+                                        </wait>
+                                        <log>
+                                            <enabled>true</enabled>
+                                            <date>default</date>
+                                            <color>cyan</color>
+                                        </log>
+                                    </run>
+                                    <watch>
+                                        <mode>none</mode>
+                                    </watch>
+                                </image>
+
+                            </images>
+                        </configuration>
+
+                    </plugin>
+
+                </plugins>
+            </build>
+
+        </profile>
+    </profiles>
 </project>
