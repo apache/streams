@@ -29,8 +29,8 @@
     <description>Streams Pig Runtime</description>
 
     <properties>
-        <hadoop-client.version>2.0.0-mr1-cdh4.6.0</hadoop-client.version>
-        <pig.version>0.11.0-cdh4.6.0</pig.version>
+        <hadoop-client.version>2.7.0</hadoop-client.version>
+        <pig.version>0.13.0</pig.version>
     </properties>
 
     <dependencies>
@@ -111,14 +111,12 @@
         <dependency>
             <groupId>jline</groupId>
             <artifactId>jline</artifactId>
-            <version>2.11</version>
-            <scope>test</scope>
+            <version>0.9.94</version>
         </dependency>
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr-runtime</artifactId>
             <version>3.5.2</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
