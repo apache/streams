@@ -63,7 +63,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCountable {
 
-  private static final String STREAMS_ID = "WebHdfsPersistReader";
+  public static final String STREAMS_ID = "WebHdfsPersistReader";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WebHdfsPersistReader.class);
 

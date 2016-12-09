@@ -82,7 +82,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class TwitterStreamProvider implements StreamsProvider, Serializable, DatumStatusCountable {
 
-  private static final String STREAMS_ID = "TwitterStreamProvider";
+  public static final String STREAMS_ID = "TwitterStreamProvider";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterStreamProvider.class);
 
