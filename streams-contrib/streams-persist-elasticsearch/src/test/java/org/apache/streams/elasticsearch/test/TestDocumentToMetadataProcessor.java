@@ -24,6 +24,7 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import org.apache.commons.lang.SerializationUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,44 +32,44 @@ import org.junit.Test;
 
 public class TestDocumentToMetadataProcessor {
 
-    private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+  private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-    @Before
-    public void prepareTest() {
+  @Before
+  public void prepareTest() {
 
-    }
+  }
 
-    @Test
-    public void testSerializability() {
-        DocumentToMetadataProcessor processor = new DocumentToMetadataProcessor();
+  @Test
+  public void testSerializability() {
+    DocumentToMetadataProcessor processor = new DocumentToMetadataProcessor();
 
-        DocumentToMetadataProcessor clone = (DocumentToMetadataProcessor) SerializationUtils.clone(processor);
-    }
+    DocumentToMetadataProcessor clone = (DocumentToMetadataProcessor) SerializationUtils.clone(processor);
+  }
 
-    @Test
-    public void testDocumentToMetadataProcessor() {
+  @Test
+  public void testDocumentToMetadataProcessor() {
 
-        ObjectNode document = MAPPER.createObjectNode()
-                .put("a", "a")
-                .put("b", "b")
-                .put("c", 6);
+    ObjectNode document = MAPPER.createObjectNode()
+        .put("a", "a")
+        .put("b", "b")
+        .put("c", 6);
 
-        DocumentToMetadataProcessor processor = new DocumentToMetadataProcessor();
+    DocumentToMetadataProcessor processor = new DocumentToMetadataProcessor();
 
-        StreamsDatum testInput = new StreamsDatum(document);
+    StreamsDatum testInput = new StreamsDatum(document);
 
-        Assert.assertNotNull(testInput.document);
-        Assert.assertNotNull(testInput.metadata);
-        Assert.assertEquals(testInput.metadata.size(), 0);
+    Assert.assertNotNull(testInput.document);
+    Assert.assertNotNull(testInput.metadata);
+    Assert.assertEquals(testInput.metadata.size(), 0);
 
-        processor.prepare(null);
+    processor.prepare(null);
 
-        StreamsDatum testOutput = processor.process(testInput).get(0);
+    StreamsDatum testOutput = processor.process(testInput).get(0);
 
-        processor.cleanUp();
+    processor.cleanUp();
 
-        Assert.assertNotNull(testOutput.metadata);
-        Assert.assertEquals(testInput.metadata.size(), 3);
+    Assert.assertNotNull(testOutput.metadata);
+    Assert.assertEquals(testInput.metadata.size(), 3);
 
-    }
+  }
 }

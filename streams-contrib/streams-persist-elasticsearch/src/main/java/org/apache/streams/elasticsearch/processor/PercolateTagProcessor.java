@@ -159,7 +159,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
 
     try {
       LOGGER.trace("Percolate request json: {}", percolateRequestJson.toString());
-      request = manager.getClient().preparePercolate().setIndices(config.getIndex()).setDocumentType(config.getType()).setSource(percolateRequestJson.toString());
+      request = manager.client().preparePercolate().setIndices(config.getIndex()).setDocumentType(config.getType()).setSource(percolateRequestJson.toString());
       LOGGER.trace("Percolate request: {}", mapper.writeValueAsString(request.request()));
       response = request.execute().actionGet();
       LOGGER.trace("Percolate response: {} matches", response.getMatches().length);
@@ -201,7 +201,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
 
     Objects.requireNonNull(config);
 
-    manager = new ElasticsearchClientManager(config);
+    manager = ElasticsearchClientManager.getInstance(config);
 
     if ( config.getTags() != null && config.getTags().getAdditionalProperties().size() > 0) {
       // initial write tags to index
@@ -214,7 +214,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
         PercolateQueryBuilder queryBuilder = new PercolateQueryBuilder(tag, query, this.usePercolateField);
         addPercolateRule(queryBuilder, config.getIndex());
       }
-      bulkBuilder = manager.getClient().prepareBulk();
+      bulkBuilder = manager.client().prepareBulk();
 
       if (writePercolateRules()) {
         LOGGER.info("wrote " + bulkBuilder.numberOfActions() + " tags to " + config.getIndex() + " _percolator");
@@ -230,7 +230,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
     if (config.getCleanupTags()) {
       deleteOldQueries(config.getIndex());
     }
-    manager.getClient().close();
+    manager.client().close();
   }
 
   public int numOfPercolateRules() {
@@ -242,7 +242,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
    * @param indexName indexName
    */
   public void createIndexIfMissing(String indexName) {
-    if (!this.manager.getClient()
+    if (!this.manager.client()
         .admin()
         .indices()
         .exists(new IndicesExistsRequest(indexName))
@@ -251,7 +251,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
       // It does not exist... So we are going to need to create the index.
       // we are going to assume that the 'templates' that we have loaded into
       // elasticsearch are sufficient to ensure the index is being created properly.
-      CreateIndexResponse response = this.manager.getClient().admin().indices().create(new CreateIndexRequest(indexName)).actionGet();
+      CreateIndexResponse response = this.manager.client().admin().indices().create(new CreateIndexRequest(indexName)).actionGet();
 
       if (response.isAcknowledged()) {
         LOGGER.info("Index {} did not exist. The index was automatically created from the stored ElasticSearch Templates.", indexName);
@@ -264,7 +264,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
   }
 
   public void addPercolateRule(PercolateQueryBuilder builder, String index) {
-    this.bulkBuilder.add(manager.getClient().prepareIndex(index, ".percolator", builder.getId())
+    this.bulkBuilder.add(manager.client().prepareIndex(index, ".percolator", builder.getId())
         .setSource(builder.getSource()));
   }
 
@@ -295,9 +295,9 @@ public class PercolateTagProcessor implements StreamsProcessor {
     if (ids.size() == 0) {
       return false;
     }
-    BulkRequestBuilder bulk = manager.getClient().prepareBulk();
+    BulkRequestBuilder bulk = manager.client().prepareBulk();
     for (String id : ids) {
-      bulk.add(manager.getClient().prepareDelete("_percolator", index, id));
+      bulk.add(manager.client().prepareDelete("_percolator", index, id));
     }
     return !bulk.execute().actionGet().hasFailures();
   }
@@ -309,7 +309,7 @@ public class PercolateTagProcessor implements StreamsProcessor {
    */
   public Set<String> getActivePercolateTags(String index) {
     Set<String> tags = new HashSet<>();
-    SearchRequestBuilder searchBuilder = manager.getClient().prepareSearch("*").setIndices(index).setTypes(".percolator").setSize(1000);
+    SearchRequestBuilder searchBuilder = manager.client().prepareSearch("*").setIndices(index).setTypes(".percolator").setSize(1000);
     SearchResponse response = searchBuilder.setQuery(QueryBuilders.matchAllQuery()).execute().actionGet();
     SearchHits hits = response.getHits();
     for (SearchHit hit : hits.getHits()) {
@@ -330,9 +330,9 @@ public class PercolateTagProcessor implements StreamsProcessor {
       return false;
     }
     LOGGER.info("Deleting {} tags.", tags.size());
-    BulkRequestBuilder bulk = manager.getClient().prepareBulk();
+    BulkRequestBuilder bulk = manager.client().prepareBulk();
     for (String tag : tags) {
-      bulk.add(manager.getClient().prepareDelete().setType(".percolator").setIndex(index).setId(tag));
+      bulk.add(manager.client().prepareDelete().setType(".percolator").setIndex(index).setId(tag));
     }
     BulkResponse response = bulk.execute().actionGet();
     return !response.hasFailures();

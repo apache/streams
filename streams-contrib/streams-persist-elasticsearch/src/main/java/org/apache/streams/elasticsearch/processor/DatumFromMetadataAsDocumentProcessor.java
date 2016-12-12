@@ -93,7 +93,7 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
     String type = ElasticsearchMetadataUtil.getType(metadata, config);
     String id = ElasticsearchMetadataUtil.getId(metadata);
 
-    GetRequestBuilder getRequestBuilder = elasticsearchClientManager.getClient().prepareGet(index, type, id);
+    GetRequestBuilder getRequestBuilder = elasticsearchClientManager.client().prepareGet(index, type, id);
     getRequestBuilder.setFields("*", "_timestamp");
     getRequestBuilder.setFetchSource(true);
     GetResponse getResponse = getRequestBuilder.get();
@@ -115,14 +115,14 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
 
   @Override
   public void prepare(Object configurationObject) {
-    this.elasticsearchClientManager = new ElasticsearchClientManager(config);
+    this.elasticsearchClientManager = ElasticsearchClientManager.getInstance(config);
     mapper = StreamsJacksonMapper.getInstance();
     mapper.registerModule(new JsonOrgModule());
   }
 
   @Override
   public void cleanUp() {
-    this.elasticsearchClientManager.getClient().close();
+    //
   }
 
 }

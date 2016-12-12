@@ -110,7 +110,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
   }
 
   public ElasticsearchPersistWriter(ElasticsearchWriterConfiguration config) {
-    this(config, new ElasticsearchClientManager(config));
+    this(config, ElasticsearchClientManager.getInstance(config));
   }
 
   /**
@@ -121,7 +121,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
   public ElasticsearchPersistWriter(ElasticsearchWriterConfiguration config, ElasticsearchClientManager manager) {
     this.config = config;
     this.manager = manager;
-    this.bulkRequest = this.manager.getClient().prepareBulk();
+    this.bulkRequest = this.manager.client().prepareBulk();
   }
 
   public long getBatchesSent() {
@@ -193,7 +193,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
   }
 
   public boolean isConnected() {
-    return (this.manager.getClient() != null);
+    return (this.manager.client() != null);
   }
 
   @Override
@@ -300,7 +300,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
         updateSettingsRequest.settings(Settings.settingsBuilder().put("refresh_interval", "5s"));
 
         // submit to ElasticSearch
-        this.manager.getClient()
+        this.manager.client()
             .admin()
             .indices()
             .updateSettings(updateSettingsRequest)
@@ -315,7 +315,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
 
       if (config.getRefresh()) {
         LOGGER.debug("Refreshing ElasticSearch index: {}", indexName);
-        this.manager.getClient()
+        this.manager.client()
             .admin()
             .indices()
             .prepareRefresh(indexName)
@@ -342,7 +342,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
     this.currentBatchBytes.set(0);
 
     // reset our bulk request builder
-    this.bulkRequest = this.manager.getClient().prepareBulk();
+    this.bulkRequest = this.manager.client().prepareBulk();
   }
 
   private synchronized void waitToCatchUp(int batchThreshold, int timeOutThresholdInMS) {
@@ -428,7 +428,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
     Objects.requireNonNull(type);
     Objects.requireNonNull(json);
 
-    IndexRequestBuilder indexRequestBuilder = manager.getClient()
+    IndexRequestBuilder indexRequestBuilder = manager.client()
         .prepareIndex(indexName, type)
         .setSource(json);
 
@@ -506,7 +506,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
       updateSettingsRequest.settings(Settings.settingsBuilder().put("refresh_interval", -1));
 
       // submit to ElasticSearch
-      this.manager.getClient()
+      this.manager.client()
           .admin()
           .indices()
           .updateSettings(updateSettingsRequest)
@@ -520,7 +520,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
    */
   public void createIndexIfMissing(String indexName) {
     // Synchronize this on a static class level
-    if (!this.manager.getClient()
+    if (!this.manager.client()
         .admin()
         .indices()
         .exists(new IndicesExistsRequest(indexName))
@@ -529,7 +529,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
       // It does not exist... So we are going to need to create the index.
       // we are going to assume that the 'templates' that we have loaded into
       // elasticsearch are sufficient to ensure the index is being created properly.
-      CreateIndexResponse response = this.manager.getClient().admin().indices().create(new CreateIndexRequest(indexName)).actionGet();
+      CreateIndexResponse response = this.manager.client().admin().indices().create(new CreateIndexRequest(indexName)).actionGet();
 
       if (response.isAcknowledged()) {
         LOGGER.info("Index Created: {}", indexName);
