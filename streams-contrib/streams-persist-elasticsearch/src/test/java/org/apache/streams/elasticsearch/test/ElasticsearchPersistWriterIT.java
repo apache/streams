@@ -82,7 +82,7 @@ public class ElasticsearchPersistWriterIT {
     Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
     Config typesafe  = testResourceConfig.withFallback(reference).resolve();
     testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration(typesafe, "elasticsearch");
-    testClient = new ElasticsearchClientManager(testConfiguration).getClient();
+    testClient = ElasticsearchClientManager.getInstance(testConfiguration).client();
 
     ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();
     ClusterHealthResponse clusterHealthResponse = testClient.admin().cluster().health(clusterHealthRequest).actionGet();

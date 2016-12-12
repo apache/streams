@@ -79,7 +79,7 @@ public class DatumFromMetadataProcessor implements StreamsProcessor, Serializabl
     String type = ElasticsearchMetadataUtil.getType(metadata, config);
     String id = ElasticsearchMetadataUtil.getId(entry);
 
-    GetRequestBuilder getRequestBuilder = elasticsearchClientManager.getClient().prepareGet(index, type, id);
+    GetRequestBuilder getRequestBuilder = elasticsearchClientManager.client().prepareGet(index, type, id);
     getRequestBuilder.setFields("*", "_timestamp");
     getRequestBuilder.setFetchSource(true);
     GetResponse getResponse = getRequestBuilder.get();
@@ -101,12 +101,12 @@ public class DatumFromMetadataProcessor implements StreamsProcessor, Serializabl
 
   @Override
   public void prepare(Object configurationObject) {
-    this.elasticsearchClientManager = new ElasticsearchClientManager(config);
+    this.elasticsearchClientManager = ElasticsearchClientManager.getInstance(config);
 
   }
 
   @Override
   public void cleanUp() {
-    this.elasticsearchClientManager.getClient().close();
+    this.elasticsearchClientManager.client().close();
   }
 }

@@ -19,16 +19,7 @@
 package org.apache.streams.elasticsearch;
 
 import com.google.common.net.InetAddresses;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.elasticsearch.Version;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequestBuilder;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
-import org.elasticsearch.action.admin.cluster.state.ClusterStateRequestBuilder;
-import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
-import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
-import org.elasticsearch.client.Client;
+
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -36,10 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Wrapper class for multiple
@@ -48,111 +37,55 @@ import java.util.concurrent.ExecutionException;
 public class ElasticsearchClientManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchClientManager.class);
-  private static Map<String, ElasticsearchClient> ALL_CLIENTS = new HashMap<>();
 
-  private ElasticsearchConfiguration elasticsearchConfiguration;
+  private ElasticsearchConfiguration config;
 
-  public ElasticsearchClientManager(ElasticsearchConfiguration elasticsearchConfiguration) {
-    this.elasticsearchConfiguration = elasticsearchConfiguration;
-  }
+  private org.elasticsearch.client.transport.TransportClient client;
 
-  public ElasticsearchConfiguration getElasticsearchConfiguration() {
-    return elasticsearchConfiguration;
-  }
-
-  /**
-   * Get the Client for this return, it is actually a transport client, but it is much
-   * easier to work with the generic object as this interface likely won't change from
-   * elasticsearch. This method is synchronized to block threads from creating
-   * too many of these at any given time.
-   *
-   * @return Client for elasticsearch
-   */
-  public Client getClient() {
-    checkAndLoadClient(null);
-
-    return ALL_CLIENTS.get(this.elasticsearchConfiguration.getClusterName()).getClient();
-  }
-
-  /**
-   * Returns Client with clusterName.
-   * @param clusterName clusterName
-   */
-  public Client getClient(String clusterName) {
-    checkAndLoadClient(clusterName);
-
-    return ALL_CLIENTS.get(this.elasticsearchConfiguration.getClusterName()).getClient();
-  }
-
-  public boolean isOnOrAfterVersion(Version version) {
-    return ALL_CLIENTS.get(this.elasticsearchConfiguration.getClusterName()).getVersion().onOrAfter(version);
-  }
-
-  public boolean refresh(String index) {
-    return refresh(new String[]{index});
-  }
-
-  public boolean refresh(String[] indexes) {
-    RefreshResponse refreshResponse = this.getClient().admin().indices().prepareRefresh(indexes).execute().actionGet();
-    return refreshResponse.getFailedShards() == 0;
-  }
-
-  /**
-   * Terminate the elasticsearch clients.
-   */
-  public synchronized void stop() {
-    // Check to see if we have a client.
-    if (ALL_CLIENTS.containsKey(this.elasticsearchConfiguration.getClusterName())) {
-      // Close the client
-      ALL_CLIENTS.get(this.elasticsearchConfiguration.getClusterName()).getClient().close();
-
-      // Remove it so that it isn't in memory any more.
-      ALL_CLIENTS.remove(this.elasticsearchConfiguration.getClusterName());
+  private ElasticsearchClientManager(ElasticsearchConfiguration config) {
+    this.config = config;
+    try {
+      this.start();
+    } catch (Exception e) {
+      e.printStackTrace();
+      this.client = null;
     }
   }
 
-  public ClusterHealthResponse getStatus() throws ExecutionException, InterruptedException {
-    ClusterHealthRequestBuilder request = this.getClient().admin().cluster().prepareHealth();
-    return request.execute().get();
-  }
+  private static Map<ElasticsearchConfiguration, ElasticsearchClientManager> INSTANCE_MAP = new HashMap<>();
 
-  public String toString() {
-    return ToStringBuilder.reflectionToString(this);
-  }
-
-  public boolean equals(Object configuration) {
-    return EqualsBuilder.reflectionEquals(this, configuration, Collections.singletonList(this.elasticsearchConfiguration.toString()));
-  }
-
-  public int hashCode() {
-    return HashCodeBuilder.reflectionHashCode(this, Collections.singletonList(this.elasticsearchConfiguration.toString()));
-  }
-
-  private synchronized void checkAndLoadClient(String clusterName) {
-
-    if (clusterName == null) {
-      clusterName = this.elasticsearchConfiguration.getClusterName();
+  public static ElasticsearchClientManager getInstance(ElasticsearchConfiguration configuration) {
+    if (INSTANCE_MAP != null &&
+        INSTANCE_MAP.size() > 0 &&
+        INSTANCE_MAP.containsKey(configuration)
+        )                  {
+      return INSTANCE_MAP.get(configuration);
+    } else {
+      ElasticsearchClientManager instance = new ElasticsearchClientManager(configuration);
+      if (instance != null) {
+        INSTANCE_MAP.put(configuration, instance);
+        return instance;
+      } else {
+        return null;
+      }
     }
+  }
 
-    // If it is there, exit early
-    if (ALL_CLIENTS.containsKey(clusterName)) {
-      return;
-    }
+  private synchronized void start() {
 
     try {
       // We are currently using lazy loading to start the elasticsearch cluster, however.
-      LOGGER.info("Creating a new TransportClient: {}", this.elasticsearchConfiguration.getHosts());
+      LOGGER.info("Creating a new TransportClient: {}", this.config.getHosts());
 
       Settings settings = Settings.settingsBuilder()
-          .put("cluster.name", this.elasticsearchConfiguration.getClusterName())
+          .put("cluster.name", this.config.getClusterName())
           .put("client.transport.ping_timeout", "90s")
           .put("client.transport.nodes_sampler_interval", "60s")
           .build();
 
-
       // Create the client
-      TransportClient transportClient = TransportClient.builder().settings(settings).build();
-      for (String h : elasticsearchConfiguration.getHosts()) {
+      client = TransportClient.builder().settings(settings).build();
+      for (String h : config.getHosts()) {
         LOGGER.info("Adding Host: {}", h);
         InetAddress address;
 
@@ -163,32 +96,22 @@ public class ElasticsearchClientManager {
           LOGGER.info("{} is a hostname", h);
           address = InetAddress.getByName(h);
         }
-        transportClient.addTransportAddress(
+        client.addTransportAddress(
             new InetSocketTransportAddress(
                 address,
-                elasticsearchConfiguration.getPort().intValue()));
+                config.getPort().intValue()));
       }
-
-      // Add the client and figure out the version.
-      ElasticsearchClient elasticsearchClient = new ElasticsearchClient(transportClient, getVersion(transportClient));
-
-      // Add it to our static map
-      ALL_CLIENTS.put(clusterName, elasticsearchClient);
-
     } catch (Exception ex) {
       LOGGER.error("Could not Create elasticsearch Transport Client: {}", ex);
     }
 
   }
 
-  private Version getVersion(Client client) {
-    try {
-      ClusterStateRequestBuilder clusterStateRequestBuilder = client.admin().cluster().prepareState();
-      ClusterStateResponse clusterStateResponse = clusterStateRequestBuilder.execute().actionGet();
+  public ElasticsearchConfiguration config() {
+    return config;
+  }
 
-      return clusterStateResponse.getState().getNodes().getMasterNode().getVersion();
-    } catch (Exception ex) {
-      return null;
-    }
+  public org.elasticsearch.client.transport.TransportClient client() {
+    return client;
   }
 }

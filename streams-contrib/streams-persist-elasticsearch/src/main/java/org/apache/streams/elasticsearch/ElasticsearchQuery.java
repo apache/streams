@@ -76,7 +76,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
    */
   public ElasticsearchQuery(ElasticsearchReaderConfiguration config) {
     this.config = config;
-    this.elasticsearchClientManager = new ElasticsearchClientManager(config);
+    this.elasticsearchClientManager = ElasticsearchClientManager.getInstance(config);
     this.indexes.addAll(config.getIndexes());
     this.types.addAll(config.getTypes());
     this.scrollTimeout = config.getScrollTimeout();
@@ -119,7 +119,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
     // If we haven't already set up the search, then set up the search.
     if (search == null) {
 
-      search = elasticsearchClientManager.getClient()
+      search = elasticsearchClientManager.client()
           .prepareSearch(indexes.toArray(new String[0]))
           .setSearchType(SearchType.SCAN)
           .setExplain(true)
@@ -201,7 +201,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
         scrollPositionInScroll = 0;
 
         // get the next hits of the scroll
-        scrollResp = elasticsearchClientManager.getClient()
+        scrollResp = elasticsearchClientManager.client()
             .prepareSearchScroll(scrollResp.getScrollId())
             .setScroll(scrollTimeout)
             .execute()
