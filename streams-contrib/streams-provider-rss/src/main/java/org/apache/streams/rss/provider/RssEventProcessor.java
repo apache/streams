@@ -24,7 +24,8 @@ import org.apache.streams.rss.serializer.SyndEntryActivitySerializer;
 import org.apache.streams.rss.serializer.SyndEntrySerializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.syndication.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndEntry;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

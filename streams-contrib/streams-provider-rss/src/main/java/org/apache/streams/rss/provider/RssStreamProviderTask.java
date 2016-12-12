@@ -25,10 +25,11 @@ import org.apache.streams.rss.serializer.SyndEntrySerializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.annotations.VisibleForTesting;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.SyndFeedInput;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.SyndFeedInput;
+
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +78,7 @@ public class RssStreamProviderTask implements Runnable {
    * Map that contains the Set of previously seen articles by an rss feed.
    */
   @VisibleForTesting
-  protected static final Map<String, Set<String>> PREVIOUSLY_SEEN = new ConcurrentHashMap<>();
+  protected Map<String, Set<String>> PREVIOUSLY_SEEN = new ConcurrentHashMap<>();
 
 
   private BlockingQueue<StreamsDatum> dataQueue;
