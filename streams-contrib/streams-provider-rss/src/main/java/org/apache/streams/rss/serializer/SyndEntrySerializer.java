@@ -21,16 +21,15 @@ package org.apache.streams.rss.serializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.sun.syndication.feed.module.Module;
-import com.sun.syndication.feed.rss.Category;
-import com.sun.syndication.feed.rss.Content;
-import com.sun.syndication.feed.rss.Enclosure;
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndEnclosure;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndImage;
-import com.sun.syndication.feed.synd.SyndLinkImpl;
+import com.rometools.rome.feed.module.Module;
+import com.rometools.rome.feed.rss.Enclosure;
+import com.rometools.rome.feed.synd.SyndContent;
+import com.rometools.rome.feed.synd.SyndEnclosure;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.feed.synd.SyndImage;
+import com.rometools.rome.feed.synd.SyndLinkImpl;
+
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
@@ -82,9 +81,9 @@ public class SyndEntrySerializer {
     }
     ArrayNode cats = factory.arrayNode();
     for (Object obj : categories) {
-      if (obj instanceof Category) {
+      if (obj instanceof com.rometools.rome.feed.rss.Category) {
         ObjectNode catNode = factory.objectNode();
-        Category category = (Category) obj;
+        com.rometools.rome.feed.rss.Category category = (com.rometools.rome.feed.rss.Category) obj;
         if (category.getDomain() != null) {
           catNode.put("domain", category.getDomain());
         }
@@ -92,8 +91,8 @@ public class SyndEntrySerializer {
           catNode.put("value", category.getValue());
         }
         cats.add(catNode);
-      } else if (obj instanceof com.sun.syndication.feed.atom.Category) {
-        com.sun.syndication.feed.atom.Category category = (com.sun.syndication.feed.atom.Category) obj;
+      } else if (obj instanceof com.rometools.rome.feed.atom.Category) {
+        com.rometools.rome.feed.atom.Category category = (com.rometools.rome.feed.atom.Category) obj;
         ObjectNode catNode = factory.objectNode();
         if (category.getLabel() != null) {
           catNode.put("label", category.getLabel());
@@ -120,13 +119,13 @@ public class SyndEntrySerializer {
     ArrayNode contentsArray = factory.arrayNode();
     for (Object obj : contents) {
       ObjectNode content = factory.objectNode();
-      if (obj instanceof Content) {
-        Content rssContent = (Content) obj;
+      if (obj instanceof com.rometools.rome.feed.rss.Content) {
+        com.rometools.rome.feed.rss.Content rssContent = (com.rometools.rome.feed.rss.Content) obj;
         content.put("type", rssContent.getType());
         content.put("value", rssContent.getValue());
       }
-      if (obj instanceof com.sun.syndication.feed.atom.Content) {
-        com.sun.syndication.feed.atom.Content atomContent = (com.sun.syndication.feed.atom.Content) obj;
+      if (obj instanceof com.rometools.rome.feed.atom.Content) {
+        com.rometools.rome.feed.atom.Content atomContent = (com.rometools.rome.feed.atom.Content) obj;
         content.put("type", atomContent.getType());
         content.put("value", atomContent.getValue());
         content.put("mode", atomContent.getMode());
@@ -248,7 +247,9 @@ public class SyndEntrySerializer {
   }
 
   private void serializeLinks(ObjectNode root, JsonNodeFactory factory, List links) {
-    if (links.get(0) instanceof String) {
+    if( links.size() == 0 ) {
+      root.put("links", factory.arrayNode());
+    } else  if (links.get(0) instanceof String) {
       serializeListOfStrings(links, "links", root, factory);
     } else if (links.get(0) instanceof SyndLinkImpl) {
       ArrayNode linksArray = factory.arrayNode();
