@@ -14,7 +14,7 @@
         "scheme": {
             "type": "string",
             "description": "scheme",
-            "enum" : ["file", "hdfs", "webhdfs"],
+            "enum" : ["file", "hdfs", "webhdfs", "s3", "s3n", "s3a", "emrfs"],
             "default": "webhdfs"
         },
         "host": {
