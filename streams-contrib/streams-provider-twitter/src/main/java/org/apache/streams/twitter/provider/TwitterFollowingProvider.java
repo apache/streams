@@ -38,6 +38,7 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import twitter4j.Status;
 import twitter4j.Twitter;
 
 import java.io.BufferedOutputStream;
@@ -213,6 +214,10 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
 
     return result;
 
+  }
+
+  public boolean shouldContinuePulling(List<twitter4j.User> users) {
+    return (users != null) && (users.size() == config.getPageSize());
   }
 
   @Override

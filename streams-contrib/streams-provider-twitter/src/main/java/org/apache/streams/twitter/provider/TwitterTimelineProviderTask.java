@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Paging;
+import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterObjectFactory;
@@ -60,12 +61,14 @@ public class TwitterTimelineProviderTask implements Runnable {
     this.id = id;
   }
 
+  int page_count = 1;
+  int item_count = 0;
+  List<Status> lastPage = null;
+
   @Override
   public void run() {
 
-    Paging paging = new Paging(1, 200);
-    List<Status> statuses = null;
-    int count = 0;
+    Paging paging = new Paging(page_count, provider.getConfig().getPageSize().intValue());
 
     LOGGER.info(id + " Thread Starting");
 
@@ -81,25 +84,27 @@ public class TwitterTimelineProviderTask implements Runnable {
         try {
           this.client = provider.getTwitterClient();
 
-          statuses = client.getUserTimeline(id, paging);
+          ResponseList<Status> statuses = client.getUserTimeline(id, paging);
 
           for (Status twitterStatus : statuses) {
 
             String json = TwitterObjectFactory.getRawJSON(twitterStatus);
 
-            if ( count < provider.getConfig().getMaxItems() ) {
+            if ( item_count < provider.getConfig().getMaxItems() ) {
               try {
                 org.apache.streams.twitter.pojo.Tweet tweet = MAPPER.readValue(json, org.apache.streams.twitter.pojo.Tweet.class);
                 ComponentUtils.offerUntilSuccess(new StreamsDatum(tweet), provider.providerQueue);
               } catch (Exception exception) {
                 LOGGER.warn("Failed to read document as Tweet ", twitterStatus);
               }
-              count++;
+              item_count++;
             }
 
           }
 
-          paging.setPage(paging.getPage() + 1);
+          lastPage = statuses;
+          page_count = paging.getPage() + 1;
+          paging.setPage(page_count);
 
           keepTrying = 10;
         } catch (Exception ex) {
@@ -107,10 +112,18 @@ public class TwitterTimelineProviderTask implements Runnable {
         }
       }
     }
-    while (provider.shouldContinuePulling(statuses) && count < provider.getConfig().getMaxItems());
+    while (shouldContinuePulling());
 
     LOGGER.info(id + " Thread Finished");
 
   }
+
+  public boolean shouldContinuePulling() {
+    return (lastPage != null)
+        && item_count < provider.getConfig().getMaxItems()
+        && page_count <= provider.getConfig().getMaxPages();
+  }
+
+
 
 }
