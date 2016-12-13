@@ -33,6 +33,7 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -75,6 +76,8 @@ public class TwitterFollowingProviderTask implements Runnable {
     this.screenName = screenName;
   }
 
+  int page_count = 0;
+  int item_count = 0;
 
   @Override
   public void run() {
@@ -119,26 +122,27 @@ public class TwitterFollowingProviderTask implements Runnable {
 
   private void collectUsers(Long id) {
     int keepTrying = 0;
-
+    List<twitter4j.User> list = null;
     long curser = -1;
+
+    twitter4j.User user;
+    String userJson;
+    try {
+      user = client.users().showUser(id);
+      userJson = TwitterObjectFactory.getRawJSON(user);
+    } catch (TwitterException ex) {
+      LOGGER.error("Failure looking up " + id);
+      return;
+    }
 
     do {
       try {
-        twitter4j.User user;
-        String userJson;
-        try {
-          user = client.users().showUser(id);
-          userJson = TwitterObjectFactory.getRawJSON(user);
-        } catch (TwitterException ex) {
-          LOGGER.error("Failure looking up " + id);
-          break;
-        }
 
-        PagableResponseList<twitter4j.User> list = null;
+        PagableResponseList<twitter4j.User> page = null;
         if ( provider.getConfig().getEndpoint().equals("followers") ) {
-          list = client.friendsFollowers().getFollowersList(id, curser, provider.getConfig().getMaxItems().intValue());
+          page = client.friendsFollowers().getFollowersList(id, curser, provider.getConfig().getPageSize().intValue());
         } else if ( provider.getConfig().getEndpoint().equals("friends") ) {
-          list = client.friendsFollowers().getFriendsList(id, curser, provider.getConfig().getMaxItems().intValue());
+          page = client.friendsFollowers().getFriendsList(id, curser, provider.getConfig().getPageSize().intValue());
         }
 
         Objects.requireNonNull(list);
@@ -162,33 +166,44 @@ public class TwitterFollowingProviderTask implements Runnable {
 
             Objects.requireNonNull(follow);
 
-            if ( count < provider.getConfig().getMaxItems()) {
+            if ( item_count < provider.getConfig().getMaxItems()) {
               ComponentUtils.offerUntilSuccess(new StreamsDatum(follow), provider.providerQueue);
-              count++;
+              item_count++;
             }
 
           } catch (Exception ex) {
             LOGGER.warn("Exception: {}", ex);
           }
         }
-        if ( !list.hasNext() ) {
+        if ( !page.hasNext() ) {
           break;
         }
-        if ( list.getNextCursor() == 0 ) {
+        if ( page.getNextCursor() == 0 ) {
           break;
         }
-        curser = list.getNextCursor();
+        curser = page.getNextCursor();
+        page_count++;
       } catch (Exception ex) {
         keepTrying += TwitterErrorHandler.handleTwitterError(client, null, ex);
       }
     }
-    while (curser != 0 && keepTrying < provider.getConfig().getRetryMax() && count < provider.getConfig().getMaxItems());
+    while (provider.shouldContinuePulling(list) && curser != 0 && keepTrying < provider.getConfig().getRetryMax() && count < provider.getConfig().getMaxItems());
   }
 
   private void collectIds(Long id) {
     int keepTrying = 0;
 
     long curser = -1;
+
+    twitter4j.User user;
+    String userJson;
+    try {
+      user = client.users().showUser(id);
+      userJson = TwitterObjectFactory.getRawJSON(user);
+    } catch (TwitterException ex) {
+      LOGGER.error("Failure looking up " + id);
+      return;
+    }
 
     do {
       try {
@@ -218,9 +233,9 @@ public class TwitterFollowingProviderTask implements Runnable {
 
             Objects.requireNonNull(follow);
 
-            if ( count < provider.getConfig().getMaxItems()) {
+            if ( item_count < provider.getConfig().getMaxItems()) {
               ComponentUtils.offerUntilSuccess(new StreamsDatum(follow), provider.providerQueue);
-              count++;
+              item_count++;
             }
           } catch (Exception ex) {
             LOGGER.warn("Exception: {}", ex);
@@ -233,13 +248,19 @@ public class TwitterFollowingProviderTask implements Runnable {
           break;
         }
         curser = ids.getNextCursor();
+        page_count++;
       } catch (TwitterException twitterException) {
         keepTrying += TwitterErrorHandler.handleTwitterError(client, id, twitterException);
       } catch (Exception ex) {
         keepTrying += TwitterErrorHandler.handleTwitterError(client, null, ex);
       }
     }
-    while (curser != 0 && keepTrying < provider.getConfig().getRetryMax() && count < provider.getConfig().getMaxItems());
+    while (shouldContinuePulling() && curser != 0 && keepTrying < provider.getConfig().getRetryMax() );
+  }
+
+  public boolean shouldContinuePulling() {
+    return ( item_count < provider.getConfig().getMaxItems()
+              && page_count < provider.getConfig().getMaxPages());
   }
 
 }

@@ -26,7 +26,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.twitter.TwitterUserInformationConfiguration;
+import org.apache.streams.twitter.TwitterTimelineProviderConfiguration;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -84,16 +84,12 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
   public static final int MAX_NUMBER_WAITING = 10000;
 
-  private TwitterUserInformationConfiguration config;
+  private TwitterTimelineProviderConfiguration config;
 
   protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-  public TwitterUserInformationConfiguration getConfig() {
+  public TwitterTimelineProviderConfiguration getConfig() {
     return config;
-  }
-
-  public void setConfig(TwitterUserInformationConfiguration config) {
-    this.config = config;
   }
 
   protected Collection<String[]> screenNameBatches;
@@ -153,7 +149,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     Config typesafe  = testResourceConfig.withFallback(reference).resolve();
 
     StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    TwitterUserInformationConfiguration config = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration(typesafe, "twitter");
+    TwitterTimelineProviderConfiguration config = new ComponentConfigurator<>(TwitterTimelineProviderConfiguration.class).detectConfiguration(typesafe, "twitter");
     TwitterTimelineProvider provider = new TwitterTimelineProvider(config);
 
     ObjectMapper mapper = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
@@ -178,7 +174,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     outStream.flush();
   }
 
-  public TwitterTimelineProvider(TwitterUserInformationConfiguration config) {
+  public TwitterTimelineProvider(TwitterTimelineProviderConfiguration config) {
     this.config = config;
   }
 
@@ -193,6 +189,10 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
   @Override
   public void prepare(Object configurationObject) {
+
+    if( configurationObject instanceof TwitterTimelineProviderConfiguration ) {
+      this.config = (TwitterTimelineProviderConfiguration)configurationObject;
+    }
 
     try {
       lock.writeLock().lock();
@@ -230,10 +230,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     executor.shutdown();
 
-  }
-
-  public boolean shouldContinuePulling(List<Status> statuses) {
-    return (statuses != null) && (statuses.size() > 0);
   }
 
   protected void submitTimelineThreads(Long[] ids) {

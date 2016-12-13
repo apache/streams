@@ -65,7 +65,7 @@ public class TwitterFollowingProviderIT {
 
     while (outCounter.readLine() != null) {}
 
-    assertEquals (10000, outCounter.getLineNumber());
+    assertEquals (outCounter.getLineNumber(), 10000);
 
   }
 }

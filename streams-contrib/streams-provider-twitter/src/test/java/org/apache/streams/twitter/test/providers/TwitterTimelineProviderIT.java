@@ -22,6 +22,7 @@ import org.apache.streams.twitter.provider.TwitterTimelineProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -62,7 +63,7 @@ public class TwitterTimelineProviderIT {
 
     while (outCounter.readLine() != null) {}
 
-    assert (outCounter.getLineNumber() == 1000);
+    Assert.assertEquals( outCounter.getLineNumber(), 1000);
 
   }
 }

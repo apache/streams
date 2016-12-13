@@ -16,10 +16,10 @@
                 "type": "string"
             }
         },
-        "max_items": {
+        "page_size": {
             "type": "integer",
-            "description": "Max items per user to collect",
-            "default": 5000
+            "description": "Max items per page to request",
+            "default": 200
         }
     }
 }
