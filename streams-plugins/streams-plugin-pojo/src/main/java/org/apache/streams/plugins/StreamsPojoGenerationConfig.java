@@ -70,7 +70,7 @@ public class StreamsPojoGenerationConfig extends DefaultGenerationConfig {
     if (null != sourceDirectory) {
       return Collections.singleton(URLUtil.parseURL(sourceDirectory)).iterator();
     }
-    List<URL> sourceUrls = new ArrayList<URL>();
+    List<URL> sourceUrls = new ArrayList<>();
     if ( sourcePaths != null && sourcePaths.size() > 0) {
       for (String source : sourcePaths) {
         sourceUrls.add(URLUtil.parseURL(source));

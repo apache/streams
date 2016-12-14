@@ -19,22 +19,20 @@
 
 package org.apache.streams.plugins.test;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import static org.apache.streams.plugins.test.StreamsPojoSourceGeneratorTest.javaFilter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Tests that streams-plugin-pojo running via maven can convert activity schemas into pojos
@@ -61,13 +59,13 @@ public class StreamsPojoSourceGeneratorMojoIT {
 
     verifier = new Verifier( testDir.getAbsolutePath() );
 
-    List cliOptions = new ArrayList<>();
+    List<String> cliOptions = new ArrayList<>();
     cliOptions.add( "-N" );
-    verifier.executeGoals( Lists.newArrayList(
+    verifier.executeGoals(Stream.of(
         "clean",
         "dependency:unpack-dependencies",
         "generate-sources",
-        "compile"));
+        "compile").collect(Collectors.toList()));
 
     verifier.verifyErrorFreeLog();
 
@@ -79,9 +77,7 @@ public class StreamsPojoSourceGeneratorMojoIT {
     Assert.assertTrue(testOutput.exists());
     Assert.assertTrue(testOutput.isDirectory());
 
-    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput).filter(javaFilter);
-    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-    Assert.assertTrue( outputCollection.size() > 133);
-
+    Collection<File> testOutputFiles = FileUtils.listFiles(testOutput, StreamsPojoSourceGeneratorTest.javaFilter, true);
+    Assert.assertTrue( testOutputFiles.size() > 133);
   }
 }

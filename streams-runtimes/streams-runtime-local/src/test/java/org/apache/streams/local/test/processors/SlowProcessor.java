@@ -22,9 +22,9 @@ package org.apache.streams.local.test.processors;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 
-import com.google.common.collect.Lists;
-
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  */
@@ -44,7 +44,7 @@ public class SlowProcessor  implements StreamsProcessor {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
-    return Lists.newArrayList(entry);
+    return Stream.of(entry).collect(Collectors.toList());
   }
 
   @Override

@@ -38,7 +38,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.S3ClientOptions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -283,7 +283,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
           clientOptions.setPathStyleAccess(false);
 
           this.amazonS3Client = new AmazonS3Client(credentials, clientConfig);
-          if (!Strings.isNullOrEmpty(s3WriterConfiguration.getRegion())) {
+          if (StringUtils.isNotEmpty(s3WriterConfiguration.getRegion())) {
             this.amazonS3Client.setRegion(Region.getRegion(Regions.fromName(s3WriterConfiguration.getRegion())));
           }
           this.amazonS3Client.setS3ClientOptions(clientOptions);

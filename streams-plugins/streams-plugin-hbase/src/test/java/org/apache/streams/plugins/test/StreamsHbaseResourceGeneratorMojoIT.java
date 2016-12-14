@@ -19,11 +19,9 @@
 
 package org.apache.streams.plugins.test;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -33,8 +31,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import static org.apache.streams.plugins.test.StreamsHbaseResourceGeneratorTest.txtFilter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Tests that streams-plugin-hbase running via maven generates txt resources.
@@ -52,12 +50,12 @@ public class StreamsHbaseResourceGeneratorMojoIT {
 
     verifier = new Verifier( testDir.getAbsolutePath() );
 
-    List cliOptions = new ArrayList<>();
+    List<String> cliOptions = new ArrayList<>();
     cliOptions.add( "-N" );
-    verifier.executeGoals( Lists.newArrayList(
+    verifier.executeGoals(Stream.of(
         "clean",
         "dependency:unpack-dependencies",
-        "generate-resources"));
+        "generate-resources").collect(Collectors.toList()));
 
     verifier.verifyErrorFreeLog();
 
@@ -69,8 +67,7 @@ public class StreamsHbaseResourceGeneratorMojoIT {
     Assert.assertTrue(testOutput.exists());
     Assert.assertTrue(testOutput.isDirectory());
 
-    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput).filter(txtFilter);
-    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
+    Collection<File> outputCollection = FileUtils.listFiles(testOutput, StreamsHbaseResourceGeneratorTest.txtFilter, true);
     Assert.assertEquals(outputCollection.size(), 133);
   }
 }

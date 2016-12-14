@@ -28,17 +28,18 @@ import org.apache.streams.pojo.json.Provider;
 
 import com.google.api.services.plus.model.Comment;
 import com.google.api.services.plus.model.Person;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * GooglePlusActivityUtil helps convert c.g.Person and c.g.Activity into o.a.s.p.j.o.Page and o.a.s.p.j.Activity.
@@ -291,6 +292,7 @@ public class GooglePlusActivityUtil {
    * @return a valid Activity ID in format "id:googleplus:part1:part2:...partN"
    */
   public static String formatId(String... idparts) {
-    return Joiner.on(":").join(Lists.asList("id:googleplus", idparts));
+    return String.join(":",
+        Stream.concat(Arrays.stream(new String[]{"id:googleplus"}), Arrays.stream(idparts)).collect(Collectors.toList()));
   }
 }

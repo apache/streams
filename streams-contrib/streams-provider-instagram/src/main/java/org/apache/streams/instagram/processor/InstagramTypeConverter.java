@@ -25,13 +25,15 @@ import org.apache.streams.instagram.serializer.InstagramUserInfoDataConverter;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 
-import com.google.common.collect.Lists;
 import org.jinstagram.entity.users.basicinfo.UserInfoData;
 import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This is deprecated - use ActivityConverterProcessor or ActivityObjectConverterProcessor.
@@ -46,7 +48,7 @@ public class InstagramTypeConverter implements StreamsProcessor {
   private InstagramMediaFeedDataConverter mediaFeedDataConverter;
   private InstagramUserInfoDataConverter userInfoDataConverter;
 
-  public static final String TERMINATE = new String("TERMINATE");
+  public static final String TERMINATE = "TERMINATE";
 
   @Override
   public String getId() {
@@ -88,9 +90,9 @@ public class InstagramTypeConverter implements StreamsProcessor {
     }
 
     if ( result != null ) {
-      return Lists.newArrayList(result);
+      return Stream.of(result).collect(Collectors.toList());
     } else {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
   }
 

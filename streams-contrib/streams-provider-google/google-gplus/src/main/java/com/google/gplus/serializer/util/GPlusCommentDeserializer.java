@@ -28,12 +28,12 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.Lists;
 import com.google.api.services.plus.model.Comment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -83,7 +83,7 @@ public class GPlusCommentDeserializer  extends JsonDeserializer<Comment> {
 
       comment.setSelfLink(node.get("selfLink").asText());
 
-      List<Comment.InReplyTo> replies = Lists.newArrayList();
+      List<Comment.InReplyTo> replies = new ArrayList<>();
       for (JsonNode reply : node.get("inReplyTo")) {
         Comment.InReplyTo irt = objectMapper.readValue(objectMapper.writeValueAsString(reply), Comment.InReplyTo.class);
         replies.add(irt);

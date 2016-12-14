@@ -18,9 +18,9 @@
 
 package org.apache.streams.monitoring.persist.impl;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -33,7 +33,7 @@ public class BroadcastMessagePersisterTest {
   public void testFailedPersist() {
     BroadcastMessagePersister persister = new BroadcastMessagePersister("http://fake.url.com/fake_endpointasdfasdfas");
 
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     for (int x = 0; x < 10; x++) {
       messages.add("Fake_message #" + x);
     }
@@ -48,7 +48,7 @@ public class BroadcastMessagePersisterTest {
   public void testInvalidUrl() {
     BroadcastMessagePersister persister = new BroadcastMessagePersister("h");
 
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     for (int x = 0; x < 10; x++) {
       messages.add("Fake_message #" + x);
     }

@@ -23,11 +23,13 @@ import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.pojo.Retweet;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.updateActivity;
 
@@ -67,12 +69,12 @@ public class TwitterJsonRetweetActivityConverter implements ActivityConverter<Re
     Activity activity = new Activity();
     updateActivity(retweet, activity);
 
-    return Lists.newArrayList(activity);
+    return Stream.of(activity).collect(Collectors.toList());
   }
 
   @Override
   public List<Activity> toActivityList(List<Retweet> serializedList) {
-    List<Activity> result = Lists.newArrayList();
+    List<Activity> result = new ArrayList<>();
     for ( Retweet item : serializedList ) {
       try {
         List<Activity> activities = toActivityList(item);

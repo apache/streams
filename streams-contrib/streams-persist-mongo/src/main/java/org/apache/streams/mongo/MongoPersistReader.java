@@ -28,8 +28,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -38,6 +36,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +51,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * MongoPersistReader reads documents from mongo.
@@ -169,10 +170,10 @@ public class MongoPersistReader implements StreamsPersistReader {
 
     ServerAddress serverAddress = new ServerAddress(config.getHost(), config.getPort().intValue());
 
-    if (!Strings.isNullOrEmpty(config.getUser()) && !Strings.isNullOrEmpty(config.getPassword())) {
+    if (StringUtils.isNotEmpty(config.getUser()) && StringUtils.isNotEmpty(config.getPassword())) {
       MongoCredential credential =
           MongoCredential.createCredential(config.getUser(), config.getDb(), config.getPassword().toCharArray());
-      client = new MongoClient(serverAddress, Lists.newArrayList(credential));
+      client = new MongoClient(serverAddress, Stream.of(credential).collect(Collectors.toList()));
     } else {
       client = new MongoClient(serverAddress);
     }

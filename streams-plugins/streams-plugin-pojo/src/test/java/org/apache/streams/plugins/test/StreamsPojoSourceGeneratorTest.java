@@ -22,9 +22,8 @@ package org.apache.streams.plugins.test;
 import org.apache.streams.plugins.StreamsPojoGenerationConfig;
 import org.apache.streams.plugins.StreamsPojoSourceGenerator;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,27 +31,18 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.Nullable;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Tests that StreamsPojoSourceGenerator via SDK generates java sources.
  *
- * @throws Exception Exception
  */
 public class StreamsPojoSourceGeneratorTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsPojoSourceGeneratorTest.class);
 
-  public static final Predicate<File> javaFilter = new Predicate<File>() {
-    @Override
-    public boolean apply(@Nullable File file) {
-      if ( file.getName().endsWith(".java") ) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  };
+  public static final String[] javaFilter = new String[]{"java"};
 
   /**
    * Tests that StreamsPojoSourceGenerator via SDK generates pig resources.
@@ -64,14 +54,14 @@ public class StreamsPojoSourceGeneratorTest {
 
     StreamsPojoGenerationConfig config = new StreamsPojoGenerationConfig();
 
-    List<String> sourcePaths = Lists.newArrayList(
+    List<String> sourcePaths = Stream.of(
         "target/test-classes/activitystreams-schemas/activity.json",
         "target/test-classes/activitystreams-schemas/collection.json",
         "target/test-classes/activitystreams-schemas/media_link.json",
         "target/test-classes/activitystreams-schemas/object.json",
         "target/test-classes/activitystreams-schemas/objectTypes",
         "target/test-classes/activitystreams-schemas/verbs"
-    );
+    ).collect(Collectors.toList());
     config.setSourcePaths(sourcePaths);
 
     config.setTargetPackage("org.apache.streams.pojo");
@@ -80,14 +70,11 @@ public class StreamsPojoSourceGeneratorTest {
     StreamsPojoSourceGenerator streamsPojoSourceGenerator = new StreamsPojoSourceGenerator(config);
     streamsPojoSourceGenerator.run();
 
-    assert ( config.getTargetDirectory() != null );
-    assert ( config.getTargetDirectory().exists() == true );
-    assert ( config.getTargetDirectory().isDirectory() == true );
+    Assert.assertNotNull(config.getTargetDirectory());
+    Assert.assertTrue(config.getTargetDirectory().exists());
+    Assert.assertTrue(config.getTargetDirectory().isDirectory());
 
-    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(config.getTargetDirectory())
-        .filter(javaFilter);
-    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-    assert ( outputCollection.size() > 133 );
-
+    Collection<File> targetFiles = FileUtils.listFiles(config.getTargetDirectory(), javaFilter, true);
+    Assert.assertTrue(targetFiles.size() > 133);
   }
 }

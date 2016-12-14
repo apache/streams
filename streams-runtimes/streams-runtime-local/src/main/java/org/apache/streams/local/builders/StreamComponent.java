@@ -31,11 +31,11 @@ import org.apache.streams.local.tasks.StreamsProviderTask;
 import org.apache.streams.local.tasks.StreamsTask;
 import org.apache.streams.util.SerializationUtil;
 
-import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -148,7 +148,7 @@ public class StreamComponent implements Serializable {
   private void initializePrivateVariables() {
     this.inBound = new HashSet<>();
     this.outBound = new HashMap<>();
-    this.tasks = Lists.newArrayList();
+    this.tasks = new ArrayList<>();
   }
 
   /**

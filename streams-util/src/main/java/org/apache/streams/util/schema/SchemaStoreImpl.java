@@ -21,7 +21,6 @@ package org.apache.streams.util.schema;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import org.apache.commons.lang3.StringUtils;
 import org.jsonschema2pojo.ContentResolver;
@@ -30,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -184,7 +184,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
 
   @Override
   public Iterator<Schema> getSchemaIterator() {
-    List<Schema> schemaList = Lists.newArrayList(schemas.values());
+    List<Schema> schemaList = new ArrayList<>(schemas.values());
     schemaList.sort(this);
     return schemaList.iterator();
   }
@@ -206,7 +206,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
           }
         }
       }
-    } else if (fieldNode != null && fieldNode.size() > 0) {
+    } else if (fieldNode.size() > 0) {
       if (fieldNode.has("properties") && fieldNode.get("properties").isObject() && fieldNode.get("properties").size() > 0) {
         schemaProperties = (ObjectNode) fieldNode.get("properties");
       }
@@ -229,7 +229,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
             absoluteUri = schema.getParentUri().resolve(parentUri);
           }
         }
-        if (absoluteUri != null && absoluteUri.isAbsolute()) {
+        if (absoluteUri.isAbsolute()) {
           if (getByUri(absoluteUri).isPresent()) {
             parentContent = (ObjectNode) getByUri(absoluteUri).get().getContent();
           }
@@ -276,7 +276,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
           }
         }
       }
-    } else if (fieldNode != null && fieldNode.size() > 0) {
+    } else if (fieldNode.size() > 0) {
       if (fieldNode.has("items") && fieldNode.get("items").isObject() && fieldNode.get("items").size() > 0) {
         schemaItems = (ObjectNode) fieldNode.get("items");
       }
@@ -299,7 +299,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
             absoluteUri = schema.getParentUri().resolve(parentUri);
           }
         }
-        if (absoluteUri != null && absoluteUri.isAbsolute()) {
+        if (absoluteUri.isAbsolute()) {
           if (getByUri(absoluteUri).isPresent()) {
             parentContent = (ObjectNode) getByUri(absoluteUri).get().getContent();
           }

@@ -25,7 +25,6 @@ import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.ActivityObject;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
@@ -33,6 +32,7 @@ import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -184,7 +184,7 @@ public class ActivityObjectConverterUtil {
       }
     }
 
-    return Lists.newArrayList(detectedClasses);
+    return new ArrayList<>(detectedClasses);
   }
 
   private Map<Class, Object> convertToDetectedClasses(List<Class> datumClasses, Object document) {

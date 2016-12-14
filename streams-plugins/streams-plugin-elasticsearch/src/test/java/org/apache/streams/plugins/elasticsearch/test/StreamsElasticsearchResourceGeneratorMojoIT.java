@@ -19,11 +19,8 @@
 
 package org.apache.streams.plugins.elasticsearch.test;
 
-import com.google.common.collect.Lists;
-
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
@@ -31,6 +28,8 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Tests that streams-plugin-elasticsearch running via maven generates elasticsearch mapping resources.
@@ -48,12 +47,12 @@ public class StreamsElasticsearchResourceGeneratorMojoIT {
 
     verifier = new Verifier( testDir.getAbsolutePath() );
 
-    List cliOptions = new ArrayList<>();
+    List<String> cliOptions = new ArrayList<>();
     cliOptions.add( "-N" );
-    verifier.executeGoals( Lists.newArrayList(
+    verifier.executeGoals(Stream.of(
         "clean",
         "dependency:unpack-dependencies",
-        "generate-resources"));
+        "generate-resources").collect(Collectors.toList()));
 
     verifier.verifyErrorFreeLog();
 

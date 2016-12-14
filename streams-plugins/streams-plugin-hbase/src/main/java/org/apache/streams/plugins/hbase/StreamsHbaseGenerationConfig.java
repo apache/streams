@@ -48,7 +48,7 @@ public class StreamsHbaseGenerationConfig extends DefaultGenerationConfig implem
 
   private String columnFamily;
   private String sourceDirectory;
-  private List<String> sourcePaths = new ArrayList<String>();
+  private List<String> sourcePaths = new ArrayList<>();
   private String targetDirectory;
   private int maxDepth = 1;
 
@@ -60,7 +60,7 @@ public class StreamsHbaseGenerationConfig extends DefaultGenerationConfig implem
     this.exclusions = exclusions;
   }
 
-  private Set<String> exclusions = new HashSet<String>();
+  private Set<String> exclusions = new HashSet<>();
 
   public int getMaxDepth() {
     return maxDepth;
@@ -90,7 +90,7 @@ public class StreamsHbaseGenerationConfig extends DefaultGenerationConfig implem
     if (null != sourceDirectory) {
       return Collections.singleton(URLUtil.parseURL(sourceDirectory)).iterator();
     }
-    List<URL> sourceUrls = new ArrayList<URL>();
+    List<URL> sourceUrls = new ArrayList<>();
     if ( sourcePaths != null && sourcePaths.size() > 0) {
       for (String source : sourcePaths) {
         sourceUrls.add(URLUtil.parseURL(source));

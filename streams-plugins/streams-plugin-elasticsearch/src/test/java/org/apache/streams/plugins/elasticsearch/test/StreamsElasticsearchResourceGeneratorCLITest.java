@@ -21,15 +21,12 @@ package org.apache.streams.plugins.elasticsearch.test;
 
 import org.apache.streams.plugins.elasticsearch.StreamsElasticsearchResourceGenerator;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
-
-import static org.apache.streams.plugins.elasticsearch.test.StreamsElasticsearchResourceGeneratorTest.jsonFilter;
 
 /**
  * Test that StreamsElasticsearchResourceGeneratorCLI generates resources.
@@ -42,18 +39,15 @@ public class StreamsElasticsearchResourceGeneratorCLITest {
     String sourceDirectory = "target/test-classes/activitystreams-schemas";
     String targetDirectory = "target/generated-resources/elasticsearch-cli";
 
-    List<String> argsList = Lists.newArrayList(sourceDirectory, targetDirectory);
-    StreamsElasticsearchResourceGenerator.main(argsList.toArray(new String[0]));
+    StreamsElasticsearchResourceGenerator.main(new String[]{sourceDirectory, targetDirectory});
 
     File testOutput = new File(targetDirectory);
 
-    assert ( testOutput != null );
-    assert ( testOutput.exists() == true );
-    assert ( testOutput.isDirectory() == true );
+    Assert.assertNotNull(testOutput);
+    Assert.assertTrue(testOutput.exists());
+    Assert.assertTrue(testOutput.isDirectory());
 
-    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-        .filter(jsonFilter);
-    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-    assert ( outputCollection.size() == 133 );
+    Collection<File> outputCollection = FileUtils.listFiles(testOutput, StreamsElasticsearchResourceGeneratorTest.jsonFilter, true);
+    Assert.assertEquals(outputCollection.size(), 133);
   }
 }

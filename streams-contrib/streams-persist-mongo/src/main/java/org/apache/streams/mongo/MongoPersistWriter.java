@@ -26,8 +26,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -35,6 +33,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.util.JSON;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +51,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MongoPersistWriter implements StreamsPersistWriter, Runnable, Flushable, Closeable {
 
@@ -133,12 +134,7 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable, Flush
    */
   public void start() {
     connectToMongo();
-    backgroundFlushTask.scheduleAtFixedRate(new Runnable() {
-      @Override
-      public void run() {
-        flushIfNecessary();
-      }
-    }, 0, MAX_WRITE_LATENCY * 2, TimeUnit.MILLISECONDS);
+    backgroundFlushTask.scheduleAtFixedRate(this::flushIfNecessary, 0, MAX_WRITE_LATENCY * 2, TimeUnit.MILLISECONDS);
   }
 
   /**
@@ -248,10 +244,10 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable, Flush
 
     ServerAddress serverAddress = new ServerAddress(config.getHost(), config.getPort().intValue());
 
-    if (!Strings.isNullOrEmpty(config.getUser()) && !Strings.isNullOrEmpty(config.getPassword())) {
+    if (StringUtils.isNotEmpty(config.getUser()) && StringUtils.isNotEmpty(config.getPassword())) {
       MongoCredential credential =
           MongoCredential.createCredential(config.getUser(), config.getDb(), config.getPassword().toCharArray());
-      client = new MongoClient(serverAddress, Lists.newArrayList(credential));
+      client = new MongoClient(serverAddress, Stream.of(credential).collect(Collectors.toList()));
     } else {
       client = new MongoClient(serverAddress);
     }

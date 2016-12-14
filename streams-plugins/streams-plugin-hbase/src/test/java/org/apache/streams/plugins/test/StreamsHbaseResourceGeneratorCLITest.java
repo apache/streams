@@ -21,16 +21,12 @@ package org.apache.streams.plugins.test;
 
 import org.apache.streams.plugins.hbase.StreamsHbaseResourceGenerator;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
-
-import static org.apache.streams.plugins.test.StreamsHbaseResourceGeneratorTest.txtFilter;
 
 /**
  * Test that StreamsHbaseResourceGeneratorCLI generates resources.
@@ -43,8 +39,7 @@ public class StreamsHbaseResourceGeneratorCLITest {
     String sourceDirectory = "target/test-classes/activitystreams-schemas";
     String targetDirectory = "target/generated-resources/hbase-cli";
 
-    List<String> argsList = Lists.newArrayList(sourceDirectory, targetDirectory);
-    StreamsHbaseResourceGenerator.main(argsList.toArray(new String[0]));
+    StreamsHbaseResourceGenerator.main(new String[]{sourceDirectory, targetDirectory});
 
     File testOutput = new File(targetDirectory);
 
@@ -52,9 +47,7 @@ public class StreamsHbaseResourceGeneratorCLITest {
     Assert.assertTrue(testOutput.exists());
     Assert.assertTrue(testOutput.isDirectory());
 
-    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-        .filter(txtFilter);
-    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-    assert ( outputCollection.size() == 133 );
+    Collection<File> outputCollection = FileUtils.listFiles(testOutput, StreamsHbaseResourceGeneratorTest.txtFilter, true);
+    Assert.assertEquals(outputCollection.size(), 133);
   }
 }

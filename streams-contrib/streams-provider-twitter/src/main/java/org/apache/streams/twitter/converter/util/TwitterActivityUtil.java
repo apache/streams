@@ -39,16 +39,18 @@ import org.apache.streams.twitter.pojo.UserMentions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.google.common.math.DoubleMath.mean;
 
@@ -300,7 +302,7 @@ public class TwitterActivityUtil {
    * @return a valid Activity ID in format "id:twitter:part1:part2:...partN"
    */
   public static String formatId(String... idparts) {
-    return String.join(":", Lists.asList("id:twitter", idparts));
+    return String.join(":", Stream.concat(Arrays.stream(new String[]{"id:twitter"}), Arrays.stream(idparts)).collect(Collectors.toList()));
   }
 
   /**

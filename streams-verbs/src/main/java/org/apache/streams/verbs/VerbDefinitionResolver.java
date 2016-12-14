@@ -22,10 +22,10 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.util.SerializationUtil;
 
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -51,14 +51,14 @@ public class VerbDefinitionResolver {
    * @param activity Activity
    * @return List of VerbDefinition
    */
-  public List<VerbDefinition> matchingVerbDefinitions(Activity activity) {
+  public Set<VerbDefinition> matchingVerbDefinitions(Activity activity) {
 
     // ConcurrentHashSet is preferable, but it's only in guava 15+
     // spark 1.5.0 uses guava 14 so for the moment this is the workaround
     // Set<VerbDefinition> matches = Sets.newConcurrentHashSet();
     Set<VerbDefinition> matches = Collections.newSetFromMap(new ConcurrentHashMap<VerbDefinition, Boolean>());
 
-    for ( VerbDefinition verbDefinition : verbDefinitionSet ) {
+    for (VerbDefinition verbDefinition : verbDefinitionSet) {
       VerbDefinition verbDefinitionCopy = SerializationUtil.cloneBySerialization(verbDefinition);
       if ( activity.getVerb().equals(verbDefinition.getValue())) {
         for ( ObjectCombination criteria : verbDefinitionCopy.getObjects()) {
@@ -72,7 +72,7 @@ public class VerbDefinitionResolver {
       }
     }
 
-    return Lists.newArrayList(matches);
+    return matches;
 
   }
 
@@ -83,7 +83,7 @@ public class VerbDefinitionResolver {
    */
   public List<ObjectCombination> matchingObjectCombinations(Activity activity) {
 
-    List<ObjectCombination> results = Lists.newArrayList();
+    List<ObjectCombination> results = new ArrayList<>();
 
     for ( VerbDefinition verbDefinition : verbDefinitionSet ) {
       if ( activity.getVerb().equals(verbDefinition.getValue())) {

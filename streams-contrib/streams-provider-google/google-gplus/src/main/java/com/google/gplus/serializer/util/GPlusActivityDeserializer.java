@@ -25,12 +25,12 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.api.client.util.DateTime;
-import com.google.api.client.util.Lists;
 import com.google.api.services.plus.model.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -142,7 +142,7 @@ public class GPlusActivityDeserializer extends JsonDeserializer<Activity> {
    * @return list of {@link com.google.api.services.plus.model.Activity.PlusObject.Attachments} objects
    */
   private List<Activity.PlusObject.Attachments> buildAttachments(JsonNode objectNode) {
-    List<Activity.PlusObject.Attachments> attachments = Lists.newArrayList();
+    List<Activity.PlusObject.Attachments> attachments = new ArrayList<>();
     if ( objectNode.has("attachments") ) {
       for (JsonNode attachmentNode : objectNode.get("attachments")) {
         Activity.PlusObject.Attachments attachments1 = new Activity.PlusObject.Attachments();

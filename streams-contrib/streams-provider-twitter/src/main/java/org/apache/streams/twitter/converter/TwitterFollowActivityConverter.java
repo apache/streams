@@ -25,11 +25,12 @@ import org.apache.streams.pojo.json.Provider;
 import org.apache.streams.twitter.converter.util.TwitterActivityUtil;
 import org.apache.streams.twitter.pojo.Follow;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TwitterFollowActivityConverter implements ActivityConverter<Follow>, Serializable {
 
@@ -73,7 +74,7 @@ public class TwitterFollowActivityConverter implements ActivityConverter<Follow>
     activity.setObject(TwitterActivityUtil.buildActor(event.getFollowee()));
     activity.setId(activity.getActor().getId() + "-follow->" + activity.getObject().getId());
     activity.setProvider((Provider) new Provider().withId("twitter"));
-    return Lists.newArrayList(activity);
+    return Stream.of(activity).collect(Collectors.toList());
   }
 
   @Override

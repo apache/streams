@@ -24,16 +24,16 @@ import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.util.ComponentUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.Twitter;
-import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *  Retrieve recent posts for a single user id.
@@ -42,7 +42,7 @@ public class TwitterTimelineProviderTask implements Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProviderTask.class);
 
-  private static ObjectMapper MAPPER = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+  private static ObjectMapper MAPPER = new StreamsJacksonMapper(Stream.of(TwitterDateTimeFormat.TWITTER_FORMAT).collect(Collectors.toList()));
 
   protected TwitterTimelineProvider provider;
   protected Twitter client;
@@ -102,8 +102,6 @@ public class TwitterTimelineProviderTask implements Runnable {
           paging.setPage(paging.getPage() + 1);
 
           keepTrying = 10;
-        } catch (TwitterException twitterException) {
-          keepTrying += TwitterErrorHandler.handleTwitterError(client, id, twitterException);
         } catch (Exception ex) {
           keepTrying += TwitterErrorHandler.handleTwitterError(client, id, ex);
         }

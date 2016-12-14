@@ -22,7 +22,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.moreover.MoreoverProvider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
@@ -47,7 +46,7 @@ public class MoreoverProviderIT {
     String configfile = "./target/test-classes/MoreoverProviderIT.conf";
     String outfile = "./target/test-classes/MoreoverProviderIT.stdout.txt";
 
-    MoreoverProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
+    MoreoverProvider.main(new String[]{configfile, outfile});
 
     File out = new File(outfile);
     assert (out.exists());

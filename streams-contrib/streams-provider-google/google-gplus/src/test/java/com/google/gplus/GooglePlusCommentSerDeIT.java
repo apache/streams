@@ -25,7 +25,6 @@ import org.apache.streams.pojo.json.Activity;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.google.api.client.util.Lists;
 import com.google.api.services.plus.model.Comment;
 import com.google.gplus.serializer.util.GPlusCommentDeserializer;
 import com.google.gplus.serializer.util.GooglePlusActivityUtil;
@@ -75,7 +74,7 @@ public class GooglePlusCommentSerDeIT {
     BufferedReader br = new BufferedReader(isr);
 
     Activity activity = new Activity();
-    List<Comment> comments = Lists.newArrayList();
+    List<Comment> comments = new ArrayList<>();
 
     try {
       while (br.ready()) {

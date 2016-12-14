@@ -19,13 +19,10 @@
 
 package org.apache.streams.plugins.cassandra.test;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -37,8 +34,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import static org.apache.streams.plugins.cassandra.test.StreamsCassandraResourceGeneratorTest.cqlFilter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Tests that streams-plugin-cassandra running via maven generates cql resources.
@@ -56,12 +53,12 @@ public class StreamsCassandraResourceGeneratorMojoIT {
 
     verifier = new Verifier( testDir.getAbsolutePath() );
 
-    List cliOptions = new ArrayList<>();
+    List<String> cliOptions = new ArrayList<>();
     cliOptions.add( "-N" );
-    verifier.executeGoals( Lists.newArrayList(
+    verifier.executeGoals(Stream.of(
         "clean",
         "dependency:unpack-dependencies",
-        "generate-resources"));
+        "generate-resources").collect(Collectors.toList()));
 
     verifier.verifyErrorFreeLog();
 
@@ -75,19 +72,16 @@ public class StreamsCassandraResourceGeneratorMojoIT {
     Assert.assertTrue(testOutput.exists());
     Assert.assertTrue(testOutput.isDirectory());
 
-    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-        .filter(cqlFilter);
-    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-    assert ( outputCollection.size() == 1 );
+    Collection<File> outputCollection = FileUtils.listFiles(testOutput, StreamsCassandraResourceGeneratorTest.cqlFilter, true);
+    Assert.assertEquals(outputCollection.size(), 1);
 
     Path path = testOutputPath.resolve("types.cql");
 
-    assert ( path.toFile().exists() );
+    Assert.assertTrue(path.toFile().exists());
 
-    String typesCqlBytes = new String(
-        java.nio.file.Files.readAllBytes(path));
+    String typesCqlBytes = new String(java.nio.file.Files.readAllBytes(path));
 
-    assert ( StringUtils.countMatches(typesCqlBytes, "CREATE TYPE") == 133 );
+    Assert.assertEquals(StringUtils.countMatches(typesCqlBytes, "CREATE TYPE"), 133);
 
   }
 }

@@ -23,10 +23,12 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.sysomos.conversion.SysomosBeatActivityConverter;
 
-import com.google.common.collect.Lists;
 import com.sysomos.xml.BeatApi;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Stream processor that converts Sysomos type to Activity.
@@ -46,9 +48,9 @@ public class SysomosTypeConverter implements StreamsProcessor {
   public List<StreamsDatum> process(StreamsDatum entry) {
     if (entry.getDocument() instanceof BeatApi.BeatResponse.Beat) {
       entry.setDocument(converter.convert((BeatApi.BeatResponse.Beat)entry.getDocument()));
-      return Lists.newArrayList(entry);
+      return Stream.of(entry).collect(Collectors.toList());
     } else {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
   }
 

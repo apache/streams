@@ -18,11 +18,10 @@
 
 package org.apache.streams.gplus.test.providers;
 
-import com.google.common.collect.Lists;
 import com.google.gplus.provider.GPlusUserDataProvider;
-import org.testng.annotations.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileReader;
@@ -42,7 +41,7 @@ public class GPlusUserDataProviderIT {
     args[0] = configfile;
     args[1] = outfile;
 
-    Thread testThread = new Thread((Runnable) () -> {
+    Thread testThread = new Thread(() -> {
       try {
         GPlusUserDataProvider.main(args);
       } catch ( Exception ex ) {
@@ -52,7 +51,7 @@ public class GPlusUserDataProviderIT {
     testThread.start();
     testThread.join(60000);
 
-    GPlusUserDataProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
+    GPlusUserDataProvider.main(new String[]{configfile, outfile});
 
     File out = new File(outfile);
     assert (out.exists());

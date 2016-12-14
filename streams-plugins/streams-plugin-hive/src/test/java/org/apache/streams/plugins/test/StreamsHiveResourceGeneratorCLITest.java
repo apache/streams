@@ -21,15 +21,12 @@ package org.apache.streams.plugins.test;
 
 import org.apache.streams.plugins.hive.StreamsHiveResourceGenerator;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import org.testng.Assert;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
-
-import static org.apache.streams.plugins.test.StreamsHiveResourceGeneratorTest.hqlFilter;
 
 /**
  * Test whether StreamsHiveResourceGeneratorCLI generates resources.
@@ -42,18 +39,15 @@ public class StreamsHiveResourceGeneratorCLITest {
     String sourceDirectory = "target/test-classes/activitystreams-schemas";
     String targetDirectory = "target/generated-resources/hive-cli";
 
-    List<String> argsList = Lists.newArrayList(sourceDirectory, targetDirectory);
-    StreamsHiveResourceGenerator.main(argsList.toArray(new String[0]));
+    StreamsHiveResourceGenerator.main(new String[]{sourceDirectory, targetDirectory});
 
     File testOutput = new File(targetDirectory);
 
-    assert ( testOutput != null );
-    assert ( testOutput.exists() == true );
-    assert ( testOutput.isDirectory() == true );
+    Assert.assertNotNull(testOutput);
+    Assert.assertTrue(testOutput.exists());
+    Assert.assertTrue(testOutput.isDirectory());
 
-    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-        .filter(hqlFilter);
-    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-    assert ( outputCollection.size() == 133 );
+    Collection<File> testOutputFiles = FileUtils.listFiles(testOutput, StreamsHiveResourceGeneratorTest.hqlFilter, true);
+    Assert.assertEquals(testOutputFiles.size(), 133);
   }
 }

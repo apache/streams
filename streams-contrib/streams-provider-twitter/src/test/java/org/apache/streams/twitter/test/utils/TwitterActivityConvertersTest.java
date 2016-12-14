@@ -29,13 +29,14 @@ import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Tests {org.apache.streams.twitter.converter.*}
@@ -44,7 +45,7 @@ public class TwitterActivityConvertersTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterActivityConvertersTest.class);
 
-  private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+  private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Stream.of(TwitterDateTimeFormat.TWITTER_FORMAT).collect(Collectors.toList()));
 
   private ActivityConverterUtil activityConverterUtil = ActivityConverterUtil.getInstance();
 
@@ -66,7 +67,7 @@ public class TwitterActivityConvertersTest {
   public void testConvertRetweet() throws Exception  {
     Retweet retweet = mapper.readValue(retweetJson, Retweet.class);
     List<Activity> activityList = activityConverterUtil.convert(retweet);
-    Assert.assertTrue(activityList.size() == 1);
+    Assert.assertEquals(activityList.size(), 1);
     Activity activity = activityList.get(0);
     if ( !ActivityUtil.isValid(activity) ) {
       Assert.fail();
@@ -77,7 +78,7 @@ public class TwitterActivityConvertersTest {
   public void testConvertDelete() throws Exception  {
     Delete delete = mapper.readValue(retweetJson, Delete.class);
     List<Activity> activityList = activityConverterUtil.convert(delete);
-    Assert.assertTrue(activityList.size() == 1);
+    Assert.assertEquals(activityList.size(), 1);
     Activity activity = activityList.get(0);
     if ( !ActivityUtil.isValid(activity) ) {
       Assert.fail();

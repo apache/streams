@@ -22,14 +22,14 @@ package org.apache.streams.plugins.test;
 import org.apache.streams.plugins.StreamsScalaGenerationConfig;
 import org.apache.streams.plugins.StreamsScalaSourceGenerator;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -42,7 +42,7 @@ public class StreamsScalaSourceGeneratorTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsScalaSourceGeneratorTest.class);
 
-  public static final Predicate<File> scalaFilter = file -> file.getName().endsWith(".scala");
+  public static final String[] scalaFilter = new String[]{"scala"};
 
   /**
    * Tests that StreamsScalaSourceGenerator via SDK generates scala sources.
@@ -53,7 +53,7 @@ public class StreamsScalaSourceGeneratorTest {
   public void testStreamsScalaSourceGenerator() throws Exception {
 
     StreamsScalaGenerationConfig streamsScalaGenerationConfig = new StreamsScalaGenerationConfig();
-    streamsScalaGenerationConfig.setSourcePackages(Lists.newArrayList("org.apache.streams.pojo.json"));
+    streamsScalaGenerationConfig.setSourcePackages(Stream.of("org.apache.streams.pojo.json").collect(Collectors.toList()));
     streamsScalaGenerationConfig.setTargetPackage("org.apache.streams.scala");
     streamsScalaGenerationConfig.setTargetDirectory("target/generated-sources/scala-test");
 

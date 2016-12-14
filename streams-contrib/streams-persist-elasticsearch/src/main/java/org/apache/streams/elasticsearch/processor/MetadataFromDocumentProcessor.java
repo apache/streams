@@ -25,14 +25,14 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,11 +66,11 @@ public class MetadataFromDocumentProcessor implements StreamsProcessor, Serializ
       mapper = StreamsJacksonMapper.getInstance();
     }
 
-    List<StreamsDatum> result = Lists.newArrayList();
+    List<StreamsDatum> result = new ArrayList<>();
 
     Map<String, Object> metadata = entry.getMetadata();
     if ( metadata == null ) {
-      metadata = Maps.newHashMap();
+      metadata = new HashMap<>();
     }
 
     String id = null;
@@ -103,10 +103,10 @@ public class MetadataFromDocumentProcessor implements StreamsProcessor, Serializ
       }
     }
 
-    if ( !Strings.isNullOrEmpty(id) ) {
+    if (StringUtils.isNotEmpty(id) ) {
       metadata.put("id", id);
     }
-    if ( !Strings.isNullOrEmpty(type) ) {
+    if (StringUtils.isNotEmpty(type) ) {
       metadata.put("type", type);
     }
 

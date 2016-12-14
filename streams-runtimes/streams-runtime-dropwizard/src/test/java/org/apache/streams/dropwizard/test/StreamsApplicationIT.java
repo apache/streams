@@ -18,7 +18,6 @@
 
 package org.apache.streams.dropwizard.test;
 
-import com.google.common.collect.Lists;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -26,6 +25,8 @@ import org.testng.annotations.Test;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Tests {@link: org.apache.streams.dropwizard.StreamsApplication}
@@ -34,7 +35,7 @@ public class StreamsApplicationIT {
 
   @BeforeClass
   public void setupTest() throws Exception {
-    String[] testArgs = Lists.newArrayList("server", "src/test/resources/configuration.yml").toArray(new String[2]);
+    String[] testArgs = Stream.of("server", "src/test/resources/configuration.yml").collect(Collectors.toList()).toArray(new String[2]);
     TestStreamsApplication.main(testArgs);
   }
 

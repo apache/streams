@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * GooglePlusCommentProcessor collects comments about a google plus activity.
@@ -63,7 +65,7 @@ public class GooglePlusCommentProcessor implements StreamsProcessor {
         /* TODO: FILL ME OUT WITH THE API CALL **/
         List<Comment> comments = new ArrayList<>();
 
-        googlePlusActivityUtil.updateActivity(comments, activity);
+        GooglePlusActivityUtil.updateActivity(comments, activity);
         result = new StreamsDatum(activity);
       }
     } catch (Exception ex) {
@@ -72,7 +74,7 @@ public class GooglePlusCommentProcessor implements StreamsProcessor {
     }
 
     if ( result != null ) {
-      return com.google.common.collect.Lists.newArrayList(result);
+      return Stream.of(result).collect(Collectors.toList());
     } else {
       return new ArrayList<>();
     }

@@ -25,11 +25,12 @@ import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Tweet;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.updateActivity;
 
@@ -77,7 +78,7 @@ public class TwitterJsonDeleteActivityConverter implements ActivityConverter<Del
 
     Activity activity = new Activity();
     updateActivity(delete, activity);
-    return Lists.newArrayList(activity);
+    return Stream.of(activity).collect(Collectors.toList());
   }
 
   public ActivityObject buildTarget(Tweet tweet) {

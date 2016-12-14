@@ -27,7 +27,6 @@ import org.apache.streams.util.SerializationUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +47,8 @@ public abstract class BaseStreamsTask implements StreamsTask {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(BaseStreamsTask.class);
 
-  private List<BlockingQueue<StreamsDatum>> inQueues = new ArrayList<BlockingQueue<StreamsDatum>>();
-  private List<BlockingQueue<StreamsDatum>> outQueues = new LinkedList<BlockingQueue<StreamsDatum>>();
+  private List<BlockingQueue<StreamsDatum>> inQueues = new ArrayList<>();
+  private List<BlockingQueue<StreamsDatum>> outQueues = new LinkedList<>();
   private int inIndex = 0;
   private ObjectMapper mapper;
   protected StreamsConfiguration streamConfig;
@@ -94,7 +93,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
   protected StreamsDatum getNextDatum() {
     int startIndex = this.inIndex;
     int index = startIndex;
-    StreamsDatum datum = null;
+    StreamsDatum datum;
     do {
       datum = this.inQueues.get(index).poll();
       index = getNextInputQueueIndex();
@@ -112,7 +111,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
       outQueues.get(0).put(datum);
     }
     else {
-      List<BlockingQueue<StreamsDatum>> toOutput = Lists.newLinkedList(this.outQueues);
+      List<BlockingQueue<StreamsDatum>> toOutput = new LinkedList<>(this.outQueues);
       while(!toOutput.isEmpty()) {
         for (BlockingQueue<StreamsDatum> queue : toOutput) {
           StreamsDatum newDatum = cloneStreamsDatum(datum);
@@ -174,7 +173,7 @@ public abstract class BaseStreamsTask implements StreamsTask {
 //            }
 
       else if(datum.document instanceof Serializable) {
-        return (StreamsDatum) SerializationUtil.cloneBySerialization(datum);
+        return SerializationUtil.cloneBySerialization(datum);
       }
     } catch (Exception e) {
       LOGGER.error("Exception while trying to clone/copy StreamsDatum : {}", e);
