@@ -20,8 +20,6 @@ package org.apache.streams.facebook.test.providers.page;
 
 import org.apache.streams.facebook.provider.page.FacebookPageProvider;
 
-import com.google.common.collect.Lists;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
@@ -56,7 +54,7 @@ public class FacebookPageProviderIT {
     testThread.start();
     testThread.join(60000);
 
-    FacebookPageProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
+    FacebookPageProvider.main(new String[]{configfile, outfile});
 
     File out = new File(outfile);
     assertTrue (out.exists());

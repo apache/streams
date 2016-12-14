@@ -21,10 +21,9 @@ package org.apache.streams.local.test.writer;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 
-import com.google.common.collect.Lists;
-
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -44,7 +43,7 @@ public class DatumCounterWriter implements StreamsPersistWriter{
   /**
    * Set of all ids that have been claimed.  Ensures all instances are assigned unique ids
    */
-  public static Set<Integer> CLAIMED_ID = new HashSet<Integer>();
+  public static Set<Integer> CLAIMED_ID = new HashSet<>();
   /**
    * Random instance to generate ids
    */
@@ -77,7 +76,7 @@ public class DatumCounterWriter implements StreamsPersistWriter{
     synchronized (RECEIVED) {
       List<Object> documents = RECEIVED.get(this.writerId);
       if(documents == null) {
-        List<Object> docs = Lists.newLinkedList();
+        List<Object> docs = new LinkedList<>();
         docs.add(entry.getDocument());
         RECEIVED.put(this.writerId, docs);
       } else {

@@ -26,13 +26,13 @@ import com.amazonaws.services.kinesis.model.GetRecordsResult;
 import com.amazonaws.services.kinesis.model.GetShardIteratorRequest;
 import com.amazonaws.services.kinesis.model.GetShardIteratorResult;
 import com.amazonaws.services.kinesis.model.Record;
-import com.google.common.collect.Maps;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +73,7 @@ public class KinesisPersistReaderTask implements Runnable {
 
     shardIteratorId = shardIteratorResult.getShardIterator();
 
-    Map<String,Object> metadata = Maps.newHashMap();
+    Map<String,Object> metadata = new HashMap<>();
     metadata.put("streamName", streamName);
     metadata.put("shardId", shardId);
 

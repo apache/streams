@@ -24,11 +24,12 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.twitter.pojo.UserstreamEvent;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.formatId;
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.getProvider;
@@ -72,7 +73,7 @@ public class TwitterJsonUserstreameventActivityConverter implements ActivityConv
   public List<Activity> toActivityList(UserstreamEvent userstreamEvent) throws ActivityConversionException {
 
     Activity activity = convert(userstreamEvent);
-    return Lists.newArrayList(activity);
+    return Stream.of(activity).collect(Collectors.toList());
 
   }
 
@@ -94,7 +95,7 @@ public class TwitterJsonUserstreameventActivityConverter implements ActivityConv
     activity.setVerb(detectVerb(event));
     activity.setObject(buildActivityObject(event));
     activity.setId(formatId(activity.getVerb()));
-    if (Strings.isNullOrEmpty(activity.getId())) {
+    if (StringUtils.isEmpty(activity.getId())) {
       throw new ActivityConversionException("Unable to determine activity id");
     }
     activity.setProvider(getProvider());
@@ -107,9 +108,7 @@ public class TwitterJsonUserstreameventActivityConverter implements ActivityConv
    * @return $.actor
    */
   public ActivityObject buildActor(UserstreamEvent event) {
-    ActivityObject actor = new ActivityObject();
-    //actor.setId(formatId(delete.getDelete().getStatus().getUserIdStr()));
-    return actor;
+    return new ActivityObject();
   }
 
   /**
@@ -118,10 +117,7 @@ public class TwitterJsonUserstreameventActivityConverter implements ActivityConv
    * @return $.object
    */
   public ActivityObject buildActivityObject(UserstreamEvent event) {
-    ActivityObject actObj = new ActivityObject();
-    //actObj.setId(formatId(delete.getDelete().getStatus().getIdStr()));
-    //actObj.setObjectType("tweet");
-    return actObj;
+    return new ActivityObject();
   }
 
   public String detectVerb(UserstreamEvent event) {

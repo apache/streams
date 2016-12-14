@@ -22,11 +22,9 @@ package org.apache.streams.plugins.cassandra.test;
 import org.apache.streams.plugins.cassandra.StreamsCassandraGenerationConfig;
 import org.apache.streams.plugins.cassandra.StreamsCassandraResourceGenerator;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +33,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
-import javax.annotation.Nullable;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Test that cassandra resources are generated.
@@ -44,16 +43,7 @@ public class StreamsCassandraResourceGeneratorTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsCassandraResourceGeneratorTest.class);
 
-  public static final Predicate<File> cqlFilter = new Predicate<File>() {
-    @Override
-    public boolean apply(@Nullable File file) {
-      if ( file.getName().endsWith(".cql") ) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  };
+  public static final String[] cqlFilter = new String[]{"cql"};
 
   /**
    * Test that cassandra resources are generated.
@@ -71,7 +61,7 @@ public class StreamsCassandraResourceGeneratorTest {
 
     config.setTargetDirectory("target/generated-resources/cassandra");
 
-    config.setExclusions(Sets.newHashSet("attachments"));
+    config.setExclusions(Stream.of("attachments").collect(Collectors.toSet()));
 
     config.setMaxDepth(2);
 
@@ -80,23 +70,20 @@ public class StreamsCassandraResourceGeneratorTest {
 
     File testOutput = config.getTargetDirectory();
 
-    assert ( testOutput != null );
-    assert ( testOutput.exists() == true );
-    assert ( testOutput.isDirectory() == true );
+    Assert.assertNotNull(testOutput);
+    Assert.assertTrue(testOutput.exists());
+    Assert.assertTrue(testOutput.isDirectory());
 
-    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-        .filter(cqlFilter);
-    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-    assert ( outputCollection.size() == 1 );
+    Collection<File> outputCollection = FileUtils.listFiles(testOutput, cqlFilter, true);
+    Assert.assertEquals(outputCollection.size(), 1);
 
     Path path = Paths.get(testOutput.getAbsolutePath()).resolve("types.cql");
 
-    assert ( path.toFile().exists() );
+    Assert.assertTrue(path.toFile().exists());
 
-    String typesCqlBytes = new String(
-        java.nio.file.Files.readAllBytes(path));
+    String typesCqlBytes = new String(java.nio.file.Files.readAllBytes(path));
 
-    assert ( StringUtils.countMatches(typesCqlBytes, "CREATE TYPE") == 133 );
+    Assert.assertEquals(StringUtils.countMatches(typesCqlBytes, "CREATE TYPE"), 133);
 
   }
 }

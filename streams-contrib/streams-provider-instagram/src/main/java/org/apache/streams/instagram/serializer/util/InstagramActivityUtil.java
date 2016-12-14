@@ -27,7 +27,6 @@ import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
 
-import com.google.common.base.Joiner;
 import org.jinstagram.entity.comments.CommentData;
 import org.jinstagram.entity.common.Comments;
 import org.jinstagram.entity.common.ImageData;
@@ -47,6 +46,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Provides utilities for working with Activity objects within the context of Instagram.
@@ -312,7 +313,8 @@ public class InstagramActivityUtil {
    * @return a valid Activity ID in format "id:instagram:part1:part2:...partN"
    */
   public static String formatId(String... idparts) {
-    return Joiner.on(":").join(Arrays.asList("id:instagram", idparts));
+    return String.join(":",
+        Stream.concat(Arrays.stream(new String[]{"id:instagram"}), Arrays.stream(idparts)).collect(Collectors.toList()));
   }
 
   /**

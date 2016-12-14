@@ -20,7 +20,6 @@ package org.apache.streams.monitoring.persist.impl;
 
 import org.apache.streams.monitoring.persist.MessagePersister;
 
-import com.google.common.collect.Lists;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -31,6 +30,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BroadcastMessagePersister implements MessagePersister {
@@ -43,7 +43,7 @@ public class BroadcastMessagePersister implements MessagePersister {
   }
 
   @Override
-  /**
+  /*
    * Given a list of messages as Strings, broadcast them to the broadcastUri
    * (if one is defined)
    * @param messages
@@ -59,7 +59,7 @@ public class BroadcastMessagePersister implements MessagePersister {
 
         post.setHeader("User-Agent", "Streams");
 
-        List<NameValuePair> urlParameters = Lists.newArrayList();
+        List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("messages", serializeMessages(messages)));
 
         post.setEntity(new UrlEncodedFormEntity(urlParameters, "UTF-8"));

@@ -31,14 +31,16 @@ import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.Thumbnail;
 import com.google.api.services.youtube.model.ThumbnailDetails;
 import com.google.api.services.youtube.model.Video;
-import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class YoutubeActivityUtil {
 
@@ -192,6 +194,7 @@ public class YoutubeActivityUtil {
    * @return a valid Activity ID in format "id:youtube:part1:part2:...partN"
    */
   public static String formatId(String... idparts) {
-    return String.join(":", Lists.asList("id:youtube", idparts));
+    return String.join(":",
+        Stream.concat(Arrays.stream(new String[]{"id:youtube"}), Arrays.stream(idparts)).collect(Collectors.toList()));
   }
 }

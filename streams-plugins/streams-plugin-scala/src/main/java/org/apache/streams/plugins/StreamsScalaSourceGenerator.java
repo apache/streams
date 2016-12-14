@@ -19,9 +19,6 @@
 
 package org.apache.streams.plugins;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -36,10 +33,14 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Embed within your own java code
@@ -75,12 +76,12 @@ public class StreamsScalaSourceGenerator implements Runnable {
   public static void main(String[] args) {
     StreamsScalaGenerationConfig config = new StreamsScalaGenerationConfig();
 
-    List<String> sourcePackages = Lists.newArrayList();
+    List<String> sourcePackages = new ArrayList<>();
     String targetDirectory = "target/generated-sources/pojo";
     String targetPackage = "";
 
     if ( args.length > 0 ) {
-      sourcePackages = Splitter.on(',').splitToList(args[0]);
+      sourcePackages = Stream.of(args[0].split(",")).collect(Collectors.toList());
     }
     if ( args.length > 1 ) {
       targetDirectory = args[1];
@@ -193,7 +194,7 @@ public class StreamsScalaSourceGenerator implements Runnable {
     Set<Class<? extends Serializable>> classes =
         reflections.getSubTypesOf(java.io.Serializable.class);
 
-    List<Class<?>> result = Lists.newArrayList();
+    List<Class<?>> result = new ArrayList<>();
 
     for ( Class clazz : classes ) {
       result.add(clazz);
@@ -209,7 +210,7 @@ public class StreamsScalaSourceGenerator implements Runnable {
    */
   public List<Class<?>> detectPojoClasses(List<Class<?>> classes) {
 
-    List<Class<?>> result = Lists.newArrayList();
+    List<Class<?>> result = new ArrayList<>();
 
     for ( Class clazz : classes ) {
       try {
@@ -228,7 +229,7 @@ public class StreamsScalaSourceGenerator implements Runnable {
 
   private List<Class<?>> detectTraits(List<Class<?>> classes) {
 
-    List<Class<?>> traits = Lists.newArrayList();
+    List<Class<?>> traits = new ArrayList<>();
 
     for ( Class clazz : classes ) {
       if (reflections.getSubTypesOf(clazz).size() > 0) {
@@ -241,7 +242,7 @@ public class StreamsScalaSourceGenerator implements Runnable {
 
   private List<Class<?>> detectCases(List<Class<?>> classes) {
 
-    List<Class<?>> cases = Lists.newArrayList();
+    List<Class<?>> cases = new ArrayList<>();
 
     for ( Class clazz : classes ) {
       if (reflections.getSubTypesOf(clazz).size() == 0) {
@@ -258,7 +259,7 @@ public class StreamsScalaSourceGenerator implements Runnable {
     stringBuffer.append(pojoClass.getPackage().getName().replace(".pojo.json", ".scala"));
     stringBuffer.append(".traits");
     stringBuffer.append(LS);
-    stringBuffer.append("trait " + pojoClass.getSimpleName());
+    stringBuffer.append("trait ").append(pojoClass.getSimpleName());
     stringBuffer.append(" extends Serializable");
     stringBuffer.append(" {");
 
@@ -277,14 +278,14 @@ public class StreamsScalaSourceGenerator implements Runnable {
     stringBuffer.append(LS);
     stringBuffer.append("import org.apache.commons.lang.builder.{HashCodeBuilder, EqualsBuilder, ToStringBuilder}");
     stringBuffer.append(LS);
-    stringBuffer.append("class " + pojoClass.getSimpleName());
+    stringBuffer.append("class ").append(pojoClass.getSimpleName());
     stringBuffer.append(" (");
 
     Set<Field> fields = ReflectionUtils.getAllFields(pojoClass);
     appendFields(stringBuffer, fields, "var", ",");
 
     stringBuffer.append(")");
-    stringBuffer.append(" extends " + pojoClass.getPackage().getName().replace(".pojo.json", ".scala") + ".traits." + pojoClass.getSimpleName());
+    stringBuffer.append(" extends ").append(pojoClass.getPackage().getName().replace(".pojo.json", ".scala")).append(".traits.").append(pojoClass.getSimpleName());
     stringBuffer.append(" with Serializable ");
     stringBuffer.append("{ ");
     stringBuffer.append(LS);
@@ -364,24 +365,19 @@ public class StreamsScalaSourceGenerator implements Runnable {
   }
 
   private boolean option(Field field) {
-    if ( field.getName().equals("verb")) {
-      return false;
-    } else if ( field.getType().equals(java.util.Map.class)) {
-      return false;
-    } else if ( field.getType().equals(java.util.List.class)) {
-      return false;
-    } else {
-      return true;
-    }
+    return !field.getName().equals("verb") &&
+        !field.getType().equals(Map.class) &&
+        !field.getType().equals(List.class);
   }
 
   private String value(Field field) {
-    if ( field.getName().equals("verb")) {
-      return "\"post\"";
-    } else if ( field.getName().equals("objectType")) {
-      return "\"application\"";
-    } else {
-      return null;
+    switch (field.getName()) {
+      case "verb":
+        return "\"post\"";
+      case "objectType":
+        return "\"application\"";
+      default:
+        return null;
     }
   }
 
@@ -397,7 +393,7 @@ public class StreamsScalaSourceGenerator implements Runnable {
   }
 
   private Map<String,Field> uniqueFields(Set<Field> fieldset) {
-    Map<String,Field> fields = Maps.newTreeMap();
+    Map<String,Field> fields = new TreeMap<>();
     Field item = null;
     for ( Iterator<Field> it = fieldset.iterator(); it.hasNext(); item = it.next() ) {
       if ( item != null && item.getName() != null ) {
@@ -418,11 +414,7 @@ public class StreamsScalaSourceGenerator implements Runnable {
 
   private boolean override(Field field) {
     try {
-      if ( field.getDeclaringClass().getSuperclass().getField(field.getName()) != null ) {
-        return true;
-      } else {
-        return false;
-      }
+      return field.getDeclaringClass().getSuperclass().getField(field.getName()) != null;
     } catch ( Exception ex ) {
       return false;
     }

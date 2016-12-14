@@ -35,7 +35,6 @@ import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.provider.TwitterProviderUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Status;
@@ -46,6 +45,8 @@ import twitter4j.TwitterObjectFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.getProvider;
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.updateActivity;
@@ -93,7 +94,7 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     } else {
       throw new IllegalStateException("Requires an activity document");
     }
-    return Lists.newArrayList(entry);
+    return Stream.of(entry).collect(Collectors.toList());
   }
 
 

@@ -32,7 +32,6 @@ import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -60,7 +59,6 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
@@ -70,6 +68,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
@@ -156,7 +156,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     TwitterUserInformationConfiguration config = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration(typesafe, "twitter");
     TwitterTimelineProvider provider = new TwitterTimelineProvider(config);
 
-    ObjectMapper mapper = new StreamsJacksonMapper(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+    ObjectMapper mapper = new StreamsJacksonMapper(Stream.of(TwitterDateTimeFormat.TWITTER_FORMAT).collect(Collectors.toList()));
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
     provider.prepare(config);
@@ -253,7 +253,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
   private Collection<Long> retrieveIds(String[] screenNames) {
     Twitter client = getTwitterClient();
 
-    List<Long> ids = Lists.newArrayList();
+    List<Long> ids = new ArrayList<>();
     try {
       for (User twitterUser : client.lookupUsers(screenNames)) {
         ids.add(twitterUser.getId());
@@ -313,8 +313,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
    * account identifiers are converted to IDs (Longs) instead of screenNames (Strings).
    */
   protected void consolidateToIDs() {
-    List<String> screenNames = Lists.newArrayList();
-    ids = Lists.newArrayList();
+    List<String> screenNames = new ArrayList<>();
+    ids = new ArrayList<>();
 
     for (String account : config.getInfo()) {
       try {
@@ -329,7 +329,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     }
 
     // Twitter allows for batches up to 100 per request, but you cannot mix types
-    screenNameBatches = new ArrayList<String[]>();
+    screenNameBatches = new ArrayList<>();
     while (screenNames.size() >= 100) {
       screenNameBatches.add(screenNames.subList(0, 100).toArray(new String[0]));
       screenNames = screenNames.subList(100, screenNames.size());
@@ -339,10 +339,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
       screenNameBatches.add(screenNames.toArray(new String[ids.size()]));
     }
 
-    Iterator<String[]> screenNameBatchIterator = screenNameBatches.iterator();
-
-    while (screenNameBatchIterator.hasNext()) {
-      Collection<Long> batchIds = retrieveIds(screenNameBatchIterator.next());
+    for (String[] screenNameBatche : screenNameBatches) {
+      Collection<Long> batchIds = retrieveIds(screenNameBatche);
       ids.addAll(batchIds);
     }
   }

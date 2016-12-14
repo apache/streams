@@ -19,12 +19,9 @@
 
 package org.apache.streams.plugins.test;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -34,8 +31,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import static org.apache.streams.plugins.test.StreamsScalaSourceGeneratorTest.scalaFilter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Tests that streams-plugin-pojo running via maven can convert activity schemas into pojos
@@ -59,10 +56,10 @@ public class StreamsScalaSourceGeneratorMojoIT {
 
     verifier = new Verifier( testDir.getAbsolutePath() );
 
-    List cliOptions = new ArrayList<>();
+    List<String> cliOptions = new ArrayList<>();
     cliOptions.add( "-N" );
-    verifier.executeGoals( Lists.newArrayList(
-        "compile"));
+    verifier.executeGoals(Stream.of(
+        "compile").collect(Collectors.toList()));
 
     verifier.verifyErrorFreeLog();
 
@@ -74,9 +71,7 @@ public class StreamsScalaSourceGeneratorMojoIT {
     Assert.assertTrue(testOutput.exists());
     Assert.assertTrue(testOutput.isDirectory());
 
-    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-        .filter(scalaFilter);
-    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
+    Collection<File> outputCollection = FileUtils.listFiles(testOutput, StreamsScalaSourceGeneratorTest.scalaFilter, true);
     assert ( outputCollection.size() > 133 );
 
   }

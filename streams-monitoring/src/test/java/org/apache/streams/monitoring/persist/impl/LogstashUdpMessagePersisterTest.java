@@ -18,8 +18,7 @@
 
 package org.apache.streams.monitoring.persist.impl;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -30,9 +29,8 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class LogstashUdpMessagePersisterTest {
 
@@ -69,9 +67,9 @@ public class LogstashUdpMessagePersisterTest {
 
     try {
       socket.receive(messageDatagram);
-      assertNotNull(messageDatagram);
-      List<String> messages = Lists.newArrayList(Splitter.on('\n').split(new String(messageDatagram.getData())));
-      assertEquals(messageArray, messages.subList(0,10));
+      Assert.assertNotNull(messageDatagram);
+      List<String> messages = Stream.of((new String(messageDatagram.getData())).split("\n")).collect(Collectors.toList());
+      Assert.assertEquals(messageArray, messages.subList(0,10));
     } catch (IOException ex) {
       LOGGER.error("Metrics Broadcast Test Failed: " + ex.getMessage());
     }

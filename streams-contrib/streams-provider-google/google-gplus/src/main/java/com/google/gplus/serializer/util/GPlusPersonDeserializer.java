@@ -27,14 +27,12 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.google.api.client.util.Lists;
 import com.google.api.services.plus.model.Person;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,7 +60,7 @@ public class GPlusPersonDeserializer extends JsonDeserializer<Person> {
     Person person = new Person();
     try {
       person.setId(node.get("id").asText());
-      person.setCircledByCount((Integer) ((IntNode) node.get("circledByCount")).numberValue());
+      person.setCircledByCount((Integer) (node.get("circledByCount")).numberValue());
       person.setDisplayName(node.get("displayName").asText());
       if( node.has("etag")) {
         person.setEtag(node.get("etag").asText());
@@ -88,7 +86,7 @@ public class GPlusPersonDeserializer extends JsonDeserializer<Person> {
 
       person.setObjectType(node.get("objectType").asText());
 
-      List<Person.Organizations> organizations = Lists.newArrayList();
+      List<Person.Organizations> organizations = new ArrayList<>();
       if( node.has("organizations")) {
         for (JsonNode orgNode : node.get("organizations")) {
           Person.Organizations org = mapper.readValue(mapper.writeValueAsString(orgNode), Person.Organizations.class);
@@ -100,7 +98,7 @@ public class GPlusPersonDeserializer extends JsonDeserializer<Person> {
       person.setUrl(node.get("url").asText());
       person.setVerified(node.get("verified").asBoolean());
 
-      List<Person.Emails> emails = Lists.newArrayList();
+      List<Person.Emails> emails = new ArrayList<>();
 
       if ( node.has("emails")) {
         for (JsonNode emailNode : node.get("emails")) {

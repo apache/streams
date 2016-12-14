@@ -34,8 +34,6 @@ import org.apache.streams.util.ComponentUtils;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.Repeat;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -47,6 +45,8 @@ import org.mockito.stubbing.Answer;
 
 import java.lang.management.ManagementFactory;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -169,7 +169,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
     try {
       StreamBuilder builder = new LocalStreamBuilder(10);
       builder.newPerpetualStream("numeric_provider", new NumericMessageProvider(numDatums));
-      String connectTo = null;
+      String connectTo;
       for(int i=0; i < numProcessors; ++i) {
         if(i == 0) {
           connectTo = "numeric_provider";
@@ -178,7 +178,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
         }
         builder.addStreamsProcessor(processorId+i, new PassthroughDatumCounterProcessor(processorId+i), 1, connectTo);
       }
-      Set output = Collections.newSetFromMap(new ConcurrentHashMap());
+      Set output = Collections.newSetFromMap(new ConcurrentHashMap<>());
       builder.addStreamsPersistWriter("writer", new DatumCounterWriter("writer"), 1, processorId+(numProcessors-1));
       builder.start();
       for(int i=0; i < numProcessors; ++i) {
@@ -203,7 +203,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
     try {
       StreamBuilder builder = new LocalStreamBuilder(50);
       builder.newPerpetualStream("numeric_provider", new NumericMessageProvider(numDatums));
-      String connectTo = null;
+      String connectTo;
       for(int i=0; i < numProcessors; ++i) {
         if(i == 0) {
           connectTo = "numeric_provider";
@@ -284,7 +284,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
     try {
       int numDatums = 30;
       int timeout = 2000;
-      Map<String, Object> config = Maps.newHashMap();
+      Map<String, Object> config = new HashMap<>();
       config.put(LocalStreamBuilder.TIMEOUT_KEY, timeout);
       StreamBuilder builder = new LocalStreamBuilder(config);
       builder.newPerpetualStream("prov1", new NumericMessageProvider(numDatums))
@@ -303,7 +303,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
   @Test
   public void testConfiguredProviderTimeout() {
     try {
-      Map<String, Object> config = Maps.newHashMap();
+      Map<String, Object> config = new HashMap<>();
       int timeout = 10000;
       config.put(LocalStreamBuilder.TIMEOUT_KEY, timeout);
       long start = System.currentTimeMillis();
@@ -377,7 +377,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
     when(processor.process(any(StreamsDatum.class))).thenAnswer(new Answer<List<StreamsDatum>>() {
       @Override
       public List<StreamsDatum> answer(InvocationOnMock invocationOnMock) throws Throwable {
-        List<StreamsDatum> datum = Lists.newLinkedList();
+        List<StreamsDatum> datum = new LinkedList<>();
         if(counter != null) {
           counter.incrementAndGet();
         }
@@ -399,15 +399,12 @@ public class LocalStreamBuilderTest extends RandomizedTest {
    */
   private StreamsPersistWriter createSetCollectingWriter(final Set collector, final AtomicInteger counter) {
     StreamsPersistWriter writer = mock(StreamsPersistWriter.class);
-    doAnswer(new Answer() {
-      @Override
-      public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-        if(counter != null) {
-          counter.incrementAndGet();
-        }
-        collector.add(((StreamsDatum)invocationOnMock.getArguments()[0]).getDocument());
-        return null;
+    doAnswer(invocationOnMock -> {
+      if(counter != null) {
+        counter.incrementAndGet();
       }
+      collector.add(((StreamsDatum)invocationOnMock.getArguments()[0]).getDocument());
+      return null;
     }).when(writer).write(any(StreamsDatum.class));
     return writer;
   }

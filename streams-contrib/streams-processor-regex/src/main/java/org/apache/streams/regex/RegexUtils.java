@@ -19,13 +19,14 @@
 
 package org.apache.streams.regex;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +35,7 @@ import java.util.regex.Pattern;
  */
 public class RegexUtils {
 
-  private static final Map<String, Pattern> patternCache = Maps.newConcurrentMap();
+  private static final Map<String, Pattern> patternCache = new ConcurrentHashMap<>();
   private static final Logger LOGGER = LoggerFactory.getLogger(RegexUtils.class);
 
   private RegexUtils() {}
@@ -62,7 +63,7 @@ public class RegexUtils {
 
   protected static Map<String, List<Integer>> getMatches(String pattern, String content, int capture) {
     try {
-      Map<String, List<Integer>> matches = Maps.newHashMap();
+      Map<String, List<Integer>> matches = new HashMap<>();
       if (content == null) {
         return matches;
       }
@@ -75,7 +76,7 @@ public class RegexUtils {
           if (matches.containsKey(group)) {
             indices = matches.get(group);
           } else {
-            indices = Lists.newArrayList();
+            indices = new ArrayList<>();
             matches.put(group, indices);
           }
           indices.add(matcher.start());

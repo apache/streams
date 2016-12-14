@@ -28,7 +28,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.util.Lists;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ActivityListResponse;
 import com.google.api.services.youtube.model.Video;
@@ -40,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
@@ -157,7 +157,7 @@ public class YoutubeUserActivityCollector extends YoutubeDataCollector {
   void processActivityFeed(ActivityListResponse feed, DateTime afterDate, DateTime beforeDate) throws IOException, InterruptedException {
     for (com.google.api.services.youtube.model.Activity activity : feed.getItems()) {
       try {
-        List<Video> videos = Lists.newArrayList();
+        List<Video> videos = new ArrayList<>();
 
         if (activity.getContentDetails().getUpload() != null) {
           videos.addAll(getVideoList(activity.getContentDetails().getUpload().getVideoId()));
@@ -217,7 +217,7 @@ public class YoutubeUserActivityCollector extends YoutubeDataCollector {
 
     if (videosListResponse.getItems().size() == 0) {
       LOGGER.debug("No Youtube videos found for videoId: {}", videoId);
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
 
     return videosListResponse.getItems();

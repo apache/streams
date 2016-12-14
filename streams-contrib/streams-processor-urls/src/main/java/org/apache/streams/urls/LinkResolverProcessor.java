@@ -24,13 +24,15 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class LinkResolverProcessor implements StreamsProcessor {
 
@@ -46,7 +48,7 @@ public class LinkResolverProcessor implements StreamsProcessor {
     @Override
     public List<StreamsDatum> process(StreamsDatum entry) {
 
-        List<StreamsDatum> result = Lists.newArrayList();
+        List<StreamsDatum> result = new ArrayList<>();
 
         LOGGER.debug("{} processing {}", STREAMS_ID, entry.getDocument().getClass());
 
@@ -56,7 +58,7 @@ public class LinkResolverProcessor implements StreamsProcessor {
         if (entry.getDocument() instanceof Activity) {
             activity = (Activity) entry.getDocument();
 
-            activity.setLinks(Lists.newArrayList(unwind(activity.getLinks())));
+            activity.setLinks(new ArrayList<>(unwind(activity.getLinks())));
 
             entry.setDocument(activity);
 
@@ -70,17 +72,17 @@ public class LinkResolverProcessor implements StreamsProcessor {
             } catch (Exception e) {
                 e.printStackTrace();
                 LOGGER.warn(e.getMessage());
-                return (Lists.newArrayList(entry));
+                return Stream.of(entry).collect(Collectors.toList());
             }
 
-            activity.setLinks(Lists.newArrayList(unwind(activity.getLinks())));
+            activity.setLinks(new ArrayList<>(unwind(activity.getLinks())));
 
             try {
                 entry.setDocument(mapper.writeValueAsString(activity));
             } catch (Exception e) {
                 e.printStackTrace();
                 LOGGER.warn(e.getMessage());
-                return (Lists.newArrayList());
+                return new ArrayList<>();
             }
 
             result.add(entry);
@@ -88,8 +90,7 @@ public class LinkResolverProcessor implements StreamsProcessor {
             return result;
 
         } else {
-            //return(Lists.newArrayList(entry));
-            return (Lists.newArrayList());
+            return new ArrayList<>();
         }
     }
 

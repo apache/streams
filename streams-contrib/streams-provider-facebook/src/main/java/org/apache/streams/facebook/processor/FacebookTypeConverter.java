@@ -33,13 +33,15 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * FacebookTypeConverter converts facebook data to activity streams types.
@@ -182,7 +184,7 @@ public class FacebookTypeConverter implements StreamsProcessor {
       } else if ( item instanceof ObjectNode) {
 
         // first check for valid json
-        node = (ObjectNode)mapper.valueToTree(item);
+        node = mapper.valueToTree(item);
 
         Class inClass = FacebookEventClassifier.detectClass(mapper.writeValueAsString(item));
 
@@ -206,9 +208,9 @@ public class FacebookTypeConverter implements StreamsProcessor {
     }
 
     if ( result != null ) {
-      return Lists.newArrayList(result);
+      return Stream.of(result).collect(Collectors.toList());
     } else {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
   }
 

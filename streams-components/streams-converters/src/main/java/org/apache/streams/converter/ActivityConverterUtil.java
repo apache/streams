@@ -26,7 +26,6 @@ import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.Activity;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
@@ -205,7 +204,7 @@ public class ActivityConverterUtil {
       }
     }
 
-    return Lists.newArrayList(detectedClasses);
+    return new ArrayList<>(detectedClasses);
   }
 
   private Map<Class, Object> convertToDetectedClasses(List<Class> datumClasses, Object document) {

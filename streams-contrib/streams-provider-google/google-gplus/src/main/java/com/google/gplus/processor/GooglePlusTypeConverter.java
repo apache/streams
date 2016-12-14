@@ -25,7 +25,6 @@ import org.apache.streams.pojo.json.Activity;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.api.services.plus.model.Person;
-import com.google.common.collect.Lists;
 import com.google.gplus.serializer.util.GPlusActivityDeserializer;
 import com.google.gplus.serializer.util.GPlusEventClassifier;
 import com.google.gplus.serializer.util.GPlusPersonDeserializer;
@@ -33,8 +32,11 @@ import com.google.gplus.serializer.util.GooglePlusActivityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * GooglePlusTypeConverter is a StreamsProcessor that converts gplus activities to activitystreams activities.
@@ -96,9 +98,9 @@ public class GooglePlusTypeConverter implements StreamsProcessor {
     }
 
     if ( result != null ) {
-      return Lists.newArrayList(result);
+      return Stream.of(result).collect(Collectors.toList());
     } else {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
   }
 

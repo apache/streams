@@ -29,11 +29,13 @@ import org.apache.streams.twitter.converter.TwitterJsonUserActivityObjectConvert
 import org.apache.streams.twitter.pojo.User;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Tests {org.apache.streams.twitter.converter.*}
@@ -42,12 +44,13 @@ public class TwitterActivityObjectsConvertersTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterActivityObjectsConvertersTest.class);
 
-  private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(TwitterDateTimeFormat.TWITTER_FORMAT));
+  private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Stream.of(TwitterDateTimeFormat.TWITTER_FORMAT)
+      .collect(Collectors.toList()));
 
   private ActivityObjectConverterProcessorConfiguration activityObjectConverterProcessorConfiguration =
       new ActivityObjectConverterProcessorConfiguration()
-          .withClassifiers(Lists.newArrayList(new TwitterDocumentClassifier()))
-          .withConverters(Lists.newArrayList(new TwitterJsonUserActivityObjectConverter()));
+          .withClassifiers(Stream.of(new TwitterDocumentClassifier()).collect(Collectors.toList()))
+          .withConverters(Stream.of(new TwitterJsonUserActivityObjectConverter()).collect(Collectors.toList()));
 
   private ActivityObjectConverterUtil activityObjectConverterUtil = ActivityObjectConverterUtil.getInstance(activityObjectConverterProcessorConfiguration);
 

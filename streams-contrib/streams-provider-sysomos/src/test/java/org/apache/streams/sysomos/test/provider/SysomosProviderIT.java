@@ -22,7 +22,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.sysomos.provider.SysomosProvider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
@@ -48,7 +47,7 @@ public class SysomosProviderIT {
     String configfile = "./target/test-classes/SysomosProviderIT.conf";
     String outfile = "./target/test-classes/SysomosProviderIT.stdout.txt";
 
-    SysomosProvider.main(Lists.newArrayList(configfile, outfile).toArray(new String[2]));
+    SysomosProvider.main(new String[]{configfile, outfile});
 
     File out = new File(outfile);
     assert (out.exists());

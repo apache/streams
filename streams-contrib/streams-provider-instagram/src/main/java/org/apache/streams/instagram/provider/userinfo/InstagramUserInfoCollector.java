@@ -20,7 +20,6 @@ import org.apache.streams.instagram.InstagramConfiguration;
 import org.apache.streams.instagram.User;
 import org.apache.streams.instagram.provider.InstagramDataCollector;
 
-import com.google.common.collect.Lists;
 import org.jinstagram.entity.users.basicinfo.UserInfo;
 import org.jinstagram.entity.users.basicinfo.UserInfoData;
 import org.jinstagram.exceptions.InstagramBadRequestException;
@@ -28,6 +27,7 @@ import org.jinstagram.exceptions.InstagramRateLimitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
@@ -75,7 +75,7 @@ public class InstagramUserInfoCollector extends InstagramDataCollector<UserInfoD
       }
       if (successful = (userInfo != null)) {
         this.consecutiveErrorCount = 0;
-        List<UserInfoData> data = Lists.newLinkedList();
+        List<UserInfoData> data = new LinkedList<>();
         data.add(userInfo.getData());
         super.queueData(data, user.getUserId());
       }

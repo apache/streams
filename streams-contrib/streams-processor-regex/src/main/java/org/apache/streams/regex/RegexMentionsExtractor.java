@@ -21,8 +21,6 @@ package org.apache.streams.regex;
 
 import org.apache.streams.core.StreamsProcessor;
 
-import com.google.common.collect.Maps;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +48,7 @@ public class RegexMentionsExtractor extends AbstractRegexExtensionExtractor<Map<
 
   @Override
   protected Map<String, Object> prepareObject(String extracted) {
-    HashMap<String, Object> mention = Maps.newHashMap();
+    Map<String, Object> mention = new HashMap<>();
     mention.put(DISPLAY_KEY, extracted.substring(1));
     return mention;
   }

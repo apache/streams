@@ -27,10 +27,7 @@ import org.apache.streams.twitter.pojo.Tweet;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -39,6 +36,9 @@ import org.testng.annotations.Test;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.streams.twitter.converter.TwitterDateTimeFormat.TWITTER_FORMAT;
 import static org.hamcrest.CoreMatchers.is;
@@ -54,7 +54,7 @@ public class TwitterObjectMapperIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterObjectMapperIT.class);
 
-  private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Lists.newArrayList(TWITTER_FORMAT));
+  private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Stream.of(TWITTER_FORMAT).collect(Collectors.toList()));
 
   @Test
   public void tests() {
@@ -92,7 +92,7 @@ public class TwitterObjectMapperIT {
             assertThat(tweet.getText(), is(not(nullValue())));
             assertThat(tweet.getUser(), is(not(nullValue())));
 
-            tweetlinks += Optional.fromNullable(tweet.getEntities().getUrls().size()).or(0);
+            tweetlinks += Optional.ofNullable(tweet.getEntities().getUrls().size()).orElse(0);
 
           } else if ( detected == Retweet.class ) {
 
@@ -105,7 +105,7 @@ public class TwitterObjectMapperIT {
             assertThat(retweet.getRetweetedStatus().getUser().getId(), is(not(nullValue())));
             assertThat(retweet.getRetweetedStatus().getUser().getCreatedAt(), is(not(nullValue())));
 
-            retweetlinks += Optional.fromNullable(retweet.getRetweetedStatus().getEntities().getUrls().size()).or(0);
+            retweetlinks += Optional.ofNullable(retweet.getRetweetedStatus().getEntities().getUrls().size()).orElse(0);
 
           } else if ( detected == Delete.class ) {
 

@@ -25,11 +25,12 @@ import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.pojo.json.Activity;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Class gets a global share count from Twitter API for links on Activity datums.
@@ -72,7 +73,7 @@ public class TwitterUrlApiProcessor extends SimpleHTTPGetProcessor implements St
     if ( activity.getLinks() != null && activity.getLinks().size() > 0) {
       return super.process(entry);
     } else {
-      return Lists.newArrayList(entry);
+      return Stream.of(entry).collect(Collectors.toList());
     }
   }
 

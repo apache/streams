@@ -25,13 +25,13 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,7 +76,7 @@ public class GenericWebhookResourceTest {
         .withCount(1)
         .withHashType("type")
         .withId("test");
-    List<ObjectNode> testPostJsonData = Lists.newArrayList();
+    List<ObjectNode> testPostJsonData = new ArrayList<>();
     testPostJsonData.add(mapper.createObjectNode().put("valid", "true"));
     testPostJsonMeta.setData(testPostJsonData);
     String testPostJsonEntity = mapper.writeValueAsString(testPostJsonMeta);

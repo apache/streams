@@ -21,15 +21,14 @@ package org.apache.streams.plugins.test;
 
 import org.apache.streams.plugins.StreamsScalaSourceGenerator;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
 
 import static org.apache.streams.plugins.test.StreamsScalaSourceGeneratorTest.scalaFilter;
 
@@ -47,18 +46,15 @@ public class StreamsScalaSourceGeneratorCLITest {
     String targetPackage = "org.apache.streams.scala";
     String targetDirectory = "./target/generated-sources/scala-cli";
 
-    List<String> argsList = Lists.newArrayList(sourcePackages, targetDirectory, targetPackage);
-    StreamsScalaSourceGenerator.main(argsList.toArray(new String[argsList.size()]));
+    StreamsScalaSourceGenerator.main(new String[]{sourcePackages, targetDirectory, targetPackage});
 
     File testOutput = new File(targetDirectory);
 
-    assert ( testOutput != null );
-    assert ( testOutput.exists() == true );
-    assert ( testOutput.isDirectory() == true );
+    Assert.assertNotNull(testOutput);
+    Assert.assertTrue(testOutput.exists() );
+    Assert.assertTrue(testOutput.isDirectory());
 
-    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-        .filter(scalaFilter);
-    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
+    Collection<File> outputCollection = FileUtils.listFiles(testOutput, scalaFilter, true);
     assert ( outputCollection.size() > 133 );
   }
 }

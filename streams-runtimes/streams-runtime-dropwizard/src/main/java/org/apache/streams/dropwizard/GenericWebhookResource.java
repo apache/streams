@@ -27,7 +27,6 @@ import org.apache.streams.util.ComponentUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Queues;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,7 +148,7 @@ public class GenericWebhookResource implements StreamsProvider {
 
     try {
 
-      for ( String line : Splitter.on(newLinePattern).split(body)) {
+      for (String line : Splitter.on(newLinePattern).split(body)) {
         ObjectNode item = mapper.readValue(line, ObjectNode.class);
 
         StreamsDatum datum = new StreamsDatum(item);
@@ -237,7 +236,6 @@ public class GenericWebhookResource implements StreamsProvider {
 
   @Override
   public void startStream() {
-    return;
   }
 
   @Override
@@ -246,7 +244,7 @@ public class GenericWebhookResource implements StreamsProvider {
     StreamsResultSet current;
 
     lock.writeLock().lock();
-    current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(providerQueue));
+    current = new StreamsResultSet(new ConcurrentLinkedQueue<>(providerQueue));
     providerQueue.clear();
     lock.writeLock().unlock();
 

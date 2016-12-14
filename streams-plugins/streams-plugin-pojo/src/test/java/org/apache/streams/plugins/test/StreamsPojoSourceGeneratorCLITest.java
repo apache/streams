@@ -21,24 +21,21 @@ package org.apache.streams.plugins.test;
 
 import org.apache.streams.plugins.StreamsPojoSourceGenerator;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
-
-import static org.apache.streams.plugins.test.StreamsPojoSourceGeneratorTest.javaFilter;
 
 /**
  * Test whether StreamsPojoSourceGeneratorCLI generates source files.
  */
 public class StreamsPojoSourceGeneratorCLITest {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(StreamsPojoSourceGeneratorTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StreamsPojoSourceGeneratorCLITest.class);
 
   @Test
   public void testStreamsPojoSourceGeneratorCLI() throws Exception {
@@ -46,18 +43,15 @@ public class StreamsPojoSourceGeneratorCLITest {
     String sourceDirectory = "target/test-classes/activitystreams-schemas";
     String targetDirectory = "target/generated-sources/test-cli";
 
-    List<String> argsList = Lists.newArrayList(sourceDirectory, targetDirectory);
-    StreamsPojoSourceGenerator.main(argsList.toArray(new String[0]));
+    StreamsPojoSourceGenerator.main(new String[]{sourceDirectory, targetDirectory});
 
     File testOutput = new File(targetDirectory);
 
-    assert ( testOutput != null );
-    assert ( testOutput.exists() == true );
-    assert ( testOutput.isDirectory() == true );
+    Assert.assertNotNull(testOutput);
+    Assert.assertTrue(testOutput.exists());
+    Assert.assertTrue(testOutput.isDirectory());
 
-    Iterable<File> outputIterator = Files.fileTreeTraverser().breadthFirstTraversal(testOutput)
-        .filter(javaFilter);
-    Collection<File> outputCollection = Lists.newArrayList(outputIterator);
-    assert ( outputCollection.size() > 133 );
+    Collection<File> testOutputFiles = FileUtils.listFiles(testOutput, StreamsPojoSourceGeneratorTest.javaFilter, true);
+    Assert.assertTrue(testOutputFiles.size() > 133);
   }
 }

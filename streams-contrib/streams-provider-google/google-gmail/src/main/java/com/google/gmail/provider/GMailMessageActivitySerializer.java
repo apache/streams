@@ -33,7 +33,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import com.googlecode.gmail4j.GmailException;
 import com.googlecode.gmail4j.GmailMessage;
 import com.googlecode.gmail4j.javamail.JavaMailGmailMessage;
@@ -45,8 +44,11 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.mail.internet.MimeMultipart;
 
 /**
@@ -115,20 +117,6 @@ public class GMailMessageActivitySerializer implements ActivitySerializer<GmailM
       LOGGER.warn(e.getMessage());
     }
     activity.setObject(object);
-
-//        try {
-//            // if jackson can't serialize the object, find out now
-//            String jsonString = mapper.writeValueAsString(gmailMessage);
-//            ObjectNode jsonObject = mapper.valueToTree(gmailMessage);
-//            // since it can, write the entire source object to extensions.gmail
-//            Map<String, Object> extensions = Maps.newHashMap();
-//            extensions.put("gmail", gmailMessage);
-//            activity.setAdditionalProperty("extensions", extensions);
-//        } catch (JsonProcessingException e) {
-//            LOGGER.debug("Failed Json Deserialization");
-//            e.printStackTrace();
-//        }
-
     return activity;
   }
 
@@ -169,7 +157,8 @@ public class GMailMessageActivitySerializer implements ActivitySerializer<GmailM
   }
 
   public static String formatId(String... idparts) {
-    return String.join(":", Lists.asList("id:gmail", idparts));
+    return String.join(":",
+        Stream.concat(Arrays.stream(new String[]{"id:googleplus"}), Arrays.stream(idparts)).collect(Collectors.toList()));
   }
 
   interface MessageMixIn {
