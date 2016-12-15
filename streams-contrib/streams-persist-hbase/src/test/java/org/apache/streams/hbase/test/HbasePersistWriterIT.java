@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,10 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import static org.testng.Assert.assertTrue;
 
 /**
  * Test HbasePersistWriterIT.
@@ -60,7 +62,7 @@ public class HbasePersistWriterIT {
 
     Config reference  = ConfigFactory.load();
     File conf_file = new File("target/test-classes/HbasePersistWriterIT.conf");
-    assert(conf_file.exists());
+    assertTrue(conf_file.exists());
     Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
     Config typesafe  = testResourceConfig.withFallback(reference).resolve();
     testConfiguration = new ComponentConfigurator<>(HbaseConfiguration.class).detectConfiguration(typesafe, "hbase");
@@ -75,7 +77,7 @@ public class HbasePersistWriterIT {
 
     InputStream testActivityFolderStream = HbasePersistWriterIT.class.getClassLoader()
         .getResourceAsStream("activities");
-    List<String> files = IOUtils.readLines(testActivityFolderStream, Charsets.UTF_8);
+    List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
     for( String file : files) {
       LOGGER.info("File: " + file );
