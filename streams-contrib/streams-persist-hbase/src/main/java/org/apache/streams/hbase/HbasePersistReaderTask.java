@@ -5,7 +5,6 @@
  * regarding copyright ownership.  The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,7 +16,29 @@
  * under the License.
  */
 
-DEFINE PROCESSOR org.apache.streams.pig.StreamsProcessDatumExec('org.apache.streams.pig.test.CopyThriceProcessor');
-in = LOAD '*' USING PigStorage('\t') AS (id: chararray, source: chararray, timestamp: long, object: chararray);
-out = FOREACH in GENERATE FLATTEN(PROCESSOR(id, source, timestamp, object));
-STORE out INTO 'target' USING PigStorage('\t');
+package org.apache.streams.hbase;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class HbasePersistReaderTask implements Runnable {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HbasePersistReaderTask.class);
+
+    private HbasePersistReader reader;
+
+    public HbasePersistReaderTask(HbasePersistReader reader) {
+        this.reader = reader;
+    }
+
+    @Override
+    public void run() {
+
+        while(reader.isRunning()) {
+
+
+        }
+
+    }
+
+}
