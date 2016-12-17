@@ -46,7 +46,7 @@ public class YoutubeChannelProviderIT {
     args[0] = configfile;
     args[1] = outfile;
 
-    Thread testThread = new Thread((Runnable) () -> {
+    Thread testThread = new Thread(() -> {
       try {
         YoutubeChannelProvider.main(args);
       } catch ( Exception ex ) {

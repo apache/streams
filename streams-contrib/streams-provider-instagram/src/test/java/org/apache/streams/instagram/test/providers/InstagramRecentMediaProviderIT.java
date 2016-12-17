@@ -22,6 +22,7 @@ import org.apache.streams.instagram.provider.recentmedia.InstagramRecentMediaPro
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -45,7 +46,7 @@ public class InstagramRecentMediaProviderIT {
     args[0] = configfile;
     args[1] = outfile;
 
-    Thread testThread = new Thread((Runnable) () -> {
+    Thread testThread = new Thread(() -> {
       try {
         InstagramRecentMediaProvider.main(args);
       } catch ( Exception ex ) {
@@ -56,9 +57,9 @@ public class InstagramRecentMediaProviderIT {
     testThread.join(60000);
 
     File out = new File(outfile);
-    assert (out.exists());
-    assert (out.canRead());
-    assert (out.isFile());
+    Assert.assertTrue (out.exists());
+    Assert.assertTrue (out.canRead());
+    Assert.assertTrue (out.isFile());
 
     FileReader outReader = new FileReader(out);
     LineNumberReader outCounter = new LineNumberReader(outReader);
@@ -66,6 +67,6 @@ public class InstagramRecentMediaProviderIT {
     while (outCounter.readLine() != null) {
     }
 
-    assert (outCounter.getLineNumber() >= 1);
+    Assert.assertTrue (outCounter.getLineNumber() >= 1);
   }
 }

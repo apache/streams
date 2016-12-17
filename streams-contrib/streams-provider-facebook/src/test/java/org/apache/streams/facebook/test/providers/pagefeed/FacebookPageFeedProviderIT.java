@@ -44,7 +44,7 @@ public class FacebookPageFeedProviderIT {
     args[0] = configfile;
     args[1] = outfile;
 
-    Thread testThread = new Thread((Runnable) () -> {
+    Thread testThread = new Thread(() -> {
       try {
         FacebookPageFeedProvider.main(args);
       } catch( Exception e ) {

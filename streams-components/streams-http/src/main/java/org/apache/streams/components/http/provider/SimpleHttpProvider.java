@@ -193,15 +193,12 @@ public class SimpleHttpProvider implements StreamsProvider {
   @Override
   public void startStream() {
 
-    executor.execute(new Runnable() {
-      @Override
-      public void run() {
+    executor.execute(() -> {
 
-        readCurrent();
+      readCurrent();
 
-        Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+      Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
 
-      }
     });
   }
 

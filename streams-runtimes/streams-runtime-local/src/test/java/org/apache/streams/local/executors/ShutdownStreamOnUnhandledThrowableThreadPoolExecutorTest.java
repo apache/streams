@@ -23,8 +23,6 @@ import org.apache.streams.util.ComponentUtils;
 
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -55,22 +53,16 @@ public class ShutdownStreamOnUnhandledThrowableThreadPoolExecutorTest {
   public void testShutDownOnException() {
     LocalStreamBuilder sb = mock(LocalStreamBuilder.class);
     final AtomicBoolean isShutdown = new AtomicBoolean(false);
-    doAnswer(new Answer() {
-      @Override
-      public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-        isShutdown.set(true);
-        return null;
-      }
+    doAnswer(invocationOnMock -> {
+      isShutdown.set(true);
+      return null;
     }).when(sb).stop();
 
     final CountDownLatch latch = new CountDownLatch(1);
 
-    Runnable runnable = new Runnable() {
-      @Override
-      public void run() {
-        latch.countDown();
-        throw new RuntimeException("Testing Throwable Handling!");
-      }
+    Runnable runnable = () -> {
+      latch.countDown();
+      throw new RuntimeException("Testing Throwable Handling!");
     };
 
     ExecutorService executor = new ShutdownStreamOnUnhandleThrowableThreadPoolExecutor(1, sb);
@@ -94,22 +86,14 @@ public class ShutdownStreamOnUnhandledThrowableThreadPoolExecutorTest {
   public void testNormalExecution() {
     LocalStreamBuilder sb = mock(LocalStreamBuilder.class);
     final AtomicBoolean isShutdown = new AtomicBoolean(false);
-    doAnswer(new Answer() {
-      @Override
-      public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-        isShutdown.set(true);
-        return null;
-      }
+    doAnswer(invocationOnMock -> {
+      isShutdown.set(true);
+      return null;
     }).when(sb).stop();
 
     final CountDownLatch latch = new CountDownLatch(1);
 
-    Runnable runnable = new Runnable() {
-      @Override
-      public void run() {
-        latch.countDown();
-      }
-    };
+    Runnable runnable = latch::countDown;
 
     ExecutorService executor = new ShutdownStreamOnUnhandleThrowableThreadPoolExecutor(1, sb);
     executor.execute(runnable);

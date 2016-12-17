@@ -46,7 +46,7 @@ public class TwitterStreamProviderIT {
     args[0] = configfile;
     args[1] = outfile;
 
-    Thread testThread = new Thread((Runnable) () -> {
+    Thread testThread = new Thread(() -> {
       try {
         TwitterStreamProvider.main(args);
       } catch ( Exception ex ) {

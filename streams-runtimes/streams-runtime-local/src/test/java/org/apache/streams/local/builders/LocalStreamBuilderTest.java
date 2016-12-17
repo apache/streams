@@ -334,12 +334,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
       builder.newPerpetualStream("prov1", new NumericMessageProvider(30))
           .addStreamsProcessor("proc1", new SlowProcessor(), 1, "prov1")
           .addStreamsPersistWriter("w1", new SystemOutWriter(), 1, "proc1");
-      service.submit(new Runnable() {
-        @Override
-        public void run() {
-          builder.start();
-        }
-      });
+      service.submit(builder::start);
       //Let streams spin up threads and start to process
       Thread.sleep(500);
       builder.stop();

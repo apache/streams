@@ -22,17 +22,13 @@ import org.apache.streams.instagram.provider.userinfo.InstagramUserInfoProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 
-import static org.testng.Assert.assertTrue;
-
-/**
- * Created by sblackmon on 10/12/16.
- */
 public class InstagramUserInfoProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoProviderIT.class);
@@ -47,7 +43,7 @@ public class InstagramUserInfoProviderIT {
     args[0] = configfile;
     args[1] = outfile;
 
-    Thread testThread = new Thread((Runnable) () -> {
+    Thread testThread = new Thread(() -> {
       try {
         InstagramUserInfoProvider.main(args);
       } catch ( Exception ex ) {
@@ -58,16 +54,16 @@ public class InstagramUserInfoProviderIT {
     testThread.join(60000);
 
     File out = new File(outfile);
-    assertTrue (out.exists());
-    assertTrue (out.canRead());
-    assertTrue (out.isFile());
+    Assert.assertTrue (out.exists());
+    Assert.assertTrue (out.canRead());
+    Assert.assertTrue (out.isFile());
 
     FileReader outReader = new FileReader(out);
     LineNumberReader outCounter = new LineNumberReader(outReader);
 
     while (outCounter.readLine() != null) {}
 
-    assertTrue (outCounter.getLineNumber() >= 1);
+    Assert.assertTrue (outCounter.getLineNumber() >= 1);
 
   }
 }

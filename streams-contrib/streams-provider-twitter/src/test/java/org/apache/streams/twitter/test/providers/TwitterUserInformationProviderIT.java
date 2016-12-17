@@ -31,7 +31,6 @@ import java.io.LineNumberReader;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.testng.Assert.assertTrue;
 
 public class TwitterUserInformationProviderIT {
 
@@ -47,7 +46,7 @@ public class TwitterUserInformationProviderIT {
     args[0] = configfile;
     args[1] = outfile;
 
-    Thread testThread = new Thread((Runnable) () -> {
+    Thread testThread = new Thread(() -> {
       try {
         TwitterUserInformationProvider.main(args);
       } catch ( Exception ex ) {
@@ -58,9 +57,9 @@ public class TwitterUserInformationProviderIT {
     testThread.join(60000);
 
     File out = new File(outfile);
-    assertTrue(out.exists());
-    assertTrue(out.canRead());
-    assertTrue(out.isFile());
+    Assert.assertTrue (out.exists());
+    Assert.assertTrue (out.canRead());
+    Assert.assertTrue (out.isFile());
 
     FileReader outReader = new FileReader(out);
     LineNumberReader outCounter = new LineNumberReader(outReader);

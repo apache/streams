@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * A fixed ThreadPoolExecutor that will shutdown a stream upon a thread ending execution due to an unhandled throwable.
- * @see {@link java.util.concurrent.ThreadPoolExecutor}
+ * @see java.util.concurrent.ThreadPoolExecutor
  */
 public class ShutdownStreamOnUnhandleThrowableThreadPoolExecutor extends ThreadPoolExecutor {
 
@@ -44,7 +44,7 @@ public class ShutdownStreamOnUnhandleThrowableThreadPoolExecutor extends ThreadP
    * @param streamBuilder streambuilder to call {@link org.apache.streams.core.StreamBuilder#stop()} on upon receiving an unhandled throwable
    */
   public ShutdownStreamOnUnhandleThrowableThreadPoolExecutor(int numThreads, LocalStreamBuilder streamBuilder) {
-    super(numThreads, numThreads, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+    super(numThreads, numThreads, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     this.streamBuilder = streamBuilder;
     this.isStoped = false;
   }

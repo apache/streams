@@ -153,14 +153,11 @@ public class YoutubeProviderTest {
       @Override
       protected Runnable getDataCollector(BackOffStrategy strategy, BlockingQueue<StreamsDatum> queue, YouTube youtube, UserInfo userInfo) {
         final BlockingQueue<StreamsDatum> q = queue;
-        return new Runnable() {
-          @Override
-          public void run() {
-            try {
-              q.put(new StreamsDatum(null));
-            } catch (InterruptedException ie) {
-              fail("Test was interrupted");
-            }
+        return () -> {
+          try {
+            q.put(new StreamsDatum(null));
+          } catch (InterruptedException ie) {
+            fail("Test was interrupted");
           }
         };
       }

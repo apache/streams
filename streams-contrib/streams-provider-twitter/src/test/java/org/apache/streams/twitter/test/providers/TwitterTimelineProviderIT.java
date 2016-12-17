@@ -22,13 +22,12 @@ import org.apache.streams.twitter.provider.TwitterTimelineProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
-
-import static org.testng.Assert.assertEquals;
 
 public class TwitterTimelineProviderIT {
 
@@ -44,7 +43,7 @@ public class TwitterTimelineProviderIT {
     args[0] = configfile;
     args[1] = outfile;
 
-    Thread testThread = new Thread((Runnable) () -> {
+    Thread testThread = new Thread(() -> {
       try {
         TwitterTimelineProvider.main(args);
       } catch ( Exception ex ) {
@@ -55,16 +54,16 @@ public class TwitterTimelineProviderIT {
     testThread.join(60000);
 
     File out = new File(outfile);
-    assert (out.exists());
-    assert (out.canRead());
-    assert (out.isFile());
+    Assert.assertTrue (out.exists());
+    Assert.assertTrue (out.canRead());
+    Assert.assertTrue (out.isFile());
 
     FileReader outReader = new FileReader(out);
     LineNumberReader outCounter = new LineNumberReader(outReader);
 
     while (outCounter.readLine() != null) {}
 
-    assertEquals (outCounter.getLineNumber(), 1000);
+    Assert.assertEquals (outCounter.getLineNumber(), 1000);
 
   }
 }

@@ -22,14 +22,12 @@ import org.apache.streams.twitter.provider.TwitterFollowingProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 public class TwitterFollowingProviderIT {
 
@@ -45,7 +43,7 @@ public class TwitterFollowingProviderIT {
     args[0] = configfile;
     args[1] = outfile;
 
-    Thread testThread = new Thread((Runnable) () -> {
+    Thread testThread = new Thread(() -> {
       try {
         TwitterFollowingProvider.main(args);
       } catch ( Exception ex ) {
@@ -56,16 +54,16 @@ public class TwitterFollowingProviderIT {
     testThread.join(60000);
 
     File out = new File(outfile);
-    assertTrue (out.exists());
-    assertTrue (out.canRead());
-    assertTrue (out.isFile());
+    Assert.assertTrue (out.exists());
+    Assert.assertTrue (out.canRead());
+    Assert.assertTrue (out.isFile());
 
     FileReader outReader = new FileReader(out);
     LineNumberReader outCounter = new LineNumberReader(outReader);
 
     while (outCounter.readLine() != null) {}
 
-    assertEquals (outCounter.getLineNumber(), 10000);
+    Assert.assertEquals (outCounter.getLineNumber(), 10000);
 
   }
 }
