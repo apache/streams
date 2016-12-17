@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 
+import static org.testng.Assert.assertEquals;
+
 public class TwitterTimelineProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProviderIT.class);
@@ -62,7 +64,7 @@ public class TwitterTimelineProviderIT {
 
     while (outCounter.readLine() != null) {}
 
-    assert (outCounter.getLineNumber() == 1000);
+    assertEquals (outCounter.getLineNumber(), 1000);
 
   }
 }

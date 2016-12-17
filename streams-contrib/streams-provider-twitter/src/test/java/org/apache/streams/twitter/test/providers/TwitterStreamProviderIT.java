@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.testng.Assert.assertTrue;
 
 public class TwitterStreamProviderIT {
@@ -64,7 +66,7 @@ public class TwitterStreamProviderIT {
 
     while (outCounter.readLine() != null) {}
 
-    assertTrue (outCounter.getLineNumber() > 25);
+    assertThat (outCounter.getLineNumber(), greaterThan(25));
 
   }
 }
