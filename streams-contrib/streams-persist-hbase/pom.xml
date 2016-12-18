@@ -20,7 +20,7 @@
     <parent>
         <artifactId>streams-contrib</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.5-incubating-SNAPSHOT</version>
+        <version>0.4.1-incubating</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -181,7 +181,7 @@
                                             <port>${hbase.tcp.host}:${hbase.tcp.port}:60000</port>
                                             <port>${hbase.http.host}:${hbase.http.port}:60010</port>
                                         </ports>
-                                        <portPropertyFile>hbase.properties</portPropertyFile> -->
+                                        <portPropertyFile>hbase.properties</portPropertyFile> --&gt;
                                         <wait>
                                             <log>hbase startup</log>
                                             <http>
