@@ -32,8 +32,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Queues;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.sysomos.SysomosConfiguration;
 import com.typesafe.config.Config;
@@ -49,10 +47,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.math.BigInteger;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -76,7 +75,7 @@ public class SysomosProvider implements StreamsProvider {
 
   public static final String STREAMS_ID = "SysomosProvider";
 
-  public static enum Mode { CONTINUOUS, BACKFILL_AND_TERMINATE }
+  public enum Mode { CONTINUOUS, BACKFILL_AND_TERMINATE }
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SysomosProvider.class);
 
@@ -91,7 +90,7 @@ public class SysomosProvider implements StreamsProvider {
   protected volatile Queue<StreamsDatum> providerQueue;
 
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
-  private final Set<String> completedHeartbeats = Sets.newHashSet();
+  private final Set<String> completedHeartbeats = new HashSet<>();
   private final long maxQueued;
   private final long minLatency;
   private final long scheduledLatency;
@@ -332,7 +331,7 @@ public class SysomosProvider implements StreamsProvider {
   }
 
   private Queue<StreamsDatum> constructQueue() {
-    return Queues.newConcurrentLinkedQueue();
+    return new ConcurrentLinkedQueue<>();
   }
 
   public int getCount() {
@@ -379,9 +378,7 @@ public class SysomosProvider implements StreamsProvider {
     provider.startStream();
     do {
       Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-      Iterator<StreamsDatum> iterator = provider.readCurrent().iterator();
-      while (iterator.hasNext()) {
-        StreamsDatum datum = iterator.next();
+      for (StreamsDatum datum : provider.readCurrent()) {
         String json;
         try {
           json = mapper.writeValueAsString(datum.getDocument());

@@ -30,8 +30,6 @@ import org.apache.streams.util.ComponentUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
 import facebook4j.Facebook;
@@ -51,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Queue;
@@ -63,6 +62,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 /**
  * FacebookFriendUpdatesProvider provides updates from friend feed.
@@ -237,7 +237,7 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
   @Override
   public void prepare(Object configurationObject) {
 
-    executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
+    executor = newFixedThreadPoolWithQueueSize(5, 20);
 
     Objects.requireNonNull(providerQueue);
     Objects.requireNonNull(this.klass);
@@ -289,7 +289,7 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
     FacebookUserstreamProvider provider;
     Facebook client;
 
-    private Set<Post> priorPollResult = Sets.newHashSet();
+    private Set<Post> priorPollResult = new HashSet<>();
 
     public FacebookFeedPollingTask(FacebookUserstreamProvider facebookUserstreamProvider) {
       provider = facebookUserstreamProvider;
@@ -301,9 +301,9 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
       while (provider.isRunning()) {
         try {
           ResponseList<Post> postResponseList = client.getHome();
-          Set<Post> update = Sets.newHashSet(postResponseList);
-          Set<Post> repeats = Sets.intersection(priorPollResult, Sets.newHashSet(update));
-          Set<Post> entrySet = Sets.difference(update, repeats);
+          Set<Post> update = new HashSet<>(postResponseList);
+          Set<Post> repeats = priorPollResult.stream().filter(update::contains).collect(Collectors.toSet());
+          Set<Post> entrySet = update.stream().filter((x) -> !repeats.contains(x)).collect(Collectors.toSet());
           for (Post item : entrySet) {
             String json = DataObjectFactory.getRawJSON(item);
             org.apache.streams.facebook.Post post = mapper.readValue(json, org.apache.streams.facebook.Post.class);

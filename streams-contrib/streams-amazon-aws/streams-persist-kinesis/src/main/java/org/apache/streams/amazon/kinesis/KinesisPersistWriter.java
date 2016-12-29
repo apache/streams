@@ -35,8 +35,8 @@ import com.amazonaws.services.kinesis.AmazonKinesisClient;
 import com.amazonaws.services.kinesis.model.PutRecordRequest;
 import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
 import com.typesafe.config.Config;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,7 +124,7 @@ public class KinesisPersistWriter implements StreamsPersistWriter {
       clientConfig.setProtocol(Protocol.valueOf(config.getProtocol().toString()));
 
       this.client = new AmazonKinesisClient(credentials, clientConfig);
-      if (!Strings.isNullOrEmpty(config.getRegion())) {
+      if (StringUtils.isNotEmpty(config.getRegion())) {
         this.client.setRegion(Region.getRegion(Regions.fromName(config.getRegion())));
       }
     }

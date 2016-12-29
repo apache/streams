@@ -29,7 +29,7 @@ import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
 import org.apache.hadoop.fs.FileSystem;
@@ -101,7 +101,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
     StringBuilder uriBuilder = new StringBuilder();
     uriBuilder.append(hdfsConfiguration.getScheme());
     uriBuilder.append("://");
-    if ( !Strings.isNullOrEmpty(hdfsConfiguration.getHost())) {
+    if (StringUtils.isNotEmpty(hdfsConfiguration.getHost())) {
       uriBuilder.append(hdfsConfiguration.getHost() + ":" + hdfsConfiguration.getPort());
     } else {
       uriBuilder.append("/");

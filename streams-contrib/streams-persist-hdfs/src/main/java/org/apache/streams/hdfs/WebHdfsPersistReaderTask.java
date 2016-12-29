@@ -21,8 +21,8 @@ package org.apache.streams.hdfs;
 import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.StreamsDatum;
 
-import com.google.common.base.Strings;
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.fs.FileStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +82,7 @@ public class WebHdfsPersistReaderTask implements Runnable {
         do {
           try {
             line = bufferedReader.readLine();
-            if ( !Strings.isNullOrEmpty(line) ) {
+            if (StringUtils.isNotEmpty(line)) {
               reader.countersCurrent.incrementAttempt();
               StreamsDatum entry = reader.lineReaderUtil.processLine(line);
               if ( entry != null ) {
@@ -98,7 +98,7 @@ public class WebHdfsPersistReaderTask implements Runnable {
             reader.countersCurrent.incrementStatus(DatumStatus.FAIL);
           }
         }
-        while ( !Strings.isNullOrEmpty(line) );
+        while (StringUtils.isNotEmpty(line));
         LOGGER.info("Finished Processing " + fileStatus.getPath().getName());
         try {
           bufferedReader.close();

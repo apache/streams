@@ -26,10 +26,11 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.verbs.VerbDefinition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Tests for {$link: org.apache.streams.verbs.VerbDefinitionResolver}
@@ -44,7 +45,7 @@ public class VerbDefinitionFilterTest {
     @Test
     public void testVerbMatchFilter() throws Exception {
         VerbDefinition definition = mapper.readValue(VerbDefinitionFilterTest.class.getResourceAsStream("/post.json"), VerbDefinition.class);
-        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Sets.newHashSet(definition));
+        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Stream.of(definition).collect(Collectors.toSet()));
         filter.prepare(null);
         StreamsDatum datum1 = new StreamsDatum(mapper.readValue("{\"id\":\"1\",\"verb\":\"notpost\"}\n", Activity.class));
         List<StreamsDatum> result1 = filter.process(datum1);
@@ -60,7 +61,7 @@ public class VerbDefinitionFilterTest {
     @Test
     public void testProviderFilter() throws Exception {
         VerbDefinition definition = mapper.readValue(VerbDefinitionFilterTest.class.getResourceAsStream("/provider.json"), VerbDefinition.class);
-        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Sets.newHashSet(definition));
+        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Stream.of(definition).collect(Collectors.toSet()));
         filter.prepare(null);
         StreamsDatum datum1 = new StreamsDatum(mapper.readValue("{\"id\":\"1\",\"verb\":\"post\",\"provider\":{\"id\":\"providerId\",\"objectType\":\"product\"}}\n", Activity.class));
         List<StreamsDatum> result1 = filter.process(datum1);
@@ -76,7 +77,7 @@ public class VerbDefinitionFilterTest {
     @Test
     public void testActorFilter() throws Exception {
         VerbDefinition definition = mapper.readValue(VerbDefinitionFilterTest.class.getResourceAsStream("/actor.json"), VerbDefinition.class);
-        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Sets.newHashSet(definition));
+        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Stream.of(definition).collect(Collectors.toSet()));
         filter.prepare(null);
         StreamsDatum datum1 = new StreamsDatum(mapper.readValue("{\"id\":\"1\",\"verb\":\"post\",\"actor\":{\"id\":\"actorId\",\"objectType\":\"page\"}}\n", Activity.class));
         List<StreamsDatum> result1 = filter.process(datum1);
@@ -93,7 +94,7 @@ public class VerbDefinitionFilterTest {
     @Test
     public void testObjectFilter() throws Exception {
         VerbDefinition definition = mapper.readValue(VerbDefinitionFilterTest.class.getResourceAsStream("/object.json"), VerbDefinition.class);
-        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Sets.newHashSet(definition));
+        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Stream.of(definition).collect(Collectors.toSet()));
         filter.prepare(null);
         StreamsDatum datum1 = new StreamsDatum(mapper.readValue("{\"id\":\"1\",\"verb\":\"post\",\"object\":{\"id\":\"objectId\"}}\n", Activity.class));
         List<StreamsDatum> result1 = filter.process(datum1);
@@ -109,7 +110,7 @@ public class VerbDefinitionFilterTest {
     @Test
     public void testMultiFilter() throws Exception {
         VerbDefinition definition = mapper.readValue(VerbDefinitionFilterTest.class.getResourceAsStream("/follow.json"), VerbDefinition.class);
-        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Sets.newHashSet(definition));
+        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Stream.of(definition).collect(Collectors.toSet()));
         filter.prepare(null);
         StreamsDatum datum1 = new StreamsDatum(mapper.readValue("{\"id\":\"1\",\"verb\":\"follow\",\"actor\":{\"id\":\"actorId\",\"objectType\":\"page\"}}}\n", Activity.class));
         List<StreamsDatum> result1 = filter.process(datum1);
@@ -129,7 +130,7 @@ public class VerbDefinitionFilterTest {
     @Test
     public void testTargetRequired() throws Exception {
         VerbDefinition definition = mapper.readValue(VerbDefinitionFilterTest.class.getResourceAsStream("/targetrequired.json"), VerbDefinition.class);
-        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Sets.newHashSet(definition));
+        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Stream.of(definition).collect(Collectors.toSet()));
         filter.prepare(null);
         StreamsDatum datum1 = new StreamsDatum(mapper.readValue("{\"id\":\"id\",\"verb\":\"post\",\"object\":{\"id\":\"objectId\",\"objectType\":\"task\"}}\n", Activity.class));
         List<StreamsDatum> result1 = filter.process(datum1);
@@ -145,7 +146,7 @@ public class VerbDefinitionFilterTest {
     @Test
     public void testAllWildcard() throws Exception {
         VerbDefinition definition = mapper.readValue(VerbDefinitionFilterTest.class.getResourceAsStream("/post.json"), VerbDefinition.class);
-        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Sets.newHashSet(definition));
+        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Stream.of(definition).collect(Collectors.toSet()));
         filter.prepare(null);
         StreamsDatum datum1 = new StreamsDatum(mapper.readValue("{\"id\":\"1\",\"verb\":\"notpost\"}\n", Activity.class));
         List<StreamsDatum> result1 = filter.process(datum1);
@@ -180,7 +181,7 @@ public class VerbDefinitionFilterTest {
         VerbDefinition object = mapper.readValue(VerbDefinitionFilterTest.class.getResourceAsStream("/object.json"), VerbDefinition.class);
         VerbDefinition target = mapper.readValue(VerbDefinitionFilterTest.class.getResourceAsStream("/targetrequired.json"), VerbDefinition.class);
         VerbDefinition follow = mapper.readValue(VerbDefinitionFilterTest.class.getResourceAsStream("/follow.json"), VerbDefinition.class);
-        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Sets.newHashSet(provider,actor,object,target,follow));
+        VerbDefinitionKeepFilter filter = new VerbDefinitionKeepFilter(Stream.of(provider,actor,object,target,follow).collect(Collectors.toSet()));
         filter.prepare(null);
         StreamsDatum datum1 = new StreamsDatum(mapper.readValue("{\"id\":\"1\",\"verb\":\"notpost\"}\n", Activity.class));
         List<StreamsDatum> result1 = filter.process(datum1);
@@ -214,7 +215,7 @@ public class VerbDefinitionFilterTest {
     @Test
     public void testVerbDropFilter() throws Exception {
         VerbDefinition definition = mapper.readValue(VerbDefinitionFilterTest.class.getResourceAsStream("/post.json"), VerbDefinition.class);
-        VerbDefinitionDropFilter filter = new VerbDefinitionDropFilter(Sets.newHashSet(definition));
+        VerbDefinitionDropFilter filter = new VerbDefinitionDropFilter(Stream.of(definition).collect(Collectors.toSet()));
         filter.prepare(null);
         StreamsDatum datum1 = new StreamsDatum(mapper.readValue("{\"id\":\"1\",\"verb\":\"notpost\"}\n", Activity.class));
         List<StreamsDatum> result1 = filter.process(datum1);
@@ -230,7 +231,7 @@ public class VerbDefinitionFilterTest {
     @Test
     public void testDropAllWildcard() throws Exception {
         VerbDefinition definition = mapper.readValue(VerbDefinitionFilterTest.class.getResourceAsStream("/post.json"), VerbDefinition.class);
-        VerbDefinitionDropFilter filter = new VerbDefinitionDropFilter(Sets.newHashSet(definition));
+        VerbDefinitionDropFilter filter = new VerbDefinitionDropFilter(Stream.of(definition).collect(Collectors.toSet()));
         filter.prepare(null);
         StreamsDatum datum1 = new StreamsDatum(mapper.readValue("{\"id\":\"1\",\"verb\":\"notpost\"}\n", Activity.class));
         List<StreamsDatum> result1 = filter.process(datum1);

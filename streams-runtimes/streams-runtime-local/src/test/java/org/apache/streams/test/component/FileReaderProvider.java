@@ -22,12 +22,12 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 
-import com.google.common.collect.Queues;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * FOR TESTING PURPOSES ONLY.
@@ -91,7 +91,7 @@ public class FileReaderProvider implements StreamsProvider {
   }
 
   private Queue<StreamsDatum> constructQueue(Scanner scanner) {
-    Queue<StreamsDatum> data = Queues.newLinkedBlockingQueue();
+    Queue<StreamsDatum> data = new LinkedBlockingQueue<>();
     while(scanner.hasNextLine()) {
       data.add(converter.convert(scanner.nextLine()));
     }
