@@ -2,7 +2,6 @@ package org.apache.streams.neo4j.bolt;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
-import org.apache.streams.neo4j.CypherQueryGraphHelper;
 import org.apache.streams.neo4j.Neo4jConfiguration;
 import org.apache.streams.neo4j.Neo4jPersistUtil;
 
@@ -23,12 +22,18 @@ import java.util.Map;
  */
 public class Neo4jBoltPersistWriter implements StreamsPersistWriter {
 
+  private Neo4jConfiguration config;
+
   Neo4jBoltClient client;
-  private static CypherQueryGraphHelper helper;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Neo4jBoltPersistWriter.class);
 
   private static ObjectMapper mapper;
+
+  public Neo4jBoltPersistWriter(Neo4jConfiguration config) {
+    this.config = config;
+
+  }
 
   @Override
   public String getId() {
@@ -37,8 +42,7 @@ public class Neo4jBoltPersistWriter implements StreamsPersistWriter {
 
   @Override
   public void prepare(Object configurationObject) {
-    client = Neo4jBoltClient.getInstance((Neo4jConfiguration)configurationObject);
-    helper = new CypherQueryGraphHelper();
+    client = Neo4jBoltClient.getInstance(config);
   }
 
   @Override

@@ -89,8 +89,7 @@ public class Neo4jBoltPersistIT {
   @Test
   public void testNeo4jBoltPersist() throws Exception {
 
-    Neo4jBoltPersistWriter testPersistWriter = new Neo4jBoltPersistWriter();
-    testPersistWriter.prepare(testConfiguration);
+    Neo4jBoltPersistWriter testPersistWriter = new Neo4jBoltPersistWriter(testConfiguration);
 
     InputStream testActivityFolderStream = Neo4jBoltPersistIT.class.getClassLoader()
         .getResourceAsStream("activities");
