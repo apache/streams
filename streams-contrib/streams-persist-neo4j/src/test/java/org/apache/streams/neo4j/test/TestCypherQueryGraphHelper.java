@@ -17,9 +17,9 @@
  * under the License.
  */
 
-package org.apache.streams.graph.test;
+package org.apache.streams.neo4j.test;
 
-import org.apache.streams.graph.neo4j.CypherQueryGraphHelper;
+import org.apache.streams.neo4j.CypherQueryGraphHelper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 
@@ -86,7 +86,7 @@ public class TestCypherQueryGraphHelper {
   }
 
   @Test
-  public void createEdgeRequestTest() throws Exception {
+  public void createActorObjectEdgeRequestTest() throws Exception {
 
     ActivityObject actor = new ActivityObject();
     actor.setId("actor");
@@ -106,7 +106,41 @@ public class TestCypherQueryGraphHelper {
     activity.setActor(actor);
     activity.setObject(object);
 
-    Pair<String, Map<String, Object>> queryAndParams = helper.createEdgeRequest(activity);
+    Pair<String, Map<String, Object>> queryAndParams = helper.createActorObjectEdge(activity);
+
+    assert(queryAndParams != null);
+    assert(queryAndParams.getValue0() != null);
+    assert(queryAndParams.getValue1() != null);
+
+  }
+
+  @Test
+  public void createEdgeRequestTest() throws Exception {
+
+    ActivityObject actor = new ActivityObject();
+    actor.setId("actor");
+    actor.setObjectType("type");
+    actor.setContent("content");
+
+    ActivityObject object = new ActivityObject();
+    object.setId("object");
+    object.setObjectType("type");
+    object.setContent("content");
+
+    ActivityObject target = new ActivityObject();
+    object.setId("target");
+    object.setObjectType("type");
+
+    Activity activity = new Activity();
+    activity.setId("activity");
+    activity.setVerb("verb");
+    activity.setContent("content");
+
+    activity.setActor(actor);
+    activity.setObject(object);
+    activity.setObject(target);
+
+    Pair<String, Map<String, Object>> queryAndParams = helper.createActorTargetEdge(activity);
 
     assert(queryAndParams != null);
     assert(queryAndParams.getValue0() != null);

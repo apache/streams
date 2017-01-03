@@ -39,6 +39,8 @@ public interface QueryGraphHelper {
 
   public Pair<String, Map<String, Object>> mergeVertexRequest(ActivityObject activityObject);
 
-  public Pair<String, Map<String, Object>> createEdgeRequest(Activity activity);
+  public Pair<String, Map<String, Object>> createActorObjectEdge(Activity activity);
+
+  public Pair<String, Map<String, Object>> createActorTargetEdge(Activity activity);
 
 }

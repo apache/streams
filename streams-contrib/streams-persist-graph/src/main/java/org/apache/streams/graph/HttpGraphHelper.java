@@ -29,6 +29,8 @@ import java.util.Map;
  */
 public interface HttpGraphHelper {
 
-  ObjectNode createHttpRequest(Pair<String, Map<String, Object>> queryPlusParameters);
+  ObjectNode readData(Pair<String, Map<String, Object>> queryPlusParameters);
+
+  ObjectNode writeData(Pair<String, Map<String, Object>> queryPlusParameters);
 
 }

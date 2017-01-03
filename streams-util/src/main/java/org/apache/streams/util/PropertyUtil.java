@@ -16,9 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.data.util;
-
-import org.apache.streams.jackson.StreamsJacksonMapper;
+package org.apache.streams.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,9 +25,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,29 +37,29 @@ import java.util.Map;
  */
 public class PropertyUtil {
 
-  private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+  private static final ObjectMapper mapper = new ObjectMapper();
 
   public static Map<String, Object> flattenToMap(ObjectNode object) {
-    Map<String, Object> flatObject = new HashMap<>();
-    addKeys("", object, flatObject, '.');
-    return flatObject;
-  }
-
-  public static Map<String, Object> flattenToMap(ObjectNode object, char seperator) {
-    Map<String, Object> flatObject = new HashMap<>();
-    addKeys("", object, flatObject, seperator);
+    Map<String, Object> flatObject = Maps.newHashMap();
+    addKeys(new String(), object, flatObject, '.');
     return flatObject;
   }
 
   public static ObjectNode flattenToObjectNode(ObjectNode object) {
     Map<String, Object> flatObject = flattenToMap(object, '.');
-    addKeys("", object, flatObject, '.');
+    addKeys(new String(), object, flatObject, '.');
     return mapper.convertValue(flatObject, ObjectNode.class);
+  }
+
+  public static Map<String, Object> flattenToMap(ObjectNode object, char seperator) {
+    Map<String, Object> flatObject = Maps.newHashMap();
+    addKeys(new String(), object, flatObject, seperator);
+    return flatObject;
   }
 
   public static ObjectNode flattenToObjectNode(ObjectNode object, char seperator) {
     Map<String, Object> flatObject = flattenToMap(object, seperator);
-    addKeys("", object, flatObject, seperator);
+    addKeys(new String(), object, flatObject, seperator);
     return mapper.convertValue(flatObject, ObjectNode.class);
   }
 
@@ -77,14 +75,20 @@ public class PropertyUtil {
       }
     } else if (jsonNode.isArray()) {
       ArrayNode arrayNode = (ArrayNode) jsonNode;
-      map.put(currentPath, arrayNode);
+      if( arrayNode.isTextual()) {
+        List<String> list = mapper.convertValue(arrayNode, List.class);
+        map.put(currentPath, list);
+      }
+      if( arrayNode.isNumber()) {
+        List<String> list = mapper.convertValue(arrayNode, List.class);
+        map.put(currentPath, list);
+      }
     } else if (jsonNode.isValueNode()) {
       ValueNode valueNode = (ValueNode) jsonNode;
-      if ( valueNode.isTextual() ) {
+      if( valueNode.isTextual() )
         map.put(currentPath, valueNode.asText());
-      } else if ( valueNode.isNumber() ) {
+      else if ( valueNode.isNumber() )
         map.put(currentPath, valueNode);
-      }
     }
   }
 
@@ -98,22 +102,24 @@ public class PropertyUtil {
     while (iter.hasNext()) {
       Map.Entry<String, JsonNode> item = iter.next();
       String fullKey = item.getKey();
-      if ( !fullKey.contains(Character.valueOf(seperator).toString())) {
+      if( !fullKey.contains(Character.valueOf(seperator).toString())) {
         root.put(item.getKey(), item.getValue());
       } else {
         ObjectNode currentNode = root;
-        List<String> keyParts = new ArrayList<>();
+        List<String> keyParts = Lists.newArrayList();
         Iterables.addAll(keyParts, Splitter.on(seperator).split(item.getKey()));
-        for (String part : Iterables.limit(Splitter.on(seperator).split(item.getKey()), keyParts.size() - 1)) {
-          if (currentNode.has(part) && currentNode.get(part).isObject()) {
+        Iterator<String> keyPartIterator = Iterables.limit(Splitter.on(seperator).split(item.getKey()), keyParts.size()-1).iterator();
+        while( keyPartIterator.hasNext()) {
+          String part = keyPartIterator.next();
+          if( currentNode.has(part) && currentNode.get(part).isObject() ) {
             currentNode = (ObjectNode) currentNode.get(part);
           } else {
             ObjectNode newNode = mapper.createObjectNode();
             currentNode.put(part, newNode);
             currentNode = newNode;
           }
-        }
-        currentNode.put(keyParts.get(keyParts.size() - 1), item.getValue());
+        };
+        currentNode.put(keyParts.get(keyParts.size()-1), item.getValue());
 
       }
     }

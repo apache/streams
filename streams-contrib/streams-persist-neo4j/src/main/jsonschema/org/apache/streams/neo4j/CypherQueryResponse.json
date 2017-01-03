@@ -5,7 +5,7 @@
         "http://www.apache.org/licenses/LICENSE-2.0"
     ],
     "id": "#",
-    "javaType" : "org.apache.streams.graph.neo4j.CypherQueryResponse",
+    "javaType" : "org.apache.streams.neo4j.CypherQueryResponse",
     "properties": {
         "columns": {
             "type": "array",
@@ -28,11 +28,11 @@
                     "required": false,
                     "items": {
                         "type": "object",
-                        "javaType" : "org.apache.streams.graph.neo4j.ItemMetadata",
+                        "javaType" : "org.apache.streams.neo4j.ItemMetadata",
                         "properties": {
                             "data": {
                                 "type": "object",
-                                "javaType" : "org.apache.streams.graph.neo4j.ItemData"
+                                "javaType" : "org.apache.streams.neo4j.ItemData"
                             }
                         }
                     }
