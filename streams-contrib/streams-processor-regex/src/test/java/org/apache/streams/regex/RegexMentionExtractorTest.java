@@ -34,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -54,23 +56,24 @@ public class RegexMentionExtractorTest {
     @Parameterized.Parameters
     public static Collection<Object[]> params() {
         return Arrays.asList(new Object[][]{
-                {"This is the @content of a standard tweet", Sets.newHashSet(new HashMap<String, Object>() {{
-                    put("displayName", "content");
-                }})},
-                {"This is the content of a standard tweet", Sets.newHashSet(new HashMap<String, Object>())},
-                {"This is the @content of a standard @tweet",  Sets.newHashSet(new HashMap<String, Object>() {{
+                {"This is the @content of a standard tweet", Stream.of(new HashMap<String, Object>() {{
+                  put("displayName", "content");
+                }}).collect(Collectors.toSet())},
+                {"This is the content of a standard tweet", Stream.of(new HashMap<String, Object>()).collect(Collectors.toSet())},
+                {"This is the @content of a standard @tweet",  Stream.of(new HashMap<String, Object>() {{
                     put("displayName", "content");
                 }},new HashMap<String, Object>() {{
                     put("displayName", "tweet");
-                }})},
-                {"UNIX 时间1400000000 秒…… （该睡觉了，各位夜猫子）@程序员#", Sets.newHashSet(new HashMap<String, Object>() {{
+                }}).collect(Collectors.toSet())},
+                {"UNIX 时间1400000000 秒…… （该睡觉了，各位夜猫子）@程序员#", Stream.of(new HashMap<String, Object>() {{
                     put("displayName", "程序员");
-                }})},
-                {"This is the body of a @fbpost. It can have multiple lines of #content, as well as much more detailed and flowery @language.",  Sets.newHashSet(new HashMap<String, Object>() {{
+                }}).collect(Collectors.toSet())},
+                {"This is the body of a @fbpost. It can have multiple lines of #content, as well as much more detailed and flowery @language.",
+                    Stream.of(new HashMap<String, Object>() {{
                     put("displayName", "fbpost");
                 }},new HashMap<String, Object>() {{
                     put("displayName", "language");
-                }})}
+                }}).collect(Collectors.toSet())}
         });
     }
 

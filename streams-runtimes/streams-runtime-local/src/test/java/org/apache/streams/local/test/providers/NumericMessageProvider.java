@@ -22,12 +22,13 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 
-import com.google.common.collect.Queues;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Test StreamsProvider that sends out StreamsDatums numbered from 0 to numMessages.
@@ -57,7 +58,7 @@ public class NumericMessageProvider implements StreamsProvider {
   @Override
   public StreamsResultSet readCurrent() {
     int batchSize = 0;
-    Queue<StreamsDatum> batch = Queues.newLinkedBlockingQueue();
+    Queue<StreamsDatum> batch = new LinkedBlockingQueue<>();
     try {
       while (!this.data.isEmpty() && batchSize < DEFAULT_BATCH_SIZE) {
         batch.add(this.data.take());
@@ -97,7 +98,7 @@ public class NumericMessageProvider implements StreamsProvider {
   }
 
   private BlockingQueue<StreamsDatum> constructQueue() {
-    BlockingQueue<StreamsDatum> datums = Queues.newArrayBlockingQueue(numMessages);
+    BlockingQueue<StreamsDatum> datums = new ArrayBlockingQueue<>(numMessages);
     for(int i=0;i<numMessages;i++) {
       datums.add(new StreamsDatum(i));
     }

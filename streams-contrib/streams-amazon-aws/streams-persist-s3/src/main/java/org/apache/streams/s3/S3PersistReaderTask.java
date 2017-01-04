@@ -22,7 +22,7 @@ import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.util.ComponentUtils;
 
-import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public class S3PersistReaderTask implements Runnable {
       String line;
       try {
         while ((line = bufferedReader.readLine()) != null) {
-          if ( !Strings.isNullOrEmpty(line) ) {
+          if (StringUtils.isNotEmpty(line) ) {
             reader.countersCurrent.incrementAttempt();
             StreamsDatum entry = reader.lineReaderUtil.processLine(line);
             ComponentUtils.offerUntilSuccess(entry, reader.persistQueue);

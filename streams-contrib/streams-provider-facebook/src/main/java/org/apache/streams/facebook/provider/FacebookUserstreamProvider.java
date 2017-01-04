@@ -29,10 +29,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.ComponentUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Queues;
-import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
 import facebook4j.Facebook;
@@ -51,11 +47,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -63,6 +61,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 public class FacebookUserstreamProvider implements StreamsProvider, Serializable {
 
@@ -88,7 +87,7 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
     this.configuration = config;
   }
 
-  protected ListeningExecutorService executor;
+  protected ExecutorService executor;
 
   protected DateTime start;
   protected DateTime end;
@@ -187,7 +186,7 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
     StreamsResultSet current;
 
     synchronized (FacebookUserstreamProvider.class) {
-      current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(providerQueue));
+      current = new StreamsResultSet(new ConcurrentLinkedQueue<>(providerQueue));
       current.setCounter(new DatumStatusCounter());
       current.getCounter().add(countersCurrent);
       countersTotal.add(countersCurrent);
@@ -241,7 +240,7 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
   @Override
   public void prepare(Object configurationObject) {
 
-    executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
+    executor = newFixedThreadPoolWithQueueSize(5, 20);
 
     Objects.requireNonNull(providerQueue);
     Objects.requireNonNull(this.klass);
@@ -299,7 +298,7 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
     Facebook client;
     String id;
 
-    private Set<Post> priorPollResult = Sets.newHashSet();
+    private Set<Post> priorPollResult = new HashSet<>();
 
     public FacebookFeedPollingTask(FacebookUserstreamProvider facebookUserstreamProvider) {
       this.provider = facebookUserstreamProvider;
@@ -318,9 +317,9 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
         try {
           postResponseList = client.getFeed(id);
 
-          Set<Post> update = Sets.newHashSet(postResponseList);
-          Set<Post> repeats = Sets.intersection(priorPollResult, Sets.newHashSet(update));
-          Set<Post> entrySet = Sets.difference(update, repeats);
+          Set<Post> update = new HashSet<>(postResponseList);
+          Set<Post> repeats = priorPollResult.stream().filter(update::contains).collect(Collectors.toSet());
+          Set<Post> entrySet = update.stream().filter((x) -> !repeats.contains(x)).collect(Collectors.toSet());
           LOGGER.debug(this.id + " response: " + update.size() + " previous: " + repeats.size() + " new: " + entrySet.size());
           for (Post item : entrySet) {
             String json = DataObjectFactory.getRawJSON(item);

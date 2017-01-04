@@ -37,8 +37,8 @@ import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
 import com.google.common.collect.Queues;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +47,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -132,7 +133,7 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
       clientOptions.setPathStyleAccess(false);
 
       this.amazonS3Client = new AmazonS3Client(credentials, clientConfig);
-      if ( !Strings.isNullOrEmpty(s3ReaderConfiguration.getRegion())) {
+      if (StringUtils.isNotEmpty(s3ReaderConfiguration.getRegion())) {
         this.amazonS3Client.setRegion(Region.getRegion(Regions.fromName(s3ReaderConfiguration.getRegion())));
       }
       this.amazonS3Client.setS3ClientOptions(clientOptions);
@@ -206,7 +207,7 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
     StreamsResultSet current;
 
     synchronized ( S3PersistReader.class ) {
-      current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(persistQueue));
+      current = new StreamsResultSet(new ConcurrentLinkedQueue<>(persistQueue));
       current.setCounter(new DatumStatusCounter());
       current.getCounter().add(countersCurrent);
       countersTotal.add(countersCurrent);

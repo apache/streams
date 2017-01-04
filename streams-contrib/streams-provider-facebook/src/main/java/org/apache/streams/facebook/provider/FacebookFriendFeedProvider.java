@@ -29,8 +29,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.ComponentUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Queues;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
 import facebook4j.Facebook;
@@ -54,6 +52,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -166,7 +165,7 @@ public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
     StreamsResultSet current;
 
     synchronized (FacebookUserstreamProvider.class) {
-      current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(providerQueue));
+      current = new StreamsResultSet(new ConcurrentLinkedQueue<>(providerQueue));
       current.setCounter(new DatumStatusCounter());
       current.getCounter().add(countersCurrent);
       countersTotal.add(countersCurrent);
@@ -220,7 +219,7 @@ public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
   @Override
   public void prepare(Object configurationObject) {
 
-    executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, 20));
+    executor = newFixedThreadPoolWithQueueSize(5, 20);
 
     Objects.requireNonNull(providerQueue);
     Objects.requireNonNull(this.klass);

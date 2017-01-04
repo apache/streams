@@ -19,14 +19,13 @@
 
 package org.apache.streams.local.test.providers;
 
-import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 
-import com.google.common.collect.Queues;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Provides new, empty instances of result set.
@@ -45,17 +44,17 @@ public class EmptyResultSetProvider implements StreamsProvider {
 
   @Override
   public StreamsResultSet readCurrent() {
-    return new StreamsResultSet(Queues.<StreamsDatum>newLinkedBlockingQueue());
+    return new StreamsResultSet(new LinkedBlockingQueue<>());
   }
 
   @Override
   public StreamsResultSet readNew(BigInteger sequence) {
-    return new StreamsResultSet(Queues.<StreamsDatum>newLinkedBlockingQueue());
+    return new StreamsResultSet(new LinkedBlockingQueue<>());
   }
 
   @Override
   public StreamsResultSet readRange(DateTime start, DateTime end) {
-    return new StreamsResultSet(Queues.<StreamsDatum>newLinkedBlockingQueue());
+    return new StreamsResultSet(new LinkedBlockingQueue<>());
   }
 
   @Override

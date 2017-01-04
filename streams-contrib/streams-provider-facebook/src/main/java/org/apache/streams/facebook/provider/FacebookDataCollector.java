@@ -27,10 +27,10 @@ import org.apache.streams.util.oauth.tokens.tokenmanager.SimpleTokenManager;
 import org.apache.streams.util.oauth.tokens.tokenmanager.impl.BasicTokenManager;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
 import facebook4j.Facebook;
 import facebook4j.FacebookFactory;
 import facebook4j.conf.ConfigurationBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +112,7 @@ public abstract class FacebookDataCollector implements Runnable {
       LOGGER.debug("appAccessToken : {}", this.config.getOauth().getAppAccessToken());
     }
     cb.setJSONStoreEnabled(true);
-    if (!Strings.isNullOrEmpty(config.getVersion())) {
+    if (StringUtils.isNotEmpty(config.getVersion())) {
       cb.setRestBaseURL("https://graph.facebook.com/" + config.getVersion() + "/");
     }
     LOGGER.debug("appId : {}", this.config.getOauth().getAppId());

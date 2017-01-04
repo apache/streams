@@ -21,8 +21,8 @@ package org.apache.streams.sysomos.util;
 
 import org.apache.streams.sysomos.SysomosException;
 
-import com.google.common.base.Strings;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ public class SysomosUtils {
       writer.flush();
 
       String xmlResponse = writer.toString();
-      if (Strings.isNullOrEmpty(xmlResponse)) {
+      if (StringUtils.isEmpty(xmlResponse)) {
         throw new SysomosException("XML Response from Sysomos was empty : "
             + xmlResponse
             + "\n"

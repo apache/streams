@@ -23,15 +23,17 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 
-import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -52,11 +54,12 @@ public class RegexHashtagExtractorTest {
     @Parameterized.Parameters
     public static Collection<Object[]> params() {
         return Arrays.asList(new Object[][]{
-                {"This is the #content of a standard tweet", Sets.newHashSet("content")},
-                {"This is the content of a standard tweet", Sets.newHashSet()},
-                {"This is the #content of a standard #tweet", Sets.newHashSet("content", "tweet")},
-                {"UNIX 时间1400000000 秒…… （该睡觉了，各位夜猫子）#程序员#", Sets.newHashSet("程序员")},
-                {"This is the body of a #fbpost. It can have multiple lines of #content, as well as much more detailed and flowery #language.", Sets.newHashSet("content", "fbpost", "language")}
+                {"This is the #content of a standard tweet", Stream.of("content").collect(Collectors.toSet())},
+                {"This is the content of a standard tweet", new HashSet<>()},
+                {"This is the #content of a standard #tweet", Stream.of("content", "tweet").collect(Collectors.toSet())},
+                {"UNIX 时间1400000000 秒…… （该睡觉了，各位夜猫子）#程序员#", Stream.of("程序员").collect(Collectors.toSet())},
+                {"This is the body of a #fbpost. It can have multiple lines of #content, as well as much more detailed and flowery #language.",
+                    Stream.of("content", "fbpost", "language").collect(Collectors.toSet())}
         });
     }
 
@@ -68,7 +71,7 @@ public class RegexHashtagExtractorTest {
         assertThat(result.size(), is(equalTo(1)));
         Activity output = (Activity)result.get(0).getDocument();
         Set<String> extracted = (Set) ExtensionUtil.getInstance().ensureExtensions(output).get(RegexHashtagExtractor.EXTENSION_KEY);
-        Sets.SetView<String> diff = Sets.difference(extracted, hashtags);
+        Set<String> diff = extracted.stream().filter((x) -> !hashtags.contains(x)).collect(Collectors.toSet());
         assertThat(diff.size(), is(equalTo(0)));
     }
 }

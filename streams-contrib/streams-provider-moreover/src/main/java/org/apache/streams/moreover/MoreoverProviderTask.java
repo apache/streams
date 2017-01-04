@@ -37,7 +37,6 @@ public class MoreoverProviderTask implements Runnable {
 
   private String lastSequence;
   private final String apiKey;
-  private final String apiId;
   private final Queue<StreamsDatum> results;
   private final MoreoverClient moClient;
   private boolean started = false;
@@ -51,11 +50,10 @@ public class MoreoverProviderTask implements Runnable {
    */
   public MoreoverProviderTask(String apiId, String apiKey, Queue<StreamsDatum> results, String lastSequence) {
     //logger.info("Constructed new task {} for {} {} {}", UUID.randomUUID().toString(), apiId, apiKey, lastSequence);
-    this.apiId = apiId;
     this.apiKey = apiKey;
     this.results = results;
     this.lastSequence = lastSequence;
-    this.moClient = new MoreoverClient(this.apiId, this.apiKey, this.lastSequence);
+    this.moClient = new MoreoverClient(apiId, this.apiKey, this.lastSequence);
     initializeClient(moClient);
   }
 

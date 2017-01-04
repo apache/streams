@@ -29,8 +29,6 @@ import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.SerializationUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Queues;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -43,11 +41,13 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -105,7 +105,7 @@ public abstract class FacebookProvider implements StreamsProvider {
   @Override
   public StreamsResultSet readCurrent() {
     int batchSize = 0;
-    BlockingQueue<StreamsDatum> batch = Queues.newLinkedBlockingQueue();
+    BlockingQueue<StreamsDatum> batch = new LinkedBlockingQueue<>();
     while (!this.datums.isEmpty() && batchSize < MAX_BATCH_SIZE) {
       ComponentUtils.offerUntilSuccess(ComponentUtils.pollWhileNotEmpty(this.datums), batch);
       ++batchSize;
@@ -125,7 +125,7 @@ public abstract class FacebookProvider implements StreamsProvider {
 
   @Override
   public void prepare(Object configurationObject) {
-    this.datums = Queues.newLinkedBlockingQueue();
+    this.datums = new LinkedBlockingQueue<>();
     this.isComplete = new AtomicBoolean(false);
     this.executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(1));
   }
@@ -141,7 +141,7 @@ public abstract class FacebookProvider implements StreamsProvider {
    * @param idsToAfterDate idsToAfterDate
    */
   public void overrideIds(Map<String, DateTime> idsToAfterDate) {
-    Set<IdConfig> ids = Sets.newHashSet();
+    Set<IdConfig> ids = new HashSet<>();
     for (String id : idsToAfterDate.keySet()) {
       IdConfig idConfig = new IdConfig();
       idConfig.setId(id);

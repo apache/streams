@@ -22,15 +22,17 @@ package org.apache.streams.regex;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.pojo.json.Activity;
 
-import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -51,12 +53,13 @@ public class RegexUrlExtractorTest {
     @Parameterized.Parameters
     public static Collection<Object[]> params() {
         return Arrays.asList(new Object[][]{
-                {"This is the http://t.co/foo of a standard tweet", Sets.newHashSet("http://t.co/foo")},
-                {"This is the https://t.co/foo of a standard tweet", Sets.newHashSet("https://t.co/foo")},
-                {"This is the https://t.co/foo of a standard tweet https://t.co/foo", Sets.newHashSet("https://t.co/foo")},
-                {"This is the http://amd.com/test of a standard tweet", Sets.newHashSet("http://amd.com/test")},
-                {"This is the content of a standard tweet", Sets.newHashSet()},
-                {"This is the http://www.google.com/articles/awesome?with=query&params=true of a standard @tweet",  Sets.newHashSet("http://www.google.com/articles/awesome?with=query&params=true")}
+                {"This is the http://t.co/foo of a standard tweet", Stream.of("http://t.co/foo").collect(Collectors.toSet())},
+                {"This is the https://t.co/foo of a standard tweet", Stream.of("https://t.co/foo").collect(Collectors.toSet())},
+                {"This is the https://t.co/foo of a standard tweet https://t.co/foo", Stream.of("https://t.co/foo").collect(Collectors.toSet())},
+                {"This is the http://amd.com/test of a standard tweet", Stream.of("http://amd.com/test").collect(Collectors.toSet())},
+                {"This is the content of a standard tweet", new HashSet<>()},
+                {"This is the http://www.google.com/articles/awesome?with=query&params=true of a standard @tweet",
+                    Stream.of("http://www.google.com/articles/awesome?with=query&params=true").collect(Collectors.toSet())}
         });
     }
 
@@ -67,8 +70,8 @@ public class RegexUrlExtractorTest {
         List<StreamsDatum> result = new RegexUrlExtractor().process(datum);
         assertThat(result.size(), is(equalTo(1)));
         Activity output = (Activity)result.get(0).getDocument();
-        Set<String> extracted = Sets.newHashSet(output.getLinks());
-        Sets.SetView<String> diff = Sets.difference(links, extracted);
+        Set<String> extracted = new HashSet<>(output.getLinks());
+        Set<String> diff = links.stream().filter((x) -> !extracted.contains(x)).collect(Collectors.toSet());
         assertThat(diff.size(), is(equalTo(0)));
     }
 }

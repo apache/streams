@@ -30,7 +30,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -106,7 +105,7 @@ public class MoreoverProvider implements StreamsProvider {
     Collection<StreamsDatum> currentIterator = new ArrayList<>();
     Iterators.addAll(currentIterator, providerQueue.iterator());
 
-    StreamsResultSet current = new StreamsResultSet(Queues.newConcurrentLinkedQueue(currentIterator));
+    StreamsResultSet current = new StreamsResultSet(new ConcurrentLinkedQueue<>(currentIterator));
 
     providerQueue.clear();
 

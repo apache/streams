@@ -25,7 +25,6 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.junit.Before;
@@ -35,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -74,7 +74,7 @@ public class TestMetadataFromDocumentProcessor {
         .getResourceAsStream("activities");
     List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
 
-    Set<ActivityObject> objects = Sets.newHashSet();
+    Set<ActivityObject> objects = new HashSet<>();
 
     for( String file : files) {
       LOGGER.info("File: " + file );
