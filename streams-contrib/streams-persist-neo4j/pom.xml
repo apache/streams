@@ -24,8 +24,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>streams-persist-graph</artifactId>
-    <name>streams-persist-graph</name>
+    <artifactId>streams-persist-neo4j</artifactId>
+    <name>streams-persist-neo4j</name>
 
     <dependencies>
         <dependency>
@@ -64,6 +64,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-persist-graph</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>stringtemplate</artifactId>
             <version>4.0.2</version>
@@ -74,7 +79,19 @@
             <version>1.2</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
+            <version>1.0.6</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schema-activitystreams</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -147,37 +164,100 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <configuration>
+                    <includes>**/*.json</includes>
+                    <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+                    <includeGroupIds>org.apache.streams</includeGroupIds>
+                    <includeTypes>test-jar</includeTypes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>test-resource-dependencies</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-            <!-- revisit using this if streams bumps to jdk8 -->
-            <!--<plugin>-->
-                <!--<groupId>com.github.harti2006</groupId>-->
-                <!--<artifactId>neo4j-server-maven-plugin</artifactId>-->
-                <!--<version>0.1</version>-->
-                <!--<configuration>-->
-                    <!--<port>7474</port>-->
-                    <!--<version>2.2.1</version>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>start-neo4j-server</id>-->
-                        <!--<phase>-->
-                            <!--pre-integration-test-->
-                        <!--</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>start</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                    <!--<execution>-->
-                        <!--<id>stop-neo4j-server</id>-->
-                        <!--<phase>-->
-                            <!--post-integration-test-->
-                        <!--</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>stop</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dockerITs</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>skipITs</name>
+                    <value>false</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <configuration combine.self="override">
+                            <watchInterval>500</watchInterval>
+                            <logDate>default</logDate>
+                            <verbose>true</verbose>
+                            <autoPull>on</autoPull>
+                            <images>
+                                <image>
+                                    <name>neo4j:3.0.6</name>
+                                    <alias>neo4j</alias>
+                                    <run>
+                                        <env>
+                                            <NEO4J_AUTH>none</NEO4J_AUTH>
+                                        </env>
+                                        <namingStrategy>none</namingStrategy>
+                                        <ports>
+                                            <port>${neo4j.http.host}:${neo4j.http.port}:7474</port>
+                                            <port>${neo4j.tcp.host}:${neo4j.tcp.port}:7687</port>
+                                        </ports>
+                                        <portPropertyFile>neo4j.properties</portPropertyFile>
+                                        <wait>
+                                            <log>neo4j startup</log>
+                                            <http>
+                                                <url>http://${neo4j.http.host}:${neo4j.http.port}</url>
+                                                <method>GET</method>
+                                                <status>200</status>
+                                            </http>
+                                            <time>20000</time>
+                                            <kill>1000</kill>
+                                            <shutdown>500</shutdown>
+                                            <!--<tcp>-->
+                                            <!--<host>${es.transport.host}</host>-->
+                                            <!--<ports>-->
+                                            <!--<port>${es.transport.port}</port>-->
+                                            <!--</ports>-->
+                                            <!--</tcp>-->
+                                        </wait>
+                                        <log>
+                                            <enabled>true</enabled>
+                                            <date>default</date>
+                                            <color>cyan</color>
+                                        </log>
+                                    </run>
+                                    <watch>
+                                        <mode>none</mode>
+                                    </watch>
+                                </image>
+
+                            </images>
+                        </configuration>
+
+                    </plugin>
+
+                </plugins>
+            </build>
+
+        </profile>
+    </profiles>
+
 </project>
