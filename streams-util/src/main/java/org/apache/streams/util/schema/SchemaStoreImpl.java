@@ -392,7 +392,10 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
         }
       }
     }
-    return 0;
+    // there still has to be some order even when there are no connections.
+    // we'll arbitrarily pick alphabetic by ID
+    int lexigraphic = right.toString().compareTo(left.toString());
+    return ( lexigraphic / Math.abs(lexigraphic) );
   }
 
 }
