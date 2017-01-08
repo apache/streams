@@ -56,6 +56,7 @@
     <body>
         <breadcrumbs>
             <item name="Incubator" href="http://incubator.apache.org/"/>
+            <item name="Streams" href="http://streams.incubator.apache.org/site/latest/streams-project"/>
         </breadcrumbs>
         <head>
             <![CDATA[
