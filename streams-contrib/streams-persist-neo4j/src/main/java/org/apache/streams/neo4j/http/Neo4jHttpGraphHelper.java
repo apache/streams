@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.graph.neo4j;
+package org.apache.streams.neo4j.http;
 
 import org.apache.streams.graph.HttpGraphHelper;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -40,36 +40,65 @@ public class Neo4jHttpGraphHelper implements HttpGraphHelper {
   private static final Logger LOGGER = LoggerFactory.getLogger(Neo4jHttpGraphHelper.class);
 
   private static final String statementKey = "statement";
+  private static final String queryKey = "query";
   private static final String paramsKey = "parameters";
   private static final String propsKey = "props";
 
   /**
-   * createHttpRequest neo4j rest json payload.
+   * readDataStatement neo4j rest json read data payload.
    *
    * @param queryPlusParameters (query, parameter map)
    * @return ObjectNode
    */
-  public ObjectNode createHttpRequest(Pair<String, Map<String, Object>> queryPlusParameters) {
+  public ObjectNode readData(Pair<String, Map<String, Object>> queryPlusParameters) {
 
-    LOGGER.debug("createHttpRequest: ", queryPlusParameters);
+    LOGGER.debug("readData: ", queryPlusParameters);
 
     Objects.requireNonNull(queryPlusParameters);
     Objects.requireNonNull(queryPlusParameters.getValue0());
-    Objects.requireNonNull(queryPlusParameters.getValue1());
+
+    ObjectNode request = MAPPER.createObjectNode();
+
+    request.put(queryKey, queryPlusParameters.getValue0());
+
+    if( queryPlusParameters.getValue1() != null && queryPlusParameters.getValue1().size() > 0) {
+      ObjectNode params = MAPPER.convertValue(queryPlusParameters.getValue1(), ObjectNode.class);
+      request.put(paramsKey, params);
+    }
+
+    LOGGER.debug("readData: ", request);
+
+    return request;
+  }
+
+  /**
+   * writeDataStatement neo4j rest json write data payload.
+   *
+   * @param queryPlusParameters (query, parameter map)
+   * @return ObjectNode
+   */
+  public ObjectNode writeData(Pair<String, Map<String, Object>> queryPlusParameters) {
+
+    LOGGER.debug("writeData: ", queryPlusParameters);
+
+    Objects.requireNonNull(queryPlusParameters);
+    Objects.requireNonNull(queryPlusParameters.getValue0());
 
     ObjectNode request = MAPPER.createObjectNode();
 
     request.put(statementKey, queryPlusParameters.getValue0());
 
-    ObjectNode params = MAPPER.createObjectNode();
-    ObjectNode props = MAPPER.convertValue(queryPlusParameters.getValue1(), ObjectNode.class);
+    if( queryPlusParameters.getValue1() != null && queryPlusParameters.getValue1().size() > 0) {
+      ObjectNode params = MAPPER.convertValue(queryPlusParameters.getValue1(), ObjectNode.class);
+      request.put(paramsKey, params);
+    } else {
+      request.put(paramsKey, MAPPER.createObjectNode());
+    }
 
-    params.put(propsKey, props);
-    request.put(paramsKey, params);
-
-    LOGGER.debug("createHttpRequest: ", request);
+    LOGGER.debug("writeData: ", request);
 
     return request;
   }
+
 
 }
