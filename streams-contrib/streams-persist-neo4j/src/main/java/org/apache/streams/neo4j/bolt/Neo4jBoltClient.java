@@ -13,7 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class Neo4jBoltClient {
 
@@ -37,12 +40,11 @@ public class Neo4jBoltClient {
     private static Map<Neo4jConfiguration, Neo4jBoltClient> INSTANCE_MAP = new ConcurrentHashMap<Neo4jConfiguration, Neo4jBoltClient>();
 
     public static Neo4jBoltClient getInstance(Neo4jConfiguration neo4jConfiguration) {
-        if (    INSTANCE_MAP != null &&
-                INSTANCE_MAP.size() > 0 &&
-                INSTANCE_MAP.containsKey(neo4jConfiguration)
-                )
+        if ( INSTANCE_MAP != null &&
+             INSTANCE_MAP.size() > 0 &&
+             INSTANCE_MAP.containsKey(neo4jConfiguration)) {
             return INSTANCE_MAP.get(neo4jConfiguration);
-        else {
+        } else {
             Neo4jBoltClient instance = new Neo4jBoltClient(neo4jConfiguration);
             if( instance != null && instance.client != null ) {
                 INSTANCE_MAP.put(neo4jConfiguration, instance);
@@ -55,10 +57,8 @@ public class Neo4jBoltClient {
 
     public void start() throws Exception {
 
-        Preconditions.checkNotNull(config);
-        Preconditions.checkArgument(
-                config.getScheme().startsWith("tcp")
-        );
+        Objects.nonNull(config);
+        assertThat("config.getScheme().startsWith(\"tcp\")", config.getScheme().startsWith("tcp"));
 
         LOGGER.info("Neo4jConfiguration.start {}", config);
 
@@ -73,15 +73,7 @@ public class Neo4jBoltClient {
             client = GraphDatabase.driver("bolt://" + config.getHosts().get(0) + ":" + config.getPort(), authToken);
         }
 
-        Preconditions.checkNotNull(client);
-
-//        try (Session session = driver.session()) {
-//            session.run()
-//        } catch( Exception e ) {
-//            LOGGER.warn("Exception: {}", e);
-//            return Optional.absent();
-//        }
-
+        Objects.nonNull(client);
 
     }
 

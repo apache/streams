@@ -68,9 +68,9 @@ public class Neo4jHttpPersistIT {
   public void prepareTest() throws IOException {
 
     Config reference  = ConfigFactory.load();
-    File conf_file = new File("target/test-classes/Neo4jHttpPersistIT.conf");
-    assertTrue(conf_file.exists());
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
+    File conf = new File("target/test-classes/Neo4jHttpPersistIT.conf");
+    assertTrue(conf.exists());
+    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf, ConfigParseOptions.defaults().setAllowMissing(false));
     Config typesafe  = testResourceConfig.withFallback(reference).resolve();
     testConfiguration = new ComponentConfigurator<>(Neo4jConfiguration.class).detectConfiguration(typesafe, "neo4j");
 

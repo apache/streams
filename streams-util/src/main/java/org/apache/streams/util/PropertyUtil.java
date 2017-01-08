@@ -23,11 +23,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +40,7 @@ public class PropertyUtil {
   private static final ObjectMapper mapper = new ObjectMapper();
 
   public static Map<String, Object> flattenToMap(ObjectNode object) {
-    Map<String, Object> flatObject = Maps.newHashMap();
+    Map<String, Object> flatObject = new HashMap<>();
     addKeys(new String(), object, flatObject, '.');
     return flatObject;
   }
@@ -52,7 +52,7 @@ public class PropertyUtil {
   }
 
   public static Map<String, Object> flattenToMap(ObjectNode object, char seperator) {
-    Map<String, Object> flatObject = Maps.newHashMap();
+    Map<String, Object> flatObject = new HashMap<>();
     addKeys(new String(), object, flatObject, seperator);
     return flatObject;
   }
@@ -106,9 +106,9 @@ public class PropertyUtil {
         root.put(item.getKey(), item.getValue());
       } else {
         ObjectNode currentNode = root;
-        List<String> keyParts = Lists.newArrayList();
-        Iterables.addAll(keyParts, Splitter.on(seperator).split(item.getKey()));
-        Iterator<String> keyPartIterator = Iterables.limit(Splitter.on(seperator).split(item.getKey()), keyParts.size()-1).iterator();
+        List<String> keyParts = new ArrayList<>(Arrays.asList(StringUtils.split(item.getKey(), seperator)));
+        keyParts.remove(keyParts.size()-1);
+        Iterator<String> keyPartIterator = keyParts.iterator();
         while( keyPartIterator.hasNext()) {
           String part = keyPartIterator.next();
           if( currentNode.has(part) && currentNode.get(part).isObject() ) {

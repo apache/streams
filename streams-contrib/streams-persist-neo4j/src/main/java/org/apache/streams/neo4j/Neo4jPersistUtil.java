@@ -124,7 +124,7 @@ public class Neo4jPersistUtil {
 
     if (StringUtils.isNotBlank(actor.getId()) && object != null && StringUtils.isNotBlank(object.getId())) {
       Pair<String, Map<String, Object>> actorObjectEdgeStatement = helper.createActorObjectEdge(activity);
-      HashMap<String, Object> props = new HashMap<>();
+      Map<String, Object> props = new HashMap<>();
       props.put("props", actorObjectEdgeStatement.getValue1());
       actorObjectEdgeStatement = actorObjectEdgeStatement.setAt1(props);
       statements.add(actorObjectEdgeStatement);
@@ -132,7 +132,7 @@ public class Neo4jPersistUtil {
 
     if (StringUtils.isNotBlank(actor.getId()) && target != null && StringUtils.isNotBlank(target.getId())) {
       Pair<String, Map<String, Object>> actorTargetEdgeStatement = helper.createActorTargetEdge(activity);
-      HashMap<String, Object> props = new HashMap<>();
+      Map<String, Object> props = new HashMap<>();
       props.put("props", actorTargetEdgeStatement.getValue1());
       actorTargetEdgeStatement = actorTargetEdgeStatement.setAt1(props);
       statements.add(actorTargetEdgeStatement);
@@ -143,7 +143,7 @@ public class Neo4jPersistUtil {
 
   public static Pair<String, Map<String, Object>> vertexStatement(ActivityObject activityObject) {
     Pair<String, Map<String, Object>> mergeVertexRequest = helper.mergeVertexRequest(activityObject);
-    HashMap<String, Object> props = new HashMap<>();
+    Map<String, Object> props = new HashMap<>();
     props.put("props", mergeVertexRequest.getValue1());
     mergeVertexRequest = mergeVertexRequest.setAt1(props);
     return mergeVertexRequest;
