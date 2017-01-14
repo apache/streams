@@ -24,7 +24,6 @@ cache:
     - $HOME/.m2
 
 before_install:
-  - export MAVEN_SKIP_RC=true
   - export MAVEN_OPTS="-Xmx2g $MAVEN_OPTS"
 
 jdk:
