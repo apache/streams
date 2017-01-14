@@ -647,6 +647,7 @@
                             <exclude>**/*.svg</exclude>
                             <exclude>dependency-reduced-pom.xml</exclude>
                             <exclude>rat.txt</exclude>
+                            <exclude>apache-maven-3.3.9/**/*</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
