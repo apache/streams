@@ -15,10 +15,22 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-sudo: false
 language: java
+
+sudo: false
+
+cache:
+ directories:
+    - $HOME/.m2
+
+before_install:
+  - export MAVEN_SKIP_RC=true
+  - export MAVEN_OPTS="-Xmx2g $MAVEN_OPTS"
+
 jdk:
-  - oraclejdk7
+  - oraclejdk8
+
 install: mvn -Dmaven.test.skip.exec=true clean -q
+
 # tests take too long to run and produce too much output to enable at this time
 script: mvn -Dmaven.test.skip.exec=true install -q -Pcontrib-check
