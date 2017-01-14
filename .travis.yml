@@ -30,7 +30,5 @@ before_install:
 jdk:
   - oraclejdk8
 
-install: mvn -Dmaven.test.skip.exec=true clean -q
-
 # tests take too long to run and produce too much output to enable at this time
-script: mvn -Dmaven.test.skip.exec=true install -q -Pcontrib-check
+script: mvn clean install -q -Pcontrib-check -Dmaven.test.skip.exec=true
