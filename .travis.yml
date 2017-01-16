@@ -15,10 +15,23 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-sudo: false
 language: java
+
+sudo: false
+
+cache:
+ directories:
+    - $HOME/.m2
+
+before_install:
+  - wget https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip
+  - unzip -qq apache-maven-3.3.9-bin.zip
+  - export PATH=$PWD/apache-maven-3.3.9/bin:$PATH
+  - export MAVEN_SKIP_RC=true
+  - export MAVEN_OPTS="-Xmx2g $MAVEN_OPTS"
+
 jdk:
-  - oraclejdk7
-install: mvn -Dmaven.test.skip.exec=true clean -q
+  - oraclejdk8
+
 # tests take too long to run and produce too much output to enable at this time
-script: mvn -Dmaven.test.skip.exec=true install -q -Pcontrib-check
+script: mvn clean install -Pcontrib-check -Drat.consoleOutput=true -Dmaven.test.skip.exec=true
