@@ -21,10 +21,8 @@ package org.apache.streams.riak.http;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.riak.binary.RiakBinaryPersistWriter;
 import org.apache.streams.riak.pojo.RiakConfiguration;
 
-import com.basho.riak.client.core.query.Location;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;

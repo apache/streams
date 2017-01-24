@@ -29,15 +29,11 @@ import com.basho.riak.client.api.commands.kv.MultiFetch;
 import com.basho.riak.client.core.RiakFuture;
 import com.basho.riak.client.core.query.Location;
 import com.basho.riak.client.core.query.Namespace;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import org.apache.commons.lang.NotImplementedException;
 import org.joda.time.DateTime;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;

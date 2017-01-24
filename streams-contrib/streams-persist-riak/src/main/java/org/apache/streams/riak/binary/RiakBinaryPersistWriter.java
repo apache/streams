@@ -23,7 +23,6 @@ import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.riak.pojo.RiakConfiguration;
 
-import com.basho.riak.client.api.RiakClient;
 import com.basho.riak.client.api.commands.kv.StoreValue;
 import com.basho.riak.client.core.query.Location;
 import com.basho.riak.client.core.query.Namespace;
