@@ -42,7 +42,7 @@ import java.net.URISyntaxException;
 import java.util.Objects;
 
 /**
- * Created by sblackmon on 1/16/17.
+ * RiakHttpPersistWriter writes documents to riak via http.
  */
 public class RiakHttpPersistWriter implements StreamsPersistWriter {
 

@@ -44,7 +44,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Created by sblackmon on 1/16/17.
+ * RiakBinaryPersistReader reads documents from riak via binary protocol.
  */
 public class RiakBinaryPersistReader implements StreamsPersistReader {
 

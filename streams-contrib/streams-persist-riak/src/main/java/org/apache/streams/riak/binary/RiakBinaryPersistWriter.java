@@ -38,7 +38,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by sblackmon on 1/16/17.
+ * RiakBinaryPersistWriter writes documents to riak via binary protocol.
  */
 public class RiakBinaryPersistWriter implements StreamsPersistWriter {
 

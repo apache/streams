@@ -47,7 +47,7 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Created by sblackmon on 1/16/17.
+ * RiakHttpPersistReader reads documents from riak via http.
  */
 public class RiakHttpPersistReader implements StreamsPersistReader {
 
