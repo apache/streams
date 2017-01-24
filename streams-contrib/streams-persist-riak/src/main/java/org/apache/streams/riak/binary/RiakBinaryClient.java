@@ -1,0 +1,88 @@
+package org.apache.streams.riak.binary;
+
+import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsPersistReader;
+import org.apache.streams.core.StreamsPersistWriter;
+import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.riak.pojo.RiakConfiguration;
+
+import com.basho.riak.client.api.commands.kv.StoreValue;
+import com.basho.riak.client.core.query.Namespace;
+import com.basho.riak.client.core.query.RiakObject;
+import com.basho.riak.client.core.util.BinaryValue;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.math.BigInteger;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+
+public class RiakBinaryClient {
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(RiakBinaryClient.class);
+
+    private com.basho.riak.client.api.RiakClient client;
+
+    public RiakConfiguration config;
+
+    private RiakBinaryClient(RiakConfiguration config) {
+        this.config = config;
+        try {
+            this.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.client = null;
+        }
+    }
+
+    private static Map<RiakConfiguration, RiakBinaryClient> INSTANCE_MAP = new ConcurrentHashMap<>();
+
+    public static RiakBinaryClient getInstance(RiakConfiguration riakConfiguration) {
+        if ( INSTANCE_MAP != null
+             && INSTANCE_MAP.size() > 0
+             && INSTANCE_MAP.containsKey(riakConfiguration)) {
+            return INSTANCE_MAP.get(riakConfiguration);
+        } else {
+            RiakBinaryClient instance = new RiakBinaryClient(riakConfiguration);
+            if( instance != null && instance.client != null ) {
+                INSTANCE_MAP.put(riakConfiguration, instance);
+                return instance;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public void start() throws Exception {
+
+        Objects.nonNull(config);
+
+        LOGGER.info("RiakHttpClient.start {}", config);
+
+        this.client = com.basho.riak.client.api.RiakClient.newClient(config.getPort().intValue(), config.getHosts());
+
+        Objects.nonNull(client);
+
+        Objects.nonNull(client.getRiakCluster());
+
+        assert( client.getRiakCluster().getNodes().size() > 0 );
+    }
+
+    public void stop() throws Exception {
+        this.client = null;
+    }
+
+    public RiakConfiguration config() {
+        return config;
+    }
+
+    public com.basho.riak.client.api.RiakClient client() {
+        return client;
+    }
+
+}
