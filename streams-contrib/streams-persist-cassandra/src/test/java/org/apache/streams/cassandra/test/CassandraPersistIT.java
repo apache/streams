@@ -101,6 +101,6 @@ public class CassandraPersistIT {
     StreamsResultSet resultSet = reader.readAll();
 
     LOGGER.info("Total Read: {}", resultSet.size() );
-    Assert.assertEquals(89, resultSet.size());
+    Assert.assertEquals(resultSet.size(), 89);
   }
 }

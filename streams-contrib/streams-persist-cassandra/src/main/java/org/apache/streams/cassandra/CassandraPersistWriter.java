@@ -77,12 +77,10 @@ public class CassandraPersistWriter implements StreamsPersistWriter, Runnable, F
   private ScheduledExecutorService backgroundFlushTask = Executors.newSingleThreadScheduledExecutor();
 
   private CassandraConfiguration config;
+  private CassandraClient client;
 
-  protected Cluster cluster;
-  protected Session session;
+  private Session session;
 
-  protected String keyspace;
-  protected String table;
   protected PreparedStatement insertStatement;
 
   protected List<BoundStatement> insertBatch = new ArrayList<>();
@@ -140,8 +138,8 @@ public class CassandraPersistWriter implements StreamsPersistWriter, Runnable, F
         byte[] value = node.toString().getBytes();
 
         String key = GuidUtils.generateGuid(node.toString());
-        if(!Objects.isNull(streamsDatum.getMetadata().get("id"))) {
-          key = streamsDatum.getMetadata().get("id").toString();
+        if(!Objects.isNull(streamsDatum.getId())) {
+          key = streamsDatum.getId();
         }
 
         BoundStatement statement = insertStatement.bind(key, ByteBuffer.wrap(value));
@@ -175,7 +173,7 @@ public class CassandraPersistWriter implements StreamsPersistWriter, Runnable, F
   @Override
   public synchronized void close() throws IOException {
     session.close();
-    cluster.close();
+    client.cluster().close();
     backgroundFlushTask.shutdownNow();
   }
 
@@ -183,7 +181,15 @@ public class CassandraPersistWriter implements StreamsPersistWriter, Runnable, F
    * start write thread.
    */
   public void start() {
-    connectToCassandra();
+    try {
+      connectToCassandra();
+      client.start();
+      createKeyspaceAndTable();
+      createInsertStatement();
+    } catch (Exception e) {
+      LOGGER.error("Exception", e);
+      return;
+    }
     backgroundFlushTask.scheduleAtFixedRate(new Runnable() {
       @Override
       public void run() {
@@ -269,51 +275,40 @@ public class CassandraPersistWriter implements StreamsPersistWriter, Runnable, F
     }
   }
 
-  private synchronized void connectToCassandra() {
-    Cluster.Builder clusterBuilder = Cluster.builder()
-        .addContactPoints(config.getHost().toArray(new String[config.getHost().size()]))
-        .withPort(config.getPort().intValue());
+  private synchronized void connectToCassandra() throws Exception {
+    client = new CassandraClient(config);
+  }
 
-    keyspace = config.getKeyspace();
-    table = config.getTable();
-
-    if (StringUtils.isNotEmpty(config.getUser()) && StringUtils.isNotEmpty(config.getPassword())) {
-      cluster = clusterBuilder.withCredentials(config.getUser(), config.getPassword()).build();
-    } else {
-      cluster = clusterBuilder.build();
-    }
-
-    Metadata metadata = cluster.getMetadata();
-    if (Objects.isNull(metadata.getKeyspace(keyspace))) {
-      LOGGER.info("Keyspace {} does not exist. Creating Keyspace", keyspace);
+  private void createKeyspaceAndTable() {
+    Metadata metadata = client.cluster().getMetadata();
+    if (Objects.isNull(metadata.getKeyspace(config.getKeyspace()))) {
+      LOGGER.info("Keyspace {} does not exist. Creating Keyspace", config.getKeyspace());
       Map<String, Object> replication = new HashMap<>();
       replication.put("class", "SimpleStrategy");
       replication.put("replication_factor", 1);
 
-      String createKeyspaceStmt = SchemaBuilder.createKeyspace(keyspace).with()
+      String createKeyspaceStmt = SchemaBuilder.createKeyspace(config.getKeyspace()).with()
           .replication(replication).getQueryString();
-      cluster.connect().execute(createKeyspaceStmt);
+      client.cluster().connect().execute(createKeyspaceStmt);
     }
 
-    session = cluster.connect(keyspace);
+    session = client.cluster().connect(config.getKeyspace());
 
-    KeyspaceMetadata ks = metadata.getKeyspace(keyspace);
-    TableMetadata tableMetadata = ks.getTable(table);
+    KeyspaceMetadata ks = metadata.getKeyspace(config.getKeyspace());
+    TableMetadata tableMetadata = ks.getTable(config.getTable());
 
     if (Objects.isNull(tableMetadata)) {
-      LOGGER.info("Table {} does not exist in Keyspace {}. Creating Table", table, keyspace);
-      String createTableStmt = SchemaBuilder.createTable(table)
+      LOGGER.info("Table {} does not exist in Keyspace {}. Creating Table", config.getTable(), config.getKeyspace());
+      String createTableStmt = SchemaBuilder.createTable(config.getTable())
                                 .addPartitionKey(config.getPartitionKeyColumn(), DataType.varchar())
                                 .addColumn(config.getColumn(), DataType.blob()).getQueryString();
 
       session.execute(createTableStmt);
     }
-
-    createInsertStatement();
   }
 
   private void createInsertStatement() {
-    Insert insertBuilder = QueryBuilder.insertInto(table);
+    Insert insertBuilder = QueryBuilder.insertInto(config.getTable());
     insertBuilder.value(config.getPartitionKeyColumn(), new Object());
     insertBuilder.value(config.getColumn(), new Object());
     insertStatement = session.prepare(insertBuilder.getQueryString());

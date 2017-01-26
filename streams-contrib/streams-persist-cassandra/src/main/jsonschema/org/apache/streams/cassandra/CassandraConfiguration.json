@@ -8,12 +8,12 @@
   "javaType": "org.apache.streams.cassandra.CassandraConfiguration",
   "javaInterfaces": ["java.io.Serializable"],
   "properties": {
-    "host": {
+    "hosts": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Cassandra host"
+      "description": "Cassandra hosts"
     },
     "port": {
       "type": "integer",
@@ -42,6 +42,30 @@
     "column": {
       "type": "string",
       "description": "Column name"
+    },
+    "ssl": {
+      "type": "object",
+      "description": "ssl details",
+      "javaInterfaces": ["java.io.Serializable"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "ssl enabled",
+          "default": "false"
+        },
+        "trustStore": {
+          "type": "string"
+        },
+        "trustStorePassword": {
+          "type": "string"
+        },
+        "keyStore": {
+          "type": "string"
+        },
+        "keyStorePassword": {
+          "type": "string"
+        }
+      }
     }
   }
 }
