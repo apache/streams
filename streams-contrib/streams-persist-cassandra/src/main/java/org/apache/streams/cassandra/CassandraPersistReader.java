@@ -76,12 +76,8 @@ public class CassandraPersistReader implements StreamsPersistReader {
   private CompletableFuture<Boolean> readerTaskFuture = new CompletableFuture<>();
 
   private CassandraConfiguration config;
+  private CassandraClient client;
 
-  protected Cluster cluster;
-  protected Session session;
-
-  protected String keyspace;
-  protected String table;
   protected Iterator<Row> rowIterator;
 
   protected final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -130,14 +126,20 @@ public class CassandraPersistReader implements StreamsPersistReader {
 
   @Override
   public void prepare(Object configurationObject) {
-    connectToCassandra();
+    try {
+      connectToCassandra();
+      client.start();
+    } catch (Exception e) {
+      LOGGER.error("Exception", e);
+      return;
+    }
 
     String selectStatement = getSelectStatement();
-    ResultSet rs = session.execute(selectStatement);
+    ResultSet rs = client.client().execute(selectStatement);
     rowIterator = rs.iterator();
 
     if (!rowIterator.hasNext()) {
-      throw new RuntimeException("Table" + table + "is empty!");
+      throw new RuntimeException("Table" + config.getTable() + "is empty!");
     }
 
     persistQueue = constructQueue();
@@ -164,50 +166,15 @@ public class CassandraPersistReader implements StreamsPersistReader {
     return new StreamsDatum(objectNode);
   }
 
-  private synchronized void connectToCassandra() {
-    Cluster.Builder clusterBuilder = Cluster.builder()
-        .addContactPoints(config.getHost().toArray(new String[config.getHost().size()]))
-        .withPort(config.getPort().intValue());
+  private synchronized void connectToCassandra() throws Exception {
 
-    keyspace = config.getKeyspace();
-    table = config.getTable();
+    client = new CassandraClient(config);
 
-    if (StringUtils.isNotEmpty(config.getUser()) && StringUtils.isNotEmpty(config.getPassword())) {
-      cluster = clusterBuilder.withCredentials(config.getUser(), config.getPassword()).build();
-    } else {
-      cluster = clusterBuilder.build();
-    }
-
-    Metadata metadata = cluster.getMetadata();
-    if (Objects.isNull(metadata.getKeyspace(keyspace))) {
-      LOGGER.info("Keyspace {} does not exist. Creating Keyspace", keyspace);
-      Map<String, Object> replication = new HashMap<>();
-      replication.put("class", "SimpleStrategy");
-      replication.put("replication_factor", 1);
-
-      String createKeyspaceStmt = SchemaBuilder.createKeyspace(keyspace).with()
-          .replication(replication).getQueryString();
-      cluster.connect().execute(createKeyspaceStmt);
-    }
-
-    session = cluster.connect(keyspace);
-
-    KeyspaceMetadata ks = metadata.getKeyspace(keyspace);
-    TableMetadata tableMetadata = ks.getTable(table);
-
-    if (Objects.isNull(tableMetadata)) {
-      LOGGER.info("Table {} does not exist in Keyspace {}. Creating Table", table, keyspace);
-      String createTableStmt = SchemaBuilder.createTable(table)
-                                .addPartitionKey(config.getPartitionKeyColumn(), DataType.varchar())
-                                .addColumn(config.getColumn(), DataType.blob()).getQueryString();
-
-      session.execute(createTableStmt);
-    }
   }
 
   @Override
   public StreamsResultSet readAll() {
-    ResultSet rs = session.execute(getSelectStatement());
+    ResultSet rs = client.client().execute(getSelectStatement());
     Iterator<Row> rowsIterator = rs.iterator();
 
     while (rowsIterator.hasNext()) {
@@ -289,7 +256,8 @@ public class CassandraPersistReader implements StreamsPersistReader {
 
   private String getSelectStatement() {
     return QueryBuilder.select().all()
-      .from(table).getQueryString();
+      .from(config.getKeyspace(), config.getTable())
+      .getQueryString();
   }
 
   public class CassandraPersistReaderTask implements Runnable {
