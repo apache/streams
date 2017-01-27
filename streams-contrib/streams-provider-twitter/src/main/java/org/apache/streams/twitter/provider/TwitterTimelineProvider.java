@@ -314,11 +314,11 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     for (String account : config.getInfo()) {
       try {
-        if (new Long(account) != null) {
+        if ( new Long(account) != null) {
           ids.add(Long.parseLong(Objects.toString(account, null)));
-        } else {
-          screenNames.add(account);
         }
+      } catch (NumberFormatException ex) {
+        screenNames.add(account);
       } catch (Exception ex) {
         LOGGER.error("Exception while trying to add ID: {{}}, {}", account, ex);
       }
