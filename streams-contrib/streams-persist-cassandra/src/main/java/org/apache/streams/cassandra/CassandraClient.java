@@ -25,9 +25,7 @@ import com.datastax.driver.core.Metadata;
 import com.datastax.driver.core.SSLOptions;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SocketOptions;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +33,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
@@ -60,7 +60,7 @@ public class CassandraClient {
 
   public void start() throws Exception {
 
-    Preconditions.checkNotNull(config);
+    Objects.nonNull(config);
 
     LOGGER.info("CassandraClient.start {}", config);
 
@@ -101,7 +101,7 @@ public class CassandraClient {
       builder = builder.withSSL(sslOptions);
     }
 
-    Collection<InetSocketAddress> addresses = Lists.newArrayList();
+    Collection<InetSocketAddress> addresses = new ArrayList<>();
     for (String h : config.getHosts()) {
       LOGGER.info("Adding Host: {}", h);
       InetSocketAddress socketAddress = new InetSocketAddress(h, config.getPort().intValue());
@@ -109,13 +109,13 @@ public class CassandraClient {
     }
     builder.addContactPointsWithPorts(addresses);
 
-    if( !Strings.isNullOrEmpty(config.getUser()) &&
-        !Strings.isNullOrEmpty(config.getPassword())) {
+    if( StringUtils.isNotBlank(config.getUser()) &&
+        StringUtils.isNotBlank(config.getPassword())) {
       builder.withCredentials(config.getUser(), config.getPassword());
     }
     cluster = builder.build();
 
-    Preconditions.checkNotNull(cluster);
+    Objects.nonNull(cluster);
 
     try {
       Metadata metadata = cluster.getMetadata();
@@ -137,7 +137,7 @@ public class CassandraClient {
       throw e;
     }
 
-    Preconditions.checkNotNull(session);
+    Objects.nonNull(session);
 
   }
 
