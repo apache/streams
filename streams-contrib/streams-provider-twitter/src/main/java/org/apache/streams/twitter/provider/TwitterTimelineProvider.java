@@ -312,21 +312,21 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     List<String> screenNames = new ArrayList<>();
     ids = new ArrayList<>();
 
-    for (String account : config.getInfo()) {
+    for ( String account : config.getInfo() ) {
       try {
-        if ( new Long(account) != null) {
+        if ( new Long(account) != null ) {
           ids.add(Long.parseLong(Objects.toString(account, null)));
         }
-      } catch (NumberFormatException ex) {
+      } catch ( NumberFormatException ex ) {
         screenNames.add(account);
-      } catch (Exception ex) {
+      } catch ( Exception ex ) {
         LOGGER.error("Exception while trying to add ID: {{}}, {}", account, ex);
       }
     }
 
     // Twitter allows for batches up to 100 per request, but you cannot mix types
     screenNameBatches = new ArrayList<>();
-    while (screenNames.size() >= 100) {
+    while ( screenNames.size() >= 100 ) {
       screenNameBatches.add(screenNames.subList(0, 100).toArray(new String[0]));
       screenNames = screenNames.subList(100, screenNames.size());
     }
@@ -335,7 +335,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
       screenNameBatches.add(screenNames.toArray(new String[ids.size()]));
     }
 
-    for (String[] screenNameBatche : screenNameBatches) {
+    for ( String[] screenNameBatche : screenNameBatches ) {
       Collection<Long> batchIds = retrieveIds(screenNameBatche);
       ids.addAll(batchIds);
     }
