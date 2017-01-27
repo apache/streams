@@ -47,6 +47,7 @@
         <module>streams-persist-kafka</module>
         <module>streams-persist-mongo</module>
         <module>streams-persist-neo4j</module>
+        <module>streams-persist-riak</module>
         <module>streams-amazon-aws</module>
         <module>streams-processor-jackson</module>
         <module>streams-processor-json</module>
