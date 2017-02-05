@@ -49,75 +49,78 @@ import java.util.List;
  */
 public class TestHdfsPersist {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestHdfsPersist.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestHdfsPersist.class);
 
-    private ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+  private ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-    @Before
-    public void setup() {
-        File file = new File("/target/TestHdfsPersist/");
-        if( file.exists())
-            file.delete();
+  @Before
+  public void setup() {
+    File file = new File("/target/TestHdfsPersist/");
+    if (file.exists()) {
+      file.delete();
+    }
+  }
+
+  @Test
+  public void TestHdfsPersist() throws Exception {
+
+    List<List<String>> fieldArrays = new ArrayList<>();
+    fieldArrays.add(new ArrayList<>());
+    fieldArrays.add(Collections.singletonList("ID"));
+    fieldArrays.add(Arrays.asList("ID", "DOC"));
+    fieldArrays.add(Arrays.asList("ID", "TS", "DOC"));
+    fieldArrays.add(Arrays.asList("ID", "TS", "META", "DOC"));
+
+    for (List<String> fields : fieldArrays) {
+      TestHdfsPersistCase(fields);
     }
 
-    @Test
-    public void TestHdfsPersist() throws Exception {
+  }
 
-        List<List<String>> fieldArrays = new ArrayList<>();
-        fieldArrays.add(new ArrayList<>());
-        fieldArrays.add(Collections.singletonList("ID"));
-        fieldArrays.add(Arrays.asList("ID", "DOC"));
-        fieldArrays.add(Arrays.asList("ID", "TS", "DOC"));
-        fieldArrays.add(Arrays.asList("ID", "TS", "META", "DOC"));
+  public void TestHdfsPersistCase(List<String> fields) throws Exception {
 
-        for( List<String> fields : fieldArrays )
-            TestHdfsPersistCase(fields);
+    HdfsConfiguration hdfsConfiguration = new HdfsConfiguration().withScheme(HdfsConfiguration.Scheme.FILE).withHost("localhost").withUser("cloudera").withPath("target/TestHdfsPersist");
+    hdfsConfiguration.setFields(fields);
+    HdfsWriterConfiguration hdfsWriterConfiguration = MAPPER.convertValue(hdfsConfiguration, HdfsWriterConfiguration.class);
+    if (fields.size() % 2 == 1) {
+      hdfsWriterConfiguration.setCompression(HdfsWriterConfiguration.Compression.GZIP);
+    }
+    hdfsWriterConfiguration.setWriterFilePrefix("activities");
+    hdfsWriterConfiguration.setWriterPath(Integer.toString(fields.size()));
+    WebHdfsPersistWriter writer = new WebHdfsPersistWriter(hdfsWriterConfiguration);
 
+    writer.prepare(null);
+
+    InputStream testActivityFolderStream = TestHdfsPersist.class.getClassLoader()
+        .getResourceAsStream("activities");
+    List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
+
+    int count = 0;
+
+    for (String file : files) {
+      LOGGER.info("File: " + file);
+      InputStream testActivityFileStream = TestHdfsPersist.class.getClassLoader()
+          .getResourceAsStream("activities/" + file);
+      Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
+      activity.getAdditionalProperties().remove("$license");
+      StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
+      writer.write(datum);
+      LOGGER.info("Wrote: " + activity.getVerb());
+      count++;
     }
 
-    public void TestHdfsPersistCase(List<String> fields) throws Exception {
+    writer.cleanUp();
 
-        HdfsConfiguration hdfsConfiguration = new HdfsConfiguration().withScheme(HdfsConfiguration.Scheme.FILE).withHost("localhost").withUser("cloudera").withPath("target/TestHdfsPersist");
-        hdfsConfiguration.setFields(fields);
-        HdfsWriterConfiguration hdfsWriterConfiguration = MAPPER.convertValue(hdfsConfiguration, HdfsWriterConfiguration.class);
-        if( fields.size() % 2 == 1 )
-            hdfsWriterConfiguration.setCompression(HdfsWriterConfiguration.Compression.GZIP);
-        hdfsWriterConfiguration.setWriterFilePrefix("activities");
-        hdfsWriterConfiguration.setWriterPath(Integer.toString(fields.size()));
-        WebHdfsPersistWriter writer = new WebHdfsPersistWriter(hdfsWriterConfiguration);
+    HdfsReaderConfiguration hdfsReaderConfiguration = MAPPER.convertValue(hdfsConfiguration, HdfsReaderConfiguration.class);
 
-        writer.prepare(null);
+    WebHdfsPersistReader reader = new WebHdfsPersistReader(hdfsReaderConfiguration);
+    hdfsReaderConfiguration.setReaderPath(Integer.toString(fields.size()));
 
-        InputStream testActivityFolderStream = TestHdfsPersist.class.getClassLoader()
-                .getResourceAsStream("activities");
-        List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
+    reader.prepare(null);
 
-        int count = 0;
+    StreamsResultSet resultSet = reader.readAll();
 
-        for( String file : files) {
-            LOGGER.info("File: " + file );
-            InputStream testActivityFileStream = TestHdfsPersist.class.getClassLoader()
-                    .getResourceAsStream("activities/" + file);
-            Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
-            activity.getAdditionalProperties().remove("$license");
-            StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
-            writer.write( datum );
-            LOGGER.info("Wrote: " + activity.getVerb() );
-            count++;
-        }
+    Assert.assertEquals(resultSet.size(), count);
 
-        writer.cleanUp();
-
-        HdfsReaderConfiguration hdfsReaderConfiguration = MAPPER.convertValue(hdfsConfiguration, HdfsReaderConfiguration.class);
-
-        WebHdfsPersistReader reader = new WebHdfsPersistReader(hdfsReaderConfiguration);
-        hdfsReaderConfiguration.setReaderPath(Integer.toString(fields.size()));
-
-        reader.prepare(null);
-
-        StreamsResultSet resultSet = reader.readAll();
-
-        Assert.assertEquals(resultSet.size(), count);
-
-    }
+  }
 }
