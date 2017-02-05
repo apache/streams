@@ -102,6 +102,7 @@
             <item name="Release Setup" href="release-setup.html" />
             <item name="Release Process" href="release.html" />
             <item name="Website Management" href="website.html" />
+            <item name="Coding Conventions" href="code-conventions.html"/>
         </menu>
         <!--<menu name="Details">-->
             <!--<item name="Mailing Lists" href="mail-lists.html" />-->
