@@ -24,8 +24,8 @@ As an alternative to releasing separately, the projects MAY be released together
 
             export MAVEN_OPTS="-Xmx1024m -XX:MaxPermSize=256m"
 
-    2. Use the latest Sun 1.7.0 JDK
-    3. Use Maven 3.2.1 or later
+    2. Use the latest Sun 1.8.x JDK
+    3. Use Maven 3.3.9 or later
     4. Make sure the [Release Setup](release-setup.html) steps have been performed.
 
 2. Prepare the source for release:

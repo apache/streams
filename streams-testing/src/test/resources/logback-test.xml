@@ -21,7 +21,7 @@
     <logger name="com.mongodb" level="WARN"/>
     <logger name="com.foursquare" level="WARN"/>
     <logger name="com.google" level="WARN"/>
-    <logger name="com.youtube" level="WARN"/>
+    <logger name="org.apache.streams.youtube" level="WARN"/>
     <logger name="io.dropwizard" level="WARN"/>
     <logger name="org.apache.streams" level="WARN"/>
     <logger name="org.apache.spark" level="WARN"/>

@@ -25,152 +25,143 @@ import org.apache.streams.hdfs.HdfsWriterConfiguration;
 import org.apache.streams.hdfs.WebHdfsPersistReader;
 import org.apache.streams.hdfs.WebHdfsPersistWriter;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 /**
  * Test for checking that strings append to FS paths as expected
  */
 public class HdfsPersistConfigTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HdfsPersistConfigTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HdfsPersistConfigTest.class);
 
-    @Test
-    public void getWriterFileUriTest()
-    {
-        HdfsWriterConfiguration writerConfiguration = new HdfsWriterConfiguration();
-        writerConfiguration.setScheme(HdfsConfiguration.Scheme.FILE);
-        writerConfiguration.setPath("path");
-        writerConfiguration.setWriterPath("writerPath");
-        writerConfiguration.setUser("cloudera");
+  @Test
+  public void getWriterFileUriTest() {
+    HdfsWriterConfiguration writerConfiguration = new HdfsWriterConfiguration();
+    writerConfiguration.setScheme(HdfsConfiguration.Scheme.FILE);
+    writerConfiguration.setPath("path");
+    writerConfiguration.setWriterPath("writerPath");
+    writerConfiguration.setUser("cloudera");
 
-        WebHdfsPersistWriter webHdfsPersistWriter = new WebHdfsPersistWriter(writerConfiguration);
+    WebHdfsPersistWriter webHdfsPersistWriter = new WebHdfsPersistWriter(writerConfiguration);
 
-        String uri = null;
-        try {
-            uri = webHdfsPersistWriter.getURI().toString();
-        } catch (URISyntaxException e) {
-            fail("URI Syntax");
-        }
-        assertArrayEquals(uri.toCharArray(), ("file:///").toCharArray());
-        webHdfsPersistWriter.prepare(null);
-        assertTrue(webHdfsPersistWriter.isConnected());
+    String uri = null;
+    try {
+      uri = webHdfsPersistWriter.getURI().toString();
+    } catch (URISyntaxException e) {
+      Assert.fail("URI Syntax");
     }
+    Assert.assertArrayEquals(uri.toCharArray(), ("file:///").toCharArray());
+    webHdfsPersistWriter.prepare(null);
+    Assert.assertTrue(webHdfsPersistWriter.isConnected());
+  }
 
-    @Test
-    public void getWriterHdfsUriTest()
-    {
-        HdfsWriterConfiguration writerConfiguration = new HdfsWriterConfiguration();
-        writerConfiguration.setScheme(HdfsConfiguration.Scheme.HDFS);
-        writerConfiguration.setHost("localhost");
-        writerConfiguration.setPort(9000L);
-        writerConfiguration.setPath("path");
-        writerConfiguration.setWriterPath("writerPath");
-        writerConfiguration.setUser("cloudera");
+  @Test
+  public void getWriterHdfsUriTest() {
+    HdfsWriterConfiguration writerConfiguration = new HdfsWriterConfiguration();
+    writerConfiguration.setScheme(HdfsConfiguration.Scheme.HDFS);
+    writerConfiguration.setHost("localhost");
+    writerConfiguration.setPort(9000L);
+    writerConfiguration.setPath("path");
+    writerConfiguration.setWriterPath("writerPath");
+    writerConfiguration.setUser("cloudera");
 
-        WebHdfsPersistWriter webHdfsPersistWriter = new WebHdfsPersistWriter(writerConfiguration);
+    WebHdfsPersistWriter webHdfsPersistWriter = new WebHdfsPersistWriter(writerConfiguration);
 
-        String uri = null;
-        try {
-            uri = webHdfsPersistWriter.getURI().toString();
-        } catch (URISyntaxException e) {
-            fail("URI Syntax");
-        }
-        assertArrayEquals(uri.toCharArray(), ("hdfs://localhost:9000").toCharArray());
-
+    String uri = null;
+    try {
+      uri = webHdfsPersistWriter.getURI().toString();
+    } catch (URISyntaxException e) {
+      Assert.fail("URI Syntax");
     }
+    Assert.assertArrayEquals(uri.toCharArray(), ("hdfs://localhost:9000").toCharArray());
 
-    @Test
-    public void getWriterWebHdfsUriTest()
-    {
-        HdfsWriterConfiguration writerConfiguration = new HdfsWriterConfiguration();
-        writerConfiguration.setScheme(HdfsConfiguration.Scheme.WEBHDFS);
-        writerConfiguration.setHost("localhost");
-        writerConfiguration.setPort(57000L);
-        writerConfiguration.setPath("path");
-        writerConfiguration.setWriterPath("writerPath");
-        writerConfiguration.setUser("cloudera");
+  }
 
-        WebHdfsPersistWriter webHdfsPersistWriter = new WebHdfsPersistWriter(writerConfiguration);
+  @Test
+  public void getWriterWebHdfsUriTest() {
+    HdfsWriterConfiguration writerConfiguration = new HdfsWriterConfiguration();
+    writerConfiguration.setScheme(HdfsConfiguration.Scheme.WEBHDFS);
+    writerConfiguration.setHost("localhost");
+    writerConfiguration.setPort(57000L);
+    writerConfiguration.setPath("path");
+    writerConfiguration.setWriterPath("writerPath");
+    writerConfiguration.setUser("cloudera");
 
-        String uri = null;
-        try {
-            uri = webHdfsPersistWriter.getURI().toString();
-        } catch (URISyntaxException e) {
-            fail("URI Syntax");
-        }
-        assertArrayEquals(uri.toCharArray(), ("webhdfs://localhost:57000").toCharArray());
+    WebHdfsPersistWriter webHdfsPersistWriter = new WebHdfsPersistWriter(writerConfiguration);
 
+    String uri = null;
+    try {
+      uri = webHdfsPersistWriter.getURI().toString();
+    } catch (URISyntaxException e) {
+      Assert.fail("URI Syntax");
     }
+    Assert.assertArrayEquals(uri.toCharArray(), ("webhdfs://localhost:57000").toCharArray());
 
-    @Test
-    public void getReaderFileUriTest()
-    {
-        HdfsReaderConfiguration readerConfiguration = new HdfsReaderConfiguration();
-        readerConfiguration.setScheme(HdfsConfiguration.Scheme.FILE);
-        readerConfiguration.setPath("path");
-        readerConfiguration.setReaderPath("readerPath");
+  }
 
-        WebHdfsPersistReader webHdfsPersistReader = new WebHdfsPersistReader(readerConfiguration);
+  @Test
+  public void getReaderFileUriTest() {
+    HdfsReaderConfiguration readerConfiguration = new HdfsReaderConfiguration();
+    readerConfiguration.setScheme(HdfsConfiguration.Scheme.FILE);
+    readerConfiguration.setPath("path");
+    readerConfiguration.setReaderPath("readerPath");
 
-        String uri = null;
-        try {
-            uri = webHdfsPersistReader.getURI().toString();
-        } catch (URISyntaxException e) {
-            fail("URI Syntax");
-        }
-        assertArrayEquals(uri.toCharArray(), ("file:///").toCharArray());
+    WebHdfsPersistReader webHdfsPersistReader = new WebHdfsPersistReader(readerConfiguration);
+
+    String uri = null;
+    try {
+      uri = webHdfsPersistReader.getURI().toString();
+    } catch (URISyntaxException e) {
+      Assert.fail("URI Syntax");
     }
+    Assert.assertArrayEquals(uri.toCharArray(), ("file:///").toCharArray());
+  }
 
-    @Test
-    public void getReaderHdfsUriTest()
-    {
-        HdfsReaderConfiguration readerConfiguration = new HdfsReaderConfiguration();
-        readerConfiguration.setScheme(HdfsConfiguration.Scheme.HDFS);
-        readerConfiguration.setHost("localhost");
-        readerConfiguration.setPort(9000L);
-        readerConfiguration.setPath("path");
-        readerConfiguration.setReaderPath("readerPath");
+  @Test
+  public void getReaderHdfsUriTest() {
+    HdfsReaderConfiguration readerConfiguration = new HdfsReaderConfiguration();
+    readerConfiguration.setScheme(HdfsConfiguration.Scheme.HDFS);
+    readerConfiguration.setHost("localhost");
+    readerConfiguration.setPort(9000L);
+    readerConfiguration.setPath("path");
+    readerConfiguration.setReaderPath("readerPath");
 
-        WebHdfsPersistReader webHdfsPersistReader = new WebHdfsPersistReader(readerConfiguration);
+    WebHdfsPersistReader webHdfsPersistReader = new WebHdfsPersistReader(readerConfiguration);
 
-        String uri = null;
-        try {
-            uri = webHdfsPersistReader.getURI().toString();
-        } catch (URISyntaxException e) {
-            fail("URI Syntax");
-        }
-        assertArrayEquals(uri.toCharArray(), ("hdfs://localhost:9000").toCharArray());
-
+    String uri = null;
+    try {
+      uri = webHdfsPersistReader.getURI().toString();
+    } catch (URISyntaxException e) {
+      Assert.fail("URI Syntax");
     }
+    Assert.assertArrayEquals(uri.toCharArray(), ("hdfs://localhost:9000").toCharArray());
 
-    @Test
-    public void getReaderWebHdfsUriTest()
-    {
-        HdfsReaderConfiguration readerConfiguration = new HdfsReaderConfiguration();
-        readerConfiguration.setScheme(HdfsConfiguration.Scheme.WEBHDFS);
-        readerConfiguration.setHost("localhost");
-        readerConfiguration.setPort(57000L);
-        readerConfiguration.setPath("path");
-        readerConfiguration.setReaderPath("readerPath");
+  }
 
-        WebHdfsPersistReader webHdfsPersistReader = new WebHdfsPersistReader(readerConfiguration);
+  @Test
+  public void getReaderWebHdfsUriTest() {
+    HdfsReaderConfiguration readerConfiguration = new HdfsReaderConfiguration();
+    readerConfiguration.setScheme(HdfsConfiguration.Scheme.WEBHDFS);
+    readerConfiguration.setHost("localhost");
+    readerConfiguration.setPort(57000L);
+    readerConfiguration.setPath("path");
+    readerConfiguration.setReaderPath("readerPath");
 
-        String uri = null;
-        try {
-            uri = webHdfsPersistReader.getURI().toString();
-        } catch (URISyntaxException e) {
-            fail("URI Syntax");
-        }
-        assertArrayEquals(uri.toCharArray(), ("webhdfs://localhost:57000").toCharArray());
+    WebHdfsPersistReader webHdfsPersistReader = new WebHdfsPersistReader(readerConfiguration);
 
+    String uri = null;
+    try {
+      uri = webHdfsPersistReader.getURI().toString();
+    } catch (URISyntaxException e) {
+      Assert.fail("URI Syntax");
     }
+    Assert.assertArrayEquals(uri.toCharArray(), ("webhdfs://localhost:57000").toCharArray());
+
+  }
 
 }

@@ -19,4 +19,4 @@ Apache Streams is an effort undergoing incubation at [The Apache Software Founda
 
 ## License
 
-Copyright (c) 2016. Apache Streams is licensed under the [Apache License 2.0](LICENSE). 
+Copyright (c) 2017. Apache Streams is licensed under the [Apache License 2.0](LICENSE). 

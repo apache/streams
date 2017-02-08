@@ -18,7 +18,7 @@
 
 package org.apache.streams.youtube.test.providers;
 
-import com.youtube.provider.YoutubeUserActivityProvider;
+import org.apache.streams.youtube.provider.YoutubeUserActivityProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

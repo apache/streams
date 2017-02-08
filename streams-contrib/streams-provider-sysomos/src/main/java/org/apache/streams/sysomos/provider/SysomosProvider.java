@@ -27,13 +27,13 @@ import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.data.util.RFC3339Utils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.sysomos.SysomosConfiguration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.sysomos.SysomosConfiguration;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
@@ -61,24 +61,17 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Streams Provider for the Sysomos Heartbeat API
- *
  * <p/>
  * Configuration:
  * The provider takes either a Map[String,Object] containing the mode (backfill and terminate OR continuous) and a
  * Map[String,String] of heartbeat IDs to document target ids or a string of the format
- *   ${heartbeatId}:${documentId},...,${heartbeatId}:${documentId}
+ * ${heartbeatId}:${documentId},...,${heartbeatId}:${documentId}
  * This configuration will configure the provider to backfill to the specified document and either terminate or not
  * depending on the mode flag.  Continuous mode is assumed, and is the ony mode supported by the String configuration.
- *
  */
 public class SysomosProvider implements StreamsProvider {
 
   public static final String STREAMS_ID = "SysomosProvider";
-
-  public enum Mode { CONTINUOUS, BACKFILL_AND_TERMINATE }
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SysomosProvider.class);
-
   public static final String ENDING_TIME_KEY = "addedBefore";
   public static final String STARTING_TIME_KEY = "addedAfter";
   public static final String MODE_KEY = "mode";
@@ -86,16 +79,14 @@ public class SysomosProvider implements StreamsProvider {
   public static final int LATENCY = 10000;  //Default minLatency for querying the Sysomos API in milliseconds
   public static final long PROVIDER_BATCH_SIZE = 10000L; //Default maximum size of the queue
   public static final long API_BATCH_SIZE = 1000L; //Default maximum size of an API request
-
-  protected volatile Queue<StreamsDatum> providerQueue;
-
+  private static final Logger LOGGER = LoggerFactory.getLogger(SysomosProvider.class);
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
   private final Set<String> completedHeartbeats = new HashSet<>();
   private final long maxQueued;
   private final long minLatency;
   private final long scheduledLatency;
   private final long maxApiBatch;
-
+  protected volatile Queue<StreamsDatum> providerQueue;
   private SysomosClient client;
   private SysomosConfiguration config;
   private ScheduledExecutorService stream;
@@ -105,7 +96,6 @@ public class SysomosProvider implements StreamsProvider {
   private Mode mode = Mode.CONTINUOUS;
   private boolean started = false;
   private AtomicInteger count;
-
   /**
    * SysomosProvider constructor.
    * @param sysomosConfiguration SysomosConfiguration
@@ -119,6 +109,57 @@ public class SysomosProvider implements StreamsProvider {
         ? (LATENCY * 15) : sysomosConfiguration.getScheduledDelayMs();
     this.maxApiBatch = sysomosConfiguration.getMinDelayMs() == null ? API_BATCH_SIZE : sysomosConfiguration.getApiBatchSize();
     this.count = new AtomicInteger();
+  }
+
+  /**
+   * To use from command line:
+   * <p/>
+   * Supply configuration similar to src/test/resources/rss.conf
+   * <p/>
+   * Launch using:
+   * <p/>
+   * mvn exec:java -Dexec.mainClass=org.apache.streams.rss.provider.RssStreamProvider -Dexec.args="rss.conf articles.json"
+   * @param args args
+   * @throws Exception Exception
+   */
+  public static void main(String[] args) throws Exception {
+
+    Preconditions.checkArgument(args.length >= 2);
+
+    String configfile = args[0];
+    String outfile = args[1];
+
+    Config reference = ConfigFactory.load();
+    File file = new File(configfile);
+    assert (file.exists());
+    Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
+
+    Config typesafe = testResourceConfig.withFallback(reference).resolve();
+
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
+    SysomosConfiguration config = new ComponentConfigurator<>(SysomosConfiguration.class).detectConfiguration(typesafe, "rss");
+    SysomosProvider provider = new SysomosProvider(config);
+
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
+
+    PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
+    provider.prepare(config);
+    provider.startStream();
+    do {
+      Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
+      for (StreamsDatum datum : provider.readCurrent()) {
+        String json;
+        try {
+          json = mapper.writeValueAsString(datum.getDocument());
+          outStream.println(json);
+        } catch (JsonProcessingException ex) {
+          System.err.println(ex.getMessage());
+        }
+      }
+    }
+    while (provider.isRunning());
+    provider.cleanUp();
+    outStream.flush();
   }
 
   public SysomosConfiguration getConfig() {
@@ -197,7 +238,7 @@ public class SysomosProvider implements StreamsProvider {
   public boolean isRunning() {
     return providerQueue.size() > 0
         || (completedHeartbeats.size() < this.getConfig().getHeartbeatIds().size()
-            && !(stream.isTerminated()
+        && !(stream.isTerminated()
         || stream.isShutdown()));
   }
 
@@ -205,7 +246,7 @@ public class SysomosProvider implements StreamsProvider {
   public void prepare(Object configurationObject) {
     this.providerQueue = constructQueue();
     if (configurationObject instanceof Map) {
-      extractConfigFromMap((Map) configurationObject);
+      extractConfigFromMap((Map)configurationObject);
     } else if (configurationObject instanceof String) {
       documentIds = Splitter.on(";").trimResults().withKeyValueSeparator("=").split((String)configurationObject);
     }
@@ -338,58 +379,5 @@ public class SysomosProvider implements StreamsProvider {
     return this.count.get();
   }
 
-  /**
-   * To use from command line:
-   *
-   * <p/>
-   * Supply configuration similar to src/test/resources/rss.conf
-   *
-   * <p/>
-   * Launch using:
-   *
-   * <p/>
-   * mvn exec:java -Dexec.mainClass=org.apache.streams.rss.provider.RssStreamProvider -Dexec.args="rss.conf articles.json"
-   *
-   * @param args args
-   * @throws Exception Exception
-   */
-  public static void main(String[] args) throws Exception {
-
-    Preconditions.checkArgument(args.length >= 2);
-
-    String configfile = args[0];
-    String outfile = args[1];
-
-    Config reference = ConfigFactory.load();
-    File file = new File(configfile);
-    assert (file.exists());
-    Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
-
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    SysomosConfiguration config = new ComponentConfigurator<>(SysomosConfiguration.class).detectConfiguration(typesafe, "rss");
-    SysomosProvider provider = new SysomosProvider(config);
-
-    ObjectMapper mapper = StreamsJacksonMapper.getInstance();
-
-    PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
-    provider.prepare(config);
-    provider.startStream();
-    do {
-      Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-      for (StreamsDatum datum : provider.readCurrent()) {
-        String json;
-        try {
-          json = mapper.writeValueAsString(datum.getDocument());
-          outStream.println(json);
-        } catch (JsonProcessingException ex) {
-          System.err.println(ex.getMessage());
-        }
-      }
-    }
-    while ( provider.isRunning() );
-    provider.cleanUp();
-    outStream.flush();
-  }
+  public enum Mode {CONTINUOUS, BACKFILL_AND_TERMINATE}
 }
