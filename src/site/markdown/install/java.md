@@ -6,9 +6,7 @@ Run from your command line:
 
 | Possible result | Explanation |
 |-----------------|-------------|
-| Java Version >= 1.7.0u72) | You're all good |
 | Java Version >= 1.8.0u25) | You're all good |
-| Java Version < 1.7.0u72 | You need a newer JDK |
 | Java Version < 1.8.0u25 | You need a newer JDK |
 
 If you need to install or upgrade Java, start here:
