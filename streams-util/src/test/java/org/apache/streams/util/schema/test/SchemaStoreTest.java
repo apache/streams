@@ -26,6 +26,9 @@ import org.junit.Test;
 
 import java.io.File;
 
+/**
+ * Unit Tests for SchemaStore.
+ */
 public class SchemaStoreTest {
 
   @Test

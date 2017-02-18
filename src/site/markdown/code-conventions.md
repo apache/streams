@@ -70,3 +70,5 @@ public class Foo extends Bar {
       </codeStyleSettings>
     </code_scheme>
  ```
+ 
+ ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
