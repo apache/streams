@@ -109,13 +109,6 @@
                     <targetDirectory>${project.basedir}/target/generated-sources/pojo</targetDirectory>
                     <targetPackage>com.moreover</targetPackage>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-sources</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>

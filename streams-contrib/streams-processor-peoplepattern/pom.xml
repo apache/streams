@@ -133,13 +133,6 @@
                         <useLongIntegers>true</useLongIntegers>
                         <useJodaDates>true</useJodaDates>
                     </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>generate-sources</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
         </plugins>
     </build>

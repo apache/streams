@@ -126,13 +126,6 @@
                     <targetDirectory>${project.basedir}/target/generated-sources/pojo</targetDirectory>
                     <targetPackage>org.apache.streams.graph.pojo</targetPackage>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-sources</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.streams</groupId>

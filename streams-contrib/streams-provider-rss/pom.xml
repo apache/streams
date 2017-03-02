@@ -141,13 +141,6 @@
                     <targetDirectory>${project.basedir}/target/generated-sources/pojo</targetDirectory>
                     <targetPackage>org.apache.streams.rss.pojo</targetPackage>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-sources</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

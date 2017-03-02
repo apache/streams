@@ -125,14 +125,6 @@
                     <targetDirectory>${basedir}/target/generated-sources/pojo</targetDirectory>
                     <targetPackage>org.apache.streams.config</targetPackage>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>generate-sources</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

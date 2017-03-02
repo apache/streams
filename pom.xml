@@ -512,6 +512,7 @@
                     </configuration>
                     <executions>
                         <execution>
+                            <phase>generate-sources</phase>
                             <goals>
                                 <goal>generate-sources</goal>
                             </goals>
@@ -533,6 +534,7 @@
                     </configuration>
                     <executions>
                         <execution>
+                            <phase>generate-sources</phase>
                             <goals>
                                 <goal>generate</goal>
                             </goals>
