@@ -23,7 +23,7 @@
     <parent>
         <artifactId>streams-project</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.5-incubating-SNAPSHOT</version>
+        <version>0.5-incubating</version>
     </parent>
 
     <artifactId>streams-monitoring</artifactId>
