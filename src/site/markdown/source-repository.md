@@ -6,12 +6,6 @@ Only project committers are permitted to push to git-wip-us.apache.org.
 
 However, anyone may open pull requests via github.org.
 
-###streams-master
-
-[streams-master](index.html "streams-master") source is officially hosted at [git-wip-us.apache.org/repos/asf/incubator-streams-master.git](https://git-wip-us.apache.org/repos/asf/incubator-streams-master.git "https://git-wip-us.apache.org/repos/asf/incubator-streams-master.git")
-
-[streams-master](index.html "streams-master") source is also hosted at [github.com/apache/incubator-streams-master.git](https://github.com/apache/incubator-streams-master.git "https://github.com/apache/incubator-streams-master.git")
-
 ###streams-project
 
 [streams-project](http://streams.incubator.apache.org/site/0.2-incubating/streams-project "streams-project") source is officially hosted at [git-wip-us.apache.org/repos/asf/incubator-streams.git](https://git-wip-us.apache.org/repos/asf/incubator-streams.git "https://git-wip-us.apache.org/repos/asf/incubator-streams.git")

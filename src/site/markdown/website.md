@@ -51,7 +51,6 @@ NOTE:
 
 Repositories should always be built and published in the following order:
 
-* streams-master
 * streams-project
 * streams-examples
 
@@ -152,7 +151,6 @@ You should now be able to access and review the published site(s) via the stagin
 
 At this point use explicit versions to access and review the new documentation, i.e.
 
-* http://streams.staging.apache.org/site/0.3-incubating-SNAPSHOT/streams-master/index.html
 * http://streams.staging.apache.org/site/0.3-incubating-SNAPSHOT/streams-project/index.html
 * http://streams.staging.apache.org/site/0.3-incubating-SNAPSHOT/streams-examples/index.html
 
@@ -166,9 +164,8 @@ These rules are located in the '.htaccess' file in the root of the SVN content d
 
     Options +FollowSymLinks
     RewriteEngine on
-    RedirectMatch   "^/$"  "/site/0.3-incubating-SNAPSHOT/streams-master"
+    RedirectMatch   "^/$"  "/site/0.3-incubating-SNAPSHOT/streams-project"
     Redirect /site/latest /site/0.3-incubating-SNAPSHOT
-    Redirect /site/latest/streams-master /site/0.3-incubating-SNAPSHOT/streams-master
     Redirect /site/latest/streams-project /site/0.3-incubating-SNAPSHOT/streams-project
     Redirect /site/latest/streams-examples /site/0.3-incubating-SNAPSHOT/streams-examples
 
@@ -178,7 +175,6 @@ Commit your changes, wait a few seconds, click Follow Staging Build, and you sho
 
 You should now be able to use 'latest' as an alias for the docs you are deploying, i.e.
 
-* http://streams.staging.apache.org/site/latest/streams-master/index.html
 * http://streams.staging.apache.org/site/latest/streams-project/index.html
 * http://streams.staging.apache.org/site/latest/streams-examples/index.html
 
