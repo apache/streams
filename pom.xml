@@ -273,7 +273,7 @@
         </snapshotRepository>
         <site>
             <id>site.streams.project</id>
-            <url>scm:svn:https://svn.apache.org/repos/asf/incubator/streams/site/trunk/content/site/${project.version}/${project.artifactId}</url>
+            <url>scm:svn:https://svn.apache.org/repos/asf/incubator/streams/site/trunk/content/site/${project.version}/streams-project</url>
         </site>
     </distributionManagement>
 
@@ -321,7 +321,7 @@
         <scalastyle.plugin.version>0.8.0</scalastyle.plugin.version>
         <scm.plugin.version>1.9.4</scm.plugin.version>
         <shade.plugin.version>2.4.3</shade.plugin.version>
-        <site.plugin.version>3.5</site.plugin.version>
+        <site.plugin.version>3.6</site.plugin.version>
         <source.plugin.version>2.4</source.plugin.version>
         <surefire.plugin.version>2.19.1</surefire.plugin.version>
         <wagon.plugin.version>2.5</wagon.plugin.version>
@@ -1213,7 +1213,6 @@
                 <version>${site.plugin.version}</version>
                 <configuration>
                     <generateSitemap>true</generateSitemap>
-                    <topSiteURL>scm:svn:https://svn.apache.org/repos/infra/websites/production/streams/content/site/${project.version}/${project.artifactId}</topSiteURL>
                 </configuration>
             </plugin>
             <plugin>
