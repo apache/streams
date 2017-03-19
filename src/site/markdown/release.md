@@ -1,21 +1,26 @@
 ##Release Process
 
-There are two distinct sets of artifacts that are released on independent schedules:  streams-master & streams-project.  The streams-master is the project metadata and only needs to be released when there is a change in the structure of the project itself.  The streams-project artifacts are comprised of all streams source code, binaries and a standalone demo.  For release setup information, refer to [Release Setup Information](/release-setup.html).
+There are two distinct sets of artifacts in two repositories that are typically released together:  streams-project and streams-examples.
 
-All of the steps below apply to all streams repository releases, unless otherwise specified.  As an alternative to releasing separately, the projects MAY be released together as one combined release.  The steps for this can be found below. ([Combined Release Steps](#combined))
+streams-project artifacts include streams source code and convenience jars by module.  
 
-NOTE:
+streams-examples source code builds ready-to-run stand-alone examples as uber-jars.
 
-Releases should always be built and published in the following order:
+Releases must be built and published in the following order:
 
-* streams-master
 * streams-project
 * streams-examples
 
 In the instructions below, ${project.name} should be one of these top-level repository aggregator pom project names.
 
-As an alternative to releasing separately, the projects MAY be released together as one combined release. The steps for this can be found below. (Combined Release Steps)
+###NOTE: 
 
+As a streams release manager, you probably want to use the release.sh and publish-rc.sh scripts in the root of streams-project.
+
+To perform a release manually, or to better understand what's going on, read the intructions below.
+
+In either case, you'll need to first refer to [Release Setup Information](/release-setup.html).
+                               
 ###Common Release Steps
 
 1. Environment setup for releasing artifacts (same for SNAPSHOTs and releases)    
@@ -118,6 +123,7 @@ As an alternative to releasing separately, the projects MAY be released together
             wget https://repository.apache.org/content/repositories/releases/org/apache/streams/${project.name}/${project.version}/${project.name}-${project.version}-source-release.zip    
             wget https://repository.apache.org/content/repositories/releases/org/apache/streams/${project.name}/${project.version}/${project.name}-${project.version}-source-release.zip.asc   
             wget https://repository.apache.org/content/repositories/releases/org/apache/streams/${project.name}/${project.version}/${project.name}-${project.version}-source-release.zip.md5   
+            wget https://repository.apache.org/content/repositories/releases/org/apache/streams/${project.name}/${project.version}/${project.name}-${project.version}-source-release.zip.sha1
             svn add ${project.name}-*
             svn commit -m "Committing Source Release for ${project.name}-${project.version}
 
@@ -133,6 +139,7 @@ As an alternative to releasing separately, the projects MAY be released together
             wget https://repository.apache.org/content/repositories/releases/org/apache/streams/${project.name}/${project.version}/${project.name}-${project.version}-source-release.zip    
             wget https://repository.apache.org/content/repositories/releases/org/apache/streams/${project.name}/${project.version}/${project.name}-${project.version}-source-release.zip.asc   
             wget https://repository.apache.org/content/repositories/releases/org/apache/streams/${project.name}/${project.version}/${project.name}-${project.version}-source-release.zip.md5   
+            wget https://repository.apache.org/content/repositories/releases/org/apache/streams/${project.name}/${project.version}/${project.name}-${project.version}-source-release.zip.sha1
             svn add ${project.name}-*
             svn commit -m "Committing Source Release for ${project.name}-${project.version}
 
@@ -214,9 +221,6 @@ In order to perform a combined release of the streams-master and streams-project
           I've created a combined ${release.version} release candidate, with the
           following artifacts up for a vote:
 
-          incubator-streams-master source tag (r${release.version}):
-          https://git-wip-us.apache.org/repos/asf?p=incubator-streams-master.git;a=commit;h=...
-
           incubator-streams source tag (r${release.version}):
           https://git-wip-us.apache.org/repos/asf?p=incubator-streams.git;a=commit;h=...
 
@@ -224,16 +228,18 @@ In order to perform a combined release of the streams-master and streams-project
           https://git-wip-us.apache.org/repos/asf?p=incubator-streams-examples.git;a=commit;h=...
 
           Maven staging repo:
-          https://repository.apache.org/content/repositories/${release.master.repository}
           https://repository.apache.org/content/repositories/${release.project.repository}
           https://repository.apache.org/content/repositories/${release.examples.repository}
 
           Source releases:
-          https://repository.apache.org/content/repositories/${release.master.repository}/org/apache/streams/streams-master/${release.version}/streams-master-${release.version}-source-release.zip
           https://repository.apache.org/content/repositories/${release.project.repository}/org/apache/rave/rave-project/${release.version}/streams-project-${release.version}-incubating-source-release.zip
           https://repository.apache.org/content/repositories/${release.project.repository}/org/apache/rave/rave-project/${release.version}/streams-project-${release.version}-incubating-source-release.zip
 
-          Checksums of streams-master-${release.version}-source-release.zip:
+          Checksums of streams-project-${release.version}-source-release.zip:
+          MD5: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          SHA1: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+          Checksums of streams-examples-${release.version}-source-release.zip:
           MD5: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
           SHA1: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
