@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Created by sblackmon on 3/20/17.
+ * Maybe this can be used to populate the parameters other than id
+ * on the restclient when calling statuses/lookup?
  */
 public class StatusesLookupRequestSerializer extends OutputStreamSerializer {
 
