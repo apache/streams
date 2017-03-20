@@ -24,7 +24,7 @@
         <version>0.5.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>google-gplus</artifactId>
+    <artifactId>streams-provider-google-gplus</artifactId>
     <name>${project.artifactId}</name>
 
     <description>Google+ Provider</description>

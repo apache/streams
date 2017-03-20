@@ -24,7 +24,7 @@
         <version>0.5.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>google-gmail</artifactId>
+    <artifactId>streams-provider-google-gmail</artifactId>
     <name>${project.artifactId}</name>
 
     <description>GMail Provider</description>
