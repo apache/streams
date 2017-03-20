@@ -1,0 +1,104 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+ digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  subgraph cluster_generators {
+    label="generators";
+    generators_youtube [label="https://api.youtube.com"]
+    generators_instagram [label="https://api.instagram.com"]
+  }
+
+  subgraph cluster_providers {
+    label="providers";
+    subgraph cluster_providers_youtube {
+      label="youtube";
+      providers_youtube_channel [label="YoutubeChannelProvider"]
+      providers_youtube_video [label="YoutubeUserActivityProvider"]
+    }
+    subgraph cluster_providers_instagram{
+      label="instagram";
+      providers_instagram_userinfo [label="InstagramUserInfoCollector"]
+      providers_instagram_media [label="InstagramRecentMediaCollector"]
+    }
+  }
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_youtube_activity [label="YoutubeTypeConverter"]
+    processors_youtube_activityobject [label="YoutubeTypeConverter"]
+    processors_instagram_activity [label="InstagramTypeConverter"]
+    processors_instagram_activityobject [label="InstagramTypeConverter"]
+  }
+
+  subgraph cluster_persisters_1 {
+    label="persisters";
+    persisters_kinesis_writer [label="KinesisPersistWriter"]
+    persisters_kinesis_writer [label="KinesisPersistWriter"]
+  }
+
+  subgraph cluster_queues {
+    label="queues";
+    kinesis [label="kinesis://", shape="trapezium"]
+  }
+  subgraph cluster_persisters_2 {
+    label="persisters";
+    persisters_elasticsearch [label="ElasticsearchPersistWriter"]
+    persisters_hdfs [label="WebHdfsPersistWriter"]
+    persisters_kinesis_reader [label="KinesisPersistReader"]
+    persisters_kinesis_reader [label="KinesisPersistReader"]
+  }
+
+  subgraph cluster_dbs {
+    label="dbs";
+    elasticsearch [label="elasticsearch", shape="cylinder"]
+    hdfs [label="hdfs", shape="tab"]
+  }
+
+  generators_youtube -> providers_youtube_channel
+  generators_youtube -> providers_youtube_video
+  providers_youtube_channel -> processors_youtube_activityobject [label="o.a.s.y.Channel"]
+  providers_youtube_video -> processors_youtube_activity [label="o.a.s.y.Video"]
+
+  generators_instagram -> providers_instagram_userinfo
+  generators_instagram -> providers_instagram_media
+  providers_instagram_userinfo -> processors_instagram_activityobject [label="o.a.s.i.UserInfoData"]
+  providers_instagram_media -> processors_instagram_activity [label="o.a.s.i.MediaFeedData"]
+
+  processors_youtube_activityobject -> persisters_kinesis_writer [label="o.a.s.p.j.Page"]
+  processors_youtube_activity -> persisters_kinesis_writer [label="o.a.s.p.j.Video\no.a.s.p.j.Comment"]
+  processors_instagram_activityobject -> persisters_kinesis_writer [label="o.a.s.p.j.Page"]
+  processors_instagram_activity -> persisters_kinesis_writer [label="o.a.s.p.j.Photo\no.a.s.p.j.Video\no.a.s.p.j.Comment"]
+
+  persisters_kinesis_writer -> kinesis -> persisters_kinesis_reader [label="o.a.s.p.j.Activity"]
+  persisters_kinesis_writer -> kinesis -> persisters_kinesis_reader [label="o.a.s.p.j.ActivityObject"]
+
+  persisters_kinesis_reader -> persisters_elasticsearch
+  persisters_kinesis_reader -> persisters_hdfs
+
+  persisters_elasticsearch -> elasticsearch [label="es://"]
+  persisters_hdfs -> hdfs [label="hdfs://"]
+
+}
