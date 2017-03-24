@@ -2,42 +2,38 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.TwitterConfiguration;
 import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.provider.TwitterProviderUtil;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.juneau.BeanContext;
-import org.apache.juneau.BeanSession;
-import org.apache.juneau.PropertyStore;
 import org.apache.juneau.json.JsonParser;
-import org.apache.juneau.json.JsonSerializer;
 import org.apache.juneau.parser.ParseException;
 import org.apache.juneau.plaintext.PlainTextSerializer;
-import org.apache.juneau.rest.client.HttpMethod;
 import org.apache.juneau.rest.client.RestCall;
 import org.apache.juneau.rest.client.RestCallException;
 import org.apache.juneau.rest.client.RestClient;
 import org.apache.juneau.rest.client.RestClientBuilder;
-import org.apache.juneau.serializer.Serializer;
-import org.apache.juneau.serializer.SerializerSession;
-import org.apache.juneau.serializer.WriterSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * Created by sblackmon on 3/19/17.
  */
-public class Twitter implements Statuses {
+public class Twitter implements Followers, Friends, Statuses, Users {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Twitter.class);
 
@@ -56,11 +52,11 @@ public class Twitter implements Statuses {
     this.httpclient = HttpClients.createDefault();
     this.rootUrl = TwitterProviderUtil.baseUrl(configuration);
     this.restClient = new RestClientBuilder()
-          .httpClient(httpclient, true)
-          .serializer(PlainTextSerializer.class)
-          .parser(JsonParser.class)
-          .rootUrl(rootUrl)
-          .build();
+        .httpClient(httpclient, true)
+        .serializer(PlainTextSerializer.class)
+        .parser(JsonParser.class)
+        .rootUrl(rootUrl)
+        .build();
   }
 
   public static Twitter getInstance(TwitterConfiguration configuration) {
@@ -74,18 +70,20 @@ public class Twitter implements Statuses {
 
   @Override
   public List<Tweet> userTimeline(StatusesUserTimelineRequest parameters) {
-    assertThat(
-        "user_id or screen_name must be set",
-        (
-            Objects.nonNull(parameters.getUserId())
-                || Objects.nonNull(parameters.getScreenName())
-        )
-    );
-    String id = ObjectUtils.firstNonNull(parameters.getUserId(), parameters.getScreenName());
-    // there may be other parameters too
     try {
-      RestCall restCall = restClient.doGet("/statuses/lookup?id=" + id);
-      List<Tweet> result = restCall.getResponse(List.class);
+      URIBuilder uriBuilder = new URIBuilder()
+          .setPath("/statuses/user_timeline")
+          .addParameter("user_id", parameters.getUserId())
+          .addParameter("screen_name", parameters.getScreenName())
+          .addParameter("since_id", parameters.getSinceId())
+          .addParameter("count", parameters.getCount())
+          .addParameter("max_id", parameters.getMaxId())
+          .addParameter("trim_user", parameters.getTrimUser().toString())
+          .addParameter("exclude_replies", parameters.getExcludeReplies().toString())
+          .addParameter("contributor_details", parameters.getContributorDetails().toString())
+          .addParameter("include_rts", parameters.getIncludeRts().toString());
+      RestCall restCall = restClient.doGet(uriBuilder.build());
+      List<Tweet> result = restCall.getResponse(LinkedList.class, Tweet.class);
       return result;
     } catch (RestCallException e) {
       LOGGER.warn("RestCallException", e);
@@ -94,6 +92,8 @@ public class Twitter implements Statuses {
       LOGGER.warn("ParseException", e);
     } catch (IOException e) {
       LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
     }
     return null;
   }
@@ -101,10 +101,15 @@ public class Twitter implements Statuses {
   @Override
   public List<Tweet> lookup(StatusesLookupRequest parameters) {
     String ids = StringUtils.join(parameters.getId(), ',');
-    // there may be other parameters too
     try {
-      RestCall restCall = restClient.doGet("/statuses/lookup?id=" + ids);
-      List<Tweet> result = restCall.getResponse(List.class);
+      URIBuilder uriBuilder = new URIBuilder()
+          .setPath("/statuses/lookup")
+          .addParameter("id", ids)
+          .addParameter("trim_user", parameters.getTrimUser().toString())
+          .addParameter("include_entities", parameters.getIncludeEntities().toString())
+          .addParameter("map", parameters.getMap().toString());
+      RestCall restCall = restClient.doGet(uriBuilder.build());
+      List<Tweet> result = restCall.getResponse(LinkedList.class, Tweet.class);
       return result;
     } catch (RestCallException e) {
       LOGGER.warn("RestCallException", e);
@@ -113,16 +118,22 @@ public class Twitter implements Statuses {
       LOGGER.warn("ParseException", e);
     } catch (IOException e) {
       LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
     }
     return null;
   }
 
   @Override
   public Tweet show(StatusesShowRequest parameters) {
-    String id = parameters.getId().toString();
-    // there may be other parameters too
     try {
-      RestCall restCall = restClient.doGet("/statuses/show/" + id);
+      URIBuilder uriBuilder = new URIBuilder()
+          .setPath("/statuses/show")
+          .addParameter("id", parameters.getId().toString())
+          .addParameter("trim_user", parameters.getTrimUser().toString())
+          .addParameter("include_entities", parameters.getIncludeEntities().toString())
+          .addParameter("include_my_retweet", parameters.getIncludeMyRetweet().toString());
+      RestCall restCall = restClient.doGet(uriBuilder.build());
       Tweet result = restCall.getResponse(Tweet.class);
       return result;
     } catch (RestCallException e) {
@@ -132,7 +143,169 @@ public class Twitter implements Statuses {
       LOGGER.warn("ParseException", e);
     } catch (IOException e) {
       LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
     }
     return null;
   }
+
+  @Override
+  public FriendsIdsResponse ids(FriendsIdsRequest parameters) {
+    try {
+      URIBuilder uriBuilder = new URIBuilder()
+          .setPath("/friends/ids")
+          .addParameter("id", parameters.getId().toString())
+          .addParameter("screen_name", parameters.getScreenName())
+          .addParameter("curser", parameters.getCurser().toString())
+          .addParameter("count", parameters.getCount().toString())
+          .addParameter("stringify_ids", parameters.getStringifyIds().toString());
+      RestCall restCall = restClient.doGet(uriBuilder.build());
+      FriendsIdsResponse result = restCall.getResponse(FriendsIdsResponse.class);
+      return result;
+    } catch (RestCallException e) {
+      LOGGER.warn("RestCallException", e);
+      // what kind of exception?
+    } catch (ParseException e) {
+      LOGGER.warn("ParseException", e);
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    }
+    return null;
+  }
+
+  @Override
+  public FriendsListResponse show(FriendsListRequest parameters) {
+    try {
+      URIBuilder uriBuilder = new URIBuilder()
+          .setPath("/friends/list")
+          .addParameter("id", parameters.getId().toString())
+          .addParameter("screen_name", parameters.getScreenName())
+          .addParameter("curser", parameters.getCurser().toString())
+          .addParameter("count", parameters.getCount().toString())
+          .addParameter("skip_status", parameters.getSkipStatus().toString())
+          .addParameter("include_user_entities", parameters.getIncludeUserEntities().toString());
+      RestCall restCall = restClient.doGet(uriBuilder.build());
+      FriendsListResponse result = restCall.getResponse(FriendsListResponse.class);
+      return result;
+    } catch (RestCallException e) {
+      LOGGER.warn("RestCallException", e);
+      // what kind of exception?
+    } catch (ParseException e) {
+      LOGGER.warn("ParseException", e);
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    }
+    return null;
+  }
+
+  @Override
+  public FollowersIdsResponse ids(FollowersIdsRequest parameters) {
+    try {
+      URIBuilder uriBuilder = new URIBuilder()
+          .setPath("/followers/ids")
+          .addParameter("id", parameters.getId().toString())
+          .addParameter("screen_name", parameters.getScreenName())
+          .addParameter("curser", parameters.getCurser().toString())
+          .addParameter("count", parameters.getCount().toString())
+          .addParameter("stringify_ids", parameters.getStringifyIds().toString());
+      RestCall restCall = restClient.doGet(uriBuilder.build());
+      FollowersIdsResponse result = restCall.getResponse(FollowersIdsResponse.class);
+      return result;
+    } catch (RestCallException e) {
+      LOGGER.warn("RestCallException", e);
+      // what kind of exception?
+    } catch (ParseException e) {
+      LOGGER.warn("ParseException", e);
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    }
+    return null;
+  }
+
+  @Override
+  public FollowersListResponse show(FollowersListRequest parameters) {
+    try {
+      URIBuilder uriBuilder =
+          new URIBuilder()
+              .setPath("/followers/list")
+              .addParameter("id", parameters.getId().toString())
+              .addParameter("screen_name", parameters.getScreenName())
+              .addParameter("curser", parameters.getCurser().toString())
+              .addParameter("count", parameters.getCount().toString())
+              .addParameter("skip_status", parameters.getSkipStatus().toString())
+              .addParameter("include_user_entities", parameters.getIncludeUserEntities().toString());
+      RestCall restCall = restClient.doGet(uriBuilder.build());
+      FollowersListResponse result = restCall.getResponse(FollowersListResponse.class);
+      return result;
+    } catch (RestCallException e) {
+      LOGGER.warn("RestCallException", e);
+      // what kind of exception?
+    } catch (ParseException e) {
+      LOGGER.warn("ParseException", e);
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    }
+    return null;
+  }
+
+  @Override
+  public List<User> lookup(UsersLookupRequest parameters) {
+    String user_ids = StringUtils.join(parameters.getUserId(), ',');
+    String screen_names = StringUtils.join(parameters.getScreenName(), ',');
+    try {
+      URIBuilder uriBuilder =
+          new URIBuilder()
+              .setPath("/users/lookup")
+              .addParameter("user_id", user_ids)
+              .addParameter("screen_name", screen_names)
+              .addParameter("include_entities", parameters.getIncludeEntities().toString());
+      RestCall restCall = restClient.doGet(uriBuilder.build());
+      List<User> result = restCall.getResponse(LinkedList.class, User.class);
+      return result;
+    } catch (RestCallException e) {
+      LOGGER.warn("RestCallException", e);
+      // what kind of exception?
+    } catch (ParseException e) {
+      LOGGER.warn("ParseException", e);
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    }
+    return null;
+  }
+
+  @Override
+  public User show(UsersShowRequest parameters) {
+    try {
+      URIBuilder uriBuilder =
+          new URIBuilder()
+              .setPath("/users/show")
+              .addParameter("user_id", parameters.getUserId().toString())
+              .addParameter("screen_name", parameters.getScreenName())
+              .addParameter("include_entities", parameters.getIncludeEntities().toString());
+      RestCall restCall = restClient.doGet(uriBuilder.build());
+      User result = restCall.getResponse(User.class);
+      return result;
+    } catch (RestCallException e) {
+      LOGGER.warn("RestCallException", e);
+      // what kind of exception?
+    } catch (ParseException e) {
+      LOGGER.warn("ParseException", e);
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    }
+    return null;
+  }
+
 }

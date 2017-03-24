@@ -16,7 +16,7 @@
     "screen_name": {
       "description": "The screen name of the user for whom to return results. Either a id or screen_name is required for this method.",
       "required": false,
-      "type": "integer"
+      "type": "string"
     },
     "include_entities": {
       "description": "The entities node will not be included when set to false.",
