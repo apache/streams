@@ -29,6 +29,6 @@ public interface Followers {
    * @see <a href="https://api.twitter.com/1.1/followers/list.json">https://api.twitter.com/1.1/followers/list.json</a>
    *
    */
-  public FollowersListResponse show(FollowersListRequest parameters);
+  public FollowersListResponse list(FollowersListRequest parameters);
 
 }

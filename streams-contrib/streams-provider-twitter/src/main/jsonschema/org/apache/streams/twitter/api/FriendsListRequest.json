@@ -4,39 +4,10 @@
     "http://www.apache.org/licenses/LICENSE-2.0"
   ],
   "id": "#",
+  "type": "object",
   "javaType" : "org.apache.streams.twitter.api.FriendsListRequest",
   "javaInterfaces": ["java.io.Serializable"],
   "description": "https://dev.twitter.com/rest/reference/get/friends/list",
-  "properties": {
-    "id": {
-      "description": "The ID of the user for whom to return results for.",
-      "required": false,
-      "type": "integer"
-    },
-    "screen_name": {
-      "description": "The screen name of the user for whom to return results for.",
-      "required": false,
-      "type": "string"
-    },
-    "curser": {
-      "description": "Causes the list of connections to be broken into pages of no more than 5000 IDs at a time. The number of IDs returned is not guaranteed to be 5000 as suspended users are filtered out after connections are queried. If no cursor is provided, a value of -1 will be assumed, which is the first page.\nThe response from the API will include a previous_cursor and next_cursor to allow paging back and forth.",
-      "required": false,
-      "type": "boolean"
-    },
-    "count": {
-      "description": "The number of users to return per page, up to a maximum of 200. Defaults to 20.",
-      "required": false,
-      "type": "integer"
-    },
-    "skip_status": {
-      "description": "When set to either true , t or 1 , statuses will not be included in the returned user objects. If set to any other value, statuses will be included.",
-      "required": false,
-      "type": "boolean"
-    },
-    "include_user_entities": {
-      "description": "The user object entities node will not be included when set to false.",
-      "required": false,
-      "type": "integer"
-    }
-  }
+  "extends": { "$ref": "FollowingListRequest.json" },
+  "properties": {}
 }

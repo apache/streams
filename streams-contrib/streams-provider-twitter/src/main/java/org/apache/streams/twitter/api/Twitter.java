@@ -4,8 +4,8 @@ import org.apache.streams.twitter.TwitterConfiguration;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.provider.TwitterProviderUtil;
+import org.apache.streams.twitter.provider.TwitterRetryHandler;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -25,10 +25,7 @@ import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by sblackmon on 3/19/17.
@@ -56,6 +53,10 @@ public class Twitter implements Followers, Friends, Statuses, Users {
         .serializer(PlainTextSerializer.class)
         .parser(JsonParser.class)
         .rootUrl(rootUrl)
+        .retryable(
+            configuration.getRetryMax().intValue(),
+            configuration.getRetrySleepMs(),
+            new TwitterRetryHandler())
         .build();
   }
 
@@ -73,11 +74,11 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     try {
       URIBuilder uriBuilder = new URIBuilder()
           .setPath("/statuses/user_timeline")
-          .addParameter("user_id", parameters.getUserId())
+          .addParameter("user_id", parameters.getUserId().toString())
           .addParameter("screen_name", parameters.getScreenName())
-          .addParameter("since_id", parameters.getSinceId())
-          .addParameter("count", parameters.getCount())
-          .addParameter("max_id", parameters.getMaxId())
+          .addParameter("since_id", parameters.getSinceId().toString())
+          .addParameter("count", parameters.getCount().toString())
+          .addParameter("max_id", parameters.getMaxId().toString())
           .addParameter("trim_user", parameters.getTrimUser().toString())
           .addParameter("exclude_replies", parameters.getExcludeReplies().toString())
           .addParameter("contributor_details", parameters.getContributorDetails().toString())
@@ -176,7 +177,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
   }
 
   @Override
-  public FriendsListResponse show(FriendsListRequest parameters) {
+  public FriendsListResponse list(FriendsListRequest parameters) {
     try {
       URIBuilder uriBuilder = new URIBuilder()
           .setPath("/friends/list")
@@ -229,7 +230,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
   }
 
   @Override
-  public FollowersListResponse show(FollowersListRequest parameters) {
+  public FollowersListResponse list(FollowersListRequest parameters) {
     try {
       URIBuilder uriBuilder =
           new URIBuilder()

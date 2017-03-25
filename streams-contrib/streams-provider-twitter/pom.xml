@@ -97,11 +97,6 @@
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.twitter4j</groupId>
-            <artifactId>twitter4j-core</artifactId>
-            <version>4.0.3</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.juneau</groupId>
             <artifactId>juneau-rest-client</artifactId>
             <version>6.1.1-incubating-SNAPSHOT</version>

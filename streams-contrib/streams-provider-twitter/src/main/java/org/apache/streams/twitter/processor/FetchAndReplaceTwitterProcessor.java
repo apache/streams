@@ -28,6 +28,8 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.twitter.TwitterConfiguration;
 import org.apache.streams.twitter.TwitterStreamConfiguration;
+import org.apache.streams.twitter.api.StatusesShowRequest;
+import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.converter.TwitterDocumentClassifier;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
@@ -37,13 +39,8 @@ import org.apache.streams.twitter.provider.TwitterProviderUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.TwitterObjectFactory;
-import twitter4j.conf.ConfigurationBuilder;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -89,7 +86,13 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
       Activity doc = (Activity)entry.getDocument();
       String originalId = doc.getId();
       if (PROVIDER_ID.equals(doc.getProvider().getId())) {
-        fetchAndReplace(doc, originalId);
+        try {
+          fetchAndReplace(doc, originalId);
+        } catch (ActivityConversionException ex) {
+          LOGGER.warn("ActivityConversionException", ex);
+        } catch (IOException ex) {
+          LOGGER.warn("IOException", ex);
+        }
       }
     } else {
       throw new IllegalStateException("Requires an activity document");
@@ -109,22 +112,14 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
 
   }
 
-  protected void fetchAndReplace(Activity doc, String originalId) {
-    try {
-      String json = fetch(doc);
-      replace(doc, json);
-      doc.setId(originalId);
-      retryCount = 0;
-    } catch (TwitterException tw) {
-      if (tw.exceededRateLimitation()) {
-        sleepAndTryAgain(doc, originalId);
-      }
-    } catch (Exception ex) {
-      LOGGER.warn("Error fetching and replacing tweet for activity {}", doc.getId());
-    }
+  protected void fetchAndReplace(Activity doc, String originalId) throws java.io.IOException, ActivityConversionException {
+    Tweet tweet = fetch(doc);
+    replace(doc, tweet);
+    doc.setId(originalId);
   }
 
-  protected void replace(Activity doc, String json) throws java.io.IOException, ActivityConversionException {
+  protected void replace(Activity doc, Tweet tweet) throws java.io.IOException, ActivityConversionException {
+    String json = mapper.writeValueAsString(tweet);
     Class documentSubType = new TwitterDocumentClassifier().detectClasses(json).get(0);
     Object object = mapper.readValue(json, documentSubType);
 
@@ -137,52 +132,38 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     }
   }
 
-  protected String fetch(Activity doc) throws TwitterException {
+  protected Tweet fetch(Activity doc) {
     String id = doc.getObject().getId();
     LOGGER.debug("Fetching status from Twitter for {}", id);
     Long tweetId = Long.valueOf(id.replace("id:twitter:tweets:", ""));
-    Status status = getTwitterClient().showStatus(tweetId);
-    return TwitterObjectFactory.getRawJSON(status);
+    Tweet tweet = client.show(
+        new StatusesShowRequest()
+            .withId(tweetId)
+    );
+    return tweet;
   }
 
 
   protected Twitter getTwitterClient() {
 
-    if (this.client == null) {
+    return Twitter.getInstance(config);
 
-      String baseUrl = TwitterProviderUtil.baseUrl(config);
-
-      ConfigurationBuilder builder = new ConfigurationBuilder()
-          .setOAuthConsumerKey(config.getOauth().getConsumerKey())
-          .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
-          .setOAuthAccessToken(config.getOauth().getAccessToken())
-          .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
-          .setIncludeEntitiesEnabled(true)
-          .setJSONStoreEnabled(true)
-          .setAsyncNumThreads(1)
-          .setRestBaseURL(baseUrl)
-          .setIncludeMyRetweetEnabled(Boolean.TRUE)
-          .setPrettyDebugEnabled(Boolean.TRUE);
-
-      this.client = new TwitterFactory(builder.build()).getInstance();
-    }
-    return this.client;
   }
 
   //Hardcore sleep to allow for catch up
-  protected void sleepAndTryAgain(Activity doc, String originalId) {
-    try {
-      //Attempt to fetchAndReplace with a backoff up to the limit then just reset the count and let the process continue
-      if (retryCount < MAX_ATTEMPTS) {
-        retryCount++;
-        LOGGER.debug("Sleeping for {} min due to excessive calls to Twitter API", (retryCount * 4));
-        Thread.sleep(BACKOFF * retryCount);
-        fetchAndReplace(doc, originalId);
-      } else {
-        retryCount = 0;
-      }
-    } catch (InterruptedException ex) {
-      LOGGER.warn("Thread sleep interrupted while waiting for twitter backoff");
-    }
-  }
+//  protected void sleepAndTryAgain(Activity doc, String originalId) {
+//    try {
+//      //Attempt to fetchAndReplace with a backoff up to the limit then just reset the count and let the process continue
+//      if (retryCount < MAX_ATTEMPTS) {
+//        retryCount++;
+//        LOGGER.debug("Sleeping for {} min due to excessive calls to Twitter API", (retryCount * 4));
+//        Thread.sleep(BACKOFF * retryCount);
+//        fetchAndReplace(doc, originalId);
+//      } else {
+//        retryCount = 0;
+//      }
+//    } catch (InterruptedException ex) {
+//      LOGGER.warn("Thread sleep interrupted while waiting for twitter backoff");
+//    }
+//  }
 }

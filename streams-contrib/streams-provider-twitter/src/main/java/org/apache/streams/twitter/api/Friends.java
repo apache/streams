@@ -29,6 +29,6 @@ public interface Friends {
    * @see <a href="https://api.twitter.com/1.1/friends/list.json">https://api.twitter.com/1.1/friends/list.json</a>
    *
    */
-  public FriendsListResponse show(FriendsListRequest parameters);
+  public FriendsListResponse list(FriendsListRequest parameters);
 
 }

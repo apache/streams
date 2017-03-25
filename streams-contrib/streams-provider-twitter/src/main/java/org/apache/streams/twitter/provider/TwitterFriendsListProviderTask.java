@@ -20,40 +20,40 @@ package org.apache.streams.twitter.provider;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.twitter.api.StatusesUserTimelineRequest;
+import org.apache.streams.twitter.api.FriendsListRequest;
+import org.apache.streams.twitter.api.FriendsListResponse;
 import org.apache.streams.twitter.api.Twitter;
-import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
-import org.apache.streams.twitter.pojo.Tweet;
+import org.apache.streams.twitter.pojo.Follow;
+import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.util.ComponentUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
- *  Retrieve recent posts for a single user id.
+ *  Retrieve friend or follower connections for a single user id.
  */
-public class TwitterTimelineProviderTask implements Runnable {
+public class TwitterFriendsListProviderTask implements Runnable {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProviderTask.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFriendsListProviderTask.class);
 
-  private static ObjectMapper MAPPER = new StreamsJacksonMapper(Stream.of(TwitterDateTimeFormat.TWITTER_FORMAT).collect(Collectors.toList()));
+  private static final ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-  protected TwitterTimelineProvider provider;
   protected Twitter client;
-  protected StatusesUserTimelineRequest request;
+  protected TwitterFollowingProvider provider;
+  protected FriendsListRequest request;
+
+  private int count = 0;
 
   /**
-   * TwitterTimelineProviderTask constructor.
-   * @param provider TwitterTimelineProvider
+   * TwitterFollowingProviderTask constructor.
+   * @param provider TwitterFollowingProvider
    * @param twitter Twitter
-   * @param request StatusesUserTimelineRequest
+   * @param request FriendsListRequest
    */
-  public TwitterTimelineProviderTask(TwitterTimelineProvider provider, Twitter twitter, StatusesUserTimelineRequest request) {
+  public TwitterFriendsListProviderTask(TwitterFollowingProvider provider, Twitter twitter, FriendsListRequest request) {
     this.provider = provider;
     this.client = twitter;
     this.request = request;
@@ -63,41 +63,50 @@ public class TwitterTimelineProviderTask implements Runnable {
   int page_count = 1;
   int item_count = 0;
 
+
   @Override
   public void run() {
 
-    LOGGER.info("Thread Starting: {}", request.toString());
+    Preconditions.checkArgument(request.getId() != null || request.getScreenName() != null);
+
+    LOGGER.info(request.getId() != null ? request.getId().toString() : request.getScreenName() + " Thread Finished");
+
+  }
+
+  private void getFriendsList(FriendsListRequest request) {
 
     do {
 
       this.client = provider.getTwitterClient();
 
-      List<Tweet> statuses = client.userTimeline(request);
+      FriendsListResponse response = client.list(request);
 
-      last_count = statuses.size();
-      if( statuses.size() > 0 ) {
+      last_count = response.getUsers().size();
 
-        for (Tweet status : statuses) {
+      if (response.getUsers().size() > 0) {
+
+        for (User friend : response.getUsers()) {
+
+          Follow follow = new Follow()
+              .withFollower(friend)
+              .withFollowee(
+                  new User()
+                      .withId(request.getId())
+                      .withScreenName(request.getScreenName()));
 
           if (item_count < provider.getConfig().getMaxItems()) {
-            ComponentUtils.offerUntilSuccess(new StreamsDatum(status), provider.providerQueue);
+            ComponentUtils.offerUntilSuccess(new StreamsDatum(follow), provider.providerQueue);
             item_count++;
           }
 
         }
 
-        Stream<Long> statusIds = statuses.stream().map(status -> status.getId());
-        long minId = statusIds.reduce(Math::min).get();
-        page_count++;
-        request.setMaxId(minId);
-
       }
+      page_count++;
+      request.setCurser(response.getNextCursor());
 
     }
     while (shouldContinuePulling(last_count, page_count, item_count));
-
-    LOGGER.info("Thread Finished: {}", request.toString());
-
   }
 
   public boolean shouldContinuePulling(int count, int page_count, int item_count) {
@@ -106,7 +115,5 @@ public class TwitterTimelineProviderTask implements Runnable {
             && item_count < provider.getConfig().getMaxItems()
             && page_count <= provider.getConfig().getMaxPages());
   }
-
-
 
 }

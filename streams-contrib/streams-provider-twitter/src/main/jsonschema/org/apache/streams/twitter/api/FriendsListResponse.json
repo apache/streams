@@ -13,9 +13,8 @@
     "users": {
       "type": "array",
       "items": {
-        "type": {
-          "$ref": "../pojo/User.json"
-        }
+        "type": "object",
+        "$ref": "../pojo/User.json"
       }
     },
     "previous_cursor": {
