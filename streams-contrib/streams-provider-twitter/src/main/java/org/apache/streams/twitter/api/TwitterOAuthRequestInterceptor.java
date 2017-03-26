@@ -5,6 +5,7 @@ import org.apache.streams.twitter.TwitterOAuthConfiguration;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,60 +58,65 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
     String oauth_timestamp = (new Long(ts/1000)).toString(); // then divide by 1000 to get seconds
 
     Map<String,String> oauthParamMap = new HashMap<>();
-    oauthParamMap.put(encode("oauth_consumer_key"), encode(oAuthConfiguration.getConsumerKey()));
-    oauthParamMap.put(encode("oauth_nonce"), encode(oauth_nonce));
-    oauthParamMap.put(encode("oauth_signature_method"), encode(oauth_signature_method));
-    oauthParamMap.put(encode("oauth_timestamp"), encode(oauth_timestamp));
-    oauthParamMap.put(encode("oauth_token"), encode(oAuthConfiguration.getAccessToken()));
-    oauthParamMap.put(encode("oauth_version"), encode(oauth_version));
+    oauthParamMap.put("oauth_consumer_key", oAuthConfiguration.getConsumerKey());
+    oauthParamMap.put("oauth_nonce", oauth_nonce);
+    oauthParamMap.put("oauth_signature_method", oauth_signature_method);
+    oauthParamMap.put("oauth_timestamp", oauth_timestamp);
+    oauthParamMap.put("oauth_token", oAuthConfiguration.getAccessToken());
+    oauthParamMap.put("oauth_version", oauth_version);
 
-    String request_url = httpRequest.getRequestLine().getUri().substring(0, httpRequest.getRequestLine().getUri().indexOf('?'));
+    String request_host = ((HttpRequestWrapper)httpRequest).getTarget().toString().replace(":443","");
+    String request_path = httpRequest.getRequestLine().getUri().substring(0, httpRequest.getRequestLine().getUri().indexOf('?'));
     String request_param_line = httpRequest.getRequestLine().getUri().substring(httpRequest.getRequestLine().getUri().indexOf('?')+1);
     String[] request_params = request_param_line.split(",");
 
     Map<String,String> requestParamMap = new HashMap<>();
     for( String request_param : request_params ) {
-      String key = encode(request_param.substring(0, request_param.indexOf('=')));
-      String value = encode(request_param.substring(request_param.indexOf('=')+1, request_param.length()));
+      String key = request_param.substring(0, request_param.indexOf('='));
+      String value =request_param.substring(request_param.indexOf('=')+1, request_param.length());
       requestParamMap.put(key, value);
     }
 
     Map<String,String> allParamsMap = new HashMap<>(oauthParamMap);
     for( Map.Entry<String, String> entry : requestParamMap.entrySet()) {
-      allParamsMap.put(encode(entry.getKey()), encode(entry.getValue()));
+      allParamsMap.put(entry.getKey(), entry.getValue());
     }
 
     String signature_parameter_string = generateSignatureParameterString(allParamsMap);
 
-    String signature_base_string = generateSignatureBaseString(get_or_post, request_url, signature_parameter_string);
+    String signature_base_string = generateSignatureBaseString(get_or_post, request_host+request_path, signature_parameter_string);
+
+    String signing_key = encode(oAuthConfiguration.getConsumerSecret()) + "&" + encode(oAuthConfiguration.getAccessTokenSecret());
 
     String oauth_signature;
     try {
-      oauth_signature = computeSignature(signature_base_string, oAuthConfiguration.getConsumerSecret() + "&" + encode(oAuthConfiguration.getAccessTokenSecret()));
+      oauth_signature = computeSignature(signature_base_string, signing_key);
     } catch (GeneralSecurityException e) {
       LOGGER.warn("GeneralSecurityException", e);
       return;
     }
 
-    String authorization_header_string = new StringBuilder()
-      .append("OAuth ")
-      .append("oauth_consumer_key=\"" + encode(oAuthConfiguration.getConsumerKey()) + "\"")
-      .append(", ")
-      .append("oauth_nonce=\"" + encode(oauth_nonce) + "\"")
-      .append(", ")
-      .append("oauth_signature=\"" + encode(oauth_signature) + "\"")
-      .append(", ")
-      .append("oauth_signature_method=\""+encode(oauth_signature_method)+"\"")
-      .append(", ")
-      .append("oauth_timestamp=\"" + encode(oauth_timestamp) + "\"")
-      .append(", ")
-      .append("oauth_token=\"" + encode(oAuthConfiguration.getAccessToken()) + "\"")
-      .append(", ")
-      .append("oauth_version=\"1.0\"")
-      .toString();
+    oauthParamMap.put("oauth_signature", encode(oauth_signature));
+
+    String authorization_header_string = generateAuthorizationHeaderString(oauthParamMap);
 
     httpRequest.setHeader("Authorization", authorization_header_string);
 
+  }
+
+  public static String generateAuthorizationHeaderString(Map<String,String> oauthParamMap) {
+    SortedSet<String> sortedKeys = new TreeSet<>(oauthParamMap.keySet());
+
+    StringJoiner stringJoiner = new StringJoiner(", ");
+    for( String key : sortedKeys ) {
+      stringJoiner.add(encode(key)+"="+"\""+encode(oauthParamMap.get(key))+"\"");
+    }
+
+    String authorization_header_string = new StringBuilder()
+        .append("OAuth ")
+        .append(stringJoiner.toString())
+        .toString();
+    return authorization_header_string;
   }
 
   public static String generateSignatureBaseString(String method, String request_url, String signature_parameter_string) {
@@ -162,7 +168,7 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
     return buf.toString();
   }
 
-  private static String computeSignature(String baseString, String keyString) throws GeneralSecurityException, UnsupportedEncodingException
+  public static String computeSignature(String baseString, String keyString) throws GeneralSecurityException, UnsupportedEncodingException
   {
     SecretKey secretKey = null;
 
