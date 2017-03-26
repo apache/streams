@@ -15,6 +15,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.StringJoiner;
+import java.util.TreeSet;
 import java.util.UUID;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -23,17 +28,19 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Created by sblackmon on 3/25/17.
  */
-public class OAuthRequestInterceptor implements HttpRequestInterceptor {
+public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OAuthRequestInterceptor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TwitterOAuthRequestInterceptor.class);
 
   private static final String get_or_post = "GET";
   private static final String oauth_signature_method = "HMAC-SHA1";
+  private static final String oauth_version = "1.0";
+
   private static final BASE64Encoder base64Encoder = new BASE64Encoder();
 
   TwitterOAuthConfiguration oAuthConfiguration;
 
-  public OAuthRequestInterceptor(TwitterOAuthConfiguration oAuthConfiguration) {
+  public TwitterOAuthRequestInterceptor(TwitterOAuthConfiguration oAuthConfiguration) {
     this.oAuthConfiguration = oAuthConfiguration;
   }
 
@@ -49,29 +56,33 @@ public class OAuthRequestInterceptor implements HttpRequestInterceptor {
     long ts = tempcal.getTimeInMillis();// get current time in milliseconds
     String oauth_timestamp = (new Long(ts/1000)).toString(); // then divide by 1000 to get seconds
 
-    String parameter_string = new StringBuilder()
-        .append("oauth_consumer_key=" + oAuthConfiguration.getConsumerKey())
-        .append("&")
-        .append("oauth_nonce=" + oauth_nonce)
-        .append("&")
-        .append("oauth_signature_method=" + oauth_signature_method)
-        .append("&")
-        .append("oauth_timestamp=" + oauth_timestamp)
-        .append("&")
-        .append("oauth_token=" + encode(oAuthConfiguration.getAccessToken()))
-        .append("&")
-        .append("oauth_version=1.0")
-        .toString();
+    Map<String,String> oauthParamMap = new HashMap<>();
+    oauthParamMap.put(encode("oauth_consumer_key"), encode(oAuthConfiguration.getConsumerKey()));
+    oauthParamMap.put(encode("oauth_nonce"), encode(oauth_nonce));
+    oauthParamMap.put(encode("oauth_signature_method"), encode(oauth_signature_method));
+    oauthParamMap.put(encode("oauth_timestamp"), encode(oauth_timestamp));
+    oauthParamMap.put(encode("oauth_token"), encode(oAuthConfiguration.getAccessToken()));
+    oauthParamMap.put(encode("oauth_version"), encode(oauth_version));
 
-    String request_url = httpRequest.getRequestLine().getUri();
-    String twitter_endpoint = request_url;
-    String signature_base_string = new StringBuilder()
-      .append(get_or_post)
-      .append("&")
-      .append(encode(twitter_endpoint))
-      .append("&")
-      .append(encode(parameter_string))
-      .toString();
+    String request_url = httpRequest.getRequestLine().getUri().substring(0, httpRequest.getRequestLine().getUri().indexOf('?'));
+    String request_param_line = httpRequest.getRequestLine().getUri().substring(httpRequest.getRequestLine().getUri().indexOf('?')+1);
+    String[] request_params = request_param_line.split(",");
+
+    Map<String,String> requestParamMap = new HashMap<>();
+    for( String request_param : request_params ) {
+      String key = encode(request_param.substring(0, request_param.indexOf('=')));
+      String value = encode(request_param.substring(request_param.indexOf('=')+1, request_param.length()));
+      requestParamMap.put(key, value);
+    }
+
+    Map<String,String> allParamsMap = new HashMap<>(oauthParamMap);
+    for( Map.Entry<String, String> entry : requestParamMap.entrySet()) {
+      allParamsMap.put(encode(entry.getKey()), encode(entry.getValue()));
+    }
+
+    String signature_parameter_string = generateSignatureParameterString(allParamsMap);
+
+    String signature_base_string = generateSignatureBaseString(get_or_post, request_url, signature_parameter_string);
 
     String oauth_signature;
     try {
@@ -83,15 +94,15 @@ public class OAuthRequestInterceptor implements HttpRequestInterceptor {
 
     String authorization_header_string = new StringBuilder()
       .append("OAuth ")
-      .append("oauth_consumer_key=\"" + oAuthConfiguration.getConsumerKey() + "\"")
+      .append("oauth_consumer_key=\"" + encode(oAuthConfiguration.getConsumerKey()) + "\"")
       .append(", ")
-      .append("oauth_nonce=\"" + oauth_nonce + "\"")
+      .append("oauth_nonce=\"" + encode(oauth_nonce) + "\"")
       .append(", ")
-      .append("oauth_signature=\"" + oauth_signature + "\"")
+      .append("oauth_signature=\"" + encode(oauth_signature) + "\"")
       .append(", ")
-      .append("oauth_signature_method=\"HMAC-SHA1\"")
+      .append("oauth_signature_method=\""+encode(oauth_signature_method)+"\"")
       .append(", ")
-      .append("oauth_timestamp=\"" + oauth_timestamp + "\"")
+      .append("oauth_timestamp=\"" + encode(oauth_timestamp) + "\"")
       .append(", ")
       .append("oauth_token=\"" + encode(oAuthConfiguration.getAccessToken()) + "\"")
       .append(", ")
@@ -102,7 +113,30 @@ public class OAuthRequestInterceptor implements HttpRequestInterceptor {
 
   }
 
-  public String encode(String value)
+  public static String generateSignatureBaseString(String method, String request_url, String signature_parameter_string) {
+    String signature_base_string = new StringBuilder()
+        .append(method)
+        .append("&")
+        .append(encode(request_url))
+        .append("&")
+        .append(encode(signature_parameter_string))
+        .toString();
+    return signature_base_string;
+  }
+
+  public static String generateSignatureParameterString(Map<String, String> allParamsMap) {
+
+    SortedSet<String> sortedKeys = new TreeSet<>(allParamsMap.keySet());
+
+    StringJoiner stringJoiner = new StringJoiner("&");
+    for( String key : sortedKeys ) {
+      stringJoiner.add(encode(key)+"="+encode(allParamsMap.get(key)));
+    }
+
+    return stringJoiner.toString();
+  }
+
+  public static String encode(String value)
   {
     String encoded = null;
     try {

@@ -16,12 +16,7 @@
  * under the License.
  */
 
-package org.apache.streams.twitter.provider;
-
-import org.apache.streams.config.ComponentConfigurator;
-import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.twitter.TwitterConfiguration;
-import org.apache.streams.twitter.api.Twitter;
+package org.apache.streams.twitter.api;
 
 import org.apache.juneau.rest.client.RetryOn;
 import org.slf4j.Logger;

@@ -4,7 +4,6 @@ import org.apache.streams.twitter.TwitterConfiguration;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.provider.TwitterProviderUtil;
-import org.apache.streams.twitter.provider.TwitterRetryHandler;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpRequestInterceptor;
@@ -51,7 +50,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
   private Twitter(TwitterConfiguration configuration) {
     this.configuration = configuration;
     this.rootUrl = TwitterProviderUtil.baseUrl(configuration);
-    this.oauthInterceptor = new OAuthRequestInterceptor(configuration.getOauth());
+    this.oauthInterceptor = new TwitterOAuthRequestInterceptor(configuration.getOauth());
     this.httpclient = HttpClientBuilder.create()
         .addInterceptorFirst(oauthInterceptor).build();
     this.restClient = new RestClientBuilder()
@@ -271,9 +270,13 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     try {
       URIBuilder uriBuilder =
           new URIBuilder()
-              .setPath("/users/lookup.json")
-              .addParameter("user_id", user_ids)
-              .addParameter("screen_name", screen_names);
+              .setPath("/users/lookup.json");
+      if( Objects.nonNull(user_ids) && StringUtils.isNotBlank(user_ids)) {
+        uriBuilder.addParameter("user_id", user_ids);
+      }
+      if( Objects.nonNull(screen_names) && StringUtils.isNotBlank(screen_names)) {
+        uriBuilder.addParameter("screen_name", screen_names);
+      }
       if( Objects.nonNull(parameters.getIncludeEntities()) && StringUtils.isNotBlank(parameters.getIncludeEntities().toString())) {
         uriBuilder.addParameter("include_entities", parameters.getIncludeEntities().toString());
       }
