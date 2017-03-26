@@ -168,8 +168,6 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
 
     Objects.requireNonNull(executor);
 
-    Preconditions.checkArgument(idsBatches.hasNext() || screenNameBatches.hasNext());
-
     LOGGER.info("startStream");
 
     running.set(true);
@@ -237,8 +235,6 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
   @Override
   public StreamsResultSet readCurrent() {
 
-    LOGGER.info("{}{} - readCurrent", idsBatches, screenNameBatches);
-
     StreamsResultSet result;
 
     try {
@@ -246,7 +242,7 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
       result = new StreamsResultSet(providerQueue);
       result.setCounter(new DatumStatusCounter());
       providerQueue = constructQueue();
-      LOGGER.debug("{}{} - providing {} docs", idsBatches, screenNameBatches, result.size());
+      LOGGER.debug("readCurrent: {} Documents", result.size());
     } finally {
       lock.writeLock().unlock();
     }
@@ -261,8 +257,8 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
 
   @Override
   public boolean isRunning() {
-    if (providerQueue.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone()) {
-      LOGGER.info("Completed");
+    if ( providerQueue.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone() ) {
+      LOGGER.info("All Threads Completed");
       running.set(false);
       LOGGER.info("Exiting");
     }

@@ -7,9 +7,10 @@ import org.apache.streams.twitter.provider.TwitterProviderUtil;
 import org.apache.streams.twitter.provider.TwitterRetryHandler;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.juneau.json.JsonParser;
 import org.apache.juneau.parser.ParseException;
 import org.apache.juneau.plaintext.PlainTextSerializer;
@@ -25,6 +26,7 @@ import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -42,12 +44,16 @@ public class Twitter implements Followers, Friends, Statuses, Users {
 
   private CloseableHttpClient httpclient;
 
+  private HttpRequestInterceptor oauthInterceptor;
+
   RestClient restClient;
 
   private Twitter(TwitterConfiguration configuration) {
     this.configuration = configuration;
-    this.httpclient = HttpClients.createDefault();
     this.rootUrl = TwitterProviderUtil.baseUrl(configuration);
+    this.oauthInterceptor = new OAuthRequestInterceptor(configuration.getOauth());
+    this.httpclient = HttpClientBuilder.create()
+        .addInterceptorFirst(oauthInterceptor).build();
     this.restClient = new RestClientBuilder()
         .httpClient(httpclient, true)
         .serializer(PlainTextSerializer.class)
@@ -73,7 +79,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
   public List<Tweet> userTimeline(StatusesUserTimelineRequest parameters) {
     try {
       URIBuilder uriBuilder = new URIBuilder()
-          .setPath("/statuses/user_timeline")
+          .setPath("/statuses/user_timeline.json")
           .addParameter("user_id", parameters.getUserId().toString())
           .addParameter("screen_name", parameters.getScreenName())
           .addParameter("since_id", parameters.getSinceId().toString())
@@ -84,6 +90,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
           .addParameter("contributor_details", parameters.getContributorDetails().toString())
           .addParameter("include_rts", parameters.getIncludeRts().toString());
       RestCall restCall = restClient.doGet(uriBuilder.build());
+
       List<Tweet> result = restCall.getResponse(LinkedList.class, Tweet.class);
       return result;
     } catch (RestCallException e) {
@@ -104,7 +111,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     String ids = StringUtils.join(parameters.getId(), ',');
     try {
       URIBuilder uriBuilder = new URIBuilder()
-          .setPath("/statuses/lookup")
+          .setPath("/statuses/lookup.json")
           .addParameter("id", ids)
           .addParameter("trim_user", parameters.getTrimUser().toString())
           .addParameter("include_entities", parameters.getIncludeEntities().toString())
@@ -129,7 +136,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
   public Tweet show(StatusesShowRequest parameters) {
     try {
       URIBuilder uriBuilder = new URIBuilder()
-          .setPath("/statuses/show")
+          .setPath("/statuses/show.json")
           .addParameter("id", parameters.getId().toString())
           .addParameter("trim_user", parameters.getTrimUser().toString())
           .addParameter("include_entities", parameters.getIncludeEntities().toString())
@@ -154,7 +161,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
   public FriendsIdsResponse ids(FriendsIdsRequest parameters) {
     try {
       URIBuilder uriBuilder = new URIBuilder()
-          .setPath("/friends/ids")
+          .setPath("/friends/ids.json")
           .addParameter("id", parameters.getId().toString())
           .addParameter("screen_name", parameters.getScreenName())
           .addParameter("curser", parameters.getCurser().toString())
@@ -180,7 +187,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
   public FriendsListResponse list(FriendsListRequest parameters) {
     try {
       URIBuilder uriBuilder = new URIBuilder()
-          .setPath("/friends/list")
+          .setPath("/friends/list.json")
           .addParameter("id", parameters.getId().toString())
           .addParameter("screen_name", parameters.getScreenName())
           .addParameter("curser", parameters.getCurser().toString())
@@ -207,7 +214,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
   public FollowersIdsResponse ids(FollowersIdsRequest parameters) {
     try {
       URIBuilder uriBuilder = new URIBuilder()
-          .setPath("/followers/ids")
+          .setPath("/followers/ids.json")
           .addParameter("id", parameters.getId().toString())
           .addParameter("screen_name", parameters.getScreenName())
           .addParameter("curser", parameters.getCurser().toString())
@@ -234,7 +241,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     try {
       URIBuilder uriBuilder =
           new URIBuilder()
-              .setPath("/followers/list")
+              .setPath("/followers/list.json")
               .addParameter("id", parameters.getId().toString())
               .addParameter("screen_name", parameters.getScreenName())
               .addParameter("curser", parameters.getCurser().toString())
@@ -264,11 +271,13 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     try {
       URIBuilder uriBuilder =
           new URIBuilder()
-              .setPath("/users/lookup")
+              .setPath("/users/lookup.json")
               .addParameter("user_id", user_ids)
-              .addParameter("screen_name", screen_names)
-              .addParameter("include_entities", parameters.getIncludeEntities().toString());
-      RestCall restCall = restClient.doGet(uriBuilder.build());
+              .addParameter("screen_name", screen_names);
+      if( Objects.nonNull(parameters.getIncludeEntities()) && StringUtils.isNotBlank(parameters.getIncludeEntities().toString())) {
+        uriBuilder.addParameter("include_entities", parameters.getIncludeEntities().toString());
+      }
+      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       List<User> result = restCall.getResponse(LinkedList.class, User.class);
       return result;
     } catch (RestCallException e) {
@@ -289,7 +298,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     try {
       URIBuilder uriBuilder =
           new URIBuilder()
-              .setPath("/users/show")
+              .setPath("/users/show.json")
               .addParameter("user_id", parameters.getUserId().toString())
               .addParameter("screen_name", parameters.getScreenName())
               .addParameter("include_entities", parameters.getIncludeEntities().toString());

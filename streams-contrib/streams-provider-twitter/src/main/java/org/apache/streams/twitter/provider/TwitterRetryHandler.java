@@ -115,6 +115,8 @@ public class TwitterRetryHandler implements RetryOn {
   @Override
   public boolean onCode(int httpResponseCode) {
 
+    LOGGER.warn("TwitterRetryHandler: {}", httpResponseCode);
+
     if( httpResponseCode > 400 ) {
       return true;
     } else {

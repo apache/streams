@@ -37,6 +37,7 @@ import org.apache.streams.util.ComponentUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -159,9 +160,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     this.config = config;
   }
 
-  protected Iterator<List<Long>> idsBatches;
-  protected Iterator<List<String>> screenNameBatches;
-
   protected ListeningExecutorService executor;
 
   protected DateTime start;
@@ -201,8 +199,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
   @Override
   public void prepare(Object configurationObject) {
-
-    Twitter client = getTwitterClient();
 
     if ( configurationObject instanceof TwitterFollowingConfiguration ) {
       config = (TwitterUserInformationConfiguration) configurationObject;
@@ -311,9 +307,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     Objects.requireNonNull(executor);
 
-    Preconditions.checkArgument(idsBatches.hasNext() || screenNameBatches.hasNext());
-
-    LOGGER.info("{}{} - startStream", idsBatches, screenNameBatches);
+    LOGGER.info("startStream: {} Threads", futures.size());
 
     running.set(true);
 
@@ -323,8 +317,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
   @Override
   public StreamsResultSet readCurrent() {
 
-    LOGGER.debug("{}{} - readCurrent", idsBatches, screenNameBatches);
-
     StreamsResultSet result;
 
     try {
@@ -332,7 +324,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
       result = new StreamsResultSet(providerQueue);
       result.setCounter(new DatumStatusCounter());
       providerQueue = constructQueue();
-      LOGGER.debug("{}{} - providing {} docs", idsBatches, screenNameBatches, result.size());
+      LOGGER.debug("readCurrent: {} Documents", result.size());
     } finally {
       lock.writeLock().unlock();
     }
@@ -359,17 +351,14 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     return (StreamsResultSet)providerQueue.iterator();
   }
 
+
   @Override
   public boolean isRunning() {
-
-    if ( providerQueue.isEmpty() && executor.isTerminated() ) {
-      LOGGER.info("{}{} - completed", idsBatches, screenNameBatches);
-
+    if ( providerQueue.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone() ) {
+      LOGGER.info("All Threads Completed");
       running.set(false);
-
       LOGGER.info("Exiting");
     }
-
     return running.get();
   }
 
