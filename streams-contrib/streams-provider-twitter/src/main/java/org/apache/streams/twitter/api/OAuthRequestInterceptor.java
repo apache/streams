@@ -49,13 +49,30 @@ public class OAuthRequestInterceptor implements HttpRequestInterceptor {
     long ts = tempcal.getTimeInMillis();// get current time in milliseconds
     String oauth_timestamp = (new Long(ts/1000)).toString(); // then divide by 1000 to get seconds
 
-    // the parameter string must be in alphabetical order, "text" parameter added at end
-    String parameter_string = "oauth_consumer_key=" + oAuthConfiguration.getConsumerKey() + "&oauth_nonce=" + oauth_nonce + "&oauth_signature_method=" + oauth_signature_method +
-        "&oauth_timestamp=" + oauth_timestamp + "&oauth_token=" + encode(oAuthConfiguration.getAccessToken()) + "&oauth_version=1.0";
+    String parameter_string = new StringBuilder()
+        .append("oauth_consumer_key=" + oAuthConfiguration.getConsumerKey())
+        .append("&")
+        .append("oauth_nonce=" + oauth_nonce)
+        .append("&")
+        .append("oauth_signature_method=" + oauth_signature_method)
+        .append("&")
+        .append("oauth_timestamp=" + oauth_timestamp)
+        .append("&")
+        .append("oauth_token=" + encode(oAuthConfiguration.getAccessToken()))
+        .append("&")
+        .append("oauth_version=1.0")
+        .toString();
 
     String request_url = httpRequest.getRequestLine().getUri();
     String twitter_endpoint = request_url;
-    String signature_base_string = get_or_post + "&"+ encode(twitter_endpoint) + "&" + encode(parameter_string);
+    String signature_base_string = new StringBuilder()
+      .append(get_or_post)
+      .append("&")
+      .append(encode(twitter_endpoint))
+      .append("&")
+      .append(encode(parameter_string))
+      .toString();
+
     String oauth_signature;
     try {
       oauth_signature = computeSignature(signature_base_string, oAuthConfiguration.getConsumerSecret() + "&" + encode(oAuthConfiguration.getAccessTokenSecret()));
@@ -64,8 +81,22 @@ public class OAuthRequestInterceptor implements HttpRequestInterceptor {
       return;
     }
 
-    String authorization_header_string = "OAuth oauth_consumer_key=\"" + oAuthConfiguration.getConsumerKey() + "\",oauth_signature_method=\"HMAC-SHA1\",oauth_timestamp=\"" + oauth_timestamp +
-        "\",oauth_nonce=\"" + oauth_nonce + "\",oauth_version=\"1.0\",oauth_signature=\"" + encode(oauth_signature) + "\",oauth_token=\"" + encode(oAuthConfiguration.getAccessToken()) + "\"";
+    String authorization_header_string = new StringBuilder()
+      .append("OAuth ")
+      .append("oauth_consumer_key=\"" + oAuthConfiguration.getConsumerKey() + "\"")
+      .append(", ")
+      .append("oauth_nonce=\"" + oauth_nonce + "\"")
+      .append(", ")
+      .append("oauth_signature=\"" + oauth_signature + "\"")
+      .append(", ")
+      .append("oauth_signature_method=\"HMAC-SHA1\"")
+      .append(", ")
+      .append("oauth_timestamp=\"" + oauth_timestamp + "\"")
+      .append(", ")
+      .append("oauth_token=\"" + encode(oAuthConfiguration.getAccessToken()) + "\"")
+      .append(", ")
+      .append("oauth_version=\"1.0\"")
+      .toString();
 
     httpRequest.setHeader("Authorization", authorization_header_string);
 
