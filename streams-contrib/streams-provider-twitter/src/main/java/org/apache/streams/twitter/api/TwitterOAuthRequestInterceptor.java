@@ -50,12 +50,12 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
 
     String uuid_string = UUID.randomUUID().toString();
     uuid_string = uuid_string.replaceAll("-", "");
-    String oauth_nonce = uuid_string; // any relatively random alphanumeric string will work here
+    String oauth_nonce = base64Encoder.encode(uuid_string.getBytes());
 
     // get the timestamp
     Calendar tempcal = Calendar.getInstance();
     long ts = tempcal.getTimeInMillis();// get current time in milliseconds
-    String oauth_timestamp = (new Long(ts/1000)).toString(); // then divide by 1000 to get seconds
+    String oauth_timestamp = (new Long(ts/1000)).toString();
 
     Map<String,String> oauthParamMap = new HashMap<>();
     oauthParamMap.put("oauth_consumer_key", oAuthConfiguration.getConsumerKey());
@@ -96,7 +96,7 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
       return;
     }
 
-    oauthParamMap.put("oauth_signature", encode(oauth_signature));
+    oauthParamMap.put("oauth_signature", oauth_signature);
 
     String authorization_header_string = generateAuthorizationHeaderString(oauthParamMap);
 
