@@ -30,8 +30,6 @@
     <description>Riak Module</description>
 
     <properties>
-        <httpcomponents.core.version>4.3.5</httpcomponents.core.version>
-        <httpcomponents.client.version>4.3.5</httpcomponents.client.version>
         <riak.version>2.0.6</riak.version>
     </properties>
 
@@ -58,7 +56,6 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${httpcomponents.client.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>

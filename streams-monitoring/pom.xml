@@ -48,14 +48,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcomponents-core</artifactId>
-            <type>pom</type>
-            <version>${httpcomponents.core.version}</version>
+            <artifactId>httpcore</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${httpcomponents.client.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>

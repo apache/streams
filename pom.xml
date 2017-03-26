@@ -359,8 +359,8 @@
         <facebook4j.version>2.4.7</facebook4j.version>
         <mockito.version>1.10.19</mockito.version>
         <powermock.version>1.6.5</powermock.version>
-        <httpcomponents.core.version>4.4.5</httpcomponents.core.version>
-        <httpcomponents.client.version>4.5.2</httpcomponents.client.version>
+        <httpcomponents.core.version>4.4.6</httpcomponents.core.version>
+        <httpcomponents.client.version>4.5.3</httpcomponents.client.version>
         <doxia.version>1.7</doxia.version>
 
         <!-- osgi configuration -->
@@ -976,6 +976,16 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>${httpcomponents.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpcomponents.client.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe</groupId>
