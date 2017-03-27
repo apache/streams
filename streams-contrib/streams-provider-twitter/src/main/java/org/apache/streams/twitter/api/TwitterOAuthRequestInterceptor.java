@@ -5,14 +5,18 @@ import org.apache.streams.twitter.TwitterOAuthConfiguration;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestWrapper;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.util.Calendar;
@@ -22,6 +26,7 @@ import java.util.SortedSet;
 import java.util.StringJoiner;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -33,7 +38,6 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterOAuthRequestInterceptor.class);
 
-  private static final String get_or_post = "GET";
   private static final String oauth_signature_method = "HMAC-SHA1";
   private static final String oauth_version = "1.0";
 
@@ -48,14 +52,9 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
   @Override
   public void process(HttpRequest httpRequest, HttpContext httpContext) throws HttpException, IOException {
 
-    String uuid_string = UUID.randomUUID().toString();
-    uuid_string = uuid_string.replaceAll("-", "");
-    String oauth_nonce = base64Encoder.encode(uuid_string.getBytes());
+    String oauth_nonce = generateNonce();
 
-    // get the timestamp
-    Calendar tempcal = Calendar.getInstance();
-    long ts = tempcal.getTimeInMillis();// get current time in milliseconds
-    String oauth_timestamp = (new Long(ts/1000)).toString();
+    String oauth_timestamp = generateTimestamp();
 
     Map<String,String> oauthParamMap = new HashMap<>();
     oauthParamMap.put("oauth_consumer_key", oAuthConfiguration.getConsumerKey());
@@ -70,21 +69,30 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
     String request_param_line = httpRequest.getRequestLine().getUri().substring(httpRequest.getRequestLine().getUri().indexOf('?')+1);
     String[] request_params = request_param_line.split(",");
 
-    Map<String,String> requestParamMap = new HashMap<>();
+    Map<String,String> allParamsMap = new HashMap<>(oauthParamMap);
+
     for( String request_param : request_params ) {
       String key = request_param.substring(0, request_param.indexOf('='));
       String value =request_param.substring(request_param.indexOf('=')+1, request_param.length());
-      requestParamMap.put(key, value);
+      allParamsMap.put(key, value);
     }
 
-    Map<String,String> allParamsMap = new HashMap<>(oauthParamMap);
-    for( Map.Entry<String, String> entry : requestParamMap.entrySet()) {
-      allParamsMap.put(entry.getKey(), entry.getValue());
+    String[] body_params;
+    if( ((HttpRequestWrapper) httpRequest).getOriginal() instanceof HttpPost) {
+      String body = EntityUtils.toString(((HttpPost)((HttpRequestWrapper) httpRequest).getOriginal()).getEntity());
+      body_params = body.split(",");
+      for( String body_param : body_params ) {
+        String key = body_param.substring(0, body_param.indexOf('='));
+        String value = URLDecoder.decode(body_param.substring(body_param.indexOf('=')+1, body_param.length()));
+        allParamsMap.put(key, value);
+      }
     }
+
+    allParamsMap = encodeMap(allParamsMap);
 
     String signature_parameter_string = generateSignatureParameterString(allParamsMap);
 
-    String signature_base_string = generateSignatureBaseString(get_or_post, request_host+request_path, signature_parameter_string);
+    String signature_base_string = generateSignatureBaseString(((HttpRequestWrapper) httpRequest).getMethod(), request_host+request_path, signature_parameter_string);
 
     String signing_key = encode(oAuthConfiguration.getConsumerSecret()) + "&" + encode(oAuthConfiguration.getAccessTokenSecret());
 
@@ -103,6 +111,30 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
     httpRequest.setHeader("Authorization", authorization_header_string);
 
   }
+
+  public String generateTimestamp() {
+    Calendar tempcal = Calendar.getInstance();
+    long ts = tempcal.getTimeInMillis();// get current time in milliseconds
+    String oauth_timestamp = (new Long(ts/1000)).toString();
+    return oauth_timestamp;
+  }
+
+  public String generateNonce() {
+    String uuid_string = UUID.randomUUID().toString();
+    uuid_string = uuid_string.replaceAll("-", "");
+    String oauth_nonce = base64Encoder.encode(uuid_string.getBytes());
+    return oauth_nonce;
+  }
+
+  public static Map<String, String> encodeMap(Map<String, String> map) {
+    Map<String,String> newMap = new HashMap<>();
+    for( String key : map.keySet() ) {
+      String value = map.get(key);
+      newMap.put(encode(key), encode(value));
+    }
+    return newMap;
+  }
+
 
   public static String generateAuthorizationHeaderString(Map<String,String> oauthParamMap) {
     SortedSet<String> sortedKeys = new TreeSet<>(oauthParamMap.keySet());
@@ -136,7 +168,7 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
 
     StringJoiner stringJoiner = new StringJoiner("&");
     for( String key : sortedKeys ) {
-      stringJoiner.add(encode(key)+"="+encode(allParamsMap.get(key)));
+      stringJoiner.add(key+"="+allParamsMap.get(key));
     }
 
     return stringJoiner.toString();
