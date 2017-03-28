@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +103,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     } catch (URISyntaxException e) {
       LOGGER.warn("URISyntaxException", e);
     }
-    return null;
+    return new ArrayList<>();
   }
 
   @Override
@@ -128,7 +129,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     } catch (URISyntaxException e) {
       LOGGER.warn("URISyntaxException", e);
     }
-    return null;
+    return new ArrayList<>();
   }
 
   @Override
@@ -293,7 +294,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     } catch (URISyntaxException e) {
       LOGGER.warn("URISyntaxException", e);
     }
-    return null;
+    return new ArrayList<>();
   }
 
   @Override
