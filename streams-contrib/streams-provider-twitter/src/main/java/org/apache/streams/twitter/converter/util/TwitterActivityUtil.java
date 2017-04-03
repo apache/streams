@@ -126,7 +126,7 @@ public class TwitterActivityUtil {
   }
 
   /**
-   * Builds the activity {@link ActivityObject} actor from the tweet
+   * Builds the activity {@link ActivityObject} actor from the tweet.
    * @param tweet the object to use as the source
    * @return a valid Actor populated from the Tweet
    */
@@ -138,7 +138,7 @@ public class TwitterActivityUtil {
   }
 
   /**
-   * Builds the activity {@link ActivityObject} actor from the User
+   * Builds the activity {@link ActivityObject} actor from the User.
    * @param user the object to use as the source
    * @return a valid Actor populated from the Tweet
    */
@@ -186,7 +186,7 @@ public class TwitterActivityUtil {
   }
 
   /**
-   * Creates an {@link ActivityObject} for the tweet
+   * Creates an {@link ActivityObject} for the tweet.
    * @param tweet the object to use as the source
    * @return a valid ActivityObject
    */

@@ -29,11 +29,13 @@ import java.io.IOException;
 /**
  *  Handle expected and unexpected exceptions.
  */
-public class TwitterRetryHandler implements HttpRequestRetryHandler /*implements RetryOn*/ {
+public class TwitterRetryHandler implements HttpRequestRetryHandler /*TODO juneau-6.2.0-incubating implements RetryOn*/ {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterRetryHandler.class);
 
-//  @Deprecated
+// This is everything we used to check via twitter4j to decide whether to retry.
+//
+// @Deprecated
 //  public static int handleTwitterError(Twitter twitter, Exception exception) {
 //    return handleTwitterError( twitter, null, exception);
 //  }
@@ -110,7 +112,7 @@ public class TwitterRetryHandler implements HttpRequestRetryHandler /*implements
 //      return (int)retryMax / 3;
 //    }
 //  }
-
+//  TODO: juneau 6.2.0-incubating
 //  @Override
 //  public boolean onCode(int httpResponseCode) {
 //
