@@ -73,7 +73,7 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
 
     for( String request_param : request_params ) {
       String key = request_param.substring(0, request_param.indexOf('='));
-      String value =request_param.substring(request_param.indexOf('=')+1, request_param.length());
+      String value = URLDecoder.decode(request_param.substring(request_param.indexOf('=')+1, request_param.length()));
       allParamsMap.put(key, value);
     }
 

@@ -56,7 +56,6 @@ public class Twitter implements Followers, Friends, Statuses, Users {
         .addInterceptorFirst(oauthInterceptor).build();
     this.restClient = new RestClientBuilder()
         .httpClient(httpclient, true)
-        .serializer(PlainTextSerializer.class)
         .parser(JsonParser.class)
         .rootUrl(rootUrl)
         .retryable(
