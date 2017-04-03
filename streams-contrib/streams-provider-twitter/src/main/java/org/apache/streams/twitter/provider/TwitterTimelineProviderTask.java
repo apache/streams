@@ -59,9 +59,9 @@ public class TwitterTimelineProviderTask implements Runnable {
     this.request = request;
   }
 
+  int item_count = 0;
   int last_count = 0;
   int page_count = 1;
-  int item_count = 0;
 
   @Override
   public void run() {
@@ -69,8 +69,6 @@ public class TwitterTimelineProviderTask implements Runnable {
     LOGGER.info("Thread Starting: {}", request.toString());
 
     do {
-
-      this.client = provider.getTwitterClient();
 
       List<Tweet> statuses = client.userTimeline(request);
 

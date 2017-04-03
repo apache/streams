@@ -64,8 +64,6 @@ public class TwitterUserInformationProviderTask implements Runnable {
 
     LOGGER.info("Thread Starting: {}", request.toString());
 
-    this.client = provider.getTwitterClient();
-
     List<User> users = client.lookup(request);
 
     for (User user : users) {

@@ -88,6 +88,32 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
   private TwitterUserInformationConfiguration config;
 
+  protected List<String> names = new ArrayList<>();
+  protected List<Long> ids = new ArrayList<>();
+
+  protected final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+  protected volatile Queue<StreamsDatum> providerQueue;
+
+  public TwitterUserInformationConfiguration getConfig() {
+    return config;
+  }
+
+  public void setConfig(TwitterUserInformationConfiguration config) {
+    this.config = config;
+  }
+
+  protected Twitter client;
+
+  protected ListeningExecutorService executor;
+
+  protected DateTime start;
+  protected DateTime end;
+
+  protected final AtomicBoolean running = new AtomicBoolean();
+
+  private List<ListenableFuture<Object>> futures = new ArrayList<>();
+
   /**
    * To use from command line:
    *
@@ -148,27 +174,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     outStream.flush();
   }
 
-  protected final ReadWriteLock lock = new ReentrantReadWriteLock();
-
-  protected volatile Queue<StreamsDatum> providerQueue;
-
-  public TwitterUserInformationConfiguration getConfig() {
-    return config;
-  }
-
-  public void setConfig(TwitterUserInformationConfiguration config) {
-    this.config = config;
-  }
-
-  protected ListeningExecutorService executor;
-
-  protected DateTime start;
-  protected DateTime end;
-
-  protected final AtomicBoolean running = new AtomicBoolean();
-
-  private List<ListenableFuture<Object>> futures = new ArrayList<>();
-
   // TODO: this should be abstracted out
   public static ExecutorService newFixedThreadPoolWithQueueSize(int numThreads, int queueSize) {
     return new ThreadPoolExecutor(numThreads, numThreads,
@@ -211,6 +216,15 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     Objects.requireNonNull(config.getOauth().getAccessToken());
     Objects.requireNonNull(config.getOauth().getAccessTokenSecret());
     Objects.requireNonNull(config.getInfo());
+    Objects.requireNonNull(config.getThreadsPerProvider());
+
+    try {
+      client = getTwitterClient();
+    } catch (InstantiationException e) {
+      LOGGER.error("InstantiationException", e);
+    }
+
+    Objects.requireNonNull(client);
 
     try {
       lock.writeLock().lock();
@@ -220,9 +234,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     }
 
     Objects.requireNonNull(providerQueue);
-
-    List<String> names = new ArrayList<>();
-    List<Long> ids = new ArrayList<>();
 
     for (String s : config.getInfo()) {
       if (s != null) {
@@ -238,11 +249,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
       }
     }
 
-    if (ids.size() + names.size() > 0) {
-      executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(config.getThreadsPerProvider().intValue(), (ids.size() + names.size())));
-    } else {
-      executor = MoreExecutors.listeningDecorator(newSingleThreadExecutor());
-    }
+    executor = MoreExecutors.listeningDecorator(TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(config.getThreadsPerProvider().intValue(), ids.size()));
 
     Objects.requireNonNull(executor);
 
@@ -251,8 +258,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
   }
 
   protected void submitUserInformationThreads(List<Long> ids, List<String> names) {
-
-    Twitter client = getTwitterClient();
 
     int idsIndex = 0;
     while( idsIndex + 100 < ids.size() ) {
@@ -381,7 +386,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     }
   }
 
-  protected Twitter getTwitterClient() {
+  protected Twitter getTwitterClient() throws InstantiationException {
     return Twitter.getInstance(config);
   }
 

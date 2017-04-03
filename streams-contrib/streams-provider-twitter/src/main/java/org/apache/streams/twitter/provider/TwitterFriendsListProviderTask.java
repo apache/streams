@@ -62,7 +62,7 @@ public class TwitterFriendsListProviderTask implements Runnable {
   int last_count = 0;
   int page_count = 1;
   int item_count = 0;
-
+  long curser = 0;
 
   @Override
   public void run() {
@@ -76,8 +76,6 @@ public class TwitterFriendsListProviderTask implements Runnable {
   private void getFriendsList(FriendsListRequest request) {
 
     do {
-
-      this.client = provider.getTwitterClient();
 
       FriendsListResponse response = client.list(request);
 
@@ -103,15 +101,17 @@ public class TwitterFriendsListProviderTask implements Runnable {
 
       }
       page_count++;
-      request.setCurser(response.getNextCursor());
+      curser = response.getNextCursor();
+      request.setCurser(curser);
 
     }
-    while (shouldContinuePulling(last_count, page_count, item_count));
+    while (shouldContinuePulling(curser, last_count, page_count, item_count));
   }
 
-  public boolean shouldContinuePulling(int count, int page_count, int item_count) {
+  public boolean shouldContinuePulling(long curser, int count, int page_count, int item_count) {
     return (
-        count > 0
+        curser > 0
+            && count > 0
             && item_count < provider.getConfig().getMaxItems()
             && page_count <= provider.getConfig().getMaxPages());
   }

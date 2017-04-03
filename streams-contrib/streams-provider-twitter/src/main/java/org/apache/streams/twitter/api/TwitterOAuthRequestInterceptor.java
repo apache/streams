@@ -67,13 +67,13 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
     String request_host = ((HttpRequestWrapper)httpRequest).getTarget().toString().replace(":443","");
     String request_path = httpRequest.getRequestLine().getUri().substring(0, httpRequest.getRequestLine().getUri().indexOf('?'));
     String request_param_line = httpRequest.getRequestLine().getUri().substring(httpRequest.getRequestLine().getUri().indexOf('?')+1);
-    String[] request_params = request_param_line.split(",");
+    String[] request_params = URLDecoder.decode(request_param_line).split("&");
 
     Map<String,String> allParamsMap = new HashMap<>(oauthParamMap);
 
     for( String request_param : request_params ) {
       String key = request_param.substring(0, request_param.indexOf('='));
-      String value = URLDecoder.decode(request_param.substring(request_param.indexOf('=')+1, request_param.length()));
+      String value = request_param.substring(request_param.indexOf('=')+1, request_param.length());
       allParamsMap.put(key, value);
     }
 
@@ -83,7 +83,7 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
       body_params = body.split(",");
       for( String body_param : body_params ) {
         String key = body_param.substring(0, body_param.indexOf('='));
-        String value = URLDecoder.decode(body_param.substring(body_param.indexOf('=')+1, body_param.length()));
+        String value = body_param.substring(body_param.indexOf('=')+1, body_param.length());
         allParamsMap.put(key, value);
       }
     }

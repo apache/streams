@@ -51,7 +51,7 @@ public class TwitterTimelineProviderIT {
       }
     });
     testThread.start();
-    testThread.join(60000);
+    testThread.join(600000);
 
     File out = new File(outfile);
     Assert.assertTrue (out.exists());

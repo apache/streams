@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -103,8 +104,14 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
 
   @Override
   public void prepare(Object configurationObject) {
-    this.client = getTwitterClient();
+    try {
+      client = getTwitterClient();
+    } catch (InstantiationException e) {
+      LOGGER.error("InstantiationException", e);
+    }
+    Objects.requireNonNull(client);
     this.mapper = StreamsJacksonMapper.getInstance();
+    Objects.requireNonNull(mapper);
   }
 
   @Override
@@ -144,7 +151,7 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
   }
 
 
-  protected Twitter getTwitterClient() {
+  protected Twitter getTwitterClient() throws InstantiationException {
 
     return Twitter.getInstance(config);
 

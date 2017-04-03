@@ -18,14 +18,18 @@
 
 package org.apache.streams.twitter.api;
 
+import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.protocol.HttpContext;
 import org.apache.juneau.rest.client.RetryOn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 /**
  *  Handle expected and unexpected exceptions.
  */
-public class TwitterRetryHandler implements RetryOn {
+public class TwitterRetryHandler implements HttpRequestRetryHandler /*implements RetryOn*/ {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterRetryHandler.class);
 
@@ -107,16 +111,28 @@ public class TwitterRetryHandler implements RetryOn {
 //    }
 //  }
 
+//  @Override
+//  public boolean onCode(int httpResponseCode) {
+//
+//    LOGGER.warn("TwitterRetryHandler: {}", httpResponseCode);
+//
+//    if( httpResponseCode > 400 ) {
+//      return true;
+//    } else {
+//      return false;
+//    }
+//
+//  }
+
   @Override
-  public boolean onCode(int httpResponseCode) {
+  public boolean retryRequest(IOException e, int i, HttpContext httpContext) {
 
-    LOGGER.warn("TwitterRetryHandler: {}", httpResponseCode);
+    LOGGER.warn("TwitterRetryHandler: {}", i);
 
-    if( httpResponseCode > 400 ) {
+    if( i > 400 ) {
       return true;
     } else {
       return false;
     }
-
   }
 }
