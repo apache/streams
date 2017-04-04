@@ -99,11 +99,6 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>${orgjson.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-testing</artifactId>
             <version>${project.version}</version>
