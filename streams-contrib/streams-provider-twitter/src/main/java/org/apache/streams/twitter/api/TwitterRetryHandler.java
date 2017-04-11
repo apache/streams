@@ -18,6 +18,10 @@
 
 package org.apache.streams.twitter.api;
 
+import org.apache.streams.util.api.requests.backoff.AbstractBackOffStrategy;
+import org.apache.streams.util.api.requests.backoff.BackOffException;
+import org.apache.streams.util.api.requests.backoff.impl.LinearTimeBackOffStrategy;
+
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
 import org.apache.juneau.rest.client.RetryOn;
@@ -25,13 +29,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *  Handle expected and unexpected exceptions.
  */
-public class TwitterRetryHandler implements HttpRequestRetryHandler /*TODO juneau-6.2.0-incubating implements RetryOn*/ {
+public class TwitterRetryHandler implements RetryOn {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterRetryHandler.class);
+
+  private static AbstractBackOffStrategy backoff_strategy;
+
+// TODO: once request context is available, we can maintain multiple BackoffStrategy one per request path / params
+//  private static Map<String, AbstractBackOffStrategy> backoffs = new ConcurrentHashMap<>();
 
 // This is everything we used to check via twitter4j to decide whether to retry.
 //
@@ -127,11 +138,22 @@ public class TwitterRetryHandler implements HttpRequestRetryHandler /*TODO junea
 //  }
 
   @Override
-  public boolean retryRequest(IOException e, int i, HttpContext httpContext) {
-
-    LOGGER.warn("TwitterRetryHandler: {}", i);
-
-    if( i > 400 ) {
+  public boolean onCode(int httpResponseCode) {
+//    if( backoff_strategy == null ) {
+//      backoff_strategy = new LinearTimeBackOffStrategy(retrySleepMs / 1000, retryMax);
+//    }
+//    if( httpResponseCode > 400 ) {
+//      try {
+//        backoff_strategy.backOff();
+//        return true;
+//      } catch (BackOffException boe) {
+//        backoff_strategy.reset();
+//        return false;
+//      }
+//    } else {
+//      return false;
+//    }
+    if( httpResponseCode > 400 ) {
       return true;
     } else {
       return false;

@@ -28,6 +28,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -38,6 +42,7 @@ import org.apache.juneau.rest.client.RestCall;
 import org.apache.juneau.rest.client.RestCallException;
 import org.apache.juneau.rest.client.RestClient;
 //import org.apache.juneau.rest.client.RestClientBuilder;
+import org.apache.juneau.rest.client.RetryOn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +81,18 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     this.rootUrl = TwitterProviderUtil.baseUrl(configuration);
     this.oauthInterceptor = new TwitterOAuthRequestInterceptor(configuration.getOauth());
     this.httpclient = HttpClientBuilder.create()
-        .addInterceptorFirst(oauthInterceptor).build();
+        .addInterceptorFirst(oauthInterceptor)
+        .setDefaultRequestConfig(RequestConfig.custom()
+          .setConnectionRequestTimeout(5000)
+          .setConnectTimeout(5000)
+          .setSocketTimeout(5000)
+          .setCookieSpec("easy")
+          .build()
+        )
+        .setMaxConnPerRoute(20)
+        .setMaxConnTotal(100)
+        .build();
+
 //  TODO: juneau-6.2.0-incubating
 //  this.restClient = new RestClientBuilder()
 //        .httpClient(httpclient, true)
@@ -90,8 +106,8 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     this.restClient = new RestClient()
         .setHttpClient(httpclient)
         .setParser(JsonParser.class)
-        .setRootUrl(rootUrl)
-        .setRetryHandler(new TwitterRetryHandler());
+        .setRootUrl(rootUrl);
+
     this.mapper = StreamsJacksonMapper.getInstance();
   }
 
@@ -142,13 +158,17 @@ public class Twitter implements Followers, Friends, Statuses, Users {
         uriBuilder.addParameter("include_rts", parameters.getIncludeRts().toString());
       }
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
-      String restResponseEntity = restCall.getResponseAsString();
-      ArrayNode resultArrayNode = mapper.readValue(restResponseEntity, ArrayNode.class);
-      List<Tweet> result = new ArrayList();
-      resultArrayNode.iterator().forEachRemaining(item -> result.add(mapper.convertValue(item, Tweet.class)));
-      return result;
-    } catch (RestCallException e) {
-      LOGGER.warn("RestCallException", e);
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new TwitterRetryHandler())
+            .getResponseAsString();
+        ArrayNode resultArrayNode = mapper.readValue(restResponseEntity, ArrayNode.class);
+        List<Tweet> result = new ArrayList();
+        resultArrayNode.iterator().forEachRemaining(item -> result.add(mapper.convertValue(item, Tweet.class)));
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
     } catch (IOException e) {
       LOGGER.warn("IOException", e);
     } catch (URISyntaxException e) {
@@ -180,14 +200,18 @@ public class Twitter implements Followers, Friends, Statuses, Users {
         uriBuilder.addParameter("map", parameters.getMap().toString());
       }
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
-      String restResponseEntity = restCall.getResponseAsString();
-      ArrayNode resultArrayNode = mapper.readValue(restResponseEntity, ArrayNode.class);
-      List<Tweet> result = new ArrayList();
-      resultArrayNode.iterator().forEachRemaining(item -> result.add(mapper.convertValue(item, Tweet.class)));
-      //List<Tweet> result = restCall.getResponse(LinkedList.class, Tweet.class);
-      return result;
-    } catch (RestCallException e) {
-      LOGGER.warn("RestCallException", e);
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new TwitterRetryHandler())
+            .getResponseAsString();
+        ArrayNode resultArrayNode = mapper.readValue(restResponseEntity, ArrayNode.class);
+        List<Tweet> result = new ArrayList();
+        resultArrayNode.iterator().forEachRemaining(item -> result.add(mapper.convertValue(item, Tweet.class)));
+        //List<Tweet> result = restCall.getResponse(LinkedList.class, Tweet.class);
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
     } catch (IOException e) {
       LOGGER.warn("IOException", e);
     } catch (URISyntaxException e) {
@@ -205,25 +229,29 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     try {
       URIBuilder uriBuilder = new URIBuilder()
           .setPath("/statuses/show.json");
-      if( Objects.nonNull(parameters.getId()) && StringUtils.isNotBlank(parameters.getId().toString())) {
+      if (Objects.nonNull(parameters.getId()) && StringUtils.isNotBlank(parameters.getId().toString())) {
         uriBuilder.addParameter("id", parameters.getId().toString());
       }
-      if( Objects.nonNull(parameters.getTrimUser()) && StringUtils.isNotBlank(parameters.getTrimUser().toString())) {
+      if (Objects.nonNull(parameters.getTrimUser()) && StringUtils.isNotBlank(parameters.getTrimUser().toString())) {
         uriBuilder.addParameter("trim_user", parameters.getTrimUser().toString());
       }
-      if( Objects.nonNull(parameters.getIncludeEntities()) && StringUtils.isNotBlank(parameters.getIncludeEntities().toString())) {
+      if (Objects.nonNull(parameters.getIncludeEntities()) && StringUtils.isNotBlank(parameters.getIncludeEntities().toString())) {
         uriBuilder.addParameter("include_entities", parameters.getIncludeEntities().toString());
       }
-      if( Objects.nonNull(parameters.getIncludeMyRetweet()) && StringUtils.isNotBlank(parameters.getIncludeMyRetweet().toString())) {
+      if (Objects.nonNull(parameters.getIncludeMyRetweet()) && StringUtils.isNotBlank(parameters.getIncludeMyRetweet().toString())) {
         uriBuilder.addParameter("include_my_retweet", parameters.getIncludeMyRetweet().toString());
       }
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
-      String restResponseEntity = restCall.getResponseAsString();
-      //Tweet result = restCall.getResponse(Tweet.class);
-      Tweet result = mapper.readValue(restResponseEntity, Tweet.class);
-      return result;
-    } catch (RestCallException e) {
-      LOGGER.warn("RestCallException", e);
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new TwitterRetryHandler())
+            .getResponseAsString();
+        //Tweet result = restCall.getResponse(Tweet.class);
+        Tweet result = mapper.readValue(restResponseEntity, Tweet.class);
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
     } catch (IOException e) {
       LOGGER.warn("IOException", e);
     } catch (URISyntaxException e) {
@@ -257,12 +285,16 @@ public class Twitter implements Followers, Friends, Statuses, Users {
         uriBuilder.addParameter("stringify_ids", parameters.getStringifyIds().toString());
       }
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
-      String restResponseEntity = restCall.getResponseAsString();
-      //FriendsIdsResponse result = restCall.getResponse(FriendsIdsResponse.class);
-      FriendsIdsResponse result = mapper.readValue(restResponseEntity, FriendsIdsResponse.class);
-      return result;
-    } catch (RestCallException e) {
-      LOGGER.warn("RestCallException", e);
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new TwitterRetryHandler())
+            .getResponseAsString();
+        //FriendsIdsResponse result = restCall.getResponse(FriendsIdsResponse.class);
+        FriendsIdsResponse result = mapper.readValue(restResponseEntity, FriendsIdsResponse.class);
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
     } catch (IOException e) {
       LOGGER.warn("IOException", e);
     } catch (URISyntaxException e) {
@@ -280,32 +312,36 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     try {
       URIBuilder uriBuilder = new URIBuilder()
           .setPath("/friends/list.json");
-      if( Objects.nonNull(parameters.getCount()) && StringUtils.isNotBlank(parameters.getCount().toString())) {
+      if (Objects.nonNull(parameters.getCount()) && StringUtils.isNotBlank(parameters.getCount().toString())) {
         uriBuilder.addParameter("count", parameters.getCount().toString());
       }
-      if( Objects.nonNull(parameters.getCurser()) && StringUtils.isNotBlank(parameters.getCurser().toString())) {
+      if (Objects.nonNull(parameters.getCurser()) && StringUtils.isNotBlank(parameters.getCurser().toString())) {
         uriBuilder.addParameter("curser", parameters.getCurser().toString());
       }
-      if( Objects.nonNull(parameters.getId()) && StringUtils.isNotBlank(parameters.getId().toString())) {
+      if (Objects.nonNull(parameters.getId()) && StringUtils.isNotBlank(parameters.getId().toString())) {
         uriBuilder.addParameter("id", parameters.getId().toString());
       }
-      if( Objects.nonNull(parameters.getIncludeUserEntities()) && StringUtils.isNotBlank(parameters.getIncludeUserEntities().toString())) {
+      if (Objects.nonNull(parameters.getIncludeUserEntities()) && StringUtils.isNotBlank(parameters.getIncludeUserEntities().toString())) {
         uriBuilder.addParameter("include_user_entities", parameters.getIncludeUserEntities().toString());
       }
-      if( Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
+      if (Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
         uriBuilder.addParameter("screen_name", parameters.getScreenName());
       }
-      if( Objects.nonNull(parameters.getSkipStatus()) && StringUtils.isNotBlank(parameters.getSkipStatus().toString())) {
+      if (Objects.nonNull(parameters.getSkipStatus()) && StringUtils.isNotBlank(parameters.getSkipStatus().toString())) {
         uriBuilder.addParameter("skip_status", parameters.getSkipStatus().toString());
       }
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
-      String restResponseEntity = restCall.getResponseAsString();
-      //FriendsListResponse result = restCall.getResponse(FriendsListResponse.class);
-      FriendsListResponse result = mapper.readValue(restResponseEntity, FriendsListResponse.class);
-      return result;
-    } catch (RestCallException e) {
-      LOGGER.warn("RestCallException", e);
-    } catch (IOException e) {
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new TwitterRetryHandler())
+            .getResponseAsString();
+        //FriendsListResponse result = restCall.getResponse(FriendsListResponse.class);
+        FriendsListResponse result = mapper.readValue(restResponseEntity, FriendsListResponse.class);
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
+    }catch (IOException e) {
       LOGGER.warn("IOException", e);
     } catch (URISyntaxException e) {
       LOGGER.warn("URISyntaxException", e);
@@ -322,28 +358,32 @@ public class Twitter implements Followers, Friends, Statuses, Users {
     try {
       URIBuilder uriBuilder = new URIBuilder()
           .setPath("/followers/ids.json");
-      if( Objects.nonNull(parameters.getCount()) && StringUtils.isNotBlank(parameters.getCount().toString())) {
+      if (Objects.nonNull(parameters.getCount()) && StringUtils.isNotBlank(parameters.getCount().toString())) {
         uriBuilder.addParameter("count", parameters.getCount().toString());
       }
-      if( Objects.nonNull(parameters.getCurser()) && StringUtils.isNotBlank(parameters.getCurser().toString())) {
+      if (Objects.nonNull(parameters.getCurser()) && StringUtils.isNotBlank(parameters.getCurser().toString())) {
         uriBuilder.addParameter("curser", parameters.getCurser().toString());
       }
-      if( Objects.nonNull(parameters.getId()) && StringUtils.isNotBlank(parameters.getId().toString())) {
+      if (Objects.nonNull(parameters.getId()) && StringUtils.isNotBlank(parameters.getId().toString())) {
         uriBuilder.addParameter("id", parameters.getId().toString());
       }
-      if( Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
+      if (Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
         uriBuilder.addParameter("screen_name", parameters.getScreenName());
       }
-      if( Objects.nonNull(parameters.getStringifyIds()) && StringUtils.isNotBlank(parameters.getStringifyIds().toString())) {
+      if (Objects.nonNull(parameters.getStringifyIds()) && StringUtils.isNotBlank(parameters.getStringifyIds().toString())) {
         uriBuilder.addParameter("stringify_ids", parameters.getStringifyIds().toString());
       }
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
-      String restResponseEntity = restCall.getResponseAsString();
-      //FollowersIdsResponse result = restCall.getResponse(FollowersIdsResponse.class);
-      FollowersIdsResponse result = mapper.readValue(restResponseEntity, FollowersIdsResponse.class);
-      return result;
-    } catch (RestCallException e) {
-      LOGGER.warn("RestCallException", e);
+      try {
+        //FollowersIdsResponse result = restCall.getResponse(FollowersIdsResponse.class);
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new TwitterRetryHandler())
+            .getResponseAsString();
+        FollowersIdsResponse result = mapper.readValue(restResponseEntity, FollowersIdsResponse.class);
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
     } catch (IOException e) {
       LOGGER.warn("IOException", e);
     } catch (URISyntaxException e) {
@@ -362,32 +402,36 @@ public class Twitter implements Followers, Friends, Statuses, Users {
       URIBuilder uriBuilder =
           new URIBuilder()
               .setPath("/followers/list.json");
-      if( Objects.nonNull(parameters.getCount()) && StringUtils.isNotBlank(parameters.getCount().toString())) {
+      if (Objects.nonNull(parameters.getCount()) && StringUtils.isNotBlank(parameters.getCount().toString())) {
         uriBuilder.addParameter("count", parameters.getCount().toString());
       }
-      if( Objects.nonNull(parameters.getCurser()) && StringUtils.isNotBlank(parameters.getCurser().toString())) {
+      if (Objects.nonNull(parameters.getCurser()) && StringUtils.isNotBlank(parameters.getCurser().toString())) {
         uriBuilder.addParameter("curser", parameters.getCurser().toString());
       }
-      if( Objects.nonNull(parameters.getId()) && StringUtils.isNotBlank(parameters.getId().toString())) {
+      if (Objects.nonNull(parameters.getId()) && StringUtils.isNotBlank(parameters.getId().toString())) {
         uriBuilder.addParameter("id", parameters.getId().toString());
       }
-      if( Objects.nonNull(parameters.getIncludeUserEntities()) && StringUtils.isNotBlank(parameters.getIncludeUserEntities().toString())) {
+      if (Objects.nonNull(parameters.getIncludeUserEntities()) && StringUtils.isNotBlank(parameters.getIncludeUserEntities().toString())) {
         uriBuilder.addParameter("include_user_entities", parameters.getIncludeUserEntities().toString());
       }
-      if( Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
+      if (Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
         uriBuilder.addParameter("screen_name", parameters.getScreenName());
       }
-      if( Objects.nonNull(parameters.getSkipStatus()) && StringUtils.isNotBlank(parameters.getSkipStatus().toString())) {
+      if (Objects.nonNull(parameters.getSkipStatus()) && StringUtils.isNotBlank(parameters.getSkipStatus().toString())) {
         uriBuilder.addParameter("skip_status", parameters.getSkipStatus().toString());
       }
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
-      String restResponseEntity = restCall.getResponseAsString();
-      //FollowersListResponse result = restCall.getResponse(FollowersListResponse.class);
-      FollowersListResponse result = mapper.readValue(restResponseEntity, FollowersListResponse.class);
-      return result;
-    } catch (RestCallException e) {
-      LOGGER.warn("RestCallException", e);
-    } catch (IOException e) {
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new TwitterRetryHandler())
+            .getResponseAsString();
+        //FollowersListResponse result = restCall.getResponse(FollowersListResponse.class);
+        FollowersListResponse result = mapper.readValue(restResponseEntity, FollowersListResponse.class);
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
+    }catch (IOException e) {
       LOGGER.warn("IOException", e);
     } catch (URISyntaxException e) {
       LOGGER.warn("URISyntaxException", e);
@@ -407,24 +451,28 @@ public class Twitter implements Followers, Friends, Statuses, Users {
       URIBuilder uriBuilder =
           new URIBuilder()
               .setPath("/users/lookup.json");
-      if( Objects.nonNull(parameters.getIncludeEntities()) && StringUtils.isNotBlank(parameters.getIncludeEntities().toString())) {
+      if (Objects.nonNull(parameters.getIncludeEntities()) && StringUtils.isNotBlank(parameters.getIncludeEntities().toString())) {
         uriBuilder.addParameter("include_entities", parameters.getIncludeEntities().toString());
       }
-      if( Objects.nonNull(screen_names) && StringUtils.isNotBlank(screen_names)) {
+      if (Objects.nonNull(screen_names) && StringUtils.isNotBlank(screen_names)) {
         uriBuilder.addParameter("screen_name", screen_names);
       }
-      if( Objects.nonNull(user_ids) && StringUtils.isNotBlank(user_ids)) {
+      if (Objects.nonNull(user_ids) && StringUtils.isNotBlank(user_ids)) {
         uriBuilder.addParameter("user_id", user_ids);
       }
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
 //      List<User> result = restCall.getResponse(LinkedList.class, User.class);
-      String restResponseEntity = restCall.getResponseAsString();
-      ArrayNode resultArrayNode = mapper.readValue(restResponseEntity, ArrayNode.class);
-      List<User> result = new ArrayList();
-      resultArrayNode.iterator().forEachRemaining(item -> result.add(mapper.convertValue(item, User.class)));
-      return result;
-    } catch (RestCallException e) {
-      LOGGER.warn("RestCallException", e);
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new TwitterRetryHandler())
+            .getResponseAsString();
+        ArrayNode resultArrayNode = mapper.readValue(restResponseEntity, ArrayNode.class);
+        List<User> result = new ArrayList();
+        resultArrayNode.iterator().forEachRemaining(item -> result.add(mapper.convertValue(item, User.class)));
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
     } catch (IOException e) {
       LOGGER.warn("IOException", e);
     } catch (URISyntaxException e) {
@@ -443,22 +491,25 @@ public class Twitter implements Followers, Friends, Statuses, Users {
       URIBuilder uriBuilder =
           new URIBuilder()
               .setPath("/users/show.json");
-      if( Objects.nonNull(parameters.getIncludeEntities()) && StringUtils.isNotBlank(parameters.getIncludeEntities().toString())) {
+      if (Objects.nonNull(parameters.getIncludeEntities()) && StringUtils.isNotBlank(parameters.getIncludeEntities().toString())) {
         uriBuilder.addParameter("include_entities", parameters.getIncludeEntities().toString());
       }
-      if( Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
+      if (Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
         uriBuilder.addParameter("screen_name", parameters.getScreenName());
       }
-      if( Objects.nonNull(parameters.getUserId()) && StringUtils.isNotBlank(parameters.getUserId().toString())) {
+      if (Objects.nonNull(parameters.getUserId()) && StringUtils.isNotBlank(parameters.getUserId().toString())) {
         uriBuilder.addParameter("user_id", parameters.getUserId().toString());
       }
-      RestCall restCall = restClient.doGet(uriBuilder.build().toString()
-      );
-      String restResponseEntity = restCall.getResponseAsString();
-      User result = mapper.readValue(restResponseEntity, User.class);
-      return result;
-    } catch (RestCallException e) {
-      LOGGER.warn("RestCallException", e);
+      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new TwitterRetryHandler())
+            .getResponseAsString();
+        User result = mapper.readValue(restResponseEntity, User.class);
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
     } catch (IOException e) {
       LOGGER.warn("IOException", e);
     } catch (URISyntaxException e) {
