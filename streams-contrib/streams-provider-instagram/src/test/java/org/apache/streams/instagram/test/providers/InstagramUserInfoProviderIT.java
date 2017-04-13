@@ -20,6 +20,7 @@ package org.apache.streams.instagram.test.providers;
 
 import org.apache.streams.instagram.provider.userinfo.InstagramUserInfoProvider;
 
+import org.hamcrest.Matchers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -29,11 +30,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 public class InstagramUserInfoProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoProviderIT.class);
 
-  @Test
+  @Test(groups = "providers")
   public void testInstagramUserInfoProvider() throws Exception {
 
     String configfile = "./target/test-classes/InstagramUserInfoProviderIT.conf";
@@ -63,7 +66,7 @@ public class InstagramUserInfoProviderIT {
 
     while (outCounter.readLine() != null) {}
 
-    Assert.assertTrue (outCounter.getLineNumber() >= 1);
+    assertThat(outCounter.getLineNumber(), Matchers.greaterThanOrEqualTo(1));
 
   }
 }

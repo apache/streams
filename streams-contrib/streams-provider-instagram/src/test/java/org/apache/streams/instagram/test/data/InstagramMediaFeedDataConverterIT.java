@@ -19,15 +19,13 @@
 package org.apache.streams.instagram.test.data;
 
 import org.apache.streams.data.ActivityConverter;
+import org.apache.streams.instagram.pojo.Media;
 import org.apache.streams.instagram.serializer.InstagramMediaFeedDataConverter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
-import org.jinstagram.entity.users.feed.MediaFeedData;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -53,21 +51,17 @@ public class InstagramMediaFeedDataConverterIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstagramMediaFeedDataConverterIT.class);
 
-  // use gson because jInstagram's pojos do
-  private Gson gson = new Gson();
-
-  // use jackson to write to file output
   private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-  @Test
-  public void InstagramMediaFeedDataConverterITCase() throws Exception {
-    InputStream is = InstagramMediaFeedDataConverterIT.class.getResourceAsStream("/testMediaFeedObjects.txt");
+  @Test(dependsOnGroups = "providers")
+  public void InstagramMediaFeedDataConverterIT() throws Exception {
+    InputStream is = InstagramMediaFeedDataConverterIT.class.getResourceAsStream("/InstagramRecentMediaProviderIT.stdout.txt");
     InputStreamReader isr = new InputStreamReader(is);
     BufferedReader br = new BufferedReader(isr);
 
     PrintStream outStream = new PrintStream(
         new BufferedOutputStream(
-            new FileOutputStream("target/test-classes/InstagramMediaFeedDataConverterITCase.txt")));
+            new FileOutputStream("target/test-classes/InstagramMediaFeedDataConverterIT.txt")));
 
     try {
       while (br.ready()) {
@@ -75,9 +69,9 @@ public class InstagramMediaFeedDataConverterIT {
         if (!StringUtils.isEmpty(line)) {
           LOGGER.info("raw: {}", line);
 
-          MediaFeedData mediaFeedData = gson.fromJson(line, MediaFeedData.class);
+          Media mediaFeedData = mapper.readValue(line, Media.class);
 
-          ActivityConverter<MediaFeedData> converter = new InstagramMediaFeedDataConverter();
+          ActivityConverter<Media> converter = new InstagramMediaFeedDataConverter();
 
           Activity activity = converter.toActivityList(mediaFeedData).get(0);
 
