@@ -20,13 +20,13 @@ package org.apache.streams.instagram.processor;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.instagram.pojo.Media;
+import org.apache.streams.instagram.pojo.UserInfo;
 import org.apache.streams.instagram.serializer.InstagramMediaFeedDataConverter;
 import org.apache.streams.instagram.serializer.InstagramUserInfoDataConverter;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 
-import org.jinstagram.entity.users.basicinfo.UserInfoData;
-import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,19 +64,19 @@ public class InstagramTypeConverter implements StreamsProcessor {
       Object item = entry.getDocument();
 
       LOGGER.debug("{} processing {}", STREAMS_ID, item.getClass());
-      if (item instanceof MediaFeedData) {
+      if (item instanceof Media) {
 
         //We don't need to use the mapper, since we have a process to convert between
         //MediaFeedData objects and Activity objects already
-        List<Activity> activity = mediaFeedDataConverter.toActivityList((MediaFeedData)item);
+        List<Activity> activity = mediaFeedDataConverter.toActivityList((Media)item);
 
         if ( activity.size() > 0 ) {
           result = new StreamsDatum(activity);
         }
 
-      } else if (item instanceof UserInfoData) {
+      } else if (item instanceof UserInfo) {
 
-        ActivityObject activityObject = userInfoDataConverter.toActivityObject((UserInfoData)item);
+        ActivityObject activityObject = userInfoDataConverter.toActivityObject((UserInfo)item);
 
         if ( activityObject != null ) {
           result = new StreamsDatum(activityObject);

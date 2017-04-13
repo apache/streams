@@ -20,10 +20,10 @@ package org.apache.streams.instagram.serializer;
 
 import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
+import org.apache.streams.instagram.pojo.Media;
 import org.apache.streams.pojo.json.Activity;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.jinstagram.entity.users.feed.MediaFeedData;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -31,9 +31,9 @@ import java.util.List;
 
 import static org.apache.streams.instagram.serializer.util.InstagramActivityUtil.updateActivity;
 
-public class InstagramMediaFeedDataConverter implements ActivityConverter<MediaFeedData>, Serializable {
+public class InstagramMediaFeedDataConverter implements ActivityConverter<Media>, Serializable {
 
-  public static Class requiredClass = MediaFeedData.class;
+  public static Class requiredClass = Media.class;
 
   public InstagramMediaFeedDataConverter() {
 
@@ -50,17 +50,17 @@ public class InstagramMediaFeedDataConverter implements ActivityConverter<MediaF
   }
 
   @Override
-  public MediaFeedData fromActivity(Activity deserialized) throws ActivityConversionException {
+  public Media fromActivity(Activity deserialized) throws ActivityConversionException {
     throw new NotImplementedException();
   }
 
   @Override
-  public List<MediaFeedData> fromActivityList(List<Activity> list) throws ActivityConversionException {
+  public List<Media> fromActivityList(List<Activity> list) throws ActivityConversionException {
     throw new NotImplementedException();
   }
 
   @Override
-  public List<Activity> toActivityList(MediaFeedData item) throws ActivityConversionException {
+  public List<Activity> toActivityList(Media item) throws ActivityConversionException {
 
     Activity activity = new Activity();
 
@@ -70,7 +70,7 @@ public class InstagramMediaFeedDataConverter implements ActivityConverter<MediaF
   }
 
   @Override
-  public List<Activity> toActivityList(List<MediaFeedData> list) throws ActivityConversionException {
+  public List<Activity> toActivityList(List<Media> list) throws ActivityConversionException {
     throw new NotImplementedException();
   }
 

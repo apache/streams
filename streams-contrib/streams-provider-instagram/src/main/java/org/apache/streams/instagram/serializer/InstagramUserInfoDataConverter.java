@@ -20,11 +20,11 @@ package org.apache.streams.instagram.serializer;
 
 import org.apache.streams.data.ActivityObjectConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
+import org.apache.streams.instagram.pojo.UserInfo;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.Provider;
 
-import org.jinstagram.entity.users.basicinfo.UserInfoData;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * InstagramUserInfoDataConverter
  */
-public class InstagramUserInfoDataConverter implements ActivityObjectConverter<UserInfoData> {
+public class InstagramUserInfoDataConverter implements ActivityObjectConverter<UserInfo> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoDataConverter.class);
 
@@ -46,7 +46,7 @@ public class InstagramUserInfoDataConverter implements ActivityObjectConverter<U
 
   @Override
   public Class requiredClass() {
-    return UserInfoData.class;
+    return UserInfo.class;
   }
 
   @Override
@@ -55,12 +55,12 @@ public class InstagramUserInfoDataConverter implements ActivityObjectConverter<U
   }
 
   @Override
-  public UserInfoData fromActivityObject(ActivityObject deserialized) throws ActivityConversionException {
+  public UserInfo fromActivityObject(ActivityObject deserialized) throws ActivityConversionException {
     return null;
   }
 
   @Override
-  public ActivityObject toActivityObject(UserInfoData serialized) throws ActivityConversionException {
+  public ActivityObject toActivityObject(UserInfo serialized) throws ActivityConversionException {
     ActivityObject activityObject = new ActivityObject();
     activityObject.setObjectType("page");
     Provider provider = new Provider();
