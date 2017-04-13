@@ -304,27 +304,166 @@ public class Instagram implements Media, Users {
   }
 
   @Override
-  public UsersInfoResponse comments(String media_id) {
+  public CommentsResponse comments(String media_id) {
+    try {
+      //  TODO: juneau-6.3.x-incubating
+//      Media restMedia = restClient.getRemoteableProxy("/media", Media.class);
+//      CommentsResponse result = restMedia.comments(media_id);
+//      return result;
+      URIBuilder uriBuilder = new URIBuilder()
+          .setPath("/media/"+media_id+"/comments");
+      uriBuilder.addParameter("access_token", configuration.getOauth().getAccessToken());
+      uriBuilder.addParameter("media_id", media_id);
+      String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
+      uriBuilder.addParameter("sig", sig);
+      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
+            .getResponseAsString();
+        CommentsResponse result = mapper.readValue(restResponseEntity, CommentsResponse.class);
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    } catch (Exception e) {
+      LOGGER.warn("Exception", e);
+    }
     return null;
   }
 
   @Override
   public UsersInfoResponse likes(String media_id) {
+    try {
+      //  TODO: juneau-6.3.x-incubating
+//      Media restMedia = restClient.getRemoteableProxy("/media", Media.class);
+//      UsersInfoResponse result = restMedia.likes(media_id);
+//      return result;
+      URIBuilder uriBuilder = new URIBuilder()
+          .setPath("/media/"+media_id+"/likes");
+      uriBuilder.addParameter("access_token", configuration.getOauth().getAccessToken());
+      String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
+      uriBuilder.addParameter("sig", sig);
+      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
+            .getResponseAsString();
+        UsersInfoResponse result = mapper.readValue(restResponseEntity, UsersInfoResponse.class);
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    } catch (Exception e) {
+      LOGGER.warn("Exception", e);
+    }
     return null;
   }
 
   @Override
   public MediaResponse lookupMedia(String media_id) {
+    try {
+      //  TODO: juneau-6.3.x-incubating
+//      Media restMedia = restClient.getRemoteableProxy("/media", Media.class);
+//      MediaResponse result = restMedia.lookupMedia(media_id);
+//      return result;
+      URIBuilder uriBuilder = new URIBuilder()
+          .setPath("/media/"+media_id);
+      uriBuilder.addParameter("access_token", configuration.getOauth().getAccessToken());
+      String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
+      uriBuilder.addParameter("sig", sig);
+      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
+            .getResponseAsString();
+        MediaResponse result = mapper.readValue(restResponseEntity, MediaResponse.class);
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    } catch (Exception e) {
+      LOGGER.warn("Exception", e);
+    }
     return null;
   }
 
   @Override
   public MediaResponse shortcode(String shortcode) {
+    try {
+      //  TODO: juneau-6.3.x-incubating
+//      Media restMedia = restClient.getRemoteableProxy("/media", Media.class);
+//      MediaResponse result = restMedia.lookupMedia(media_id);
+//      return result;
+      URIBuilder uriBuilder = new URIBuilder()
+          .setPath("/media/shortcode/"+shortcode);
+      uriBuilder.addParameter("access_token", configuration.getOauth().getAccessToken());
+      String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
+      uriBuilder.addParameter("sig", sig);
+      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
+            .getResponseAsString();
+        MediaResponse result = mapper.readValue(restResponseEntity, MediaResponse.class);
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    } catch (Exception e) {
+      LOGGER.warn("Exception", e);
+    }
     return null;
   }
 
   @Override
-  public SearchMediaResponse searchMedia(String shortcode) {
+  public SearchMediaResponse searchMedia(SearchMediaRequest parameters) {
+    try {
+      //  TODO: juneau-6.3.x-incubating
+//      Media restMedia = restClient.getRemoteableProxy("/media", Media.class);
+//      SearchMediaResponse result = restMedia.lookupMedia(media_id);
+//      return result;
+      URIBuilder uriBuilder = new URIBuilder()
+          .setPath("/media/search");
+      uriBuilder.addParameter("access_token", configuration.getOauth().getAccessToken());
+      uriBuilder.addParameter("distance", parameters.getDistance().toString());
+      uriBuilder.addParameter("lat", parameters.getLat().toString());
+      uriBuilder.addParameter("lng", parameters.getLng().toString());
+      String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
+      uriBuilder.addParameter("sig", sig);
+      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      try {
+        String restResponseEntity = restCall
+            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
+            .getResponseAsString();
+        SearchMediaResponse result = mapper.readValue(restResponseEntity, SearchMediaResponse.class);
+        return result;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    } catch (Exception e) {
+      LOGGER.warn("Exception", e);
+    }
     return null;
   }
 }

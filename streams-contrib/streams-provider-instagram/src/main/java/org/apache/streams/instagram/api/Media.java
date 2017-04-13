@@ -5,7 +5,7 @@ package org.apache.streams.instagram.api;
  */
 public interface Media {
 
-  public UsersInfoResponse comments(String media_id);
+  public CommentsResponse comments(String media_id);
 
   public UsersInfoResponse likes(String media_id);
 
@@ -13,5 +13,5 @@ public interface Media {
 
   public MediaResponse shortcode(String shortcode);
 
-  public SearchMediaResponse searchMedia(String shortcode);
+  public SearchMediaResponse searchMedia(SearchMediaRequest parameters);
 }
