@@ -85,7 +85,7 @@
         },
         "retryMax": {
              "type": "integer",
-             "description": "ms to sleep when hitting a rate limit",
+             "description": "max times to retry",
              "default": 10
         }
    }

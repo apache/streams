@@ -56,6 +56,7 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterOAuthRequestInterceptor.class);
 
+  private static final String oauth_signature_encoding = "UTF-8";
   private static final String oauth_signature_method = "HMAC-SHA1";
   private static final String oauth_version = "1.0";
 
@@ -196,7 +197,7 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
   {
     String encoded = null;
     try {
-      encoded = URLEncoder.encode(value, "UTF-8");
+      encoded = URLEncoder.encode(value, oauth_signature_encoding);
     } catch (UnsupportedEncodingException ignore) {
     }
     StringBuilder buf = new StringBuilder(encoded.length());
