@@ -85,9 +85,23 @@
             <artifactId>json-path-assert</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sachinhandiekar</groupId>
-            <artifactId>jInstagram</artifactId>
-            <version>1.1.8</version>
+            <groupId>org.apache.juneau</groupId>
+            <artifactId>juneau-rest-client</artifactId>
+            <version>6.1.0-incubating</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -135,6 +149,13 @@
                     <targetDirectory>${project.basedir}/target/generated-sources/pojo</targetDirectory>
                     <targetPackage>org.apache.streams.instagram.pojo</targetPackage>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.streams</groupId>
+                        <artifactId>streams-pojo</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
