@@ -16,15 +16,15 @@ under the License. */
 package org.apache.streams.instagram.provider;
 
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.instagram.InstagramConfiguration;
-import org.apache.streams.instagram.User;
+import org.apache.streams.instagram.config.InstagramConfiguration;
+import org.apache.streams.instagram.config.InstagramOAuthConfiguration;
+import org.apache.streams.instagram.api.Instagram;
 import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
 import org.apache.streams.util.api.requests.backoff.impl.ExponentialBackOffStrategy;
 import org.apache.streams.util.oauth.tokens.tokenmanager.SimpleTokenManager;
 import org.apache.streams.util.oauth.tokens.tokenmanager.impl.BasicTokenManager;
 
-import org.jinstagram.Instagram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +44,8 @@ public abstract class InstagramDataCollector<T> implements Runnable {
 
   protected Queue<StreamsDatum> dataQueue; //exposed for testing
   private InstagramConfiguration config;
-  private AtomicBoolean isCompleted;
-  private SimpleTokenManager<InstagramOauthToken> tokenManger;
+  protected AtomicBoolean isCompleted;
+  private SimpleTokenManager<InstagramOAuthConfiguration> tokenManger;
   protected int consecutiveErrorCount;
   protected BackOffStrategy backOffStrategy;
   private Instagram instagram;
@@ -55,17 +55,14 @@ public abstract class InstagramDataCollector<T> implements Runnable {
    * @param queue Queue of StreamsDatum
    * @param config InstagramConfiguration
    */
-  public InstagramDataCollector(Queue<StreamsDatum> queue, InstagramConfiguration config) {
+  public InstagramDataCollector(Instagram instagram, Queue<StreamsDatum> queue, InstagramConfiguration config) {
     this.dataQueue = queue;
     this.config = config;
     this.isCompleted = new AtomicBoolean(false);
-    this.tokenManger = new BasicTokenManager<InstagramOauthToken>();
-    for (String tokens : this.config.getUsersInfo().getAuthorizedTokens()) {
-      this.tokenManger.addTokenToPool(new InstagramOauthToken(tokens));
-    }
+    this.tokenManger = new BasicTokenManager<InstagramOAuthConfiguration>();
     this.consecutiveErrorCount = 0;
     this.backOffStrategy = new ExponentialBackOffStrategy(2);
-    this.instagram = new Instagram(this.config.getClientId());
+    this.instagram = instagram;
   }
 
 
@@ -76,9 +73,9 @@ public abstract class InstagramDataCollector<T> implements Runnable {
    * @return result
    */
   protected Instagram getNextInstagramClient() {
-    if (this.tokenManger.numAvailableTokens() > 0) {
-      this.instagram.setAccessToken(this.tokenManger.getNextAvailableToken());
-    }
+//    if (this.tokenManger.numAvailableTokens() > 0) {
+//      this.instagram.setAccessToken(this.tokenManger.getNextAvailableToken());
+//    }
     return this.instagram;
   }
 
@@ -111,28 +108,6 @@ public abstract class InstagramDataCollector<T> implements Runnable {
   public boolean isCompleted() {
     return this.isCompleted.get();
   }
-
-  @Override
-  public void run() {
-    for (User user : this.config.getUsersInfo().getUsers()) {
-      try {
-        collectInstagramDataForUser(user);
-      } catch (InterruptedException ie) {
-        Thread.currentThread().interrupt();
-      } catch (Exception ex) {
-        LOGGER.error("Exception thrown while polling for user, {}, skipping user.", user.getUserId());
-        LOGGER.error("Exception thrown while polling for user : ", ex);
-      }
-    }
-    this.isCompleted.set(true);
-  }
-
-  /**
-   * Pull instagram data for a user and queues the resulting data.
-   * @param user
-   * @throws Exception
-   */
-  protected abstract void collectInstagramDataForUser(User user) throws Exception;
 
   /**
    * Takes an Instagram Object and sets it as the document of a streams datum and sets the id of the streams datum.

@@ -20,9 +20,8 @@ import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
-import org.apache.streams.instagram.InstagramConfiguration;
-import org.apache.streams.instagram.User;
-import org.apache.streams.instagram.UsersInfo;
+import org.apache.streams.instagram.api.Instagram;
+import org.apache.streams.instagram.config.InstagramConfiguration;
 import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.SerializationUtil;
 
@@ -40,6 +39,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -58,8 +58,12 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
   private static final int MAX_BATCH_SIZE = 2000;
 
   protected InstagramConfiguration config;
+
+  protected Instagram client;
+
   protected Queue<StreamsDatum> dataQueue;
   private ListeningExecutorService executorService;
+
 
   private List<ListenableFuture<Object>> futures = new ArrayList<>();
 
@@ -120,6 +124,22 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
   public void prepare(Object configurationObject) {
     this.dataQueue = new ConcurrentLinkedQueue<>();
     this.isCompleted = new AtomicBoolean(false);
+
+    Objects.requireNonNull(config);
+    Objects.requireNonNull(config.getOauth());
+    Objects.requireNonNull(config.getOauth().getClientId());
+    Objects.requireNonNull(config.getOauth().getClientSecret());
+    Objects.requireNonNull(config.getOauth().getAccessToken());
+    Objects.requireNonNull(config.getThreadsPerProvider());
+
+    try {
+      client = Instagram.getInstance(this.config);
+    } catch (InstantiationException e) {
+      LOGGER.error("InstantiationException", e);
+    }
+
+    Objects.requireNonNull(client);
+
   }
 
   @Override
@@ -134,80 +154,22 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
   /**
    * Add default start and stop points if necessary.
    */
-  private void updateUserInfoList() {
-    UsersInfo usersInfo = this.config.getUsersInfo();
-    if (usersInfo.getDefaultAfterDate() == null && usersInfo.getDefaultBeforeDate() == null) {
-      return;
-    }
-    DateTime defaultAfterDate = usersInfo.getDefaultAfterDate();
-    DateTime defaultBeforeDate = usersInfo.getDefaultBeforeDate();
-    for (User user : usersInfo.getUsers()) {
-      if (defaultAfterDate != null && user.getAfterDate() == null) {
-        user.setAfterDate(defaultAfterDate);
-      }
-      if (defaultBeforeDate != null && user.getBeforeDate() == null) {
-        user.setBeforeDate(defaultBeforeDate);
-      }
-    }
-  }
-
-  /**
-   * Overrides the client id in the configuration.
-   * @param clientId client id to use
-   */
-  public void setInstagramClientId(String clientId) {
-    this.config.setClientId(clientId);
-  }
-
-  /**
-   * Overrides authroized user tokens in the configuration.
-   * @param tokenStrings tokenStrings
-   */
-  public void setAuthorizedUserTokens(Collection<String> tokenStrings) {
-    ensureUsersInfo(this.config).setAuthorizedTokens(new HashSet<>(tokenStrings));
-  }
-
-  /**
-   * Overrides the default before date in the configuration.
-   * @param beforeDate beforeDate
-   */
-  public void setDefaultBeforeDate(DateTime beforeDate) {
-    ensureUsersInfo(this.config).setDefaultBeforeDate(beforeDate);
-  }
-
-  /**
-   * Overrides the default after date in the configuration.
-   * @param afterDate afterDate
-   */
-  public void setDefaultAfterDate(DateTime afterDate) {
-    ensureUsersInfo(this.config).setDefaultAfterDate(afterDate);
-  }
-
-  /**
-   * Overrides the users in the configuration and sets the after date for each user. A NULL DateTime implies
-   * pull data from as early as possible.  If default before or after DateTimes are set, they will applied to all
-   * NULL DateTimes.
-   * @param usersWithAfterDate instagram user id mapped to BeforeDate time
-   */
-  public void setUsersWithAfterDate(Map<String, DateTime> usersWithAfterDate) {
-    Set<User> users = new HashSet<>();
-    for (String userId : usersWithAfterDate.keySet()) {
-      User user = new User();
-      user.setUserId(userId);
-      user.setAfterDate(usersWithAfterDate.get(userId));
-      users.add(user);
-    }
-    ensureUsersInfo(this.config).setUsers(users);
-  }
-
-  private UsersInfo ensureUsersInfo(InstagramConfiguration config) {
-    UsersInfo usersInfo = config.getUsersInfo();
-    if (usersInfo == null) {
-      usersInfo = new UsersInfo();
-      config.setUsersInfo(usersInfo);
-    }
-    return usersInfo;
-  }
+//  private void updateUserInfoList() {
+//    UsersInfo usersInfo = this.config.getUsersInfo();
+//    if (usersInfo.getDefaultAfterDate() == null && usersInfo.getDefaultBeforeDate() == null) {
+//      return;
+//    }
+//    DateTime defaultAfterDate = usersInfo.getDefaultAfterDate();
+//    DateTime defaultBeforeDate = usersInfo.getDefaultBeforeDate();
+//    for (User user : usersInfo.getUsers()) {
+//      if (defaultAfterDate != null && user.getAfterDate() == null) {
+//        user.setAfterDate(defaultAfterDate);
+//      }
+//      if (defaultBeforeDate != null && user.getBeforeDate() == null) {
+//        user.setBeforeDate(defaultBeforeDate);
+//      }
+//    }
+//  }
 
   @Override
   public boolean isRunning() {
