@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.instagram.pojo.UserRecentMediaRequest",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "extends": {"$ref":"SelfRecentMediaRequest.json"},
+  "properties": {
+    "user_id": {
+      "description": "user_id",
+      "type": "string"
+    }
+  }
+}
