@@ -30,11 +30,11 @@ import java.util.List;
 public interface Statuses {
 
   /**
-   * Returns a single Tweet, specified by the id parameter. The Tweet’s author will also be embedded within the Tweet.
+   * Returns fully-hydrated Tweet objects for up to 100 Tweets per request, as specified by comma-separated values passed to the id parameter.
    *
-   * @param parameters StatusesLookupRequest
+   * @param parameters {@link org.apache.streams.twitter.api.StatusesLookupRequest}
    * @return List<Tweet>
-   * @see <a href="https://api.twitter.com/1.1/statuses/show.json">https://api.twitter.com/1.1/statuses/show.json</a>
+   * @see <a href="https://dev.twitter.com/rest/reference/get/statuses/lookup">https://dev.twitter.com/rest/reference/get/statuses/lookup</a>
    *
    */
   public List<Tweet> lookup(StatusesLookupRequest parameters);
@@ -42,9 +42,9 @@ public interface Statuses {
   /**
    * Returns a single Tweet, specified by the id parameter. The Tweet’s author will also be embedded within the Tweet.
    *
-   * @param parameters StatusesUserTimelineRequest
+   * @param parameters {@link org.apache.streams.twitter.api.StatusesShowRequest}
    * @return List<Tweet>
-   * @see <a href="https://api.twitter.com/1.1/statuses/show.json">https://api.twitter.com/1.1/statuses/show.json</a>
+   * @see <a href="https://dev.twitter.com/rest/reference/get/statuses/show/id">https://dev.twitter.com/rest/reference/get/statuses/show/id</a>
    *
    */
   public Tweet show(StatusesShowRequest parameters);
@@ -52,9 +52,9 @@ public interface Statuses {
   /**
    * Returns a collection of the most recent Tweets posted by the user indicated by the screen_name or user_id parameters.
    *
-   * @param parameters StatusesUserTimelineRequest
+   * @param parameters {@link org.apache.streams.twitter.api.StatusesUserTimelineRequest}
    * @return List<Tweet>
-   * @see <a href="https://api.twitter.com/1.1/statuses/user_timeline.json">https://api.twitter.com/1.1/statuses/user_timeline.json</a>
+   * @see <a href="https://dev.twitter.com/rest/reference/get/statuses/user_timeline">https://dev.twitter.com/rest/reference/get/statuses/user_timeline</a>
    *
    */
   public List<Tweet> userTimeline(StatusesUserTimelineRequest parameters);

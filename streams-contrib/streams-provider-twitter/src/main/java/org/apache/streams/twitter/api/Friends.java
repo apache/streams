@@ -32,9 +32,9 @@ public interface Friends {
   /**
    * Returns a cursored collection of user IDs for every user the specified user is following.
    *
-   * @param parameters StatusesLookupRequest
+   * @param parameters {@link org.apache.streams.twitter.api.FriendsIdsRequest}
    * @return List<Tweet>
-   * @see <a href="https://api.twitter.com/1.1/friends/ids.json">https://api.twitter.com/1.1/friends/ids.json</a>
+   * @see <a href="https://dev.twitter.com/rest/reference/get/friends/ids">https://dev.twitter.com/rest/reference/get/friends/ids</a>
    *
    */
   public FriendsIdsResponse ids(FriendsIdsRequest parameters);
@@ -42,9 +42,9 @@ public interface Friends {
   /**
    * Returns a cursored collection of user objects for every user the specified user is following.
    *
-   * @param parameters StatusesUserTimelineRequest
+   * @param parameters {@link org.apache.streams.twitter.api.FriendsListRequest}
    * @return List<Tweet>
-   * @see <a href="https://api.twitter.com/1.1/friends/list.json">https://api.twitter.com/1.1/friends/list.json</a>
+   * @see <a href="https://dev.twitter.com/rest/reference/get/friends/list">https://dev.twitter.com/rest/reference/get/friends/list</a>
    *
    */
   public FriendsListResponse list(FriendsListRequest parameters);
