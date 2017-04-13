@@ -17,7 +17,7 @@
       "required": false,
       "type": "string"
     },
-    "curser": {
+    "cursor": {
       "description": "Causes the list of connections to be broken into pages of no more than 5000 IDs at a time. The number of IDs returned is not guaranteed to be 5000 as suspended users are filtered out after connections are queried. If no cursor is provided, a value of -1 will be assumed, which is the first page.\nThe response from the API will include a previous_cursor and next_cursor to allow paging back and forth.",
       "required": false,
       "type": "integer"

@@ -123,7 +123,7 @@ public class TwitterRetryHandler implements RetryOn {
 //      return (int)retryMax / 3;
 //    }
 //  }
-//  TODO: juneau 6.2.0-incubating
+//  TODO: juneau 6.3.x-incubating
 //  @Override
 //  public boolean onCode(int httpResponseCode) {
 //

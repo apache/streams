@@ -93,7 +93,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
         .setMaxConnTotal(100)
         .build();
 
-//  TODO: juneau-6.2.0-incubating
+//  TODO: juneau-6.3.x-incubating
 //  this.restClient = new RestClientBuilder()
 //        .httpClient(httpclient, true)
 //        .parser(JsonParser.class)
@@ -124,16 +124,16 @@ public class Twitter implements Followers, Friends, Statuses, Users {
   @Override
   public List<Tweet> userTimeline(StatusesUserTimelineRequest parameters) {
     try {
-//  TODO: juneau-6.2.0-incubating
+//  TODO: juneau-6.3.x-incubating
 //      Statuses restStatuses = restClient.getRemoteableProxy("/statuses/user_timeline.json", Statuses.class);
 //      List<Tweet> result = restStatuses.userTimeline(parameters);
 //      return result;
       URIBuilder uriBuilder = new URIBuilder()
           .setPath("/statuses/user_timeline.json");
-      if( Objects.nonNull(parameters.getUserId()) && StringUtils.isNotBlank(parameters.getUserId().toString())) {
+      if( StringUtils.isNotBlank(parameters.getUserId().toString())) {
         uriBuilder.addParameter("user_id", parameters.getUserId().toString());
       }
-      if( Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
+      if( StringUtils.isNotBlank(parameters.getScreenName())) {
         uriBuilder.addParameter("screen_name", parameters.getScreenName());
       }
       if( Objects.nonNull(parameters.getSinceId()) && StringUtils.isNotBlank(parameters.getSinceId().toString())) {
@@ -179,7 +179,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
 
   @Override
   public List<Tweet> lookup(StatusesLookupRequest parameters) {
-//  TODO: juneau-6.2.0-incubating
+//  TODO: juneau-6.3.x-incubating
 //      Statuses restStatuses = restClient.getRemoteableProxy("/statuses/lookup.json", Statuses.class);
 //      List<Tweet> result = restStatuses.lookup(parameters);
 //      return result;
@@ -222,7 +222,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
 
   @Override
   public Tweet show(StatusesShowRequest parameters) {
-//  TODO: juneau-6.2.0-incubating
+//  TODO: juneau-6.3.x-incubating
 //      Statuses restStatuses = restClient.getRemoteableProxy("/statuses/show.json", Statuses.class);
 //      Tweet result = restStatuses.show(parameters);
 //      return result;
@@ -262,7 +262,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
 
   @Override
   public FriendsIdsResponse ids(FriendsIdsRequest parameters) {
-//  TODO: juneau-6.2.0-incubating
+//  TODO: juneau-6.3.x-incubating
 //      Friends restFriends = restClient.getRemoteableProxy("/friends/ids.json", Friends.class);
 //      FriendsIdsResponse result = restFriends.ids(parameters);
 //      return result;
@@ -272,13 +272,13 @@ public class Twitter implements Followers, Friends, Statuses, Users {
       if( Objects.nonNull(parameters.getCount()) && StringUtils.isNotBlank(parameters.getCount().toString())) {
         uriBuilder.addParameter("count", parameters.getCount().toString());
       }
-      if( Objects.nonNull(parameters.getCurser()) && StringUtils.isNotBlank(parameters.getCurser().toString())) {
-        uriBuilder.addParameter("curser", parameters.getCurser().toString());
+      if( Objects.nonNull(parameters.getCursor()) && StringUtils.isNotBlank(parameters.getCursor().toString())) {
+        uriBuilder.addParameter("cursor", parameters.getCursor().toString());
       }
       if( Objects.nonNull(parameters.getId()) && StringUtils.isNotBlank(parameters.getId().toString())) {
         uriBuilder.addParameter("id", parameters.getId().toString());
       }
-      if( Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
+      if( StringUtils.isNotBlank(parameters.getScreenName())) {
         uriBuilder.addParameter("screen_name", parameters.getScreenName());
       }
       if( Objects.nonNull(parameters.getStringifyIds()) && StringUtils.isNotBlank(parameters.getStringifyIds().toString())) {
@@ -305,7 +305,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
 
   @Override
   public FriendsListResponse list(FriendsListRequest parameters) {
-//  TODO: juneau-6.2.0-incubating
+//  TODO: juneau-6.3.x-incubating
 //      Friends restFriends = restClient.getRemoteableProxy("/friends/list.json", Friends.class);
 //      FriendsListResponse result = restFriends.list(parameters);
 //      return result;
@@ -315,8 +315,8 @@ public class Twitter implements Followers, Friends, Statuses, Users {
       if (Objects.nonNull(parameters.getCount()) && StringUtils.isNotBlank(parameters.getCount().toString())) {
         uriBuilder.addParameter("count", parameters.getCount().toString());
       }
-      if (Objects.nonNull(parameters.getCurser()) && StringUtils.isNotBlank(parameters.getCurser().toString())) {
-        uriBuilder.addParameter("curser", parameters.getCurser().toString());
+      if (Objects.nonNull(parameters.getCursor()) && StringUtils.isNotBlank(parameters.getCursor().toString())) {
+        uriBuilder.addParameter("cursor", parameters.getCursor().toString());
       }
       if (Objects.nonNull(parameters.getId()) && StringUtils.isNotBlank(parameters.getId().toString())) {
         uriBuilder.addParameter("id", parameters.getId().toString());
@@ -324,7 +324,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
       if (Objects.nonNull(parameters.getIncludeUserEntities()) && StringUtils.isNotBlank(parameters.getIncludeUserEntities().toString())) {
         uriBuilder.addParameter("include_user_entities", parameters.getIncludeUserEntities().toString());
       }
-      if (Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
+      if (StringUtils.isNotBlank(parameters.getScreenName())) {
         uriBuilder.addParameter("screen_name", parameters.getScreenName());
       }
       if (Objects.nonNull(parameters.getSkipStatus()) && StringUtils.isNotBlank(parameters.getSkipStatus().toString())) {
@@ -351,7 +351,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
 
   @Override
   public FollowersIdsResponse ids(FollowersIdsRequest parameters) {
-//  TODO: juneau-6.2.0-incubating
+//  TODO: juneau-6.3.x-incubating
 //      Followers restFollowers = restClient.getRemoteableProxy("/friends/list.json", Followers.class);
 //      FollowersIdsResponse result = restFollowers.ids(parameters);
 //      return result;
@@ -361,13 +361,13 @@ public class Twitter implements Followers, Friends, Statuses, Users {
       if (Objects.nonNull(parameters.getCount()) && StringUtils.isNotBlank(parameters.getCount().toString())) {
         uriBuilder.addParameter("count", parameters.getCount().toString());
       }
-      if (Objects.nonNull(parameters.getCurser()) && StringUtils.isNotBlank(parameters.getCurser().toString())) {
-        uriBuilder.addParameter("curser", parameters.getCurser().toString());
+      if (Objects.nonNull(parameters.getCursor()) && StringUtils.isNotBlank(parameters.getCursor().toString())) {
+        uriBuilder.addParameter("cursor", parameters.getCursor().toString());
       }
       if (Objects.nonNull(parameters.getId()) && StringUtils.isNotBlank(parameters.getId().toString())) {
         uriBuilder.addParameter("id", parameters.getId().toString());
       }
-      if (Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
+      if (StringUtils.isNotBlank(parameters.getScreenName())) {
         uriBuilder.addParameter("screen_name", parameters.getScreenName());
       }
       if (Objects.nonNull(parameters.getStringifyIds()) && StringUtils.isNotBlank(parameters.getStringifyIds().toString())) {
@@ -394,7 +394,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
 
   @Override
   public FollowersListResponse list(FollowersListRequest parameters) {
-//  TODO: juneau-6.2.0-incubating
+//  TODO: juneau-6.3.x-incubating
 //      Followers restFollowers = restClient.getRemoteableProxy("/friends/list.json", Followers.class);
 //      FollowersListResponse result = restFollowers.list(parameters);
 //      return result;
@@ -405,8 +405,8 @@ public class Twitter implements Followers, Friends, Statuses, Users {
       if (Objects.nonNull(parameters.getCount()) && StringUtils.isNotBlank(parameters.getCount().toString())) {
         uriBuilder.addParameter("count", parameters.getCount().toString());
       }
-      if (Objects.nonNull(parameters.getCurser()) && StringUtils.isNotBlank(parameters.getCurser().toString())) {
-        uriBuilder.addParameter("curser", parameters.getCurser().toString());
+      if (Objects.nonNull(parameters.getCursor()) && StringUtils.isNotBlank(parameters.getCursor().toString())) {
+        uriBuilder.addParameter("cursor", parameters.getCursor().toString());
       }
       if (Objects.nonNull(parameters.getId()) && StringUtils.isNotBlank(parameters.getId().toString())) {
         uriBuilder.addParameter("id", parameters.getId().toString());
@@ -414,7 +414,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
       if (Objects.nonNull(parameters.getIncludeUserEntities()) && StringUtils.isNotBlank(parameters.getIncludeUserEntities().toString())) {
         uriBuilder.addParameter("include_user_entities", parameters.getIncludeUserEntities().toString());
       }
-      if (Objects.nonNull(parameters.getScreenName()) && StringUtils.isNotBlank(parameters.getScreenName())) {
+      if (StringUtils.isNotBlank(parameters.getScreenName())) {
         uriBuilder.addParameter("screen_name", parameters.getScreenName());
       }
       if (Objects.nonNull(parameters.getSkipStatus()) && StringUtils.isNotBlank(parameters.getSkipStatus().toString())) {
@@ -441,7 +441,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
 
   @Override
   public List<User> lookup(UsersLookupRequest parameters) {
-//  TODO: juneau-6.2.0-incubating
+//  TODO: juneau-6.3.x-incubating
 //      Users restUsers = restClient.getRemoteableProxy("/users/lookup.json", Users.class);
 //      List<User> result = restUsers.lookup(parameters);
 //      return result;
@@ -483,7 +483,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
 
   @Override
   public User show(UsersShowRequest parameters) {
-//  TODO: juneau-6.2.0-incubating
+//  TODO: juneau-6.3.x-incubating
 //      Users restUsers = restClient.getRemoteableProxy("/users/lookup.json", Users.class);
 //      User result = restUsers.show(parameters);
 //      return result;
