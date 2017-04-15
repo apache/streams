@@ -16,9 +16,9 @@ under the License. */
 package org.apache.streams.instagram.provider;
 
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.instagram.api.Instagram;
 import org.apache.streams.instagram.config.InstagramConfiguration;
 import org.apache.streams.instagram.config.InstagramOAuthConfiguration;
-import org.apache.streams.instagram.api.Instagram;
 import org.apache.streams.util.ComponentUtils;
 import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
 import org.apache.streams.util.api.requests.backoff.impl.ExponentialBackOffStrategy;
@@ -73,9 +73,9 @@ public abstract class InstagramDataCollector<T> implements Runnable {
    * @return result
    */
   protected Instagram getNextInstagramClient() {
-//    if (this.tokenManger.numAvailableTokens() > 0) {
-//      this.instagram.setAccessToken(this.tokenManger.getNextAvailableToken());
-//    }
+    //    if (this.tokenManger.numAvailableTokens() > 0) {
+    //      this.instagram.setAccessToken(this.tokenManger.getNextAvailableToken());
+    //    }
     return this.instagram;
   }
 
@@ -111,8 +111,8 @@ public abstract class InstagramDataCollector<T> implements Runnable {
 
   /**
    * Takes an Instagram Object and sets it as the document of a streams datum and sets the id of the streams datum.
-   * @param item
-   * @return
+   * @param item item
+   * @return StreamsDatum
    */
   protected abstract StreamsDatum convertToStreamsDatum(T item);
 

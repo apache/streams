@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * InstagramUserInfoDataConverter
+ * InstagramUserInfoDataConverter.
  */
 public class InstagramUserInfoDataConverter implements ActivityObjectConverter<UserInfo> {
 

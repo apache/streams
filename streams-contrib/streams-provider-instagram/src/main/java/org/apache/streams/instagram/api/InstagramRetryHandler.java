@@ -35,7 +35,7 @@ public class InstagramRetryHandler implements RetryOn {
 
   @Override
   public boolean onCode(int httpResponseCode) {
-    if( httpResponseCode > 400 ) {
+    if ( httpResponseCode > 400 ) {
       return true;
     } else {
       return false;

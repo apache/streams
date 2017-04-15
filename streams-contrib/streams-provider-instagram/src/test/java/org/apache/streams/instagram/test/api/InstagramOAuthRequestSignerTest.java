@@ -1,3 +1,22 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.apache.streams.instagram.test.api;
 
 import org.apache.streams.instagram.api.InstagramOAuthRequestSigner;
@@ -26,21 +45,13 @@ public class InstagramOAuthRequestSignerTest {
   private static final InstagramOAuthRequestSigner signer =
       new InstagramOAuthRequestSigner(testOauthConfig);
 
-//  @Test
-//  public void testEncode() {
-//    assertEquals( "Ladies%20%2B%20Gentlemen", encode("Ladies + Gentlemen"));
-//    assertEquals( "An%20encoded%20string%21", encode("An encoded string!"));
-//    assertEquals( "Dogs%2C%20Cats%20%26%20Mice", encode("Dogs, Cats & Mice"));
-//    assertEquals( "%E2%98%83", encode("☃"));
-//  }
-//
   @Test
   public void testExample1() throws Exception {
     String endpoint = "/users/self";
     Map<String,String> testParamMap = new HashMap<>();
     testParamMap.put("access_token", "fb2e77d.47a0479900504cb3ab4a1f626d174d2d");
     String signature_parameter_string = signer.generateSignatureBaseString(endpoint, testParamMap);
-    String expected_parameter_string = endpoint+"|access_token=fb2e77d.47a0479900504cb3ab4a1f626d174d2d";
+    String expected_parameter_string = endpoint + "|access_token=fb2e77d.47a0479900504cb3ab4a1f626d174d2d";
     assertEquals(expected_parameter_string, signature_parameter_string);
     String signature = signer.computeSignature(signature_parameter_string, testOauthConfig.getClientSecret());
     String expected_signature = "cbf5a1f41db44412506cb6563a3218b50f45a710c7a8a65a3e9b18315bb338bf";
@@ -54,7 +65,7 @@ public class InstagramOAuthRequestSignerTest {
     testParamMap.put("access_token", "fb2e77d.47a0479900504cb3ab4a1f626d174d2d");
     testParamMap.put("count", "10");
     String signature_parameter_string = signer.generateSignatureBaseString(endpoint, testParamMap);
-    String expected_parameter_string = endpoint+"|access_token=fb2e77d.47a0479900504cb3ab4a1f626d174d2d|count=10";
+    String expected_parameter_string = endpoint + "|access_token=fb2e77d.47a0479900504cb3ab4a1f626d174d2d|count=10";
     assertEquals(expected_parameter_string, signature_parameter_string);
     String signature = signer.computeSignature(signature_parameter_string, testOauthConfig.getClientSecret());
     String expected_signature = "260634b241a6cfef5e4644c205fb30246ff637591142781b86e2075faf1b163a";

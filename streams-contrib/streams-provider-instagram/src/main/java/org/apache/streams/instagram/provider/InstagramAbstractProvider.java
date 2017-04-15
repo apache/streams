@@ -134,8 +134,8 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
 
     try {
       client = Instagram.getInstance(this.config);
-    } catch (InstantiationException e) {
-      LOGGER.error("InstantiationException", e);
+    } catch (InstantiationException ex) {
+      LOGGER.error("InstantiationException", ex);
     }
 
     Objects.requireNonNull(client);
@@ -150,26 +150,6 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
       this.executorService = null;
     }
   }
-
-  /**
-   * Add default start and stop points if necessary.
-   */
-//  private void updateUserInfoList() {
-//    UsersInfo usersInfo = this.config.getUsersInfo();
-//    if (usersInfo.getDefaultAfterDate() == null && usersInfo.getDefaultBeforeDate() == null) {
-//      return;
-//    }
-//    DateTime defaultAfterDate = usersInfo.getDefaultAfterDate();
-//    DateTime defaultBeforeDate = usersInfo.getDefaultBeforeDate();
-//    for (User user : usersInfo.getUsers()) {
-//      if (defaultAfterDate != null && user.getAfterDate() == null) {
-//        user.setAfterDate(defaultAfterDate);
-//      }
-//      if (defaultBeforeDate != null && user.getBeforeDate() == null) {
-//        user.setBeforeDate(defaultBeforeDate);
-//      }
-//    }
-//  }
 
   @Override
   public boolean isRunning() {

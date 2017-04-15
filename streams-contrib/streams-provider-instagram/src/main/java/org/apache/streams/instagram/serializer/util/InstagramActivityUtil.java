@@ -22,6 +22,7 @@ package org.apache.streams.instagram.serializer.util;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.exceptions.ActivitySerializerException;
 import org.apache.streams.instagram.pojo.Comment;
+import org.apache.streams.instagram.pojo.Comments;
 import org.apache.streams.instagram.pojo.Images;
 import org.apache.streams.instagram.pojo.Media;
 import org.apache.streams.instagram.pojo.UserInfo;
@@ -34,7 +35,6 @@ import org.apache.streams.pojo.json.Image;
 import org.apache.streams.pojo.json.ImageParent;
 import org.apache.streams.pojo.json.Provider;
 
-import com.sun.scenario.effect.ImageData;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -333,22 +333,26 @@ public class InstagramActivityUtil {
       extensions.put("likes", likes);
     }
 
+    if (item.getComments() != null) {
+      Map<String, Object> comments = new HashMap<>();
+      comments.put("count", item.getComments().getCount());
+      extensions.put("comments", comments);
+    }
+
     extensions.put("hashtags", item.getTags());
 
-    // TODO: update schema to hold comment text and re-enable this section
-//
-//    Comments comments = item.getComments();
-//    String commentsConcat = "";
-//
-//    if (comments != null) {
-//      for (CommentData commentData : comments.getComments()) {
-//        commentsConcat += " " + commentData.getText();
-//      }
-//    }
-//    if (item.getCaption() != null) {
-//      commentsConcat += " " + item.getCaption().getText();
-//    }
+    Comments comments = item.getComments();
+    String commentsConcat = "";
 
-//    extensions.put("keywords", commentsConcat);
+    if (comments != null) {
+      for (Comment comment : comments.getData()) {
+        commentsConcat += " " + comment.getText();
+      }
+    }
+    if (item.getCaption() != null) {
+      commentsConcat += " " + item.getCaption().getText();
+    }
+
+    extensions.put("keywords", commentsConcat);
   }
 }

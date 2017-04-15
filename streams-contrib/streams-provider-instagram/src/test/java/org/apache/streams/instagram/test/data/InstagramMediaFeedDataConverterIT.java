@@ -46,7 +46,6 @@ import static org.junit.Assert.assertThat;
 /**
  * Tests conversion of instagram inputs to Activity.
  */
-
 public class InstagramMediaFeedDataConverterIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstagramMediaFeedDataConverterIT.class);

@@ -63,6 +63,7 @@ public class InstagramRecentMediaProvider extends InstagramAbstractProvider {
     super(config);
     this.config = config;
   }
+
   @Override
   protected InstagramDataCollector getInstagramDataCollector() {
     return new InstagramRecentMediaCollector(client, super.dataQueue, config);

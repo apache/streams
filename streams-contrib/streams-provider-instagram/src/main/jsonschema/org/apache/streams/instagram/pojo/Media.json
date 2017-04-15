@@ -30,10 +30,16 @@
     },
     "comments": {
       "type": "object",
-      "javaType": "org.apache.streams.instagram.pojo.CommentCounts",
+      "javaType": "org.apache.streams.instagram.pojo.Comments",
       "properties": {
         "count": {
           "type": "integer"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "Comment.json"
+          }
         }
       }
     },

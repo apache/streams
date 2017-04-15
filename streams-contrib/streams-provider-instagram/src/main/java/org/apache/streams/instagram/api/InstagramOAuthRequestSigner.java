@@ -44,10 +44,15 @@ public class InstagramOAuthRequestSigner {
     this.oAuthConfiguration = oauth;
   }
 
+  /**
+   * generateSignature.
+   * @param uri uri
+   * @return String
+   */
   public String generateSignature(String uri) {
 
     String request_path = uri.substring(0, uri.indexOf('?'));
-    String request_param_line = uri.substring(uri.indexOf('?')+1);
+    String request_param_line = uri.substring(uri.indexOf('?') + 1);
     String[] request_params = URLDecoder.decode(request_param_line).split("&");
 
     Map<String,String> oauthParamMap = new HashMap<>();
@@ -55,9 +60,9 @@ public class InstagramOAuthRequestSigner {
 
     Map<String,String> allParamsMap = new HashMap<>(oauthParamMap);
 
-    for( String request_param : request_params ) {
+    for ( String request_param : request_params ) {
       String key = request_param.substring(0, request_param.indexOf('='));
-      String value = request_param.substring(request_param.indexOf('=')+1, request_param.length());
+      String value = request_param.substring(request_param.indexOf('=') + 1, request_param.length());
       allParamsMap.put(key, value);
     }
 
@@ -69,30 +74,45 @@ public class InstagramOAuthRequestSigner {
     String oauth_signature;
     try {
       oauth_signature = computeSignature(signature_base_string, oAuthConfiguration.getClientSecret());
-    } catch (GeneralSecurityException e) {
-      LOGGER.warn("GeneralSecurityException", e);
+    } catch (GeneralSecurityException ex) {
+      LOGGER.warn("GeneralSecurityException", ex);
       return null;
-    } catch (UnsupportedEncodingException e) {
-      LOGGER.warn("UnsupportedEncodingException", e);
+    } catch (UnsupportedEncodingException ex) {
+      LOGGER.warn("UnsupportedEncodingException", ex);
       return null;
     }
 
     return oauth_signature;
   }
 
+  /**
+   * generateSignatureBaseString.
+   * @param endpoint endpoint
+   * @param allParamsMap allParamsMap
+   * @return String
+   */
   public static String generateSignatureBaseString(String endpoint, Map<String, String> allParamsMap) {
 
     SortedSet<String> sortedKeys = new TreeSet<>(allParamsMap.keySet());
 
     StringJoiner stringJoiner = new StringJoiner("|");
     stringJoiner.add(endpoint);
-    for( String key : sortedKeys ) {
-      stringJoiner.add(key+"="+allParamsMap.get(key));
+    for ( String key : sortedKeys ) {
+      stringJoiner.add(key + "=" + allParamsMap.get(key));
     }
 
     return stringJoiner.toString();
   }
 
+  /**
+   * computeSignature.
+   * @param signature_base_string Signature Base String
+   * @param clientSecret Client Secret
+   * @return String
+   * @throws NoSuchAlgorithmException
+   * @throws InvalidKeyException
+   * @throws UnsupportedEncodingException
+   */
   public static String computeSignature(String signature_base_string, String clientSecret) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
     SecretKeySpec keySpec = new SecretKeySpec(clientSecret.getBytes(oauth_signature_encoding), oauth_signature_method);
     Mac mac = Mac.getInstance(oauth_signature_method);

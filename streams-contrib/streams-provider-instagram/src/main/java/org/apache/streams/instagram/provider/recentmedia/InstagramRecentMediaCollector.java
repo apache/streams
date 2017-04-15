@@ -17,13 +17,9 @@ package org.apache.streams.instagram.provider.recentmedia;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.instagram.api.Instagram;
-import org.apache.streams.instagram.api.UserInfoResponse;
-import org.apache.streams.instagram.config.InstagramConfiguration;
-import org.apache.streams.instagram.config.InstagramRecentMediaProviderConfiguration;
-import org.apache.streams.instagram.api.Pagination;
-import org.apache.streams.instagram.pojo.Media;
 import org.apache.streams.instagram.api.RecentMediaResponse;
-import org.apache.streams.instagram.pojo.UserInfo;
+import org.apache.streams.instagram.config.InstagramRecentMediaProviderConfiguration;
+import org.apache.streams.instagram.pojo.Media;
 import org.apache.streams.instagram.pojo.UserRecentMediaRequest;
 import org.apache.streams.instagram.provider.InstagramDataCollector;
 
@@ -83,23 +79,25 @@ public class InstagramRecentMediaCollector extends InstagramDataCollector<Media>
     UserRecentMediaRequest request = (UserRecentMediaRequest) new UserRecentMediaRequest()
         .withUserId(userId)
         .withMinId(null)
-        .withMaxId(0l)
-        .withCount(33l);
+        .withMaxId(0L)
+        .withCount(33L);
     RecentMediaResponse response;
     do {
       response = getNextInstagramClient().userMediaRecent(request);
-      if( response != null && response.getData() != null) {
+      if ( response != null && response.getData() != null) {
         List<Media> data = new LinkedList<>();
         data.addAll(response.getData());
         super.queueData(data, userId);
       }
-      if( shouldContinuePulling(response) )
+      if ( shouldContinuePulling(response) ) {
         request.setMaxId(new Long(response.getPagination().getNextMaxId()));
-    } while (shouldContinuePulling(response));
+      }
+    }
+    while (shouldContinuePulling(response));
   }
 
   private boolean shouldContinuePulling(RecentMediaResponse response) {
-    if( response != null
+    if ( response != null
         || response.getData() != null
         || response.getData().size() > 0
         || response.getPagination() != null

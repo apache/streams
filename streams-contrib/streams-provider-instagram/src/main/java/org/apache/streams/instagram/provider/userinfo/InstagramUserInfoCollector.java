@@ -70,7 +70,7 @@ public class InstagramUserInfoCollector extends InstagramDataCollector<UserInfo>
     } catch (Exception ex) {
       LOGGER.error("Expection while polling instagram : {}", ex);
     }
-    if( userInfoResponse != null && userInfoResponse.getData() != null) {
+    if ( userInfoResponse != null && userInfoResponse.getData() != null) {
       List<UserInfo> data = new LinkedList<>();
       data.add(userInfoResponse.getData());
       super.queueData(data, userId);

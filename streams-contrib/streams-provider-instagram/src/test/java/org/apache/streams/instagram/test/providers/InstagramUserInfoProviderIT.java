@@ -57,9 +57,9 @@ public class InstagramUserInfoProviderIT {
     testThread.join(60000);
 
     File out = new File(outfile);
-    Assert.assertTrue (out.exists());
-    Assert.assertTrue (out.canRead());
-    Assert.assertTrue (out.isFile());
+    Assert.assertTrue(out.exists());
+    Assert.assertTrue(out.canRead());
+    Assert.assertTrue(out.isFile());
 
     FileReader outReader = new FileReader(out);
     LineNumberReader outCounter = new LineNumberReader(outReader);
