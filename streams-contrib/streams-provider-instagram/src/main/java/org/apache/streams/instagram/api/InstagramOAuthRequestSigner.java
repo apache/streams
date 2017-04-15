@@ -27,7 +27,9 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * https://www.instagram.com/developer/secure-api-requests/
+ * Handles request signing to api.instagram.com.
+ *
+ * @see <a href="https://www.instagram.com/developer/secure-api-requests/">https://www.instagram.com/developer/secure-api-requests/</a>
  */
 public class InstagramOAuthRequestSigner {
 
