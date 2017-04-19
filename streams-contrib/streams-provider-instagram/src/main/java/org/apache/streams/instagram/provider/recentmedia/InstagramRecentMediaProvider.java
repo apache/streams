@@ -19,7 +19,8 @@ import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.instagram.InstagramConfiguration;
+import org.apache.streams.instagram.config.InstagramConfiguration;
+import org.apache.streams.instagram.config.InstagramRecentMediaProviderConfiguration;
 import org.apache.streams.instagram.provider.InstagramAbstractProvider;
 import org.apache.streams.instagram.provider.InstagramDataCollector;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -56,16 +57,16 @@ public class InstagramRecentMediaProvider extends InstagramAbstractProvider {
 
   private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-  public InstagramRecentMediaProvider() {
-  }
+  InstagramRecentMediaProviderConfiguration config;
 
-  public InstagramRecentMediaProvider(InstagramConfiguration config) {
+  public InstagramRecentMediaProvider(InstagramRecentMediaProviderConfiguration config) {
     super(config);
+    this.config = config;
   }
 
   @Override
   protected InstagramDataCollector getInstagramDataCollector() {
-    return new InstagramRecentMediaCollector(super.dataQueue, super.config);
+    return new InstagramRecentMediaCollector(client, super.dataQueue, config);
   }
 
   /**
@@ -105,7 +106,7 @@ public class InstagramRecentMediaProvider extends InstagramAbstractProvider {
     Config typesafe  = conf.withFallback(reference).resolve();
 
     StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    InstagramConfiguration config = new ComponentConfigurator<>(InstagramConfiguration.class).detectConfiguration(typesafe, "instagram");
+    InstagramRecentMediaProviderConfiguration config = new ComponentConfigurator<>(InstagramRecentMediaProviderConfiguration.class).detectConfiguration(typesafe, "instagram");
     InstagramRecentMediaProvider provider = new InstagramRecentMediaProvider(config);
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));

@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.instagram.api.Pagination",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "properties": {
+    "next_url": {
+      "type": "string"
+    },
+    "next_max_id": {
+      "type": "string"
+    }
+  }
+}

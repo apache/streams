@@ -16,14 +16,13 @@ under the License. */
 package org.apache.streams.instagram.provider.userinfo;
 
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.instagram.InstagramConfiguration;
-import org.apache.streams.instagram.User;
+import org.apache.streams.instagram.api.Instagram;
+import org.apache.streams.instagram.api.UserInfoResponse;
+import org.apache.streams.instagram.config.InstagramConfiguration;
+import org.apache.streams.instagram.config.InstagramUserInfoProviderConfiguration;
+import org.apache.streams.instagram.pojo.UserInfo;
 import org.apache.streams.instagram.provider.InstagramDataCollector;
 
-import org.jinstagram.entity.users.basicinfo.UserInfo;
-import org.jinstagram.entity.users.basicinfo.UserInfoData;
-import org.jinstagram.exceptions.InstagramBadRequestException;
-import org.jinstagram.exceptions.InstagramRateLimitException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,60 +34,54 @@ import java.util.Queue;
  * InstagramDataCollector that pulls UserInfoData from Instagram
  * @see org.apache.streams.instagram.provider.InstagramDataCollector
  */
-public class InstagramUserInfoCollector extends InstagramDataCollector<UserInfoData> {
+public class InstagramUserInfoCollector extends InstagramDataCollector<UserInfo> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoCollector.class);
   protected static final int MAX_ATTEMPTS = 5;
 
   private int consecutiveErrorCount;
 
-  public InstagramUserInfoCollector(Queue<StreamsDatum> dataQueue, InstagramConfiguration config) {
-    super(dataQueue, config);
-    this.consecutiveErrorCount = 0;
+  InstagramUserInfoProviderConfiguration config;
+
+  public InstagramUserInfoCollector(Instagram instagram, Queue<StreamsDatum> dataQueue, InstagramUserInfoProviderConfiguration config) {
+    super(instagram, dataQueue, config);
+    this.config = config;
   }
 
   @Override
-  protected void collectInstagramDataForUser(User user) throws Exception {
-    int attempt = 0;
-    boolean successful = false;
-    UserInfo userInfo = null;
-    while (!successful && attempt < MAX_ATTEMPTS) {
-      ++attempt;
+  public void run() {
+    for (String userId : this.config.getInfo()) {
       try {
-        userInfo = getNextInstagramClient().getUserInfo(user.getUserId());
+        collectInstagramDataForUser(userId);
+      } catch (InterruptedException ie) {
+        Thread.currentThread().interrupt();
       } catch (Exception ex) {
-        if (ex instanceof InstagramRateLimitException) {
-          LOGGER.warn("Hit rate limit exception, backing off.");
-          super.backOffStrategy.backOff();
-        } else if (ex instanceof InstagramBadRequestException) {
-          LOGGER.error("Sent a bad request to Instagram, skipping user : {}", user.getUserId());
-          attempt = MAX_ATTEMPTS;
-          ++this.consecutiveErrorCount;
-        } else {
-          LOGGER.error("Expection while polling instagram : {}", ex);
-          ++this.consecutiveErrorCount;
-        }
-        if (this.consecutiveErrorCount >= Math.max(super.numAvailableTokens(), MAX_ATTEMPTS * 2)) {
-          LOGGER.error("Consecutive Errors above acceptable limits, ending collection of data.");
-          throw new Exception("Consecutive Errors above acceptable limits : " + this.consecutiveErrorCount);
-        }
-      }
-      if (successful = (userInfo != null)) {
-        this.consecutiveErrorCount = 0;
-        List<UserInfoData> data = new LinkedList<>();
-        data.add(userInfo.getData());
-        super.queueData(data, user.getUserId());
+        LOGGER.error("Exception thrown while polling for user, {}, skipping user.", userId);
+        LOGGER.error("Exception thrown while polling for user : ", ex);
       }
     }
-    if (attempt == MAX_ATTEMPTS) {
-      LOGGER.error("Failed to collect data for user : {}", user.getUserId());
+    this.isCompleted.set(true);
+  }
+
+  protected void collectInstagramDataForUser(String userId) throws Exception {
+    UserInfoResponse userInfoResponse = null;
+    try {
+      userInfoResponse = getNextInstagramClient().lookupUser(userId);
+    } catch (Exception ex) {
+      LOGGER.error("Expection while polling instagram : {}", ex);
+    }
+    if ( userInfoResponse != null && userInfoResponse.getData() != null) {
+      List<UserInfo> data = new LinkedList<>();
+      data.add(userInfoResponse.getData());
+      super.queueData(data, userId);
     }
   }
 
   @Override
-  protected StreamsDatum convertToStreamsDatum(UserInfoData item) {
+  protected StreamsDatum convertToStreamsDatum(UserInfo item) {
     return new StreamsDatum(item, item.getId());
   }
+
 
 
 }

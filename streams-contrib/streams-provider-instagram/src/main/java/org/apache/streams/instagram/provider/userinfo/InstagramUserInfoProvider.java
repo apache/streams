@@ -19,8 +19,8 @@ import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.instagram.InstagramConfiguration;
-import org.apache.streams.instagram.InstagramUserInformationConfiguration;
+import org.apache.streams.instagram.config.InstagramConfiguration;
+import org.apache.streams.instagram.config.InstagramUserInfoProviderConfiguration;
 import org.apache.streams.instagram.provider.InstagramAbstractProvider;
 import org.apache.streams.instagram.provider.InstagramDataCollector;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -56,17 +56,16 @@ public class InstagramUserInfoProvider extends InstagramAbstractProvider {
 
   private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-  public InstagramUserInfoProvider() {
-    super();
-  }
+  InstagramUserInfoProviderConfiguration config;
 
-  public InstagramUserInfoProvider(InstagramConfiguration config) {
+  public InstagramUserInfoProvider(InstagramUserInfoProviderConfiguration config) {
     super(config);
+    this.config = config;
   }
 
   @Override
   protected InstagramDataCollector getInstagramDataCollector() {
-    return new InstagramUserInfoCollector(super.dataQueue, super.config);
+    return new InstagramUserInfoCollector(client, super.dataQueue, config);
   }
 
   /**
@@ -106,7 +105,7 @@ public class InstagramUserInfoProvider extends InstagramAbstractProvider {
     Config typesafe  = conf.withFallback(reference).resolve();
 
     StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    InstagramUserInformationConfiguration config = new ComponentConfigurator<>(InstagramUserInformationConfiguration.class)
+    InstagramUserInfoProviderConfiguration config = new ComponentConfigurator<>(InstagramUserInfoProviderConfiguration.class)
         .detectConfiguration(typesafe, "instagram");
     InstagramUserInfoProvider provider = new InstagramUserInfoProvider(config);
 
@@ -131,4 +130,5 @@ public class InstagramUserInfoProvider extends InstagramAbstractProvider {
     provider.cleanUp();
     outStream.flush();
   }
+
 }

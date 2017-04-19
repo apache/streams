@@ -21,21 +21,20 @@ package org.apache.streams.instagram.serializer.util;
 
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.exceptions.ActivitySerializerException;
+import org.apache.streams.instagram.pojo.Comment;
+import org.apache.streams.instagram.pojo.Comments;
+import org.apache.streams.instagram.pojo.Images;
+import org.apache.streams.instagram.pojo.Media;
+import org.apache.streams.instagram.pojo.UserInfo;
+import org.apache.streams.instagram.pojo.UserInfoCounts;
+import org.apache.streams.instagram.pojo.Videos;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Image;
+import org.apache.streams.pojo.json.ImageParent;
 import org.apache.streams.pojo.json.Provider;
 
-import org.jinstagram.entity.comments.CommentData;
-import org.jinstagram.entity.common.Comments;
-import org.jinstagram.entity.common.ImageData;
-import org.jinstagram.entity.common.Images;
-import org.jinstagram.entity.common.VideoData;
-import org.jinstagram.entity.common.Videos;
-import org.jinstagram.entity.users.basicinfo.Counts;
-import org.jinstagram.entity.users.basicinfo.UserInfoData;
-import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +61,7 @@ public class InstagramActivityUtil {
    * @throws ActivityConversionException ActivityConversionException
    */
 
-  public static void updateActivity(MediaFeedData item, Activity activity) throws ActivityConversionException {
+  public static void updateActivity(Media item, Activity activity) throws ActivityConversionException {
     activity.setActor(buildActor(item));
     activity.setVerb("post");
 
@@ -90,25 +89,25 @@ public class InstagramActivityUtil {
    * @param activity the target of the updates.  Will receive all values from the tweet.
    * @throws ActivitySerializerException ActivitySerializerException
    */
-  public static void updateActivity(UserInfoData item, Activity activity) throws ActivitySerializerException {
+  public static void updateActivity(UserInfo item, Activity activity) throws ActivitySerializerException {
     activity.setActor(buildActor(item));
     activity.setId(null);
     activity.setProvider(getProvider());
   }
 
   /**
-   * Builds an Actor object given a UserInfoData object.
-   * @param item UserInfoData item
+   * Builds an Actor object given a UserInfo object.
+   * @param item UserInfo item
    * @return Actor object
    */
-  public static ActivityObject buildActor(UserInfoData item) {
+  public static ActivityObject buildActor(UserInfo item) {
     ActivityObject actor = new ActivityObject();
 
     try {
       Image image = new Image();
       image.setUrl(item.getProfilePicture());
 
-      Counts counts = item.getCounts();
+      UserInfoCounts counts = item.getCounts();
 
       Map<String, Object> extensions = new HashMap<>();
 
@@ -134,27 +133,27 @@ public class InstagramActivityUtil {
 
   /**
    * Builds the actor.
-   * @param item MediaFeedData item
+   * @param item Media item
    * @return a valid ActivityObject
    */
-  public static ActivityObject buildActor(MediaFeedData item) {
+  public static ActivityObject buildActor(Media item) {
     ActivityObject actor = new ActivityObject();
 
     try {
       Image image = new Image();
-      image.setUrl(item.getUser().getProfilePictureUrl());
+      image.setUrl(item.getUser().getProfilePicture());
 
       Map<String, Object> extensions = new HashMap<>();
-      extensions.put("screenName", item.getUser().getUserName());
+      extensions.put("screenName", item.getUser().getUsername());
 
       actor.setDisplayName(item.getUser().getFullName());
       actor.setSummary(item.getUser().getBio());
-      actor.setUrl(item.getUser().getWebsiteUrl());
+      actor.setUrl(item.getUser().getWebsite());
 
       actor.setId(formatId(String.valueOf(item.getUser().getId())));
       actor.setImage(image);
       actor.setAdditionalProperty("extensions", extensions);
-      actor.setAdditionalProperty("handle", item.getUser().getUserName());
+      actor.setAdditionalProperty("handle", item.getUser().getUsername());
     } catch (Exception ex) {
       LOGGER.error("Exception trying to build actor object: {}", ex.getMessage());
     }
@@ -167,20 +166,20 @@ public class InstagramActivityUtil {
    * @param item the item
    * @return a valid Activity Object
    */
-  public static ActivityObject buildActivityObject(MediaFeedData item) {
+  public static ActivityObject buildActivityObject(Media item) {
     ActivityObject actObj = new ActivityObject();
 
-    actObj.setObjectType(item.getType());
+    actObj.setObjectType(item.getType().toString());
     actObj.setAttachments(buildActivityObjectAttachments(item));
 
     Image standardResolution = new Image();
     if (item.getType().equals("image") && item.getImages() != null) {
-      ImageData standardResolutionData = item.getImages().getStandardResolution();
-      standardResolution.setHeight((long) standardResolutionData.getImageHeight());
-      standardResolution.setWidth((long) standardResolutionData.getImageWidth());
-      standardResolution.setUrl(standardResolutionData.getImageUrl());
+      ImageParent standardResolutionData = item.getImages().getStandardResolution();
+      standardResolution.setHeight((long) standardResolutionData.getHeight());
+      standardResolution.setWidth((long) standardResolutionData.getWidth());
+      standardResolution.setUrl(standardResolutionData.getUrl());
     } else if (item.getType().equals("video") && item.getVideos() != null) {
-      VideoData standardResolutionData = item.getVideos().getStandardResolution();
+      ImageParent standardResolutionData = item.getVideos().getStandardResolution();
       standardResolution.setHeight((long) standardResolutionData.getHeight());
       standardResolution.setWidth((long) standardResolutionData.getWidth());
       standardResolution.setUrl(standardResolutionData.getUrl());
@@ -192,12 +191,12 @@ public class InstagramActivityUtil {
   }
 
   /**
-   * Builds all of the attachments associated with a MediaFeedData object.
+   * Builds all of the attachments associated with a Media object.
    *
    * @param item item
    * @return result
    */
-  public static List<ActivityObject> buildActivityObjectAttachments(MediaFeedData item) {
+  public static List<ActivityObject> buildActivityObjectAttachments(Media item) {
     List<ActivityObject> attachments = new ArrayList<>();
 
     addImageObjects(attachments, item);
@@ -211,27 +210,27 @@ public class InstagramActivityUtil {
    * @param attachments attachments
    * @param item item
    */
-  public static void addImageObjects(List<ActivityObject> attachments, MediaFeedData item) {
+  public static void addImageObjects(List<ActivityObject> attachments, Media item) {
     Images images = item.getImages();
 
     if (images != null) {
       try {
-        ImageData thumbnail = images.getThumbnail();
-        ImageData lowResolution = images.getLowResolution();
+        ImageParent thumbnail = images.getThumbnail();
+        ImageParent lowResolution = images.getLowResolution();
 
         ActivityObject thumbnailObject = new ActivityObject();
         Image thumbnailImage = new Image();
-        thumbnailImage.setUrl(thumbnail.getImageUrl());
-        thumbnailImage.setHeight((long) thumbnail.getImageHeight());
-        thumbnailImage.setWidth((long) thumbnail.getImageWidth());
+        thumbnailImage.setUrl(thumbnail.getUrl());
+        thumbnailImage.setHeight((long) thumbnail.getHeight());
+        thumbnailImage.setWidth((long) thumbnail.getWidth());
         thumbnailObject.setImage(thumbnailImage);
         thumbnailObject.setObjectType("image");
 
         ActivityObject lowResolutionObject = new ActivityObject();
         Image lowResolutionImage = new Image();
-        lowResolutionImage.setUrl(lowResolution.getImageUrl());
-        lowResolutionImage.setHeight((long) lowResolution.getImageHeight());
-        lowResolutionImage.setWidth((long) lowResolution.getImageWidth());
+        lowResolutionImage.setUrl(lowResolution.getUrl());
+        lowResolutionImage.setHeight((long) lowResolution.getHeight());
+        lowResolutionImage.setWidth((long) lowResolution.getWidth());
         lowResolutionObject.setImage(lowResolutionImage);
         lowResolutionObject.setObjectType("image");
 
@@ -248,12 +247,12 @@ public class InstagramActivityUtil {
    * @param attachments attachments
    * @param item item
    */
-  public static void addVideoObjects(List<ActivityObject> attachments, MediaFeedData item) {
+  public static void addVideoObjects(List<ActivityObject> attachments, Media item) {
     Videos videos = item.getVideos();
 
     if (videos != null) {
       try {
-        VideoData lowResolutionVideo = videos.getLowResolution();
+        ImageParent lowResolutionVideo = videos.getLowResolution();
 
         ActivityObject lowResolutionVideoObject = new ActivityObject();
         Image lowResolutionVideoImage = new Image();
@@ -275,7 +274,7 @@ public class InstagramActivityUtil {
    * @param item the object to use as the source
    * @return a list of links corresponding to the expanded URL
    */
-  public static List<String> getLinks(MediaFeedData item) {
+  public static List<String> getLinks(Media item) {
     return new ArrayList<>();
   }
 
@@ -284,7 +283,7 @@ public class InstagramActivityUtil {
    * @param activity the Activity object to update
    * @param item the object to use as the source
    */
-  public static void addLocationExtension(Activity activity, MediaFeedData item) {
+  public static void addLocationExtension(Activity activity, Media item) {
     Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
 
     if (item.getLocation() != null) {
@@ -321,9 +320,9 @@ public class InstagramActivityUtil {
    * Takes various parameters from the instagram object that are currently not part of the
    * activity schema and stores them in a generic extensions attribute.
    * @param activity Activity activity
-   * @param item MediaFeedData item
+   * @param item Media item
    */
-  public static void addInstagramExtensions(Activity activity, MediaFeedData item) {
+  public static void addInstagramExtensions(Activity activity, Media item) {
     Map<String, Object> extensions = ExtensionUtil.getInstance().ensureExtensions(activity);
 
     addLocationExtension(activity, item);
@@ -334,14 +333,20 @@ public class InstagramActivityUtil {
       extensions.put("likes", likes);
     }
 
+    if (item.getComments() != null) {
+      Map<String, Object> comments = new HashMap<>();
+      comments.put("count", item.getComments().getCount());
+      extensions.put("comments", comments);
+    }
+
     extensions.put("hashtags", item.getTags());
 
     Comments comments = item.getComments();
     String commentsConcat = "";
 
     if (comments != null) {
-      for (CommentData commentData : comments.getComments()) {
-        commentsConcat += " " + commentData.getText();
+      for (Comment comment : comments.getData()) {
+        commentsConcat += " " + comment.getText();
       }
     }
     if (item.getCaption() != null) {

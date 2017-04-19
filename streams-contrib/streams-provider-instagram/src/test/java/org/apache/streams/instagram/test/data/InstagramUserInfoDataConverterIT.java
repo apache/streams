@@ -19,6 +19,7 @@
 package org.apache.streams.instagram.test.data;
 
 import org.apache.streams.data.ActivityObjectConverter;
+import org.apache.streams.instagram.pojo.UserInfo;
 import org.apache.streams.instagram.serializer.InstagramUserInfoDataConverter;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.ActivityObject;
@@ -26,7 +27,6 @@ import org.apache.streams.pojo.json.ActivityObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
-import org.jinstagram.entity.users.basicinfo.UserInfoData;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,15 +53,11 @@ public class InstagramUserInfoDataConverterIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoDataConverterIT.class);
 
-  // use gson because jInstagram's pojos do
-  private Gson gson = new Gson();
-
-  // use jackson to write to file output
   private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-  @Test
+  @Test(dependsOnGroups = "providers")
   public void InstagramUserInfoDataConverterIT() throws Exception {
-    InputStream is = InstagramUserInfoDataConverterIT.class.getResourceAsStream("/testUserInfoData.txt");
+    InputStream is = InstagramUserInfoDataConverterIT.class.getResourceAsStream("/InstagramUserInfoProviderIT.stdout.txt");
     InputStreamReader isr = new InputStreamReader(is);
     BufferedReader br = new BufferedReader(isr);
 
@@ -76,9 +72,9 @@ public class InstagramUserInfoDataConverterIT {
 
           LOGGER.info("raw: {}", line);
 
-          UserInfoData userInfoData = gson.fromJson(line, UserInfoData.class);
+          UserInfo userInfoData = mapper.readValue(line, UserInfo.class);
 
-          ActivityObjectConverter<UserInfoData> converter = new InstagramUserInfoDataConverter();
+          ActivityObjectConverter<UserInfo> converter = new InstagramUserInfoDataConverter();
 
           ActivityObject activityObject = converter.toActivityObject(userInfoData);
 

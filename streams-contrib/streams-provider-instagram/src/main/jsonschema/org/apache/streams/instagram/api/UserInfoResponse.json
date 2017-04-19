@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.instagram.api.UserInfoResponse",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "properties": {
+    "data": {
+      "$ref": "../pojo/UserInfo.json"
+    },
+    "meta": {
+      "javaType": "org.apache.streams.instagram.api.Meta"
+    },
+    "pagination": {
+      "javaType": "org.apache.streams.instagram.api.Pagination"
+    }
+  }
+}

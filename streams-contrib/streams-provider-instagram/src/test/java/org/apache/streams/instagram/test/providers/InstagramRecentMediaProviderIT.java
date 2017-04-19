@@ -20,6 +20,7 @@ package org.apache.streams.instagram.test.providers;
 
 import org.apache.streams.instagram.provider.recentmedia.InstagramRecentMediaProvider;
 
+import org.hamcrest.Matchers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -29,6 +30,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * Integration Test for InstagramRecentMediaProvider.
  */
@@ -36,7 +39,7 @@ public class InstagramRecentMediaProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstagramRecentMediaProviderIT.class);
 
-  @Test
+  @Test(groups = "providers")
   public void testInstagramRecentMediaProvider() throws Exception {
 
     String configfile = "./target/test-classes/InstagramRecentMediaProviderIT.conf";
@@ -57,16 +60,16 @@ public class InstagramRecentMediaProviderIT {
     testThread.join(60000);
 
     File out = new File(outfile);
-    Assert.assertTrue (out.exists());
-    Assert.assertTrue (out.canRead());
-    Assert.assertTrue (out.isFile());
+    Assert.assertTrue(out.exists());
+    Assert.assertTrue(out.canRead());
+    Assert.assertTrue(out.isFile());
 
     FileReader outReader = new FileReader(out);
     LineNumberReader outCounter = new LineNumberReader(outReader);
 
-    while (outCounter.readLine() != null) {
-    }
+    while (outCounter.readLine() != null) {}
 
-    Assert.assertTrue (outCounter.getLineNumber() >= 1);
+    assertThat(outCounter.getLineNumber(), Matchers.greaterThanOrEqualTo(1));
+
   }
 }
