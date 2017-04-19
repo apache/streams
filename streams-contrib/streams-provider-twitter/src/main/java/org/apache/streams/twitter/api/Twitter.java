@@ -130,7 +130,7 @@ public class Twitter implements Followers, Friends, Statuses, Users {
 //      return result;
       URIBuilder uriBuilder = new URIBuilder()
           .setPath("/statuses/user_timeline.json");
-      if( StringUtils.isNotBlank(parameters.getUserId().toString())) {
+      if( Objects.nonNull(parameters.getUserId()) && StringUtils.isNotBlank(parameters.getUserId().toString())) {
         uriBuilder.addParameter("user_id", parameters.getUserId().toString());
       }
       if( StringUtils.isNotBlank(parameters.getScreenName())) {

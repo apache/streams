@@ -116,9 +116,10 @@ public class TwitterOAuthRequestInterceptorTest {
     Mockito.when(interceptor.generateNonce()).thenReturn("kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg");
     Mockito.when(interceptor.generateTimestamp()).thenReturn("1318622958");
     interceptor.process(wrapper, new HttpCoreContext());
-    String expected = "OAuth oauth_consumer_key=\"xvz1evFS4wEEPTGEFPHBog\", oauth_nonce=\"kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg\", oauth_signature=\"tnnArxj06cWHq44gCs1OSKk%2FjLY%3D\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp=\"1318622958\", oauth_token=\"370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb\", oauth_version=\"1.0\"";
     assertEquals(1, wrapper.getHeaders("Authorization").length);
-    assertEquals(expected, wrapper.getFirstHeader("Authorization").getValue());
+    String actual = wrapper.getFirstHeader("Authorization").getValue();
+    String expected = "OAuth oauth_consumer_key=\"xvz1evFS4wEEPTGEFPHBog\", oauth_nonce=\"kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg\", oauth_signature=\"tnnArxj06cWHq44gCs1OSKk%2FjLY%3D\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp=\"1318622958\", oauth_token=\"370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb\", oauth_version=\"1.0\"";
+    assertEquals(expected, actual);
   }
 
 }

@@ -96,11 +96,11 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
       allParamsMap.put(key, value);
     }
 
-    String[] body_params;
     if( ((HttpRequestWrapper) httpRequest).getOriginal() instanceof HttpPost) {
       String body = EntityUtils.toString(((HttpPost)((HttpRequestWrapper) httpRequest).getOriginal()).getEntity());
-      body_params = body.split(",");
+      String[] body_params = body.split(",");
       for( String body_param : body_params ) {
+        body_param = URLDecoder.decode(body_param);
         String key = body_param.substring(0, body_param.indexOf('='));
         String value = body_param.substring(body_param.indexOf('=')+1, body_param.length());
         allParamsMap.put(key, value);
