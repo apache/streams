@@ -26,20 +26,26 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.TwitterFollowingConfiguration;
+import org.apache.streams.twitter.TwitterUserInformationConfiguration;
+import org.apache.streams.twitter.api.FollowersIdsRequest;
+import org.apache.streams.twitter.api.FollowingIdsRequest;
+import org.apache.streams.twitter.api.FriendsIdsRequest;
+import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
+import org.apache.streams.twitter.pojo.User;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import twitter4j.Status;
-import twitter4j.Twitter;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -49,13 +55,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Retrieve all follow adjacencies from a list of user ids or names.
  */
-public class TwitterFollowingProvider extends TwitterUserInformationProvider {
+public class TwitterFollowingProvider {
 
   public static final String STREAMS_ID = "TwitterFollowingProvider";
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFollowingProvider.class);
@@ -64,7 +75,18 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
 
   private TwitterFollowingConfiguration config;
 
+  protected List<String> names = new ArrayList<>();
+  protected List<Long> ids = new ArrayList<>();
+
+  protected Twitter client;
+
+  protected ListeningExecutorService executor;
+
   private List<ListenableFuture<Object>> futures = new ArrayList<>();
+
+  protected final AtomicBoolean running = new AtomicBoolean();
+
+  protected volatile Queue<StreamsDatum> providerQueue;
 
   /**
    * To use from command line:
@@ -139,66 +161,136 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
   }
 
   public TwitterFollowingProvider(TwitterFollowingConfiguration config) {
-    super(config);
     this.config = config;
   }
 
-  @Override
   public void prepare(Object configurationObject) {
-    super.prepare(config);
+
+    Objects.requireNonNull(config);
+    Objects.requireNonNull(config.getOauth());
+    Objects.requireNonNull(config.getOauth().getConsumerKey());
+    Objects.requireNonNull(config.getOauth().getConsumerSecret());
+    Objects.requireNonNull(config.getOauth().getAccessToken());
+    Objects.requireNonNull(config.getOauth().getAccessTokenSecret());
+    Objects.requireNonNull(config.getInfo());
+    Objects.requireNonNull(config.getThreadsPerProvider());
+
+    try {
+      client = getTwitterClient();
+    } catch (InstantiationException e) {
+      LOGGER.error("InstantiationException", e);
+    }
+
+    Objects.requireNonNull(client);
+
+    try {
+      lock.writeLock().lock();
+      providerQueue = constructQueue();
+    } finally {
+      lock.writeLock().unlock();
+    }
+
+    Objects.requireNonNull(providerQueue);
+
+    // abstract this out
+    for (String s : config.getInfo()) {
+      if (s != null) {
+        String potentialScreenName = s.replaceAll("@", "").trim().toLowerCase();
+
+        // See if it is a long, if it is, add it to the user iD list, if it is not, add it to the
+        // screen name list
+        try {
+          ids.add(Long.parseLong(potentialScreenName));
+        } catch (Exception ex) {
+          names.add(potentialScreenName);
+        }
+      }
+    }
+
     Objects.requireNonNull(getConfig().getEndpoint());
+
+    executor = MoreExecutors.listeningDecorator(TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(config.getThreadsPerProvider().intValue(), ids.size()));
+
     Preconditions.checkArgument(getConfig().getEndpoint().equals("friends") || getConfig().getEndpoint().equals("followers"));
+
+    if( config.getEndpoint().equals("friends")) {
+      submitFriendsThreads(ids, names);
+    } else if( config.getEndpoint().equals("followers")) {
+      submitFollowersThreads(ids, names);
+    }
   }
 
-  @Override
   public void startStream() {
 
     Objects.requireNonNull(executor);
-
-    Preconditions.checkArgument(idsBatches.hasNext() || screenNameBatches.hasNext());
 
     LOGGER.info("startStream");
 
     running.set(true);
 
-    while (idsBatches.hasNext()) {
-      submitFollowingThreads(idsBatches.next());
-    }
-    while (screenNameBatches.hasNext()) {
-      submitFollowingThreads(screenNameBatches.next());
-    }
-
     executor.shutdown();
 
   }
 
-  protected void submitFollowingThreads(Long[] ids) {
-    Twitter client = getTwitterClient();
+  protected void submitFollowersThreads(List<Long> ids, List<String> names) {
 
-    for (int i = 0; i < ids.length; i++) {
-      TwitterFollowingProviderTask providerTask = new TwitterFollowingProviderTask(this, client, ids[i]);
+    for (Long id : ids) {
+      TwitterFollowersIdsProviderTask providerTask =
+          new TwitterFollowersIdsProviderTask(
+              this,
+              client,
+              (FollowersIdsRequest)new FollowersIdsRequest().withId(id));
+
       ListenableFuture future = executor.submit(providerTask);
       futures.add(future);
-      LOGGER.info("submitted {}", ids[i]);
+      LOGGER.info("Thread Submitted: {}", providerTask.request);
+    }
+
+    for (String name : names) {
+      TwitterFollowersIdsProviderTask providerTask =
+          new TwitterFollowersIdsProviderTask(
+              this,
+              client,
+              (FollowersIdsRequest)new FollowersIdsRequest().withScreenName(name));
+
+      ListenableFuture future = executor.submit(providerTask);
+      futures.add(future);
+      LOGGER.info("Thread Submitted: {}", providerTask.request);
     }
   }
 
-  protected void submitFollowingThreads(String[] screenNames) {
-    Twitter client = getTwitterClient();
+  protected void submitFriendsThreads(List<Long> ids, List<String> names) {
 
-    for (int i = 0; i < screenNames.length; i++) {
-      TwitterFollowingProviderTask providerTask = new TwitterFollowingProviderTask(this, client, screenNames[i]);
+    for (Long id : ids) {
+      TwitterFriendsIdsProviderTask providerTask =
+          new TwitterFriendsIdsProviderTask(
+              this,
+              client,
+              (FriendsIdsRequest)new FriendsIdsRequest().withId(id));
+
       ListenableFuture future = executor.submit(providerTask);
       futures.add(future);
-      LOGGER.info("submitted {}", screenNames[i]);
+      LOGGER.info("Thread Submitted: {}", providerTask.request);
     }
 
+    for (String name : names) {
+      TwitterFriendsIdsProviderTask providerTask =
+          new TwitterFriendsIdsProviderTask(
+              this,
+              client,
+              (FriendsIdsRequest)new FriendsIdsRequest().withScreenName(name));
+
+      ListenableFuture future = executor.submit(providerTask);
+      futures.add(future);
+      LOGGER.info("Thread Submitted: {}", providerTask.request);
+    }
   }
 
-  @Override
+  protected Twitter getTwitterClient() throws InstantiationException {
+    return Twitter.getInstance(config);
+  }
+
   public StreamsResultSet readCurrent() {
-
-    LOGGER.info("{}{} - readCurrent", idsBatches, screenNameBatches);
 
     StreamsResultSet result;
 
@@ -207,7 +299,7 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
       result = new StreamsResultSet(providerQueue);
       result.setCounter(new DatumStatusCounter());
       providerQueue = constructQueue();
-      LOGGER.debug("{}{} - providing {} docs", idsBatches, screenNameBatches, result.size());
+      LOGGER.debug("readCurrent: {} Documents", result.size());
     } finally {
       lock.writeLock().unlock();
     }
@@ -216,17 +308,45 @@ public class TwitterFollowingProvider extends TwitterUserInformationProvider {
 
   }
 
-  public boolean shouldContinuePulling(List<twitter4j.User> users) {
+  public boolean shouldContinuePulling(List<User> users) {
     return (users != null) && (users.size() == config.getPageSize());
   }
 
-  @Override
   public boolean isRunning() {
-    if (providerQueue.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone()) {
-      LOGGER.info("Completed");
+    if ( providerQueue.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone() ) {
+      LOGGER.info("All Threads Completed");
       running.set(false);
       LOGGER.info("Exiting");
     }
     return running.get();
+  }
+
+  // abstract this out
+  protected Queue<StreamsDatum> constructQueue() {
+    return new LinkedBlockingQueue<>();
+  }
+
+  // abstract this out
+  void shutdownAndAwaitTermination(ExecutorService pool) {
+    pool.shutdown(); // Disable new tasks from being submitted
+    try {
+      // Wait a while for existing tasks to terminate
+      if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
+        pool.shutdownNow(); // Cancel currently executing tasks
+        // Wait a while for tasks to respond to being cancelled
+        if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
+          System.err.println("Pool did not terminate");
+        }
+      }
+    } catch (InterruptedException ie) {
+      // (Re-)Cancel if current thread also interrupted
+      pool.shutdownNow();
+      // Preserve interrupt status
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  public void cleanUp() {
+    shutdownAndAwaitTermination(executor);
   }
 }

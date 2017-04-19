@@ -28,6 +28,8 @@ import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.TwitterFollowingConfiguration;
 import org.apache.streams.twitter.TwitterUserInformationConfiguration;
+import org.apache.streams.twitter.api.Twitter;
+import org.apache.streams.twitter.api.UsersLookupRequest;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.util.ComponentUtils;
@@ -35,6 +37,8 @@ import org.apache.streams.util.ComponentUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -45,10 +49,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import twitter4j.Twitter;
-import twitter4j.TwitterFactory;
-import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.json.DataObjectFactory;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -87,6 +87,32 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
   public static final int MAX_NUMBER_WAITING = 1000;
 
   private TwitterUserInformationConfiguration config;
+
+  protected List<String> names = new ArrayList<>();
+  protected List<Long> ids = new ArrayList<>();
+
+  protected final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+  protected volatile Queue<StreamsDatum> providerQueue;
+
+  public TwitterUserInformationConfiguration getConfig() {
+    return config;
+  }
+
+  public void setConfig(TwitterUserInformationConfiguration config) {
+    this.config = config;
+  }
+
+  protected Twitter client;
+
+  protected ListeningExecutorService executor;
+
+  protected DateTime start;
+  protected DateTime end;
+
+  protected final AtomicBoolean running = new AtomicBoolean();
+
+  private List<ListenableFuture<Object>> futures = new ArrayList<>();
 
   /**
    * To use from command line:
@@ -148,28 +174,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     outStream.flush();
   }
 
-  protected final ReadWriteLock lock = new ReentrantReadWriteLock();
-
-  protected volatile Queue<StreamsDatum> providerQueue;
-
-  public TwitterUserInformationConfiguration getConfig() {
-    return config;
-  }
-
-  public void setConfig(TwitterUserInformationConfiguration config) {
-    this.config = config;
-  }
-
-  protected Iterator<Long[]> idsBatches;
-  protected Iterator<String[]> screenNameBatches;
-
-  protected ListeningExecutorService executor;
-
-  protected DateTime start;
-  protected DateTime end;
-
-  protected final AtomicBoolean running = new AtomicBoolean();
-
   // TODO: this should be abstracted out
   public static ExecutorService newFixedThreadPoolWithQueueSize(int numThreads, int queueSize) {
     return new ThreadPoolExecutor(numThreads, numThreads,
@@ -212,6 +216,15 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     Objects.requireNonNull(config.getOauth().getAccessToken());
     Objects.requireNonNull(config.getOauth().getAccessTokenSecret());
     Objects.requireNonNull(config.getInfo());
+    Objects.requireNonNull(config.getThreadsPerProvider());
+
+    try {
+      client = getTwitterClient();
+    } catch (InstantiationException e) {
+      LOGGER.error("InstantiationException", e);
+    }
+
+    Objects.requireNonNull(client);
 
     try {
       lock.writeLock().lock();
@@ -222,12 +235,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     Objects.requireNonNull(providerQueue);
 
-    List<String> screenNames = new ArrayList<>();
-    List<String[]> screenNameBatches = new ArrayList<>();
-
-    List<Long> ids = new ArrayList<>();
-    List<Long[]> idsBatches = new ArrayList<>();
-
     for (String s : config.getInfo()) {
       if (s != null) {
         String potentialScreenName = s.replaceAll("@", "").trim().toLowerCase();
@@ -237,46 +244,67 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
         try {
           ids.add(Long.parseLong(potentialScreenName));
         } catch (Exception ex) {
-          screenNames.add(potentialScreenName);
-        }
-
-        // Twitter allows for batches up to 100 per request, but you cannot mix types
-
-        if (ids.size() >= 100) {
-          // add the batch
-          idsBatches.add(ids.toArray(new Long[ids.size()]));
-          // reset the Ids
-          ids = new ArrayList<>();
-        }
-
-        if (screenNames.size() >= 100) {
-          // add the batch
-          screenNameBatches.add(screenNames.toArray(new String[ids.size()]));
-          // reset the Ids
-          screenNames = new ArrayList<>();
+          names.add(potentialScreenName);
         }
       }
     }
 
-
-    if (ids.size() > 0) {
-      idsBatches.add(ids.toArray(new Long[ids.size()]));
-    }
-
-    if (screenNames.size() > 0) {
-      screenNameBatches.add(screenNames.toArray(new String[ids.size()]));
-    }
-
-    if (ids.size() + screenNames.size() > 0) {
-      executor = MoreExecutors.listeningDecorator(newFixedThreadPoolWithQueueSize(5, (ids.size() + screenNames.size())));
-    } else {
-      executor = MoreExecutors.listeningDecorator(newSingleThreadExecutor());
-    }
+    executor = MoreExecutors.listeningDecorator(TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(config.getThreadsPerProvider().intValue(), ids.size()));
 
     Objects.requireNonNull(executor);
 
-    this.idsBatches = idsBatches.iterator();
-    this.screenNameBatches = screenNameBatches.iterator();
+    // Twitter allows for batches up to 100 per request, but you cannot mix types
+    submitUserInformationThreads(ids, names);
+  }
+
+  protected void submitUserInformationThreads(List<Long> ids, List<String> names) {
+
+    int idsIndex = 0;
+    while( idsIndex + 100 < ids.size() ) {
+      List<Long> batchIds = ids.subList(idsIndex, idsIndex + 100);
+      TwitterUserInformationProviderTask providerTask = new TwitterUserInformationProviderTask(
+          this,
+          client,
+          new UsersLookupRequest().withUserId(batchIds));
+      ListenableFuture future = executor.submit(providerTask);
+      futures.add(future);
+      LOGGER.info("Thread Submitted: {}", providerTask.request);
+      idsIndex += 100;
+    }
+    if (ids.size() >= idsIndex) {
+      List<Long> batchIds = ids.subList(idsIndex, ids.size());
+      TwitterUserInformationProviderTask providerTask = new TwitterUserInformationProviderTask(
+          this,
+          client,
+          new UsersLookupRequest().withUserId(batchIds));
+      ListenableFuture future = executor.submit(providerTask);
+      futures.add(future);
+      LOGGER.info("Thread Submitted: {}", providerTask.request);
+    }
+
+    int namesIndex = 0;
+    while( idsIndex + 100 < ids.size() ) {
+      List<String> batchNames = names.subList(namesIndex, namesIndex + 100);
+      TwitterUserInformationProviderTask providerTask = new TwitterUserInformationProviderTask(
+          this,
+          client,
+          new UsersLookupRequest().withScreenName(batchNames));
+      ListenableFuture future = executor.submit(providerTask);
+      futures.add(future);
+      LOGGER.info("Thread Submitted: {}", providerTask.request);
+      namesIndex += 100;
+    }
+    if (names.size() >= idsIndex) {
+      List<Long> batchNames = ids.subList(idsIndex, names.size());
+      TwitterUserInformationProviderTask providerTask = new TwitterUserInformationProviderTask(
+          this,
+          client,
+          new UsersLookupRequest().withUserId(batchNames));
+      ListenableFuture future = executor.submit(providerTask);
+      futures.add(future);
+      LOGGER.info("Thread Submitted: {}", providerTask.request);
+    }
+
   }
 
   @Override
@@ -284,81 +312,15 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     Objects.requireNonNull(executor);
 
-    Preconditions.checkArgument(idsBatches.hasNext() || screenNameBatches.hasNext());
-
-    LOGGER.info("{}{} - startStream", idsBatches, screenNameBatches);
-
-    while (idsBatches.hasNext()) {
-      loadBatch(idsBatches.next());
-    }
-
-    while (screenNameBatches.hasNext()) {
-      loadBatch(screenNameBatches.next());
-    }
+    LOGGER.info("startStream: {} Threads", futures.size());
 
     running.set(true);
 
     executor.shutdown();
   }
 
-  protected void loadBatch(Long[] ids) {
-    Twitter client = getTwitterClient();
-    int keepTrying = 0;
-
-    // keep trying to load, give it 5 attempts.
-    //while (keepTrying < 10)
-    while (keepTrying < 1) {
-      try {
-        long[] toQuery = new long[ids.length];
-
-        for (int i = 0; i < ids.length; i++) {
-          toQuery[i] = ids[i];
-        }
-
-        for (twitter4j.User twitterUser : client.lookupUsers(toQuery)) {
-          String json = DataObjectFactory.getRawJSON(twitterUser);
-          try {
-            User user = MAPPER.readValue(json, org.apache.streams.twitter.pojo.User.class);
-            ComponentUtils.offerUntilSuccess(new StreamsDatum(user), providerQueue);
-          } catch (Exception exception) {
-            LOGGER.warn("Failed to read document as User ", twitterUser);
-          }
-        }
-        keepTrying = 10;
-      } catch (Exception ex) {
-        keepTrying += TwitterErrorHandler.handleTwitterError(client, ex);
-      }
-    }
-  }
-
-  protected void loadBatch(String[] ids) {
-    Twitter client = getTwitterClient();
-    int keepTrying = 0;
-
-    // keep trying to load, give it 5 attempts.
-    //while (keepTrying < 10)
-    while (keepTrying < 1) {
-      try {
-        for (twitter4j.User twitterUser : client.lookupUsers(ids)) {
-          String json = DataObjectFactory.getRawJSON(twitterUser);
-          try {
-            User user = MAPPER.readValue(json, org.apache.streams.twitter.pojo.User.class);
-            ComponentUtils.offerUntilSuccess(new StreamsDatum(user), providerQueue);
-          } catch (Exception exception) {
-            LOGGER.warn("Failed to read document as User ", twitterUser);
-          }
-        }
-        keepTrying = 10;
-      } catch (Exception ex) {
-        keepTrying += TwitterErrorHandler.handleTwitterError(client, ex);
-      }
-    }
-  }
-
   @Override
   public StreamsResultSet readCurrent() {
-
-    LOGGER.debug("{}{} - readCurrent", idsBatches, screenNameBatches);
 
     StreamsResultSet result;
 
@@ -367,7 +329,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
       result = new StreamsResultSet(providerQueue);
       result.setCounter(new DatumStatusCounter());
       providerQueue = constructQueue();
-      LOGGER.debug("{}{} - providing {} docs", idsBatches, screenNameBatches, result.size());
+      LOGGER.debug("readCurrent: {} Documents", result.size());
     } finally {
       lock.writeLock().unlock();
     }
@@ -394,17 +356,14 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     return (StreamsResultSet)providerQueue.iterator();
   }
 
+
   @Override
   public boolean isRunning() {
-
-    if ( providerQueue.isEmpty() && executor.isTerminated() ) {
-      LOGGER.info("{}{} - completed", idsBatches, screenNameBatches);
-
+    if ( providerQueue.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone() ) {
+      LOGGER.info("All Threads Completed");
       running.set(false);
-
       LOGGER.info("Exiting");
     }
-
     return running.get();
   }
 
@@ -427,29 +386,8 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     }
   }
 
-
-  // TODO: abstract out, also appears in TwitterTimelineProvider
-  protected Twitter getTwitterClient() {
-    String baseUrl = TwitterProviderUtil.baseUrl(config);
-
-    ConfigurationBuilder builder = new ConfigurationBuilder()
-        .setOAuthConsumerKey(config.getOauth().getConsumerKey())
-        .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
-        .setOAuthAccessToken(config.getOauth().getAccessToken())
-        .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
-        .setIncludeEntitiesEnabled(true)
-        .setJSONStoreEnabled(true)
-        .setAsyncNumThreads(3)
-        .setRestBaseURL(baseUrl)
-        .setIncludeMyRetweetEnabled(Boolean.TRUE)
-        .setPrettyDebugEnabled(Boolean.TRUE);
-
-    return new TwitterFactory(builder.build()).getInstance();
-  }
-
-  protected void callback() {
-
-
+  protected Twitter getTwitterClient() throws InstantiationException {
+    return Twitter.getInstance(config);
   }
 
   @Override

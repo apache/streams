@@ -27,7 +27,11 @@ import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.TwitterTimelineProviderConfiguration;
+import org.apache.streams.twitter.api.StatusesUserTimelineRequest;
+import org.apache.streams.twitter.api.Twitter;
+import org.apache.streams.twitter.api.UsersLookupRequest;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
+import org.apache.streams.twitter.pojo.User;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,12 +48,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.User;
-import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -92,8 +90,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     return config;
   }
 
-  protected Collection<String[]> screenNameBatches;
-  protected Collection<Long> ids;
+  protected List<String> names = new ArrayList<>();
+  protected List<Long> ids = new ArrayList<>();
 
   protected volatile Queue<StreamsDatum> providerQueue;
 
@@ -108,9 +106,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
   protected final AtomicBoolean running = new AtomicBoolean();
 
   private List<ListenableFuture<Object>> futures = new ArrayList<>();
-
-  Boolean jsonStoreEnabled;
-  Boolean includeEntitiesEnabled;
 
   /**
    * To use from command line:
@@ -207,14 +202,34 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     Objects.requireNonNull(config.getOauth().getAccessToken());
     Objects.requireNonNull(config.getOauth().getAccessTokenSecret());
     Objects.requireNonNull(config.getInfo());
+    Objects.requireNonNull(config.getThreadsPerProvider());
 
-    consolidateToIDs();
-
-    if (ids.size() > 1) {
-      executor = MoreExecutors.listeningDecorator(TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(5, ids.size()));
-    } else {
-      executor = MoreExecutors.listeningDecorator(newSingleThreadExecutor());
+    try {
+      client = getTwitterClient();
+    } catch (InstantiationException e) {
+      LOGGER.error("InstantiationException", e);
     }
+
+    Objects.requireNonNull(client);
+
+    for (String s : config.getInfo()) {
+      if (s != null) {
+        String potentialScreenName = s.replaceAll("@", "").trim().toLowerCase();
+
+        // See if it is a long, if it is, add it to the user iD list, if it is not, add it to the
+        // screen name list
+        try {
+          ids.add(Long.parseLong(potentialScreenName));
+        } catch (Exception ex) {
+          names.add(potentialScreenName);
+        }
+      }
+    }
+
+    executor = MoreExecutors.listeningDecorator(TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(config.getThreadsPerProvider().intValue(), config.getInfo().size()));
+
+    submitTimelineThreads(ids, names);
+
   }
 
   @Override
@@ -222,42 +237,40 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     LOGGER.debug("{} startStream", STREAMS_ID);
 
-    Preconditions.checkArgument(!ids.isEmpty());
-
     running.set(true);
-
-    submitTimelineThreads(ids.toArray(new Long[0]));
 
     executor.shutdown();
 
   }
 
-  protected void submitTimelineThreads(Long[] ids) {
+  protected void submitTimelineThreads(List<Long> ids, List<String> names) {
 
-    Twitter client = getTwitterClient();
-
-    for (int i = 0; i < ids.length; i++) {
-
-      TwitterTimelineProviderTask providerTask = new TwitterTimelineProviderTask(this, client, ids[i]);
+    for (Long id : ids) {
+      StatusesUserTimelineRequest request = new StatusesUserTimelineRequest();
+      request.setUserId(id);
+      request.setCount(config.getPageSize());
+      TwitterTimelineProviderTask providerTask = new TwitterTimelineProviderTask(
+          this,
+          client,
+          request
+      );
       ListenableFuture future = executor.submit(providerTask);
       futures.add(future);
-      LOGGER.info("submitted {}", ids[i]);
+      LOGGER.info("Thread Submitted: {}", providerTask.request);
     }
-
-  }
-
-  private Collection<Long> retrieveIds(String[] screenNames) {
-    Twitter client = getTwitterClient();
-
-    List<Long> ids = new ArrayList<>();
-    try {
-      for (User twitterUser : client.lookupUsers(screenNames)) {
-        ids.add(twitterUser.getId());
-      }
-    } catch (TwitterException ex) {
-      LOGGER.error("Failure retrieving user details.", ex.getMessage());
+    for (String name : names) {
+      StatusesUserTimelineRequest request = new StatusesUserTimelineRequest();
+      request.setScreenName(name);
+      request.setCount(config.getPageSize());
+      TwitterTimelineProviderTask providerTask = new TwitterTimelineProviderTask(
+          this,
+          client,
+          request
+      );
+      ListenableFuture future = executor.submit(providerTask);
+      futures.add(future);
+      LOGGER.info("Thread Submitted: {}", providerTask.request);
     }
-    return ids;
   }
 
   @Override
@@ -302,66 +315,14 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     throw new NotImplementedException();
   }
 
-
-
-  /**
-   * Using the "info" list that is contained in the configuration, ensure that all
-   * account identifiers are converted to IDs (Longs) instead of screenNames (Strings).
-   */
-  protected void consolidateToIDs() {
-    List<String> screenNames = new ArrayList<>();
-    ids = new ArrayList<>();
-
-    for ( String account : config.getInfo() ) {
-      try {
-        if ( new Long(account) != null ) {
-          ids.add(Long.parseLong(Objects.toString(account, null)));
-        }
-      } catch ( NumberFormatException ex ) {
-        screenNames.add(account);
-      } catch ( Exception ex ) {
-        LOGGER.error("Exception while trying to add ID: {{}}, {}", account, ex);
-      }
-    }
-
-    // Twitter allows for batches up to 100 per request, but you cannot mix types
-    screenNameBatches = new ArrayList<>();
-    while ( screenNames.size() >= 100 ) {
-      screenNameBatches.add(screenNames.subList(0, 100).toArray(new String[0]));
-      screenNames = screenNames.subList(100, screenNames.size());
-    }
-
-    if (screenNames.size() > 0) {
-      screenNameBatches.add(screenNames.toArray(new String[ids.size()]));
-    }
-
-    for ( String[] screenNameBatche : screenNameBatches ) {
-      Collection<Long> batchIds = retrieveIds(screenNameBatche);
-      ids.addAll(batchIds);
-    }
-  }
-
   /**
    * get Twitter Client from TwitterUserInformationConfiguration.
    * @return result
    */
-  public Twitter getTwitterClient() {
+  public Twitter getTwitterClient() throws InstantiationException {
 
-    String baseUrl = TwitterProviderUtil.baseUrl(config);
+    return Twitter.getInstance(config);
 
-    ConfigurationBuilder builder = new ConfigurationBuilder()
-        .setOAuthConsumerKey(config.getOauth().getConsumerKey())
-        .setOAuthConsumerSecret(config.getOauth().getConsumerSecret())
-        .setOAuthAccessToken(config.getOauth().getAccessToken())
-        .setOAuthAccessTokenSecret(config.getOauth().getAccessTokenSecret())
-        .setIncludeEntitiesEnabled(true)
-        .setJSONStoreEnabled(true)
-        .setAsyncNumThreads(3)
-        .setRestBaseURL(baseUrl)
-        .setIncludeMyRetweetEnabled(Boolean.TRUE)
-        .setPrettyDebugEnabled(Boolean.TRUE);
-
-    return new TwitterFactory(builder.build()).getInstance();
   }
 
   @Override

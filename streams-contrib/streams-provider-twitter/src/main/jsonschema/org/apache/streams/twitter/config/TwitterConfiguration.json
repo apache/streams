@@ -73,14 +73,19 @@
                 }
             }
         },
+        "threadsPerProvider": {
+            "type": "integer",
+            "description": "number of threads per provider",
+            "default": 10
+        },
         "retrySleepMs": {
              "type": "integer",
              "description": "ms to sleep when hitting a rate limit",
              "default": 100000
-         },
-         "retryMax": {
+        },
+        "retryMax": {
              "type": "integer",
-             "description": "ms to sleep when hitting a rate limit",
+             "description": "max times to retry",
              "default": 10
         }
    }
