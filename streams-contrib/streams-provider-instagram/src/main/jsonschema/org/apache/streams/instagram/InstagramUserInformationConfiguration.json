@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.instagram.InstagramUserInformationConfiguration",
+    "extends": {"$ref":"InstagramConfiguration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "userIds": {
+            "type": "array",
+            "description": "A list of user IDs, indicating the users whose posts should be delivered on the stream",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

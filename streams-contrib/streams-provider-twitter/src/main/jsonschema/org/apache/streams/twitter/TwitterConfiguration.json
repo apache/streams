@@ -1,0 +1,87 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.twitter.TwitterConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "protocol": {
+            "type": "string",
+            "description": "The protocol",
+            "default": "https"
+        },
+        "host": {
+            "type": "string",
+            "description": "The host",
+            "default": "api.twitter.com"
+        },
+        "port": {
+            "type": "integer",
+            "description": "The port",
+            "default": 443
+        },
+        "version": {
+            "type": "string",
+            "description": "The version",
+            "default": "1.1"
+        },
+        "endpoint": {
+            "type": "string",
+            "description": "The endpoint"
+        },
+        "jsonStoreEnabled": {
+            "default" : true,
+            "type": "string"
+        },
+        "oauth": {
+            "type": "object",
+            "dynamic": "true",
+            "javaType" : "org.apache.streams.twitter.TwitterOAuthConfiguration",
+            "javaInterfaces": ["java.io.Serializable"],
+            "properties": {
+                "appName": {
+                    "type": "string"
+                },
+                "consumerKey": {
+                    "type": "string"
+                },
+                "consumerSecret": {
+                    "type": "string"
+                },
+                "accessToken": {
+                    "type": "string"
+                },
+                "accessTokenSecret": {
+                    "type": "string"
+                }
+            }
+        },
+        "basicauth": {
+            "type": "object",
+            "dynamic": "true",
+            "javaType" : "org.apache.streams.twitter.TwitterBasicAuthConfiguration",
+            "javaInterfaces": ["java.io.Serializable"],
+            "properties": {
+                "username": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "retrySleepMs": {
+             "type": "integer",
+             "description": "ms to sleep when hitting a rate limit",
+             "default": 100000
+         },
+         "retryMax": {
+             "type": "integer",
+             "description": "ms to sleep when hitting a rate limit",
+             "default": 10
+        }
+   }
+}

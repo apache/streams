@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.twitter.TwitterTimelineProviderConfiguration",
+    "extends": {"$ref":"TwitterUserInformationConfiguration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "max_items": {
+            "type": "integer",
+            "description": "Max items per user to collect",
+            "default": 3200
+        },
+        "max_pages": {
+            "type": "integer",
+            "description": "Max items per page to request",
+            "default": 16
+        }
+    }
+}

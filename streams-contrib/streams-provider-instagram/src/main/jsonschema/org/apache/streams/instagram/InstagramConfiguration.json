@@ -1,0 +1,71 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.instagram.InstagramConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "clientId": {
+            "type": "string",
+            "description": "Your Instagram Client Id"
+        },
+        "usersInfo": {
+            "type": "object",
+            "javaInterfaces" : ["java.io.Serializable"],
+            "properties": {
+                "authorizedTokens": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Instagram tokens for authorized users of your client/app"
+                },
+                "users": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "object",
+                        "$ref": "#/definitions/user"
+                    },
+                    "description": "List of user ids to gather data for. Type of data gathered depends on provider"
+                },
+                "defaultAfterDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "If the api allows to gather data by date range, this date will be used as the start of the range for the request for all users that don't have date ranges specified. If this is null it will pull from the earliest possible time"
+                },
+                "defaultBeforeDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "If the api allows to gather data by date range, this date will be used as the end of the range for the request for all users that don't have date ranges specified. If this is null it will pull till current time."
+                }
+            }
+        }
+   },
+    "definitions": {
+        "user": {
+            "type": "object",
+            "javaInterfaces" : ["java.io.Serializable"],
+            "properties": {
+                "userId": {
+                    "type": "string",
+                    "description": "instagram user id"
+                },
+                "afterDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "If the api allows to gather data by date range, this date will be used as the start of the range for the request for this user. If this is null it will use the defaultBeforeDate."
+                },
+                "beforeDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "If the api allows to gather data by date range, this date will be used as the end of the range for the request for this user.. If this is null it will use the defaultAfterDate."
+                }
+            }
+        }
+    }
+}
