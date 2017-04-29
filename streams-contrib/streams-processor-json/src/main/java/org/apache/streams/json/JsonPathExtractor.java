@@ -25,7 +25,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -143,7 +142,6 @@ public class JsonPathExtractor implements StreamsProcessor {
     } else if ( configurationObject instanceof String[] ) {
       jsonPath = JsonPath.compile(((String[]) (configurationObject))[0]);
     }
-    mapper.registerModule(new JsonOrgModule());
   }
 
   @Override

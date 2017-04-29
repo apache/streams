@@ -29,7 +29,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import com.typesafe.config.Config;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
@@ -117,7 +116,6 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
   public void prepare(Object configurationObject) {
     this.elasticsearchClientManager = ElasticsearchClientManager.getInstance(config);
     mapper = StreamsJacksonMapper.getInstance();
-    mapper.registerModule(new JsonOrgModule());
   }
 
   @Override

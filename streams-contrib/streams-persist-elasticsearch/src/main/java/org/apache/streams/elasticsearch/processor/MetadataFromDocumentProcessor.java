@@ -24,7 +24,6 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +120,6 @@ public class MetadataFromDocumentProcessor implements StreamsProcessor, Serializ
   @Override
   public void prepare(Object configurationObject) {
     mapper = StreamsJacksonMapper.getInstance();
-    mapper.registerModule(new JsonOrgModule());
   }
 
   @Override

@@ -350,7 +350,6 @@
         <commons-validator.version>1.5.1</commons-validator.version>
         <typesafe.config.version>1.2.0</typesafe.config.version>
         <reflections.version>0.9.10</reflections.version>
-        <orgjson.version>20140107</orgjson.version>
         <guava.version>19.0</guava.version>
         <clojure.version>1.4.0</clojure.version>
         <zookeeper.version>3.4.5</zookeeper.version>
@@ -1130,11 +1129,6 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-json-org</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml</groupId>
             <artifactId>aalto-xml</artifactId>
             <version>${aalto.version}</version>
@@ -1143,11 +1137,6 @@
             <groupId>nz.net.ultraq.jaxb</groupId>
             <artifactId>jaxb-utilities</artifactId>
             <version>${jaxbutil.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>${orgjson.version}</version>
         </dependency>
         <!-- JsonPath -->
         <dependency>
