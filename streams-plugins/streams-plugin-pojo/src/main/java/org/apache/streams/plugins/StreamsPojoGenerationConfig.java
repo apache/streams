@@ -19,7 +19,9 @@
 
 package org.apache.streams.plugins;
 
+import org.jsonschema2pojo.Annotator;
 import org.jsonschema2pojo.DefaultGenerationConfig;
+import org.jsonschema2pojo.NoopAnnotator;
 import org.jsonschema2pojo.util.URLUtil;
 
 import java.io.File;
@@ -113,5 +115,10 @@ public class StreamsPojoGenerationConfig extends DefaultGenerationConfig {
   //    public boolean isIncludeAdditionalProperties() {
   //        return true;
   //    }
+
+  @Override
+  public Class<? extends Annotator> getCustomAnnotator() {
+    return JuneauPojoAnnotator.class;
+  }
 
 }

@@ -56,6 +56,11 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.juneau</groupId>
+            <artifactId>juneau-core</artifactId>
+            <version>6.2.1-incubating-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>0.9.9</version>
