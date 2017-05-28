@@ -98,6 +98,7 @@
             <item name="Install Git" href="install/git.html"/>
             <item name="Install Maven" href="install/maven.html"/>
             <item name="Changelog" href="changelog.html" />
+            <item name="Confluent Wiki" href="https://cwiki.apache.org/confluence/display/STREAMS/Streams+Home" />
             <item name="Release Setup" href="release-setup.html" />
             <item name="Release Process" href="release.html" />
             <item name="Website Management" href="website.html" />
