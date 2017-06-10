@@ -20,6 +20,7 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.pojo.Tweet;
 
+import org.apache.juneau.remoteable.Body;
 import org.apache.juneau.remoteable.QueryIfNE;
 import org.apache.juneau.remoteable.RemoteMethod;
 import org.apache.juneau.remoteable.Remoteable;
@@ -27,33 +28,23 @@ import org.apache.juneau.remoteable.Remoteable;
 import java.util.List;
 
 /**
- * Interface for /followers methods.
+ * Interface for /favorites methods.
  *
  * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
  */
-@Remoteable(path = "https://api.twitter.com/1.1/followers")
-public interface Followers {
+@Remoteable(path = "https://api.twitter.com/1.1/favorites")
+public interface Favorites {
 
   /**
-   * Returns a cursored collection of user IDs for every user following the specified user.
+   * Returns the 20 most recent Tweets favorited by the authenticating or specified user.
+   * Bind this at: /favorites
    *
-   * @param parameters {@link org.apache.streams.twitter.api.FollowersIdsRequest}
+   * @param parameters {@link org.apache.streams.twitter.api.FavoritesListRequest}
    * @return List < Tweet >
-   * @see <a href="https://dev.twitter.com/rest/reference/get/followers/ids">https://dev.twitter.com/rest/reference/get/followers/ids</a>
-   *
-   */
-  @RemoteMethod(httpMethod = "GET", path = "/ids.json")
-  public FollowersIdsResponse ids( @QueryIfNE("*") FollowersIdsRequest parameters);
-
-  /**
-   * Returns a cursored collection of user objects for users following the specified user.
-   *
-   * @param parameters {@link org.apache.streams.twitter.api.FollowersListRequest}
-   * @return List < Tweet >
-   * @see <a href="https://dev.twitter.com/rest/reference/get/followers/list">https://dev.twitter.com/rest/reference/get/followers/list</a>
+   * @see <a href="https://dev.twitter.com/rest/reference/get/favorites/list">https://dev.twitter.com/rest/reference/get/favorites/list</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/list.json")
-  public FollowersListResponse list( @QueryIfNE("*") FollowersListRequest parameters);
+  public List<Tweet> list( @QueryIfNE("*") FavoritesListRequest parameters);
 
 }

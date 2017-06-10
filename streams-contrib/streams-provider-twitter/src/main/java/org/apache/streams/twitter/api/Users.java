@@ -21,11 +21,20 @@ package org.apache.streams.twitter.api;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 
+import org.apache.juneau.remoteable.Path;
+import org.apache.juneau.remoteable.QueryIfNE;
+import org.apache.juneau.remoteable.RemoteMethod;
+import org.apache.juneau.remoteable.Remoteable;
+import org.apache.juneau.remoteable.RequestBean;
+
 import java.util.List;
 
 /**
- * Returns a collection of the most recent Tweets posted by the user indicated by the screen_name or user_id parameters.
+ * Interface for /users methods.
+ *
+ * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
  */
+@Remoteable(path = "https://api.twitter.com/1.1/users")
 public interface Users {
 
   /**
@@ -36,7 +45,8 @@ public interface Users {
    * @see <a href="https://dev.twitter.com/rest/reference/get/users/lookup">https://dev.twitter.com/rest/reference/get/users/lookup</a>
    *
    */
-  public List<User> lookup(UsersLookupRequest parameters);
+  @RemoteMethod(httpMethod = "GET", path = "/lookup.json")
+  public List<User> lookup( @QueryIfNE UsersLookupRequest parameters);
 
   /**
    * Returns a variety of information about the user specified by the required user_id or screen_name parameter. The author’s most recent Tweet will be returned inline when possible.
@@ -46,6 +56,7 @@ public interface Users {
    * @see <a href="https://dev.twitter.com/rest/reference/get/users/show">https://dev.twitter.com/rest/reference/get/users/show</a>
    *
    */
-  public User show(UsersShowRequest parameters);
+  @RemoteMethod(httpMethod = "GET", path = "/show.json")
+  public User show( @QueryIfNE UsersShowRequest parameters);
 
 }

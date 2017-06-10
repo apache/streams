@@ -20,13 +20,18 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.pojo.Tweet;
 
+import org.apache.juneau.remoteable.QueryIfNE;
+import org.apache.juneau.remoteable.RemoteMethod;
+import org.apache.juneau.remoteable.Remoteable;
+
 import java.util.List;
 
 /**
- * Returns a collection of the most recent Tweets posted by the user indicated by the screen_name or user_id parameters.
+ * Interface for /friends methods.
  *
- * @see <a href="https://dev.twitter.com/rest/reference/get/statuses/user_timeline">https://api.twitter.com/1.1/statuses/user_timeline.json</a>
+ * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
  */
+@Remoteable(path = "https://api.twitter.com/1.1/friends")
 public interface Friends {
 
   /**
@@ -37,7 +42,8 @@ public interface Friends {
    * @see <a href="https://dev.twitter.com/rest/reference/get/friends/ids">https://dev.twitter.com/rest/reference/get/friends/ids</a>
    *
    */
-  public FriendsIdsResponse ids(FriendsIdsRequest parameters);
+  @RemoteMethod(httpMethod = "GET", path = "/ids.json")
+  public FriendsIdsResponse ids( @QueryIfNE("*") FriendsIdsRequest parameters);
 
   /**
    * Returns a cursored collection of user objects for every user the specified user is following.
@@ -47,6 +53,7 @@ public interface Friends {
    * @see <a href="https://dev.twitter.com/rest/reference/get/friends/list">https://dev.twitter.com/rest/reference/get/friends/list</a>
    *
    */
-  public FriendsListResponse list(FriendsListRequest parameters);
+  @RemoteMethod(httpMethod = "GET", path = "/list.json")
+  public FriendsListResponse list( @QueryIfNE("*") FriendsListRequest parameters);
 
 }

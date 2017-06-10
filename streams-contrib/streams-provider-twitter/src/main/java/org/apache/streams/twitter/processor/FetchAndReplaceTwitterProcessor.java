@@ -142,10 +142,7 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
     String id = doc.getObject().getId();
     LOGGER.debug("Fetching status from Twitter for {}", id);
     Long tweetId = Long.valueOf(id.replace("id:twitter:tweets:", ""));
-    Tweet tweet = client.show(
-        new StatusesShowRequest()
-            .withId(tweetId)
-    );
+    Tweet tweet = client.show(new StatusesShowRequest().withId(tweetId));
     return tweet;
   }
 

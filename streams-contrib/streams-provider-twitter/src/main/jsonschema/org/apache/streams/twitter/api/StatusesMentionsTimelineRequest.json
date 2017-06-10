@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.StatusesMentionsTimelineRequest",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://api.twitter.com/1.1/statuses/mentions_timeline.json",
+  "properties": {
+    "count": {
+      "description": "Specifies the number of records to retrieve. Must be less than or equal to 200. Defaults to 20. The value of count is best thought of as a limit to the number of tweets to return because suspended or deleted content is removed after the count has been applied.",
+      "required": false,
+      "type": "integer"
+    },
+    "since_id": {
+      "description": "Returns results with an ID greater than (that is, more recent than) the specified ID. There are limits to the number of Tweets which can be accessed through the API. If the limit of Tweets has occured since the since_id, the since_id will be forced to the oldest ID available.",
+      "required": false,
+      "type": "integer"
+    },
+    "max_id": {
+      "description": "Returns results with an ID less than (that is, older than) or equal to the specified ID.",
+      "required": false,
+      "type": "integer"
+    },
+    "trim_user": {
+      "description": "When set to either true , t or 1 , each Tweet returned in a timeline will include a user object including only the status authors numerical ID. Omit this parameter to receive the complete user object.",
+      "required": false,
+      "type": "boolean"
+    },
+    "include_entities": {
+      "description": "The entities node will not be included when set to false.",
+      "required": false,
+      "type": "boolean"
+    }
+  }
+}

@@ -22,8 +22,12 @@ import org.apache.streams.util.api.requests.backoff.AbstractBackOffStrategy;
 import org.apache.streams.util.api.requests.backoff.BackOffException;
 import org.apache.streams.util.api.requests.backoff.impl.LinearTimeBackOffStrategy;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
+import org.apache.juneau.json.JsonParser;
+import org.apache.juneau.parser.ParseException;
 import org.apache.juneau.rest.client.RetryOn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,132 +35,55 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.ws.rs.core.Response;
 
 /**
  *  Handle expected and unexpected exceptions.
  */
-public class TwitterRetryHandler implements RetryOn {
+public class TwitterRetryHandler extends RetryOn {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterRetryHandler.class);
 
-  private static AbstractBackOffStrategy backoff_strategy;
-
-// TODO: once request context is available, we can maintain multiple BackoffStrategy one per request path / params
-//  private static Map<String, AbstractBackOffStrategy> backoffs = new ConcurrentHashMap<>();
-
-// This is everything we used to check via twitter4j to decide whether to retry.
-//
-// @Deprecated
-//  public static int handleTwitterError(Twitter twitter, Exception exception) {
-//    return handleTwitterError( twitter, null, exception);
-//  }
-//
-//
-//  public static int handleTwitterError(Twitter twitter, Long id, Exception exception) {
-//
-//    if (exception instanceof TwitterException) {
-//      TwitterException twitterException = (TwitterException)exception;
-//
-//      if (twitterException.exceededRateLimitation()) {
-//
-//        long millisUntilReset = retry;
-//
-//        final RateLimitStatus rateLimitStatus = twitterException.getRateLimitStatus();
-//        if (rateLimitStatus != null) {
-//          millisUntilReset = rateLimitStatus.getSecondsUntilReset() * 1000;
-//        }
-//
-//        LOGGER.warn("Rate Limit Exceeded. Will retry in {} seconds...", millisUntilReset / 1000);
-//
-//        try {
-//          Thread.sleep(millisUntilReset);
-//        } catch (InterruptedException e1) {
-//          Thread.currentThread().interrupt();
-//        }
-//
-//        return 1;
-//      } else if (twitterException.isCausedByNetworkIssue()) {
-//        LOGGER.info("Twitter Network Issues Detected. Backing off...");
-//        LOGGER.info("{} - {}", twitterException.getExceptionCode(), twitterException.getLocalizedMessage());
-//        try {
-//          Thread.sleep(retry);
-//        } catch (InterruptedException e1) {
-//          Thread.currentThread().interrupt();
-//        }
-//        return 1;
-//      } else if (twitterException.isErrorMessageAvailable()) {
-//        if (twitterException.getMessage().toLowerCase().contains("does not exist")) {
-//          if ( id != null ) {
-//            LOGGER.warn("User does not exist: {}", id);
-//          } else {
-//            LOGGER.warn("User does not exist");
-//          }
-//          return (int)retryMax;
-//        } else {
-//          return (int)retryMax / 3;
-//        }
-//      } else {
-//        if (twitterException.getExceptionCode().equals("ced778ef-0c669ac0")) {
-//          // This is a known weird issue, not exactly sure the cause, but you'll never be able to get the data.
-//          return (int)retryMax / 3;
-//        } else if (twitterException.getExceptionCode().equals("4be80492-0a7bf7c7")) {
-//          // This is a 401 reflecting credentials don't have access to the requested resource.
-//          if ( id != null ) {
-//            LOGGER.warn("Authentication Exception accessing id: {}", id);
-//          } else {
-//            LOGGER.warn("Authentication Exception");
-//          }
-//          return (int)retryMax;
-//        } else {
-//          LOGGER.warn("Unknown Twitter Exception...");
-//          LOGGER.warn("   Access: {}", twitterException.getAccessLevel());
-//          LOGGER.warn("     Code: {}", twitterException.getExceptionCode());
-//          LOGGER.warn("  Message: {}", twitterException.getLocalizedMessage());
-//          return (int)retryMax / 10;
-//        }
-//      }
-//    } else if (exception instanceof RuntimeException) {
-//      LOGGER.warn("TwitterGrabber: Unknown Runtime Error", exception.getMessage());
-//      return (int)retryMax / 3;
-//    } else {
-//      LOGGER.info("Completely Unknown Exception: {}", exception);
-//      return (int)retryMax / 3;
-//    }
-//  }
-//  TODO: juneau 6.3.x-incubating
-//  @Override
-//  public boolean onCode(int httpResponseCode) {
-//
-//    LOGGER.warn("TwitterRetryHandler: {}", httpResponseCode);
-//
-//    if( httpResponseCode > 400 ) {
-//      return true;
-//    } else {
-//      return false;
-//    }
-//
-//  }
-
-  @Override
-  public boolean onCode(int httpResponseCode) {
-//    if( backoff_strategy == null ) {
-//      backoff_strategy = new LinearTimeBackOffStrategy(retrySleepMs / 1000, retryMax);
-//    }
-//    if( httpResponseCode > 400 ) {
-//      try {
-//        backoff_strategy.backOff();
-//        return true;
-//      } catch (BackOffException boe) {
-//        backoff_strategy.reset();
-//        return false;
-//      }
-//    } else {
-//      return false;
-//    }
-    if( httpResponseCode > 400 ) {
-      return true;
-    } else {
-      return false;
+  protected boolean onResponse(HttpResponse response) {
+    LOGGER.debug(response.toString());
+    switch(response.getStatusLine().getStatusCode()) {
+      case 200: // Response.Status.OK
+      case 304: // Response.Status.NOT_MODIFIED
+      case 400: // Response.Status.BAD_REQUEST
+        return false;
+      case 401: // Response.Status.UNAUTHORIZED
+        return true;
+      case 403: // Response.Status.FORBIDDEN
+      case 404: // Response.Status.NOT_FOUND
+      case 406: // Response.Status.NOT_ACCEPTABLE
+      case 410: // Response.Status.GONE
+        return false;
+      case 420: // Enhance Your Calm
+      case 429: // Too Many Requests
+        return true;
+      case 500: // Response.Status.INTERNAL_SERVER_ERROR
+      case 502: // Bad Gateway
+      case 503: // Response.Status.SERVICE_UNAVAILABLE
+      case 504: // Gateway Timeout
+        return true;
+      default:
+        return false;
     }
+  }
+
+  private ResponseErrors parseResponseErrors(HttpResponse response) {
+    ResponseErrors responseErrors = null;
+    if (response.getEntity() != null) {
+      try {
+        String responseEntity = EntityUtils.toString(response.getEntity());
+        LOGGER.debug(responseEntity);
+        responseErrors = JsonParser.DEFAULT.parse(responseEntity, ResponseErrors.class);
+      } catch (IOException e) {
+        e.printStackTrace();
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+    }
+    return responseErrors;
   }
 }

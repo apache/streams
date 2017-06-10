@@ -5,7 +5,10 @@
   ],
   "id": "#",
   "javaType" : "org.apache.streams.twitter.api.StatusesShowRequest",
-  "javaInterfaces": ["java.io.Serializable"],
+  "javaInterfaces": [
+    "java.io.Serializable",
+    "org.apache.streams.twitter.api.Statuses.StatusesShowRequestAnnotations"
+  ],
   "description": "https://dev.twitter.com/rest/reference/get/statuses/show/id",
   "properties": {
     "id": {

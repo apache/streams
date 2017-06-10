@@ -20,6 +20,7 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.TwitterOAuthConfiguration;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -30,7 +31,6 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -60,7 +60,7 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
   private static final String oauth_signature_method = "HMAC-SHA1";
   private static final String oauth_version = "1.0";
 
-  private static final BASE64Encoder base64Encoder = new BASE64Encoder();
+  private static final Base64 base64 = new Base64();
 
   TwitterOAuthConfiguration oAuthConfiguration;
 
@@ -75,6 +75,7 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
 
     String oauth_timestamp = generateTimestamp();
 
+
     Map<String,String> oauthParamMap = new HashMap<>();
     oauthParamMap.put("oauth_consumer_key", oAuthConfiguration.getConsumerKey());
     oauthParamMap.put("oauth_nonce", oauth_nonce);
@@ -84,16 +85,20 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
     oauthParamMap.put("oauth_version", oauth_version);
 
     String request_host = ((HttpRequestWrapper)httpRequest).getTarget().toString().replace(":443","");
-    String request_path = httpRequest.getRequestLine().getUri().substring(0, httpRequest.getRequestLine().getUri().indexOf('?'));
-    String request_param_line = httpRequest.getRequestLine().getUri().substring(httpRequest.getRequestLine().getUri().indexOf('?')+1);
-    String[] request_params = URLDecoder.decode(request_param_line).split("&");
+    String request_path = httpRequest.getRequestLine().getUri();
 
     Map<String,String> allParamsMap = new HashMap<>(oauthParamMap);
 
-    for( String request_param : request_params ) {
-      String key = request_param.substring(0, request_param.indexOf('='));
-      String value = request_param.substring(request_param.indexOf('=')+1, request_param.length());
-      allParamsMap.put(key, value);
+    if( request_path.contains("?")) {
+      request_path = request_path.substring(0, httpRequest.getRequestLine().getUri().indexOf('?'));
+      String request_param_line = httpRequest.getRequestLine().getUri().substring(httpRequest.getRequestLine().getUri().indexOf('?')+1);
+      String[] request_params = URLDecoder.decode(request_param_line).split("&");
+
+      for( String request_param : request_params ) {
+        String key = request_param.substring(0, request_param.indexOf('='));
+        String value = request_param.substring(request_param.indexOf('=')+1, request_param.length());
+        allParamsMap.put(key, value);
+      }
     }
 
     if( ((HttpRequestWrapper) httpRequest).getOriginal() instanceof HttpPost) {
@@ -129,6 +134,8 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
 
     httpRequest.setHeader("Authorization", authorization_header_string);
 
+    // might need to replace all the params here in alphabetical order
+
   }
 
   public String generateTimestamp() {
@@ -141,7 +148,7 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
   public String generateNonce() {
     String uuid_string = UUID.randomUUID().toString();
     uuid_string = uuid_string.replaceAll("-", "");
-    String oauth_nonce = base64Encoder.encode(uuid_string.getBytes());
+    String oauth_nonce = base64.encode(uuid_string.getBytes()).toString();
     return oauth_nonce;
   }
 
@@ -231,6 +238,6 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
 
     byte[] text = baseString.getBytes();
 
-    return new String(base64Encoder.encode(mac.doFinal(text))).trim();
+    return new String(base64.encode(mac.doFinal(text))).trim();
   }
 }
