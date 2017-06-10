@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.instagram.api.RelationshipResponse",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "properties": {
+    "incoming_status": {
+      "type": "string",
+      "enum": [
+        "blocked_by_you",
+        "followed_by",
+        "requested_by",
+        "none"
+      ]
+    },
+    "outgoing_status": {
+      "type": "string",
+      "enum": [
+        "follows",
+        "requested",
+        "none"
+      ]
+    }
+  }
+}

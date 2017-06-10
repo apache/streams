@@ -21,11 +21,18 @@ package org.apache.streams.instagram.api;
 import org.apache.streams.instagram.pojo.UserInfo;
 import org.apache.streams.instagram.pojo.UserRecentMediaRequest;
 
+import org.apache.juneau.remoteable.FormDataIfNE;
+import org.apache.juneau.remoteable.Path;
+import org.apache.juneau.remoteable.QueryIfNE;
+import org.apache.juneau.remoteable.RemoteMethod;
+import org.apache.juneau.remoteable.Remoteable;
+
 /**
  * User Endpoints.
  *
  * @see <a href="https://www.instagram.com/developer/endpoints/users/">https://www.instagram.com/developer/endpoints/users/</a>
  */
+@Remoteable(path = "/users")
 public interface Users {
 
   /**
@@ -34,6 +41,7 @@ public interface Users {
    * @see <a href="https://www.instagram.com/developer/endpoints/users/#get_users_self">https://www.instagram.com/developer/endpoints/users/#get_users_self</a>
    * @return UserInfoResponse @link{org.apache.streams.instagram.api.UserInfoResponse}
    */
+  @RemoteMethod(httpMethod = "POST", path = "/self/")
   public UserInfoResponse self();
 
   /**
@@ -44,7 +52,8 @@ public interface Users {
    * @param user_id user_id
    * @return UserInfoResponse @link{org.apache.streams.instagram.api.UserInfoResponse}
    */
-  public UserInfoResponse lookupUser(String user_id);
+  @RemoteMethod(httpMethod = "GET", path = "/{user_id}/")
+  public UserInfoResponse lookupUser( @Path("user_id") String user_id);
 
   /**
    * Get the most recent media published by the owner of the access_token.
@@ -53,7 +62,8 @@ public interface Users {
    * @param parameters @link{org.apache.streams.instagram.api.SelfRecentMediaRequest}
    * @return RecentMediaResponse @link{org.apache.streams.instagram.api.RecentMediaResponse}
    */
-  public RecentMediaResponse selfMediaRecent(SelfRecentMediaRequest parameters);
+  @RemoteMethod(httpMethod = "GET", path = "/self/media/recent/")
+  public RecentMediaResponse selfMediaRecent( @QueryIfNE("*") SelfRecentMediaRequest parameters);
 
   /**
    * Get the most recent media published by a user.
@@ -63,7 +73,8 @@ public interface Users {
    * @param parameters @link{org.apache.streams.instagram.api.UserRecentMediaRequest}
    * @return RecentMediaResponse @link{org.apache.streams.instagram.api.RecentMediaResponse}
    */
-  public RecentMediaResponse userMediaRecent(UserRecentMediaRequest parameters);
+  @RemoteMethod(httpMethod = "GET", path = "/{user_id}/media/recent/")
+  public RecentMediaResponse userMediaRecent( @QueryIfNE("*") @Path("user_id") UserRecentMediaRequest parameters);
 
   /**
    * Get the list of recent media liked by the owner of the access_token.
@@ -72,7 +83,8 @@ public interface Users {
    * @param parameters @link{org.apache.streams.instagram.api.SelfLikedMediaRequest}
    * @return RecentMediaResponse @link{org.apache.streams.instagram.api.RecentMediaResponse}
    */
-  public RecentMediaResponse selfMediaLiked(SelfLikedMediaRequest parameters);
+  @RemoteMethod(httpMethod = "GET", path = "/self/media/liked")
+  public RecentMediaResponse selfMediaLiked( @QueryIfNE("*") SelfLikedMediaRequest parameters);
 
   /**
    * Get a list of users matching the query.
@@ -81,5 +93,6 @@ public interface Users {
    * @param parameters @link{org.apache.streams.instagram.api.SearchUsersRequest}
    * @return SearchUsersResponse @link{org.apache.streams.instagram.api.SearchUsersResponse}
    */
-  public SearchUsersResponse searchUser(SearchUsersRequest parameters);
+  @RemoteMethod(httpMethod = "GET", path = "/search")
+  public SearchUsersResponse searchUser( @QueryIfNE("*") SearchUsersRequest parameters);
 }

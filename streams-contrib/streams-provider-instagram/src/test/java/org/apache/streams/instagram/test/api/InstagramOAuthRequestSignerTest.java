@@ -20,6 +20,7 @@
 package org.apache.streams.instagram.test.api;
 
 import org.apache.streams.instagram.api.InstagramOAuthRequestSigner;
+import org.apache.streams.instagram.config.InstagramConfiguration;
 import org.apache.streams.instagram.config.InstagramOAuthConfiguration;
 
 import org.slf4j.Logger;
@@ -32,18 +33,24 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by sblackmon on 3/26/17.
+ * Unit Test request signing logic.
  */
 public class InstagramOAuthRequestSignerTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstagramOAuthRequestSignerTest.class);
 
   private static final InstagramOAuthConfiguration testOauthConfig = new InstagramOAuthConfiguration()
-            .withClientSecret("6dc1787668c64c939929c17683d7cb74")
-            .withAccessToken("fb2e77d.47a0479900504cb3ab4a1f626d174d2d");
+      .withClientSecret("6dc1787668c64c939929c17683d7cb74")
+      .withAccessToken("fb2e77d.47a0479900504cb3ab4a1f626d174d2d");
+
+  private static final InstagramConfiguration testConfig = new InstagramConfiguration()
+      .withProtocol("https")
+      .withHost("api.instagram.com")
+      .withVersion("v1")
+      .withOauth(testOauthConfig);
 
   private static final InstagramOAuthRequestSigner signer =
-      new InstagramOAuthRequestSigner(testOauthConfig);
+      new InstagramOAuthRequestSigner(testConfig);
 
   @Test
   public void testExample1() throws Exception {
