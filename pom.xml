@@ -604,6 +604,7 @@
                                         </excludes>
                                         <!-- Don't fail for parents being snapshots as the only parent modules are within this project -->
                                         <failWhenParentIsSnapshot>false</failWhenParentIsSnapshot>
+                                        <onlyWhenRelease>true</onlyWhenRelease>
                                     </requireReleaseDeps>
                                 </rules>
                                 <fail>true</fail>
