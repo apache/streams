@@ -332,6 +332,7 @@
         <jackson-xml-databind.version>0.6.2</jackson-xml-databind.version>
         <aalto.version>1.0.0</aalto.version>
         <joda-time.version>2.9.4</joda-time.version>
+        <juneau.version>6.2.1-incubating-SNAPSHOT</juneau.version>
         <rave.version>0.22</rave.version>
         <datastax.version>1.0.3</datastax.version>
         <jsonschema2pojo.version>0.4.10</jsonschema2pojo.version>
@@ -986,6 +987,26 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${httpcomponents.client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.juneau</groupId>
+            <artifactId>juneau-core</artifactId>
+            <version>${juneau.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.juneau</groupId>
+            <artifactId>juneau-core-rdf</artifactId>
+            <version>${juneau.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.juneau</groupId>
+            <artifactId>juneau-rest</artifactId>
+            <version>${juneau.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.juneau</groupId>
+            <artifactId>juneau-rest-client</artifactId>
+            <version>${juneau.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe</groupId>
