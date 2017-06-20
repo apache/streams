@@ -332,7 +332,7 @@
         <jackson-xml-databind.version>0.6.2</jackson-xml-databind.version>
         <aalto.version>1.0.0</aalto.version>
         <joda-time.version>2.9.4</joda-time.version>
-        <juneau.version>6.2.1-incubating-SNAPSHOT</juneau.version>
+        <juneau.version>6.3.0-incubating</juneau.version>
         <rave.version>0.22</rave.version>
         <datastax.version>1.0.3</datastax.version>
         <jsonschema2pojo.version>0.4.10</jsonschema2pojo.version>

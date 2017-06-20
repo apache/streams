@@ -19,8 +19,8 @@
 package org.apache.streams.juneau;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.juneau.PartType;
 import org.apache.juneau.serializer.PartSerializer;
-import org.apache.juneau.serializer.PartType;
 
 import java.util.List;
 
