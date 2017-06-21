@@ -22,18 +22,20 @@ import org.apache.streams.instagram.config.InstagramConfiguration;
 import org.apache.streams.instagram.pojo.UserRecentMediaRequest;
 import org.apache.streams.instagram.provider.InstagramProviderUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.juneau.JodaDateSwap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.juneau.json.JsonParser;
+import org.apache.juneau.json.JsonSerializer;
 import org.apache.juneau.rest.client.RestCall;
 import org.apache.juneau.rest.client.RestCallException;
 import org.apache.juneau.rest.client.RestClient;
+import org.apache.juneau.rest.client.RestClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +44,8 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 /**
  * Implementation of all instagram interfaces using juneau.
@@ -56,11 +60,11 @@ public class Instagram implements Media, Users {
 
   private ObjectMapper mapper;
 
-  private String rootUrl;
-
   private CloseableHttpClient httpclient;
 
   private InstagramOAuthRequestSigner oauthSigner;
+
+  private String rootUrl;
 
   RestClient restClient;
 
@@ -79,12 +83,25 @@ public class Instagram implements Media, Users {
         .setMaxConnPerRoute(20)
         .setMaxConnTotal(100)
         .build();
-
-    this.restClient = new RestClient()
-        .setHttpClient(httpclient)
-        .setParser(JsonParser.class)
-        .setRootUrl(rootUrl);
-
+    this.restClient = new RestClientBuilder()
+        .rootUrl(rootUrl)
+        .accept(APPLICATION_JSON.getMimeType())
+        .httpClient(httpclient, true)
+        .pooled()
+        .parser(
+            JsonParser.DEFAULT.builder()
+                .ignoreUnknownBeanProperties(true)
+                .pojoSwaps(JodaDateSwap.class)
+                .build())
+        .serializer(
+            JsonSerializer.DEFAULT.builder()
+                .pojoSwaps(JodaDateSwap.class)
+                .build())
+        .retryable(
+            configuration.getRetryMax().intValue(),
+            configuration.getRetrySleepMs(),
+            new InstagramRetryHandler())
+        .build();
     this.mapper = StreamsJacksonMapper.getInstance();
   }
 
@@ -120,7 +137,6 @@ public class Instagram implements Media, Users {
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
-            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
             .getResponseAsString();
         UserInfoResponse result = mapper.readValue(restResponseEntity, UserInfoResponse.class);
         return result;
@@ -152,7 +168,6 @@ public class Instagram implements Media, Users {
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
-            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
             .getResponseAsString();
         UserInfoResponse result = mapper.readValue(restResponseEntity, UserInfoResponse.class);
         return result;
@@ -193,7 +208,6 @@ public class Instagram implements Media, Users {
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
-            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
             .getResponseAsString();
         RecentMediaResponse result = mapper.readValue(restResponseEntity, RecentMediaResponse.class);
         return result;
@@ -234,7 +248,6 @@ public class Instagram implements Media, Users {
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
-            .setRetryable(1, 1000, new InstagramRetryHandler())
             .getResponseAsString();
         RecentMediaResponse result = mapper.readValue(restResponseEntity, RecentMediaResponse.class);
         return result;
@@ -272,7 +285,6 @@ public class Instagram implements Media, Users {
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
-            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
             .getResponseAsString();
         RecentMediaResponse result = mapper.readValue(restResponseEntity, RecentMediaResponse.class);
         return result;
@@ -310,7 +322,6 @@ public class Instagram implements Media, Users {
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
-            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
             .getResponseAsString();
         SearchUsersResponse result = mapper.readValue(restResponseEntity, SearchUsersResponse.class);
         return result;
@@ -343,7 +354,6 @@ public class Instagram implements Media, Users {
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
-            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
             .getResponseAsString();
         CommentsResponse result = mapper.readValue(restResponseEntity, CommentsResponse.class);
         return result;
@@ -375,7 +385,6 @@ public class Instagram implements Media, Users {
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
-            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
             .getResponseAsString();
         UsersInfoResponse result = mapper.readValue(restResponseEntity, UsersInfoResponse.class);
         return result;
@@ -407,7 +416,6 @@ public class Instagram implements Media, Users {
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
-            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
             .getResponseAsString();
         MediaResponse result = mapper.readValue(restResponseEntity, MediaResponse.class);
         return result;
@@ -439,7 +447,6 @@ public class Instagram implements Media, Users {
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
-            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
             .getResponseAsString();
         MediaResponse result = mapper.readValue(restResponseEntity, MediaResponse.class);
         return result;
@@ -474,7 +481,6 @@ public class Instagram implements Media, Users {
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
-            .setRetryable(configuration.getRetryMax().intValue(), configuration.getRetrySleepMs().intValue(), new InstagramRetryHandler())
             .getResponseAsString();
         SearchMediaResponse result = mapper.readValue(restResponseEntity, SearchMediaResponse.class);
         return result;
