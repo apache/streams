@@ -18,25 +18,27 @@
 
 package org.apache.streams.instagram.api;
 
-import org.apache.streams.instagram.config.InstagramOAuthConfiguration;
+import org.apache.streams.instagram.config.InstagramConfiguration;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpRequestWrapper;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.StringJoiner;
@@ -49,17 +51,45 @@ import javax.crypto.spec.SecretKeySpec;
  *
  * @see <a href="https://www.instagram.com/developer/secure-api-requests/">https://www.instagram.com/developer/secure-api-requests/</a>
  */
-public class InstagramOAuthRequestSigner {
+public class InstagramOAuthRequestSigner implements HttpRequestInterceptor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstagramOAuthRequestSigner.class);
 
   private static final String oauth_signature_encoding = "UTF-8";
   private static final String oauth_signature_method = "HmacSHA256";
 
-  InstagramOAuthConfiguration oAuthConfiguration;
+  InstagramConfiguration configuration;
 
-  public InstagramOAuthRequestSigner(InstagramOAuthConfiguration oauth) {
-    this.oAuthConfiguration = oauth;
+  public InstagramOAuthRequestSigner(InstagramConfiguration configuration) {
+    this.configuration = configuration;
+  }
+
+  @Override
+  public void process(HttpRequest httpRequest, HttpContext httpContext) throws HttpException, IOException {
+
+    try {
+      HttpRequestWrapper httpRequestWrapper = (HttpRequestWrapper) httpRequest;
+      HttpRequestBase httpRequestBase = (HttpRequestBase) httpRequestWrapper.getOriginal();
+
+      String sig_uri = httpRequestBase.getURI().getPath();
+      if( sig_uri.startsWith("/"+configuration.getVersion()) ) {
+        sig_uri = sig_uri.substring(configuration.getVersion().length()+1);
+      }
+
+      String sig = generateSignature(sig_uri);
+
+      URI oauthURI = new URIBuilder(httpRequestBase.getURI())
+          .addParameter("access_token", configuration.getOauth().getAccessToken())
+          .addParameter("sig", sig)
+          .build();
+
+      httpRequestBase.setURI(oauthURI);
+      ((HttpRequestWrapper) httpRequest).setURI(oauthURI);
+
+    } catch( Exception ue ) {
+      throw new IOException("Exception", ue);
+    }
+
   }
 
   /**
@@ -69,19 +99,23 @@ public class InstagramOAuthRequestSigner {
    */
   public String generateSignature(String uri) {
 
-    String request_path = uri.substring(0, uri.indexOf('?'));
-    String request_param_line = uri.substring(uri.indexOf('?') + 1);
-    String[] request_params = URLDecoder.decode(request_param_line).split("&");
-
     Map<String,String> oauthParamMap = new HashMap<>();
-    oauthParamMap.put("access_token", oAuthConfiguration.getAccessToken());
+
+    oauthParamMap.put("access_token", configuration.getOauth().getAccessToken());
 
     Map<String,String> allParamsMap = new HashMap<>(oauthParamMap);
 
-    for ( String request_param : request_params ) {
-      String key = request_param.substring(0, request_param.indexOf('='));
-      String value = request_param.substring(request_param.indexOf('=') + 1, request_param.length());
-      allParamsMap.put(key, value);
+    String request_path = uri;
+
+    if( uri.contains("?")) {
+      request_path = uri.substring(0, uri.indexOf('?'));
+      String request_param_line = uri.substring(uri.indexOf('?') + 1);
+      String[] request_params = URLDecoder.decode(request_param_line).split("&");
+      for ( String request_param : request_params ) {
+        String key = request_param.substring(0, request_param.indexOf('='));
+        String value = request_param.substring(request_param.indexOf('=') + 1, request_param.length());
+        allParamsMap.put(key, value);
+      }
     }
 
     String endpoint = request_path;
@@ -91,7 +125,7 @@ public class InstagramOAuthRequestSigner {
 
     String oauth_signature;
     try {
-      oauth_signature = computeSignature(signature_base_string, oAuthConfiguration.getClientSecret());
+      oauth_signature = computeSignature(signature_base_string, configuration.getOauth().getClientSecret());
     } catch (GeneralSecurityException ex) {
       LOGGER.warn("GeneralSecurityException", ex);
       return null;

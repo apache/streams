@@ -79,10 +79,18 @@ public class InstagramUserInfoDataConverter implements ActivityObjectConverter<U
     Map<String, Object> extensions = new HashMap<>();
     activityObject.setAdditionalProperty("extensions", extensions);
     extensions.put("screenName", serialized.getUsername());
-    extensions.put("posts", serialized.getCounts().getMedia());
-    extensions.put("followers", serialized.getCounts().getFollowedBy());
+    if( serialized.getCounts() != null ) {
+      if( serialized.getCounts().getFollowedBy() != null ) {
+        extensions.put("followers", serialized.getCounts().getFollowedBy());
+      }
+      if( serialized.getCounts().getFollows() != null ) {
+        extensions.put("following", serialized.getCounts().getFollows());
+      }
+      if( serialized.getCounts().getMedia() != null ) {
+        extensions.put("posts", serialized.getCounts().getMedia());
+      }
+    }
     extensions.put("website", serialized.getWebsite());
-    extensions.put("following", serialized.getCounts().getFollows());
     return activityObject;
   }
 

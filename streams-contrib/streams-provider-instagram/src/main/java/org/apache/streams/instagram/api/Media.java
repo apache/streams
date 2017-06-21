@@ -18,6 +18,11 @@
 
 package org.apache.streams.instagram.api;
 
+import org.apache.juneau.remoteable.Path;
+import org.apache.juneau.remoteable.QueryIfNE;
+import org.apache.juneau.remoteable.RemoteMethod;
+import org.apache.juneau.remoteable.Remoteable;
+
 /**
  * Media Endpoints.
  * Comments Endpoints.
@@ -27,6 +32,7 @@ package org.apache.streams.instagram.api;
  * @see <a href="https://www.instagram.com/developer/endpoints/comments/">https://www.instagram.com/developer/endpoints/comments/</a>
  * @see <a href="https://www.instagram.com/developer/endpoints/likes/">https://www.instagram.com/developer/endpoints/likes/</a>
  */
+@Remoteable(path = "/media")
 public interface Media {
 
   /**
@@ -37,7 +43,8 @@ public interface Media {
    * @param media_id media_id
    * @return CommentsResponse @link{CommentsResponse}
    */
-  public CommentsResponse comments(String media_id);
+  @RemoteMethod(httpMethod = "GET", path = "/{media_id}/comments")
+  public CommentsResponse comments( @Path("media_id") String media_id);
 
   /**
    * Get a list of users who have liked this media.
@@ -47,7 +54,8 @@ public interface Media {
    * @param media_id media_id
    * @return UsersInfoResponse @link{UsersInfoResponse}
    */
-  public UsersInfoResponse likes(String media_id);
+  @RemoteMethod(httpMethod = "GET", path = "/{media_id}/likes")
+  public UsersInfoResponse likes( @Path("media_id") String media_id);
 
   /**
    * Get information about a media object. Use the type field to differentiate between image and video media in the response. You will also receive the user_has_liked field which tells you whether the owner of the access_token has liked this media.
@@ -58,7 +66,8 @@ public interface Media {
    * @param media_id media_id
    * @return MediaResponse @link{MediaResponse}
    */
-  public MediaResponse lookupMedia(String media_id);
+  @RemoteMethod(httpMethod = "GET", path = "/{media_id}")
+  public MediaResponse lookupMedia( @Path("media_id") String media_id);
 
   /**
    * This endpoint returns the same response as GET /media/media-id.
@@ -68,7 +77,8 @@ public interface Media {
    * @param shortcode shortcode
    * @return MediaResponse @link{MediaResponse}
    */
-  public MediaResponse shortcode(String shortcode);
+  @RemoteMethod(httpMethod = "GET", path = "/shortcode/{shortcode}")
+  public MediaResponse shortcode( @Path("shortcode") String shortcode);
 
   /**
    * Search for recent media in a given area.
@@ -77,5 +87,6 @@ public interface Media {
    * @param parameters @link{SearchMediaRequest}
    * @return SearchMediaResponse @link{SearchMediaResponse}
    */
-  public SearchMediaResponse searchMedia(SearchMediaRequest parameters);
+  @RemoteMethod(httpMethod = "GET", path = "/search")
+  public SearchMediaResponse searchMedia( @QueryIfNE("*") SearchMediaRequest parameters);
 }

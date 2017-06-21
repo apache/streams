@@ -20,6 +20,7 @@ package org.apache.streams.instagram.api;
 
 import org.apache.streams.util.api.requests.backoff.AbstractBackOffStrategy;
 
+import org.apache.http.HttpResponse;
 import org.apache.juneau.rest.client.RetryOn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,18 +28,36 @@ import org.slf4j.LoggerFactory;
 /**
  *  Handle expected and unexpected exceptions.
  */
-public class InstagramRetryHandler implements RetryOn {
+public class InstagramRetryHandler extends RetryOn {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstagramRetryHandler.class);
 
   private static AbstractBackOffStrategy backoff_strategy;
 
-  @Override
-  public boolean onCode(int httpResponseCode) {
-    if ( httpResponseCode > 400 ) {
-      return true;
-    } else {
-      return false;
+  protected boolean onResponse(HttpResponse response) {
+    LOGGER.debug(response.toString());
+    switch(response.getStatusLine().getStatusCode()) {
+      case 200: // Response.Status.OK
+      case 304: // Response.Status.NOT_MODIFIED
+      case 400: // Response.Status.BAD_REQUEST
+        return false;
+      case 401: // Response.Status.UNAUTHORIZED
+        return true;
+      case 403: // Response.Status.FORBIDDEN
+      case 404: // Response.Status.NOT_FOUND
+      case 406: // Response.Status.NOT_ACCEPTABLE
+      case 410: // Response.Status.GONE
+        return false;
+      case 420: // Enhance Your Calm
+      case 429: // Too Many Requests
+        return true;
+      case 500: // Response.Status.INTERNAL_SERVER_ERROR
+      case 502: // Bad Gateway
+      case 503: // Response.Status.SERVICE_UNAVAILABLE
+      case 504: // Gateway Timeout
+        return true;
+      default:
+        return false;
     }
   }
 }
