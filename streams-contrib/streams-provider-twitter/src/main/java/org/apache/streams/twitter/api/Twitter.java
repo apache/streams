@@ -130,7 +130,6 @@ public class Twitter implements Account, Favorites, Followers, Friends, Statuses
     return result;
   }
 
-  //  TODO: juneau-6.3.x-incubating
   @Override
   public List<Tweet> homeTimeline(StatusesHomeTimelineRequest parameters) {
     Statuses restStatuses = restClient.getRemoteableProxy(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");

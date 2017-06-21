@@ -38,7 +38,7 @@ public interface Followers {
    * Returns a cursored collection of user IDs for every user following the specified user.
    *
    * @param parameters {@link org.apache.streams.twitter.api.FollowersIdsRequest}
-   * @return List < Tweet >
+   * @return FollowersIdsResponse
    * @see <a href="https://dev.twitter.com/rest/reference/get/followers/ids">https://dev.twitter.com/rest/reference/get/followers/ids</a>
    *
    */
@@ -49,7 +49,7 @@ public interface Followers {
    * Returns a cursored collection of user objects for users following the specified user.
    *
    * @param parameters {@link org.apache.streams.twitter.api.FollowersListRequest}
-   * @return List < Tweet >
+   * @return FollowersListResponse
    * @see <a href="https://dev.twitter.com/rest/reference/get/followers/list">https://dev.twitter.com/rest/reference/get/followers/list</a>
    *
    */

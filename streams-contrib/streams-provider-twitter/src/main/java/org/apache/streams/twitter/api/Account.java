@@ -26,6 +26,7 @@ import org.apache.juneau.remoteable.Remoteable;
 import java.util.List;
 
 /**
+ * Interface for /account methods.
  */
 @Remoteable(path = "https://api.twitter.com/1.1/account")
 public interface Account {
@@ -41,7 +42,7 @@ public interface Account {
   public AccountSettings settings();
 
   /**
-   * Returns settings (including current trend, geo and sleep time information) for the authenticating user.
+   * Returns user credentials for the authenticating user.
    *
    * @return User
    * @see <a href=https://dev.twitter.com/rest/reference/get/account/verify_credentials">https://dev.twitter.com/rest/reference/get/account/verify_credentials</a>

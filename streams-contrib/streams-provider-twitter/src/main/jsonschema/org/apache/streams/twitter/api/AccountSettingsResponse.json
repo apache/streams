@@ -22,9 +22,6 @@
     "language": {
       "type": "string"
     },
-    "language": {
-      "type": "string"
-    },
     "protected": {
       "type": "boolean"
     },

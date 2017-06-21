@@ -38,7 +38,7 @@ public interface Friends {
    * Returns a cursored collection of user IDs for every user the specified user is following.
    *
    * @param parameters {@link org.apache.streams.twitter.api.FriendsIdsRequest}
-   * @return List<Tweet>
+   * @return FriendsIdsResponse
    * @see <a href="https://dev.twitter.com/rest/reference/get/friends/ids">https://dev.twitter.com/rest/reference/get/friends/ids</a>
    *
    */
@@ -49,7 +49,7 @@ public interface Friends {
    * Returns a cursored collection of user objects for every user the specified user is following.
    *
    * @param parameters {@link org.apache.streams.twitter.api.FriendsListRequest}
-   * @return List<Tweet>
+   * @return FriendsListResponse
    * @see <a href="https://dev.twitter.com/rest/reference/get/friends/list">https://dev.twitter.com/rest/reference/get/friends/list</a>
    *
    */

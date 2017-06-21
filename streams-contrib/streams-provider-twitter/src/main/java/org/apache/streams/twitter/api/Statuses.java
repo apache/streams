@@ -79,7 +79,7 @@ public interface Statuses {
    * Returns a single Tweet, specified by the id parameter. The Tweet’s author will also be embedded within the Tweet.
    *
    * @param parameters {@link org.apache.streams.twitter.api.StatusesShowRequest}
-   * @return List<Tweet>
+   * @return Tweet
    * @see <a href="https://dev.twitter.com/rest/reference/get/statuses/show/id">https://dev.twitter.com/rest/reference/get/statuses/show/id</a>
    *
    */

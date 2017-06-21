@@ -41,7 +41,7 @@ public interface Users {
    * Returns fully-hydrated user objects for up to 100 users per request, as specified by comma-separated values passed to the user_id and/or screen_name parameters.
    *
    * @param parameters {@link org.apache.streams.twitter.api.UsersLookupRequest}
-   * @return List<Tweet>
+   * @return List<User>
    * @see <a href="https://dev.twitter.com/rest/reference/get/users/lookup">https://dev.twitter.com/rest/reference/get/users/lookup</a>
    *
    */
@@ -52,7 +52,7 @@ public interface Users {
    * Returns a variety of information about the user specified by the required user_id or screen_name parameter. The author’s most recent Tweet will be returned inline when possible.
    *
    * @param parameters {@link org.apache.streams.twitter.api.UsersShowRequest}
-   * @return List<Tweet>
+   * @return List<User>
    * @see <a href="https://dev.twitter.com/rest/reference/get/users/show">https://dev.twitter.com/rest/reference/get/users/show</a>
    *
    */

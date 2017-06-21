@@ -78,10 +78,10 @@ public class TwitterRetryHandler extends RetryOn {
         String responseEntity = EntityUtils.toString(response.getEntity());
         LOGGER.debug(responseEntity);
         responseErrors = JsonParser.DEFAULT.parse(responseEntity, ResponseErrors.class);
-      } catch (IOException e) {
-        e.printStackTrace();
-      } catch (ParseException e) {
-        e.printStackTrace();
+      } catch (IOException ex) {
+        LOGGER.error("IOException", ex);
+      } catch (ParseException ex) {
+        LOGGER.error("ParseException", ex);
       }
     }
     return responseErrors;
