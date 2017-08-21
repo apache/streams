@@ -162,7 +162,7 @@ In either case, you'll need to first refer to [Release Setup Information](/relea
 14. Update the JIRA versions page to close all issues, mark the version as "released", and set the date to the date that the release was approved. You may also need to make a new release entry for the next release.
 15. Announcing the release
        * Make a news announcement on the streams homepage.
-       * Make an announcement about the release on the dev@streams.incubator.apache.org, and announce@incubator.apache.org list as per the Apache Announcement Mailing Lists page)
+       * Make an announcement about the release on the dev@streams.apache.org, and announce@incubator.apache.org list as per the Apache Announcement Mailing Lists page)
 
 ####Recovering from a vetoed release
 

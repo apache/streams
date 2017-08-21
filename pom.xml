@@ -33,7 +33,7 @@
     <name>Apache Streams</name>
     <description>Apache Streams</description>
 
-    <url>http://streams.incubator.apache.org/site/${project.version}/streams-project</url>
+    <url>http://streams.apache.org/site/${project.version}/streams-project</url>
 
     <licenses>
         <license>
@@ -45,9 +45,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:apache/incubator-streams.git</connection>
-        <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/incubator-streams.git</developerConnection>
-        <url>scm:git:git@github.com:apache/incubator-streams.git</url>
+        <connection>scm:git:https://github.com:apache/streams</connection>
+        <developerConnection>scm:git:git@github.com:apache/streams.git</developerConnection>
+        <url>scm:git:git@github.com:apache/streams.git</url>
         <tag>HEAD</tag>
     </scm>
 
@@ -68,16 +68,16 @@
     <mailingLists>
         <mailingList>
             <name>Dev Mailing List</name>
-            <post>dev@streams.incubator.apache.org</post>
-            <subscribe>dev-subscribe@streams.incubator.apache.org</subscribe>
-            <unsubscribe>dev-unsubscribe@streams.incubator.apache.org</unsubscribe>
+            <post>dev@streams.apache.org</post>
+            <subscribe>dev-subscribe@streams.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@streams.apache.org</unsubscribe>
             <archive>http://mail-archives.apache.org/mod_mbox/incubator-streams-dev/</archive>
         </mailingList>
         <mailingList>
             <name>Commits Mailing List</name>
-            <post>commits@streams.incubator.apache.org</post>
-            <subscribe>commits-subscribe@streams.incubator.apache.org</subscribe>
-            <unsubscribe>commits-unsubscribe@streams.incubator.apache.org</unsubscribe>
+            <post>commits@streams.apache.org</post>
+            <subscribe>commits-subscribe@streams.apache.org</subscribe>
+            <unsubscribe>commits-unsubscribe@streams.apache.org</unsubscribe>
             <archive>http://mail-archives.apache.org/mod_mbox/incubator-streams-commits/</archive>
         </mailingList>
     </mailingLists>
@@ -287,7 +287,8 @@
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <streams.version>0.4-incubating-SNAPSHOT</streams.version>
+        <streams.version>0.5.1-SNAPSHOT</streams.version>
+        <github.global.server>github</github.global.server>
 
         <!-- Release Properties -->
         <snapshot.repository.url>
@@ -892,7 +893,7 @@
                             <id>validate</id>
                             <phase>validate</phase>
                             <configuration>
-                                <configLocation>http://streams.incubator.apache.org/site/latest/streams-project/streams-java-checkstyle.xml</configLocation>
+                                <configLocation>http://streams.apache.org/site/latest/streams-project/streams-java-checkstyle.xml</configLocation>
                                 <encoding>UTF-8</encoding>
                                 <consoleOutput>true</consoleOutput>
                                 <includeTestSourceDirectory>true</includeTestSourceDirectory>

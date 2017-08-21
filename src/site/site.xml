@@ -26,23 +26,18 @@
     </skin>
     <bannerLeft>
         <name>Apache Streams</name>
-        <src>http://streams.incubator.apache.org/images/streams_logo.jpg</src>
-        <href>http://streams.incubator.apache.org</href>
+        <src>http://streams.apache.org/images/streams_logo.jpg</src>
+        <href>http://streams.apache.org</href>
         <height>100</height>
         <width>150</width>
     </bannerLeft>
-    <bannerRight>
-        <name>Apache Incubator</name>
-        <src>http://incubator.apache.org/images/egg-logo.png</src>
-        <href>http://incubator.apache.org</href>
-    </bannerRight>
     <custom>
         <fluidoSkin>
             <topBarEnabled>true</topBarEnabled>
             <navBarStyle>navbar-inverse</navBarStyle>
             <sideBarEnabled>false</sideBarEnabled>
             <gitHub>
-                <projectId>apache/incubator-streams</projectId>
+                <projectId>apache/streams</projectId>
                 <ribbonOrientation>right</ribbonOrientation>
                 <ribbonColor>black</ribbonColor>
             </gitHub>
@@ -55,8 +50,7 @@
     </custom>
     <body>
         <breadcrumbs>
-            <item name="Incubator" href="http://incubator.apache.org/"/>
-            <item name="Streams" href="http://streams.incubator.apache.org/site/latest/streams-project"/>
+            <item name="Streams" href="http://streams.apache.org/site/latest/streams-project"/>
         </breadcrumbs>
         <head>
             <![CDATA[
@@ -76,7 +70,7 @@
             <item name="Architecture" href="architecture.html" />
             <item name="Concepts" href="concepts.html" />
             <item name="Downloads" href="downloads.html" />
-            <item name="Examples" href="http://streams.incubator.apache.org/site/latest/streams-examples/" />
+            <item name="Examples" href="http://streams.apache.org/site/latest/streams-examples/" />
             <item name="Frequently Asked Questions" href="faq.html" />
             <item name="Modules" href="modules.html" />
         </menu>
