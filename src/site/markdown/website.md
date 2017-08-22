@@ -1,10 +1,9 @@
 ## Website Management
 
-http://streams.incubator.apache.org is a set of interconnected websites generated
-by the maven site plugin.  The front page, this page, and most pages linked in the
-top nav of the site are part of incubator-streams-master.  incubator-streams and
-incubator-streams-examples also contain documentation of specific modules and examples that
-are part of the project webpage.
+http://streams.apache.org is a set of interconnected websites generated from markdown
+by the maven site plugin.  The front page, this page, and all pages aside from those
+organized under 'Examples' reside in http://github.com/apache/streams.  Those pages reside in 
+http://github.com/apache/streams-examples
 
 ### Website Content
 
@@ -44,7 +43,7 @@ Currently pushing website changes is a manual process with several steps, perfor
 
 This typically requires checking out the current website from SVN.
 
-    svn co https://svn.apache.org/repos/asf/incubator/streams/site/trunk/content
+    svn co https://svn.apache.org/repos/asf/streams/site/trunk/content
     cd content
 
 NOTE:

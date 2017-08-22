@@ -10,7 +10,7 @@ You should *not* import streams-master (depicted below), because it does not do 
 
 Browse the "Project Modules" index of streams-project to find artifacts you might want to import.
 
-[streams-project-modules](http://streams.incubator.apache.org/site/latest/streams-project/modules.html "http://streams.incubator.apache.org/site/latest/streams-project/modules.html")
+[streams-project-modules](http://streams.apache.org/site/latest/streams-project/modules.html "http://streams.apache.org/site/latest/streams-project/modules.html")
 
 <div class="section">
 
