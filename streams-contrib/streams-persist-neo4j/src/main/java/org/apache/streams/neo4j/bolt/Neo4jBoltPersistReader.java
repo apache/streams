@@ -159,7 +159,7 @@ public class Neo4jBoltPersistReader implements StreamsPersistReader {
       if( valueJsons.size() == 1) {
         valueJson = valueJsons.get(valueJsons.keySet().iterator().next());
       }
-      objectNode = PropertyUtil.unflattenObjectNode(valueJson, '.');
+      objectNode = PropertyUtil.getInstance(mapper).unflattenObjectNode(valueJson);
       return Optional.of(new StreamsDatum(objectNode));
     }
 
@@ -313,12 +313,12 @@ public class Neo4jBoltPersistReader implements StreamsPersistReader {
         NodeValue nodeValue = (NodeValue) value;
         Node node = nodeValue.asNode();
         Map<String, Object> nodeMap = node.asMap();
-        resultNode = PropertyUtil.unflattenMap(nodeMap, '.');
+        resultNode = PropertyUtil.getInstance(mapper).unflattenMap(nodeMap);
       } else if (value instanceof RelationshipValue) {
         RelationshipValue relationshipValue = (RelationshipValue) value;
         Relationship relationship = relationshipValue.asRelationship();
         Map<String, Object> relationshipMap = relationship.asMap();
-        resultNode = PropertyUtil.unflattenMap(relationshipMap, '.');
+        resultNode = PropertyUtil.getInstance(mapper).unflattenMap(relationshipMap);
       }
       return resultNode;
     }

@@ -82,7 +82,7 @@ public class SchemaOrderingTest {
     File update = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
     schemaStore.create(update.toURI());
     // update > alert b/c it's ascii is higher alphabetically
-    assert (schemaStore.compare( schemaStore.getByUri(alert.toURI()).get(), schemaStore.getByUri(update.toURI()).get()) == 1);
+    assert (schemaStore.compare( schemaStore.getByUri(alert.toURI()).get(), schemaStore.getByUri(update.toURI()).get()) != 0);
   }
 
   @Test

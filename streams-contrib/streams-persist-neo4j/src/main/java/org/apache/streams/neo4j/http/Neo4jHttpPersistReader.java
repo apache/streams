@@ -139,7 +139,7 @@ public class Neo4jHttpPersistReader extends SimpleHttpProvider implements Stream
 
           LOGGER.debug("itemData: " + itemData);
 
-          results.add(PropertyUtil.unflattenMap(itemData.getAdditionalProperties(), '.'));
+          results.add(PropertyUtil.getInstance(mapper).unflattenMap(itemData.getAdditionalProperties()));
         }
 
       }
