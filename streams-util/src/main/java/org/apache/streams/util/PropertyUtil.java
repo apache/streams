@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import com.github.wnameless.json.flattener.JsonFlattener;
+import com.github.wnameless.json.unflattener.JsonUnflattener;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -37,93 +39,76 @@ import java.util.Map;
  */
 public class PropertyUtil {
 
-  private static final ObjectMapper mapper = new ObjectMapper();
+  private static final PropertyUtil INSTANCE = new PropertyUtil(new ObjectMapper());
 
-  public static Map<String, Object> flattenToMap(ObjectNode object) {
-    Map<String, Object> flatObject = new HashMap<>();
-    addKeys(new String(), object, flatObject, '.');
+  public static PropertyUtil getInstance() {
+    return INSTANCE;
+  }
+
+  public static PropertyUtil getInstance(ObjectMapper mapper) {
+    return new PropertyUtil(mapper);
+  }
+
+  private ObjectMapper mapper;
+
+  public PropertyUtil(ObjectMapper mapper) {
+    this.mapper = mapper;
+  }
+
+  public Map<String, Object> flattenToMap(ObjectNode object) {
+    return flattenToMap(mapper, object);
+  }
+
+  public ObjectNode flattenToObjectNode(ObjectNode object) {
+    return flattenToObjectNode(mapper, object);
+  }
+
+  public ObjectNode unflattenMap(Map<String, Object> object) {
+    return unflattenMap(mapper, object);
+  }
+
+  public ObjectNode unflattenObjectNode(ObjectNode object) {
+    return unflattenObjectNode(mapper, object);
+  }
+
+  public static Map<String, Object> flattenToMap(ObjectMapper mapper, ObjectNode object) {
+    Map<String, Object> flatObject;
+    try {
+      flatObject = mapper.readValue(JsonFlattener.flatten(mapper.writeValueAsString(object)), Map.class);
+    } catch( Exception ex ) {
+      return null;
+    }
     return flatObject;
   }
 
-  public static ObjectNode flattenToObjectNode(ObjectNode object) {
-    Map<String, Object> flatObject = flattenToMap(object, '.');
-    addKeys(new String(), object, flatObject, '.');
-    return mapper.convertValue(flatObject, ObjectNode.class);
-  }
-
-  public static Map<String, Object> flattenToMap(ObjectNode object, char seperator) {
-    Map<String, Object> flatObject = new HashMap<>();
-    addKeys(new String(), object, flatObject, seperator);
-    return flatObject;
-  }
-
-  public static ObjectNode flattenToObjectNode(ObjectNode object, char seperator) {
-    Map<String, Object> flatObject = flattenToMap(object, seperator);
-    addKeys(new String(), object, flatObject, seperator);
-    return mapper.convertValue(flatObject, ObjectNode.class);
-  }
-
-  private static void addKeys(String currentPath, JsonNode jsonNode, Map<String, Object> map, char seperator) {
-    if (jsonNode.isObject()) {
-      ObjectNode objectNode = (ObjectNode) jsonNode;
-      Iterator<Map.Entry<String, JsonNode>> iter = objectNode.fields();
-      String pathPrefix = currentPath.isEmpty() ? "" : currentPath + seperator;
-
-      while (iter.hasNext()) {
-        Map.Entry<String, JsonNode> entry = iter.next();
-        addKeys(pathPrefix + entry.getKey(), entry.getValue(), map, seperator);
-      }
-    } else if (jsonNode.isArray()) {
-      ArrayNode arrayNode = (ArrayNode) jsonNode;
-      if( arrayNode.isTextual()) {
-        List<String> list = mapper.convertValue(arrayNode, List.class);
-        map.put(currentPath, list);
-      }
-      if( arrayNode.isNumber()) {
-        List<String> list = mapper.convertValue(arrayNode, List.class);
-        map.put(currentPath, list);
-      }
-    } else if (jsonNode.isValueNode()) {
-      ValueNode valueNode = (ValueNode) jsonNode;
-      if( valueNode.isTextual() )
-        map.put(currentPath, valueNode.asText());
-      else if ( valueNode.isNumber() )
-        map.put(currentPath, valueNode);
+  public static ObjectNode flattenToObjectNode(ObjectMapper mapper, ObjectNode object) {
+    ObjectNode flatObjectNode;
+    try {
+      flatObjectNode = mapper.readValue(JsonFlattener.flatten(mapper.writeValueAsString(object)), ObjectNode.class);
+    } catch( Exception ex ) {
+      return null;
     }
+    return flatObjectNode;
   }
 
-  public static ObjectNode unflattenMap(Map<String, Object> object, char seperator) {
-    return unflattenObjectNode(mapper.convertValue(object, ObjectNode.class), seperator);
-  }
-
-  public static ObjectNode unflattenObjectNode(ObjectNode flatObject, char seperator) {
-    ObjectNode root = mapper.createObjectNode();
-    Iterator<Map.Entry<String, JsonNode>> iter = flatObject.fields();
-    while (iter.hasNext()) {
-      Map.Entry<String, JsonNode> item = iter.next();
-      String fullKey = item.getKey();
-      if( !fullKey.contains(Character.valueOf(seperator).toString())) {
-        root.put(item.getKey(), item.getValue());
-      } else {
-        ObjectNode currentNode = root;
-        List<String> keyParts = new ArrayList<>(Arrays.asList(StringUtils.split(item.getKey(), seperator)));
-        keyParts.remove(keyParts.size()-1);
-        Iterator<String> keyPartIterator = keyParts.iterator();
-        while( keyPartIterator.hasNext()) {
-          String part = keyPartIterator.next();
-          if( currentNode.has(part) && currentNode.get(part).isObject() ) {
-            currentNode = (ObjectNode) currentNode.get(part);
-          } else {
-            ObjectNode newNode = mapper.createObjectNode();
-            currentNode.put(part, newNode);
-            currentNode = newNode;
-          }
-        };
-        currentNode.put(keyParts.get(keyParts.size()-1), item.getValue());
-
-      }
+  public static ObjectNode unflattenMap(ObjectMapper mapper, Map<String, Object> object) {
+    ObjectNode unflatObjectNode;
+    try {
+      unflatObjectNode = mapper.readValue(JsonUnflattener.unflatten(mapper.writeValueAsString(object)), ObjectNode.class);
+    } catch( Exception ex ) {
+      return null;
     }
-    return root;
+    return unflatObjectNode;
+  }
+
+  public static ObjectNode unflattenObjectNode(ObjectMapper mapper, ObjectNode object) {
+    ObjectNode unflatObjectNode;
+    try {
+      unflatObjectNode = mapper.readValue(JsonUnflattener.unflatten(mapper.writeValueAsString(object)), ObjectNode.class);
+    } catch( Exception ex ) {
+      return null;
+    }
+    return unflatObjectNode;
   }
 
 
