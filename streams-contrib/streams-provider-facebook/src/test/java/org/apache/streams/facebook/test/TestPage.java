@@ -23,6 +23,7 @@ import facebook4j.Place;
 
 import java.net.URL;
 import java.util.Date;
+import java.util.Map;
 
 public class TestPage implements Page {
   private String id;
@@ -140,6 +141,16 @@ public class TestPage implements Page {
 
   @Override
   public String getUsername() {
+    return null;
+  }
+
+  @Override
+  public String getMission() {
+    return null;
+  }
+
+  @Override
+  public Map<String, String> getHours() {
     return null;
   }
 }

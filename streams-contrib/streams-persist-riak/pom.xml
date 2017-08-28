@@ -30,7 +30,7 @@
     <description>Riak Module</description>
 
     <properties>
-        <riak.version>2.0.6</riak.version>
+        <riak.version>2.1.1</riak.version>
     </properties>
 
     <dependencies>

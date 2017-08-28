@@ -30,7 +30,7 @@
     <description>Mongo Module</description>
 
     <properties>
-        <mongo-driver.version>3.3.0</mongo-driver.version>
+        <mongo-driver.version>3.5.0</mongo-driver.version>
     </properties>
 
     <dependencies>

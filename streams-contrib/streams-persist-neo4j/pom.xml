@@ -27,6 +27,10 @@
     <artifactId>streams-persist-neo4j</artifactId>
     <name>streams-persist-neo4j</name>
 
+    <properties>
+        <neo4j-driver.version>1.4.3</neo4j-driver.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.streams</groupId>
@@ -82,7 +86,12 @@
         <dependency>
             <groupId>org.neo4j.driver</groupId>
             <artifactId>neo4j-java-driver</artifactId>
-            <version>1.0.6</version>
+            <version>${neo4j-driver.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.1</version>
         </dependency>
 
         <dependency>
