@@ -33,7 +33,7 @@
     <description>Amazon AWS Modules</description>
 
     <properties>
-
+        <amazonaws.version>1.11.184</amazonaws.version>
     </properties>
 
     <modules>
@@ -43,10 +43,15 @@
 
     <dependencyManagement>
         <dependencies>
-	        <dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-kinesis</artifactId>
+                <version>${amazonaws.version}</version>
+            </dependency>
+            <dependency>
 	            <groupId>com.amazonaws</groupId>
-	            <artifactId>aws-java-sdk</artifactId>
-	            <version>1.10.15</version>
+	            <artifactId>aws-java-sdk-s3</artifactId>
+	            <version>${amazonaws.version}</version>
 	        </dependency>
             <dependency>
                 <groupId>org.apache.streams</groupId>

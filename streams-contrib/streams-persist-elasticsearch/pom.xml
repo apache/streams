@@ -30,8 +30,8 @@
     <description>Elasticsearch Module</description>
 
     <properties>
-        <elasticsearch.version>2.3.5</elasticsearch.version>
-        <lucene.version>5.5.0</lucene.version>
+        <elasticsearch.version>2.4.6</elasticsearch.version>
+        <lucene.version>5.5.4</lucene.version>
     </properties>
 
     <dependencies>

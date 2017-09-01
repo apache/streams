@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -113,6 +114,11 @@ public class JsonPathExtractor implements StreamsProcessor {
               LOGGER.info("Object Item:" + item);
               JSONObject match = (JSONObject) item;
               ObjectNode objectNode = mapper.readValue(mapper.writeValueAsString(match), ObjectNode.class);
+              StreamsDatum matchDatum = new StreamsDatum(objectNode);
+              result.add(matchDatum);
+            } else if (item instanceof LinkedHashMap) {
+              LOGGER.info("Object Item:" + item);
+              ObjectNode objectNode = mapper.readValue(mapper.writeValueAsString(item), ObjectNode.class);
               StreamsDatum matchDatum = new StreamsDatum(objectNode);
               result.add(matchDatum);
             } else {
