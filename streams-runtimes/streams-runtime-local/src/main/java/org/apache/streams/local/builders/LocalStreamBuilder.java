@@ -128,7 +128,7 @@ public class LocalStreamBuilder implements StreamBuilder {
    */
   @Deprecated
   public LocalStreamBuilder(int maxQueueCapacity, Map<String, Object> streamConfig) {
-    this(new LocalRuntimeConfiguration());
+    this(new ObjectMapper().convertValue(StreamsConfigurator.detectConfiguration(), LocalRuntimeConfiguration.class));
     this.streamConfig.setQueueSize((long) maxQueueCapacity);
     if( streamConfig != null && streamConfig.get(LocalStreamBuilder.TIMEOUT_KEY) != null )
       this.streamConfig.setProviderTimeoutMs(new Long((Integer) (streamConfig.get(LocalStreamBuilder.TIMEOUT_KEY))));

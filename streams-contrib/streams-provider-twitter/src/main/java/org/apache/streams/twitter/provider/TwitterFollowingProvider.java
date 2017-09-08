@@ -175,6 +175,8 @@ public class TwitterFollowingProvider {
     Objects.requireNonNull(config.getInfo());
     Objects.requireNonNull(config.getThreadsPerProvider());
 
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+
     try {
       client = getTwitterClient();
     } catch (InstantiationException e) {
@@ -209,7 +211,12 @@ public class TwitterFollowingProvider {
 
     Objects.requireNonNull(getConfig().getEndpoint());
 
-    executor = MoreExecutors.listeningDecorator(TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(config.getThreadsPerProvider().intValue(), ids.size()));
+    executor = MoreExecutors.listeningDecorator(
+        TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(
+            config.getThreadsPerProvider().intValue(),
+            streamsConfiguration.getQueueSize().intValue()
+        )
+    );
 
     Preconditions.checkArgument(getConfig().getEndpoint().equals("friends") || getConfig().getEndpoint().equals("followers"));
 

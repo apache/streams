@@ -10,48 +10,39 @@
     "properties": {
         "batchFrequencyMs": {
             "type": "integer",
-            "description": "Frequency of messaging between components",
-            "default": 5000
+            "description": "Frequency of messaging between components"
         },
         "batchSize": {
             "type" : "integer",
-            "description" : "Default max batch size for batch-based persist readers and writers",
-            "default": 1000
+            "description" : "Default max batch size for batch-based persist readers and writers"
         },
         "identifier": {
             "type" : "string",
-            "description" : "Name of streams pipeline",
-            "default": "No-name Stream"
+            "description" : "Name of streams pipeline"
         },
         "parallelism": {
             "type" : "integer",
-            "description" : "Default parallelism for processors",
-            "default": 1
+            "description" : "Default parallelism for processors"
         },
         "providerTimeoutMs": {
             "type": "integer",
-            "description": "Kill the stream if all providers supply nothing for this long.",
-            "default": 1440000
+            "description": "Kill the stream if all providers supply nothing for this long."
         },
         "queueSize": {
             "type" : "integer",
-            "description" : "Size of inter-component buffers",
-            "default": 1000
+            "description" : "Size of inter-component buffers"
         },
         "shutdownCheckDelay": {
             "type": "integer",
-            "description": "Initial delay before checking for shutdown",
-            "default": 1000
+            "description": "Initial delay before checking for shutdown"
         },
         "shutdownCheckInterval": {
             "type": "integer",
-            "description": "Recurring delay between checking for shutdown",
-            "default": 1000
+            "description": "Recurring delay between checking for shutdown"
         },
         "startedAt": {
             "type": "integer",
-            "description": "Timestamp of beginning of stream execution",
-            "default": -1
+            "description": "Timestamp of beginning of stream execution"
         }
     }
 }

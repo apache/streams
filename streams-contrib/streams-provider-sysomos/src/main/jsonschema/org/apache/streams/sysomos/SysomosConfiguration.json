@@ -13,8 +13,7 @@
         },
         "endpoint": {
             "type": "string",
-            "description": "The endpoint",
-            "default": "http://api.sysomos.com/"
+            "description": "The endpoint"
         },
         "heartbeatIds": {
             "type": "array",

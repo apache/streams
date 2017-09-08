@@ -19,6 +19,7 @@
 package org.apache.streams.local.tasks;
 
 import org.apache.streams.config.StreamsConfiguration;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.DatumStatus;
 import org.apache.streams.core.DatumStatusCountable;
 import org.apache.streams.core.DatumStatusCounter;
@@ -65,7 +66,7 @@ public class StreamsProcessorTask extends BaseStreamsTask implements DatumStatus
    * @param processor process to run in task
    */
   public StreamsProcessorTask(StreamsProcessor processor) {
-    this(processor, new StreamsConfiguration());
+    this(processor, StreamsConfigurator.detectConfiguration());
   }
 
   /**
