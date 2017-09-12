@@ -27,6 +27,9 @@ import java.lang.management.ManagementFactory;
 import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
 
+import org.junit.Assert;
+
+
 /**
  * Unit tests for {@link org.apache.streams.local.counters.StreamsTaskCounter}
  */
@@ -57,7 +60,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
     try {
       new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
     } catch (Throwable t) {
-      fail("Constructor threw error : "+t.getMessage());
+      Assert.fail("Constructor threw error : "+t.getMessage());
     }
   }
 
@@ -73,7 +76,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
     for(int i=0; i < numIncrements; ++i) {
       counter.incrementEmittedCount();
     }
-    assertEquals(numIncrements, counter.getNumEmitted());
+    Assert.assertEquals(numIncrements, counter.getNumEmitted());
 
     unregisterMXBean();
 
@@ -85,7 +88,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
       total += delta;
       counter.incrementEmittedCount(delta);
     }
-    assertEquals(total, counter.getNumEmitted());
+    Assert.assertEquals(total, counter.getNumEmitted());
   }
 
   /**
@@ -100,7 +103,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
     for(int i=0; i < numIncrements; ++i) {
       counter.incrementReceivedCount();
     }
-    assertEquals(numIncrements, counter.getNumReceived());
+    Assert.assertEquals(numIncrements, counter.getNumReceived());
 
     unregisterMXBean();
 
@@ -112,7 +115,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
       total += delta;
       counter.incrementReceivedCount(delta);
     }
-    assertEquals(total, counter.getNumReceived());
+    Assert.assertEquals(total, counter.getNumReceived());
   }
 
   /**
@@ -127,7 +130,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
     for(int i=0; i < numIncrements; ++i) {
       counter.incrementErrorCount();
     }
-    assertEquals(numIncrements, counter.getNumUnhandledErrors());
+    Assert.assertEquals(numIncrements, counter.getNumUnhandledErrors());
 
     unregisterMXBean();
 
@@ -139,7 +142,7 @@ public class StreamsTaskCounterTest extends RandomizedTest {
       total += delta;
       counter.incrementErrorCount(delta);
     }
-    assertEquals(total, counter.getNumUnhandledErrors());
+    Assert.assertEquals(total, counter.getNumUnhandledErrors());
   }
 
   /**
@@ -150,12 +153,12 @@ public class StreamsTaskCounterTest extends RandomizedTest {
   @Repeat(iterations = 3)
   public void testErrorRate() throws Exception {
     StreamsTaskCounter counter = new StreamsTaskCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-    assertEquals(0.0, counter.getErrorRate(), 0);
+    Assert.assertEquals(0.0, counter.getErrorRate(), 0);
     int failures = randomIntBetween(0, 100000);
     int received = randomIntBetween(0, 100000);
     counter.incrementReceivedCount(received);
     counter.incrementErrorCount(failures);
-    assertEquals((double)failures / (double)(received), counter.getErrorRate(), 0);
+    Assert.assertEquals((double)failures / (double)(received), counter.getErrorRate(), 0);
   }
 
 }

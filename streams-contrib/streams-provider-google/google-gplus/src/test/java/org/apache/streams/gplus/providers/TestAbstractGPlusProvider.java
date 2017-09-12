@@ -38,6 +38,9 @@ import java.util.concurrent.BlockingQueue;
 
 import static org.mockito.Mockito.mock;
 
+import org.junit.Assert;
+
+
 /**
  * Unit tests for {@link org.apache.streams.gplus.provider.AbstractGPlusProvider}
  */
@@ -75,7 +78,7 @@ public class TestAbstractGPlusProvider extends RandomizedTest {
           try {
             q.put(new StreamsDatum(null));
           } catch (InterruptedException ie) {
-            fail("Test was interrupted");
+            Assert.fail("Test was interrupted");
           }
         };
       }
@@ -88,7 +91,7 @@ public class TestAbstractGPlusProvider extends RandomizedTest {
       while (provider.isRunning()) {
         datumCount += provider.readCurrent().size();
       }
-      assertEquals(numUsers, datumCount);
+      Assert.assertEquals(numUsers, datumCount);
     } finally {
       provider.cleanUp();
     }

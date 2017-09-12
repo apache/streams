@@ -218,6 +218,10 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     Objects.requireNonNull(config.getInfo());
     Objects.requireNonNull(config.getThreadsPerProvider());
 
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+
+    Objects.requireNonNull(streamsConfiguration.getQueueSize());
+
     try {
       client = getTwitterClient();
     } catch (InstantiationException e) {
@@ -249,7 +253,12 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
       }
     }
 
-    executor = MoreExecutors.listeningDecorator(TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(config.getThreadsPerProvider().intValue(), ids.size()));
+    executor = MoreExecutors.listeningDecorator(
+        TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(
+            config.getThreadsPerProvider().intValue(),
+            streamsConfiguration.getQueueSize().intValue()
+        )
+    );
 
     Objects.requireNonNull(executor);
 
@@ -283,7 +292,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     }
 
     int namesIndex = 0;
-    while( idsIndex + 100 < ids.size() ) {
+    while( namesIndex + 100 < names.size() ) {
       List<String> batchNames = names.subList(namesIndex, namesIndex + 100);
       TwitterUserInformationProviderTask providerTask = new TwitterUserInformationProviderTask(
           this,
@@ -294,12 +303,12 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
       LOGGER.info("Thread Submitted: {}", providerTask.request);
       namesIndex += 100;
     }
-    if (names.size() >= idsIndex) {
-      List<Long> batchNames = ids.subList(idsIndex, names.size());
+    if (names.size() >= namesIndex) {
+      List<String> batchNames = names.subList(namesIndex, names.size());
       TwitterUserInformationProviderTask providerTask = new TwitterUserInformationProviderTask(
           this,
           client,
-          new UsersLookupRequest().withUserId(batchNames));
+          new UsersLookupRequest().withScreenName(batchNames));
       ListenableFuture future = executor.submit(providerTask);
       futures.add(future);
       LOGGER.info("Thread Submitted: {}", providerTask.request);

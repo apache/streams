@@ -37,6 +37,7 @@ import com.carrotsearch.randomizedtesting.annotations.Repeat;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.joda.time.DateTime;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -124,7 +125,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
     } catch (RuntimeException e) {
       exp = e;
     }
-    assertNotNull(exp);
+    Assert.assertNotNull(exp);
     exp = null;
     builder.addStreamsProcessor("1", new PassthroughDatumCounterProcessor("1"), 1, "id");
     try {
@@ -132,7 +133,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
     } catch (RuntimeException e) {
       exp = e;
     }
-    assertNotNull(exp);
+    Assert.assertNotNull(exp);
     removeRegisteredMBeans("1", "2", "id");
   }
 
@@ -182,10 +183,10 @@ public class LocalStreamBuilderTest extends RandomizedTest {
       builder.addStreamsPersistWriter("writer", new DatumCounterWriter("writer"), 1, processorId+(numProcessors-1));
       builder.start();
       for(int i=0; i < numProcessors; ++i) {
-        assertEquals("Processor "+i+" did not receive all of the datums", numDatums, PassthroughDatumCounterProcessor.COUNTS.get(processorId+i).get());
+        Assert.assertEquals("Processor "+i+" did not receive all of the datums", numDatums, PassthroughDatumCounterProcessor.COUNTS.get(processorId+i).get());
       }
       for(int i=0; i < numDatums; ++i) {
-        assertTrue("Expected writer to have received : "+i, DatumCounterWriter.RECEIVED.get("writer").contains(i));
+        Assert.assertTrue("Expected writer to have received : "+i, DatumCounterWriter.RECEIVED.get("writer").contains(i));
       }
     } finally {
       for(int i=0; i < numProcessors; ++i) {
@@ -218,12 +219,12 @@ public class LocalStreamBuilderTest extends RandomizedTest {
       Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
       builder.stop();
       Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
-      assertEquals(numDatums, DatumCounterWriter.RECEIVED.get("writer").size());
+      Assert.assertEquals(numDatums, DatumCounterWriter.RECEIVED.get("writer").size());
       for(int i=0; i < numDatums; ++i) {
-        assertTrue("Expected Writer to receive datum : " + i, DatumCounterWriter.RECEIVED.get("writer").contains(i));
+        Assert.assertTrue("Expected Writer to receive datum : " + i, DatumCounterWriter.RECEIVED.get("writer").contains(i));
       }
       for(int i=0; i < numProcessors; ++i) {
-        assertEquals(numDatums, PassthroughDatumCounterProcessor.COUNTS.get(processorId+i).get());
+        Assert.assertEquals(numDatums, PassthroughDatumCounterProcessor.COUNTS.get(processorId+i).get());
       }
 
     } finally {
@@ -248,9 +249,9 @@ public class LocalStreamBuilderTest extends RandomizedTest {
           .addStreamsProcessor("proc2", processor2, 1, "sp2")
           .addStreamsPersistWriter("writer1", new DatumCounterWriter("writer"), 1, "proc1", "proc2");
       builder.start();
-      assertEquals(numDatums1, PassthroughDatumCounterProcessor.COUNTS.get("proc1").get());
-      assertEquals(numDatums2, PassthroughDatumCounterProcessor.COUNTS.get("proc2").get());
-      assertEquals(numDatums1+numDatums2, DatumCounterWriter.COUNTS.get("writer").get());
+      Assert.assertEquals(numDatums1, PassthroughDatumCounterProcessor.COUNTS.get("proc1").get());
+      Assert.assertEquals(numDatums2, PassthroughDatumCounterProcessor.COUNTS.get("proc2").get());
+      Assert.assertEquals(numDatums1+numDatums2, DatumCounterWriter.COUNTS.get("writer").get());
     } finally {
       String procClass = "-"+PassthroughDatumCounterProcessor.class.getCanonicalName();
       String writerClass = "-"+DatumCounterWriter.class.getCanonicalName();
@@ -268,9 +269,9 @@ public class LocalStreamBuilderTest extends RandomizedTest {
           .addStreamsProcessor("proc2", new PassthroughDatumCounterProcessor("proc2"), 1, "prov1")
           .addStreamsPersistWriter("w1", new DatumCounterWriter("writer"), 1, "proc1", "proc2");
       builder.start();
-      assertEquals(numDatums, PassthroughDatumCounterProcessor.COUNTS.get("proc1").get());
-      assertEquals(numDatums, PassthroughDatumCounterProcessor.COUNTS.get("proc2").get());
-      assertEquals(numDatums*2, DatumCounterWriter.COUNTS.get("writer").get());
+      Assert.assertEquals(numDatums, PassthroughDatumCounterProcessor.COUNTS.get("proc1").get());
+      Assert.assertEquals(numDatums, PassthroughDatumCounterProcessor.COUNTS.get("proc2").get());
+      Assert.assertEquals(numDatums*2, DatumCounterWriter.COUNTS.get("writer").get());
     } finally {
       String provClass = "-"+NumericMessageProvider.class.getCanonicalName();
       String procClass = "-"+PassthroughDatumCounterProcessor.class.getCanonicalName();
@@ -291,7 +292,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
           .addStreamsProcessor("proc1", new SlowProcessor(), 1, "prov1")
           .addStreamsPersistWriter("w1", new DatumCounterWriter("writer"), 1, "proc1");
       builder.start();
-      assertEquals(numDatums, DatumCounterWriter.COUNTS.get("writer").get());
+      Assert.assertEquals(numDatums, DatumCounterWriter.COUNTS.get("writer").get());
     } finally {
       String provClass = "-"+NumericMessageProvider.class.getCanonicalName();
       String procClass = "-"+PassthroughDatumCounterProcessor.class.getCanonicalName();
@@ -315,7 +316,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
       builder.start();
       long end = System.currentTimeMillis();
       //We care mostly that it doesn't terminate too early.  With thread shutdowns, etc, the actual time is indeterminate.  Just make sure there is an upper bound
-      assertThat((int) (end - start), is(allOf(greaterThanOrEqualTo(timeout), lessThanOrEqualTo(4 * timeout))));
+      Assert.assertThat((int) (end - start), is(allOf(greaterThanOrEqualTo(timeout), lessThanOrEqualTo(4 * timeout))));
     } finally {
       String provClass = "-"+NumericMessageProvider.class.getCanonicalName();
       String procClass = "-"+PassthroughDatumCounterProcessor.class.getCanonicalName();
@@ -340,7 +341,7 @@ public class LocalStreamBuilderTest extends RandomizedTest {
       builder.stop();
       service.shutdownNow();
       service.awaitTermination(30000, TimeUnit.MILLISECONDS);
-      assertThat(Thread.activeCount(), is(equalTo(before)));
+      Assert.assertThat(Thread.activeCount(), is(equalTo(before)));
     } finally {
       String provClass = "-"+NumericMessageProvider.class.getCanonicalName();
       String procClass = "-"+PassthroughDatumCounterProcessor.class.getCanonicalName();

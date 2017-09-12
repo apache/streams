@@ -17,33 +17,27 @@
         },
         "executorShutdownPauseMs": {
             "type": "integer",
-            "description": "Duration of pause before shutting down",
-            "default": 3000
+            "description": "Duration of pause before shutting down"
         },
         "monitorShutdownPauseMs": {
             "type": "integer",
-            "description": "Duration of pause before shutting down",
-            "default": 3000
+            "description": "Duration of pause before shutting down"
         },
         "executorShutdownWaitMs": {
             "type": "integer",
-            "description": "Duration of wait for shut down",
-            "default": 10000
+            "description": "Duration of wait for shut down"
         },
         "monitorShutdownWaitMs": {
             "type": "integer",
-            "description": "Duration of wait for shut down",
-            "default": 5000
+            "description": "Duration of wait for shut down"
         },
         "shutdownPauseMs": {
             "type": "integer",
-            "description": "Duration of pause before shutting down",
-            "default": 1000
+            "description": "Duration of pause before shutting down"
         },
         "taskTimeoutMs": {
             "type": "integer",
-            "description": "Max duration to allow tasks to terminate",
-            "default": 1000
+            "description": "Max duration to allow tasks to terminate"
         }
     }
 }

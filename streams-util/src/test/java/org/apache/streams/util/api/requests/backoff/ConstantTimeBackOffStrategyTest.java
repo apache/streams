@@ -21,6 +21,7 @@ package org.apache.streams.util.api.requests.backoff;
 import org.apache.streams.util.api.requests.backoff.impl.ConstantTimeBackOffStrategy;
 
 import com.carrotsearch.randomizedtesting.RandomizedTest;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -31,11 +32,11 @@ public class ConstantTimeBackOffStrategyTest extends RandomizedTest {
   @Test
   public void constantTimeBackOffStategy() {
     AbstractBackOffStrategy backOff = new ConstantTimeBackOffStrategy(1);
-    assertEquals(1, backOff.calculateBackOffTime(1,1));
-    assertEquals(1, backOff.calculateBackOffTime(2,1));
-    assertEquals(1, backOff.calculateBackOffTime(3,1));
-    assertEquals(1, backOff.calculateBackOffTime(4,1));
-    assertEquals(1, backOff.calculateBackOffTime(randomIntBetween(1, Integer.MAX_VALUE),1));
+    Assert.assertEquals(1, backOff.calculateBackOffTime(1,1));
+    Assert.assertEquals(1, backOff.calculateBackOffTime(2,1));
+    Assert.assertEquals(1, backOff.calculateBackOffTime(3,1));
+    Assert.assertEquals(1, backOff.calculateBackOffTime(4,1));
+    Assert.assertEquals(1, backOff.calculateBackOffTime(randomIntBetween(1, Integer.MAX_VALUE),1));
   }
 
 
