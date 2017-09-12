@@ -336,7 +336,7 @@
         <joda-convert.version>1.8.1</joda-convert.version>
         <json-flattener.version>0.4.1</json-flattener.version>
         <json-schema-validator.version>0.1.10</json-schema-validator.version>
-        <juneau.version>6.3.2-incubating-SNAPSHOT</juneau.version>
+        <juneau.version>6.4.0-incubating</juneau.version>
         <jsonschema2pojo.version>0.4.10</jsonschema2pojo.version>
         <jaxb2.version>0.13.1</jaxb2.version>
         <jaxb2-basics.version>0.11.1</jaxb2-basics.version>
@@ -998,32 +998,27 @@
         </dependency>
         <dependency>
             <groupId>org.apache.juneau</groupId>
-            <artifactId>juneau-core</artifactId>
-            <version>${juneau.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.juneau</groupId>
-            <artifactId>juneau-core-rdf</artifactId>
-            <version>${juneau.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.juneau</groupId>
             <artifactId>juneau-marshall</artifactId>
             <version>${juneau.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.juneau</groupId>
-            <artifactId>juneau-svl</artifactId>
-            <version>${juneau.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.juneau</groupId>
-            <artifactId>juneau-rest</artifactId>
+            <artifactId>juneau-marshall-rdf</artifactId>
             <version>${juneau.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.juneau</groupId>
             <artifactId>juneau-rest-client</artifactId>
+            <version>${juneau.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.juneau</groupId>
+            <artifactId>juneau-rest-server</artifactId>
+            <version>${juneau.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.juneau</groupId>
+            <artifactId>juneau-svl</artifactId>
             <version>${juneau.version}</version>
         </dependency>
         <dependency>
