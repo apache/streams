@@ -27,6 +27,9 @@ import java.lang.management.ManagementFactory;
 import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
 
+import org.junit.Assert;
+
+
 /**
  *
  */
@@ -58,7 +61,7 @@ public class DatumStatusCounterTest extends RandomizedTest {
     try {
       new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
     } catch (Throwable t) {
-      fail("Constructor Threw Exception : "+t.getMessage());
+      Assert.fail("Constructor Threw Exception : "+t.getMessage());
     }
   }
 
@@ -74,7 +77,7 @@ public class DatumStatusCounterTest extends RandomizedTest {
     for(int i=0; i < numIncrements; ++i) {
       counter.incrementPassedCount();
     }
-    assertEquals(numIncrements, counter.getNumPassed());
+    Assert.assertEquals(numIncrements, counter.getNumPassed());
 
     unregisterMXBean();
 
@@ -86,7 +89,7 @@ public class DatumStatusCounterTest extends RandomizedTest {
       total += delta;
       counter.incrementPassedCount(delta);
     }
-    assertEquals(total, counter.getNumPassed());
+    Assert.assertEquals(total, counter.getNumPassed());
   }
 
   /**
@@ -101,7 +104,7 @@ public class DatumStatusCounterTest extends RandomizedTest {
     for(int i=0; i < numIncrements; ++i) {
       counter.incrementFailedCount();
     }
-    assertEquals(numIncrements, counter.getNumFailed());
+    Assert.assertEquals(numIncrements, counter.getNumFailed());
 
     unregisterMXBean();
 
@@ -113,7 +116,7 @@ public class DatumStatusCounterTest extends RandomizedTest {
       total += delta;
       counter.incrementFailedCount(delta);
     }
-    assertEquals(total, counter.getNumFailed());
+    Assert.assertEquals(total, counter.getNumFailed());
   }
 
 
@@ -124,11 +127,11 @@ public class DatumStatusCounterTest extends RandomizedTest {
   @Repeat(iterations = 3)
   public void testFailureRate() {
     DatumStatusCounter counter = new DatumStatusCounter(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-    assertEquals(0.0, counter.getFailRate(), 0);
+    Assert.assertEquals(0.0, counter.getFailRate(), 0);
     int failures = randomIntBetween(0, 100000);
     int passes = randomIntBetween(0, 100000);
     counter.incrementPassedCount(passes);
     counter.incrementFailedCount(failures);
-    assertEquals((double)failures / (double)(passes + failures), counter.getFailRate(), 0);
+    Assert.assertEquals((double)failures / (double)(passes + failures), counter.getFailRate(), 0);
   }
 }

@@ -30,6 +30,10 @@ import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
+import org.junit.Assert;
+
+
+
 /**
  * Single thread unit tests for {@link org.apache.streams.local.queues.ThroughputQueue}
  */
@@ -59,25 +63,25 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
     int putCount = randomIntBetween(1, 1000);
     for(int i=0; i < putCount; ++i) {
       queue.put(i);
-      assertEquals(i+1, queue.size());
-      assertEquals(queue.size(), queue.getCurrentSize());
+      Assert.assertEquals(i+1, queue.size());
+      Assert.assertEquals(queue.size(), queue.getCurrentSize());
     }
     safeSleep(100); //ensure measurable wait time
     int takeCount = randomIntBetween(1, putCount);
     for(int i=0; i < takeCount; ++i) {
       Integer element = queue.take();
-      assertNotNull(element);
-      assertEquals(i, element.intValue());
-      assertEquals(putCount - (1+i), queue.size());
-      assertEquals(queue.size(), queue.getCurrentSize());
+      Assert.assertNotNull(element);
+      Assert.assertEquals(i, element.intValue());
+      Assert.assertEquals(putCount - (1+i), queue.size());
+      Assert.assertEquals(queue.size(), queue.getCurrentSize());
     }
-    assertEquals(putCount-takeCount, queue.size());
-    assertEquals(queue.size(), queue.getCurrentSize());
-    assertTrue(0.0 < queue.getMaxWait());
-    assertTrue(0.0 < queue.getAvgWait());
-    assertTrue(0.0 < queue.getThroughput());
-    assertEquals(putCount, queue.getAdded());
-    assertEquals(takeCount, queue.getRemoved());
+    Assert.assertEquals(putCount-takeCount, queue.size());
+    Assert.assertEquals(queue.size(), queue.getCurrentSize());
+    Assert.assertTrue(0.0 < queue.getMaxWait());
+    Assert.assertTrue(0.0 < queue.getAvgWait());
+    Assert.assertTrue(0.0 < queue.getThroughput());
+    Assert.assertEquals(putCount, queue.getAdded());
+    Assert.assertEquals(takeCount, queue.getRemoved());
   }
 
   /**
@@ -91,25 +95,25 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
     int putCount = randomIntBetween(1, 1000);
     for(int i=0; i < putCount; ++i) {
       queue.add(i);
-      assertEquals(i+1, queue.size());
-      assertEquals(queue.size(), queue.getCurrentSize());
+      Assert.assertEquals(i+1, queue.size());
+      Assert.assertEquals(queue.size(), queue.getCurrentSize());
     }
     safeSleep(100); //ensure measurable wait time
     int takeCount = randomIntBetween(1, putCount);
     for(int i=0; i < takeCount; ++i) {
       Integer element = queue.remove();
-      assertNotNull(element);
-      assertEquals(i, element.intValue());
-      assertEquals(putCount - (1+i), queue.size());
-      assertEquals(queue.size(), queue.getCurrentSize());
+      Assert.assertNotNull(element);
+      Assert.assertEquals(i, element.intValue());
+      Assert.assertEquals(putCount - (1+i), queue.size());
+      Assert.assertEquals(queue.size(), queue.getCurrentSize());
     }
-    assertEquals(putCount-takeCount, queue.size());
-    assertEquals(queue.size(), queue.getCurrentSize());
-    assertTrue(0.0 < queue.getMaxWait());
-    assertTrue(0.0 < queue.getAvgWait());
-    assertTrue(0.0 < queue.getThroughput());
-    assertEquals(putCount, queue.getAdded());
-    assertEquals(takeCount, queue.getRemoved());
+    Assert.assertEquals(putCount-takeCount, queue.size());
+    Assert.assertEquals(queue.size(), queue.getCurrentSize());
+    Assert.assertTrue(0.0 < queue.getMaxWait());
+    Assert.assertTrue(0.0 < queue.getAvgWait());
+    Assert.assertTrue(0.0 < queue.getThroughput());
+    Assert.assertEquals(putCount, queue.getAdded());
+    Assert.assertEquals(takeCount, queue.getRemoved());
   }
 
   /**
@@ -123,25 +127,25 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
     int putCount = randomIntBetween(1, 1000);
     for(int i=0; i < putCount; ++i) {
       queue.offer(i);
-      assertEquals(i+1, queue.size());
-      assertEquals(queue.size(), queue.getCurrentSize());
+      Assert.assertEquals(i+1, queue.size());
+      Assert.assertEquals(queue.size(), queue.getCurrentSize());
     }
     safeSleep(100); //ensure measurable wait time
     int takeCount = randomIntBetween(1, putCount);
     for(int i=0; i < takeCount; ++i) {
       Integer element = queue.poll();
-      assertNotNull(element);
-      assertEquals(i, element.intValue());
-      assertEquals(putCount - (1+i), queue.size());
-      assertEquals(queue.size(), queue.getCurrentSize());
+      Assert.assertNotNull(element);
+      Assert.assertEquals(i, element.intValue());
+      Assert.assertEquals(putCount - (1+i), queue.size());
+      Assert.assertEquals(queue.size(), queue.getCurrentSize());
     }
-    assertEquals(putCount-takeCount, queue.size());
-    assertEquals(queue.size(), queue.getCurrentSize());
-    assertTrue(0.0 < queue.getMaxWait());
-    assertTrue(0.0 < queue.getAvgWait());
-    assertTrue(0.0 < queue.getThroughput());
-    assertEquals(putCount, queue.getAdded());
-    assertEquals(takeCount, queue.getRemoved());
+    Assert.assertEquals(putCount-takeCount, queue.size());
+    Assert.assertEquals(queue.size(), queue.getCurrentSize());
+    Assert.assertTrue(0.0 < queue.getMaxWait());
+    Assert.assertTrue(0.0 < queue.getAvgWait());
+    Assert.assertTrue(0.0 < queue.getThroughput());
+    Assert.assertEquals(putCount, queue.getAdded());
+    Assert.assertEquals(takeCount, queue.getRemoved());
   }
 
 
@@ -159,14 +163,14 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
       queue.put(1);
       safeSleep(wait);
       queue.take();
-      assertTrue(queue.getMaxWait() >= wait && queue.getMaxWait() <= (wait * 2));//can't calculate exactly, making sure its close.
-      assertTrue(queue.getAvgWait() >= wait && queue.getAvgWait() <= (wait * 2));
+      Assert.assertTrue(queue.getMaxWait() >= wait && queue.getMaxWait() <= (wait * 2));//can't calculate exactly, making sure its close.
+      Assert.assertTrue(queue.getAvgWait() >= wait && queue.getAvgWait() <= (wait * 2));
     }
     queue.put(1);
     queue.take();
-    assertTrue(queue.getMaxWait() >= wait && queue.getMaxWait() <= (wait * 2));//can't calculate exactly, making sure its close.
-    assertTrue(queue.getAvgWait() <= 5000 );
-    assertTrue(queue.getAvgWait() >= 500);
+    Assert.assertTrue(queue.getMaxWait() >= wait && queue.getMaxWait() <= (wait * 2));//can't calculate exactly, making sure its close.
+    Assert.assertTrue(queue.getAvgWait() <= 5000 );
+    Assert.assertTrue(queue.getAvgWait() >= 500);
   }
 
   /**
@@ -183,8 +187,8 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
       queue.take();
     }
     double throughput = queue.getThroughput();
-    assertTrue(throughput <= 15 ); //can't calculate exactly, making sure its close.
-    assertTrue(throughput >= 5);
+    Assert.assertTrue(throughput <= 15 ); //can't calculate exactly, making sure its close.
+    Assert.assertTrue(throughput >= 5);
 
     queue = new ThroughputQueue();
     wait = 1000;
@@ -196,8 +200,8 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
     }
     safeSleep(wait);
     throughput = queue.getThroughput();
-    assertTrue(throughput <= 15 ); //can't calculate exactly, making sure its close.
-    assertTrue(throughput >= 5);
+    Assert.assertTrue(throughput <= 15 ); //can't calculate exactly, making sure its close.
+    Assert.assertTrue(throughput >= 5);
   }
 
 
@@ -210,11 +214,11 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
       MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
       Integer beanCount = mbs.getMBeanCount();
       ThroughputQueue queue = new ThroughputQueue(MBEAN_ID, STREAM_ID, STREAM_START_TIME);
-      assertEquals("Expected bean to be registered", new Integer(beanCount+1), mbs.getMBeanCount());
+      Assert.assertEquals("Expected bean to be registered", new Integer(beanCount+1), mbs.getMBeanCount());
       ObjectInstance mBean = mbs.getObjectInstance(new ObjectName(String.format(ThroughputQueue.NAME_TEMPLATE, MBEAN_ID, STREAM_ID, STREAM_START_TIME)));
-      assertNotNull(mBean);
+      Assert.assertNotNull(mBean);
     } catch (Exception e) {
-      fail("Failed to register MXBean : "+e.getMessage());
+      Assert.fail("Assert.failed to register MXBean : "+e.getMessage());
     }
   }
 
@@ -229,12 +233,12 @@ public class ThroughputQueueSingleThreadTest extends RandomizedTest {
       int numReg = randomIntBetween(2, 100);
       for(int i=0; i < numReg; ++i) {
         ThroughputQueue queue = new ThroughputQueue(MBEAN_ID + "" + i, STREAM_ID, STREAM_START_TIME);
-        assertEquals("Expected bean to be registered", new Integer(beanCount + (i+1)), mbs.getMBeanCount());
+        Assert.assertEquals("Expected bean to be registered", new Integer(beanCount + (i+1)), mbs.getMBeanCount());
         ObjectInstance mBean = mbs.getObjectInstance(new ObjectName(String.format(ThroughputQueue.NAME_TEMPLATE, MBEAN_ID + "" + i, STREAM_ID, STREAM_START_TIME)));
-        assertNotNull(mBean);
+        Assert.assertNotNull(mBean);
       }
     } catch (Exception e) {
-      fail("Failed to register MXBean : "+e.getMessage());
+      Assert.fail("Assert.failed to register MXBean : "+e.getMessage());
     }
   }
 

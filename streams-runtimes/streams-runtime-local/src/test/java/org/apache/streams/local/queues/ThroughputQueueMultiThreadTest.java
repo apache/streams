@@ -36,6 +36,11 @@ import java.util.concurrent.TimeUnit;
 import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
 
+import org.junit.Assert;
+
+
+
+
 /**
  * MultiThread unit tests for {@link org.apache.streams.local.queues.ThroughputQueue}
  */
@@ -83,16 +88,16 @@ public class ThroughputQueueMultiThreadTest extends RandomizedTest {
     BlocksOnFullQueue testThread = new BlocksOnFullQueue(full, finished, queue, queueSize);
     executor.submit(testThread);
     full.await();
-    assertEquals(queueSize, queue.size());
-    assertEquals(queueSize, queue.getCurrentSize());
-    assertFalse(testThread.isComplete()); //test that it is blocked
+    Assert.assertEquals(queueSize, queue.size());
+    Assert.assertEquals(queueSize, queue.getCurrentSize());
+    Assert.assertFalse(testThread.isComplete()); //test that it is blocked
     safeSleep(1000);
-    assertFalse(testThread.isComplete()); //still blocked
+    Assert.assertFalse(testThread.isComplete()); //still blocked
     queue.take();
     finished.await();
-    assertEquals(queueSize, queue.size());
-    assertEquals(queueSize, queue.getCurrentSize());
-    assertTrue(testThread.isComplete());
+    Assert.assertEquals(queueSize, queue.size());
+    Assert.assertEquals(queueSize, queue.getCurrentSize());
+    Assert.assertTrue(testThread.isComplete());
     executor.shutdownNow();
     executor.awaitTermination(500, TimeUnit.MILLISECONDS);
   }
@@ -114,16 +119,16 @@ public class ThroughputQueueMultiThreadTest extends RandomizedTest {
     }
     executor.submit(testThread);
     empty.await();
-    assertEquals(0, queue.size());
-    assertEquals(0, queue.getCurrentSize());
-    assertFalse(testThread.isComplete());
+    Assert.assertEquals(0, queue.size());
+    Assert.assertEquals(0, queue.getCurrentSize());
+    Assert.assertFalse(testThread.isComplete());
     safeSleep(1000);
-    assertFalse(testThread.isComplete());
+    Assert.assertFalse(testThread.isComplete());
     queue.put(1);
     finished.await();
-    assertEquals(0, queue.size());
-    assertEquals(0, queue.getCurrentSize());
-    assertTrue(testThread.isComplete());
+    Assert.assertEquals(0, queue.size());
+    Assert.assertEquals(0, queue.getCurrentSize());
+    Assert.assertTrue(testThread.isComplete());
     executor.shutdownNow();
     executor.awaitTermination(500, TimeUnit.MILLISECONDS);
   }
@@ -164,8 +169,8 @@ public class ThroughputQueueMultiThreadTest extends RandomizedTest {
       safeSleep(500);
     }
     long totalData = ((long) dataCount) * putTakeThreadCount;
-    assertEquals(totalData, queue.getAdded());
-    assertEquals(totalData, queue.getRemoved());
+    Assert.assertEquals(totalData, queue.getAdded());
+    Assert.assertEquals(totalData, queue.getRemoved());
     executor.shutdown();
     executor.awaitTermination(1000, TimeUnit.MILLISECONDS); //shutdown puts
     executor.shutdownNow();

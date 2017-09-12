@@ -46,6 +46,9 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.junit.Assert;
+
+
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -174,13 +177,13 @@ public class TestGPlusUserActivityCollector extends RandomizedTest {
     GPlusUserActivityCollector collector = new GPlusUserActivityCollector(plus, datums, strategy, userInfo);
     collector.run();
 
-    assertEquals(numActivitiesInDateRange, datums.size());
+    Assert.assertEquals(numActivitiesInDateRange, datums.size());
     while (!datums.isEmpty()) {
       StreamsDatum datum = datums.take();
-      assertNotNull(datum);
-      assertNotNull(datum.getDocument());
-      assertTrue(datum.getDocument() instanceof String);
-      assertTrue(((String)datum.getDocument()).contains(IN_RANGE_IDENTIFIER)); //only in range documents are on the out going queue.
+      Assert.assertNotNull(datum);
+      Assert.assertNotNull(datum.getDocument());
+      Assert.assertTrue(datum.getDocument() instanceof String);
+      Assert.assertTrue(((String)datum.getDocument()).contains(IN_RANGE_IDENTIFIER)); //only in range documents are on the out going queue.
     }
   }
 
@@ -202,7 +205,7 @@ public class TestGPlusUserActivityCollector extends RandomizedTest {
       Plus.Activities.List list = createMockPlusActivitiesList(numBefore, numAfter, numInRange, after, before);
       when(activities.list(anyString(), anyString())).thenReturn(list);
     } catch (IOException ioe) {
-      fail("Should not have thrown exception while creating mock. : " + ioe.getMessage());
+      Assert.fail("Should not have thrown exception while creating mock. : " + ioe.getMessage());
     }
     return activities;
   }
@@ -220,7 +223,7 @@ public class TestGPlusUserActivityCollector extends RandomizedTest {
     try {
       doAnswer(answer).when(list).execute();
     } catch (IOException ioe) {
-      fail("Should not have thrown exception while creating mock. : " + ioe.getMessage());
+      Assert.fail("Should not have thrown exception while creating mock. : " + ioe.getMessage());
     }
     return list;
   }

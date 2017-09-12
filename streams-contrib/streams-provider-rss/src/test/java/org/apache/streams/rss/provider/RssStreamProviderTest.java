@@ -32,6 +32,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.junit.Assert;
+
 /**
  * Unit tests for {@link org.apache.streams.rss.provider.RssStreamProvider}
  */
@@ -69,13 +71,13 @@ public class RssStreamProviderTest extends RandomizedTest {
       if (batch.size() != 0) {
         //if race condition happened, pull again
         batch = provider.readCurrent();
-        assertEquals(0, batch.size());
+        Assert.assertEquals(0, batch.size());
       }
 
-      assertTrue(provider.scheduler.isComplete());
-      assertEquals(20, datumCount);
-      assertFalse(provider.isRunning());
-      assertEquals(0, datums.size());
+      Assert.assertTrue(provider.scheduler.isComplete());
+      Assert.assertEquals(20, datumCount);
+      Assert.assertFalse(provider.isRunning());
+      Assert.assertEquals(0, datums.size());
       provider.cleanUp();
     } finally {
       if (provider != null) {
