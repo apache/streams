@@ -21,7 +21,7 @@
 
     <parent>
         <groupId>org.apache.streams</groupId>
-        <artifactId>streams-project</artifactId>
+        <artifactId>apache-streams</artifactId>
         <version>0.5.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
