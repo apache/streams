@@ -23,6 +23,7 @@ import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
+import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.TwitterFollowingConfiguration;
@@ -44,6 +45,8 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
+import org.apache.commons.lang.NotImplementedException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +54,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +71,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Retrieve all follow adjacencies from a list of user ids or names.
  */
-public class TwitterFollowingProvider {
+public class TwitterFollowingProvider implements StreamsProvider, Serializable {
 
   public static final String STREAMS_ID = "TwitterFollowingProvider";
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFollowingProvider.class);
@@ -162,6 +167,11 @@ public class TwitterFollowingProvider {
 
   public TwitterFollowingProvider(TwitterFollowingConfiguration config) {
     this.config = config;
+  }
+
+  @Override
+  public String getId() {
+    return STREAMS_ID;
   }
 
   public void prepare(Object configurationObject) {
@@ -313,6 +323,16 @@ public class TwitterFollowingProvider {
 
     return result;
 
+  }
+
+  @Override
+  public StreamsResultSet readNew(BigInteger sequence) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public StreamsResultSet readRange(DateTime start, DateTime end) {
+    throw new NotImplementedException();
   }
 
   public boolean shouldContinuePulling(List<User> users) {
