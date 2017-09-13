@@ -35,7 +35,7 @@ Apache Streams is not
 * prescriptive or opinionated about how it should be used
 * only useful for projects fully dedicated to activity streams datasets
 
-The primary Streams git repository incubator-streams (org.apache.streams:streams-project) contains
+The primary Streams git repository apache-streams (org.apache.streams:apache-streams) contains
 
 * core interfaces and utilities
 * plugins for transforming schemas into source code and other artifacts
@@ -43,7 +43,7 @@ The primary Streams git repository incubator-streams (org.apache.streams:streams
 
 Similar modules can also be hosted externally - so long as they publish maven artifacts compatible with your version of streams, you can import and use them in your streams easily.
 
-The streams community also supports a separate repository incubator-streams-examples (org.apache.streams:streams-examples) which contains a library of simple streams that are 'ready-to-run'.  Look here to see what Streams user code look like.
+The streams community also supports a separate repository apache-streams-examples (org.apache.streams:apache-streams-examples) which contains a library of simple streams that are 'ready-to-run'.  Look here to see examples of what Streams user code look like.
 
 ###    Why bother with any data framework at all?
 
