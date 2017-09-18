@@ -314,7 +314,6 @@
         <jar.plugin.version>2.6</jar.plugin.version>
         <javadoc.plugin.version>2.10.2</javadoc.plugin.version>
         <pax.plugin.version>1.5</pax.plugin.version>
-        <reflections.plugin.version>0.9.9-RC2</reflections.plugin.version>
         <remote-resources.plugin.version>1.4</remote-resources.plugin.version>
         <reports.plugin.version>2.9</reports.plugin.version>
         <resources.plugin.version>2.7</resources.plugin.version>
@@ -790,11 +789,6 @@
                     <configuration>
                         <skipIfEmpty>true</skipIfEmpty>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.reflections</groupId>
-                    <artifactId>reflections-maven</artifactId>
-                    <version>${reflections.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.ops4j</groupId>
