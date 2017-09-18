@@ -76,7 +76,7 @@ public class KinesisPersistReader implements StreamsPersistReader, Serializable 
    * KinesisPersistReader constructor - resolves KinesisReaderConfiguration from JVM 'kinesis'.
    */
   public KinesisPersistReader() {
-    Config config = StreamsConfigurator.config.getConfig("kinesis");
+    Config config = StreamsConfigurator.getConfig().getConfig("kinesis");
     this.config = new ComponentConfigurator<>(KinesisReaderConfiguration.class).detectConfiguration(config);
     this.persistQueue  = new ConcurrentLinkedQueue<>();
   }

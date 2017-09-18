@@ -116,7 +116,7 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
    * FacebookFriendUpdatesProvider constructor - resolves FacebookUserInformationConfiguration from JVM 'facebook'.
    */
   public FacebookFriendUpdatesProvider() {
-    Config config = StreamsConfigurator.config.getConfig("facebook");
+    Config config = StreamsConfigurator.getConfig().getConfig("facebook");
     FacebookUserInformationConfiguration configuration;
     try {
       configuration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
@@ -138,7 +138,7 @@ public class FacebookFriendUpdatesProvider implements StreamsProvider, Serializa
    * resolves FacebookUserInformationConfiguration from JVM 'facebook.
    */
   public FacebookFriendUpdatesProvider(Class klass) {
-    Config config = StreamsConfigurator.config.getConfig("facebook");
+    Config config = StreamsConfigurator.getConfig().getConfig("facebook");
     FacebookUserInformationConfiguration configuration;
     try {
       configuration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
