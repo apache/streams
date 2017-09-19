@@ -28,6 +28,8 @@ import com.typesafe.config.ConfigValueFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Map;
+
 /**
  * Test for {@link org.apache.streams.config.StreamsConfigurator}
  */
@@ -93,6 +95,35 @@ public class StreamsConfiguratorTest {
         assert( defaultPojo != null);
 
         assert( defaultPojo.getParallelism() == 100);
+
+    }
+
+    @Test
+    public void testResolve() throws Exception {
+
+        Config overrides = ConfigFactory.parseResourcesAnySyntax("testResolve.conf");
+
+        StreamsConfigurator.addConfig(overrides);
+
+        Config withOverride = StreamsConfigurator.getConfig();
+
+        assert( withOverride.getString("message") != null);
+
+        assert( withOverride.getConfig("evenmore").getString("message") != null);
+
+        assert( withOverride.getString("samemessage") != null);
+
+        StreamsConfiguration defaultPojo = StreamsConfigurator.detectConfiguration();
+
+        assert( defaultPojo != null);
+
+        assert( defaultPojo.getAdditionalProperties().containsKey("message"));
+
+        assert( defaultPojo.getAdditionalProperties().containsKey("samemessage"));
+
+        assert( defaultPojo.getAdditionalProperties().containsKey("evenmore"));
+
+        assert( defaultPojo.getAdditionalProperties().get("evenmore") instanceof Map);
 
     }
 }

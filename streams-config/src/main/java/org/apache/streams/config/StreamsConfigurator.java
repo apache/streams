@@ -46,7 +46,7 @@ public class StreamsConfigurator {
   private static Config config = ConfigFactory.load();
 
   public static Config getConfig() {
-    return config;
+    return config.resolve();
   }
 
   public static void addConfig(Config newConfig) {
@@ -74,7 +74,7 @@ public class StreamsConfigurator {
     StreamsConfiguration pojoConfig = null;
 
     try {
-      pojoConfig = mapper.readValue(typesafeConfig.root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
+      pojoConfig = mapper.readValue(typesafeConfig.resolve().root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
     } catch (Exception e) {
       e.printStackTrace();
       LOGGER.warn("Could not parse:", typesafeConfig);
@@ -90,7 +90,7 @@ public class StreamsConfigurator {
     StreamsConfiguration pojoConfig = null;
 
     try {
-      pojoConfig = mapper.readValue(merged.root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
+      pojoConfig = mapper.readValue(merged.resolve().root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
     } catch (Exception e) {
       e.printStackTrace();
       LOGGER.warn("Failed to merge.");
