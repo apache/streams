@@ -101,6 +101,11 @@ public class YoutubeUserActivityCollector extends YoutubeDataCollector {
    * associated with their accounts.
    */
   protected void collectActivityData() {
+
+    int item_count = 0;
+    int last_count = 0;
+    int page_count = 0;
+
     try {
       YouTube.Activities.List request = null;
       ActivityListResponse feed = null;
@@ -127,8 +132,10 @@ public class YoutubeUserActivityCollector extends YoutubeDataCollector {
             feed = request.execute();
           }
           this.backOff.reset(); //successful pull reset api.
-
+          last_count = feed.getItems().size();
           processActivityFeed(feed, afterDate, beforeDate);
+          item_count += last_count;
+          page_count++;
         } catch (GoogleJsonResponseException gjre) {
           tryAgain = backoffAndIdentifyIfRetry(gjre, this.backOff);
           ++attempt;
@@ -142,6 +149,9 @@ public class YoutubeUserActivityCollector extends YoutubeDataCollector {
       throwable.printStackTrace();
       LOGGER.warn("Unable to pull Activities for user={} : {}", this.userInfo.getUserId(), throwable);
     }
+
+    LOGGER.info("item_count: {} last_count: {} page_count: {} ", item_count, last_count, page_count);
+
   }
 
   /**

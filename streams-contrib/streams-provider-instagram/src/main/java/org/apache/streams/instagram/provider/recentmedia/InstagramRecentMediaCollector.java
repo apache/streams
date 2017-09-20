@@ -76,6 +76,11 @@ public class InstagramRecentMediaCollector extends InstagramDataCollector<Media>
    * @throws Exception Exception
    */
   protected void collectInstagramDataForUser(String userId) throws Exception {
+
+    int item_count = 0;
+    int last_count = 0;
+    int page_count = 0;
+
     UserRecentMediaRequest request = (UserRecentMediaRequest) new UserRecentMediaRequest()
         .withUserId(userId)
         .withMinId(null)
@@ -85,15 +90,21 @@ public class InstagramRecentMediaCollector extends InstagramDataCollector<Media>
     do {
       response = getNextInstagramClient().userMediaRecent(request);
       if ( response != null && response.getData() != null) {
+        last_count = response.getData().size();
         List<Media> data = new LinkedList<>();
         data.addAll(response.getData());
         super.queueData(data, userId);
+        item_count += last_count;
       }
+      page_count++;
       if ( shouldContinuePulling(response) ) {
         request.setMaxId(new Long(response.getPagination().getNextMaxId()));
       }
     }
     while (shouldContinuePulling(response));
+
+    LOGGER.info("item_count: {} last_count: {} page_count: {} ", item_count, last_count, page_count);
+
   }
 
   private boolean shouldContinuePulling(RecentMediaResponse response) {
