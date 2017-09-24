@@ -27,6 +27,9 @@ import org.apache.streams.twitter.pojo.Tweet;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +53,12 @@ import static org.hamcrest.Matchers.greaterThan;
 /**
  * Tests serialization / deserialization of twitter jsons.
  */
+@Test(dependsOnGroups = {"Providers"}, groups = {"Data"})
 public class TwitterObjectMapperIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterObjectMapperIT.class);
+
+  private static Config application = ConfigFactory.parseResources("TwitterObjectMapperIT.conf").withFallback(ConfigFactory.load());
 
   private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Stream.of(TWITTER_FORMAT).collect(Collectors.toList()));
 
@@ -63,7 +69,9 @@ public class TwitterObjectMapperIT {
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
     mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-    InputStream is = TwitterObjectMapperIT.class.getResourceAsStream("/testtweets.txt");
+    String inputResourcePath = application.getString("inputResourcePath");
+
+    InputStream is = TwitterObjectMapperIT.class.getResourceAsStream(inputResourcePath);
     InputStreamReader isr = new InputStreamReader(is);
     BufferedReader br = new BufferedReader(isr);
 

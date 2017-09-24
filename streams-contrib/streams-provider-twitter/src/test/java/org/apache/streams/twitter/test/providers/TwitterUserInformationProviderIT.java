@@ -32,6 +32,7 @@ import java.io.LineNumberReader;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 
+@Test(dependsOnGroups = {"Account"}, groups = {"Providers"})
 public class TwitterUserInformationProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterUserInformationProviderIT.class);

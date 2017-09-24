@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.twitter.api.MessageCreateRequest",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://dev.twitter.com/rest/reference/post/direct_messages/events/new",
+  "properties": {
+    "event": {
+      "type": {
+        "$ref": "../pojo/DirectMessageEvent.json"
+      }
+    }
+  }
+}

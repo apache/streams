@@ -41,7 +41,6 @@ public class TwitterProviderUtil {
         .append(config.getPort())
         .append("/")
         .append(config.getVersion())
-        .append("/")
         .toString();
 
     return baseUrl;

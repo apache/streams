@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.MediaStatusRequest",
+  "javaInterfaces": ["java.io.Serializable"],
+  "properties": {
+    "command": {
+      "description": "Must be set to STATUS (case sensitive).",
+      "required": true,
+      "type": "string",
+      "enum": [
+        "STATUS"
+      ]
+    },
+    "media_id": {
+      "description": "The media_id returned from the INIT command.",
+      "required": true,
+      "type": "integer"
+    }
+  }
+}
