@@ -170,18 +170,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.reflections</groupId>
-                <artifactId>reflections-maven</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>reflections</goal>
-                        </goals>
-                        <phase>process-classes</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
