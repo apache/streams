@@ -67,6 +67,8 @@ public class TwitterFriendsListProviderTask implements Runnable {
 
     Preconditions.checkArgument(request.getId() != null || request.getScreenName() != null);
 
+    getFriendsList(request);
+
     LOGGER.info(request.getId() != null ? request.getId().toString() : request.getScreenName() + " Thread Finished");
 
   }
