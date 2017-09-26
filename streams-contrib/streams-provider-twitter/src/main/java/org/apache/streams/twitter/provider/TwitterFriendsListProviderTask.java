@@ -86,11 +86,13 @@ public class TwitterFriendsListProviderTask implements Runnable {
         for (User friend : response.getUsers()) {
 
           Follow follow = new Follow()
-              .withFollower(friend)
-              .withFollowee(
+              .withFollower(
                   new User()
                       .withId(request.getId())
-                      .withScreenName(request.getScreenName()));
+                      .withScreenName(request.getScreenName()))
+              .withFollowee(
+                  friend
+              );
 
           if (item_count < provider.getConfig().getMaxItems()) {
             ComponentUtils.offerUntilSuccess(new StreamsDatum(follow), provider.providerQueue);
