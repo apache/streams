@@ -73,7 +73,7 @@ public class Neo4jHttpPersistWriter extends SimpleHTTPPostPersistWriter {
    * GraphHttpPersistWriter constructor - resolve GraphHttpConfiguration from JVM 'graph'.
    */
   public Neo4jHttpPersistWriter() {
-    this(new ComponentConfigurator<>(Neo4jConfiguration.class).detectConfiguration(StreamsConfigurator.config.getConfig("neo4j")));
+    this(new ComponentConfigurator<>(Neo4jConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("neo4j")));
   }
 
   /**

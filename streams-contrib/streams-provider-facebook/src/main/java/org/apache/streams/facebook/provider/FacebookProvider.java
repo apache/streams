@@ -75,7 +75,7 @@ public abstract class FacebookProvider implements StreamsProvider {
    */
   public FacebookProvider() {
     try {
-      this.configuration = MAPPER.readValue(StreamsConfigurator.config.getConfig("facebook").root().render(ConfigRenderOptions.concise()), FacebookConfiguration.class);
+      this.configuration = MAPPER.readValue(StreamsConfigurator.getConfig().getConfig("facebook").root().render(ConfigRenderOptions.concise()), FacebookConfiguration.class);
     } catch (IOException ioe) {
       LOGGER.error("Exception trying to read default config : {}", ioe);
     }

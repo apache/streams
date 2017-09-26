@@ -109,7 +109,7 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
    * FacebookUserstreamProvider constructor.
    */
   public FacebookUserstreamProvider() {
-    Config config = StreamsConfigurator.config.getConfig("facebook");
+    Config config = StreamsConfigurator.getConfig().getConfig("facebook");
     FacebookUserInformationConfiguration facebookUserInformationConfiguration;
     try {
       facebookUserInformationConfiguration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
@@ -131,7 +131,7 @@ public class FacebookUserstreamProvider implements StreamsProvider, Serializable
    * @param klass output Class
    */
   public FacebookUserstreamProvider(Class klass) {
-    Config config = StreamsConfigurator.config.getConfig("facebook");
+    Config config = StreamsConfigurator.getConfig().getConfig("facebook");
     FacebookUserInformationConfiguration facebookUserInformationConfiguration;
     try {
       facebookUserInformationConfiguration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
