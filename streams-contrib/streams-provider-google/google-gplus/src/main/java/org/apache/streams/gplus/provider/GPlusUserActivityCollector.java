@@ -104,6 +104,9 @@ public class GPlusUserActivityCollector extends GPlusDataCollector {
   }
 
   protected void collectActivityData() {
+    int item_count = 0;
+    int last_count = 0;
+    int page_count = 0;
     try {
       ActivityFeed feed = null;
       boolean tryAgain = false;
@@ -121,6 +124,7 @@ public class GPlusUserActivityCollector extends GPlusDataCollector {
                 .setPageToken(feed.getNextPageToken()).execute();
           }
           this.backOff.reset(); //successful pull reset api.
+          last_count += feed.getItems().size();
           for (com.google.api.services.plus.model.Activity activity : feed.getItems()) {
             DateTime published = new DateTime(activity.getPublished().getValue());
             if ((afterDate == null && beforeDate == null)
@@ -129,11 +133,13 @@ public class GPlusUserActivityCollector extends GPlusDataCollector {
                 || ((afterDate != null && beforeDate != null) && (afterDate.isBefore(published) && beforeDate.isAfter(published)))) {
               String json = MAPPER.writeValueAsString(activity);
               this.datumQueue.put(new StreamsDatum(json, activity.getId()));
+              item_count++;
             } else if (afterDate != null && afterDate.isAfter(published)) {
               feed.setNextPageToken(null); // do not fetch next page
               break;
             }
           }
+          page_count += 1;
         } catch (GoogleJsonResponseException gjre) {
           tryAgain = backoffAndIdentifyIfRetry(gjre, this.backOff);
           ++attempt;
@@ -147,6 +153,9 @@ public class GPlusUserActivityCollector extends GPlusDataCollector {
       th.printStackTrace();
       LOGGER.warn("Unable to pull Activities for user={} : {}",this.userInfo.getUserId(), th);
     }
+
+    LOGGER.info("item_count: {} last_count: {} page_count: {} ", item_count, last_count, page_count);
+
   }
 
 }

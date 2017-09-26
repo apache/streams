@@ -245,6 +245,8 @@ public class TwitterFollowingProvider implements StreamsProvider, Serializable {
 
     running.set(true);
 
+    LOGGER.info("isRunning");
+
     executor.shutdown();
 
   }
