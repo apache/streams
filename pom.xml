@@ -27,7 +27,7 @@
     </parent>
 
     <groupId>org.apache.streams</groupId>
-    <artifactId>streams-project</artifactId>
+    <artifactId>apache-streams</artifactId>
     <version>0.5.1-SNAPSHOT</version>
 
     <name>Apache Streams</name>
@@ -314,7 +314,6 @@
         <jar.plugin.version>2.6</jar.plugin.version>
         <javadoc.plugin.version>2.10.2</javadoc.plugin.version>
         <pax.plugin.version>1.5</pax.plugin.version>
-        <reflections.plugin.version>0.9.8</reflections.plugin.version>
         <remote-resources.plugin.version>1.4</remote-resources.plugin.version>
         <reports.plugin.version>2.9</reports.plugin.version>
         <resources.plugin.version>2.7</resources.plugin.version>
@@ -372,6 +371,9 @@
 
         <skipITs>true</skipITs>
         <skipTests>false</skipTests>
+
+        <!-- avoid intermittent build failures in streams-plugins -->
+        <jvm.options>-Djava.util.Arrays.useLegacyMergeSort=true</jvm.options>
 
     </properties>
 
@@ -440,6 +442,9 @@
                         <source>${java.version}</source>
                         <target>${java.version}</target>
                         <encoding>${project.build.sourceEncoding}</encoding>
+                            <compilerArgs>
+                                <arg>-J${jvm.options}</arg>
+                            </compilerArgs>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -672,6 +677,7 @@
                     </executions>
                     <configuration>
                         <!-- Skips unit tests if the value of skip.unit.tests property is true -->
+                        <argLine>${jvm.options}</argLine>
                         <skipTests>${skipTests}</skipTests>
                         <threadCount>1</threadCount>
                         <useUnlimitedThreads>false</useUnlimitedThreads>
@@ -739,6 +745,7 @@
                     </executions>
                     <configuration>
                         <!-- Skips integration tests if the value of skip.integration.tests property is true -->
+                        <argLine>${jvm.options}</argLine>
                         <skipTests>${skipITs}</skipTests>
                         <threadCount>1</threadCount>
                         <useUnlimitedThreads>false</useUnlimitedThreads>
@@ -782,11 +789,6 @@
                     <configuration>
                         <skipIfEmpty>true</skipIfEmpty>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.reflections</groupId>
-                    <artifactId>reflections-maven</artifactId>
-                    <version>${reflections.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.ops4j</groupId>
@@ -1301,6 +1303,34 @@
     </reporting>
 
     <profiles>
+        <profile>
+            <id>quick</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <maven.test.skip.exec>true</maven.test.skip.exec>
+                <skipITs>true</skipITs>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.scalastyle</groupId>
+                        <artifactId>scalastyle-maven-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>apache-release</id>
             <properties>

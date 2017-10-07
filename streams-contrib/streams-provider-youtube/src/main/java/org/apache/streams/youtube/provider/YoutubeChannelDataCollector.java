@@ -77,6 +77,11 @@ public class YoutubeChannelDataCollector extends YoutubeDataCollector {
   @Override
   public void run() {
     Gson gson = new Gson();
+
+    int item_count = 0;
+    int last_count = 0;
+    int page_count = 0;
+
     try {
       int attempt = 0;
       YouTube.Channels.List channelLists = this.youTube.channels().list(CONTENT).setId(this.userInfo.getUserId()).setKey(this.youtubeConfig.getApiKey());
@@ -84,9 +89,11 @@ public class YoutubeChannelDataCollector extends YoutubeDataCollector {
       do {
         try {
           List<Channel> channels = channelLists.execute().getItems();
+          last_count = channels.size();
           for (Channel channel : channels) {
             String json = gson.toJson(channel);
             this.queue.put(new StreamsDatum(json, channel.getId()));
+            item_count++;
           }
           if (StringUtils.isEmpty(channelLists.getPageToken())) {
             channelLists = null;
@@ -94,6 +101,7 @@ public class YoutubeChannelDataCollector extends YoutubeDataCollector {
             channelLists = this.youTube.channels().list(CONTENT).setId(this.userInfo.getUserId()).setOauthToken(this.youtubeConfig.getApiKey())
                 .setPageToken(channelLists.getPageToken());
           }
+          page_count++;
         } catch (GoogleJsonResponseException gjre) {
           LOGGER.warn("GoogleJsonResposneException caught : {}", gjre);
           tryAgain = backoffAndIdentifyIfRetry(gjre, this.strategy);
@@ -104,6 +112,8 @@ public class YoutubeChannelDataCollector extends YoutubeDataCollector {
         }
       }
       while ((tryAgain && attempt < MAX_ATTEMPTS) || channelLists != null);
+
+      LOGGER.info("item_count: {} last_count: {} page_count: {} ", item_count, last_count, page_count);
 
     } catch (Throwable throwable) {
       LOGGER.warn(throwable.getMessage());

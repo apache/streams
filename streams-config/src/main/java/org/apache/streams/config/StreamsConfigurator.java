@@ -43,10 +43,18 @@ public class StreamsConfigurator {
   /*
       Pull all configuration files from the classpath, system properties, and environment variables
    */
-  public static Config config = ConfigFactory.load();
+  private static Config config = ConfigFactory.load();
 
   public static Config getConfig() {
-    return config;
+    return config.resolve();
+  }
+
+  public static void addConfig(Config newConfig) {
+    config = newConfig.withFallback(config);
+  }
+
+  public static void setConfig(Config newConfig) {
+    config = newConfig;
   }
 
   public static Config resolveConfig(String configUrl) throws MalformedURLException {
@@ -56,9 +64,7 @@ public class StreamsConfigurator {
     config = urlConfig;
     return config;
   }
-
-
-
+  
   public static StreamsConfiguration detectConfiguration() {
     return detectConfiguration(config);
   }
@@ -68,7 +74,7 @@ public class StreamsConfigurator {
     StreamsConfiguration pojoConfig = null;
 
     try {
-      pojoConfig = mapper.readValue(typesafeConfig.root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
+      pojoConfig = mapper.readValue(typesafeConfig.resolve().root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
     } catch (Exception e) {
       e.printStackTrace();
       LOGGER.warn("Could not parse:", typesafeConfig);
@@ -84,7 +90,7 @@ public class StreamsConfigurator {
     StreamsConfiguration pojoConfig = null;
 
     try {
-      pojoConfig = mapper.readValue(merged.root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
+      pojoConfig = mapper.readValue(merged.resolve().root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
     } catch (Exception e) {
       e.printStackTrace();
       LOGGER.warn("Failed to merge.");

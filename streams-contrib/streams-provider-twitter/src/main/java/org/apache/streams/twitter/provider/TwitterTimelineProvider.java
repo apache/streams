@@ -204,6 +204,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     Objects.requireNonNull(config.getInfo());
     Objects.requireNonNull(config.getThreadsPerProvider());
 
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+
     try {
       client = getTwitterClient();
     } catch (InstantiationException e) {
@@ -226,7 +228,12 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
       }
     }
 
-    executor = MoreExecutors.listeningDecorator(TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(config.getThreadsPerProvider().intValue(), config.getInfo().size()));
+    executor = MoreExecutors.listeningDecorator(
+        TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(
+            config.getThreadsPerProvider().intValue(),
+            streamsConfiguration.getQueueSize().intValue()
+        )
+    );
 
     submitTimelineThreads(ids, names);
 

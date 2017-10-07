@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.twitter.pojo.Relationship",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "Detailed information about the relationship between two arbitrary users.",
+  "properties": {
+    "source": {
+      "$ref": "./RelationshipSource.json"
+    },
+    "target": {
+      "$ref": "./RelationshipTarget.json"
+    }
+  }
+}

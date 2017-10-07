@@ -175,7 +175,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
   private DatumStatusCounter countersTotal = new DatumStatusCounter();
 
   public TwitterStreamProvider() {
-    this.config = new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration(StreamsConfigurator.config, "twitter");
+    this.config = new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig(), "twitter");
   }
 
   public TwitterStreamProvider(TwitterStreamConfiguration config) {

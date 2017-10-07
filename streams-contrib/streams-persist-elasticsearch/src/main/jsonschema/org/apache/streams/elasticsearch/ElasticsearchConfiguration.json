@@ -17,8 +17,7 @@
         },
         "port": {
             "type": "integer",
-            "description": "Elasticsearch Transport API port",
-            "default": 9300
+            "description": "Elasticsearch Transport API port"
         },
         "clusterName": {
             "type": "string",

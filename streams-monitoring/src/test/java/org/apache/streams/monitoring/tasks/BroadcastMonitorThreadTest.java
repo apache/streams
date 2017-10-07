@@ -19,6 +19,7 @@
 package org.apache.streams.monitoring.tasks;
 
 import org.apache.streams.config.StreamsConfiguration;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.local.monitoring.MonitoringConfiguration;
 
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class BroadcastMonitorThreadTest {
 
   @Test
   public void testThreadEmptyBeanConfig() {
-    StreamsConfiguration streamsConfiguration = new StreamsConfiguration();
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
     BroadcastMonitorThread thread = new BroadcastMonitorThread(streamsConfiguration);
     testThread(thread);
   }

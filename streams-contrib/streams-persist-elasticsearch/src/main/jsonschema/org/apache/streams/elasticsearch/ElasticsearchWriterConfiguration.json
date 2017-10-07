@@ -19,21 +19,19 @@
         },
         "bulk": {
             "type": "boolean",
-            "description": "Index in large or small batches",
-            "default": "false"
+            "description": "Index in large or small batches"
         },
         "batchSize": {
             "type": "integer",
-            "description": "Item Count before flush",
-            "default": 100
+            "description": "Item Count before flush"
         },
         "batchBytes": {
             "type": "integer",
-            "description": "Number of bytes before flush",
-            "default": 5242880
+            "description": "Number of bytes before flush"
         },
         "maxTimeBetweenFlushMs": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Max time between flush (ms)"
         },
         "script": {
             "type": "string",
@@ -46,13 +44,11 @@
         },
         "replaceTags": {
             "type": "boolean",
-            "description": "Whether to overwrite _percolator rules on startup",
-            "default": true
+            "description": "Whether to overwrite _percolator rules on startup"
         },
         "cleanupTags": {
             "type": "boolean",
-            "description": "Whether to remove _percolator rules on shutdown",
-            "default": true
+            "description": "Whether to remove _percolator rules on shutdown"
         },
          "forceUseConfig": {
              "type": "boolean",
@@ -60,8 +56,7 @@
          },
         "refresh": {
             "type": "boolean",
-            "description": "Whether to refresh during cleanup",
-            "default": "false"
+            "description": "Whether to refresh during cleanup"
         }
     }
 }

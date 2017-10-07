@@ -23,8 +23,12 @@ import org.apache.streams.config.StreamsConfigurator;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigValue;
+import com.typesafe.config.ConfigValueFactory;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Map;
 
 /**
  * Test for {@link org.apache.streams.config.StreamsConfigurator}
@@ -44,11 +48,82 @@ public class StreamsConfiguratorTest {
 
         assert(defaultPojo != null);
 
-        StreamsConfiguration configuredPojo = StreamsConfigurator.detectConfiguration(StreamsConfigurator.config);
+        StreamsConfiguration configuredPojo = StreamsConfigurator.detectConfiguration(StreamsConfigurator.getConfig());
 
         assert(configuredPojo != null);
 
         Assert.assertEquals(configuredPojo, defaultPojo);
+
+    }
+
+    @Test
+    public void testReference() throws Exception {
+
+        Config defaultConfig = StreamsConfigurator.getConfig();
+
+        assert( defaultConfig.getLong("batchFrequencyMs") > 0);
+        assert( defaultConfig.getLong("batchSize") > 0);
+        assert( defaultConfig.getLong("parallelism") > 0);
+        assert( defaultConfig.getLong("providerTimeoutMs") > 0);
+        assert( defaultConfig.getLong("queueSize") > 0);
+
+        StreamsConfiguration defaultPojo = StreamsConfigurator.detectConfiguration();
+
+        assert(defaultPojo != null);
+
+        assert( defaultPojo.getBatchFrequencyMs() > 0);
+        assert( defaultPojo.getBatchSize() > 0);
+        assert( defaultPojo.getParallelism() > 0);
+        assert( defaultPojo.getProviderTimeoutMs() > 0);
+        assert( defaultPojo.getQueueSize() > 0);
+
+    }
+
+    @Test
+    public void testOverride() throws Exception {
+
+        Config overrides = ConfigFactory.empty()
+            .withValue("parallelism", ConfigValueFactory.fromAnyRef(100l));
+        StreamsConfigurator.addConfig(overrides);
+
+        Config withOverride = StreamsConfigurator.getConfig();
+
+        assert( withOverride.getLong("parallelism") == 100);
+
+        StreamsConfiguration defaultPojo = StreamsConfigurator.detectConfiguration();
+
+        assert( defaultPojo != null);
+
+        assert( defaultPojo.getParallelism() == 100);
+
+    }
+
+    @Test
+    public void testResolve() throws Exception {
+
+        Config overrides = ConfigFactory.parseResourcesAnySyntax("testResolve.conf");
+
+        StreamsConfigurator.addConfig(overrides);
+
+        Config withOverride = StreamsConfigurator.getConfig();
+
+        assert( withOverride.getString("message") != null);
+
+        assert( withOverride.getConfig("evenmore").getString("message") != null);
+
+        assert( withOverride.getString("samemessage") != null);
+
+        StreamsConfiguration defaultPojo = StreamsConfigurator.detectConfiguration();
+
+        assert( defaultPojo != null);
+
+        assert( defaultPojo.getAdditionalProperties().containsKey("message"));
+
+        assert( defaultPojo.getAdditionalProperties().containsKey("samemessage"));
+
+        assert( defaultPojo.getAdditionalProperties().containsKey("evenmore"));
+
+        assert( defaultPojo.getAdditionalProperties().get("evenmore") instanceof Map);
 
     }
 }

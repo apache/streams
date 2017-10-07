@@ -101,7 +101,7 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
    * FacebookUserInformationProvider constructor - resolves FacebookUserInformationConfiguration from JVM 'facebook'.
    */
   public FacebookUserInformationProvider() {
-    Config config = StreamsConfigurator.config.getConfig("facebook");
+    Config config = StreamsConfigurator.getConfig().getConfig("facebook");
     FacebookUserInformationConfiguration facebookUserInformationConfiguration;
     try {
       facebookUserInformationConfiguration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
@@ -119,7 +119,7 @@ public class FacebookUserInformationProvider implements StreamsProvider, Seriali
   }
 
   public FacebookUserInformationProvider(Class klass) {
-    Config config = StreamsConfigurator.config.getConfig("facebook");
+    Config config = StreamsConfigurator.getConfig().getConfig("facebook");
     FacebookUserInformationConfiguration facebookUserInformationConfiguration;
     try {
       facebookUserInformationConfiguration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);

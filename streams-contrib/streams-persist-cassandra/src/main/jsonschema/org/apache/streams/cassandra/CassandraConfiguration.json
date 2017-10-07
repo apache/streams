@@ -50,8 +50,7 @@
       "properties": {
         "enabled": {
           "type": "boolean",
-          "description": "ssl enabled",
-          "default": "false"
+          "description": "ssl enabled"
         },
         "trustStore": {
           "type": "string"

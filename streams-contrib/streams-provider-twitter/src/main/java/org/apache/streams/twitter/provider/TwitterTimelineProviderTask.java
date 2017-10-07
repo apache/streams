@@ -61,7 +61,7 @@ public class TwitterTimelineProviderTask implements Runnable {
 
   int item_count = 0;
   int last_count = 0;
-  int page_count = 1;
+  int page_count = 0;
 
   @Override
   public void run() {
@@ -94,8 +94,8 @@ public class TwitterTimelineProviderTask implements Runnable {
     }
     while (shouldContinuePulling(last_count, page_count, item_count));
 
-    LOGGER.info("Thread Finished: {}", request.toString());
-
+    LOGGER.info("item_count: {} last_count: {} page_count: {} ", item_count, last_count, page_count);
+    
   }
 
   public boolean shouldContinuePulling(int count, int page_count, int item_count) {
