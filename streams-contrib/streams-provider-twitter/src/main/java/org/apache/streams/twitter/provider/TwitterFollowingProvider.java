@@ -26,6 +26,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.StreamsJacksonMapperConfiguration;
 import org.apache.streams.twitter.TwitterFollowingConfiguration;
 import org.apache.streams.twitter.TwitterUserInformationConfiguration;
 import org.apache.streams.twitter.api.FollowersIdsRequest;
@@ -124,18 +125,17 @@ public class TwitterFollowingProvider implements StreamsProvider, Serializable {
     String configfile = args[0];
     String outfile = args[1];
 
-    Config reference = ConfigFactory.load();
     File file = new File(configfile);
     assert (file.exists());
-    Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
+    Config testConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false)).withFallback(StreamsConfigurator.getConfig()).resolve();
 
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    TwitterFollowingConfiguration config = new ComponentConfigurator<>(TwitterFollowingConfiguration.class).detectConfiguration(typesafe, "twitter");
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(testConfig);
+    TwitterFollowingConfiguration config = new ComponentConfigurator<>(TwitterFollowingConfiguration.class).detectConfiguration(testConfig, "twitter");
     TwitterFollowingProvider provider = new TwitterFollowingProvider(config);
 
-    ObjectMapper mapper = new StreamsJacksonMapper(Collections.singletonList(TwitterDateTimeFormat.TWITTER_FORMAT));
+    StreamsJacksonMapperConfiguration mapperConfiguration = new StreamsJacksonMapperConfiguration()
+        .withDateFormats(Collections.singletonList(TwitterDateTimeFormat.TWITTER_FORMAT));
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance(mapperConfiguration);
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
     provider.prepare(config);

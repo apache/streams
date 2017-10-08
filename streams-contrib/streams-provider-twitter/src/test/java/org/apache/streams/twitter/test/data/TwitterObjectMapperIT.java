@@ -56,14 +56,14 @@ public class TwitterObjectMapperIT {
 
   private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Stream.of(TWITTER_FORMAT).collect(Collectors.toList()));
 
-  @Test
+  @Test(dependsOnGroups = "TwitterStreamProviderIT")
   public void tests() {
 
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.TRUE);
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
     mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-    InputStream is = TwitterObjectMapperIT.class.getResourceAsStream("/testtweets.txt");
+    InputStream is = TwitterObjectMapperIT.class.getResourceAsStream("/TwitterStreamProviderIT.stdout.txt");
     InputStreamReader isr = new InputStreamReader(is);
     BufferedReader br = new BufferedReader(isr);
 

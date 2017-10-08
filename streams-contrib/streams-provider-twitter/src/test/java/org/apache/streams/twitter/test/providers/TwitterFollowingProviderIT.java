@@ -18,11 +18,15 @@
 
 package org.apache.streams.twitter.test.providers;
 
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.twitter.provider.TwitterFollowingProvider;
 
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -33,15 +37,45 @@ public class TwitterFollowingProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFollowingProviderIT.class);
 
-  @Test
-  public void testTwitterFollowingProvider() throws Exception {
+  /**
+   * Data Provider for TwitterFollowingProviderIT
+   *   [][0] = endpoint
+   *   [][1] = ids_only
+   *   [][2] = max_items
+   * @return
+   */
+  @DataProvider(name = "TwitterFollowingProviderIT")
+  public static Object[][] credentials() {
+    return new Object[][] {
+        {"followers", Boolean.FALSE, 40},
+        {"followers", Boolean.TRUE, 10000},
+        {"friends", Boolean.FALSE, 40 },
+        {"friends", Boolean.TRUE, 100}
+    };
+  }
+
+  @Test(dataProvider = "TwitterFollowingProviderIT")
+  public void testTwitterFollowingProvider(String endpoint, Boolean ids_only, Integer max_items) throws Exception {
 
     String configfile = "./target/test-classes/TwitterFollowingProviderIT.conf";
-    String outfile = "./target/test-classes/TwitterFollowingProviderIT.stdout.txt";
+    String outfile = "./target/test-classes/TwitterFollowingProviderIT-"+endpoint+"-"+ids_only+".stdout.txt";
 
     String[] args = new String[2];
     args[0] = configfile;
     args[1] = outfile;
+
+    File conf = new File(configfile);
+    Assert.assertTrue (conf.exists());
+    Assert.assertTrue (conf.canRead());
+    Assert.assertTrue (conf.isFile());
+
+    System.setProperty("ENDPOINT", endpoint);
+    System.setProperty("IDS_ONLY", Boolean.toString(ids_only));
+    System.setProperty("MAX_ITEMS", Integer.toString(max_items));
+    ConfigFactory.invalidateCaches();
+    StreamsConfigurator.setConfig(ConfigFactory.load());
+
+    Assert.assertTrue(ConfigFactory.parseFileAnySyntax(conf).withFallback(StreamsConfigurator.getConfig()).resolve().isResolved());
 
     Thread testThread = new Thread(() -> {
       try {
@@ -63,7 +97,7 @@ public class TwitterFollowingProviderIT {
 
     while (outCounter.readLine() != null) {}
 
-    Assert.assertEquals (outCounter.getLineNumber(), 10000);
+    Assert.assertEquals (outCounter.getLineNumber(), max_items.intValue());
 
   }
 }
