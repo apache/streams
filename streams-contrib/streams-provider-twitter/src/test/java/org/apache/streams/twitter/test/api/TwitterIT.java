@@ -23,7 +23,11 @@ import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.twitter.TwitterConfiguration;
 import org.apache.streams.twitter.api.Account;
+import org.apache.streams.twitter.api.AccountActivity;
 import org.apache.streams.twitter.api.AccountSettings;
+import org.apache.streams.twitter.api.DirectMessages;
+import org.apache.streams.twitter.api.EventsListRequest;
+import org.apache.streams.twitter.api.EventsListResponse;
 import org.apache.streams.twitter.api.Favorites;
 import org.apache.streams.twitter.api.FavoritesListRequest;
 import org.apache.streams.twitter.api.Followers;
@@ -45,8 +49,17 @@ import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.api.Users;
 import org.apache.streams.twitter.api.UsersLookupRequest;
 import org.apache.streams.twitter.api.UsersShowRequest;
+import org.apache.streams.twitter.api.Webhook;
+import org.apache.streams.twitter.api.WelcomeMessageRules;
+import org.apache.streams.twitter.api.WelcomeMessageRulesListRequest;
+import org.apache.streams.twitter.api.WelcomeMessageRulesListResponse;
+import org.apache.streams.twitter.api.WelcomeMessages;
+import org.apache.streams.twitter.api.WelcomeMessagesListRequest;
+import org.apache.streams.twitter.api.WelcomeMessagesListResponse;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
+import org.apache.streams.twitter.pojo.WelcomeMessage;
+import org.apache.streams.twitter.pojo.WelcomeMessageRule;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -222,5 +235,58 @@ public class TwitterIT {
     List<User> lookupUserByScreenName = users.lookup(usersLookupRequest);
     nonNull(lookupUserByScreenName);
     assertThat("lookupUserByScreenName.size() > 0", lookupUserByScreenName.size() > 0);
+  }
+
+  @Test(
+      enabled=false,
+      dependsOnGroups = {"Account"},
+      groups = {"DirectMessages"}
+  )
+  public void testDirectMessagesListEvents() throws Exception {
+    DirectMessages directMessages = Twitter.getInstance(config);
+    nonNull(directMessages);
+    EventsListResponse eventsListResponse = directMessages.listEvents(new EventsListRequest());
+    nonNull(eventsListResponse);
+    List<Object> events = eventsListResponse.getEvents();
+    nonNull(events);
+    assertThat("events.size() > 0", events.size() > 0);
+  }
+
+  @Test(
+      enabled=false,
+      dependsOnGroups = {"Account"},
+      groups = {"AccountActivity"}
+  )
+  public void testGetWebhooks() throws Exception {
+    AccountActivity accountActivity = Twitter.getInstance(config);
+    nonNull(accountActivity);
+    List<Webhook> webhooks = accountActivity.getWebhooks();
+    nonNull(webhooks);
+  }
+
+  @Test(
+      enabled=false,
+      dependsOnGroups = {"Account"},
+      groups = {"WelcomeMessages"}
+  )
+  public void testGetWelcomeMessages() throws Exception {
+    WelcomeMessages welcomeMessages = Twitter.getInstance(config);
+    nonNull(welcomeMessages);
+    WelcomeMessagesListResponse welcomeMessageListResponse = welcomeMessages.listWelcomeMessages(new WelcomeMessagesListRequest());
+    List<WelcomeMessage> welcomeMessageList = welcomeMessageListResponse.getWelcomeMessages();
+    nonNull(welcomeMessageList);
+  }
+
+  @Test(
+      enabled=false,
+      dependsOnGroups = {"Account"},
+      groups = {"WelcomeMessageRules"}
+  )
+  public void testGetWelcomeMessageRules() throws Exception {
+    WelcomeMessageRules welcomeMessageRules = Twitter.getInstance(config);
+    nonNull(welcomeMessageRules);
+    WelcomeMessageRulesListResponse welcomeMessageListResponse = welcomeMessageRules.listWelcomeMessageRules(new WelcomeMessageRulesListRequest());
+    List<WelcomeMessageRule> welcomeMessageRuleList = welcomeMessageListResponse.getWelcomeMessageRules();
+    nonNull(welcomeMessageRuleList);
   }
 }

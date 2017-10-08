@@ -45,6 +45,7 @@ public class TwitterRetryHandler extends RetryOn {
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterRetryHandler.class);
 
   protected boolean onResponse(HttpResponse response) {
+    if( response == null ) return false;
     LOGGER.debug(response.toString());
     switch(response.getStatusLine().getStatusCode()) {
       case 200: // Response.Status.OK

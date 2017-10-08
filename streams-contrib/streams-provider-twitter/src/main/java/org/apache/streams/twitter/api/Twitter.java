@@ -22,24 +22,33 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.TwitterConfiguration;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.twitter.converter.TwitterJodaDateSwap;
+import org.apache.streams.twitter.pojo.DirectMessageEvent;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
+import org.apache.streams.twitter.pojo.WelcomeMessage;
+import org.apache.streams.twitter.pojo.WelcomeMessageRule;
 import org.apache.streams.twitter.provider.TwitterProviderUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.juneau.json.JsonParser;
 import org.apache.juneau.json.JsonSerializer;
+import org.apache.juneau.rest.client.RestCall;
+import org.apache.juneau.rest.client.RestCallException;
 import org.apache.juneau.rest.client.RestClient;
 import org.apache.juneau.rest.client.RestClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +59,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Implementation of all twitter interfaces using juneau.
  */
-public class Twitter implements Account, Favorites, Followers, Friends, Statuses, Users {
+public class Twitter implements Account, AccountActivity, DirectMessages, Favorites, Followers, Friends, Statuses, Users, WelcomeMessages, WelcomeMessageRules {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Twitter.class);
 
@@ -90,10 +99,11 @@ public class Twitter implements Account, Favorites, Followers, Friends, Statuses
         .setMaxConnPerRoute(20)
         .setMaxConnTotal(100)
         .addInterceptorFirst(oauthInterceptor)
-        .addInterceptorLast((HttpRequestInterceptor) (httpRequest, httpContext) -> System.out.println(httpRequest.getRequestLine().getUri()))
-        .addInterceptorLast((HttpResponseInterceptor) (httpResponse, httpContext) -> System.out.println(httpResponse.getStatusLine()))
+        .addInterceptorLast((HttpRequestInterceptor) (httpRequest, httpContext) -> LOGGER.debug(httpRequest.getRequestLine().getUri()))
+        .addInterceptorLast((HttpResponseInterceptor) (httpResponse, httpContext) -> LOGGER.debug(httpResponse.getStatusLine().toString()))
         .build();
     this.restClient = new RestClientBuilder()
+        .debug()
         .httpClient(httpclient, true)
         .parser(
             JsonParser.DEFAULT.builder()
@@ -103,6 +113,8 @@ public class Twitter implements Account, Favorites, Followers, Friends, Statuses
         .serializer(
             JsonSerializer.DEFAULT.builder()
                 .pojoSwaps(TwitterJodaDateSwap.class)
+                .trimEmptyCollections(true)
+                .trimEmptyMaps(true)
                 .build())
         .rootUrl(rootUrl)
         .retryable(
@@ -219,5 +231,165 @@ public class Twitter implements Account, Favorites, Followers, Friends, Statuses
     Account restAccount = restClient.getRemoteableProxy(Account.class, TwitterProviderUtil.baseUrl(configuration)+"/account");
     User result = restAccount.verifyCredentials();
     return result;
+  }
+
+  @Override
+  public WelcomeMessagesListResponse listWelcomeMessages(WelcomeMessagesListRequest parameters) {
+    WelcomeMessages proxy = restClient.getRemoteableProxy(WelcomeMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages");
+    return proxy.listWelcomeMessages(parameters);
+  }
+
+  @Override
+  public WelcomeMessage showWelcomeMessage(Long id) {
+    WelcomeMessages proxy = restClient.getRemoteableProxy(WelcomeMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages");
+    return proxy.showWelcomeMessage(id);
+  }
+
+  @Override
+  public WelcomeMessageNewResponse newWelcomeMessage(WelcomeMessageNewRequest parameters) {
+    WelcomeMessages proxy = restClient.getRemoteableProxy(WelcomeMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages");
+    return proxy.newWelcomeMessage(parameters);
+  }
+
+  @Override
+  public void destroyWelcomeMessage(Long id) {
+    WelcomeMessages proxy = restClient.getRemoteableProxy(WelcomeMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages");
+    proxy.destroyWelcomeMessage(id);
+  }
+
+  @Override
+  public WelcomeMessageRulesListResponse listWelcomeMessageRules(WelcomeMessageRulesListRequest parameters) {
+    WelcomeMessageRules proxy = restClient.getRemoteableProxy(WelcomeMessageRules.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages/rules");
+    return proxy.listWelcomeMessageRules(parameters);
+  }
+
+  @Override
+  public WelcomeMessageRule showWelcomeMessageRule(Long id) {
+    WelcomeMessageRules proxy = restClient.getRemoteableProxy(WelcomeMessageRules.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages/rules");
+    return proxy.showWelcomeMessageRule(id);
+  }
+
+  @Override
+  public WelcomeMessageRule newWelcomeMessageRule(WelcomeMessageNewRuleRequest body) {
+    WelcomeMessageRules proxy = restClient.getRemoteableProxy(WelcomeMessageRules.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages/rules");
+    return proxy.newWelcomeMessageRule(body);
+  }
+
+  @Override
+  public void destroyWelcomeMessageRule(Long id) {
+    WelcomeMessageRules proxy = restClient.getRemoteableProxy(WelcomeMessageRules.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages/rules");
+    proxy.destroyWelcomeMessageRule(id);
+  }
+
+  @Override
+  public List<Webhook> getWebhooks() {
+    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+    return proxy.getWebhooks();
+  }
+
+  @Override
+  public Webhook registerWebhook(String url) {
+    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+    return proxy.registerWebhook(url);
+  }
+
+  @Override
+  public Boolean deleteWebhook(Long webhookId) {
+    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+    return proxy.deleteWebhook(webhookId);
+  }
+
+  @Override
+  public Boolean putWebhook(Long webhookId) {
+    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+    return proxy.putWebhook(webhookId);
+  }
+
+  @Override
+  public Boolean getWebhookSubscription(Long webhookId) {
+//    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+//    return proxy.getWebhookSubscription(webhookId);
+    try {
+      URIBuilder uriBuilder =
+          new URIBuilder()
+              .setPath("/account_activity/webhooks/"+webhookId+"/subscriptions.json");
+      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      try {
+        int statusCode = restCall
+            .getResponse().getStatusLine().getStatusCode();
+        return statusCode == 204;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    }
+    return false;
+  }
+
+  @Override
+  public Boolean registerWebhookSubscriptions(Long webhookId) {
+//    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+//    return proxy.registerWebhookSubscriptions(webhookId);
+    try {
+      URIBuilder uriBuilder =
+          new URIBuilder()
+              .setPath("/account_activity/webhooks/"+webhookId+"/subscriptions.json");
+      RestCall restCall = restClient.doPost(uriBuilder.build().toString());
+      try {
+        int statusCode = restCall.getResponse().getStatusLine().getStatusCode();
+        return statusCode == 204;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    }
+    return false;
+  }
+
+  @Override
+  public Boolean deleteWebhookSubscriptions(Long webhookId) {
+//    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+//      return proxy.deleteWebhookSubscriptions(webhookId);
+    try {
+      URIBuilder uriBuilder =
+          new URIBuilder()
+              .setPath("/account_activity/webhooks/"+webhookId+"/subscriptions.json");
+      RestCall restCall = restClient.doDelete(uriBuilder.build().toString());
+      try {
+        int statusCode = restCall.getResponse().getStatusLine().getStatusCode();
+        return statusCode == 204;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    }
+    return false;
+  }
+
+  @Override
+  public EventsListResponse listEvents(EventsListRequest parameters) {
+    DirectMessages proxy = restClient.getRemoteableProxy(DirectMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages");
+    return proxy.listEvents(parameters);
+  }
+
+  @Override
+  public EventShowResponse showEvent(Long id) {
+    DirectMessages proxy = restClient.getRemoteableProxy(DirectMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages");
+    return proxy.showEvent(id);
+  }
+
+  @Override
+  public DirectMessageEvent newEvent(MessageCreateRequest event) {
+    DirectMessages proxy = restClient.getRemoteableProxy(DirectMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages");
+    return proxy.newEvent(event);
   }
 }

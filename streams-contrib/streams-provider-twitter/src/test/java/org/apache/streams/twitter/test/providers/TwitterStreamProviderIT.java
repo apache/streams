@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.testng.Assert.assertTrue;
 
+@Test(dependsOnGroups = {"Account"}, groups = {"Providers"})
 public class TwitterStreamProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterStreamProviderIT.class);

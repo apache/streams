@@ -4,11 +4,11 @@
     "http://www.apache.org/licenses/LICENSE-2.0"
   ],
   "id": "#",
-  "javaType": "org.apache.streams.twitter.api.AccountSettingsResponse",
+  "javaType": "org.apache.streams.twitter.api.AccountSessionsResponse",
   "javaInterfaces": [
     "java.io.Serializable"
   ],
-  "description": "https://dev.twitter.com/rest/reference/get/account/settings",
+  "description": "https://dev.twitter.com/webhooks/reference/get/account_activity/webhooks",
   "properties": {
     "always_use_https": {
       "type": "boolean"

@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 
+@Test(dependsOnGroups = {"Account"}, groups = {"Providers"})
 public class TwitterTimelineProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProviderIT.class);

@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.MediaStatusResponse",
+  "javaInterfaces": ["java.io.Serializable"],
+  "properties": {
+    "media_id": {
+      "description": "The media_id returned from the INIT command.",
+      "required": true,
+      "type": "integer"
+    },
+    "media_id_string": {
+      "description": "The media_id returned from the INIT command.",
+      "required": true,
+      "type": "integer"
+    },
+    "expires_after_seconds": {
+      "required": false,
+      "type": "integer"
+    },
+    "processing_info": {
+      "description": "he response body contains processing_info field which provides information about current state of media processing operation.",
+      "required": true,
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "It contains a state field which has transition flow: “pending” -> “in_progress” -> [“failed” | “succeeded”]. You can not use the media_id to create Tweet or other entities before the state field is set to “succeeded”.",
+          "type": "string",
+          "enum": [
+            "pending",
+            "in_progress",
+            "failed",
+            "succeeded"
+          ]
+        },
+        "progress_percent": {
+          "description": "Optional [0-100] int value. Please don't use it as a replacement of \"state\" field.",
+          "required": false,
+          "type": "integer"
+        },
+        "check_after_secs": {
+          "required": false,
+          "type": "integer"
+        }
+      }
+    },
+    "media_id": {
+      "description": "The media_id returned from the INIT command.",
+      "required": true,
+      "type": "integer"
+    }
+  }
+}
