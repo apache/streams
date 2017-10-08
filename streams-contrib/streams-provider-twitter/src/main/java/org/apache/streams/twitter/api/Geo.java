@@ -40,8 +40,8 @@ public interface Geo {
    * Returns all the information about a known place.
    *
    * @param place_id A place in the world. These IDs can be retrieved from geo/reverse_geocode.
-   * @return @link{}
-   * @see <a href="https://dev.twitter.com/rest/reference/get/favorites/list">https://dev.twitter.com/rest/reference/get/favorites/list</a>
+   * @return {@link org.apache.streams.twitter.pojo.Place}
+   * @see <a href="https://dev.twitter.com/rest/reference/get/geo/id">https://dev.twitter.com/rest/reference/get/geo/id</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/id/{place_id}.json")
@@ -51,8 +51,8 @@ public interface Geo {
    * Search for places that can be attached to a statuses/update. Given a latitude and a longitude pair, an IP address, or a name, this request will return a list of all the valid places that can be used as the place_id when updating a status.
    *
    * @param parameters A place in the world. These IDs can be retrieved from geo/reverse_geocode.
-   * @return @link{}
-   * @see <a href="https://dev.twitter.com/rest/reference/get/favorites/list">https://dev.twitter.com/rest/reference/get/favorites/list</a>
+   * @return {@link org.apache.streams.twitter.api.GeoSearchResponse}
+   * @see <a href="https://dev.twitter.com/rest/reference/get/geo/search">https://dev.twitter.com/rest/reference/get/geo/search</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/search.json")
@@ -62,8 +62,8 @@ public interface Geo {
    * Given a latitude and a longitude, searches for up to 20 places that can be used as a place_id when updating a status.
    *
    * @param parameters A place in the world. These IDs can be retrieved from geo/reverse_geocode.
-   * @return @link{}
-   * @see <a href="https://dev.twitter.com/rest/reference/get/favorites/list">https://dev.twitter.com/rest/reference/get/favorites/list</a>
+   * @return {@link org.apache.streams.twitter.api.GeoSearchResponse}
+   * @see <a href="https://dev.twitter.com/rest/reference/get/geo/reverse_geocode">https://dev.twitter.com/rest/reference/get/geo/reverse_geocode</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/reverse_geocode.json")

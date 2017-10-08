@@ -40,7 +40,7 @@ public interface DirectMessages {
   /**
    * Returns all Direct Message events (both sent and received) within the last 30 days. Sorted in reverse-chronological order.
    *
-   * @return EventsList
+   * @return {@link org.apache.streams.twitter.api.EventsListResponse}
    * @see <a href="https://dev.twitter.com/rest/reference/get/direct_messages/events/list">https://dev.twitter.com/rest/reference/get/direct_messages/events/list</a>
    *
    */
@@ -48,22 +48,20 @@ public interface DirectMessages {
   public EventsListResponse listEvents(@QueryIfNE EventsListRequest parameters);
 
   /**
-   * Returns all Direct Message events (both sent and received) within the last 30 days. Sorted in reverse-chronological order.
+   * Returns a single Direct Message event by the given id.
    *
-   * @return EventsList
-   * @see <a href="https://dev.twitter.com/rest/reference/get/direct_messages/events/list">https://dev.twitter.com/rest/reference/get/direct_messages/events/list</a>
+   * @return {@link org.apache.streams.twitter.api.EventShowResponse}
+   * @see <a href="https://dev.twitter.com/rest/reference/get/direct_messages/events/show">https://dev.twitter.com/rest/reference/get/direct_messages/events/show</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/events/show.json")
   public EventShowResponse showEvent(@Query("id") Long id);
 
   /**
-   * Publishes a new message_create event resulting in a Direct Message sent to a specified user from the authenticating user. Returns an event in the requested format if successful. Supports publishing Direct Messages with optional Quick Reply and media attachment. Replaces behavior currently provided by POST direct_messages/new.
+   * Publishes a new message_create event resulting in a Direct Message sent to a specified user from the authenticating user. Returns an event in the requested format if successful.
    *
-   * Requires a JSON POST body and Content-Type header to be set to application/json. Setting Content-Length may also be required if it is not automatically.
-   *
-   * @return EventsList
-   * @see <a href="https://dev.twitter.com/rest/reference/get/direct_messages/events/list">https://dev.twitter.com/rest/reference/get/direct_messages/events/list</a>
+   * @return {@link org.apache.streams.twitter.pojo.DirectMessageEvent}
+   * @see <a href="https://dev.twitter.com/rest/reference/get/direct_messages/events/new">https://dev.twitter.com/rest/reference/get/direct_messages/events/new</a>
    *
    */
   @RemoteMethod(httpMethod = "POST", path = "/events/new.json")

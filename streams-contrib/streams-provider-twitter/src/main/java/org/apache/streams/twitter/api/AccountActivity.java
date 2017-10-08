@@ -98,8 +98,6 @@ public interface AccountActivity {
   /**
    * Subscribes the provided app to events for the provided user context. When subscribed, all DM events for the provided user will be sent to the app’s webhook via POST request.
    *
-   * Subscriptions are currently limited to 50 users per application. If you have a need to add more subscriptions, please let us know by using this form.
-   *
    * @param webhookId Webhook ID. Defined in resource path.
    * @return Boolean
    * @see <a href=https://dev.twitter.com/webhooks/reference/post/account_activity/webhooks/subscriptions">https://dev.twitter.com/webhooks/reference/post/account_activity/webhooks/subscriptions</a>
