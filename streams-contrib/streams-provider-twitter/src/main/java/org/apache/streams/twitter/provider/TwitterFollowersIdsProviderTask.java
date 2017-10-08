@@ -45,8 +45,6 @@ public class TwitterFollowersIdsProviderTask implements Runnable {
   protected TwitterFollowingProvider provider;
   protected FollowersIdsRequest request;
 
-  private int count = 0;
-
   /**
    * TwitterFollowingProviderTask constructor.
    * @param provider TwitterFollowingProvider
@@ -73,7 +71,7 @@ public class TwitterFollowersIdsProviderTask implements Runnable {
   }
 
   int last_count = 0;
-  int page_count = 1;
+  int page_count = 0;
   int item_count = 0;
   long cursor = 0;
 
@@ -111,6 +109,9 @@ public class TwitterFollowersIdsProviderTask implements Runnable {
       request.setCursor(cursor);
     }
     while (shouldContinuePulling(cursor, last_count, page_count, item_count));
+
+    LOGGER.info("item_count: {} last_count: {} page_count: {} ", item_count, last_count, page_count);
+
   }
 
   public boolean shouldContinuePulling(long cursor, int count, int page_count, int item_count) {

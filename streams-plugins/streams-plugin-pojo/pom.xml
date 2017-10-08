@@ -56,7 +56,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.juneau</groupId>
-            <artifactId>juneau-core</artifactId>
+            <artifactId>juneau-marshall</artifactId>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
@@ -161,18 +161,6 @@
                         <goals>
                             <goal>descriptor</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.reflections</groupId>
-                <artifactId>reflections-maven</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>reflections</goal>
-                        </goals>
-                        <phase>process-classes</phase>
                     </execution>
                 </executions>
             </plugin>

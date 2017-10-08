@@ -45,8 +45,6 @@ public class TwitterFriendsListProviderTask implements Runnable {
   protected TwitterFollowingProvider provider;
   protected FriendsListRequest request;
 
-  private int count = 0;
-
   /**
    * TwitterFollowingProviderTask constructor.
    * @param provider TwitterFollowingProvider
@@ -60,7 +58,7 @@ public class TwitterFriendsListProviderTask implements Runnable {
   }
 
   int last_count = 0;
-  int page_count = 1;
+  int page_count = 0;
   int item_count = 0;
   long cursor = 0;
 
@@ -68,6 +66,8 @@ public class TwitterFriendsListProviderTask implements Runnable {
   public void run() {
 
     Preconditions.checkArgument(request.getId() != null || request.getScreenName() != null);
+
+    getFriendsList(request);
 
     LOGGER.info(request.getId() != null ? request.getId().toString() : request.getScreenName() + " Thread Finished");
 
@@ -86,11 +86,13 @@ public class TwitterFriendsListProviderTask implements Runnable {
         for (User friend : response.getUsers()) {
 
           Follow follow = new Follow()
-              .withFollower(friend)
-              .withFollowee(
+              .withFollower(
                   new User()
                       .withId(request.getId())
-                      .withScreenName(request.getScreenName()));
+                      .withScreenName(request.getScreenName()))
+              .withFollowee(
+                  friend
+              );
 
           if (item_count < provider.getConfig().getMaxItems()) {
             ComponentUtils.offerUntilSuccess(new StreamsDatum(follow), provider.providerQueue);
@@ -106,6 +108,9 @@ public class TwitterFriendsListProviderTask implements Runnable {
 
     }
     while (shouldContinuePulling(cursor, last_count, page_count, item_count));
+
+    LOGGER.info("item_count: {} last_count: {} page_count: {} ", item_count, last_count, page_count);
+
   }
 
   public boolean shouldContinuePulling(long cursor, int count, int page_count, int item_count) {

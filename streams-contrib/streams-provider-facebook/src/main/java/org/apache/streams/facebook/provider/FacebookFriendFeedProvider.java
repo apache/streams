@@ -107,7 +107,7 @@ public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
    * FacebookFriendFeedProvider constructor - resolves FacebookUserInformationConfiguration from JVM 'facebook'.
    */
   public FacebookFriendFeedProvider() {
-    Config config = StreamsConfigurator.config.getConfig("facebook");
+    Config config = StreamsConfigurator.getConfig().getConfig("facebook");
     FacebookUserInformationConfiguration configuration;
     try {
       configuration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
@@ -128,7 +128,7 @@ public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
    * @param klass Class
    */
   public FacebookFriendFeedProvider(Class klass) {
-    Config config = StreamsConfigurator.config.getConfig("facebook");
+    Config config = StreamsConfigurator.getConfig().getConfig("facebook");
     FacebookUserInformationConfiguration configuration;
     try {
       configuration = mapper.readValue(config.root().render(ConfigRenderOptions.concise()), FacebookUserInformationConfiguration.class);
@@ -281,6 +281,10 @@ public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
       this.id = id;
     }
 
+    int last_count = 0;
+    int page_count = 0;
+    int item_count = 0;
+
     @Override
     public void run() {
       client = provider.getFacebookClient();
@@ -288,28 +292,39 @@ public class FacebookFriendFeedProvider implements StreamsProvider, Serializable
         ResponseList<Post> postResponseList = client.getFeed(id);
         Paging<Post> postPaging;
         do {
-
+          last_count = postResponseList.getCount();
           for (Post item : postResponseList) {
             String json = DataObjectFactory.getRawJSON(item);
             org.apache.streams.facebook.Post post = mapper.readValue(json, org.apache.streams.facebook.Post.class);
             try {
               lock.readLock().lock();
               ComponentUtils.offerUntilSuccess(new StreamsDatum(post), providerQueue);
-              countersCurrent.incrementAttempt();
+              item_count++;
             } finally {
               lock.readLock().unlock();
             }
           }
+          page_count++;
           postPaging = postResponseList.getPaging();
           postResponseList = client.fetchNext(postPaging);
         }
-        while ( postPaging != null
-                &&
-                postResponseList != null );
+        while ( shouldContinuePulling(postPaging, postResponseList) );
 
+        LOGGER.info("item_count: {} last_count: {} page_count: {} ", item_count, last_count, page_count);
+        
       } catch (Exception ex) {
         ex.printStackTrace();
       }
+
+    }
+
+    public boolean shouldContinuePulling(Paging<Post> postPaging, ResponseList<Post> postResponseList) {
+      return (
+          postPaging != null
+              &&
+          postResponseList != null
+      );
     }
   }
+
 }

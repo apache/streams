@@ -68,7 +68,7 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
   private int retryCount;
 
   public FetchAndReplaceTwitterProcessor() {
-    this(new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration(StreamsConfigurator.config, "twitter"));
+    this(new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig(), "twitter"));
   }
 
   public FetchAndReplaceTwitterProcessor(TwitterStreamConfiguration config) {

@@ -26,11 +26,14 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.StreamsJacksonMapperConfiguration;
 import org.apache.streams.twitter.TwitterFollowingConfiguration;
 import org.apache.streams.twitter.TwitterUserInformationConfiguration;
 import org.apache.streams.twitter.api.FollowersIdsRequest;
+import org.apache.streams.twitter.api.FollowersListRequest;
 import org.apache.streams.twitter.api.FollowingIdsRequest;
 import org.apache.streams.twitter.api.FriendsIdsRequest;
+import org.apache.streams.twitter.api.FriendsListRequest;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.twitter.pojo.User;
@@ -122,18 +125,17 @@ public class TwitterFollowingProvider implements StreamsProvider, Serializable {
     String configfile = args[0];
     String outfile = args[1];
 
-    Config reference = ConfigFactory.load();
     File file = new File(configfile);
     assert (file.exists());
-    Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
+    Config testConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false)).withFallback(StreamsConfigurator.getConfig()).resolve();
 
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    TwitterFollowingConfiguration config = new ComponentConfigurator<>(TwitterFollowingConfiguration.class).detectConfiguration(typesafe, "twitter");
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(testConfig);
+    TwitterFollowingConfiguration config = new ComponentConfigurator<>(TwitterFollowingConfiguration.class).detectConfiguration(testConfig, "twitter");
     TwitterFollowingProvider provider = new TwitterFollowingProvider(config);
 
-    ObjectMapper mapper = new StreamsJacksonMapper(Collections.singletonList(TwitterDateTimeFormat.TWITTER_FORMAT));
+    StreamsJacksonMapperConfiguration mapperConfiguration = new StreamsJacksonMapperConfiguration()
+        .withDateFormats(Collections.singletonList(TwitterDateTimeFormat.TWITTER_FORMAT));
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance(mapperConfiguration);
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
     provider.prepare(config);
@@ -230,11 +232,16 @@ public class TwitterFollowingProvider implements StreamsProvider, Serializable {
 
     Preconditions.checkArgument(getConfig().getEndpoint().equals("friends") || getConfig().getEndpoint().equals("followers"));
 
-    if( config.getEndpoint().equals("friends")) {
-      submitFriendsThreads(ids, names);
-    } else if( config.getEndpoint().equals("followers")) {
-      submitFollowersThreads(ids, names);
+    for (Long id : ids) {
+      submitTask(createTask(id, null));
+      LOGGER.info("Thread Submitted: {}", id);
     }
+
+    for (String name : names) {
+      submitTask(createTask(null, name));
+      LOGGER.info("Thread Submitted: {}", name);
+    }
+
   }
 
   public void startStream() {
@@ -245,62 +252,43 @@ public class TwitterFollowingProvider implements StreamsProvider, Serializable {
 
     running.set(true);
 
+    LOGGER.info("isRunning");
+
     executor.shutdown();
 
   }
 
-  protected void submitFollowersThreads(List<Long> ids, List<String> names) {
-
-    for (Long id : ids) {
-      TwitterFollowersIdsProviderTask providerTask =
-          new TwitterFollowersIdsProviderTask(
+  protected Runnable createTask(Long id, String name) {
+    if( config.getEndpoint().equals("friends") && config.getIdsOnly() == true ) {
+      FriendsIdsRequest request = (FriendsIdsRequest)new FriendsIdsRequest().withId(id).withScreenName(name);
+      return new TwitterFriendsIdsProviderTask(
               this,
               client,
-              (FollowersIdsRequest)new FollowersIdsRequest().withId(id));
-
-      ListenableFuture future = executor.submit(providerTask);
-      futures.add(future);
-      LOGGER.info("Thread Submitted: {}", providerTask.request);
-    }
-
-    for (String name : names) {
-      TwitterFollowersIdsProviderTask providerTask =
-          new TwitterFollowersIdsProviderTask(
-              this,
-              client,
-              (FollowersIdsRequest)new FollowersIdsRequest().withScreenName(name));
-
-      ListenableFuture future = executor.submit(providerTask);
-      futures.add(future);
-      LOGGER.info("Thread Submitted: {}", providerTask.request);
-    }
+              request);
+    } else if( config.getEndpoint().equals("friends") && config.getIdsOnly() == false ) {
+      FriendsListRequest request = (FriendsListRequest)new FriendsListRequest().withId(id).withScreenName(name);
+      return new TwitterFriendsListProviderTask(
+          this,
+          client,
+          request);
+    } else if( config.getEndpoint().equals("followers") && config.getIdsOnly() == true ) {
+      FollowersIdsRequest request = (FollowersIdsRequest)new FollowersIdsRequest().withId(id).withScreenName(name);
+      return new TwitterFollowersIdsProviderTask(
+          this,
+          client,
+          request);
+    } else if( config.getEndpoint().equals("followers") && config.getIdsOnly() == false ) {
+      FollowersListRequest request = (FollowersListRequest)new FollowersListRequest().withId(id).withScreenName(name);
+      return new TwitterFollowersListProviderTask(
+          this,
+          client,
+          request);
+    } else return null;
   }
 
-  protected void submitFriendsThreads(List<Long> ids, List<String> names) {
-
-    for (Long id : ids) {
-      TwitterFriendsIdsProviderTask providerTask =
-          new TwitterFriendsIdsProviderTask(
-              this,
-              client,
-              (FriendsIdsRequest)new FriendsIdsRequest().withId(id));
-
-      ListenableFuture future = executor.submit(providerTask);
-      futures.add(future);
-      LOGGER.info("Thread Submitted: {}", providerTask.request);
-    }
-
-    for (String name : names) {
-      TwitterFriendsIdsProviderTask providerTask =
-          new TwitterFriendsIdsProviderTask(
-              this,
-              client,
-              (FriendsIdsRequest)new FriendsIdsRequest().withScreenName(name));
-
-      ListenableFuture future = executor.submit(providerTask);
-      futures.add(future);
-      LOGGER.info("Thread Submitted: {}", providerTask.request);
-    }
+  protected void submitTask(Runnable providerTask) {
+    ListenableFuture future = executor.submit(providerTask);
+    futures.add(future);
   }
 
   protected Twitter getTwitterClient() throws InstantiationException {

@@ -34,7 +34,7 @@ public class TwitterTimelineProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProviderIT.class);
 
-  @Test
+  @Test(groups = "TwitterTimelineProviderIT")
   public void testTwitterTimelineProvider() throws Exception {
 
     String configfile = "./target/test-classes/TwitterTimelineProviderIT.conf";

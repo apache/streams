@@ -45,8 +45,8 @@ public class JodaDateSwap extends StringSwap<DateTime> {
   @Override /* PojoSwap */
   public String swap(BeanSession session, DateTime o) {
     DateTimeFormatter dateFormatter = this.dateFormatter;
-    if( StringUtils.isNotBlank(session.getProperty("format"))) {
-      dateFormatter = DateTimeFormat.forPattern(session.getProperty("format"));
+    if( StringUtils.isNotBlank(session.getStringProperty("format"))) {
+      dateFormatter = DateTimeFormat.forPattern(session.getStringProperty("format"));
     }
     return dateFormatter.print(o);
   }
@@ -54,8 +54,8 @@ public class JodaDateSwap extends StringSwap<DateTime> {
   @Override /* PojoSwap */
   public DateTime unswap(BeanSession session, String f, ClassMeta<?> hint) throws ParseException {
     DateTimeFormatter dateFormatter = this.dateFormatter;
-    if( StringUtils.isNotBlank(session.getProperty("format"))) {
-      dateFormatter = DateTimeFormat.forPattern(session.getProperty("format"));
+    if( StringUtils.isNotBlank(session.getStringProperty("format"))) {
+      dateFormatter = DateTimeFormat.forPattern(session.getStringProperty("format"));
     }
     return dateFormatter.parseDateTime(f);
   }

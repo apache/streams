@@ -34,7 +34,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.juneau</groupId>
-            <artifactId>juneau-core</artifactId>
+            <artifactId>juneau-marshall</artifactId>
         </dependency>
         <dependency>
             <groupId>com.typesafe</groupId>

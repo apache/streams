@@ -74,7 +74,7 @@ public class KinesisPersistWriter implements StreamsPersistWriter {
    * KinesisPersistWriter constructor - resolves KinesisWriterConfiguration from JVM 'kinesis'.
    */
   public KinesisPersistWriter() {
-    Config config = StreamsConfigurator.config.getConfig("kinesis");
+    Config config = StreamsConfigurator.getConfig().getConfig("kinesis");
     this.config = new ComponentConfigurator<>(KinesisWriterConfiguration.class).detectConfiguration(config);
     this.persistQueue  = new ConcurrentLinkedQueue<>();
   }
