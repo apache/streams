@@ -2,7 +2,7 @@
 
 Start neo4j via docker with the docker maven plugin:
 
-    docker -PdockerITs docker:start
+    mvn -PdockerITs docker:start
 
 Confirm that neo4j is running:
 
