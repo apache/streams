@@ -2,7 +2,7 @@
 
 Start mongo via docker with the docker maven plugin:
 
-    docker -PdockerITs docker:start
+    mvn -PdockerITs docker:start
 
 Confirm that elasticsearch is running:
 
