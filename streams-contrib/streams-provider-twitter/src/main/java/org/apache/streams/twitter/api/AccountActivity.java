@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Interface for /account_activity methods.
  *
- * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
+ * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/overview">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/overview</a>
  */
 @Remoteable(path = "https://api.twitter.com/1.1/account_activity")
 public interface AccountActivity {
@@ -43,7 +43,7 @@ public interface AccountActivity {
    * We mark a URL as invalid if it fails the daily validation check. In order to re-enable the URL, call the update endpoint.
    *
    * @return List\<Webhook\>
-   * @see <a href=https://https://dev.twitter.com/webhooks/reference/get/account_activity/webhooks">https://https://dev.twitter.com/webhooks/reference/get/account_activity/webhooks</a>
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-webhook-config</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/webhooks.json")
@@ -55,7 +55,7 @@ public interface AccountActivity {
    * Only one webhook URL can be registered to an application.
    *
    * @return Webhook
-   * @see <a href=https://dev.twitter.com/webhooks/reference/post/account_activity/webhooks">https://dev.twitter.com/webhooks/reference/post/account_activity/webhooks</a>
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/new-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/new-webhook-config</a>
    *
    */
   @RemoteMethod(httpMethod = "POST", path = "/webhooks.json")
@@ -65,7 +65,7 @@ public interface AccountActivity {
    * Removes the webhook from the provided application’s configuration. The webhook ID can be accessed by making a call to GET /1.1/account_activity/webhooks.
    *
    * @return Boolean
-   * @see <a href=https://dev.twitter.com/webhooks/reference/del/account_activity/webhooks">https://dev.twitter.com/webhooks/reference/del/account_activity/webhooks</a>
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/delete-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/delete-webhook-config</a>
    *
    */
   @RemoteMethod(httpMethod = "DELETE", path = "/webhooks/{webhookId}.json")
@@ -76,7 +76,7 @@ public interface AccountActivity {
    *
    * @param webhookId Webhook ID. Defined in resource path.
    * @return Boolean
-   * @see <a href=https://dev.twitter.com/webhooks/reference/put/account_activity/webhooks">https://dev.twitter.com/webhooks/reference/put/account_activity/webhooks</a>
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/validate-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/validate-webhook-config</a>
    *
    */
   @RemoteMethod(httpMethod = "PUT", path = "/webhooks/{webhookId}.json")
@@ -87,7 +87,7 @@ public interface AccountActivity {
    *
    * @param webhookId Webhook ID. Defined in resource path.
    * @return Boolean
-   * @see <a href=https://dev.twitter.com/webhooks/reference/put/account_activity/webhooks">https://dev.twitter.com/webhooks/reference/put/account_activity/webhooks</a>
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-subscription">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-subscription</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/webhooks/{webhookId}/subscriptions.json")
@@ -100,7 +100,7 @@ public interface AccountActivity {
    *
    * @param webhookId Webhook ID. Defined in resource path.
    * @return Boolean
-   * @see <a href=https://dev.twitter.com/webhooks/reference/post/account_activity/webhooks/subscriptions">https://dev.twitter.com/webhooks/reference/post/account_activity/webhooks/subscriptions</a>
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/new-subscription">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/new-subscription</a>
    *
    */
   @RemoteMethod(httpMethod = "POST", path = "/webhooks/{webhookId}/subscriptions.json")
@@ -113,7 +113,7 @@ public interface AccountActivity {
    *
    * @param webhookId Webhook ID. Defined in resource path.
    * @return Boolean
-   * @see <a href=https://dev.twitter.com/webhooks/reference/del/account_activity/webhooks/subscriptions">https://dev.twitter.com/webhooks/reference/del/account_activity/webhooks/subscriptions</a>
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/delete-subscription">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/delete-subscription</a>
    *
    */
   @RemoteMethod(httpMethod = "DELETE", path = "/webhooks/{webhookId}/subscriptions.json")
