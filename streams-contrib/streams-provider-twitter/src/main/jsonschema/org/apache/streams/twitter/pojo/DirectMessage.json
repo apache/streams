@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.twitter.pojo.DirectMessage",
+    "javaInterfaces": ["java.io.Serializable"],
+    "description": "",
+    "properties": {
+        "created_at": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "entities": {
+            "$ref": "./tweet.json#properties/entities"
+        },
+        "recipient": {
+            "type": "./User.json"
+        },
+        "recipient_id": {
+            "type": "integer"
+        },
+        "recipient_screen_name": {
+            "type": "string"
+        },
+        "sender": {
+            "type": "./User.json"
+        },
+        "sender_id": {
+            "type": "integer"
+        },
+        "sender_screen_name": {
+            "type": "string"
+        },
+        "text": {
+            "type": "string"
+        }
+    }
+}

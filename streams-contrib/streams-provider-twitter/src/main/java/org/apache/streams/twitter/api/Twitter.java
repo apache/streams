@@ -22,6 +22,7 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.TwitterConfiguration;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.twitter.converter.TwitterJodaDateSwap;
+import org.apache.streams.twitter.pojo.DirectMessage;
 import org.apache.streams.twitter.pojo.DirectMessageEvent;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
@@ -402,5 +403,30 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
   public DirectMessageEvent newEvent(MessageCreateRequest event) {
     DirectMessages proxy = restClient.getRemoteableProxy(DirectMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages");
     return proxy.newEvent(event);
+  }
+
+  @Override
+  public DirectMessage destroy(Long id) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public DirectMessage show(Long id) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<DirectMessage> list(DirectMessagesListRequest parameters) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<DirectMessage> sent(DirectMessagesSentRequest parameters) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public DirectMessage newDM(DirectMessageNewRequest parameters) {
+    throw new NotImplementedException();
   }
 }
