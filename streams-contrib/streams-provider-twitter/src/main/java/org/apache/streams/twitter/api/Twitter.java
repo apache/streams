@@ -30,6 +30,7 @@ import org.apache.streams.twitter.pojo.WelcomeMessageRule;
 import org.apache.streams.twitter.provider.TwitterProviderUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.client.config.RequestConfig;
@@ -231,6 +232,16 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
     Account restAccount = restClient.getRemoteableProxy(Account.class, TwitterProviderUtil.baseUrl(configuration)+"/account");
     User result = restAccount.verifyCredentials();
     return result;
+  }
+
+  @Override
+  public User updateProfile(UpdateProfileRequest parameters) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public AccountSettings updateSettings(UpdateProfileRequest parameters) {
+    throw new NotImplementedException();
   }
 
   @Override

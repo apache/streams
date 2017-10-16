@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.UpdateProfileRequest",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/post-account-update_profile",
+  "properties": {
+    "name": {
+      "description": "Full name associated with the profile. Maximum of 20 characters.",
+      "required": false,
+      "type": "string"
+    },
+    "url": {
+      "description": "URL associated with the profile. Will be prepended with \"http://\" if not present. Maximum of 100 characters.",
+      "required": false,
+      "type": "string"
+    },
+    "location": {
+      "description": "The city or country describing where the user of the account is located. The contents are not normalized or geocoded in any way. Maximum of 30 characters.",
+      "required": false,
+      "type": "string"
+    },
+    "description": {
+      "description": "A description of the user owning the account. Maximum of 160 characters.",
+      "required": false,
+      "type": "string"
+    },
+    "profile_link_color": {
+      "description": "Sets a hex value that controls the color scheme of links used on the authenticating user’s profile page on twitter.com. This must be a valid hexadecimal value, and may be either three or six characters (ex: F00 or FF0000).",
+      "required": false,
+      "type": "string"
+    },
+    "include_entities": {
+      "description": "The entities node will not be included when set to false.",
+      "required": false,
+      "type": "string"
+    },
+    "skip_status": {
+      "description": "When set to either true , t or 1 statuses will not be included in the returned user objects.",
+      "required": false,
+      "type": "string"
+    }
+  }
+}

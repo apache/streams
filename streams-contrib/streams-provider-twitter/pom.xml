@@ -25,10 +25,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>streams-provider-twitter</artifactId>
+    <name>streams-provider-twitter</name>
+
+    <description>Twitter Provider</description>
 
     <properties>
         <skipITs>true</skipITs>
-        <testDataBaseURl>http://streams.peoplepattern.com.s3.amazonaws.com/test-data/</testDataBaseURl>
     </properties>
 
     <dependencies>
