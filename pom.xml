@@ -710,27 +710,6 @@
                     </dependencies>
                 </plugin>
                 <plugin>
-                    <groupId>com.googlecode.maven-download-plugin</groupId>
-                    <artifactId>download-maven-plugin</artifactId>
-                    <version>${download.plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>download-it-data</id>
-                            <phase>pre-integration-test</phase>
-                            <goals>
-                                <goal>wget</goal>
-                            </goals>
-                            <configuration>
-                                <skip>${skipITs}</skip>
-                                <url>${testDataBaseURl}/${project.artifactId}.zip</url>
-                                <unpack>true</unpack>
-                                <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
-                                <!--<md5>df65b5642f33676313ebe4d5b69a3fff</md5>-->
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>${failsafe.plugin.version}</version>

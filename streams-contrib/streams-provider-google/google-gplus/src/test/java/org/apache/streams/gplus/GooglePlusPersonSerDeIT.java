@@ -30,6 +30,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.api.services.plus.model.Person;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,11 @@ import static org.testng.Assert.assertTrue;
  * Tests conversion of gplus inputs to Activity.
  */
 public class GooglePlusPersonSerDeIT {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(GooglePlusPersonSerDeIT.class);
+
+  private static Config application = ConfigFactory.parseResources("GooglePlusPersonSerDeIT.conf").withFallback(ConfigFactory.load());
+
   private ObjectMapper objectMapper;
 
   /**
@@ -63,9 +69,12 @@ public class GooglePlusPersonSerDeIT {
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
-  @Test
+  @Test(groups = "GooglePlusPersonSerDeIT", dependsOnGroups = "GPlusUserDataProviderIT")
   public void testPersonObjects() {
-    InputStream is = GooglePlusPersonSerDeIT.class.getResourceAsStream("/google_plus_person_jsons.txt");
+
+    String inputResourcePath = application.getString("inputResourcePath");
+
+    InputStream is = GooglePlusPersonSerDeIT.class.getResourceAsStream(inputResourcePath);
     InputStreamReader isr = new InputStreamReader(is);
     BufferedReader br = new BufferedReader(isr);
 

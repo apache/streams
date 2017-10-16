@@ -33,6 +33,8 @@ import java.io.InputStreamReader;
 
 /**
  * Tests ability to convert String json form to {@link org.apache.streams.sysomos.Sysomos} form
+ *
+ * Disabled until an IT that produces fresh test data is added.
  */
 public class SysomosJsonSerDeIT {
 
@@ -40,7 +42,7 @@ public class SysomosJsonSerDeIT {
 
   private ObjectMapper mapper = new ObjectMapper();
 
-  @Test
+  @Test(enabled = false)
   public void testSysomosJsonSerDe() {
 
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.FALSE);

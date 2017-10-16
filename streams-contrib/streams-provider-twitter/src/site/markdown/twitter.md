@@ -1,6 +1,6 @@
 ## Twitter Credentials
 
-Create a local file `twitter.oauth.conf` with valid twitter credentials
+Create a local file `twitter.conf` with valid twitter credentials
 
     twitter {
       oauth {
@@ -20,5 +20,7 @@ Select your application and click into 'Keys and Access Tokens'
 The consumerKey and consumerSecret are application-wide.
 
 The accessToken and accessTokenSecret are per-user.
+
+When running integration testing, twitter.conf must be in the root of the streams project repository.
 
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

@@ -1,11 +1,8 @@
-# environment ignores #
-streams-master-pom/
-
 # Compile directores and files #
-
-target/
-overlays/
 dependency-reduced-pom.xml
+dist/
+overlays/
+target/
 **/src/site/resources
 
 # IDE directories/files #
@@ -15,6 +12,16 @@ dependency-reduced-pom.xml
 .settings/
 .classpath
 .project
+
+# Maven plug-in generated files #
+DEPENDENCIES
+DISCLAIMER
+LICENSE
+NOTICE
+
+# Local Configuration Files
+/*.conf
+/*.properties
 
 # OS generated files #
 .DS_Store
@@ -26,8 +33,3 @@ Icon?
 ehthumbs.db
 Thumbs.db
 
-# Maven plug-in generated files #
-DEPENDENCIES
-DISCLAIMER
-LICENSE
-NOTICE

@@ -31,4 +31,6 @@ Supply application-specific configuration as well:
         collection: ""
     }
 
+When running integration testing, mongo.properties must be in the root of the streams project repository.
+
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

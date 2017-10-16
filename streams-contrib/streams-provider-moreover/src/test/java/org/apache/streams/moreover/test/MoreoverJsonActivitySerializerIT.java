@@ -36,6 +36,8 @@ import java.nio.charset.Charset;
 
 /**
  * Tests ability to serialize moreover json Strings.
+ *
+ * Disabled until credentials, provider and provider IT capable of generating fresh data are available.
  */
 public class MoreoverJsonActivitySerializerIT {
 
@@ -62,7 +64,7 @@ public class MoreoverJsonActivitySerializerIT {
     json = mapper.readValue(writer.toString(), JsonNode.class);
   }
 
-  @Test
+  @Test(enabled = false)
   public void loadData() throws Exception {
     for (JsonNode item : json) {
       MoreoverTestUtil.validate(serializer.deserialize(getString(item)));

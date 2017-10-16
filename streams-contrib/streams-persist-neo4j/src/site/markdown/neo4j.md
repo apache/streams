@@ -26,4 +26,6 @@ When configuring a stream, include these files:
     include "neo4j.properties"
     include "neo4j.conf"
 
+When running integration testing, neo4j.properties must be in the root of the streams project repository.
+
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

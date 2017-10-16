@@ -34,7 +34,7 @@ public class FacebookPageFeedProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FacebookPageFeedProviderIT.class);
 
-  @Test
+  @Test(groups = "FacebookPageFeedProviderIT")
   public void testFacebookPageFeedProvider() throws Exception {
 
     String configfile = "./target/test-classes/FacebookPageFeedProviderIT.conf";

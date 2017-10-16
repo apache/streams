@@ -32,7 +32,7 @@ public class GPlusUserDataProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GPlusUserDataProviderIT.class);
 
-  @Test(groups={"testGPlusUserDataProvider"})
+  @Test(groups={"GPlusUserDataProviderIT"})
   public void testGPlusUserDataProvider() throws Exception {
 
     String configfile = "./target/test-classes/GPlusUserDataProviderIT.conf";

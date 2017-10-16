@@ -32,4 +32,6 @@ Supply application-specific configuration as well:
         type: ""
     }
 
+When running integration testing, elasticsearch.properties must be in the root of the streams project repository.
+
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
