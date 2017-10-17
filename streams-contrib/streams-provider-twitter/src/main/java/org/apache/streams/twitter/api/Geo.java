@@ -31,7 +31,8 @@ import java.util.List;
 /**
  * Interface for /geo methods.
  *
- * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
+ * @see <a href="https://developer.twitter.com/en/docs/geo/place-information/overview">https://developer.twitter.com/en/docs/geo/place-information/overview</a>
+ * @see <a href="https://developer.twitter.com/en/docs/geo/places-near-location/overview">https://developer.twitter.com/en/docs/geo/places-near-location/overview</a>
  */
 @Remoteable(path = "https://api.twitter.com/1.1/geo")
 public interface Geo {
@@ -41,7 +42,7 @@ public interface Geo {
    *
    * @param place_id A place in the world. These IDs can be retrieved from geo/reverse_geocode.
    * @return {@link org.apache.streams.twitter.pojo.Place}
-   * @see <a href="https://dev.twitter.com/rest/reference/get/geo/id">https://dev.twitter.com/rest/reference/get/geo/id</a>
+   * @see <a href="https://developer.twitter.com/en/docs/geo/place-information/api-reference/get-geo-id-place_id">https://developer.twitter.com/en/docs/geo/place-information/api-reference/get-geo-id-place_id</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/id/{place_id}.json")
@@ -52,7 +53,7 @@ public interface Geo {
    *
    * @param parameters A place in the world. These IDs can be retrieved from geo/reverse_geocode.
    * @return {@link org.apache.streams.twitter.api.GeoSearchResponse}
-   * @see <a href="https://dev.twitter.com/rest/reference/get/geo/search">https://dev.twitter.com/rest/reference/get/geo/search</a>
+   * @see <a href="https://developer.twitter.com/en/docs/geo/places-near-location/api-reference/get-geo-search">https://developer.twitter.com/en/docs/geo/places-near-location/api-reference/get-geo-search</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/search.json")
@@ -63,7 +64,7 @@ public interface Geo {
    *
    * @param parameters A place in the world. These IDs can be retrieved from geo/reverse_geocode.
    * @return {@link org.apache.streams.twitter.api.GeoSearchResponse}
-   * @see <a href="https://dev.twitter.com/rest/reference/get/geo/reverse_geocode">https://dev.twitter.com/rest/reference/get/geo/reverse_geocode</a>
+   * @see <a href="https://developer.twitter.com/en/docs/geo/places-near-location/api-reference/get-geo-reverse_geocode">https://developer.twitter.com/en/docs/geo/places-near-location/api-reference/get-geo-reverse_geocode</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/reverse_geocode.json")
