@@ -41,22 +41,46 @@ public interface Users {
    * Returns fully-hydrated user objects for up to 100 users per request, as specified by comma-separated values passed to the user_id and/or screen_name parameters.
    *
    * @param parameters {@link org.apache.streams.twitter.api.UsersLookupRequest}
-   * @return List<User>
-   * @see <a href="https://dev.twitter.com/rest/reference/get/users/lookup">https://dev.twitter.com/rest/reference/get/users/lookup</a>
+   * @return {@link java.util.List}[{@link org.apache.streams.twitter.pojo.User}]
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-lookup">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-lookup</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/lookup.json")
   public List<User> lookup( @QueryIfNE UsersLookupRequest parameters);
 
   /**
-   * Returns a variety of information about the user specified by the required user_id or screen_name parameter. The author’s most recent Tweet will be returned inline when possible.
+   * Provides a simple, relevance-based search interface to public user accounts on Twitter. Try querying by topical interest, full name, company name, location, or other criteria. Exact match searches are not supported.
    *
-   * @param parameters {@link org.apache.streams.twitter.api.UsersShowRequest}
-   * @return List<User>
-   * @see <a href="https://dev.twitter.com/rest/reference/get/users/show">https://dev.twitter.com/rest/reference/get/users/show</a>
+   * Only the first 1,000 matching results are available.
+   *
+   * @param parameters {@link org.apache.streams.twitter.api.UsersSearchRequest}
+   * @return {@link java.util.List}[{@link org.apache.streams.twitter.pojo.User}]
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-search">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-search</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/show.json")
+  @RemoteMethod(httpMethod = "GET", path = "/search.json")
+  public List<User> search( @QueryIfNE UsersSearchRequest parameters);
+
+  /**
+   * Access to Twitter’s suggested user list. This returns the list of suggested user categories.
+   *
+   * @param lang Restricts the suggested categories to the requested language. The language must be specified by the appropriate two letter ISO 639-1 representation.
+   * @return {@link java.util.List}[{@link org.apache.streams.twitter.api.SuggestedUserCategory}]
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions</a>
+   *
+   */
+  @RemoteMethod(httpMethod = "GET", path = "/suggestions.json")
+  public List<SuggestedUserCategory> suggestedUserCategories( @QueryIfNE("lang") String lang);
+
+  /**
+   * Access to Twitter’s suggested user list. This returns the list of suggested user categories.
+   *
+   * @param lang Restricts the suggested categories to the requested language. The language must be specified by the appropriate two letter ISO 639-1 representation.
+   * @return {@link java.util.List}[{@link org.apache.streams.twitter.api.SuggestedUserCategory}]
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions</a>
+   *
+   */
+  @RemoteMethod(httpMethod = "GET", path = "/suggestions/{slug}")
   public User show( @QueryIfNE UsersShowRequest parameters);
 
 }
