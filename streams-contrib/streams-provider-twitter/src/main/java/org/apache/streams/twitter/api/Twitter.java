@@ -61,7 +61,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Implementation of all twitter interfaces using juneau.
  */
-public class Twitter implements Account, AccountActivity, DirectMessages, Favorites, Followers, Friends, Statuses, Users, WelcomeMessages, WelcomeMessageRules {
+public class Twitter implements Account, AccountActivity, DirectMessages, Favorites, Followers, Friends, Statuses, SuggestedUsers, Users, WelcomeMessages, WelcomeMessageRules {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Twitter.class);
 
@@ -205,6 +205,16 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
     Users restUsers = restClient.getRemoteableProxy(Users.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
     List<User> result = restUsers.lookup(parameters);
     return result;
+  }
+
+  @Override
+  public List<User> search(UsersSearchRequest parameters) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<SuggestedUserCategory> suggestedUserCategories(String lang) {
+    return null;
   }
 
   @Override
@@ -427,6 +437,21 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
 
   @Override
   public DirectMessage newDM(DirectMessageNewRequest parameters) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<SuggestedUserCategory> categories(String lang) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public SuggestedUserCategory suggestions(String slug, String lang) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<User> members(String slug) {
     throw new NotImplementedException();
   }
 }
