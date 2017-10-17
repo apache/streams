@@ -33,7 +33,8 @@ import java.util.List;
 /**
  * Interface for /statuses methods.
  *
- * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
+ * @see <a href="https://developer.twitter.com/en/docs/tweets/post-and-engage/overview">https://developer.twitter.com/en/docs/tweets/post-and-engage/overview</a>
+ * @see <a href="https://developer.twitter.com/en/docs/tweets/timelines/overview">https://developer.twitter.com/en/docs/tweets/timelines/overview</a>
  */
 @Remoteable(path = "https://api.twitter.com/1.1/statuses")
 public interface Statuses {
@@ -42,8 +43,8 @@ public interface Statuses {
    * Returns a collection of the most recent Tweets posted by the user indicated by the screen_name or user_id parameters.
    *
    * @param parameters {@link org.apache.streams.twitter.api.StatusesHomeTimelineRequest}
-   * @return List<Tweet>
-   * @see <a href="https://dev.twitter.com/rest/reference/get/statuses/home_timeline">https://dev.twitter.com/rest/reference/get/statuses/home_timeline</a>
+   * @return {@link java.util.List}[{@link org.apache.streams.twitter.pojo.Tweet}]
+   * @see <a href="https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-home_timeline">https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-home_timeline</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/home_timeline.json")
@@ -53,8 +54,8 @@ public interface Statuses {
    * Returns fully-hydrated Tweet objects for up to 100 Tweets per request, as specified by comma-separated values passed to the id parameter.
    *
    * @param parameters {@link org.apache.streams.twitter.api.StatusesLookupRequest}
-   * @return List<Tweet>
-   * @see <a href="https://dev.twitter.com/rest/reference/get/statuses/lookup">https://dev.twitter.com/rest/reference/get/statuses/lookup</a>
+   * @return {@link java.util.List}[{@link org.apache.streams.twitter.pojo.Tweet}]
+   * @see <a href="https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-lookup">https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-lookup</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/lookup.json")
@@ -67,9 +68,9 @@ public interface Statuses {
    *
    * This method can only return up to 800 tweets.
    *
-   * @param parameters {@link org.apache.streams.twitter.api.StatusesUserTimelineRequest}
-   * @return List<Tweet>
-   * @see <a href="https://dev.twitter.com/rest/reference/get/statuses/mentions_timeline">https://dev.twitter.com/rest/reference/get/statuses/mentions_timeline</a>
+   * @param parameters {@link org.apache.streams.twitter.api.StatusesMentionsTimelineRequest}
+   * @return {@link java.util.List}[{@link org.apache.streams.twitter.pojo.Tweet}]
+   * @see <a href="https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-mentions_timeline">https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-mentions_timeline</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/mentions_timeline.json")
@@ -79,8 +80,8 @@ public interface Statuses {
    * Returns a single Tweet, specified by the id parameter. The Tweet’s author will also be embedded within the Tweet.
    *
    * @param parameters {@link org.apache.streams.twitter.api.StatusesShowRequest}
-   * @return Tweet
-   * @see <a href="https://dev.twitter.com/rest/reference/get/statuses/show/id">https://dev.twitter.com/rest/reference/get/statuses/show/id</a>
+   * @return {@link org.apache.streams.twitter.pojo.Tweet}
+   * @see <a href="https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-show-id">https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-show-id</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/show/{id}")
@@ -90,8 +91,8 @@ public interface Statuses {
    * Returns a collection of the most recent Tweets posted by the user indicated by the screen_name or user_id parameters.
    *
    * @param parameters {@link org.apache.streams.twitter.api.StatusesUserTimelineRequest}
-   * @return List<Tweet>
-   * @see <a href="https://dev.twitter.com/rest/reference/get/statuses/user_timeline">https://dev.twitter.com/rest/reference/get/statuses/user_timeline</a>
+   * @return {@link java.util.List}[{@link org.apache.streams.twitter.pojo.Tweet}]
+   * @see <a href="https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-user_timeline">https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-user_timeline</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/user_timeline.json")
