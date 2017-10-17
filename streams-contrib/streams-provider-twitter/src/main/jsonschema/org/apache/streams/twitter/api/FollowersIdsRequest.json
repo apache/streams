@@ -7,7 +7,7 @@
   "type": "object",
   "javaType" : "org.apache.streams.twitter.api.FollowersIdsRequest",
   "javaInterfaces": ["java.io.Serializable"],
-  "description": "https://dev.twitter.com/rest/reference/get/followers/ids",
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids",
   "extends": { "$ref": "FollowingIdsRequest.json" },
   "properties": {}
 }

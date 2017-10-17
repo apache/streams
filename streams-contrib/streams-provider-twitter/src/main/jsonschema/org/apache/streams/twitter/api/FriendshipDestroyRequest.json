@@ -7,7 +7,7 @@
   "type": "object",
   "javaType" : "org.apache.streams.twitter.api.FriendshipDestroyRequest",
   "javaInterfaces": ["java.io.Serializable"],
-  "description": "https://https://dev.twitter.com/rest/reference/post/friendships/destroy",
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-destroy",
   "properties": {
     "screen_name": {
       "description": "The screen name of the user for whom to befriend.",

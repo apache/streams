@@ -6,7 +6,7 @@
   "id": "#",
   "javaType" : "org.apache.streams.twitter.api.StatusesLookupRequest",
   "javaInterfaces": ["java.io.Serializable"],
-  "description": "https://dev.twitter.com/rest/reference/get/statuses/lookup",
+  "description": "https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-lookup",
   "properties": {
     "id": {
       "description": "A comma separated list of Tweet IDs, up to 100 are allowed in a single request.",

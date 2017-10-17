@@ -8,7 +8,7 @@
   "javaInterfaces": [
     "java.io.Serializable"
   ],
-  "description": "https://dev.twitter.com/rest/reference/post/direct_messages/welcome_messages/rules/new",
+  "description": "https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/new-welcome-message-rule",
   "properties": {
     "welcome_message_rule": {
       "type": "object",
