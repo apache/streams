@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<rss version="0.91">
+  <channel>
+    <title>streams-provider-facebook - Checkstyle report</title>
+    <link>https://github.com/apache/streams/streams-contrib/streams-provider-facebook</link>
+    <description>streams-provider-facebook - Checkstyle report</description>
+    <language>en-us</language>
+    <copyright>&#169;2017 The Apache Software Foundation</copyright>
+    <item>
+      <title>File: 17,
+             Errors: 752,
+             Warnings: 0,
+             Infos: 0
+      </title>
+            <link>https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html</link>
+      <description>
+        <p>Click <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html">here</a> for the full Checkstyle report.</p>
+
+        <table summary="Files" boder="1">
+          <thead>
+            <tr>
+              <th>Files</th>
+              <th style="width:30px;"><abbr title="Info">I</abbr></th>
+              <th style="width:30px;"><abbr title="Warning">W</abbr></th>
+              <th style="width:30px;"><abbr title="Error">E</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.api.FacebookPageActivitySerializer.java">org/apache/streams/facebook/api/FacebookPageActivitySerializer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  15
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.serializer.FacebookStreamsPostSerializer.java">org/apache/streams/facebook/serializer/FacebookStreamsPostSerializer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  16
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.page.FacebookPageProvider.java">org/apache/streams/facebook/provider/page/FacebookPageProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.FacebookUserInformationProvider.java">org/apache/streams/facebook/provider/FacebookUserInformationProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  93
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.pagefeed.FacebookPageFeedDataCollector.java">org/apache/streams/facebook/provider/pagefeed/FacebookPageFeedDataCollector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.FacebookEventClassifier.java">org/apache/streams/facebook/provider/FacebookEventClassifier.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  12
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.FacebookFriendUpdatesProvider.java">org/apache/streams/facebook/provider/FacebookFriendUpdatesProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  98
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.FacebookFriendFeedProvider.java">org/apache/streams/facebook/provider/FacebookFriendFeedProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  118
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.pagefeed.FacebookPageFeedProvider.java">org/apache/streams/facebook/provider/pagefeed/FacebookPageFeedProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  17
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.api.FacebookPostActivitySerializer.java">org/apache/streams/facebook/api/FacebookPostActivitySerializer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.serializer.FacebookActivityUtil.java">org/apache/streams/facebook/serializer/FacebookActivityUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  43
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.page.FacebookPageDataCollector.java">org/apache/streams/facebook/provider/page/FacebookPageDataCollector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.feed.FacebookPublicFeedXmlActivitySerializer.java">org/apache/streams/facebook/feed/FacebookPublicFeedXmlActivitySerializer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.FacebookDataCollector.java">org/apache/streams/facebook/provider/FacebookDataCollector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  27
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.FacebookProvider.java">org/apache/streams/facebook/provider/FacebookProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.FacebookUserstreamProvider.java">org/apache/streams/facebook/provider/FacebookUserstreamProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  103
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.processor.FacebookTypeConverter.java">org/apache/streams/facebook/processor/FacebookTypeConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  76
+                </td>
+              </tr>
+                      </tbody>
+        </table>
+        
+      </description>
+    </item>
+  </channel>
+</rss>
+

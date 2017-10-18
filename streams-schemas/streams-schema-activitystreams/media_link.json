@@ -1,0 +1,34 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id":"#",
+    "type": "object",
+    "title": "media_link",
+    "javaInterfaces": ["java.io.Serializable"],
+    "description": "Visual representation of an object in the form of an image, video or embedded HTML fragments",
+    "properties": {
+        "duration": {
+            "title": "duration",
+            "type": "number",
+            "description": "A hint to the consumer about the length, in seconds, of the media resource identified by the url property. A media link MAY contain a \"duration\" property when the target resource is a time-based media item such as an audio or video."
+        },
+        "height": {
+            "title": "height",
+            "type": "integer",
+            "description": "A hint to the consumer about the height, in pixels, of the media resource identified by the url property. A media link MAY contain a height property when the target resource is a visual media item such as an image, video or embeddable HTML page."
+        },
+        "width": {
+            "title": "width",
+            "type": "integer",
+            "description": "A hint to the consumer about the width, in pixels, of the media resource identified by the url property. A media link MAY contain a width property when the target resource is a visual media item such as an image, video or embeddable HTML page."
+        },
+        "url": {
+            "type": "string",
+            "required": true,
+            "description": "The IRI of the media resource being linked. A media link MUST have a url property."
+        }
+    }
+}

@@ -1,0 +1,5 @@
+org.apache.streams.data
+org.apache.streams.data.util
+org.apache.streams.exceptions
+org.apache.streams.jackson
+org.apache.streams.juneau

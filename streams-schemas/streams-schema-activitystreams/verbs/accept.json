@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id":"#",
+    "type": "object",
+    "title": "Accept",
+    "description": "Indicates that that the actor has accepted the object. For instance, a person accepting an award, or accepting an assignment.",
+    "extends": {
+        "$ref": "../activity.json"
+    },
+    "properties": {
+        "verb": {
+            "type": "string",
+            "default": "accept"
+        },
+        "title": {
+            "type": "string",
+            "default": "{actor.displayName} accepted {object.displayName}"
+        }
+    }
+}

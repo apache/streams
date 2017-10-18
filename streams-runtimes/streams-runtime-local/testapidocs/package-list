@@ -1,0 +1,10 @@
+org.apache.streams.local.builders
+org.apache.streams.local.counters
+org.apache.streams.local.executors
+org.apache.streams.local.queues
+org.apache.streams.local.tasks
+org.apache.streams.local.test.processors
+org.apache.streams.local.test.providers
+org.apache.streams.local.test.writer
+org.apache.streams.test.component
+org.apache.streams.test.component.tests

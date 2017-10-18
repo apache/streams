@@ -1,0 +1,7 @@
+org.apache.streams.instagram.api
+org.apache.streams.instagram.processor
+org.apache.streams.instagram.provider
+org.apache.streams.instagram.provider.recentmedia
+org.apache.streams.instagram.provider.userinfo
+org.apache.streams.instagram.serializer
+org.apache.streams.instagram.serializer.util

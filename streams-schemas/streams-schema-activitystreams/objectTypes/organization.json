@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id":"#",
+    "type": "object",
+    "title": "organization",
+    "extends": {
+        "$ref": "../object.json"
+    },
+    "properties": {
+        "objectType": {
+            "type": "string",
+            "default": "organization"
+        }
+    }
+}

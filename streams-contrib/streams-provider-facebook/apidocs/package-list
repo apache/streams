@@ -1,0 +1,7 @@
+org.apache.streams.facebook.api
+org.apache.streams.facebook.feed
+org.apache.streams.facebook.processor
+org.apache.streams.facebook.provider
+org.apache.streams.facebook.provider.page
+org.apache.streams.facebook.provider.pagefeed
+org.apache.streams.facebook.serializer

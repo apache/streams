@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id":"#",
+    "type": "object",
+    "title": "Confirm",
+    "description": "Indicates that the actor has confirmed or agrees with the object. For instance, a software developer might confirm an issue reported against a product.",
+    "extends": {
+        "$ref": "../activity.json"
+    },
+    "properties": {
+        "verb": {
+            "type": "string",
+            "default": "confirm"
+        },
+        "title": {
+            "type": "string",
+            "default": "{actor.displayName} confirmed {object.displayName}"
+        }
+    }
+}

@@ -1,0 +1,4 @@
+org.apache.streams.twitter.test.api
+org.apache.streams.twitter.test.data
+org.apache.streams.twitter.test.providers
+org.apache.streams.twitter.test.utils

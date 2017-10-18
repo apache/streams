@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id":"#",
+    "type": "object",
+    "title": "Present",
+    "description": "Indicates that the actor has presented the object. For instance, when a person gives a presentation at a conference.",
+    "extends": {
+        "$ref": "../activity.json"
+    },
+    "properties": {
+        "verb": {
+            "type": "string",
+            "default": "present"
+        },
+        "title": {
+            "type": "string",
+            "default": "{actor.displayName} presented {object.displayName}"
+        }
+    }
+}

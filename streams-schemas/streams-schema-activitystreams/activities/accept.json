@@ -1,0 +1,16 @@
+{
+  "$license": [
+    "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "actor": {
+    "objectType": "person",
+    "displayName": "Sally"
+  },
+  "verb": "accept",
+  "object": {
+    "objectType": "job",
+    "displayName": "Director of Marketing"
+  },
+  "title": "Sally accepted the Director of Marketing job."
+}

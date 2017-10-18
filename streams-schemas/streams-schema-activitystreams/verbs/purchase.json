@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id":"#",
+    "type": "object",
+    "title": "Purchase",
+    "description": "Indicates that the actor has purchased the object. If a target is specified, in indicates the entity from which the object was purchased.",
+    "extends": {
+        "$ref": "../activity.json"
+    },
+    "properties": {
+        "verb": {
+            "type": "string",
+            "default": "purchase"
+        },
+        "title": {
+            "type": "string",
+            "default": "{actor.displayName} purchased {object.displayName} from {target.displayName}"
+        }
+    }
+}

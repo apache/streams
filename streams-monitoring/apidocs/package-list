@@ -1,0 +1,4 @@
+org.apache.streams.jackson
+org.apache.streams.monitoring.persist
+org.apache.streams.monitoring.persist.impl
+org.apache.streams.monitoring.tasks

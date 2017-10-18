@@ -1,0 +1,7 @@
+org.apache.streams.util
+org.apache.streams.util.api.requests.backoff
+org.apache.streams.util.api.requests.backoff.impl
+org.apache.streams.util.oauth.tokens
+org.apache.streams.util.oauth.tokens.tokenmanager
+org.apache.streams.util.oauth.tokens.tokenmanager.impl
+org.apache.streams.util.schema

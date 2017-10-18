@@ -1,0 +1,28 @@
+{
+  "$license": [
+    "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "actor": {
+    "objectType": "person",
+    "displayName": "Joe's Boss"
+  },
+  "verb": "give",
+  "object": {
+    "objectType": "note",
+    "displayName": "Notice of Employment Termination"
+  },
+  "target": {
+    "objectType": "collection",
+    "items": [
+      {
+        "objectType": "person",
+        "displayName": "Joe"
+      },
+      {
+        "objectType": "person",
+        "displayName": "Sally"
+      }
+    ]
+  }
+}

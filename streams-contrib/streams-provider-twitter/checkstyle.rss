@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<rss version="0.91">
+  <channel>
+    <title>streams-provider-twitter - Checkstyle report</title>
+    <link>https://github.com/apache/streams/streams-contrib/streams-provider-twitter</link>
+    <description>streams-provider-twitter - Checkstyle report</description>
+    <language>en-us</language>
+    <copyright>&#169;2017 The Apache Software Foundation</copyright>
+    <item>
+      <title>File: 44,
+             Errors: 1616,
+             Warnings: 0,
+             Infos: 0
+      </title>
+            <link>https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html</link>
+      <description>
+        <p>Click <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html">here</a> for the full Checkstyle report.</p>
+
+        <table summary="Files" boder="1">
+          <thead>
+            <tr>
+              <th>Files</th>
+              <th style="width:30px;"><abbr title="Info">I</abbr></th>
+              <th style="width:30px;"><abbr title="Warning">W</abbr></th>
+              <th style="width:30px;"><abbr title="Error">E</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.AccountActivity.java">org/apache/streams/twitter/api/AccountActivity.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  38
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.Geo.java">org/apache/streams/twitter/api/Geo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  17
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterTimelineProvider.java">org/apache/streams/twitter/provider/TwitterTimelineProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  90
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.Media.java">org/apache/streams/twitter/api/Media.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.processor.TwitterTypeConverter.java">org/apache/streams/twitter/processor/TwitterTypeConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.converter.TwitterJodaDateSwap.java">org/apache/streams/twitter/converter/TwitterJodaDateSwap.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  15
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterFriendsIdsProviderTask.java">org/apache/streams/twitter/provider/TwitterFriendsIdsProviderTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  46
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.Favorites.java">org/apache/streams/twitter/api/Favorites.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  7
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.Twitter.java">org/apache/streams/twitter/api/Twitter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  176
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.converter.TwitterJsonUserActivityObjectConverter.java">org/apache/streams/twitter/converter/TwitterJsonUserActivityObjectConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  16
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterStreamHelper.java">org/apache/streams/twitter/provider/TwitterStreamHelper.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterFollowersListProviderTask.java">org/apache/streams/twitter/provider/TwitterFollowersListProviderTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  45
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.WelcomeMessageRules.java">org/apache/streams/twitter/api/WelcomeMessageRules.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.converter.TwitterDateTimeFormat.java">org/apache/streams/twitter/converter/TwitterDateTimeFormat.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.Account.java">org/apache/streams/twitter/api/Account.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.TwitterRetryHandler.java">org/apache/streams/twitter/api/TwitterRetryHandler.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  35
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.DirectMessages.java">org/apache/streams/twitter/api/DirectMessages.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  15
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.converter.TwitterFollowActivityConverter.java">org/apache/streams/twitter/converter/TwitterFollowActivityConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.converter.StreamsTwitterMapper.java">org/apache/streams/twitter/converter/StreamsTwitterMapper.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.Friendships.java">org/apache/streams/twitter/api/Friendships.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.Followers.java">org/apache/streams/twitter/api/Followers.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  15
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.converter.util.TwitterActivityUtil.java">org/apache/streams/twitter/converter/util/TwitterActivityUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  73
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterFriendsListProviderTask.java">org/apache/streams/twitter/provider/TwitterFriendsListProviderTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  48
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.converter.TwitterJsonTweetActivityConverter.java">org/apache/streams/twitter/converter/TwitterJsonTweetActivityConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterFollowingProvider.java">org/apache/streams/twitter/provider/TwitterFollowingProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  109
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.TwitterSecurity.java">org/apache/streams/twitter/api/TwitterSecurity.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  82
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterProviderUtil.java">org/apache/streams/twitter/provider/TwitterProviderUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.converter.TwitterJsonDeleteActivityConverter.java">org/apache/streams/twitter/converter/TwitterJsonDeleteActivityConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterStreamProvider.java">org/apache/streams/twitter/provider/TwitterStreamProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  75
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.converter.TwitterJsonUserstreameventActivityConverter.java">org/apache/streams/twitter/converter/TwitterJsonUserstreameventActivityConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  31
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.Users.java">org/apache/streams/twitter/api/Users.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  12
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterUserInformationProvider.java">org/apache/streams/twitter/provider/TwitterUserInformationProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  118
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.processor.FetchAndReplaceTwitterProcessor.java">org/apache/streams/twitter/processor/FetchAndReplaceTwitterProcessor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  46
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.processor.TwitterUrlApiProcessor.java">org/apache/streams/twitter/processor/TwitterUrlApiProcessor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  14
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterFollowersIdsProviderTask.java">org/apache/streams/twitter/provider/TwitterFollowersIdsProviderTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  47
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.TwitterOAuthRequestInterceptor.java">org/apache/streams/twitter/api/TwitterOAuthRequestInterceptor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  81
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.converter.TwitterDocumentClassifier.java">org/apache/streams/twitter/converter/TwitterDocumentClassifier.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  16
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterUserInformationProviderTask.java">org/apache/streams/twitter/provider/TwitterUserInformationProviderTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  19
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.converter.TwitterJsonRetweetActivityConverter.java">org/apache/streams/twitter/converter/TwitterJsonRetweetActivityConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.converter.TwitterJsonUserActivityConverter.java">org/apache/streams/twitter/converter/TwitterJsonUserActivityConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.WelcomeMessages.java">org/apache/streams/twitter/api/WelcomeMessages.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  18
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.Statuses.java">org/apache/streams/twitter/api/Statuses.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  35
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterTimelineProviderTask.java">org/apache/streams/twitter/provider/TwitterTimelineProviderTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  44
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.Friends.java">org/apache/streams/twitter/api/Friends.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  12
+                </td>
+              </tr>
+                      </tbody>
+        </table>
+        
+      </description>
+    </item>
+  </channel>
+</rss>
+

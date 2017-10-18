@@ -1,0 +1,5 @@
+org.apache.streams.facebook.test
+org.apache.streams.facebook.test.data
+org.apache.streams.facebook.test.providers
+org.apache.streams.facebook.test.providers.page
+org.apache.streams.facebook.test.providers.pagefeed

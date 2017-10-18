@@ -1,0 +1,4 @@
+org.apache.streams.youtube.processor
+org.apache.streams.youtube.provider
+org.apache.streams.youtube.serializer
+org.apache.streams.youtube.test.providers

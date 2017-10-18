@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0",
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id":"#",
+    "type": "object",
+    "title": "Attend",
+    "description": "Indicates that the actor has attended the object. For instance, a person attending a meeting.",
+    "extends": {
+        "$ref": "../activity.json"
+    },
+    "properties": {
+        "verb": {
+            "type": "string",
+            "default": "attend"
+        },
+        "title": {
+            "type": "string",
+            "default": "{actor.displayName} attended {object.displayName}"
+        }
+    }
+}

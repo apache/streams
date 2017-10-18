@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<rss version="0.91">
+  <channel>
+    <title>streams-util - Checkstyle report</title>
+    <link>https://github.com/apache/streams/streams-util</link>
+    <description>streams-util - Checkstyle report</description>
+    <language>en-us</language>
+    <copyright>&#169;2017 The Apache Software Foundation</copyright>
+    <item>
+      <title>File: 22,
+             Errors: 455,
+             Warnings: 0,
+             Infos: 0
+      </title>
+            <link>https://github.com/apache/streams/streams-util/checkstyle.html</link>
+      <description>
+        <p>Click <a href="https://github.com/apache/streams/streams-util/checkstyle.html">here</a> for the full Checkstyle report.</p>
+
+        <table summary="Files" boder="1">
+          <thead>
+            <tr>
+              <th>Files</th>
+              <th style="width:30px;"><abbr title="Info">I</abbr></th>
+              <th style="width:30px;"><abbr title="Warning">W</abbr></th>
+              <th style="width:30px;"><abbr title="Error">E</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.PropertyUtil.java">org/apache/streams/util/PropertyUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  62
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.impl.ConstantTimeBackOffStrategy.java">org/apache/streams/util/api/requests/backoff/impl/ConstantTimeBackOffStrategy.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  13
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.GuidUtils.java">org/apache/streams/util/GuidUtils.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.schema.FileUtil.java">org/apache/streams/util/schema/FileUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  25
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.schema.SchemaStore.java">org/apache/streams/util/schema/SchemaStore.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  14
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.impl.ExponentialBackOffStrategy.java">org/apache/streams/util/api/requests/backoff/impl/ExponentialBackOffStrategy.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  9
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.BackOffException.java">org/apache/streams/util/api/requests/backoff/BackOffException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  19
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.schema.SchemaUtil.java">org/apache/streams/util/schema/SchemaUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  18
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.schema.UriUtil.java">org/apache/streams/util/schema/UriUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  10
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.schema.GenerationConfig.java">org/apache/streams/util/schema/GenerationConfig.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.schema.SchemaStoreImpl.java">org/apache/streams/util/schema/SchemaStoreImpl.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  122
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.BackOffStrategy.java">org/apache/streams/util/api/requests/backoff/BackOffStrategy.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.SerializationUtil.java">org/apache/streams/util/SerializationUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  9
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.oauth.tokens.tokenmanager.SimpleTokenManager.java">org/apache/streams/util/oauth/tokens/tokenmanager/SimpleTokenManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  9
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.schema.Schema.java">org/apache/streams/util/schema/Schema.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  30
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.impl.LinearTimeBackOffStrategy.java">org/apache/streams/util/api/requests/backoff/impl/LinearTimeBackOffStrategy.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  12
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.oauth.tokens.tokenmanager.impl.BasicTokenManager.java">org/apache/streams/util/oauth/tokens/tokenmanager/impl/BasicTokenManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  18
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.schema.FieldType.java">org/apache/streams/util/schema/FieldType.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.oauth.tokens.AbstractOauthToken.java">org/apache/streams/util/oauth/tokens/AbstractOauthToken.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.ComponentUtils.java">org/apache/streams/util/ComponentUtils.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  28
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.schema.FieldUtil.java">org/apache/streams/util/schema/FieldUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.AbstractBackOffStrategy.java">org/apache/streams/util/api/requests/backoff/AbstractBackOffStrategy.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  25
+                </td>
+              </tr>
+                      </tbody>
+        </table>
+        
+      </description>
+    </item>
+  </channel>
+</rss>
+

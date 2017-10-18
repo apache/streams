@@ -1,0 +1,4 @@
+org.apache.streams.rss.processor
+org.apache.streams.rss.provider
+org.apache.streams.rss.provider.perpetual
+org.apache.streams.rss.serializer

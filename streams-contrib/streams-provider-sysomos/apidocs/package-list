@@ -1,0 +1,6 @@
+org.apache.streams.sysomos
+org.apache.streams.sysomos.conversion
+org.apache.streams.sysomos.data
+org.apache.streams.sysomos.processor
+org.apache.streams.sysomos.provider
+org.apache.streams.sysomos.util
