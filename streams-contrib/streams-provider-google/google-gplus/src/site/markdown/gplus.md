@@ -6,7 +6,7 @@ Visit https://console.developers.google.com/apis/credentials
 
 The list of projects is in a top-left dropdown - select or create one.
 
-Create a local file `gplus.conf` with valid youtube credentials
+Create a local file `gplus.conf` with valid Google Plus credentials
 
     gplus {
       apiKey = ""
