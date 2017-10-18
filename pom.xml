@@ -1306,7 +1306,7 @@
         <profile>
             <id>quick</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
                 <maven.test.skip.exec>true</maven.test.skip.exec>
