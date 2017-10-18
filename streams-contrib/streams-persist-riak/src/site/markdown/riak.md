@@ -1,4 +1,4 @@
-## Neo4j
+## Riak
 
 Start riak via docker with the docker maven plugin:
 
