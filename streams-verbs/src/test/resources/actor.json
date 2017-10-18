@@ -1,9 +1,0 @@
-{
-    "id": "http://streams.apache.org/verbs/test/targetrequired",
-    "value": "post",
-    "objects": [
-        {
-            "actor": "person"
-        }
-    ]
-}
