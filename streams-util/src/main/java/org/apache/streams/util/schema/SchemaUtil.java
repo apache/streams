@@ -20,6 +20,7 @@ package org.apache.streams.util.schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,24 +56,6 @@ public class SchemaUtil {
     schemaNode.put("$ref", schemaUrl.toString());
     return schemaNode;
 
-  }
-
-  /**
-   * merge parent and child properties maps.
-   * @param content ObjectNode
-   * @param parent ObjectNode
-   * @return merged ObjectNode
-   */
-  public static ObjectNode mergeProperties(ObjectNode content, ObjectNode parent) {
-
-    ObjectNode merged = parent.deepCopy();
-    Iterator<Map.Entry<String, JsonNode>> fields = content.fields();
-    for ( ; fields.hasNext(); ) {
-      Map.Entry<String, JsonNode> field = fields.next();
-      String fieldId = field.getKey();
-      merged.put(fieldId, field.getValue().deepCopy());
-    }
-    return merged;
   }
 
 }

@@ -21,6 +21,7 @@ package org.apache.streams.util;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.wnameless.json.flattener.JsonFlattener;
@@ -111,5 +112,28 @@ public class PropertyUtil {
     return unflatObjectNode;
   }
 
+  /**
+   * merge parent and child properties maps.
+   * @param content ObjectNode
+   * @param parent ObjectNode
+   * @return merged ObjectNode
+   */
+  public static ObjectNode mergeProperties(ObjectNode content, ObjectNode parent) {
+
+    ObjectNode merged = parent.deepCopy();
+    Iterator<Map.Entry<String, JsonNode>> fields = content.fields();
+    for ( ; fields.hasNext(); ) {
+      Map.Entry<String, JsonNode> field = fields.next();
+      String fieldId = field.getKey();
+      if( merged.get(fieldId) != null ) {
+        if( merged.get(fieldId).getNodeType().equals(JsonNodeType.OBJECT)) {
+          merged.put(fieldId, mergeProperties(field.getValue().deepCopy(), (ObjectNode)merged.get(fieldId)));
+        }
+      } else {
+        merged.put(fieldId, content.get(fieldId));
+      }
+    }
+    return merged;
+  }
 
 }

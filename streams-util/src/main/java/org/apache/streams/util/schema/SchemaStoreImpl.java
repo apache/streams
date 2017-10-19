@@ -18,6 +18,8 @@
 
 package org.apache.streams.util.schema;
 
+import org.apache.streams.util.PropertyUtil;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -247,7 +249,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
 
     ObjectNode resolvedProperties = NODE_FACTORY.objectNode();
     if (parentProperties != null && parentProperties.size() > 0) {
-      resolvedProperties = SchemaUtil.mergeProperties(schemaProperties, parentProperties);
+      resolvedProperties = PropertyUtil.mergeProperties(schemaProperties, parentProperties);
     } else {
       resolvedProperties = schemaProperties.deepCopy();
     }
@@ -315,7 +317,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
 
     ObjectNode resolvedItems = NODE_FACTORY.objectNode();
     if (parentItems != null && parentItems.size() > 0) {
-      resolvedItems = SchemaUtil.mergeProperties(schemaItems, parentItems);
+      resolvedItems = PropertyUtil.mergeProperties(schemaItems, parentItems);
     } else {
       resolvedItems = schemaItems.deepCopy();
     }
