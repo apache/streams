@@ -66,8 +66,11 @@ import com.typesafe.config.ConfigFactory;
 import org.apache.juneau.remoteable.RemoteMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -83,13 +86,24 @@ public class TwitterIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterIT.class);
 
-  private static Config application = ConfigFactory.parseResources("TwitterIT.conf").withFallback(ConfigFactory.load());
-  private static StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(application);
-  private static TwitterConfiguration config = new ComponentConfigurator<>(TwitterConfiguration.class).detectConfiguration(application, "twitter");
+  private static String configfile = "target/test-classes/TwitterIT.conf";
+
+  private static Config application;
+  private static TwitterConfiguration config;
 
   private static User user;
   private static AccountSettings settings;
   private static List<Tweet> statusesHomeTimeline;
+
+  @BeforeClass
+  public void setup() throws Exception {
+    File conf = new File(configfile);
+    Assert.assertTrue (conf.exists());
+    Assert.assertTrue (conf.canRead());
+    Assert.assertTrue (conf.isFile());
+    application = ConfigFactory.parseFileAnySyntax(conf).withFallback(ConfigFactory.load());
+    config = new ComponentConfigurator<>(TwitterConfiguration.class).detectConfiguration(application, "twitter");
+  }
 
   @Test(groups = {"Account","AccountVerifyCredentials"})
   public void testVerifyCredentials() throws Exception {

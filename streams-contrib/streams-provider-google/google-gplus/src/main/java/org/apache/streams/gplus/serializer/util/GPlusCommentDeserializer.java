@@ -80,7 +80,9 @@ public class GPlusCommentDeserializer extends JsonDeserializer<Comment> {
 
       comment.setObject(objectMapper.readValue(objectMapper.writeValueAsString(node.get("object")), Comment.PlusObject.class));
 
-      comment.setSelfLink(node.get("selfLink").asText());
+      if( node != null && node.get("selfLink") != null ) {
+        comment.setSelfLink(node.get("selfLink").asText());
+      }
 
       List<Comment.InReplyTo> replies = new ArrayList<>();
       for (JsonNode reply : node.get("inReplyTo")) {

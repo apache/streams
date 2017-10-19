@@ -36,6 +36,8 @@ import java.util.List;
 
 /**
  * Tests ability to serialize moreover xml Strings
+ *
+ * Disabled until credentials, provider and provider IT capable of generating fresh data are available.
  */
 public class MoreoverXmlActivitySerializerIT {
   ActivitySerializer serializer;
@@ -47,7 +49,7 @@ public class MoreoverXmlActivitySerializerIT {
     xml = loadXml();
   }
 
-  @Test
+  @Test(enabled = false)
   public void loadData() throws Exception {
     List<Activity> activities = serializer.deserializeAll(Collections.singletonList(xml));
     for (Activity activity : activities) {

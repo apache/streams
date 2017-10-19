@@ -28,6 +28,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.api.services.plus.model.Comment;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,10 +47,16 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 
 /**
- * Tests conversion of gplus inputs to Activity.
+ * Tests serialization of google plus comments.
+ *
+ * Disabled until a companion provider/test to generate the data exists.
  */
 public class GooglePlusCommentSerDeIT {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(GooglePlusCommentSerDeIT.class);
+
+  private static Config application = ConfigFactory.parseResources("GooglePlusCommentSerDeIT.conf").withFallback(ConfigFactory.load());
+
   private ObjectMapper objectMapper;
 
   /**
@@ -63,9 +71,13 @@ public class GooglePlusCommentSerDeIT {
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
-  @Test
+
+  @Test(enabled = false, groups = "GooglePlusCommentSerDeIT", dependsOnGroups = "GPlusUserActivityProviderIT")
   public void testCommentObjects() {
-    InputStream is = GooglePlusCommentSerDeIT.class.getResourceAsStream("/google_plus_comments_jsons.txt");
+
+    String inputResourcePath = application.getString("inputResourcePath");
+
+    InputStream is = GooglePlusCommentSerDeIT.class.getResourceAsStream(inputResourcePath);
     InputStreamReader isr = new InputStreamReader(is);
     BufferedReader br = new BufferedReader(isr);
 

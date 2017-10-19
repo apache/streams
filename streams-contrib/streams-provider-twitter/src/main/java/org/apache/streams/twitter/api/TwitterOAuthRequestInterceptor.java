@@ -87,6 +87,7 @@ public class TwitterOAuthRequestInterceptor implements HttpRequestInterceptor {
     oauthParamMap.put("oauth_timestamp", oauth_timestamp);
     oauthParamMap.put("oauth_token", oAuthConfiguration.getAccessToken());
     oauthParamMap.put("oauth_version", security.oauth_version);
+    assert(oauthParamMap.containsValue(null) == false);
 
     String request_host = ((HttpRequestWrapper)httpRequest).getTarget().toString().replace(":443","");
     String request_path = httpRequest.getRequestLine().getUri();

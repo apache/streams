@@ -31,7 +31,7 @@ public class GPlusUserActivityProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GPlusUserActivityProviderIT.class);
 
-  @Test(groups={"testGPlusUserActivityProvider"})
+  @Test(groups={"GPlusUserActivityProviderIT"})
   public void testGPlusUserActivityProvider() throws Exception {
 
     String configfile = "./target/test-classes/GPlusUserActivityProviderIT.conf";

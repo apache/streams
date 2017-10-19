@@ -23,14 +23,19 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 /**
@@ -41,33 +46,40 @@ public class FacebookPageSerDeIT {
   private static final Logger LOGGER = LoggerFactory.getLogger(FacebookPageSerDeIT.class);
   private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-  @Test
-  public void Tests()
+  private static Config application = ConfigFactory.parseResources("FacebookPageSerDeIT.conf").withFallback(ConfigFactory.load());
+
+  @Test(groups = "FacebookPageSerDeIT", dependsOnGroups = "FacebookPageProviderIT")
+  public void facebookPageSerDeIT() throws Exception
   {
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.TRUE);
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);
     mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, Boolean.TRUE);
 
-    InputStream is = FacebookPageSerDeIT.class.getResourceAsStream("/testpage.json");
-    is = new BoundedInputStream(is, 10000);
-    String json;
+    String inputResourcePath = application.getString("inputResourcePath");
+
+    InputStream is = FacebookPageSerDeIT.class.getResourceAsStream(inputResourcePath);
+
+    InputStreamReader isr = new InputStreamReader(is);
+    BufferedReader br = new BufferedReader(isr);
 
     try {
-      json = String.join(" ", IOUtils.readLines(is, Charset.defaultCharset()));
-      LOGGER.debug(json);
+      while (br.ready()) {
+        String line = br.readLine();
+        if (!StringUtils.isEmpty(line)) {
 
-      Page ser = mapper.readValue(json, Page.class);
+          Page ser = mapper.readValue(line, Page.class);
 
-      String de = mapper.writeValueAsString(ser);
+          String de = mapper.writeValueAsString(ser);
 
-      LOGGER.debug(de);
+          LOGGER.debug(de);
 
-      Page serde = mapper.readValue(de, Page.class);
+          Page serde = mapper.readValue(de, Page.class);
 
-      Assert.assertEquals(ser, serde);
+          Assert.assertEquals(ser, serde);
 
-      LOGGER.debug(mapper.writeValueAsString(serde));
-
+          LOGGER.debug(mapper.writeValueAsString(serde));
+        }
+      }
     } catch( Exception e ) {
       LOGGER.error("Exception: ", e);
       Assert.fail();

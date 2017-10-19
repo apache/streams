@@ -25,9 +25,9 @@ import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.sysomos.xml.BeatApi;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +37,8 @@ import java.io.InputStreamReader;
 
 /**
  * Tests ability to convert String xml form to {@link com.sysomos.xml.BeatApi} form
+ *
+ * Disabled until an IT that produces fresh test data is added.
  */
 public class SysomosXmlSerDeIT {
 
@@ -47,7 +49,7 @@ public class SysomosXmlSerDeIT {
   /**
    * before.
    */
-  @Before
+  @BeforeClass
   public void before() {
 
     XmlFactory xmlFactory = new XmlFactory(new InputFactoryImpl(),
@@ -77,7 +79,7 @@ public class SysomosXmlSerDeIT {
 
   }
 
-  @Test
+  @Test(enabled = false)
   public void test() {
 
     InputStream is = SysomosXmlSerDeIT.class.getResourceAsStream("/sysomos_xmls.txt");

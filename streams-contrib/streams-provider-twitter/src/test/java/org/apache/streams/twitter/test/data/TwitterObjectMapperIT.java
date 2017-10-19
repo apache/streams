@@ -63,7 +63,7 @@ public class TwitterObjectMapperIT {
   private ObjectMapper mapper = StreamsJacksonMapper.getInstance(Stream.of(TWITTER_FORMAT).collect(Collectors.toList()));
 
   @Test(dependsOnGroups = "TwitterStreamProviderIT")
-  public void tests() {
+  public void testTwitterObjectMapper() {
 
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, Boolean.TRUE);
     mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, Boolean.TRUE);

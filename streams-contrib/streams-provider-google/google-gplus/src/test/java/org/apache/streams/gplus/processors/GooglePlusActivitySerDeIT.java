@@ -19,6 +19,7 @@
 
 package org.apache.streams.gplus.processors;
 
+import org.apache.streams.gplus.GooglePlusCommentSerDeIT;
 import org.apache.streams.gplus.serializer.util.GPlusActivityDeserializer;
 import org.apache.streams.gplus.serializer.util.GooglePlusActivityUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -30,6 +31,8 @@ import org.apache.streams.pojo.json.Provider;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +51,11 @@ import static org.testng.Assert.assertNotNull;
  * Tests conversion of gplus inputs to Activity.
  */
 public class GooglePlusActivitySerDeIT {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(GooglePlusActivitySerDeIT.class);
+
+  private static Config application = ConfigFactory.parseResources("GooglePlusActivitySerDeIT.conf").withFallback(ConfigFactory.load());
+
   private ObjectMapper objectMapper;
 
   /**
@@ -66,7 +73,9 @@ public class GooglePlusActivitySerDeIT {
   @Test
   @SuppressWarnings("unchecked")
   public void testActivityObjects() {
-    InputStream is = GooglePlusActivitySerDeIT.class.getResourceAsStream("/google_plus_activity_jsons.txt");
+    String inputResourcePath = application.getString("inputResourcePath");
+
+    InputStream is = GooglePlusActivitySerDeIT.class.getResourceAsStream(inputResourcePath);
     InputStreamReader isr = new InputStreamReader(is);
     BufferedReader br = new BufferedReader(isr);
 

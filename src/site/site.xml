@@ -86,6 +86,7 @@
                 <item name="Elasticsearch" href="services/elasticsearch.html" />
                 <item name="Mongo" href="services/mongo.html" />
                 <item name="Neo4j" href="services/neo4j.html" />
+                <item name="Riak" href="services/riak.html" />
             </item>
         </menu>
         <menu name="Developers">

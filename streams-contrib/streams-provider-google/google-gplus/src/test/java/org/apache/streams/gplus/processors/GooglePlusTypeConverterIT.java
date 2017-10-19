@@ -31,6 +31,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.api.services.plus.model.Person;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,8 +57,10 @@ import static org.testng.Assert.assertTrue;
 public class GooglePlusTypeConverterIT {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(GooglePlusTypeConverterIT.class);
-  private GooglePlusTypeConverter googlePlusTypeConverter;
+
   private ObjectMapper objectMapper;
+
+  private GooglePlusTypeConverter googlePlusTypeConverter;
 
   @BeforeClass
   public void setup() {
@@ -71,11 +75,11 @@ public class GooglePlusTypeConverterIT {
     googlePlusTypeConverter.prepare(null);
   }
 
-  @Test(dependsOnGroups = {"testGPlusUserDataProvider"})
+  @Test(dependsOnGroups = {"GPlusUserDataProviderIT"})
   public void testProcessPerson() throws IOException, ActivitySerializerException {
-
-    File file = new File("target/test-classes/GPlusUserDataProviderIT.stdout.txt");
-    InputStream is = new FileInputStream(file);
+    Config application = ConfigFactory.parseResources("GooglePlusTypeConverterIT.conf").withFallback(ConfigFactory.load());
+    String inputResourcePath = application.getConfig("testProcessPerson").getString("inputResourcePath");
+    InputStream is = GooglePlusTypeConverterIT.class.getResourceAsStream(inputResourcePath);
     InputStreamReader isr = new InputStreamReader(is);
     BufferedReader br = new BufferedReader(isr);
 
@@ -100,11 +104,11 @@ public class GooglePlusTypeConverterIT {
     }
   }
 
-  @Test(dependsOnGroups = {"testGPlusUserActivityProvider"})
+  @Test(dependsOnGroups = {"GPlusUserActivityProviderIT"})
   public void testProcessActivity() throws IOException, ActivitySerializerException {
-
-    File file = new File("target/test-classes/GPlusUserActivityProviderIT.stdout.txt");
-    InputStream is = new FileInputStream(file);
+    Config application = ConfigFactory.parseResources("GooglePlusTypeConverterIT.conf").withFallback(ConfigFactory.load());
+    String inputResourcePath = application.getConfig("testProcessActivity").getString("inputResourcePath");
+    InputStream is = GooglePlusTypeConverterIT.class.getResourceAsStream(inputResourcePath);
     InputStreamReader isr = new InputStreamReader(is);
     BufferedReader br = new BufferedReader(isr);
 
