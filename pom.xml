@@ -788,6 +788,11 @@
                     </configuration>
                 </plugin>
                 <plugin>
+                    <groupId>com.googlecode.maven-download-plugin</groupId>
+                    <artifactId>download-maven-plugin</artifactId>
+                    <version>${download.plugin.version}</version>
+                </plugin>
+                <plugin>
                     <groupId>org.ops4j</groupId>
                     <artifactId>maven-pax-plugin</artifactId>
                     <version>${pax.plugin.version}</version>
