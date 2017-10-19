@@ -33,7 +33,7 @@
     <name>Apache Streams</name>
     <description>Apache Streams</description>
 
-    <url>http://streams.apache.org/site/${project.version}/streams-project</url>
+    <url>https://github.com/apache/streams</url>
 
     <licenses>
         <license>
@@ -45,7 +45,7 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:https://github.com:apache/streams</connection>
+        <connection>scm:git:https://github.com/apache/streams</connection>
         <developerConnection>scm:git:git@github.com:apache/streams.git</developerConnection>
         <url>scm:git:git@github.com:apache/streams.git</url>
         <tag>HEAD</tag>
@@ -273,7 +273,7 @@
         </snapshotRepository>
         <site>
             <id>site.streams.project</id>
-            <url>scm:svn:https://svn.apache.org/repos/asf/incubator/streams/site/trunk/content/site/${project.version}/streams-project</url>
+            <url>scm:git:https://github.com/apache/streams.git</url>
         </site>
     </distributionManagement>
 
@@ -319,12 +319,13 @@
         <resources.plugin.version>2.7</resources.plugin.version>
         <scala.plugin.version>3.2.2</scala.plugin.version>
         <scalastyle.plugin.version>0.8.0</scalastyle.plugin.version>
-        <scm.plugin.version>1.9.4</scm.plugin.version>
+        <scm.plugin.version>1.9.5</scm.plugin.version>
+        <scmpublish.plugin.version>1.1</scmpublish.plugin.version>
         <shade.plugin.version>2.4.3</shade.plugin.version>
         <site.plugin.version>3.6</site.plugin.version>
         <source.plugin.version>2.4</source.plugin.version>
         <surefire.plugin.version>2.19.1</surefire.plugin.version>
-        <wagon.plugin.version>2.5</wagon.plugin.version>
+        <wagon.plugin.version>3.0.0</wagon.plugin.version>
         <war.plugin.version>2.5</war.plugin.version>
 
         <!-- Library Dependency Versions -->
@@ -396,6 +397,23 @@
     <packaging>pom</packaging>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-scm</artifactId>
+                <version>${wagon.plugin.version}</version>
+            </extension>
+            <extension>
+                <groupId>org.apache.maven.scm</groupId>
+                <artifactId>maven-scm-manager-plexus</artifactId>
+                <version>${scm.plugin.version}</version>
+            </extension>
+            <extension>
+                <groupId>org.apache.maven.scm</groupId>
+                <artifactId>maven-scm-provider-gitexe</artifactId>
+                <version>${scm.plugin.version}</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -800,31 +818,25 @@
                             <version>${doxia.version}</version>
                         </dependency>
                         <dependency>
-                            <groupId>org.apache.maven.wagon</groupId>
-                            <artifactId>wagon-ssh</artifactId>
-                            <version>${wagon.plugin.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.apache.maven.wagon</groupId>
-                            <artifactId>wagon-scm</artifactId>
-                            <version>${wagon.plugin.version}</version>
-                        </dependency>
-                        <dependency>
                             <groupId>org.apache.maven.scm</groupId>
                             <artifactId>maven-scm-api</artifactId>
                             <version>${scm.plugin.version}</version>
                         </dependency>
                         <dependency>
                             <groupId>org.apache.maven.scm</groupId>
-                            <artifactId>maven-scm-provider-svn-commons</artifactId>
-                            <version>${scm.plugin.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.apache.maven.scm</groupId>
-                            <artifactId>maven-scm-provider-svnexe</artifactId>
+                            <artifactId>maven-scm-provider-gitexe</artifactId>
                             <version>${scm.plugin.version}</version>
                         </dependency>
                     </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-publish-plugin</artifactId>
+                    <version>${scmpublish.plugin.version}</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <scmBranch>gh-pages</scmBranch>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
