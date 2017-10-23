@@ -20,6 +20,7 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.pojo.User;
 
+import org.apache.juneau.remoteable.Body;
 import org.apache.juneau.remoteable.RemoteMethod;
 import org.apache.juneau.remoteable.Remoteable;
 
@@ -34,8 +35,8 @@ public interface Account {
   /**
    * Returns settings (including current trend, geo and sleep time information) for the authenticating user.
    *
-   * @return AccountSettingsResponse
-   * @see <a href=https://dev.twitter.com/rest/reference/get/account/settings">https://dev.twitter.com/rest/reference/get/account/settings</a>
+   * @return {@link org.apache.streams.twitter.api.AccountSettings}
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/get-account-settings">https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/get-account-settings</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/settings.json")
@@ -44,11 +45,31 @@ public interface Account {
   /**
    * Returns user credentials for the authenticating user.
    *
-   * @return User
-   * @see <a href=https://dev.twitter.com/rest/reference/get/account/verify_credentials">https://dev.twitter.com/rest/reference/get/account/verify_credentials</a>
+   * @return {@link org.apache.streams.twitter.pojo.User}
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/get-account-verify_credentials">https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/get-account-verify_credentials</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/verify_credentials.json")
   public User verifyCredentials();
+
+  /**
+   * Sets some values that users are able to set under the “Account” tab of their settings page. Only the parameters specified will be updated.
+   *
+   * @return {@link org.apache.streams.twitter.pojo.User}
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/post-account-update_profile">https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/post-account-update_profile</a>
+   *
+   */
+  @RemoteMethod(httpMethod = "POST", path = "/update_profile.json")
+  public User updateProfile(@Body UpdateProfileRequest parameters);
+
+  /**
+   * Updates the authenticating user’s settings.
+   *
+   * @return {@link org.apache.streams.twitter.api.AccountSettings}
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/post-account-settings">https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/post-account-settings</a>
+   *
+   */
+  @RemoteMethod(httpMethod = "POST", path = "/update_settings.json")
+  public AccountSettings updateSettings(@Body UpdateProfileRequest parameters);
 
 }

@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.twitter.api.DirectMessagesSentRequest",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/get-sent-message",
+  "properties": {
+    "count": {
+      "description": "Specifies the number of records to retrieve. Must be less than or equal to 200.",
+      "type": "integer",
+      "required": false
+    },
+    "since_id": {
+      "description": "Returns results with an ID greater than (that is, more recent than) the specified ID. There are limits to the number of Tweets which can be accessed through the API. If the limit of Tweets has occured since the since_id, the since_id will be forced to the oldest ID available.",
+      "type": "integer",
+      "required": false
+    },
+    "max_id": {
+      "description": "Returns results with an ID less than (that is, older than) or equal to the specified ID.",
+      "type": "integer",
+      "required": false
+    },
+    "page": {
+      "description": "Specifies the page of results to retrieve.",
+      "type": "integer",
+      "required": false
+    },
+    "include_entities": {
+      "description": "The entities node will not be included when set to false.",
+      "required": false,
+      "type": "boolean"
+    }
+  }
+}

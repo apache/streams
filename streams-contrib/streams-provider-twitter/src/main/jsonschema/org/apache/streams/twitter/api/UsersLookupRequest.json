@@ -8,7 +8,7 @@
   "javaInterfaces": [
     "java.io.Serializable"
   ],
-  "description": "https://dev.twitter.com/rest/reference/get/users/lookup",
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-lookup",
   "properties": {
     "user_id": {
       "description": "A comma separated list of user IDs, up to 100 are allowed in a single request. You are strongly encouraged to use a POST for larger requests.",

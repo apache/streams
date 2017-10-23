@@ -7,7 +7,7 @@
   "type": "object",
   "javaType" : "org.apache.streams.twitter.api.FriendsListRequest",
   "javaInterfaces": ["java.io.Serializable"],
-  "description": "https://dev.twitter.com/rest/reference/get/friends/list",
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friends-list",
   "extends": { "$ref": "FollowingListRequest.json" },
   "properties": {}
 }

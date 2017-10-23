@@ -7,7 +7,7 @@
   "type": "object",
   "javaType" : "org.apache.streams.twitter.api.FriendshipUpdateRequest",
   "javaInterfaces": ["java.io.Serializable"],
-  "description": "https://https://dev.twitter.com/rest/reference/post/friendships/update",
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-update",
   "properties": {
     "device": {
       "description": "Enable/disable device notifications from the target user.",

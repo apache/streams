@@ -22,6 +22,7 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.TwitterConfiguration;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.twitter.converter.TwitterJodaDateSwap;
+import org.apache.streams.twitter.pojo.DirectMessage;
 import org.apache.streams.twitter.pojo.DirectMessageEvent;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
@@ -30,6 +31,7 @@ import org.apache.streams.twitter.pojo.WelcomeMessageRule;
 import org.apache.streams.twitter.provider.TwitterProviderUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.client.config.RequestConfig;
@@ -59,7 +61,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Implementation of all twitter interfaces using juneau.
  */
-public class Twitter implements Account, AccountActivity, DirectMessages, Favorites, Followers, Friends, Statuses, Users, WelcomeMessages, WelcomeMessageRules {
+public class Twitter implements Account, AccountActivity, DirectMessages, Favorites, Followers, Friends, Statuses, SuggestedUsers, Users, WelcomeMessages, WelcomeMessageRules {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Twitter.class);
 
@@ -206,6 +208,16 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
   }
 
   @Override
+  public List<User> search(UsersSearchRequest parameters) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<SuggestedUserCategory> suggestedUserCategories(String lang) {
+    return null;
+  }
+
+  @Override
   public User show(UsersShowRequest parameters) {
     Users restUsers = restClient.getRemoteableProxy(Users.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
     User result = restUsers.show(parameters);
@@ -231,6 +243,16 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
     Account restAccount = restClient.getRemoteableProxy(Account.class, TwitterProviderUtil.baseUrl(configuration)+"/account");
     User result = restAccount.verifyCredentials();
     return result;
+  }
+
+  @Override
+  public User updateProfile(UpdateProfileRequest parameters) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public AccountSettings updateSettings(UpdateProfileRequest parameters) {
+    throw new NotImplementedException();
   }
 
   @Override
@@ -391,5 +413,45 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
   public DirectMessageEvent newEvent(MessageCreateRequest event) {
     DirectMessages proxy = restClient.getRemoteableProxy(DirectMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages");
     return proxy.newEvent(event);
+  }
+
+  @Override
+  public DirectMessage destroy(Long id) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public DirectMessage show(Long id) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<DirectMessage> list(DirectMessagesListRequest parameters) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<DirectMessage> sent(DirectMessagesSentRequest parameters) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public DirectMessage newDM(DirectMessageNewRequest parameters) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<SuggestedUserCategory> categories(String lang) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public SuggestedUserCategory suggestions(String slug, String lang) {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public List<User> members(String slug) {
+    throw new NotImplementedException();
   }
 }

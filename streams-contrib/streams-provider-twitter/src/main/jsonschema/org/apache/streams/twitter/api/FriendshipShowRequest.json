@@ -7,7 +7,7 @@
   "type": "object",
   "javaType" : "org.apache.streams.twitter.api.FriendshipShowResponse",
   "javaInterfaces": ["java.io.Serializable"],
-  "description": "https://https://dev.twitter.com/rest/reference/get/friendships/show",
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-show",
   "properties": {
     "relationship": {
       "$ref": "../pojo/Relationship.json"

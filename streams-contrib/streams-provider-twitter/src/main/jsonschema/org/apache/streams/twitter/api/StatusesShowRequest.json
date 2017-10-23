@@ -9,7 +9,7 @@
     "java.io.Serializable",
     "org.apache.streams.twitter.api.Statuses.StatusesShowRequestAnnotations"
   ],
-  "description": "https://dev.twitter.com/rest/reference/get/statuses/show/id",
+  "description": "https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-show-id",
   "properties": {
     "id": {
       "description": "The numerical ID of the desired Tweet.",

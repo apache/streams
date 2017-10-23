@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Interface for /friendships methods.
  *
- * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
+ * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/overview">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/overview</a>
  */
 @Remoteable(path = "https://api.twitter.com/1.1/friendships")
 public interface Friendships {
@@ -38,9 +38,9 @@ public interface Friendships {
   /**
    * Allows the authenticating users to follow the user specified in the ID parameter.
    *
-   * @param parameters {@link FollowersIdsRequest}
-   * @return FollowersIdsResponse
-   * @see <a href="https://dev.twitter.com/rest/reference/post/friendships/create">https://dev.twitter.com/rest/reference/post/friendships/create</a>
+   * @param parameters {@link org.apache.streams.twitter.api.FriendshipCreateRequest}
+   * @return {@link org.apache.streams.twitter.pojo.User}
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-create">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-create</a>
    *
    */
   @RemoteMethod(httpMethod = "POST", path = "/create.json")
@@ -49,32 +49,44 @@ public interface Friendships {
   /**
    * Allows the authenticating user to unfollow the user specified in the ID parameter.
    *
-   * @param parameters {@link User}
-   * @return User
-   * @see <a href="https://dev.twitter.com/rest/reference/post/friendships/destroy">https://dev.twitter.com/rest/reference/post/friendships/destroy</a>
+   * @param parameters {@link org.apache.streams.twitter.api.FriendshipDestroyRequest}
+   * @return {@link org.apache.streams.twitter.pojo.User}
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-destroy">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-destroy</a>
    *
    */
   @RemoteMethod(httpMethod = "POST", path = "/destroy.json")
   public User destroy(@QueryIfNE("*") FriendshipDestroyRequest parameters);
 
   /**
+   * Returns a collection of numeric IDs for every user who has a pending request to follow the authenticating user.
+   *
+   * @param parameters {@link org.apache.streams.twitter.api.FriendshipsIncomingRequest}
+   * @return {@link org.apache.streams.twitter.api.FollowersListResponse}
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-incoming">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-incoming</a>
+   *
+   */
+  @RemoteMethod(httpMethod = "GET", path = "/incoming.json")
+  public User incoming(@QueryIfNE("*") FriendshipsIncomingRequest parameters);
+
+  /**
    * Returns the relationships of the authenticating user to the comma-separated list of up to 100 screen_names or user_ids provided.
    * Values for connections can be: following, following_requested, followed_by, none, blocking, muting.
    *
-   * @param parameters {@link FriendshipsLookupRequest}
-   * @return List<Friendship>
-   * @see <a href="https://dev.twitter.com/rest/reference/get/friendships/lookup">https://dev.twitter.com/rest/reference/get/friendships/lookup</a>
+   * @param parameters {@link org.apache.streams.twitter.api.FriendshipsLookupRequest}
+   * @return {@link java.util.List}[{@link org.apache.streams.twitter.pojo.Friendship}]
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-lookup">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-lookup</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/lookup.json")
   public List<Friendship> lookup(@QueryIfNE("*") FriendshipsLookupRequest parameters);
 
+
   /**
    * Returns a collection of numeric IDs for every protected user for whom the authenticating user has a pending follow request.
    *
-   * @param parameters {@link FriendshipsOutgoingRequest}
-   * @return FollowersListResponse
-   * @see <a href="https://dev.twitter.com/rest/reference/get/friendships/outgoing">https://dev.twitter.com/rest/reference/get/friendships/outgoing</a>
+   * @param parameters {@link org.apache.streams.twitter.api.FriendshipsOutgoingRequest}
+   * @return {@link org.apache.streams.twitter.api.FollowersListResponse}
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-incoming">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-incoming</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/outgoing.json")
@@ -83,20 +95,20 @@ public interface Friendships {
   /**
    * Returns detailed information about the relationship between two arbitrary users.
    *
-   * @param parameters {@link FriendshipShowRequest}
-   * @return FriendshipShowResponse
-   * @see <a href="https://dev.twitter.com/rest/reference/get/friendships/show">https://dev.twitter.com/rest/reference/get/friendships/show</a>
+   * @param parameters {@link org.apache.streams.twitter.api.FriendshipShowRequest}
+   * @return {@link org.apache.streams.twitter.api.FriendshipShowResponse}
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-show">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-show</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/show.json")
-  public FriendshipShowResponse outgoing(@QueryIfNE("*") FriendshipShowRequest parameters);
+  public FriendshipShowResponse show(@QueryIfNE("*") FriendshipShowRequest parameters);
 
   /**
    * Allows one to enable or disable retweets and device notifications from the specified user.
    *
-   * @param parameters {@link FriendshipUpdateRequest}
-   * @return User
-   * @see <a href="https://dev.twitter.com/rest/reference/post/friendships/update">https://dev.twitter.com/rest/reference/post/friendships/update</a>
+   * @param parameters {@link org.apache.streams.twitter.api.FriendshipUpdateRequest}
+   * @return {@link org.apache.streams.twitter.pojo.User}
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-update">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-update</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/update.json")

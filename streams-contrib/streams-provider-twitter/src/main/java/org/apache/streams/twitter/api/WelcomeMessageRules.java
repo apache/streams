@@ -20,8 +20,8 @@ public interface WelcomeMessageRules {
   /**
    * Returns a list of Welcome Message Rules.
    *
-   * @return WelcomeMessageRulesListResponse
-   * @see <a href="https://dev.twitter.com/rest/reference/get/direct_messages/welcome_messages/rules/list">https://dev.twitter.com/rest/reference/get/direct_messages/welcome_messages/rules/list</a>
+   * @return {@link org.apache.streams.twitter.api.WelcomeMessageRulesListResponse}
+   * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/list-welcome-message-rules">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/list-welcome-message-rules</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/list.json")
@@ -30,8 +30,8 @@ public interface WelcomeMessageRules {
   /**
    * Returns a Welcome Message Rule by the given id.
    *
-   * @return WelcomeMessage
-   * @see <a href="https://dev.twitter.com/rest/reference/get/direct_messages/events/list">https://dev.twitter.com/rest/reference/get/direct_messages/events/list</a>
+   * @return {@link org.apache.streams.twitter.pojo.WelcomeMessageRule}
+   * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/get-welcome-message-rule">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/get-welcome-message-rule</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/show.json")
@@ -44,8 +44,8 @@ public interface WelcomeMessageRules {
    *
    * Additional rule configurations are forthcoming. For the initial beta release, the most recently created Rule will always take precedence, and the assigned Welcome Message will be displayed in the conversation.
    *
-   * @return WelcomeMessage
-   * @see <a href="https://dev.twitter.com/rest/reference/post/direct_messages/welcome_messages/rules/new">https://dev.twitter.com/rest/reference/post/direct_messages/welcome_messages/rules/new</a>
+   * @return {@link org.apache.streams.twitter.pojo.WelcomeMessageRule}
+   * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/new-welcome-message-rule">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/new-welcome-message-rule</a>
    *
    */
   @RemoteMethod(httpMethod = "POST", path = "/new.json")
@@ -54,7 +54,7 @@ public interface WelcomeMessageRules {
   /**
    * Deletes a Welcome Message Rule by the given id.
    *
-   * @see <a href="https://dev.twitter.com/rest/reference/del/direct_messages/welcome_messages/rules/destroy">https://dev.twitter.com/rest/reference/del/direct_messages/welcome_messages/rules/destroy</a>
+   * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/delete-welcome-message-rule">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/delete-welcome-message-rule</a>
    *
    */
   @RemoteMethod(httpMethod = "DELETE", path = "/destroy.json")

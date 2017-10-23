@@ -21,7 +21,7 @@ public interface Media {
    *
    * @param parameters {@link org.apache.streams.twitter.api.MediaStatusRequest}
    * @return {@link org.apache.streams.twitter.api.MediaStatusResponse)
-   * @see <a href="https://dev.twitter.com/rest/reference/get/media/upload-status">https://dev.twitter.com/rest/reference/get/media/upload-status</a>
+   * @see <a href="https://developer.twitter.com/en/docs/media/upload-media/api-reference/get-media-upload-status">https://developer.twitter.com/en/docs/media/upload-media/api-reference/get-media-upload-status</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/upload")

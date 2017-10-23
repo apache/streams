@@ -12,7 +12,7 @@ import org.apache.juneau.remoteable.RequestBean;
 /**
  * Interface for /direct_messages/welcome_messages methods.
  *
- * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
+ * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference</a>
  */
 @Remoteable(path = "https://api.twitter.com/1.1/direct_messages/welcome_messages")
 public interface WelcomeMessages {
@@ -20,8 +20,8 @@ public interface WelcomeMessages {
   /**
    * Returns a list of Welcome Messages.
    *
-   * @return WelcomeMessageListResponse
-   * @see <a href="https://dev.twitter.com/rest/reference/get/direct_messages/welcome_messages/list">https://dev.twitter.com/rest/reference/get/direct_messages/welcome_messages/list</a>
+   * @return {@link org.apache.streams.twitter.api.WelcomeMessagesListResponse}
+   * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/list-welcome-messages">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/list-welcome-messages</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/list.json")
@@ -30,8 +30,8 @@ public interface WelcomeMessages {
   /**
    * Returns a Welcome Message by the given id.
    *
-   * @return WelcomeMessage
-   * @see <a href="https://dev.twitter.com/rest/reference/get/direct_messages/events/list">https://dev.twitter.com/rest/reference/get/direct_messages/events/list</a>
+   * @return {@link org.apache.streams.twitter.pojo.WelcomeMessage}
+   * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/get-welcome-message">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/get-welcome-message</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/show.json")
@@ -40,8 +40,8 @@ public interface WelcomeMessages {
   /**
    * Creates a new Welcome Message that will be stored and sent in the future from the authenticating user in defined circumstances. Returns the message template in the requested format if successful. Supports publishing with the same elements as Direct Messages (e.g. Quick Replies, media attachments).
    *
-   * @return WelcomeMessage
-   * @see <a href="https://dev.twitter.com/rest/reference/get/direct_messages/events/list">https://dev.twitter.com/rest/reference/get/direct_messages/events/list</a>
+   * @return {@link org.apache.streams.twitter.pojo.WelcomeMessage}
+   * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/new-welcome-message">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/new-welcome-message</a>
    *
    */
   @RemoteMethod(httpMethod = "POST", path = "/new.json")
@@ -50,8 +50,7 @@ public interface WelcomeMessages {
   /**
    * Deletes a Welcome Message by the given id.
    *
-   * @see <a href="https://dev.twitter.com/rest/reference/del/direct_messages/welcome_messages/destroy">https://dev.twitter.com/rest/reference/del/direct_messages/welcome_messages/destroy</a>
-   *
+   * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/delete-welcome-message">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/delete-welcome-message</a>
    */
   @RemoteMethod(httpMethod = "DELETE", path = "/destroy.json")
   public void destroyWelcomeMessage(@Query("id") Long id);

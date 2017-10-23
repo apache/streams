@@ -8,7 +8,7 @@
   "javaInterfaces": [
     "java.io.Serializable"
   ],
-  "description": "https://dev.twitter.com/webhooks/reference/get/account_activity/webhooks",
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-webhook-config",
   "properties": {
     "id": {
       "type": "string"

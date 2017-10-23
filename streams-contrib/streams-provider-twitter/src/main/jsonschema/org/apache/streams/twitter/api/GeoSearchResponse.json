@@ -6,7 +6,7 @@
   "id": "#",
   "javaType" : "org.apache.streams.twitter.api.GeoSearchResponse",
   "javaInterfaces": ["java.io.Serializable"],
-  "description": "https://dev.twitter.com/rest/reference/get/users/show/id",
+  "description": "https://developer.twitter.com/en/docs/geo/places-near-location/api-reference/get-geo-search",
   "properties": {
     "query": {
       "type": "object",

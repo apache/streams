@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Interface for /friends methods.
  *
- * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
+ * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference</a>
  */
 @Remoteable(path = "https://api.twitter.com/1.1/friends")
 public interface Friends {
@@ -39,7 +39,7 @@ public interface Friends {
    *
    * @param parameters {@link org.apache.streams.twitter.api.FriendsIdsRequest}
    * @return FriendsIdsResponse
-   * @see <a href="https://dev.twitter.com/rest/reference/get/friends/ids">https://dev.twitter.com/rest/reference/get/friends/ids</a>
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/ids.json")
@@ -50,7 +50,7 @@ public interface Friends {
    *
    * @param parameters {@link org.apache.streams.twitter.api.FriendsListRequest}
    * @return FriendsListResponse
-   * @see <a href="https://dev.twitter.com/rest/reference/get/friends/list">https://dev.twitter.com/rest/reference/get/friends/list</a>
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friends-list">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friends-list</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/list.json")
