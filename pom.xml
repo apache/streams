@@ -658,6 +658,7 @@
                             <exclude>.git/**</exclude>
                             <exclude>.idea/**</exclude>
                             <exclude>.java-version</exclude>
+                            <exclude>*.conf</exclude>
                             <exclude>**/DEPENDENCIES</exclude>
                             <exclude>**/LICENSE</exclude>
                             <exclude>**/MANIFEST.MF</exclude>
@@ -676,7 +677,7 @@
                             <exclude>**/*.svg</exclude>
                             <exclude>dependency-reduced-pom.xml</exclude>
                             <exclude>rat.txt</exclude>
-                            <exclude>apache-maven-3.3.9/**/*</exclude>
+                            <exclude>apache-maven-*/**/*</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
