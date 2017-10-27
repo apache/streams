@@ -62,25 +62,13 @@ public interface Users {
   public List<User> search( @QueryIfNE UsersSearchRequest parameters);
 
   /**
-   * Access to Twitter’s suggested user list. This returns the list of suggested user categories.
+   * Returns a variety of information about the user specified by the required user_id or screen_name parameter. The author’s most recent Tweet will be returned inline when possible.
    *
-   * @param lang Restricts the suggested categories to the requested language. The language must be specified by the appropriate two letter ISO 639-1 representation.
-   * @return {@link java.util.List}[{@link org.apache.streams.twitter.api.SuggestedUserCategory}]
-   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions</a>
-   *
-   */
-  @RemoteMethod(httpMethod = "GET", path = "/suggestions.json")
-  public List<SuggestedUserCategory> suggestedUserCategories( @QueryIfNE("lang") String lang);
-
-  /**
-   * Access to Twitter’s suggested user list. This returns the list of suggested user categories.
-   *
-   * @param lang Restricts the suggested categories to the requested language. The language must be specified by the appropriate two letter ISO 639-1 representation.
-   * @return {@link java.util.List}[{@link org.apache.streams.twitter.api.SuggestedUserCategory}]
-   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions</a>
+   * @return {@link java.util.List}[{@link org.apache.streams.twitter.pojo.User}]
+   * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-show">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-show</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/suggestions/{slug}")
+  @RemoteMethod(httpMethod = "GET", path = "/show.json")
   public User show( @QueryIfNE UsersShowRequest parameters);
 
 }

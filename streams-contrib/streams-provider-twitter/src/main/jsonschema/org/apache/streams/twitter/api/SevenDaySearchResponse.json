@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.SevenDaySearchResponse",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets.html",
+  "properties": {
+    "statuses": {
+      "type": "array",
+      "items": {
+        "$ref": "../pojo/tweet.json"
+      }
+    }
+  }
+}
