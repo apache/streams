@@ -298,7 +298,7 @@
         </snapshotRepository>
         <site>
             <id>site.streams.project</id>
-            <url>scm:git:https://github.com/apache/streams.git</url>
+            <url>scm:git:git@github.com:apache/streams.git</url>
         </site>
     </distributionManagement>
 
