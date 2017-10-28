@@ -1,3 +1,4 @@
+org.apache.streams.local
 org.apache.streams.local.builders
 org.apache.streams.local.counters
 org.apache.streams.local.executors

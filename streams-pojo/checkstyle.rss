@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2017 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 17,
-             Errors: 264,
+      <title>File: 165,
+             Errors: 6340,
              Warnings: 0,
              Infos: 0
       </title>
@@ -46,20 +46,6 @@ under the License.
           <tbody>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.juneau.ListSerializer.java">org/apache/streams/juneau/ListSerializer.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  12
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.jackson.StreamsDateTimeDeserializer.java">org/apache/streams/jackson/StreamsDateTimeDeserializer.java</a>
                 </td>
                 <td>
@@ -74,7 +60,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.jackson.StreamsJacksonModule.java">org/apache/streams/jackson/StreamsJacksonModule.java</a>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Listen.java">org/apache/streams/pojo/json/verbs/Listen.java</a>
                 </td>
                 <td>
                   0
@@ -83,35 +69,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  13
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.data.ActivitySerializer.java">org/apache/streams/data/ActivitySerializer.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  6
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.juneau.JodaDateSwap.java">org/apache/streams/juneau/JodaDateSwap.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  16
+                  41
                 </td>
               </tr>
                           <tr>
@@ -130,7 +88,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.exceptions.ActivitySerializerException.java">org/apache/streams/exceptions/ActivitySerializerException.java</a>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Schedule.java">org/apache/streams/pojo/json/verbs/Schedule.java</a>
                 </td>
                 <td>
                   0
@@ -139,12 +97,12 @@ under the License.
                   0
                 </td>
                 <td>
-                  9
+                  40
                 </td>
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.data.ActivityConverter.java">org/apache/streams/data/ActivityConverter.java</a>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Unshare.java">org/apache/streams/pojo/json/verbs/Unshare.java</a>
                 </td>
                 <td>
                   0
@@ -153,7 +111,49 @@ under the License.
                   0
                 </td>
                 <td>
-                  17
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Host.java">org/apache/streams/pojo/json/verbs/Host.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Disagree.java">org/apache/streams/pojo/json/verbs/Disagree.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Receive.java">org/apache/streams/pojo/json/verbs/Receive.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
                 </td>
               </tr>
                           <tr>
@@ -172,7 +172,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.data.util.RFC3339Utils.java">org/apache/streams/data/util/RFC3339Utils.java</a>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Members.java">org/apache/streams/pojo/json/objectTypes/Members.java</a>
                 </td>
                 <td>
                   0
@@ -181,7 +181,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  74
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Folder.java">org/apache/streams/pojo/json/objectTypes/Folder.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
                 </td>
               </tr>
                           <tr>
@@ -200,7 +214,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.exceptions.ActivityConversionException.java">org/apache/streams/exceptions/ActivityConversionException.java</a>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Task.java">org/apache/streams/pojo/json/objectTypes/Task.java</a>
                 </td>
                 <td>
                   0
@@ -209,7 +223,259 @@ under the License.
                   0
                 </td>
                 <td>
-                  10
+                  68
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Sponsor.java">org/apache/streams/pojo/json/verbs/Sponsor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Event.java">org/apache/streams/pojo/json/objectTypes/Event.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  102
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Post.java">org/apache/streams/pojo/json/verbs/Post.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.jackson.StreamsDateTimeFormat.java">org/apache/streams/jackson/StreamsDateTimeFormat.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Service.java">org/apache/streams/pojo/json/objectTypes/Service.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Bookmark.java">org/apache/streams/pojo/json/objectTypes/Bookmark.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.FlagAsInappropriate.java">org/apache/streams/pojo/json/verbs/FlagAsInappropriate.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  42
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Binary.java">org/apache/streams/pojo/json/objectTypes/Binary.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Playlist.java">org/apache/streams/pojo/json/objectTypes/Playlist.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.RsvpYes.java">org/apache/streams/pojo/json/verbs/RsvpYes.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Win.java">org/apache/streams/pojo/json/verbs/Win.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Interact.java">org/apache/streams/pojo/json/verbs/Interact.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.StopFollowing.java">org/apache/streams/pojo/json/verbs/StopFollowing.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Video.java">org/apache/streams/pojo/json/objectTypes/Video.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Share.java">org/apache/streams/pojo/json/verbs/Share.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Article.java">org/apache/streams/pojo/json/objectTypes/Article.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Invite.java">org/apache/streams/pojo/json/verbs/Invite.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Add.java">org/apache/streams/pojo/json/verbs/Add.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
                 </td>
               </tr>
                           <tr>
@@ -228,6 +494,34 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Organization.java">org/apache/streams/pojo/json/objectTypes/Organization.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.ImageParent.java">org/apache/streams/pojo/json/ImageParent.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  71
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.jackson.StreamsPeriodSerializer.java">org/apache/streams/jackson/StreamsPeriodSerializer.java</a>
                 </td>
                 <td>
@@ -238,6 +532,580 @@ under the License.
                 </td>
                 <td>
                   8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Accept.java">org/apache/streams/pojo/json/verbs/Accept.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Process.java">org/apache/streams/pojo/json/objectTypes/Process.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.Generator.java">org/apache/streams/pojo/json/Generator.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.Icon.java">org/apache/streams/pojo/json/Icon.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Start.java">org/apache/streams/pojo/json/verbs/Start.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Lose.java">org/apache/streams/pojo/json/verbs/Lose.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Acknowledge.java">org/apache/streams/pojo/json/verbs/Acknowledge.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Use.java">org/apache/streams/pojo/json/verbs/Use.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Experience.java">org/apache/streams/pojo/json/verbs/Experience.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Note.java">org/apache/streams/pojo/json/objectTypes/Note.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Device.java">org/apache/streams/pojo/json/objectTypes/Device.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.exceptions.ActivitySerializerException.java">org/apache/streams/exceptions/ActivitySerializerException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  9
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Status.java">org/apache/streams/pojo/json/objectTypes/Status.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Cancel.java">org/apache/streams/pojo/json/verbs/Cancel.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Agree.java">org/apache/streams/pojo/json/verbs/Agree.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Send.java">org/apache/streams/pojo/json/verbs/Send.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Delete.java">org/apache/streams/pojo/json/verbs/Delete.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Qualify.java">org/apache/streams/pojo/json/verbs/Qualify.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Create.java">org/apache/streams/pojo/json/verbs/Create.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Retract.java">org/apache/streams/pojo/json/verbs/Retract.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.Author.java">org/apache/streams/pojo/json/Author.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Checkin.java">org/apache/streams/pojo/json/verbs/Checkin.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Authorize.java">org/apache/streams/pojo/json/verbs/Authorize.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.StreamsJacksonMapperConfiguration.java">org/apache/streams/pojo/StreamsJacksonMapperConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  44
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Return.java">org/apache/streams/pojo/json/verbs/Return.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Unsave.java">org/apache/streams/pojo/json/verbs/Unsave.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Resolve.java">org/apache/streams/pojo/json/verbs/Resolve.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Request.java">org/apache/streams/pojo/json/verbs/Request.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Song.java">org/apache/streams/pojo/json/objectTypes/Song.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Option.java">org/apache/streams/pojo/json/objectTypes/Option.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.File.java">org/apache/streams/pojo/json/objectTypes/File.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  50
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Audio.java">org/apache/streams/pojo/json/objectTypes/Audio.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.AddressParent.java">org/apache/streams/pojo/json/objectTypes/AddressParent.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  84
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Tag.java">org/apache/streams/pojo/json/verbs/Tag.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.RemoveFriend.java">org/apache/streams/pojo/json/verbs/RemoveFriend.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Install.java">org/apache/streams/pojo/json/verbs/Install.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Deny.java">org/apache/streams/pojo/json/verbs/Deny.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Present.java">org/apache/streams/pojo/json/verbs/Present.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Search.java">org/apache/streams/pojo/json/verbs/Search.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Close.java">org/apache/streams/pojo/json/verbs/Close.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Reject.java">org/apache/streams/pojo/json/verbs/Reject.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
                 </td>
               </tr>
                           <tr>
@@ -256,6 +1124,580 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Page.java">org/apache/streams/pojo/json/objectTypes/Page.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.juneau.ListSerializer.java">org/apache/streams/juneau/ListSerializer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  12
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Comment.java">org/apache/streams/pojo/json/objectTypes/Comment.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Follow.java">org/apache/streams/pojo/json/verbs/Follow.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.RsvpNo.java">org/apache/streams/pojo/json/verbs/RsvpNo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.juneau.JodaDateSwap.java">org/apache/streams/juneau/JodaDateSwap.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  16
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Like.java">org/apache/streams/pojo/json/verbs/Like.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Ignore.java">org/apache/streams/pojo/json/verbs/Ignore.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Read.java">org/apache/streams/pojo/json/verbs/Read.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Person.java">org/apache/streams/pojo/json/objectTypes/Person.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  29
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Item.java">org/apache/streams/pojo/json/objectTypes/Item.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  35
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Author.java">org/apache/streams/pojo/json/verbs/Author.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Submit.java">org/apache/streams/pojo/json/verbs/Submit.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.exceptions.ActivityConversionException.java">org/apache/streams/exceptions/ActivityConversionException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  10
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.Provider.java">org/apache/streams/pojo/json/Provider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Photo.java">org/apache/streams/pojo/json/objectTypes/Photo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  42
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Build.java">org/apache/streams/pojo/json/verbs/Build.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Dislike.java">org/apache/streams/pojo/json/verbs/Dislike.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Group.java">org/apache/streams/pojo/json/objectTypes/Group.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Attach.java">org/apache/streams/pojo/json/verbs/Attach.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Unfavorite.java">org/apache/streams/pojo/json/verbs/Unfavorite.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Image.java">org/apache/streams/pojo/json/objectTypes/Image.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Consume.java">org/apache/streams/pojo/json/verbs/Consume.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.FullImage.java">org/apache/streams/pojo/json/objectTypes/FullImage.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Assign.java">org/apache/streams/pojo/json/verbs/Assign.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Team.java">org/apache/streams/pojo/json/objectTypes/Team.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Role.java">org/apache/streams/pojo/json/objectTypes/Role.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Leave.java">org/apache/streams/pojo/json/verbs/Leave.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.Image.java">org/apache/streams/pojo/json/Image.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Replace.java">org/apache/streams/pojo/json/verbs/Replace.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Approve.java">org/apache/streams/pojo/json/verbs/Approve.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Place.java">org/apache/streams/pojo/json/objectTypes/Place.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  50
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Complete.java">org/apache/streams/pojo/json/verbs/Complete.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Address.java">org/apache/streams/pojo/json/objectTypes/Address.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Terminate.java">org/apache/streams/pojo/json/verbs/Terminate.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Position.java">org/apache/streams/pojo/json/objectTypes/Position.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  47
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Attend.java">org/apache/streams/pojo/json/verbs/Attend.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Join.java">org/apache/streams/pojo/json/verbs/Join.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Property.java">org/apache/streams/pojo/json/objectTypes/Property.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  52
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.ActivityObject.java">org/apache/streams/pojo/json/ActivityObject.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  179
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Save.java">org/apache/streams/pojo/json/verbs/Save.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.data.util.ActivityUtil.java">org/apache/streams/data/util/ActivityUtil.java</a>
                 </td>
                 <td>
@@ -270,7 +1712,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.jackson.StreamsDateTimeFormat.java">org/apache/streams/jackson/StreamsDateTimeFormat.java</a>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Open.java">org/apache/streams/pojo/json/verbs/Open.java</a>
                 </td>
                 <td>
                   0
@@ -279,7 +1721,637 @@ under the License.
                   0
                 </td>
                 <td>
-                  1
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Unsatisfy.java">org/apache/streams/pojo/json/verbs/Unsatisfy.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Confirm.java">org/apache/streams/pojo/json/verbs/Confirm.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Update.java">org/apache/streams/pojo/json/verbs/Update.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  59
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Purchase.java">org/apache/streams/pojo/json/verbs/Purchase.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Remove.java">org/apache/streams/pojo/json/verbs/Remove.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Unlike.java">org/apache/streams/pojo/json/verbs/Unlike.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.Activity.java">org/apache/streams/pojo/json/Activity.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  182
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Insert.java">org/apache/streams/pojo/json/verbs/Insert.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Deliver.java">org/apache/streams/pojo/json/verbs/Deliver.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.MakeFriend.java">org/apache/streams/pojo/json/verbs/MakeFriend.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.data.ActivityConverter.java">org/apache/streams/data/ActivityConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  17
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.At.java">org/apache/streams/pojo/json/verbs/At.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.List.java">org/apache/streams/pojo/json/objectTypes/List.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Find.java">org/apache/streams/pojo/json/verbs/Find.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.PhotoAlbum.java">org/apache/streams/pojo/json/objectTypes/PhotoAlbum.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.Item.java">org/apache/streams/pojo/json/Item.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Issue.java">org/apache/streams/pojo/json/objectTypes/Issue.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Question.java">org/apache/streams/pojo/json/objectTypes/Question.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Alert.java">org/apache/streams/pojo/json/objectTypes/Alert.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Tie.java">org/apache/streams/pojo/json/verbs/Tie.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.jackson.StreamsJacksonModule.java">org/apache/streams/jackson/StreamsJacksonModule.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  13
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Access.java">org/apache/streams/pojo/json/verbs/Access.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Satisfy.java">org/apache/streams/pojo/json/verbs/Satisfy.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Favorite.java">org/apache/streams/pojo/json/verbs/Favorite.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.data.ActivitySerializer.java">org/apache/streams/data/ActivitySerializer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Product.java">org/apache/streams/pojo/json/objectTypes/Product.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Application.java">org/apache/streams/pojo/json/objectTypes/Application.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.RequestFriend.java">org/apache/streams/pojo/json/verbs/RequestFriend.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Scope.java">org/apache/streams/pojo/json/objectTypes/Scope.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Offer.java">org/apache/streams/pojo/json/objectTypes/Offer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Watch.java">org/apache/streams/pojo/json/verbs/Watch.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Job.java">org/apache/streams/pojo/json/objectTypes/Job.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Archive.java">org/apache/streams/pojo/json/verbs/Archive.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Permission.java">org/apache/streams/pojo/json/objectTypes/Permission.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  50
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Borrow.java">org/apache/streams/pojo/json/verbs/Borrow.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.data.util.RFC3339Utils.java">org/apache/streams/data/util/RFC3339Utils.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  74
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Append.java">org/apache/streams/pojo/json/verbs/Append.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Give.java">org/apache/streams/pojo/json/verbs/Give.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Badge.java">org/apache/streams/pojo/json/objectTypes/Badge.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Review.java">org/apache/streams/pojo/json/objectTypes/Review.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.RsvpMaybe.java">org/apache/streams/pojo/json/verbs/RsvpMaybe.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.objectTypes.Game.java">org/apache/streams/pojo/json/objectTypes/Game.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.Collection.java">org/apache/streams/pojo/json/Collection.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  74
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Play.java">org/apache/streams/pojo/json/verbs/Play.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-pojo/checkstyle.html#org.apache.streams.pojo.json.verbs.Sell.java">org/apache/streams/pojo/json/verbs/Sell.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
                 </td>
               </tr>
                       </tbody>

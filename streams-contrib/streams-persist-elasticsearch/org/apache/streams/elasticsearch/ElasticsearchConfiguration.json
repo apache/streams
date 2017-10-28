@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.elasticsearch.ElasticsearchConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "hosts": {
+            "type": "array",
+            "description": "Elasticsearch Hosts",
+            "items": {
+                "type": "string"
+            }
+        },
+        "port": {
+            "type": "integer",
+            "description": "Elasticsearch Transport API port"
+        },
+        "clusterName": {
+            "type": "string",
+            "description": "Cluster Name"
+        }
+    }
+}

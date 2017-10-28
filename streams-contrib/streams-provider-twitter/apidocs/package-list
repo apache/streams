@@ -1,5 +1,7 @@
+org.apache.streams.twitter
 org.apache.streams.twitter.api
 org.apache.streams.twitter.converter
 org.apache.streams.twitter.converter.util
+org.apache.streams.twitter.pojo
 org.apache.streams.twitter.processor
 org.apache.streams.twitter.provider

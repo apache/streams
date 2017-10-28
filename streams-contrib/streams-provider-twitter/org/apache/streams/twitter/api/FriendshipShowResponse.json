@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.twitter.api.FriendshipShowRequest",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-show",
+  "properties": {
+    "source_id": {
+      "description": "The user_id of the subject user.",
+      "required": false,
+      "type": "integer"
+    },
+    "source_screen_name": {
+      "description": "The screen_name of the subject user.",
+      "required": false,
+      "type": "string"
+    },
+    "target_id": {
+      "description": "The user_id of the target user.",
+      "required": false,
+      "type": "integer"
+    },
+    "target_screen_name": {
+      "description": "The screen_name of the target user.",
+      "required": false,
+      "type": "string"
+    }
+  }
+}

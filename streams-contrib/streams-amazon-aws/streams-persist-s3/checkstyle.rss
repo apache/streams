@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2017 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 5,
-             Errors: 242,
+      <title>File: 8,
+             Errors: 474,
              Warnings: 0,
              Infos: 0
       </title>
@@ -44,6 +44,20 @@ under the License.
             </tr>
           </thead>
           <tbody>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-amazon-aws/streams-persist-s3/checkstyle.html#org.apache.streams.s3.S3ReaderConfiguration.java">org/apache/streams/s3/S3ReaderConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  34
+                </td>
+              </tr>
                           <tr>
                 <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-amazon-aws/streams-persist-s3/checkstyle.html#org.apache.streams.s3.S3ObjectInputStreamWrapper.java">org/apache/streams/s3/S3ObjectInputStreamWrapper.java</a>
@@ -98,6 +112,34 @@ under the License.
                 </td>
                 <td>
                   43
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-amazon-aws/streams-persist-s3/checkstyle.html#org.apache.streams.s3.S3WriterConfiguration.java">org/apache/streams/s3/S3WriterConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  102
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-amazon-aws/streams-persist-s3/checkstyle.html#org.apache.streams.s3.S3Configuration.java">org/apache/streams/s3/S3Configuration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  96
                 </td>
               </tr>
                           <tr>

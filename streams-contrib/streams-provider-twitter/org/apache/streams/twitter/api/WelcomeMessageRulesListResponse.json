@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.twitter.api.WelcomeMessageRulesListResponse",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/list-welcome-message-rules",
+  "properties": {
+    "welcome_message_rules": {
+      "type": "array",
+      "items": {
+        "$ref": "../pojo/WelcomeMessageRule.json"
+      }
+    },
+    "next_curser": {
+      "type": "string"
+    }
+  }
+}

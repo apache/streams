@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2017 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 5,
-             Errors: 177,
+      <title>File: 8,
+             Errors: 416,
              Warnings: 0,
              Infos: 0
       </title>
@@ -44,6 +44,20 @@ under the License.
             </tr>
           </thead>
           <tbody>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-hdfs/checkstyle.html#org.apache.streams.hdfs.HdfsReaderConfiguration.java">org/apache/streams/hdfs/HdfsReaderConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  34
+                </td>
+              </tr>
                           <tr>
                 <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-persist-hdfs/checkstyle.html#org.apache.streams.hdfs.WebHdfsPersistWriter.java">org/apache/streams/hdfs/WebHdfsPersistWriter.java</a>
@@ -112,6 +126,34 @@ under the License.
                 </td>
                 <td>
                   6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-hdfs/checkstyle.html#org.apache.streams.hdfs.HdfsConfiguration.java">org/apache/streams/hdfs/HdfsConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  112
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-hdfs/checkstyle.html#org.apache.streams.hdfs.HdfsWriterConfiguration.java">org/apache/streams/hdfs/HdfsWriterConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  93
                 </td>
               </tr>
                       </tbody>

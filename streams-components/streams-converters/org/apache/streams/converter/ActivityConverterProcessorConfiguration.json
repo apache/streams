@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.converter.ActivityConverterProcessorConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "classifiers": {
+            "type": "array",
+            "items": {
+                "javaType": "org.apache.streams.data.DocumentClassifier",
+                "type": "object"
+            }
+        },
+        "converters": {
+            "type": "array",
+            "items": {
+                "javaType": "org.apache.streams.data.ActivityConverter",
+                "type": "object"
+            }
+        }
+    }
+}

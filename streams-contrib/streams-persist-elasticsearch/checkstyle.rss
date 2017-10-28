@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2017 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 12,
-             Errors: 656,
+      <title>File: 16,
+             Errors: 982,
              Warnings: 0,
              Infos: 0
       </title>
@@ -44,20 +44,6 @@ under the License.
             </tr>
           </thead>
           <tbody>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchClientManager.java">org/apache/streams/elasticsearch/ElasticsearchClientManager.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  23
-                </td>
-              </tr>
                           <tr>
                 <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchMetadataUtil.java">org/apache/streams/elasticsearch/ElasticsearchMetadataUtil.java</a>
@@ -88,7 +74,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.processor.PercolateTagProcessor.java">org/apache/streams/elasticsearch/processor/PercolateTagProcessor.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.Tags.java">org/apache/streams/elasticsearch/Tags.java</a>
                 </td>
                 <td>
                   0
@@ -97,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  105
+                  21
                 </td>
               </tr>
                           <tr>
@@ -144,7 +130,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.processor.DocumentToMetadataProcessor.java">org/apache/streams/elasticsearch/processor/DocumentToMetadataProcessor.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration.java">org/apache/streams/elasticsearch/ElasticsearchWriterConfiguration.java</a>
                 </td>
                 <td>
                   0
@@ -153,21 +139,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  19
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchPersistWriter.java">org/apache/streams/elasticsearch/ElasticsearchPersistWriter.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  215
+                  171
                 </td>
               </tr>
                           <tr>
@@ -210,6 +182,90 @@ under the License.
                 </td>
                 <td>
                   70
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchClientManager.java">org/apache/streams/elasticsearch/ElasticsearchClientManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  23
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.processor.PercolateTagProcessor.java">org/apache/streams/elasticsearch/processor/PercolateTagProcessor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  105
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchConfiguration.java">org/apache/streams/elasticsearch/ElasticsearchConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  59
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration.java">org/apache/streams/elasticsearch/ElasticsearchReaderConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  75
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.processor.DocumentToMetadataProcessor.java">org/apache/streams/elasticsearch/processor/DocumentToMetadataProcessor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  19
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchPersistWriter.java">org/apache/streams/elasticsearch/ElasticsearchPersistWriter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  215
                 </td>
               </tr>
                       </tbody>

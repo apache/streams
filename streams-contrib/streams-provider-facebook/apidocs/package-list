@@ -1,3 +1,4 @@
+org.apache.streams.facebook
 org.apache.streams.facebook.api
 org.apache.streams.facebook.feed
 org.apache.streams.facebook.processor

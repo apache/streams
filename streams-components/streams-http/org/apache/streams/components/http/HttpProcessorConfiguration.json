@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.components.http.HttpProcessorConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "extends": { "$ref": "HttpConfiguration.json" },
+    "properties": {
+        "entity": {
+            "type": "string",
+            "description": "Entity to extend",
+            "enum": [ "activity", "actor", "object", "target" ],
+            "required" : true,
+            "default": "activity"
+        },
+        "extension": {
+            "type": "string",
+            "description": "Extension identifier",
+            "required" : true
+        },
+        "urlField": {
+            "type": "string",
+            "description": "Field where url is located",
+            "required" : true,
+            "default": "url"
+        }
+    }
+}

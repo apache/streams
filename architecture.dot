@@ -1,0 +1,62 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+ digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  subgraph cluster_upstream {
+    label="Upstream Systems";
+    upstream_databases [label="Databases", shape="cylinder"]
+    upstream_filesystems [label="Filesystems", shape="tab"]
+    upstream_generators [label="Generators"]
+    upstream_queues [label="Queues", shape="trapezium"]
+  }
+
+  subgraph cluster_streams {
+    label="Apache Streams Pipelines";
+    providers [label="Providers"]
+    persistReaders [label="PersistReaders"]
+    processors [label="Processors"]
+    persistWriters [label="PersistWriters"]
+  }
+
+  subgraph cluster_downstream {
+    label="Downstream Systems";
+    downstream_databases [label="Databases", shape="cylinder"]
+    downstream_filesystems [label="Filesystems", shape="tab"]
+    downstream_queues [label="Queues", shape="trapezium"]
+  }
+
+  upstream_generators -> providers
+  upstream_databases -> persistReaders
+  upstream_filesystems -> persistReaders
+  upstream_queues -> persistReaders
+  providers,persistReaders -> processors
+  processors -> processors
+  processors -> persistWriters
+  persistWriters -> downstream_databases
+  persistWriters -> downstream_filesystems
+  persistWriters -> downstream_queues
+
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.UsersLookupRequest",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-lookup",
+  "properties": {
+    "user_id": {
+      "description": "A comma separated list of user IDs, up to 100 are allowed in a single request. You are strongly encouraged to use a POST for larger requests.",
+      "required": true,
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "screen_name": {
+      "description": "A comma separated list of screen names, up to 100 are allowed in a single request. You are strongly encouraged to use a POST for larger (up to 100 screen names) requests.",
+      "required": true,
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "include_entities": {
+      "description": "The entities node will not be included when set to false.",
+      "required": false,
+      "type": "boolean"
+    }
+  }
+}

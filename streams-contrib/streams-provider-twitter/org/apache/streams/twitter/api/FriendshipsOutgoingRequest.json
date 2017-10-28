@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.twitter.api.FriendshipsOutgoingRequest",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-outgoing",
+  "properties": {
+    "cursor": {
+      "description": "Causes the list of connections to be broken into pages of no more than 5000 IDs at a time. The number of IDs returned is not guaranteed to be 5000 as suspended users are filtered out after connections are queried. If no cursor is provided, a value of -1 will be assumed, which is the first page.",
+      "required": false,
+      "type": "integer"
+    },
+    "stringify_ids": {
+      "description": "Many programming environments will not consume our Tweet ids due to their size. Provide this option to have ids returned as strings instead.",
+      "required": false,
+      "type": "boolean"
+    }
+  }
+}

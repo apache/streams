@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.twitter.api.EventsListResponse",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/overview",
+  "properties": {
+    "events": {
+      "type": "array",
+      "items": {
+        "type": {
+          "$ref": "../pojo/DirectMessageEvent.json"
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,6 @@
 org.apache.streams.jackson
+org.apache.streams.local.monitoring
 org.apache.streams.monitoring.persist
 org.apache.streams.monitoring.persist.impl
 org.apache.streams.monitoring.tasks
+org.apache.streams.pojo.json

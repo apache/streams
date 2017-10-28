@@ -1,0 +1,62 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration",
+    "extends": {"$ref":"ElasticsearchConfiguration.json"},
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "index": {
+            "type": "string",
+            "description": "Index to write to"
+        },
+        "type": {
+            "type": "string",
+            "description": "Type to write as"
+        },
+        "bulk": {
+            "type": "boolean",
+            "description": "Index in large or small batches"
+        },
+        "batchSize": {
+            "type": "integer",
+            "description": "Item Count before flush"
+        },
+        "batchBytes": {
+            "type": "integer",
+            "description": "Number of bytes before flush"
+        },
+        "maxTimeBetweenFlushMs": {
+            "type": "integer",
+            "description": "Max time between flush (ms)"
+        },
+        "script": {
+            "type": "string",
+            "description": "Script to execute during index"
+        },
+        "tags": {
+            "type": "object",
+            "javaInterfaces": ["java.io.Serializable"],
+            "description": "Tags to apply during index"
+        },
+        "replaceTags": {
+            "type": "boolean",
+            "description": "Whether to overwrite _percolator rules on startup"
+        },
+        "cleanupTags": {
+            "type": "boolean",
+            "description": "Whether to remove _percolator rules on shutdown"
+        },
+         "forceUseConfig": {
+             "type": "boolean",
+             "description": "Whether or not we force the values that are set in the configuration"
+         },
+        "refresh": {
+            "type": "boolean",
+            "description": "Whether to refresh during cleanup"
+        }
+    }
+}

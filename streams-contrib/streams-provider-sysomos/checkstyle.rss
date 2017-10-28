@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2017 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 12,
-             Errors: 418,
+      <title>File: 20,
+             Errors: 1179,
              Warnings: 0,
              Infos: 0
       </title>
@@ -46,7 +46,7 @@ under the License.
           <tbody>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.processor.SysomosTypeConverter.java">org/apache/streams/sysomos/processor/SysomosTypeConverter.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#com.sysomos.xml.ObjectFactory.java">com/sysomos/xml/ObjectFactory.java</a>
                 </td>
                 <td>
                   0
@@ -55,12 +55,12 @@ under the License.
                   0
                 </td>
                 <td>
-                  10
+                  42
                 </td>
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.SysomosException.java">org/apache/streams/sysomos/SysomosException.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#com.sysomos.xml.package-info.java">com/sysomos/xml/package-info.java</a>
                 </td>
                 <td>
                   0
@@ -69,7 +69,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  21
+                  8
                 </td>
               </tr>
                           <tr>
@@ -102,20 +102,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.data.HeartbeatInfo.java">org/apache/streams/sysomos/data/HeartbeatInfo.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  14
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.provider.SysomosHeartbeatStream.java">org/apache/streams/sysomos/provider/SysomosHeartbeatStream.java</a>
                 </td>
                 <td>
@@ -126,6 +112,20 @@ under the License.
                 </td>
                 <td>
                   113
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.Sysomos.java">org/apache/streams/sysomos/Sysomos.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  148
                 </td>
               </tr>
                           <tr>
@@ -172,6 +172,104 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.SysomosConfiguration.java">org/apache/streams/sysomos/SysomosConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  88
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.Location.java">org/apache/streams/sysomos/Location.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  38
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#JAXBDebug.java">JAXBDebug.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  13
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#com.sysomos.xml.BeatApi.java">com/sysomos/xml/BeatApi.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  410
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.processor.SysomosTypeConverter.java">org/apache/streams/sysomos/processor/SysomosTypeConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  10
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.SysomosException.java">org/apache/streams/sysomos/SysomosException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.data.HeartbeatInfo.java">org/apache/streams/sysomos/data/HeartbeatInfo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  14
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.provider.SysomosClient.java">org/apache/streams/sysomos/provider/SysomosClient.java</a>
                 </td>
                 <td>
@@ -196,6 +294,20 @@ under the License.
                 </td>
                 <td>
                   29
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#com.sysomos.xml.Adapter1.java">com/sysomos/xml/Adapter1.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  14
                 </td>
               </tr>
                           <tr>

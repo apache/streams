@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.twitter.api.WelcomeMessageRulesListRequest",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/list-welcome-messages",
+  "properties": {
+    "count": {
+      "description": "Max number of events to be returned. 20 default. 50 max.",
+      "type": "integer",
+      "required": false
+    },
+    "cursor": {
+      "description": "For paging through result sets greater than 1 page, use the “next_cursor” property from the previous request.",
+      "type": "string",
+      "required": false
+    }
+  }
+}

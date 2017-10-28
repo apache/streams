@@ -1,4 +1,6 @@
 org.apache.streams.instagram.api
+org.apache.streams.instagram.config
+org.apache.streams.instagram.pojo
 org.apache.streams.instagram.processor
 org.apache.streams.instagram.provider
 org.apache.streams.instagram.provider.recentmedia

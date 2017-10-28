@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.twitter.pojo.RelationshipTarget",
+  "javaInterfaces": ["java.io.Serializable"],
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "id_str": {
+      "type": "string"
+    },
+    "screen_name": {
+      "type": "string"
+    },
+    "following": {
+      "type": "boolean"
+    },
+    "followed_by": {
+      "type": "boolean"
+    }
+  }
+}

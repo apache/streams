@@ -1,0 +1,56 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+digraph g {
+
+  graph [compound = true];
+
+  //presentation
+  splines = true;
+  overlap = false;
+  rankdir = TB;
+
+  subgraph cluster_generators {
+    label="generators";
+    style="dotted";
+    generators_instagram [label="https://api.instagram.com"]
+  }
+
+  subgraph cluster_providers {
+    label="providers";
+    providers_instagram_userinfo [label="InstagramUserInfoCollector"]
+    providers_instagram_media [label="InstagramRecentMediaCollector"]
+  }
+
+  subgraph cluster_processors {
+    label="processors";
+    processors_instagram_activity [label="InstagramTypeConverter"]
+    processors_instagram_activityobject [label="InstagramTypeConverter"]
+  }
+
+  persisters [label="persisters", shape="cylinder"];
+
+  generators_instagram -> providers_instagram_userinfo
+  generators_instagram -> providers_instagram_media
+  providers_instagram_userinfo -> processors_instagram_activityobject [label="o.a.s.i.UserInfoData"]
+  providers_instagram_media -> processors_instagram_activity [label="o.a.s.i.MediaFeedData"]
+
+  processors_instagram_activityobject -> persisters [label="o.a.s.p.j.Page"]
+  processors_instagram_activity -> persisters [label="o.a.s.p.j.Photo\no.a.s.p.j.Video\no.a.s.p.j.Comment"]
+
+}

@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType": "org.apache.streams.peoplepattern.AccountType",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "prediction" : {
+            "type" : "string",
+            "enum" : [
+                "person",
+                "organization",
+                "entertainment",
+                "adult",
+                "spam",
+                "no-prediction"
+            ],
+            "default": "no-prediction"
+        },
+        "score": {
+            "type": "number"
+        },
+        "id": {
+            "type": "string"
+        }
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.hdfs.HdfsConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "extends": {
+        "$ref": "../../../../../../../../../streams-components/streams-converters/src/main/jsonschema/org/apache/streams/converter/LineReadWriteConfiguration.json"
+    },
+    "properties": {
+        "scheme": {
+            "type": "string",
+            "description": "scheme",
+            "enum" : ["file", "hdfs", "webhdfs", "s3", "s3n", "s3a", "emrfs"],
+            "default": "webhdfs"
+        },
+        "host": {
+            "type": "string",
+            "description": "WebHdfs host"
+        },
+        "port": {
+            "type": "integer",
+            "description": "WebHdfs port"
+        },
+        "path": {
+            "type": "string",
+            "description": "Base path"
+        },
+        "user": {
+            "type": "string",
+            "description": "User"
+        },
+        "password": {
+          "type": "string",
+          "description": "Password"
+        }
+    }
+}

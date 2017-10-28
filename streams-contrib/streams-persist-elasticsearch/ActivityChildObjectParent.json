@@ -1,0 +1,21 @@
+{
+    "$license": [
+      "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "template": "*_parent_child_it",
+    "order": 100,
+    "mappings": {
+        "object": {
+            "dynamic": true
+        },
+        "activity": {
+            "_parent": {
+              "type": "object"
+            },
+            "_routing": {
+                "required": true
+            },
+            "dynamic": true
+        }
+    }
+}

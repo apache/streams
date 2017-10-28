@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.hbase.HbaseConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "rootdir": {
+            "type": "string",
+            "description": "Hbase host"
+        },
+        "parent": {
+            "type": "string",
+            "description": "WebHdfs port"
+        },
+        "rootserver": {
+            "type": "string",
+            "description": "Base path"
+        },
+        "quorum": {
+            "type": "string",
+            "description": "User"
+        },
+        "clientPort": {
+            "type": "integer",
+            "description": "ZK Port"
+        },
+        "table": {
+            "type": "string",
+            "description": "Table"
+        },
+        "family": {
+            "type": "string",
+            "description": "Column Family"
+        },
+        "qualifier": {
+            "type": "string",
+            "description": "Qualifier"
+        }
+    }
+}

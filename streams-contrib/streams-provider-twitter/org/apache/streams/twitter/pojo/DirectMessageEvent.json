@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.twitter.pojo.DirectMessageEvent",
+    "javaInterfaces": ["java.io.Serializable"],
+    "description": "",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "created_timestamp": {
+            "type": "string"
+        },
+        "type": {
+            "type": "string",
+            "default": "message_create",
+            "enum" : [
+                "message_create"
+            ]
+        },
+        "initiated_via": {
+            "type": "object",
+            "properties": {
+                "tweet_id": {
+                    "description": "The ID of the Tweet with Direct Message Prompt the event was initiated from if one was used.",
+                    "type": "string"
+                },
+                "welcome_message_id": {
+                    "description": "The ID of the Welcome Message immediately preceding the event if one was used.",
+                    "type": "string"
+                }
+            }
+        },
+        "message_create": {
+            "type": "object",
+            "properties": {
+                "sender_id": {
+                    "type": "string"
+                },
+                "source_app_id": {
+                    "type": "string"
+                },
+                "target": {
+                    "type": "object",
+                    "properties": {
+                        "recipient_id": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "message_data": {
+                    "$ref": "../pojo/MessageData.json"
+                }
+            }
+        }
+    }
+}

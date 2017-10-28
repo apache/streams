@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.neo4j.Neo4jReaderConfiguration",
+  "javaInterfaces": ["java.io.Serializable"],
+  "extends" : {"$ref":"Neo4jConfiguration.json"},
+  "properties": {
+    "query": {
+      "type": "string",
+      "required": "true"
+    },
+    "params": {
+      "type": "object"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.twitter.api.DirectMessageNewRequest",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/new-message",
+  "properties": {
+    "user_id": {
+      "description": "The ID of the user who should receive the direct message. Helpful for disambiguating when a valid user ID is also a valid screen name.",
+      "type": "integer",
+      "required": false
+    },
+    "screen_name": {
+      "description": "The screen name of the user who should receive the direct message. Helpful for disambiguating when a valid screen name is also a user ID.",
+      "type": "string",
+      "required": false
+    },
+    "text": {
+      "description": "The text of your direct message.",
+      "type": "integer",
+      "required": false
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.instagram.api.SearchMediaRequest",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "properties": {
+    "distance": {
+      "description": "Default is 1km (distance=1000), max distance is 5km.",
+      "type": "integer"
+    },
+    "lat": {
+      "description": "Latitude of the center search coordinate. If used, lng is required.",
+      "type": "integer"
+    },
+    "lng": {
+      "description": "Longitude of the center search coordinate. If used, lat is required.",
+      "type": "integer"
+    }
+  }
+}

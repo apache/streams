@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.twitter.api.AccountSettingsResponse",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/get-account-settings",
+  "properties": {
+    "always_use_https": {
+      "type": "boolean"
+    },
+    "discoverable_by_email": {
+      "type": "boolean"
+    },
+    "geo_enabled": {
+      "type": "boolean"
+    },
+    "language": {
+      "type": "string"
+    },
+    "protected": {
+      "type": "boolean"
+    },
+    "screen_name": {
+      "type": "string"
+    },
+    "show_all_inline_media": {
+      "type": "boolean"
+    },
+    "sleep_time": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "time_zone": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "tzinfo_name": {
+          "type": "string"
+        },
+        "utc_offset": {
+          "type": "integer"
+        }
+      }
+    },
+    "trend_location": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "country": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentid": {
+            "type": "integer"
+          },
+          "placeType": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "url": {
+            "type": "string"
+          },
+          "woeid": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "use_cookie_personalization": {
+      "type": "boolean"
+    },
+    "allow_contributor_request": {
+      "type": "string"
+    }
+  }
+}

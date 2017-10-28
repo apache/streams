@@ -1,0 +1,183 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.twitter.search.ThirtyDaySearchOperator",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "",
+  "properties": {
+    "keywords": {
+      "description": "Matches a keyword within the body of a Tweet.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "emojis": {
+      "description": "Matches an emoji within the body of a Tweet.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "exact_phrases": {
+      "description": "Matches an exact phrase within the body of a Tweet.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "froms": {
+      "description": "Matches any Tweet from a specific user (name or ID).",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tos": {
+      "description": "Matches any Tweet that is in reply to a particular user.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mentions": {
+      "description": "Matches any Tweet that mentions the given user (name or ID).",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "retweets_ofs": {
+      "description": "Matches Retweets that are Tweets of a specified user (name or ID).",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "hashtags": {
+      "description": "Matches any Tweet with the given hashtag.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "urls": {
+      "description": "Performs a tokenized (keyword/phrase) match on the expanded URLs of a Tweet.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bios": {
+      "description": "Matches a keyword or phrase within the user bio of a Tweet.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bio_names": {
+      "description": "Matches a keyword within the user bio name of a Tweet.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bio_locations": {
+      "description": "Matches Tweets where the user’s bio-level location contains the specified keyword or phrase.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "places": {
+      "description": "Matches Tweets tagged with a specified location or 'Twitter place.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "place_countrys": {
+      "description": "Matches Tweets tagged with the specified location or Twitter place ID (see examples). Multi-word place names (“New York City”, “Palo Alto”) should be enclosed in quotes.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "point_radiuses": {
+      "description": "Matches against the Exact Location (x,y) of the Tweet when present, and in Twitter, against a “Place” geo polygon, where the Place is fully contained within the defined region.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bounding_boxes": {
+      "description": "Matches against the Exact Location (x,y) of the Tweet when present, and in Twitter, against a “Place” geo polygon.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "time_zones": {
+      "description": "Matches Tweets where the user-selected time zone specified in a user’s profile settings matches a given string.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "langs": {
+      "description": "Matches Tweets that have been classified by Twitter as being of a particular language. Assigned to one of over 50 languages or marked as 'undefined.'",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "has_images": {
+      "description": "A boolean search operator that returns all Tweets that contain a native images (e.g. pic.twitter.com).",
+      "type": "boolean",
+      "default": false
+    },
+    "has_links": {
+      "description": "This operator matches Tweets which contain links in the message body.",
+      "type": "boolean",
+      "default": false
+    },
+    "has_mentions": {
+      "description": "Matches Tweets that mention another Twitter user.",
+      "type": "boolean",
+      "default": false
+    },
+    "has_videos": {
+      "description": "A boolean search operator that returns all Tweets that contain native videos (does not include vine, periscope).",
+      "type": "boolean",
+      "default": false
+    },
+    "has_media": {
+      "description": "Matches Tweets that contain a media url classified by Twitter, e.g. pic.twitter.com.",
+      "type": "boolean",
+      "default": false
+    },
+    "not": {
+      "description": "'NOT' all of these operators.",
+      "type": "boolean",
+      "default": false
+    },
+    "ands": {
+      "description": "'AND' these additional operators.",
+      "type": "array",
+      "items": {
+        "$ref": "#"
+      }
+    },
+    "ors": {
+      "description": "'OR' these additional operators.",
+      "type": "array",
+      "items": {
+        "$ref": "#"
+      }
+    }
+  }
+}

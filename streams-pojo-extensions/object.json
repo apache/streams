@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "title": "activity",
+  "javaType": "org.apache.streams.pojo.extensions.ActivityObject",
+  "javaInterfaces": ["java.io.Serializable"],
+  "extends": {
+    "$ref": "../../../../streams-pojo/src/main/jsonschema/object.json"
+  },
+  "description": "ActivityObject with Apache Streams extended fields.",
+  "properties": {
+    "extensions": {
+      "javaType": "org.apache.streams.pojo.extensions.ObjectExtensions",
+      "javaInterfaces": ["java.io.Serializable"],
+      "type": "object",
+      "properties": {
+        "followers": {
+          "type": "integer",
+          "description": "The number of followers that the actor/object has"
+        },
+        "friends": {
+          "type": "integer",
+          "description": "The number of followers that the actor/object has"
+        },
+        "handle": {
+          "type": "string",
+          "description": "Screen name of the actor/object, distinct from displayName"
+        },
+        "language": {
+          "type": "string",
+          "description": "The ISO language code the actor/object prefers"
+        },
+        "likes": {
+          "type": "integer",
+          "description": "The number of likes that the actor/object has"
+        },
+        "location": {
+          "type": "object",
+          "description": "Location from which the actor/object most frequently posts",
+          "properties": {
+            "country": {
+              "type": "string",
+              "description": "Country"
+            },
+            "coordinates": {
+              "type": "array",
+              "items": "number",
+              "description": "Specific Geo-JSON coordinates (long,lat)"
+            }
+          }
+        },
+        "posts": {
+          "type": "integer",
+          "description": "The number of posts that the actor/object has"
+        }
+      }
+    }
+  }
+}

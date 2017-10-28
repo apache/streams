@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "title": "object",
+    "extends": {
+        "$ref": "./Broadcast.json"
+    },
+    "javaType": "org.apache.streams.pojo.json.DatumStatusCounterBroadcast",
+    "javaInterfaces": ["java.io.Serializable"],
+    "description": "Snapshot of the DatumStatusCounter",
+    "properties": {
+        "passed": {
+            "type": "boolean",
+            "description": "Number of objects that have passed"
+        },
+        "failed": {
+            "type": "boolean",
+            "description": "Number of objects that have faile"
+        },
+        "name": {
+            "type": "string",
+            "description": "Name of the MBean"
+        }
+    }
+}

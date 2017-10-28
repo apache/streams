@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.UsersShowRequest",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-show",
+  "properties": {
+    "user_id": {
+      "description": "The ID of the user for whom to return results. Either an id or screen_name is required for this method.",
+      "required": false,
+      "type": "integer"
+    },
+    "screen_name": {
+      "description": "The screen name of the user for whom to return results. Either a id or screen_name is required for this method.",
+      "required": false,
+      "type": "string"
+    },
+    "include_entities": {
+      "description": "The entities node will not be included when set to false.",
+      "required": false,
+      "type": "boolean"
+    }
+  }
+}

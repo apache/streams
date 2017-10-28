@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.twitter.api.FollowersIdsResponse",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids",
+  "properties": {
+    "ids": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "previous_cursor": {
+      "type": "integer"
+    },
+    "previous_cursor_str": {
+      "type": "string"
+    },
+    "next_cursor": {
+      "type": "integer"
+    },
+    "next_cursor_str": {
+      "type": "string"
+    }
+  }
+}

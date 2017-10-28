@@ -1,3 +1,4 @@
+org.apache.streams.components.http
 org.apache.streams.components.http.persist
 org.apache.streams.components.http.processor
 org.apache.streams.components.http.provider

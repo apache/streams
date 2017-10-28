@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.UsersSearchRequest",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-search",
+  "properties": {
+    "q": {
+      "description": "The search query to run against people search.",
+      "required": true,
+      "type": "string"
+    },
+    "page": {
+      "description": "Specifies the page of results to retrieve.",
+      "required": false,
+      "type": "integer"
+    },
+    "count": {
+      "description": "The number of potential user results to retrieve per page. This value has a maximum of 20.",
+      "required": false,
+      "type": "integer"
+    },
+    "include_entities": {
+      "description": "The entities node will not be included in embedded Tweet objects when set to false.",
+      "required": false,
+      "type": "integer"
+    }
+  }
+}

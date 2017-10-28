@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.StatusesLookupRequest",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-lookup",
+  "properties": {
+    "id": {
+      "description": "A comma separated list of Tweet IDs, up to 100 are allowed in a single request.",
+      "required": true,
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "trim_user": {
+      "description": "When set to either true , t or 1 , each Tweet returned in a timeline will include a user object including only the status authors numerical ID. Omit this parameter to receive the complete user object.",
+      "required": false,
+      "type": "boolean"
+    },
+    "include_entities": {
+      "description": "The entities node will not be included when set to false.",
+      "required": false,
+      "type": "boolean"
+    },
+    "map": {
+      "description": "When using the map parameter, Tweets that do not exist or cannot be viewed by the current user will still have their key represented but with an explicitly null value paired with it.",
+      "required": false,
+      "type": "boolean"
+    }
+  }
+}

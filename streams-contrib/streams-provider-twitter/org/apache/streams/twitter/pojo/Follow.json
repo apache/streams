@@ -1,0 +1,18 @@
+{
+    "type": "object",
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+      "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "javaType" : "org.apache.streams.twitter.pojo.Follow",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "follower": {
+            "$ref": "User.json"
+        },
+        "followee": {
+            "$ref": "User.json"
+        }
+    }
+}

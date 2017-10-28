@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.twitter.api.FriendshipDestroyRequest",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-destroy",
+  "properties": {
+    "screen_name": {
+      "description": "The screen name of the user for whom to befriend.",
+      "required": false,
+      "type": "string"
+    },
+    "user_id": {
+      "description": "The ID of the user for whom to befriend.",
+      "required": false,
+      "type": "integer"
+    }
+  }
+}

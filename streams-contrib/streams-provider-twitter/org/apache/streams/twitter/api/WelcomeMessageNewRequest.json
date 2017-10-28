@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.twitter.api.WelcomeMessageNewRequest",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/new-welcome-message",
+  "properties": {
+    "welcome_message": {
+      "type": "object",
+      "javaType": "org.apache.streams.twitter.api.WelcomeMessageNewRequestWrapper",
+      "properties": {
+        "message_data": {
+          "$ref": "../pojo/MessageData.json"
+        }
+      }
+    }
+  }
+}

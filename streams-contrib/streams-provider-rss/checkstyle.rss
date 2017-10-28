@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2017 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 7,
-             Errors: 349,
+      <title>File: 9,
+             Errors: 426,
              Warnings: 0,
              Infos: 0
       </title>
@@ -74,6 +74,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-rss/checkstyle.html#org.apache.streams.rss.FeedDetails.java">org/apache/streams/rss/FeedDetails.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  46
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-rss/checkstyle.html#org.apache.streams.rss.provider.RssStreamProviderTask.java">org/apache/streams/rss/provider/RssStreamProviderTask.java</a>
                 </td>
                 <td>
@@ -84,6 +98,20 @@ under the License.
                 </td>
                 <td>
                   78
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-rss/checkstyle.html#org.apache.streams.rss.RssStreamConfiguration.java">org/apache/streams/rss/RssStreamConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  31
                 </td>
               </tr>
                           <tr>

@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.GeoSearchRequest",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://developer.twitter.com/en/docs/geo/places-near-location/api-reference/get-geo-search",
+  "properties": {
+    "lat": {
+      "description": "The latitude to search around. This parameter will be ignored unless it is inside the range -90.0 to +90.0 (North is positive) inclusive. It will also be ignored if there isn’t a corresponding long parameter.",
+      "required": false,
+      "type": "number"
+    },
+    "long": {
+      "description": "The longitude to search around. The valid ranges for longitude is -180.0 to +180.0 (East is positive) inclusive. This parameter will be ignored if outside that range, if it is not a number, if geo_enabled is disabled, or if there not a corresponding lat parameter.",
+      "required": false,
+      "type": "number"
+    },
+    "query": {
+      "description": "Free-form text to match against while executing a geo-based query, best suited for finding nearby locations by name. Remember to URL encode the query.",
+      "required": false,
+      "type": "string"
+    },
+    "ip": {
+      "description": "An IP address. Used when attempting to fix geolocation based off of the user’s IP address.",
+      "required": false,
+      "type": "string"
+    },
+    "granularity": {
+      "description": "This is the minimal granularity of place types to return and must be one of: poi , neighborhood , city , admin or country . If no granularity is provided for the request neighborhood is assumed.  Setting this to city , for example, will find places which have a type of city , admin or country .",
+      "required": false,
+      "type": "string"
+    },
+    "accuracy": {
+      "description": "A hint on the region in which to search. If a number, then this is a radius in meters, but it can also take a string that is suffixed with ft to specify feet. If this is not passed in, then it is assumed to be 0m . If coming from a device, in practice, this value is whatever accuracy the device has measuring its location (whether it be coming from a GPS, WiFi triangulation, etc.).",
+      "required": false,
+      "type": "boolean"
+    },
+    "max_results": {
+      "description": "A hint as to the number of results to return. This does not guarantee that the number of results returned will equal max_results, but instead informs how many nearby results to return. Ideally, only pass in the number of places you intend to display to the user here.",
+      "required": false,
+      "type": "integer"
+    },
+    "contained_within": {
+      "description": "This is the place_id which you would like to restrict the search results to. Setting this value means only places within the given place_id will be found. Specify a place_id.",
+      "required": false,
+      "type": "string"
+    }
+  }
+}

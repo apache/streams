@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2017 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 14,
-             Errors: 383,
+      <title>File: 17,
+             Errors: 651,
              Warnings: 0,
              Infos: 0
       </title>
@@ -44,6 +44,20 @@ under the License.
             </tr>
           </thead>
           <tbody>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-google/streams-provider-google-gplus/checkstyle.html#org.apache.streams.google.gplus.GPlusOAuthConfiguration.java">org/apache/streams/google/gplus/GPlusOAuthConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  59
+                </td>
+              </tr>
                           <tr>
                 <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-google/streams-provider-google-gplus/checkstyle.html#org.apache.streams.gplus.provider.AbstractGPlusProvider.java">org/apache/streams/gplus/provider/AbstractGPlusProvider.java</a>
@@ -102,6 +116,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-google/streams-provider-google-gplus/checkstyle.html#org.apache.streams.google.gplus.configuration.UserInfo.java">org/apache/streams/google/gplus/configuration/UserInfo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  58
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-google/streams-provider-google-gplus/checkstyle.html#org.apache.streams.gplus.provider.GPlusUserActivityProvider.java">org/apache/streams/gplus/provider/GPlusUserActivityProvider.java</a>
                 </td>
                 <td>
@@ -126,6 +154,20 @@ under the License.
                 </td>
                 <td>
                   28
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-google/streams-provider-google-gplus/checkstyle.html#org.apache.streams.google.gplus.GPlusConfiguration.java">org/apache/streams/google/gplus/GPlusConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  148
                 </td>
               </tr>
                           <tr>
@@ -237,7 +279,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  13
+                  16
                 </td>
               </tr>
                       </tbody>

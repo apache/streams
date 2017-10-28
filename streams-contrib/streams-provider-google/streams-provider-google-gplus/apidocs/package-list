@@ -1,3 +1,5 @@
+org.apache.streams.google.gplus
+org.apache.streams.google.gplus.configuration
 org.apache.streams.gplus.processor
 org.apache.streams.gplus.provider
 org.apache.streams.gplus.serializer.util

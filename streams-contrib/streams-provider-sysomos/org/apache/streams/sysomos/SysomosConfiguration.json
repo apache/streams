@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.sysomos.SysomosConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "apiKey": {
+            "type": "string"
+        },
+        "endpoint": {
+            "type": "string",
+            "description": "The endpoint"
+        },
+        "heartbeatIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "string"
+            }
+        },
+        "minDelayMs": {
+            "type": "String",
+			"format": "utc-millisec"
+        },
+        "scheduledDelayMs": {
+            "type": "String",
+			"format": "utc-millisec"
+        },
+        "maxBatchSize": {
+            "type": "String",
+			"format": "utc-millisec"
+        },
+        "apiBatchSize": {
+            "type": "String",
+			"format": "utc-millisec"
+        }
+    }
+}

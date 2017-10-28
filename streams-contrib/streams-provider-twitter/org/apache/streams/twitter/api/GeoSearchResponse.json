@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.GeoSearchResponse",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://developer.twitter.com/en/docs/geo/places-near-location/api-reference/get-geo-search",
+  "properties": {
+    "query": {
+      "type": "object",
+      "javaType" : "org.apache.streams.twitter.api.GeoSearchResponseQuery",
+      "properties": {
+        "params": {
+          "type": "object",
+          "javaType" : "org.apache.streams.twitter.api.GeoSearchResponseQueryParams",
+          "properties": {
+            "accuracy": {
+              "type": "number"
+            },
+            "autocomplete": {
+              "type": "boolean"
+            },
+            "granularity": {
+              "type": "string"
+            },
+            "query": {
+              "type": "string"
+            },
+            "trim_place": {
+              "type": "boolean"
+            }
+          }
+        },
+        "type": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "javaType": "org.apache.streams.twitter.api.GeoSearchResponseResult",
+      "properties": {
+        "places": {
+          "type": "array",
+          "items": {
+            "$ref": "../pojo/Place.json"
+          }
+        }
+      }
+    }
+  }
+}

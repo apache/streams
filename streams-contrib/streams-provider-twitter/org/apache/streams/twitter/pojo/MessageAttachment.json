@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.twitter.pojo.MediaItem",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "",
+  "properties": {
+    "type": {
+      "type": "string"
+    },
+    "media": {
+      "$ref": "./MediaItem.json"
+    }
+  }
+}

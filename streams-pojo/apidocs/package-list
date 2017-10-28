@@ -3,3 +3,7 @@ org.apache.streams.data.util
 org.apache.streams.exceptions
 org.apache.streams.jackson
 org.apache.streams.juneau
+org.apache.streams.pojo
+org.apache.streams.pojo.json
+org.apache.streams.pojo.json.objectTypes
+org.apache.streams.pojo.json.verbs

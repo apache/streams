@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.twitter.api.WelcomeMessageNewRuleRequest",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/new-welcome-message-rule",
+  "properties": {
+    "welcome_message_rule": {
+      "type": "object",
+      "javaType": "org.apache.streams.twitter.api.WelcomeMessageNewRuleRequestWrapper",
+      "properties": {
+        "welcome_message_id": {
+          "description": "The ID of the Welcome Message that will be sent when this Rule is triggered.",
+          "type": "string",
+          "required": true
+        }
+      }
+    }
+  }
+}

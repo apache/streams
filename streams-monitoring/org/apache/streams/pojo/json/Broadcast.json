@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "title": "object",
+    "javaType": "org.apache.streams.pojo.json.Broadcast",
+    "javaInterfaces": ["java.io.Serializable"],
+    "description": "Base Broadcast class",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Name of the MBean"
+        },
+        "streamIdentifier": {
+            "type": "string",
+            "description": "The name of the Stream that is currently executing"
+        },
+        "startedAt": {
+            "type": "integer",
+            "description": "Milliseconds since epoch when this Stream was started"
+        }
+    }
+}

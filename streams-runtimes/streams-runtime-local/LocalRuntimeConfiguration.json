@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.local.LocalRuntimeConfiguration",
+    "extends": {
+        "$ref": "../../../../../streams-config/src/main/jsonschema/StreamsConfiguration.json"
+    },
+    "javaInterfaces": ["java.io.Serializable"],
+    "properties": {
+        "monitoring": {
+            "type" : "object",
+            "$ref": "../../../../../streams-monitoring/src/main/jsonschema/org/apache/streams/local/monitoring/MonitoringConfiguration.json"
+        },
+        "executorShutdownPauseMs": {
+            "type": "integer",
+            "description": "Duration of pause before shutting down"
+        },
+        "monitorShutdownPauseMs": {
+            "type": "integer",
+            "description": "Duration of pause before shutting down"
+        },
+        "executorShutdownWaitMs": {
+            "type": "integer",
+            "description": "Duration of wait for shut down"
+        },
+        "monitorShutdownWaitMs": {
+            "type": "integer",
+            "description": "Duration of wait for shut down"
+        },
+        "shutdownPauseMs": {
+            "type": "integer",
+            "description": "Duration of pause before shutting down"
+        },
+        "taskTimeoutMs": {
+            "type": "integer",
+            "description": "Max duration to allow tasks to terminate"
+        }
+    }
+}
