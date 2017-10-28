@@ -259,7 +259,7 @@
                                                 <method>GET</method>
                                                 <status>200</status>
                                             </http>
-                                            <time>20000</time>
+                                            <time>30000</time>
                                             <kill>1000</kill>
                                             <shutdown>500</shutdown>
                                             <!--<tcp>-->
