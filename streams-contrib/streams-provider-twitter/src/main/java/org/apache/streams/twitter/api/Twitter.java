@@ -38,7 +38,6 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.apache.juneau.json.JsonParser;
 import org.apache.juneau.json.JsonSerializer;
 import org.apache.juneau.rest.client.RestCall;
@@ -49,7 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +59,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Implementation of all twitter interfaces using juneau.
  */
-public class Twitter implements Account, AccountActivity, DirectMessages, Favorites, Followers, Friends, Statuses, SuggestedUsers, Users, WelcomeMessages, WelcomeMessageRules {
+public class Twitter implements Account, AccountActivity, DirectMessages, Favorites, Followers, Friends, SevenDaySearch, Statuses, SuggestedUsers, Users, WelcomeMessages, WelcomeMessageRules {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Twitter.class);
 
@@ -90,40 +88,40 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
     this.rootUrl = TwitterProviderUtil.baseUrl(configuration);
     this.oauthInterceptor = new TwitterOAuthRequestInterceptor(configuration.getOauth());
     this.httpclient = HttpClientBuilder.create()
-        .setDefaultRequestConfig(
-            RequestConfig.custom()
-                .setConnectionRequestTimeout(5000)
-                .setConnectTimeout(5000)
-                .setSocketTimeout(5000)
-                .setCookieSpec("easy")
-                .build()
-        )
-        .setMaxConnPerRoute(20)
-        .setMaxConnTotal(100)
-        .addInterceptorFirst(oauthInterceptor)
-        .addInterceptorLast((HttpRequestInterceptor) (httpRequest, httpContext) -> LOGGER.debug(httpRequest.getRequestLine().getUri()))
-        .addInterceptorLast((HttpResponseInterceptor) (httpResponse, httpContext) -> LOGGER.debug(httpResponse.getStatusLine().toString()))
-        .build();
+      .setDefaultRequestConfig(
+        RequestConfig.custom()
+          .setConnectionRequestTimeout(5000)
+          .setConnectTimeout(5000)
+          .setSocketTimeout(5000)
+          .setCookieSpec("easy")
+          .build()
+      )
+      .setMaxConnPerRoute(20)
+      .setMaxConnTotal(100)
+      .addInterceptorFirst(oauthInterceptor)
+      .addInterceptorLast((HttpRequestInterceptor) (httpRequest, httpContext) -> LOGGER.debug(httpRequest.getRequestLine().getUri()))
+      .addInterceptorLast((HttpResponseInterceptor) (httpResponse, httpContext) -> LOGGER.debug(httpResponse.getStatusLine().toString()))
+      .build();
     this.restClient = new RestClientBuilder()
-        .debug()
-        .httpClient(httpclient, true)
-        .parser(
-            JsonParser.DEFAULT.builder()
-                .ignoreUnknownBeanProperties(true)
-                .pojoSwaps(TwitterJodaDateSwap.class)
-                .build())
-        .serializer(
-            JsonSerializer.DEFAULT.builder()
-                .pojoSwaps(TwitterJodaDateSwap.class)
-                .trimEmptyCollections(true)
-                .trimEmptyMaps(true)
-                .build())
-        .rootUrl(rootUrl)
-        .retryable(
-            configuration.getRetryMax().intValue(),
-            configuration.getRetrySleepMs(),
-            new TwitterRetryHandler())
-        .build();
+      .debug()
+      .httpClient(httpclient, true)
+      .parser(
+        JsonParser.DEFAULT.builder()
+          .ignoreUnknownBeanProperties(true)
+          .pojoSwaps(TwitterJodaDateSwap.class)
+          .build())
+      .serializer(
+        JsonSerializer.DEFAULT.builder()
+          .pojoSwaps(TwitterJodaDateSwap.class)
+          .trimEmptyCollections(true)
+          .trimEmptyMaps(true)
+          .build())
+      .rootUrl(rootUrl)
+      .retryable(
+        configuration.getRetryMax().intValue(),
+        configuration.getRetrySleepMs(),
+        new TwitterRetryHandler())
+      .build();
     this.mapper = StreamsJacksonMapper.getInstance();
   }
 
@@ -209,12 +207,9 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
 
   @Override
   public List<User> search(UsersSearchRequest parameters) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public List<SuggestedUserCategory> suggestedUserCategories(String lang) {
-    return null;
+    Users proxy = restClient.getRemoteableProxy(Users.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
+    List<User> result = proxy.search(parameters);
+    return result;
   }
 
   @Override
@@ -333,12 +328,12 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
 //    return proxy.getWebhookSubscription(webhookId);
     try {
       URIBuilder uriBuilder =
-          new URIBuilder()
-              .setPath("/account_activity/webhooks/"+webhookId+"/subscriptions.json");
+        new URIBuilder()
+          .setPath("/account_activity/webhooks/"+webhookId+"/subscriptions.json");
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         int statusCode = restCall
-            .getResponse().getStatusLine().getStatusCode();
+          .getResponse().getStatusLine().getStatusCode();
         return statusCode == 204;
       } catch (RestCallException e) {
         LOGGER.warn("RestCallException", e);
@@ -357,8 +352,8 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
 //    return proxy.registerWebhookSubscriptions(webhookId);
     try {
       URIBuilder uriBuilder =
-          new URIBuilder()
-              .setPath("/account_activity/webhooks/"+webhookId+"/subscriptions.json");
+        new URIBuilder()
+          .setPath("/account_activity/webhooks/"+webhookId+"/subscriptions.json");
       RestCall restCall = restClient.doPost(uriBuilder.build().toString());
       try {
         int statusCode = restCall.getResponse().getStatusLine().getStatusCode();
@@ -380,8 +375,8 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
 //      return proxy.deleteWebhookSubscriptions(webhookId);
     try {
       URIBuilder uriBuilder =
-          new URIBuilder()
-              .setPath("/account_activity/webhooks/"+webhookId+"/subscriptions.json");
+        new URIBuilder()
+          .setPath("/account_activity/webhooks/"+webhookId+"/subscriptions.json");
       RestCall restCall = restClient.doDelete(uriBuilder.build().toString());
       try {
         int statusCode = restCall.getResponse().getStatusLine().getStatusCode();
@@ -416,6 +411,12 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
   }
 
   @Override
+  public SevenDaySearchResponse sevenDaySearch(SevenDaySearchRequest event) {
+    SevenDaySearch proxy = restClient.getRemoteableProxy(SevenDaySearch.class, TwitterProviderUtil.baseUrl(configuration)+"/search");
+    return proxy.sevenDaySearch(event);
+  }
+
+  @Override
   public DirectMessage destroy(Long id) {
     throw new NotImplementedException();
   }
@@ -442,16 +443,20 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
 
   @Override
   public List<SuggestedUserCategory> categories(String lang) {
-    throw new NotImplementedException();
+    SuggestedUsers proxy = restClient.getRemoteableProxy(SuggestedUsers.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
+    return proxy.categories(lang);
   }
 
   @Override
   public SuggestedUserCategory suggestions(String slug, String lang) {
-    throw new NotImplementedException();
+    SuggestedUsers proxy = restClient.getRemoteableProxy(SuggestedUsers.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
+    return proxy.suggestions(slug, lang);
   }
 
   @Override
   public List<User> members(String slug) {
-    throw new NotImplementedException();
+    SuggestedUsers proxy = restClient.getRemoteableProxy(SuggestedUsers.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
+    return proxy.members(slug);
   }
+
 }

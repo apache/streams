@@ -40,14 +40,20 @@ import org.apache.streams.twitter.api.FriendsIdsRequest;
 import org.apache.streams.twitter.api.FriendsIdsResponse;
 import org.apache.streams.twitter.api.FriendsListRequest;
 import org.apache.streams.twitter.api.FriendsListResponse;
+import org.apache.streams.twitter.api.SevenDaySearch;
+import org.apache.streams.twitter.api.SevenDaySearchRequest;
+import org.apache.streams.twitter.api.SevenDaySearchResponse;
 import org.apache.streams.twitter.api.Statuses;
 import org.apache.streams.twitter.api.StatusesHomeTimelineRequest;
 import org.apache.streams.twitter.api.StatusesLookupRequest;
 import org.apache.streams.twitter.api.StatusesMentionsTimelineRequest;
 import org.apache.streams.twitter.api.StatusesShowRequest;
+import org.apache.streams.twitter.api.SuggestedUserCategory;
+import org.apache.streams.twitter.api.SuggestedUsers;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.api.Users;
 import org.apache.streams.twitter.api.UsersLookupRequest;
+import org.apache.streams.twitter.api.UsersSearchRequest;
 import org.apache.streams.twitter.api.UsersShowRequest;
 import org.apache.streams.twitter.api.Webhook;
 import org.apache.streams.twitter.api.WelcomeMessageRules;
@@ -63,6 +69,8 @@ import org.apache.streams.twitter.pojo.WelcomeMessageRule;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import org.apache.juneau.remoteable.Path;
+import org.apache.juneau.remoteable.QueryIfNE;
 import org.apache.juneau.remoteable.RemoteMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,9 +232,9 @@ public class TwitterIT {
   public void testUsersShow() throws Exception {
     Users users = Twitter.getInstance(config);
     nonNull(users);
-    User showUser = users.show(new UsersShowRequest().withScreenName(user.getScreenName()));
+    User showUser = users.show(new UsersShowRequest().withScreenName(settings.getScreenName()));
     nonNull(showUser);
-    assertEquals( user.getId(), showUser.getId());
+    assertEquals( settings.getScreenName(), showUser.getScreenName());
   }
 
   @Test(dependsOnGroups = {"Account"}, groups = {"Users"})
@@ -249,6 +257,45 @@ public class TwitterIT {
     List<User> lookupUserByScreenName = users.lookup(usersLookupRequest);
     nonNull(lookupUserByScreenName);
     assertThat("lookupUserByScreenName.size() > 0", lookupUserByScreenName.size() > 0);
+  }
+
+  @Test(dependsOnGroups = {"Account"}, groups = {"Users"})
+  public void testUserSearch() throws Exception {
+    Users users = Twitter.getInstance(config);
+    nonNull(users);
+    UsersSearchRequest searchRequest = new UsersSearchRequest();
+    searchRequest.setQ("big data");
+    List<User> searchResponse = users.search(searchRequest);
+    nonNull(searchResponse);
+    assertThat("searchResponse.size() > 0", searchResponse.size() > 0);
+  }
+
+  @Test(dependsOnGroups = {"Account"}, groups = {"Search"})
+  public void testSevenDaySearch() throws Exception {
+    SevenDaySearch search = Twitter.getInstance(config);
+    nonNull(search);
+    SevenDaySearchRequest searchRequest = new SevenDaySearchRequest();
+    searchRequest.setQ("big data");
+    SevenDaySearchResponse searchResponse = search.sevenDaySearch(searchRequest);
+    nonNull(searchResponse);
+    assertThat("searchResponse.getStatuses().size() > 0", searchResponse.getStatuses().size() > 0);
+  }
+
+  @Test(dependsOnGroups = {"Account"}, groups = {"SuggestedUsers"})
+  public void testSuggestedUsersCategories() throws Exception {
+    String testLang = "en";
+    SuggestedUsers suggestedUsers = Twitter.getInstance(config);
+    nonNull(suggestedUsers);
+    List<SuggestedUserCategory> categories = suggestedUsers.categories(testLang);
+    nonNull(categories);
+    assertThat("categories.size() > 0", categories.size() > 0);
+    String firstSlug = categories.get(0).getSlug();
+    SuggestedUserCategory firstCategory = suggestedUsers.suggestions(firstSlug, testLang);
+    nonNull(firstCategory);
+    assertThat("firstCategory.getUsers().size() > 0", firstCategory.getUsers().size() > 0);
+    List<User> members = suggestedUsers.members(firstSlug);
+    nonNull(members);
+    assertThat("members.size() > 0", members.size() > 0);
   }
 
   @Test(
