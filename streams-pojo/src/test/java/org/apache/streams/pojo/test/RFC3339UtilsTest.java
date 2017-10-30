@@ -69,6 +69,26 @@ public class RFC3339UtilsTest {
   }
 
   @Test
+  public void validUTCMicroSecond() {
+    DateTime parsed = parseUTC("2014-12-25T12:00:00.235235Z");
+    assertThat(parsed.minuteOfHour().get(), is(equalTo(0)));
+    assertThat(parsed.hourOfDay().get(), is(equalTo(12)));
+    assertThat(parsed.dayOfMonth().get(), is(equalTo(25)));
+    assertThat(parsed.monthOfYear().get(), is(equalTo(12)));
+    assertThat(parsed.millisOfSecond().get(), is(equalTo(235)));
+  }
+
+  @Test
+  public void validUTCNanoSecond() {
+    DateTime parsed = parseUTC("2014-12-25T12:00:00.123456789Z");
+    assertThat(parsed.minuteOfHour().get(), is(equalTo(0)));
+    assertThat(parsed.hourOfDay().get(), is(equalTo(12)));
+    assertThat(parsed.dayOfMonth().get(), is(equalTo(25)));
+    assertThat(parsed.monthOfYear().get(), is(equalTo(12)));
+    assertThat(parsed.millisOfSecond().get(), is(equalTo(123)));
+  }
+
+  @Test
   public void validEST() {
     DateTime parsed = parseUTC("2014-12-25T12:00:00-05:00");
     assertThat(parsed.minuteOfHour().get(), is(equalTo(0)));
