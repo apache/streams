@@ -128,12 +128,26 @@ public class PropertyUtil {
       if( merged.get(fieldId) != null ) {
         if( merged.get(fieldId).getNodeType().equals(JsonNodeType.OBJECT)) {
           merged.put(fieldId, mergeProperties(field.getValue().deepCopy(), (ObjectNode)merged.get(fieldId)));
+        } else if ( merged.get(fieldId).getNodeType().equals(JsonNodeType.ARRAY)) {
+          merged.put(fieldId, mergeArrays(((ArrayNode)field.getValue()), ((ArrayNode)merged.get(fieldId))));
+        } else {
+          merged.put(fieldId, content.get(fieldId));
         }
       } else {
         merged.put(fieldId, content.get(fieldId));
       }
     }
     return merged;
+  }
+
+  /**
+   * merge two arrays.
+   * @param content ArrayNode
+   * @param parent ArrayNode
+   * @return merged ArrayNode
+   */
+  private static ArrayNode mergeArrays(ArrayNode content, ArrayNode parent) {
+    return parent.deepCopy().addAll(content);
   }
 
 }

@@ -16,13 +16,14 @@
  * under the License.
  */
 
-package org.apache.streams.util.schema.test;
+package org.apache.streams.util.test;
 
 import org.apache.streams.util.PropertyUtil;
 import org.apache.streams.util.schema.SchemaUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 
@@ -56,13 +57,19 @@ public class PropertyUtilTest {
   public void testMergeProperties() throws Exception {
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode left = mapper.createObjectNode();
-    left.put("objectType", "post").putObject("actor").putObject("author").put("id", "authorId");
+    left.put("objectType", "post");
+    left.putArray("links").add("link1");
+    left.putObject("actor").put("id", "leftId").putObject("author").put("id", "authorId");
     ObjectNode right = mapper.createObjectNode();
-    right.putObject("actor").put("id", "actorId").putObject("image").put("url", "http://url.com");
+    right.putArray("links").add("link2");
+    right.putObject("actor").put("id", "rightId").putObject("image").put("url", "http://url.com");
     JsonNode merged = PropertyUtil.mergeProperties(left, right);
     assert( merged.has("objectType"));
     assert( merged.has("actor"));
+    assert( merged.has("links"));
+    assert( (merged.get("links")).size() == 2);
     assert( merged.get("actor").has("id"));
+    assert( merged.get("actor").get("id").asText().equals("leftId"));
     assert( merged.get("actor").has("author"));
     assert( merged.get("actor").get("author").has("id"));
     assert( merged.get("actor").has("image"));
