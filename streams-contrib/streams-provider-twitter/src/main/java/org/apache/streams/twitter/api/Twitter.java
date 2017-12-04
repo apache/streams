@@ -81,6 +81,8 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
     properties.put("format", TwitterDateTimeFormat.TWITTER_FORMAT);
   }
 
+  RestClientBuilder restClientBuilder;
+
   RestClient restClient;
 
   private Twitter(TwitterConfiguration configuration) throws InstantiationException {
@@ -102,8 +104,7 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
       .addInterceptorLast((HttpRequestInterceptor) (httpRequest, httpContext) -> LOGGER.debug(httpRequest.getRequestLine().getUri()))
       .addInterceptorLast((HttpResponseInterceptor) (httpResponse, httpContext) -> LOGGER.debug(httpResponse.getStatusLine().toString()))
       .build();
-    this.restClient = new RestClientBuilder()
-      .debug()
+    this.restClientBuilder = new RestClientBuilder()
       .httpClient(httpclient, true)
       .parser(
         JsonParser.DEFAULT.builder()
@@ -120,8 +121,12 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
       .retryable(
         configuration.getRetryMax().intValue(),
         configuration.getRetrySleepMs(),
-        new TwitterRetryHandler())
-      .build();
+        new TwitterRetryHandler());
+    if( configuration.getDebug() ) {
+      restClientBuilder = restClientBuilder.debug();
+    }
+
+    this.restClient = restClientBuilder.build();
     this.mapper = StreamsJacksonMapper.getInstance();
   }
 
