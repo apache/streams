@@ -24,9 +24,17 @@
             "type": "string",
             "description": "The version"
         },
+        "debug": {
+            "type": "boolean",
+            "description": "Whether to enable juneau debug logging"
+        },
         "endpoint": {
             "type": "string",
             "description": "The endpoint"
+        },
+        "environment": {
+            "type": "string",
+            "description": "The environment"
         },
         "jsonStoreEnabled": {
             "type": "boolean"
