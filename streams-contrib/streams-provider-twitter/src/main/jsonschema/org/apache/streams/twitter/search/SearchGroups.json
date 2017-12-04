@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.twitter.search.SearchOperators",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "",
+  "properties": {
+    "keyword": {
+      "description": "Matches a keyword within the body of a Tweet.",
+      "type": "string"
+    },
+    "emoji": {
+      "description": "Matches an emoji within the body of a Tweet.",
+      "type": "string"
+    },
+    "exact_phrase": {
+      "description": "Matches an exact phrase within the body of a Tweet.",
+      "type": "string"
+    },
+    "from": {
+      "description": "Matches any Tweet from a specific user (name or ID).",
+      "type": "string"
+    },
+    "to": {
+      "description": "Matches any Tweet that is in reply to a particular user.",
+      "type": "string"
+    },
+    "mention": {
+      "description": "Matches any Tweet that mentions the given user (name or ID).",
+      "type": "string"
+    },
+    "retweets_of": {
+      "description": "Matches Retweets that are Tweets of a specified user (name or ID).",
+      "type": "string"
+    },
+    "hashtag": {
+      "description": "Matches any Tweet with the given hashtag.",
+      "type": "string"
+    },
+    "url": {
+      "description": "Performs a tokenized (keyword/phrase) match on the expanded URLs of a Tweet.",
+      "type": "string"
+    },
+    "bio": {
+      "description": "Matches a keyword or phrase within the user bio of a Tweet.",
+      "type": "string"
+    },
+    "bio_name": {
+      "description": "Matches a keyword within the user bio name of a Tweet.",
+      "type": "string"
+    },
+    "bio_location": {
+      "description": "Matches Tweets where the user’s bio-level location contains the specified keyword or phrase.",
+      "type": "string"
+    },
+    "place": {
+      "description": "Matches Tweets tagged with a specified location or 'Twitter place.",
+      "type": "string"
+    },
+    "place_country": {
+      "description": "Matches Tweets tagged with the specified location or Twitter place ID (see examples). Multi-word place names (“New York City”, “Palo Alto”) should be enclosed in quotes.",
+      "type": "string"
+    },
+    "point_radius": {
+      "description": "Matches against the Exact Location (x,y) of the Tweet when present, and in Twitter, against a “Place” geo polygon, where the Place is fully contained within the defined region.",
+      "type": "string"
+    },
+    "bounding_box": {
+      "description": "Matches against the Exact Location (x,y) of the Tweet when present, and in Twitter, against a “Place” geo polygon.",
+      "type": "string"
+    },
+    "time_zone": {
+      "description": "Matches Tweets where the user-selected time zone specified in a user’s profile settings matches a given string.",
+      "type": "string"
+    },
+    "has_links": {
+      "description": "This operator matches Tweets which contain links in the message body.",
+      "type": "boolean"
+    },
+    "lang": {
+      "description": "Matches Tweets that have been classified by Twitter as being of a particular language. Assigned to one of over 50 languages or marked as 'undefined.'",
+      "type": "string"
+    },
+    "has_mentions": {
+      "description": "Matches Tweets that mention another Twitter user.",
+      "type": "boolean"
+    },
+    "has_images": {
+      "description": "A boolean search operator that returns all Tweets that contain a native images (e.g. pic.twitter.com).",
+      "type": "boolean"
+    },
+    "has_videos": {
+      "description": "A boolean search operator that returns all Tweets that contain native videos (does not include vine, periscope).",
+      "type": "boolean"
+    },
+    "has_media": {
+      "description": "Matches Tweets that contain a media url classified by Twitter, e.g. pic.twitter.com.",
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.ThirtyDaySearchResponse",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://developer.twitter.com/en/docs/tweets/search/api-reference/30-day-search",
+  "properties": {
+    "results": {
+      "description": "The results.",
+      "type": "array",
+      "items": {
+        "$ref": "../pojo/tweet.json"
+      }
+    },
+    "next": {
+      "description": "This parameter is used to get the next \"page\" of results.",
+      "required": false,
+      "type": "string"
+    },
+    "requestParameters": {
+      "description": "The request Parameters.",
+      "$ref": "./ThirtyDaySearchRequest.json"
+    }
+  }
+}

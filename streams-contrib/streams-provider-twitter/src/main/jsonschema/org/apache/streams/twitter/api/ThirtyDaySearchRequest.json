@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.ThirtyDaySearchRequest",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://developer.twitter.com/en/docs/tweets/search/api-reference/30-day-search",
+  "properties": {
+    "query": {
+      "description": "The equivalent of one Gnip PowerTrack rule, with up to 2048 characters (and no limits on the number of positive and negative clauses).  This parameter should include ALL portions of the PowerTrack rule, including all operators, and portions of the rule should not be separated into other parameters of the query.",
+      "required": true,
+      "type": "string"
+    },
+    "fromDate": {
+      "description": "The oldest UTC timestamp (back to 3/21/2006) from which the activities will be provided. Timestamp is in minute granularity and is inclusive (i.e. 12:00 includes the 00 minute).",
+      "required": false,
+      "type": "string"
+    },
+    "toDate": {
+      "description": "The latest, most recent UTC timestamp to which the activities will be provided. Timestamp is in minute granularity and is not inclusive (i.e. 11:59 does not include the 59th minute of the hour).",
+      "required": false,
+      "type": "string"
+    },
+    "maxResults": {
+      "description": "The maximum number of search results to be returned by a request. A number between 10 and the system limit (currently 500). By default, a request response will return 100 results.",
+      "required": false,
+      "type": "integer"
+    },
+    "next": {
+      "description": "This parameter is used to get the next \"page\" of results.",
+      "required": false,
+      "type": "string"
+    },
+    "tag": {
+      "description": "Tags can be used to segregate rules and their matching data into different logical groups.",
+      "required": false,
+      "type": "string"
+    }
+  }
+}

@@ -50,6 +50,12 @@ import org.apache.streams.twitter.api.StatusesMentionsTimelineRequest;
 import org.apache.streams.twitter.api.StatusesShowRequest;
 import org.apache.streams.twitter.api.SuggestedUserCategory;
 import org.apache.streams.twitter.api.SuggestedUsers;
+import org.apache.streams.twitter.api.ThirtyDaySearch;
+import org.apache.streams.twitter.api.ThirtyDaySearchCounts;
+import org.apache.streams.twitter.api.ThirtyDaySearchCountsRequest;
+import org.apache.streams.twitter.api.ThirtyDaySearchCountsResponse;
+import org.apache.streams.twitter.api.ThirtyDaySearchRequest;
+import org.apache.streams.twitter.api.ThirtyDaySearchResponse;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.api.Users;
 import org.apache.streams.twitter.api.UsersLookupRequest;
@@ -82,6 +88,7 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.testng.Assert.assertEquals;
@@ -296,6 +303,41 @@ public class TwitterIT {
     List<User> members = suggestedUsers.members(firstSlug);
     nonNull(members);
     assertThat("members.size() > 0", members.size() > 0);
+  }
+
+  /*
+   Disabled because it requires a premium environment.
+   */
+  @Test(enabled = false, dependsOnGroups = {"Account"}, groups = {"Search"})
+  public void testThirtyDaySearch() throws Exception {
+    ThirtyDaySearch search = Twitter.getInstance(config);
+    nonNull(search);
+    ThirtyDaySearchRequest searchRequest = new ThirtyDaySearchRequest();
+    searchRequest.setQuery("big data");
+    ThirtyDaySearchResponse searchResponse = search.thirtyDaySearch(config.getEnvironment(), searchRequest);
+    nonNull(searchResponse);
+    assertThat("searchResponse.getResults().size() > 0", searchResponse.getResults().size() > 0);
+    nonNull(searchResponse.getNext());
+    ThirtyDaySearchRequest nextRequest = searchRequest.withNext(searchResponse.getNext());
+    ThirtyDaySearchResponse nextResponse = search.thirtyDaySearch(config.getEnvironment(), nextRequest);
+    nonNull(nextResponse);
+    assertThat("nextResponse.getResults().size() > 0", nextResponse.getResults().size() > 0);
+    nonNull(nextResponse.getNext());
+  }
+
+  /*
+   Disabled because it is deactivated in a development environmnt.
+   */
+  @Test(enabled = false, dependsOnGroups = {"Account"}, groups = {"Search"})
+  public void testThirtyDaySearchCounts() throws Exception {
+    ThirtyDaySearchCounts searchCounts = Twitter.getInstance(config);
+    nonNull(searchCounts);
+    ThirtyDaySearchCountsRequest searchRequest = new ThirtyDaySearchCountsRequest();
+    searchRequest.setQuery("big data");
+    ThirtyDaySearchCountsResponse searchCountsResponse = searchCounts.thirtyDaySearchCounts(config.getEnvironment(), searchRequest);
+    nonNull(searchCountsResponse);
+    assertThat("searchCountsResponse.getTotalCounts() > 0", searchCountsResponse.getTotalCount() > 0);
+    assertThat("searchCountsResponse.getResults().size() > 0", searchCountsResponse.getResults().size() > 0);
   }
 
   @Test(
