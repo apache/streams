@@ -32,6 +32,7 @@ import org.apache.streams.twitter.provider.TwitterProviderUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.client.config.RequestConfig;
@@ -59,7 +60,21 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Implementation of all twitter interfaces using juneau.
  */
-public class Twitter implements Account, AccountActivity, DirectMessages, Favorites, Followers, Friends, SevenDaySearch, Statuses, SuggestedUsers, Users, WelcomeMessages, WelcomeMessageRules {
+public class Twitter implements
+  Account,
+  AccountActivity,
+  DirectMessages,
+  Favorites,
+  Followers,
+  Friends,
+  SevenDaySearch,
+  Statuses,
+  SuggestedUsers,
+  ThirtyDaySearch,
+  ThirtyDaySearchCounts,
+  Users,
+  WelcomeMessages,
+  WelcomeMessageRules {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Twitter.class);
 
@@ -419,6 +434,20 @@ public class Twitter implements Account, AccountActivity, DirectMessages, Favori
   public SevenDaySearchResponse sevenDaySearch(SevenDaySearchRequest event) {
     SevenDaySearch proxy = restClient.getRemoteableProxy(SevenDaySearch.class, TwitterProviderUtil.baseUrl(configuration)+"/search");
     return proxy.sevenDaySearch(event);
+  }
+
+  @Override
+  public ThirtyDaySearchResponse thirtyDaySearch(String environment, ThirtyDaySearchRequest searchRequest) {
+    ThirtyDaySearch proxy = restClient.getRemoteableProxy(ThirtyDaySearch.class, TwitterProviderUtil.baseUrl(configuration)+"/"+ThirtyDaySearch.path);
+    String env = StringUtils.defaultString(environment, configuration.getEnvironment());
+    return proxy.thirtyDaySearch(env, searchRequest);
+  }
+
+  @Override
+  public ThirtyDaySearchCountsResponse thirtyDaySearchCounts(String environment, ThirtyDaySearchCountsRequest searchCountsRequest) {
+    ThirtyDaySearchCounts proxy = restClient.getRemoteableProxy(ThirtyDaySearchCounts.class, TwitterProviderUtil.baseUrl(configuration)+"/"+ThirtyDaySearch.path);
+    String env = StringUtils.defaultString(environment, configuration.getEnvironment());
+    return proxy.thirtyDaySearchCounts(env, searchCountsRequest);
   }
 
   @Override

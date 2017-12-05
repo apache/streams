@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType" : "org.apache.streams.twitter.api.ThirtyDaySearchCountsResponse",
+  "javaInterfaces": ["java.io.Serializable"],
+  "description": "https://developer.twitter.com/en/docs/tweets/search/api-reference/30-day-search",
+  "properties": {
+    "totalCount": {
+      "description": "totalCount.",
+      "type": "integer"
+    },
+    "results": {
+      "description": "The results.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "javaType": "org.apache.streams.twitter.api.ThirtyDaySearchCountItem",
+        "properties": {
+          "timePeriod": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "next": {
+      "description": "This parameter is used to get the next \"page\" of results.",
+      "required": false,
+      "type": "string"
+    },
+    "requestParameters": {
+      "description": "The request Parameters.",
+      "$ref": "./ThirtyDaySearchCountsRequest.json"
+    }
+  }
+}
