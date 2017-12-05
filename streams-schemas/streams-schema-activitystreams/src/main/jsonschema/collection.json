@@ -34,14 +34,14 @@
             "optional": true,
             "description": "Links between an this object and other resources as defined in Web Linking",
             "extends": {
-                "$ref": "http://json-schema.org/links#properties"
+                "$ref": "http://json-schema.org/draft-03/links#properties"
             }
         }
     },
     "links": [
         {
             "rel": "describedby",
-            "href": "http://json-schema.org/schema"
+            "href": "http://json-schema.org/draft-03/schema"
         }
     ]
 }
