@@ -55,9 +55,9 @@ In either case, you'll need to first refer to [Release Setup Information](/relea
 
     - The dry run will not commit any changes back to SCM and gives you the opportunity to verify that the release process will complete as expected. You will be prompted for the following information :
 
-        * Release version - take the default (should be ${project.version}-incubating)
+        * Release version - take the default (should be ${project.version})
         * SCM release tag - *DO NOT TAKE THE DEFAULT*  - ${project.artifactId}-${project.version}-rcX
-        * New development version - take the default (should be ${project.version}-incubating-SNAPSHOT)
+        * New development version - take the default (should be ${project.version}-SNAPSHOT)
         * GPG Passphrase  
 
     - *If you cancel a release:prepare before it updates the pom.xml versions, then use the release:clean goal to just remove the extra files that were created.*
@@ -157,7 +157,7 @@ In either case, you'll need to first refer to [Release Setup Information](/relea
 
 15. Announcing the release
        * Make a news announcement on the streams homepage.
-       * Make an announcement about the release on the dev@streams.apache.org, and announce@incubator.apache.org list as per the Apache Announcement Mailing Lists page)
+       * Make an announcement about the release on the dev@streams.apache.org, and announce@apache.org list as per the Apache Announcement Mailing Lists page)
 
 ####Recovering from a vetoed release
 
@@ -233,8 +233,8 @@ In order to perform a combined release of the streams-master and streams-project
           https://repository.apache.org/content/repositories/${release.examples.repository}
 
           Source releases:
-          https://repository.apache.org/content/repositories/${release.project.repository}/org/apache/rave/rave-project/${release.version}/streams-project-${release.version}-incubating-source-release.zip
-          https://repository.apache.org/content/repositories/${release.project.repository}/org/apache/rave/rave-project/${release.version}/streams-project-${release.version}-incubating-source-release.zip
+          https://repository.apache.org/content/repositories/${release.project.repository}/org/apache/rave/rave-project/${release.version}/streams-project-${release.version}-source-release.zip
+          https://repository.apache.org/content/repositories/${release.project.repository}/org/apache/rave/rave-project/${release.version}/streams-project-${release.version}-source-release.zip
 
           Checksums of streams-project-${release.version}-source-release.zip:
           MD5: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
