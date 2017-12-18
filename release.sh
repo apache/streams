@@ -52,7 +52,7 @@ checkStatus() {
 }
 
 #streams
-git clone https://git-wip-us.apache.org/repos/asf/streams.git ./streams-$REL
+git clone https://github.com/apache/streams.git ./streams-$REL
 cd streams-$REL
 
 printInfo
