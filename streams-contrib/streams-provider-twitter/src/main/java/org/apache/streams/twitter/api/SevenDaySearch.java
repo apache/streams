@@ -39,7 +39,7 @@ public interface SevenDaySearch {
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/tweets.json")
-  public SevenDaySearchResponse sevenDaySearch(@QueryIfNE SevenDaySearchRequest parameters);
+  public SevenDaySearchResponse sevenDaySearch(@QueryIfNE("*") SevenDaySearchRequest parameters);
 
 }
 
