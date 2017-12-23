@@ -15,12 +15,12 @@
     "max_items": {
       "type": "integer",
       "description": "Max items total",
-      "default": 100
+      "default": 1000
     },
     "max_pages": {
       "type": "integer",
       "description": "Max items per page to request",
-      "default": 1
+      "default": 10
     }
   }
 }
