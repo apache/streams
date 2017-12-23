@@ -102,4 +102,7 @@ public class RiakHttpClient {
     return client;
   }
 
+  public URI getBaseURI() {
+    return baseURI;
+  }
 }
