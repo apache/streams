@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
+import com.typesafe.config.ConfigResolveOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +48,10 @@ public class StreamsConfigurator {
 
   public static Config getConfig() {
     return config.resolve();
+  }
+
+  public static Config rawConfig() {
+    return config;
   }
 
   public static void addConfig(Config newConfig) {
