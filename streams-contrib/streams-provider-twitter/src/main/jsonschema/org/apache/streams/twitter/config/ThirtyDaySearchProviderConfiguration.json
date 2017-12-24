@@ -5,22 +5,22 @@
   ],
   "id": "#",
   "type": "object",
-  "javaType" : "org.apache.streams.twitter.SevenDaySearchProviderConfiguration",
+  "javaType" : "org.apache.streams.twitter.ThirtyDaySearchProviderConfiguration",
   "extends": {"$ref":"TwitterConfiguration.json"},
   "javaInterfaces": ["java.io.Serializable"],
   "properties": {
-    "q": {
-      "$ref": "../api/SevenDaySearchRequest.json#properties/q"
+    "query": {
+      "$ref": "../api/ThirtyDaySearchRequest.json#properties/query"
     },
     "max_items": {
       "type": "integer",
       "description": "Max items total",
-      "default": 1000
+      "default": 100
     },
     "max_pages": {
       "type": "integer",
       "description": "Max pages to request",
-      "default": 10
+      "default": 5
     }
   }
 }
