@@ -30,6 +30,7 @@
 
     <properties>
         <jackson.version>2.6.1</jackson.version>
+        <juneau.version>7.0.1</juneau.version>
         <commons-lang3.version>3.4</commons-lang3.version>
     </properties>
 
@@ -121,6 +122,11 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-joda</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.juneau</groupId>
+            <artifactId>juneau-marshall</artifactId>
+            <version>${juneau.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
