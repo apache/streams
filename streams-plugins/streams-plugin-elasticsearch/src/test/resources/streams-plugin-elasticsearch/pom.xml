@@ -23,7 +23,7 @@
 
     <groupId>org.apache.streams.plugins</groupId>
     <artifactId>streams-plugin-elasticsearch-test</artifactId>
-    <version>0.5-incubating-SNAPSHOT</version>
+    <version>0.5.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Test StreamsElasticsearchResourceGeneratorMojo</name>
 
@@ -98,7 +98,7 @@
             <plugin>
                 <groupId>org.apache.streams.plugins</groupId>
                 <artifactId>streams-plugin-elasticsearch</artifactId>
-                <version>0.5-incubating-SNAPSHOT</version>
+                <version>0.5.1-SNAPSHOT</version>
                 <configuration>
                     <sourcePaths>
                         <sourcePath>target/test-classes/activitystreams-schemas/activity.json</sourcePath>
