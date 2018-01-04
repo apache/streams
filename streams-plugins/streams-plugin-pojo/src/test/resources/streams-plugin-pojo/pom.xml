@@ -24,7 +24,7 @@
 
     <groupId>org.apache.streams.plugins</groupId>
     <artifactId>streams-plugin-pojo-test</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.5.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Test StreamsPojoMojo</name>
 
