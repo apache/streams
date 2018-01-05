@@ -34,12 +34,12 @@ public interface SevenDaySearch {
   /**
    * Returns a collection of relevant Tweets matching a specified query.
    *
-   * @return {@link AccountSettings}
-   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/get-account-settings">https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/get-account-settings</a>
+   * @return {@link SevenDaySearchResponse}
+   * @see <a href=https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets">https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets</a>
    *
    */
   @RemoteMethod(httpMethod = "GET", path = "/tweets.json")
-  public SevenDaySearchResponse sevenDaySearch(@QueryIfNE SevenDaySearchRequest parameters);
+  public SevenDaySearchResponse sevenDaySearch(@QueryIfNE("*") SevenDaySearchRequest parameters);
 
 }
 

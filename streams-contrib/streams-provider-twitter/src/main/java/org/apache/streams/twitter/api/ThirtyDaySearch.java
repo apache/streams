@@ -39,7 +39,7 @@ public interface ThirtyDaySearch {
    * @param environment "environment to use"
    * @param searchRequest {@link org.apache.streams.twitter.api.ThirtyDaySearchRequest}
    * @return {@link ThirtyDaySearchResponse}
-   * @see <a href=https://developer.twitter.com/en/docs/tweets/search/api-reference/30-day-search">https://developer.twitter.com/en/docs/tweets/search/api-reference/30-day-search</a>
+   * @see <a href=https://developer.twitter.com/en/docs/tweets/search/overview/premium">https://developer.twitter.com/en/docs/tweets/search/overview/premium</a>
    *
    */
   @RemoteMethod(httpMethod = "POST", path = "/{environment}.json")

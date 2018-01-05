@@ -361,7 +361,7 @@
         <joda-convert.version>1.8.1</joda-convert.version>
         <json-flattener.version>0.4.1</json-flattener.version>
         <json-schema-validator.version>0.1.10</json-schema-validator.version>
-        <juneau.version>7.0.0</juneau.version>
+        <juneau.version>7.0.1</juneau.version>
         <jsonschema2pojo.version>0.4.10</jsonschema2pojo.version>
         <jaxb2.version>0.13.1</jaxb2.version>
         <jaxb2-basics.version>0.11.1</jaxb2-basics.version>
@@ -377,7 +377,7 @@
         <commons-io.version>2.5</commons-io.version>
         <commons-lang3.version>3.6</commons-lang3.version>
         <commons-validator.version>1.6</commons-validator.version>
-        <typesafe.config.version>1.3.1</typesafe.config.version>
+        <typesafe.config.version>1.3.2</typesafe.config.version>
         <reflections.version>0.9.11</reflections.version>
         <guava.version>20.0</guava.version>
         <clojure.version>1.4.0</clojure.version>
@@ -387,8 +387,8 @@
         <facebook4j.version>2.4.7</facebook4j.version>
         <mockito.version>1.10.19</mockito.version>
         <powermock.version>1.7.1</powermock.version>
-        <httpcomponents.core.version>4.4.6</httpcomponents.core.version>
-        <httpcomponents.client.version>4.5.3</httpcomponents.client.version>
+        <httpcomponents.core.version>4.4.8</httpcomponents.core.version>
+        <httpcomponents.client.version>4.5.4</httpcomponents.client.version>
         <doxia.version>1.7</doxia.version>
 
         <!-- osgi configuration -->
