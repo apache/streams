@@ -73,7 +73,6 @@ sleep 30
 docker ps
 head *.properties
 
-#mvn clean verify $REPO -DskipTests=true -DskipITs=false -DargLine="-Dconfig.file=`pwd`/application.conf" > ../logs/streams_integrationtests.txt
 mvn clean verify $REPO -DskipTests=true -DskipITs=false > ../logs/streams_integrationtests.txt
 checkStatus ../logs/streams_integrationtests.txt
 
