@@ -36,8 +36,10 @@ import java.io.LineNumberReader;
 public class TwitterThirtyDaySearchProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterThirtyDaySearchProviderIT.class);
-
-  @Test(groups = "TwitterThirtyDaySearchProviderIT")
+  /*
+  Must disble methods individually if using Test annotation, see STREAMS-570
+   */
+  @Test(groups = "TwitterThirtyDaySearchProviderIT", enabled = false)
   public void testTwitterThirtyDaySearchProvider() throws Exception {
 
     String configfile = "./target/test-classes/TwitterThirtyDaySearchProviderIT.conf";
