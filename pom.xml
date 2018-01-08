@@ -28,7 +28,7 @@
 
     <groupId>org.apache.streams</groupId>
     <artifactId>apache-streams</artifactId>
-    <version>0.5.2-SNAPSHOT-SNAPSHOT</version>
+    <version>0.5.2-SNAPSHOT</version>
 
     <name>Apache Streams</name>
     <description>Apache Streams</description>
