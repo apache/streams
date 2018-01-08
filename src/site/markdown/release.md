@@ -44,6 +44,7 @@ In either case, you'll need to first refer to [Release Setup Information](/relea
 
         git checkout master
         git branch ${project.name}-${project.version}-rcX
+        git checkout ${project.name}-${project.version}-rcX
 
 4. Verify the source has the required license headers before trying to release:
 
