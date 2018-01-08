@@ -40,6 +40,9 @@ import org.apache.streams.twitter.api.FriendsIdsRequest;
 import org.apache.streams.twitter.api.FriendsIdsResponse;
 import org.apache.streams.twitter.api.FriendsListRequest;
 import org.apache.streams.twitter.api.FriendsListResponse;
+import org.apache.streams.twitter.api.RetweeterIdsRequest;
+import org.apache.streams.twitter.api.RetweeterIdsResponse;
+import org.apache.streams.twitter.api.RetweetsRequest;
 import org.apache.streams.twitter.api.SevenDaySearch;
 import org.apache.streams.twitter.api.SevenDaySearchRequest;
 import org.apache.streams.twitter.api.SevenDaySearchResponse;
@@ -233,6 +236,30 @@ public class TwitterIT {
     Tweet statusesShow = statuses.show(statusesShowRequest);
     nonNull(statusesShow);
     nonNull(statusesShow.getCreatedAt());
+  }
+
+  @Test(dependsOnGroups = {"Account"}, groups = {"Statuses"})
+  public void testRetweets() throws Exception {
+    Statuses statuses = Twitter.getInstance(config);
+    nonNull(statuses);
+    RetweetsRequest retweetsRequest = new RetweetsRequest();
+    retweetsRequest.setId(947621735511105538l);
+    List<Tweet> retweets = statuses.retweets(retweetsRequest);
+    nonNull(retweets);
+    assertThat("retweets.size() > 0", retweets.size() > 0);
+  }
+
+  @Test(dependsOnGroups = {"Account"}, groups = {"Statuses"})
+  public void testRetweeterIds() throws Exception {
+    Statuses statuses = Twitter.getInstance(config);
+    nonNull(statuses);
+    RetweeterIdsRequest retweeterIdsRequest = new RetweeterIdsRequest();
+    retweeterIdsRequest.setId(947621735511105538l);
+    RetweeterIdsResponse response = statuses.retweeterIds(retweeterIdsRequest);
+    nonNull(response);
+    List<String> retweeterIds = response.getIds();
+    nonNull(response);
+    assertThat("retweeterIds.size() > 0", retweeterIds.size() > 0);
   }
 
   @Test(dependsOnGroups = {"Account"}, groups = {"Users"})

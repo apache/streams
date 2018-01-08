@@ -163,6 +163,20 @@ public class Twitter implements
   }
 
   @Override
+  public List<Tweet> retweets(RetweetsRequest parameters) {
+    Statuses restStatuses = restClient.getRemoteableProxy(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
+    List<Tweet> result = restStatuses.retweets(parameters);
+    return result;
+  }
+
+  @Override
+  public RetweeterIdsResponse retweeterIds(RetweeterIdsRequest parameters) {
+    Statuses restStatuses = restClient.getRemoteableProxy(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
+    RetweeterIdsResponse result = restStatuses.retweeterIds(parameters);
+    return result;
+  }
+
+  @Override
   public List<Tweet> homeTimeline(StatusesHomeTimelineRequest parameters) {
     Statuses restStatuses = restClient.getRemoteableProxy(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
     List<Tweet> result = restStatuses.homeTimeline(parameters);

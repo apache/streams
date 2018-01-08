@@ -98,7 +98,36 @@ public interface Statuses {
   @RemoteMethod(httpMethod = "GET", path = "/user_timeline.json")
   public List<Tweet> userTimeline( @QueryIfNE("*") StatusesUserTimelineRequest parameters);
 
+  /**
+   * Returns a collection of the 100 most recent retweets of the Tweet specified by the id parameter.
+   *
+   * @param parameters {@link org.apache.streams.twitter.api.RetweetsRequest}
+   * @return {@link java.util.List}[{@link org.apache.streams.twitter.pojo.Tweet}]
+   * @see <a href="https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweets-id">https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweets-id</a>
+   *
+   */
+  @RemoteMethod(httpMethod = "GET", path = "/retweets/{id}")
+  public List<Tweet> retweets( @RequestBean RetweetsRequest parameters);
+
+  /**
+   * Returns a collection of up to 100 user IDs belonging to users who have retweeted the Tweet specified by the id parameter.
+   *
+   * @param parameters {@link org.apache.streams.twitter.api.RetweeterIdsRequest}
+   * @return {@link org.apache.streams.twitter.api.RetweeterIdsResponse}
+   * @see <a href="https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweeters-ids">https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweeters-ids</a>
+   *
+   */
+  @RemoteMethod(httpMethod = "GET", path = "/retweeters/ids.json")
+  public RetweeterIdsResponse retweeterIds( @QueryIfNE("*") RetweeterIdsRequest parameters);
+
   interface StatusesShowRequestAnnotations {
+
+    @Path("id")
+    Long getId();
+
+  }
+
+  interface RetweetsRequestAnnotations {
 
     @Path("id")
     Long getId();
