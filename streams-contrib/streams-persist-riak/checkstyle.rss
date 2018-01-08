@@ -23,10 +23,10 @@ under the License.
     <link>https://github.com/apache/streams/streams-contrib/streams-persist-riak</link>
     <description>streams-persist-riak - Checkstyle report</description>
     <language>en-us</language>
-    <copyright>&#169;2017 The Apache Software Foundation</copyright>
+    <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
       <title>File: 7,
-             Errors: 313,
+             Errors: 314,
              Warnings: 0,
              Infos: 0
       </title>
@@ -125,7 +125,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  30
+                  31
                 </td>
               </tr>
                           <tr>

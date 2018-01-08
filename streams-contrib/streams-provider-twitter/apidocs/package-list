@@ -5,3 +5,4 @@ org.apache.streams.twitter.converter.util
 org.apache.streams.twitter.pojo
 org.apache.streams.twitter.processor
 org.apache.streams.twitter.provider
+org.apache.streams.twitter.search

@@ -2,3 +2,4 @@ org.apache.streams.util.api.requests.backoff
 org.apache.streams.util.files
 org.apache.streams.util.oauth.tokens.tokenmanager
 org.apache.streams.util.schema.test
+org.apache.streams.util.test

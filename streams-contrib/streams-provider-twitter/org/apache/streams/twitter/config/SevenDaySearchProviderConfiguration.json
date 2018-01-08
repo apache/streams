@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.twitter.SevenDaySearchProviderConfiguration",
+  "extends": {"$ref":"TwitterConfiguration.json"},
+  "javaInterfaces": ["java.io.Serializable"],
+  "properties": {
+    "q": {
+      "$ref": "../api/SevenDaySearchRequest.json#properties/q"
+    },
+    "max_items": {
+      "type": "integer",
+      "description": "Max items total",
+      "default": 1000
+    },
+    "max_pages": {
+      "type": "integer",
+      "description": "Max pages to request",
+      "default": 10
+    }
+  }
+}

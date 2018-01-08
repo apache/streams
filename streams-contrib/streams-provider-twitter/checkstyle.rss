@@ -23,10 +23,10 @@ under the License.
     <link>https://github.com/apache/streams/streams-contrib/streams-provider-twitter</link>
     <description>streams-provider-twitter - Checkstyle report</description>
     <language>en-us</language>
-    <copyright>&#169;2017 The Apache Software Foundation</copyright>
+    <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 164,
-             Errors: 8875,
+      <title>File: 183,
+             Errors: 10464,
              Warnings: 0,
              Infos: 0
       </title>
@@ -84,6 +84,20 @@ under the License.
                 </td>
                 <td>
                   38
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.SevenDaySearch.java">org/apache/streams/twitter/api/SevenDaySearch.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
                 </td>
               </tr>
                           <tr>
@@ -410,6 +424,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.ThirtyDaySearchProvider.java">org/apache/streams/twitter/provider/ThirtyDaySearchProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  71
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.WelcomeMessageNewRuleResponseWrapper.java">org/apache/streams/twitter/api/WelcomeMessageNewRuleResponseWrapper.java</a>
                 </td>
                 <td>
@@ -648,6 +676,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.SevenDaySearchResponse.java">org/apache/streams/twitter/api/SevenDaySearchResponse.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  33
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.GeoSearchRequest.java">org/apache/streams/twitter/api/GeoSearchRequest.java</a>
                 </td>
                 <td>
@@ -760,6 +802,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.ThirtyDaySearchCountItem.java">org/apache/streams/twitter/api/ThirtyDaySearchCountItem.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.pojo.Users.java">org/apache/streams/twitter/pojo/Users.java</a>
                 </td>
                 <td>
@@ -783,7 +839,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  189
+                  224
                 </td>
               </tr>
                           <tr>
@@ -798,6 +854,20 @@ under the License.
                 </td>
                 <td>
                   19
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.ThirtyDaySearchRequest.java">org/apache/streams/twitter/api/ThirtyDaySearchRequest.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  93
                 </td>
               </tr>
                           <tr>
@@ -1012,6 +1082,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.search.SearchOperators.java">org/apache/streams/twitter/search/SearchOperators.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  259
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.DirectMessageNewRequest.java">org/apache/streams/twitter/api/DirectMessageNewRequest.java</a>
                 </td>
                 <td>
@@ -1175,7 +1259,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  29
+                  20
                 </td>
               </tr>
                           <tr>
@@ -1190,6 +1274,20 @@ under the License.
                 </td>
                 <td>
                   48
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.ThirtyDaySearchProviderConfiguration.java">org/apache/streams/twitter/ThirtyDaySearchProviderConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  61
                 </td>
               </tr>
                           <tr>
@@ -1376,6 +1474,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.search.ThirtyDaySearchOperator.java">org/apache/streams/twitter/search/ThirtyDaySearchOperator.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  294
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterFollowersListProviderTask.java">org/apache/streams/twitter/provider/TwitterFollowersListProviderTask.java</a>
                 </td>
                 <td>
@@ -1470,6 +1582,20 @@ under the License.
                 </td>
                 <td>
                   13
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.SevenDaySearchRequest.java">org/apache/streams/twitter/api/SevenDaySearchRequest.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  141
                 </td>
               </tr>
                           <tr>
@@ -1581,7 +1707,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  147
+                  171
                 </td>
               </tr>
                           <tr>
@@ -1670,6 +1796,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.ThirtyDaySearch.java">org/apache/streams/twitter/api/ThirtyDaySearch.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  9
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.EventsListResponse.java">org/apache/streams/twitter/api/EventsListResponse.java</a>
                 </td>
                 <td>
@@ -1694,6 +1834,48 @@ under the License.
                 </td>
                 <td>
                   356
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.ThirtyDaySearchCountsRequest.java">org/apache/streams/twitter/api/ThirtyDaySearchCountsRequest.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  98
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.search.SearchUtil.java">org/apache/streams/twitter/search/SearchUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  78
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.ThirtyDaySearchProviderTask.java">org/apache/streams/twitter/provider/ThirtyDaySearchProviderTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  44
                 </td>
               </tr>
                           <tr>
@@ -1894,6 +2076,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.ThirtyDaySearchCountsResponse.java">org/apache/streams/twitter/api/ThirtyDaySearchCountsResponse.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  71
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.FriendshipsIncomingRequest.java">org/apache/streams/twitter/api/FriendshipsIncomingRequest.java</a>
                 </td>
                 <td>
@@ -1932,6 +2128,20 @@ under the License.
                 </td>
                 <td>
                   68
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.SevenDaySearchProviderConfiguration.java">org/apache/streams/twitter/SevenDaySearchProviderConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  62
                 </td>
               </tr>
                           <tr>
@@ -2118,6 +2328,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.ThirtyDaySearchCounts.java">org/apache/streams/twitter/api/ThirtyDaySearchCounts.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  5
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.TwitterProviderUtil.java">org/apache/streams/twitter/provider/TwitterProviderUtil.java</a>
                 </td>
                 <td>
@@ -2253,7 +2477,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  75
+                  74
                 </td>
               </tr>
                           <tr>
@@ -2268,6 +2492,48 @@ under the License.
                 </td>
                 <td>
                   40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.SevenDaySearchProviderTask.java">org/apache/streams/twitter/provider/SevenDaySearchProviderTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  45
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.api.ThirtyDaySearchResponse.java">org/apache/streams/twitter/api/ThirtyDaySearchResponse.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  58
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-twitter/checkstyle.html#org.apache.streams.twitter.provider.SevenDaySearchProvider.java">org/apache/streams/twitter/provider/SevenDaySearchProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  73
                 </td>
               </tr>
                           <tr>

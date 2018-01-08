@@ -23,10 +23,10 @@ under the License.
     <link>https://github.com/apache/streams/streams-config</link>
     <description>streams-config - Checkstyle report</description>
     <language>en-us</language>
-    <copyright>&#169;2017 The Apache Software Foundation</copyright>
+    <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
       <title>File: 4,
-             Errors: 223,
+             Errors: 225,
              Warnings: 0,
              Infos: 0
       </title>
@@ -55,7 +55,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  29
+                  31
                 </td>
               </tr>
                           <tr>
