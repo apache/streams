@@ -85,7 +85,7 @@ In general however the scm plugin is smart enough to just add new resources and 
 
 If you are publishing a release, it's appropriate to delete the site snapshots related to the prior releases.
 
-For example when 0.3-incubating is published, 0.2-incubating-SNAPSHOT should be deleted.
+For example when 0.5.2 is published, 0.5.1-SNAPSHOT should be deleted.
 
 This policy of removing old snapshots keeps external projects from linking to snapshot artifacts indefinitely.
 
@@ -150,8 +150,8 @@ You should now be able to access and review the published site(s) via the stagin
 
 At this point use explicit versions to access and review the new documentation, i.e.
 
-* http://streams.staging.apache.org/site/0.3-incubating-SNAPSHOT/streams-project/index.html
-* http://streams.staging.apache.org/site/0.3-incubating-SNAPSHOT/streams-examples/index.html
+* http://streams.staging.apache.org/site/0.5.1/streams-project/index.html
+* http://streams.staging.apache.org/site/0.5.1/streams-examples/index.html
 
 #### Managing version pointers
 
@@ -163,10 +163,10 @@ These rules are located in the '.htaccess' file in the root of the SVN content d
 
     Options +FollowSymLinks
     RewriteEngine on
-    RedirectMatch   "^/$"  "/site/0.3-incubating-SNAPSHOT/streams-project"
-    Redirect /site/latest /site/0.3-incubating-SNAPSHOT
-    Redirect /site/latest/streams-project /site/0.3-incubating-SNAPSHOT/streams-project
-    Redirect /site/latest/streams-examples /site/0.3-incubating-SNAPSHOT/streams-examples
+    RedirectMatch   "^/$"  "/site/0.5.2-SNAPSHOT/streams-project"
+    Redirect /site/latest /site/0.5.2-SNAPSHOT
+    Redirect /site/latest/streams-project /site/0.5.2-SNAPSHOT/streams-project
+    Redirect /site/latest/streams-examples /site/0.5.2-SNAPSHOT/streams-examples
 
 Adjust the Redirect rules as appropriate for the project and version you are deploying.  You can do this directly from the CMS.
 

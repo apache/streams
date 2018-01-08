@@ -13,7 +13,7 @@ Output will be placed in target/generated-resources/hbase by default
 
 Run within a module containing a src/main/jsonschema directory
 
-    mvn org.apache.streams.plugins:streams-plugin-hbase:0.4-incubating:hbase
+    mvn org.apache.streams.plugins:streams-plugin-hbase:0.5.1:generate-resources
 
 ##### SDK
 

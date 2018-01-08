@@ -11,7 +11,7 @@ Output will be placed in target/generated-resources/elasticsearch by default
 
 Run within a module containing a src/main/jsonschema directory
 
-    mvn org.apache.streams.plugins:streams-plugin-elasticsearch:0.4-incubating:elasticsearch
+    mvn org.apache.streams.plugins:streams-plugin-elasticsearch:0.5.1:generate-resources
 
 [streams-plugin-elasticsearch/pom.xml](streams-plugin-elasticsearch/pom.xml "streams-plugin-elasticsearch/pom.xml")
 

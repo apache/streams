@@ -11,7 +11,7 @@ Output will be placed in target/generated-resources/hive by default
 
 Run within a module containing a src/main/jsonschema directory
 
-    mvn org.apache.streams.plugins:streams-plugin-hive:0.4-incubating:generate-resources
+    mvn org.apache.streams.plugins:streams-plugin-hive:0.5.1:generate-resources
 
 [streams-plugin-hive/pom.xml](streams-plugin-hive/pom.xml "streams-plugin-hive/pom.xml")
 

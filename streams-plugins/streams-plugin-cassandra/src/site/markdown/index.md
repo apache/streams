@@ -9,7 +9,7 @@ streams-plugin-cassandra generates resources from json schemas to assist with in
 
 Run within a module containing a src/main/jsonschema directory
 
-    mvn org.apache.streams.plugins:streams-plugin-cassandra:0.4-incubating:cassandra
+    mvn org.apache.streams.plugins:streams-plugin-cassandra:0.5.1:generate-resources
 
 [streams-plugin-cassandra/pom.xml](streams-plugin-cassandra/pom.xml "streams-plugin-cassandra/pom.xml")
 
