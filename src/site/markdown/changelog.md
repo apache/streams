@@ -2,6 +2,223 @@ Apache Streams
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
+        Release Notes - Streams - Version 0.5.1
+            
+<h2>        Access
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-563'>STREAMS-563</a>] -         Remove &quot;incubating&quot; from all pom.xmls
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-571'>STREAMS-571</a>] -         Remove application.conf from release.sh
+</li>
+</ul>
+                    
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-494'>STREAMS-494</a>] -         PropertyUtilTest is not running with surefire, and doesn&#39;t adequately test PropertyUtil
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-495'>STREAMS-495</a>] -         mvn -o clean can fail when streams-plugin-pojo snapshot is not installed
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-499'>STREAMS-499</a>] -         site:stage and site:publish problem with 0.5-incubating
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-505'>STREAMS-505</a>] -         Add ASFv2 Licenses
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-506'>STREAMS-506</a>] -         Missing ASFv2 License in Instagram Provider
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-517'>STREAMS-517</a>] -         compile error in streams-provider-instagram in master
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-532'>STREAMS-532</a>] -         ids_only=false for friends/followers does not work as expected in streams-provider-twitter
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-545'>STREAMS-545</a>] -         SchemaUtil.mergeProperties does not deep-copy / merge sub-objects
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-549'>STREAMS-549</a>] -         Bug in PropertyUtil.mergeProperties
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-555'>STREAMS-555</a>] -         Test in streams-util failing - because http://json-schema.org/schema has changed
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-570'>STREAMS-570</a>] -         Update enabled=false on TwitterThirtyDaySearchProviderIT
+</li>
+</ul>
+                                        
+<h2>        Improvement
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-394'>STREAMS-394</a>] -         Replace Travis CI with jenkins for building PRs
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-492'>STREAMS-492</a>] -         Create a twitter keyword search provider
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-493'>STREAMS-493</a>] -         streams-examples jenkins build fails
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-502'>STREAMS-502</a>] -         Re-implement instagram providers using juneau libraries
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-508'>STREAMS-508</a>] -         Utilize new third-party rest proxy capability in provider-twitter
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-512'>STREAMS-512</a>] -         Add @BeanProperty annotations in addition to @JsonProperty
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-516'>STREAMS-516</a>] -         switch @BeanProperty annotations to value
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-519'>STREAMS-519</a>] -         Support parsing dates with micro and nano precision with StreamsJacksonMapper
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-521'>STREAMS-521</a>] -         Add support for twitter direct message events and web hook events
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-530'>STREAMS-530</a>] -         Log the page_count, item_count, last_count when providers shut down
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-531'>STREAMS-531</a>] -         Implement the /friendships endpoint in streams-provider-twitter
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-537'>STREAMS-537</a>] -         Integration Tests should not assume presence of any specific system property values not controlled via SCM or maven lifecycle
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-546'>STREAMS-546</a>] -         Allow rat plugin to ignore .conf files in project root
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-552'>STREAMS-552</a>] -         Disable .debug() by default in org.apache.streams.twitter.api.Twitter
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-557'>STREAMS-557</a>] -         RiakHttpClient would be more useful if it exposed baseUrl publically
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-565'>STREAMS-565</a>] -         Permit access to StreamsConfigurator underlying Config without resolve()
+</li>
+</ul>
+            
+<h2>        New Feature
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-535'>STREAMS-535</a>] -         Implement /users/search and /users/suggestions in streams-provider-twitter
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-553'>STREAMS-553</a>] -         Implement Premium Search in streams-provider-twitter
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-556'>STREAMS-556</a>] -         Twitter: SevenDaySearchProvider
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-566'>STREAMS-566</a>] -         Twitter: ThirtyDaySearchProvider
+</li>
+</ul>
+                                                                    
+<h2>        Task
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-316'>STREAMS-316</a>] -         add “apache’ to the artifact name
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-420'>STREAMS-420</a>] -         reboot: cleanup JIRA
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-496'>STREAMS-496</a>] -         Remove twitter4j dependency from streams-provider-twitter
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-497'>STREAMS-497</a>] -         Add streams prefix to project and examples artifactIds
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-500'>STREAMS-500</a>] -         Remove jackson-datatype-json-org from project
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-507'>STREAMS-507</a>] -         Jenkins is not deploying snapshots for org/apache/streams/plugins
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-522'>STREAMS-522</a>] -         Remove mention of incubating status from code and web site
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-523'>STREAMS-523</a>] -         global dependency version bump
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-524'>STREAMS-524</a>] -         Ensure all Streams Components are serializable and implement the correct interface
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-525'>STREAMS-525</a>] -         discontinue use of reflections-maven
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-526'>STREAMS-526</a>] -         incorporate juneau 6.4.0 release
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-527'>STREAMS-527</a>] -         Move default values on configuration beans from json schemas into typesafe reference.conf files
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-528'>STREAMS-528</a>] -         disable style plugins by default
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-529'>STREAMS-529</a>] -         Make it possible to update data behind the StreamsConfigurator after initialization.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-533'>STREAMS-533</a>] -         Fix JavaDoc links in streams-provider-twitter
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-534'>STREAMS-534</a>] -         Implement /search/tweets in streams-provider-twitter
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-539'>STREAMS-539</a>] -         quick profile should be disabled by default
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-540'>STREAMS-540</a>] -         drop dependence on third-party test data archive
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-547'>STREAMS-547</a>] -         add any missing AL headers
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-548'>STREAMS-548</a>] -         update juneau dependency to 7.0.0
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-564'>STREAMS-564</a>] -         Update dependency versions on juneau and httpclient
+</li>
+</ul>        
+
+        Release Notes - Streams - Version 0.5
+    
+<h2>        Sub-task
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-255'>STREAMS-255</a>] -         Merge streams-master into streams-project
+</li>
+</ul>
+                            
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-257'>STREAMS-257</a>] -         Remove incomplete DEPENDENCIES file from src zip artifact
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-448'>STREAMS-448</a>] -         TwitterUserInformationConfiguration only accepts Twitter IDs not usernames
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-472'>STREAMS-472</a>] -         Fix failing IT in streams-plugins
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-477'>STREAMS-477</a>] -         Fix link for checkstyle.xml
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-481'>STREAMS-481</a>] -         Update .travis.yml to use Java 8
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-490'>STREAMS-490</a>] -         Upgrade Flink to 1.2.0 and remove the remaining guava references in streams-examples
+</li>
+</ul>
+                                        
+<h2>        Improvement
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-71'>STREAMS-71</a>] -         Sysomos Provider should allow a target document or timeframe to be set
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-341'>STREAMS-341</a>] -         Cassandra Persistance
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-344'>STREAMS-344</a>] -         Support binary protocol in streams-persist-graph
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-438'>STREAMS-438</a>] -         Create coding guidelines document for website
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-453'>STREAMS-453</a>] -         tag each jira against one/more components. 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-476'>STREAMS-476</a>] -         Remove guava dependency from streams-example project
+</li>
+</ul>
+            
+<h2>        New Feature
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-455'>STREAMS-455</a>] -         LICENSE, NOTICE and DISCLAIMER in source control.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-478'>STREAMS-478</a>] -         streams persist reader/writer for Apache Cassandra
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-480'>STREAMS-480</a>] -         Remove -incubating suffix from Release artifacts names
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-482'>STREAMS-482</a>] -         persist capability for riak
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-483'>STREAMS-483</a>] -         add support for SSL connections to streams-persist-cassandra
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-484'>STREAMS-484</a>] -         Update website to reflect deprecation of streams-master
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-485'>STREAMS-485</a>] -         Improve release process - no more repeated pasting of versions
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-486'>STREAMS-486</a>] -         Update release script on website
+</li>
+</ul>
+                                                                    
+<h2>        Task
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-444'>STREAMS-444</a>] -         tighten up test logging
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-463'>STREAMS-463</a>] -         Move every class in all repos underneath org.apache.streams
+</li>
+</ul>
+        
+<h2>        Test
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-488'>STREAMS-488</a>] -         Fail in build 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/STREAMS-491'>STREAMS-491</a>] -         Example failure
+</li>
+</ul>
+
         Release Notes - Streams - Version 0.4
     
 <h2>        Sub-task
