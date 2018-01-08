@@ -1494,5 +1494,15 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>dockerITs</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>skipITs</name>
+                    <value>false</value>
+                </property>
+            </activation>
+        </profile>
     </profiles>
 </project>
