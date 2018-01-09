@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 351,
-             Errors: 12762,
+      <title>File: 360,
+             Errors: 13080,
              Warnings: 0,
              Infos: 0
       </title>
@@ -98,6 +98,20 @@ under the License.
                 </td>
                 <td>
                   31
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.instagram.provider.InstagramLikersCollector.java">org/apache/streams/instagram/provider/InstagramLikersCollector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  25
                 </td>
               </tr>
                           <tr>
@@ -601,7 +615,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  40
+                  53
                 </td>
               </tr>
                           <tr>
@@ -699,7 +713,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  224
+                  232
                 </td>
               </tr>
                           <tr>
@@ -1110,6 +1124,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.twitter.provider.TwitterRetweetsTask.java">org/apache/streams/twitter/provider/TwitterRetweetsTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.local.tasks.StreamsProviderTask.java">org/apache/streams/local/tasks/StreamsProviderTask.java</a>
                 </td>
                 <td>
@@ -1432,6 +1460,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.instagram.provider.InstagramEngagersCollector.java">org/apache/streams/instagram/provider/InstagramEngagersCollector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.moreover.MoreoverJsonActivitySerializer.java">org/apache/streams/moreover/MoreoverJsonActivitySerializer.java</a>
                 </td>
                 <td>
@@ -1455,7 +1497,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  23
+                  28
                 </td>
               </tr>
                           <tr>
@@ -1833,7 +1875,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  44
+                  43
                 </td>
               </tr>
                           <tr>
@@ -2323,7 +2365,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  35
+                  38
                 </td>
               </tr>
                           <tr>
@@ -2813,7 +2855,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  31
+                  39
                 </td>
               </tr>
                           <tr>
@@ -2912,6 +2954,20 @@ under the License.
                 </td>
                 <td>
                   2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.twitter.provider.TwitterRetweeterIdsTask.java">org/apache/streams/twitter/provider/TwitterRetweeterIdsTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
                 </td>
               </tr>
                           <tr>
@@ -3196,6 +3252,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.instagram.provider.InstagramCommentsProvider.java">org/apache/streams/instagram/provider/InstagramCommentsProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.converter.BaseStringActivityObjectConverter.java">org/apache/streams/converter/BaseStringActivityObjectConverter.java</a>
                 </td>
                 <td>
@@ -3290,6 +3360,20 @@ under the License.
                 </td>
                 <td>
                   60
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.twitter.provider.TwitterEngagersProvider.java">org/apache/streams/twitter/provider/TwitterEngagersProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  82
                 </td>
               </tr>
                           <tr>
@@ -3500,6 +3584,20 @@ under the License.
                 </td>
                 <td>
                   25
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.instagram.provider.InstagramCommentsCollector.java">org/apache/streams/instagram/provider/InstagramCommentsCollector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  24
                 </td>
               </tr>
                           <tr>
@@ -4353,7 +4451,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  90
+                  93
                 </td>
               </tr>
                           <tr>
@@ -4382,6 +4480,20 @@ under the License.
                 </td>
                 <td>
                   32
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.instagram.provider.InstagramEngagersProvider.java">org/apache/streams/instagram/provider/InstagramEngagersProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
                 </td>
               </tr>
                           <tr>
@@ -4592,6 +4704,20 @@ under the License.
                 </td>
                 <td>
                   103
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.instagram.provider.InstagramLikersProvider.java">org/apache/streams/instagram/provider/InstagramLikersProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
                 </td>
               </tr>
                           <tr>
@@ -4843,7 +4969,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  118
+                  119
                 </td>
               </tr>
                           <tr>
