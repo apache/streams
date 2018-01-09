@@ -866,7 +866,7 @@
                     <version>${scmpublish.plugin.version}</version>
                     <extensions>true</extensions>
                     <configuration>
-                        <scmBranch>gh-pages</scmBranch>
+                        <scmBranch>asf-site</scmBranch>
                     </configuration>
                 </plugin>
                 <plugin>
