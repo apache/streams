@@ -83,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  16
+                  15
                 </td>
               </tr>
                           <tr>
@@ -144,20 +144,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.FacebookFriendUpdatesProvider.java">org/apache/streams/facebook/provider/FacebookFriendUpdatesProvider.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  98
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.FacebookFriendFeedProvider.java">org/apache/streams/facebook/provider/FacebookFriendFeedProvider.java</a>
                 </td>
                 <td>
@@ -168,6 +154,20 @@ under the License.
                 </td>
                 <td>
                   118
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.provider.FacebookFriendUpdatesProvider.java">org/apache/streams/facebook/provider/FacebookFriendUpdatesProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  98
                 </td>
               </tr>
                           <tr>
@@ -195,7 +195,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  49
+                  50
                 </td>
               </tr>
                           <tr>
@@ -279,7 +279,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  27
+                  28
                 </td>
               </tr>
                           <tr>
@@ -377,7 +377,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  93
+                  92
                 </td>
               </tr>
                           <tr>
@@ -396,20 +396,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.FacebookUserstreamConfiguration.java">org/apache/streams/facebook/FacebookUserstreamConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  49
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.Like.java">org/apache/streams/facebook/Like.java</a>
                 </td>
                 <td>
@@ -420,6 +406,20 @@ under the License.
                 </td>
                 <td>
                   40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.FacebookUserstreamConfiguration.java">org/apache/streams/facebook/FacebookUserstreamConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  49
                 </td>
               </tr>
                           <tr>
@@ -489,21 +489,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  43
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.Comment.java">org/apache/streams/facebook/Comment.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  56
+                  44
                 </td>
               </tr>
                           <tr>
@@ -518,6 +504,20 @@ under the License.
                 </td>
                 <td>
                   31
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.Comment.java">org/apache/streams/facebook/Comment.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  56
                 </td>
               </tr>
                           <tr>
@@ -587,12 +587,12 @@ under the License.
                   0
                 </td>
                 <td>
-                  61
+                  60
                 </td>
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.Datum.java">org/apache/streams/facebook/Datum.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.Datum_.java">org/apache/streams/facebook/Datum_.java</a>
                 </td>
                 <td>
                   0
@@ -601,7 +601,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  40
+                  41
                 </td>
               </tr>
                           <tr>
@@ -620,7 +620,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.Datum_.java">org/apache/streams/facebook/Datum_.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.Datum.java">org/apache/streams/facebook/Datum.java</a>
                 </td>
                 <td>
                   0
@@ -629,7 +629,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  41
+                  40
                 </td>
               </tr>
                       </tbody>

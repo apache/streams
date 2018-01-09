@@ -111,7 +111,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  15
+                  14
                 </td>
               </tr>
                           <tr>
@@ -139,7 +139,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  60
+                  61
                 </td>
               </tr>
                           <tr>
@@ -167,7 +167,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  7
+                  8
                 </td>
               </tr>
                           <tr>
@@ -195,7 +195,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  111
+                  110
                 </td>
               </tr>
                           <tr>
@@ -228,7 +228,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-monitoring/checkstyle.html#org.apache.streams.jackson.ThroughputQueueDeserializer.java">org/apache/streams/jackson/ThroughputQueueDeserializer.java</a>
+                  <a href="https://github.com/apache/streams/streams-monitoring/checkstyle.html#org.apache.streams.jackson.StreamsTaskCounterDeserializer.java">org/apache/streams/jackson/StreamsTaskCounterDeserializer.java</a>
                 </td>
                 <td>
                   0
@@ -242,7 +242,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-monitoring/checkstyle.html#org.apache.streams.jackson.StreamsTaskCounterDeserializer.java">org/apache/streams/jackson/StreamsTaskCounterDeserializer.java</a>
+                  <a href="https://github.com/apache/streams/streams-monitoring/checkstyle.html#org.apache.streams.jackson.ThroughputQueueDeserializer.java">org/apache/streams/jackson/ThroughputQueueDeserializer.java</a>
                 </td>
                 <td>
                   0

@@ -10,19 +10,23 @@
     "properties": {
         "protocol": {
             "type": "string",
-            "description": "The protocol"
+            "description": "The protocol",
+            "default": "https"
         },
         "host": {
             "type": "string",
-            "description": "The host"
+            "description": "The host",
+            "default": "api.instagram.com"
         },
         "port": {
             "type": "integer",
-            "description": "The port"
+            "description": "The port",
+            "default": 443
         },
         "version": {
             "type": "string",
-            "description": "The version"
+            "description": "The version",
+            "default": "v1"
         },
         "oauth": {
             "type": "object",
@@ -43,15 +47,18 @@
         },
         "threadsPerProvider": {
             "type": "integer",
-            "description": "number of threads per provider"
+            "description": "number of threads per provider",
+            "default": 10
         },
         "retrySleepMs": {
             "type": "integer",
-            "description": "ms to sleep when hitting a rate limit"
+            "description": "ms to sleep when hitting a rate limit",
+            "default": 100000
         },
         "retryMax": {
             "type": "integer",
-            "description": "max times to retry"
+            "description": "max times to retry",
+            "default": 10
         }
    }
 }

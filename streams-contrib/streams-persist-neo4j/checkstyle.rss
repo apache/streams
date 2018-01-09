@@ -55,7 +55,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  26
+                  25
                 </td>
               </tr>
                           <tr>
@@ -97,35 +97,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  37
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-neo4j/checkstyle.html#org.apache.streams.neo4j.CypherQueryResponse.java">org/apache/streams/neo4j/CypherQueryResponse.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  41
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-neo4j/checkstyle.html#org.apache.streams.neo4j.Neo4jConfiguration.java">org/apache/streams/neo4j/Neo4jConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  67
+                  38
                 </td>
               </tr>
                           <tr>
@@ -140,6 +112,34 @@ under the License.
                 </td>
                 <td>
                   29
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-neo4j/checkstyle.html#org.apache.streams.neo4j.CypherQueryResponse.java">org/apache/streams/neo4j/CypherQueryResponse.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-neo4j/checkstyle.html#org.apache.streams.neo4j.Neo4jConfiguration.java">org/apache/streams/neo4j/Neo4jConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  67
                 </td>
               </tr>
                           <tr>
@@ -209,7 +209,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  19
+                  20
                 </td>
               </tr>
                           <tr>

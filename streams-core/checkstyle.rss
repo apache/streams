@@ -74,20 +74,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.StreamsProcessor.java">org/apache/streams/core/StreamsProcessor.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  5
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.StreamsPersistReader.java">org/apache/streams/core/StreamsPersistReader.java</a>
                 </td>
                 <td>
@@ -102,7 +88,21 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.DatumStatusCountable.java">org/apache/streams/core/DatumStatusCountable.java</a>
+                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.StreamsProcessor.java">org/apache/streams/core/StreamsProcessor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  5
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.StreamsProvider.java">org/apache/streams/core/StreamsProvider.java</a>
                 </td>
                 <td>
                   0
@@ -116,7 +116,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.StreamsProvider.java">org/apache/streams/core/StreamsProvider.java</a>
+                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.DatumStatusCountable.java">org/apache/streams/core/DatumStatusCountable.java</a>
                 </td>
                 <td>
                   0
@@ -167,21 +167,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  3
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.StreamsResultSet.java">org/apache/streams/core/StreamsResultSet.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  22
+                  2
                 </td>
               </tr>
                           <tr>
@@ -200,6 +186,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.StreamsResultSet.java">org/apache/streams/core/StreamsResultSet.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.DatumStatus.java">org/apache/streams/core/DatumStatus.java</a>
                 </td>
                 <td>
@@ -209,7 +209,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  3
+                  4
                 </td>
               </tr>
                       </tbody>

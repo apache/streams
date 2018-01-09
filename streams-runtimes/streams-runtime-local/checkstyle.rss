@@ -46,6 +46,20 @@ under the License.
           <tbody>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.counters.StreamsTaskCounterMXBean.java">org/apache/streams/local/counters/StreamsTaskCounterMXBean.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  18
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.counters.StreamsTaskCounter.java">org/apache/streams/local/counters/StreamsTaskCounter.java</a>
                 </td>
                 <td>
@@ -56,20 +70,6 @@ under the License.
                 </td>
                 <td>
                   46
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.counters.StreamsTaskCounterMXBean.java">org/apache/streams/local/counters/StreamsTaskCounterMXBean.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  17
                 </td>
               </tr>
                           <tr>
@@ -139,7 +139,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  13
+                  12
                 </td>
               </tr>
                           <tr>
@@ -153,7 +153,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  9
+                  8
                 </td>
               </tr>
                           <tr>
@@ -209,7 +209,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  32
+                  31
                 </td>
               </tr>
                           <tr>
@@ -228,20 +228,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.tasks.StatusCounterMonitorThread.java">org/apache/streams/local/tasks/StatusCounterMonitorThread.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  24
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.tasks.LocalStreamProcessMonitorThread.java">org/apache/streams/local/tasks/LocalStreamProcessMonitorThread.java</a>
                 </td>
                 <td>
@@ -256,6 +242,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.tasks.StatusCounterMonitorThread.java">org/apache/streams/local/tasks/StatusCounterMonitorThread.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  24
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.builders.LocalStreamBuilder.java">org/apache/streams/local/builders/LocalStreamBuilder.java</a>
                 </td>
                 <td>
@@ -265,7 +265,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  286
+                  287
                 </td>
               </tr>
                           <tr>
@@ -284,6 +284,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.queues.ThroughputQueue.java">org/apache/streams/local/queues/ThroughputQueue.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  134
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.tasks.StreamsPersistWriterTask.java">org/apache/streams/local/tasks/StreamsPersistWriterTask.java</a>
                 </td>
                 <td>
@@ -294,20 +308,6 @@ under the License.
                 </td>
                 <td>
                   55
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.queues.ThroughputQueue.java">org/apache/streams/local/queues/ThroughputQueue.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  133
                 </td>
               </tr>
                           <tr>

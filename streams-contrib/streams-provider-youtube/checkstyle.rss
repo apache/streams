@@ -167,7 +167,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  18
+                  19
                 </td>
               </tr>
                           <tr>
@@ -195,7 +195,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  9
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-youtube/checkstyle.html#org.apache.streams.youtube.provider.YoutubeUserActivityProvider.java">org/apache/streams/youtube/provider/YoutubeUserActivityProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
                 </td>
               </tr>
                           <tr>
@@ -214,20 +228,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-youtube/checkstyle.html#org.apache.streams.youtube.provider.YoutubeUserActivityProvider.java">org/apache/streams/youtube/provider/YoutubeUserActivityProvider.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  19
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-youtube/checkstyle.html#org.apache.streams.youtube.provider.YoutubeDataCollector.java">org/apache/streams/youtube/provider/YoutubeDataCollector.java</a>
                 </td>
                 <td>
@@ -237,7 +237,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  17
+                  16
                 </td>
               </tr>
                       </tbody>

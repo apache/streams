@@ -139,7 +139,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  73
+                  72
                 </td>
               </tr>
                           <tr>
@@ -158,6 +158,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-moreover/checkstyle.html#org.apache.streams.moreover.MoreoverJsonActivitySerializer.java">org/apache/streams/moreover/MoreoverJsonActivitySerializer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  19
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-moreover/checkstyle.html#org.apache.streams.moreover.MoreoverProvider.java">org/apache/streams/moreover/MoreoverProvider.java</a>
                 </td>
                 <td>
@@ -168,20 +182,6 @@ under the License.
                 </td>
                 <td>
                   34
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-moreover/checkstyle.html#org.apache.streams.moreover.MoreoverJsonActivitySerializer.java">org/apache/streams/moreover/MoreoverJsonActivitySerializer.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  18
                 </td>
               </tr>
                           <tr>
@@ -242,20 +242,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-moreover/checkstyle.html#com.moreover.api.SemanticsItem.java">com/moreover/api/SemanticsItem.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  40
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-moreover/checkstyle.html#com.moreover.api.AuthorPublishingPlatform.java">com/moreover/api/AuthorPublishingPlatform.java</a>
                 </td>
                 <td>
@@ -266,6 +252,20 @@ under the License.
                 </td>
                 <td>
                   69
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-moreover/checkstyle.html#com.moreover.api.SemanticsItem.java">com/moreover/api/SemanticsItem.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
                 </td>
               </tr>
                           <tr>
@@ -363,7 +363,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  32
+                  31
                 </td>
               </tr>
                           <tr>
@@ -396,20 +396,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-moreover/checkstyle.html#com.moreover.api.Feed.java">com/moreover/api/Feed.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  213
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-moreover/checkstyle.html#com.moreover.api.Topic.java">com/moreover/api/Topic.java</a>
                 </td>
                 <td>
@@ -420,6 +406,20 @@ under the License.
                 </td>
                 <td>
                   29
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-moreover/checkstyle.html#com.moreover.api.Feed.java">com/moreover/api/Feed.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  213
                 </td>
               </tr>
                           <tr>
@@ -536,20 +536,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-moreover/checkstyle.html#org.apache.streams.moreover.Feed.java">org/apache/streams/moreover/Feed.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  175
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-moreover/checkstyle.html#org.apache.streams.moreover.Rank.java">org/apache/streams/moreover/Rank.java</a>
                 </td>
                 <td>
@@ -560,6 +546,20 @@ under the License.
                 </td>
                 <td>
                   47
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-moreover/checkstyle.html#org.apache.streams.moreover.Feed.java">org/apache/streams/moreover/Feed.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  175
                 </td>
               </tr>
                           <tr>
@@ -657,7 +657,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  77
+                  78
                 </td>
               </tr>
                           <tr>
@@ -671,7 +671,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  39
+                  40
                 </td>
               </tr>
                           <tr>
@@ -741,7 +741,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  41
+                  40
                 </td>
               </tr>
                           <tr>
