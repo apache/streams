@@ -919,7 +919,7 @@
                             <id>validate</id>
                             <phase>validate</phase>
                             <configuration>
-                                <configLocation>http://streams.apache.org/site/latest/streams-project/streams-java-checkstyle.xml</configLocation>
+                                <configLocation>src/main/resources/streams-java-checkstyle.xml</configLocation>
                                 <encoding>UTF-8</encoding>
                                 <consoleOutput>true</consoleOutput>
                                 <includeTestSourceDirectory>true</includeTestSourceDirectory>
