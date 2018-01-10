@@ -55,7 +55,7 @@ public class InstagramUserInfoDataConverterIT {
 
   private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-  @Test(dependsOnGroups = "providers")
+  @Test(dependsOnGroups = "InstagramUserInfoProviderIT")
   public void InstagramUserInfoDataConverterIT() throws Exception {
     InputStream is = InstagramUserInfoDataConverterIT.class.getResourceAsStream("/InstagramUserInfoProviderIT.stdout.txt");
     InputStreamReader isr = new InputStreamReader(is);

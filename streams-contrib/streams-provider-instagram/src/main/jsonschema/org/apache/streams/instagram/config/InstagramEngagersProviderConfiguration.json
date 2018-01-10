@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.instagram.config.InstagramEngagersProviderConfiguration",
+  "extends": {"$ref":"InstagramConfiguration.json"},
+  "javaInterfaces": ["java.io.Serializable"],
+  "properties": {
+    "endpoints": {
+      "type": "array",
+      "description": "Which endpoints to use when finding engagers.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "comments",
+          "likes"
+        ]
+      }
+    },
+    "info": {
+      "type": "array",
+      "description": "A list of media IDs, indicating the media whose comments should be delivered on the stream.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "max_items": {
+      "type": "integer",
+      "description": "Max items per user to collect",
+      "default": 5000
+    }
+  }
+}

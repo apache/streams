@@ -17,6 +17,8 @@ package org.apache.streams.instagram.provider;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.instagram.api.Instagram;
+import org.apache.streams.instagram.api.SearchUsersRequest;
+import org.apache.streams.instagram.api.SearchUsersResponse;
 import org.apache.streams.instagram.config.InstagramConfiguration;
 import org.apache.streams.instagram.config.InstagramOAuthConfiguration;
 import org.apache.streams.util.ComponentUtils;
@@ -25,6 +27,7 @@ import org.apache.streams.util.api.requests.backoff.impl.ExponentialBackOffStrat
 import org.apache.streams.util.oauth.tokens.tokenmanager.SimpleTokenManager;
 import org.apache.streams.util.oauth.tokens.tokenmanager.impl.BasicTokenManager;
 
+import org.apache.juneau.internal.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +51,7 @@ public abstract class InstagramDataCollector<T> implements Runnable {
   private SimpleTokenManager<InstagramOAuthConfiguration> tokenManger;
   protected int consecutiveErrorCount;
   protected BackOffStrategy backOffStrategy;
-  private Instagram instagram;
+  protected Instagram instagram;
 
   /**
    * InstagramDataCollector constructor.
@@ -116,5 +119,15 @@ public abstract class InstagramDataCollector<T> implements Runnable {
    */
   protected abstract StreamsDatum convertToStreamsDatum(T item);
 
-
+  public String swapUsernameForId(String username) {
+    SearchUsersRequest searchUsersRequest = new SearchUsersRequest()
+      .withQ(username);
+    SearchUsersResponse searchUsersResponse =
+      getNextInstagramClient().searchUser(searchUsersRequest);
+    if( searchUsersResponse.getData().size() > 0 &&
+      searchUsersResponse.getData().get(0).getUsername().equals(username)) {
+      return searchUsersResponse.getData().get(0).getId();
+    }
+    return null;
+  }
 }
