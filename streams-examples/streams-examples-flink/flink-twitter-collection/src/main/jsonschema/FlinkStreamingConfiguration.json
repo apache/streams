@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "type": "object",
+  "javaType" : "org.apache.streams.flink.FlinkStreamingConfiguration",
+  "javaInterfaces": ["java.io.Serializable"],
+  "extends": {
+    "$ref": "StreamsFlinkConfiguration.json"
+  },
+  "properties": {
+    "parallel": {
+      "type": "integer",
+      "default": 1
+    },
+    "providerWaitMs": {
+      "type": "integer",
+      "default": 1000
+    },
+    "checkpointIntervalMs": {
+      "type": "integer",
+      "default": 300000
+    },
+    "checkpointTimeoutMs": {
+      "type": "integer",
+      "default": 30000
+    },
+    "restartAttempts": {
+      "type": "integer",
+      "description": "number of restart attempts",
+      "default": 3
+    },
+    "restartDelayMs": {
+      "type": "integer",
+      "description": "delay in milliseconds",
+      "default": 10000
+    }
+  }
+}

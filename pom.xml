@@ -346,7 +346,7 @@
         <scalastyle.plugin.version>0.8.0</scalastyle.plugin.version>
         <scm.plugin.version>1.9.5</scm.plugin.version>
         <scmpublish.plugin.version>1.1</scmpublish.plugin.version>
-        <shade.plugin.version>2.4.3</shade.plugin.version>
+        <shade.plugin.version>3.1.0</shade.plugin.version>
         <site.plugin.version>3.6</site.plugin.version>
         <source.plugin.version>2.4</source.plugin.version>
         <surefire.plugin.version>2.19.1</surefire.plugin.version>
@@ -408,6 +408,7 @@
         <module>streams-config</module>
         <module>streams-contrib</module>
         <module>streams-components</module>
+        <module>streams-examples</module>
         <module>streams-monitoring</module>
         <module>streams-pojo</module>
         <module>streams-pojo-extensions</module>
@@ -478,6 +479,22 @@
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>${clean.plugin.version}</version>
+                    <configuration>
+                        <filesets>
+                            <fileset>
+                                <directory>src/site/resources</directory>
+                                <followSymlinks>false</followSymlinks>
+                            </fileset>
+                            <!-- this is here because elasticsearch integration tests don't have a setting to change directory where temp index files get created -->
+                            <fileset>
+                                <directory>data</directory>
+                                <followSymlinks>false</followSymlinks>
+                            </fileset>
+                            <fileset>
+                                <directory>dist</directory>
+                            </fileset>
+                        </filesets>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -1349,6 +1366,46 @@
                         <configuration>
                             <skip>true</skip>
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>dist</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>${shade.plugin.version}</version>
+                        <configuration>
+                            <outputDirectory>dist</outputDirectory>
+                            <outputFile>dist/${project.artifactId}-jar-with-dependencies.jar</outputFile>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>**/META-INF/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>reference.conf</resource>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

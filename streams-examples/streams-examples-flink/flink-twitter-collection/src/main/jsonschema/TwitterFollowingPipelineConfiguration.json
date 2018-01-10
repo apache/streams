@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "type": "object",
+  "javaType" : "org.apache.streams.examples.flink.twitter.TwitterFollowingPipelineConfiguration",
+  "javaInterfaces": ["java.io.Serializable"],
+  "extends": {
+    "$ref": "FlinkStreamingConfiguration.json"
+  },
+  "properties": {
+    "twitter": {
+      "type": "object",
+      "javaType": "org.apache.streams.twitter.TwitterFollowingConfiguration"
+    },
+    "source": {
+      "type": "object",
+      "javaType": "org.apache.streams.hdfs.HdfsReaderConfiguration"
+    },
+    "destination": {
+      "type": "object",
+      "javaType": "org.apache.streams.hdfs.HdfsWriterConfiguration"
+    },
+    "providerWaitMs": {
+      "type": "integer"
+    }
+  }
+}
