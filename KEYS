@@ -5,7 +5,7 @@ Users: pgp < KEYS
 Developers:
         pgp -kxa <your name> and append it to this file.
         (pgpk -ll <your name> && pgpk -xa <your name>) >> this file.
-        (gpg --list-sigs <your name>
+        (gpg --list-keys <your name>
              && gpg --armor --export <your name>) >> this file.
 
 pub   2048R/3F94A968 2013-01-07
@@ -241,10 +241,7 @@ TkzA3pbw+g==
 pub   rsa4096 2017-02-27 [SC]
       AD270AD637D1405B3E42E790B5FAE7973E7A9A44
 uid           [ unknown] Trevor Grant (CODE SIGNING KEY) <rawkintrevo@apache.org>
-sig 3        B5FAE7973E7A9A44 2017-02-27  Trevor Grant (CODE SIGNING KEY) <rawkintrevo@apache.org>
-sig          A70A1B29E90ADC5D 2017-09-21  Holden Karau (CODE SIGNING KEY) <holden@apache.org>
 sub   rsa4096 2017-02-27 [E]
-sig          B5FAE7973E7A9A44 2017-02-27  Trevor Grant (CODE SIGNING KEY) <rawkintrevo@apache.org>
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
