@@ -1,0 +1,46 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+ digraph g {
+
+  //providers
+  TwitterStreamProvider [label="TwitterStreamProvider",shape=ellipse,URL="https://github.com/apache/streams/blob/master/streams-contrib/streams-provider-twitter/src/main/java/org/apache/streams/twitter/provider/TwitterStreamProvider.java"];
+
+  //processors
+  ActivityConverterProcessor [label="ActivityConverterProcessor",shape=box,URL="https://github.com/apache/streams/blob/master/streams-components/streams-converters/src/main/java/org/apache/streams/converter/ActivityConverterProcessor.java"];
+  DeleteOnlyProcessor [label="VerbDefinitionKeepFilter (verb:delete)",shape=box,URL="https://github.com/apache/streams/blob/master/streams-components/streams-filters/src/main/java/org/apache/streams/filters/VerbDefinitionKeepFilter.java"];
+  NoDeletesProcessor  [label="VerbDefinitionDropFilter (verb:delete)",shape=box,URL="https://github.com/apache/streams/blob/master/streams-components/streams-filters/src/main/java/org/apache/streams/filters/VerbDefinitionDropFilter.java"];
+  SetDeleteIdProcessor [label="SetDeleteIdProcessor (verb:post)",shape=box,URL="https://github.com/apache/streams-examples/blob/master/local/twitter-userstream-elasticsearch/src/main/java/org/apache/streams/twitter/example/TwitterUserstreamElasticsearch.java"];
+
+  //persisters
+  ElasticsearchPersistWriter [label="ElasticsearchPersistWriter",shape=ellipse,URL="https://github.com/apache/streams/blob/master/streams-contrib/streams-persist-elasticsearch/src/main/java/org/apache/streams/elasticsearch/ElasticsearchPersistWriter.java"];
+  ElasticsearchPersistDeleter [label="ElasticsearchPersistDeleter",shape=ellipse,URL="https://github.com/apache/streams/blob/master/streams-contrib/streams-persist-elasticsearch/src/main/java/org/apache/streams/elasticsearch/ElasticsearchPersistDeleter.java"];
+
+   //data
+  es [label="es://{index}/{type}",shape=box];
+
+  //stream
+  TwitterStreamProvider -> ActivityConverterProcessor [label="ObjectNode"];
+  ActivityConverterProcessor -> DeleteOnlyProcessor [label="Activity",URL="https://github.com/apache/streams/blob/master/streams-pojo/src/main/jsonschema/org/apache/streams/pojo/json/activity.json"];
+  ActivityConverterProcessor -> NoDeletesProcessor [label="Activity",URL="https://github.com/apache/streams/blob/master/streams-pojo/src/main/jsonschema/org/apache/streams/pojo/json/activity.json"];
+  DeleteOnlyProcessor -> SetDeleteIdProcessor [label="Activity",URL="https://github.com/apache/streams/blob/master/streams-pojo/src/main/jsonschema/org/apache/streams/pojo/json/activity.json"];
+  NoDeletesProcessor -> ElasticsearchPersistWriter [label="Activity",URL="https://github.com/apache/streams/blob/master/streams-pojo/src/main/jsonschema/org/apache/streams/pojo/json/activity.json"];
+  ElasticsearchPersistWriter -> es [label="Activity",URL="https://github.com/apache/streams/blob/master/streams-pojo/src/main/jsonschema/org/apache/streams/pojo/json/activity.json"];
+  SetDeleteIdProcessor -> ElasticsearchPersistDeleter [label="Delete",URL="https://github.com/apache/streams/blob/master/streams-pojo/src/main/jsonschema/org/apache/streams/pojo/json/verbs/delete.json"];
+  ElasticsearchPersistDeleter -> es [label="Delete",URL="https://github.com/apache/streams/blob/master/streams-pojo/src/main/jsonschema/org/apache/streams/pojo/json/delete.json"];
+}
