@@ -55,7 +55,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  23
+                  22
                 </td>
               </tr>
                           <tr>
@@ -88,7 +88,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.config.InstagramOAuthConfiguration.java">org/apache/streams/instagram/config/InstagramOAuthConfiguration.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.api.SearchUsersRequest.java">org/apache/streams/instagram/api/SearchUsersRequest.java</a>
                 </td>
                 <td>
                   0
@@ -97,7 +97,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  50
+                  46
                 </td>
               </tr>
                           <tr>
@@ -116,20 +116,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.api.SearchUsersRequest.java">org/apache/streams/instagram/api/SearchUsersRequest.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  46
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.pojo.UserInfoCounts.java">org/apache/streams/instagram/pojo/UserInfoCounts.java</a>
                 </td>
                 <td>
@@ -140,6 +126,20 @@ under the License.
                 </td>
                 <td>
                   47
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.config.InstagramOAuthConfiguration.java">org/apache/streams/instagram/config/InstagramOAuthConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  50
                 </td>
               </tr>
                           <tr>
@@ -186,7 +186,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.config.InstagramRecentMediaProviderConfiguration.java">org/apache/streams/instagram/config/InstagramRecentMediaProviderConfiguration.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.pojo.Media.java">org/apache/streams/instagram/pojo/Media.java</a>
                 </td>
                 <td>
                   0
@@ -195,7 +195,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  40
+                  160
                 </td>
               </tr>
                           <tr>
@@ -214,7 +214,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.pojo.Media.java">org/apache/streams/instagram/pojo/Media.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.config.InstagramRecentMediaProviderConfiguration.java">org/apache/streams/instagram/config/InstagramRecentMediaProviderConfiguration.java</a>
                 </td>
                 <td>
                   0
@@ -223,7 +223,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  160
+                  40
                 </td>
               </tr>
                           <tr>
@@ -256,6 +256,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.api.UserInfoResponse.java">org/apache/streams/instagram/api/UserInfoResponse.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  48
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.config.InstagramConfiguration.java">org/apache/streams/instagram/config/InstagramConfiguration.java</a>
                 </td>
                 <td>
@@ -266,20 +280,6 @@ under the License.
                 </td>
                 <td>
                   120
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.api.UserInfoResponse.java">org/apache/streams/instagram/api/UserInfoResponse.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  49
                 </td>
               </tr>
                           <tr>
@@ -335,7 +335,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  23
+                  24
                 </td>
               </tr>
                           <tr>
@@ -363,7 +363,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  21
+                  20
                 </td>
               </tr>
                           <tr>
@@ -405,7 +405,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  3
+                  2
                 </td>
               </tr>
                           <tr>
@@ -447,7 +447,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  14
+                  15
                 </td>
               </tr>
                           <tr>
@@ -475,7 +475,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  103
+                  104
                 </td>
               </tr>
                           <tr>
@@ -489,7 +489,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  48
+                  49
                 </td>
               </tr>
                           <tr>
@@ -531,7 +531,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  65
+                  66
                 </td>
               </tr>
                           <tr>
@@ -559,7 +559,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  25
+                  24
                 </td>
               </tr>
                           <tr>
@@ -601,7 +601,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  41
+                  42
                 </td>
               </tr>
                           <tr>
@@ -657,7 +657,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  34
+                  35
                 </td>
               </tr>
                           <tr>
@@ -671,7 +671,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  39
+                  38
                 </td>
               </tr>
                           <tr>
@@ -685,7 +685,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  20
+                  19
                 </td>
               </tr>
                       </tbody>

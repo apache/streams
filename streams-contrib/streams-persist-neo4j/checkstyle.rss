@@ -102,6 +102,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-neo4j/checkstyle.html#org.apache.streams.neo4j.Neo4jConfiguration.java">org/apache/streams/neo4j/Neo4jConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  68
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-persist-neo4j/checkstyle.html#org.apache.streams.neo4j.ItemMetadata.java">org/apache/streams/neo4j/ItemMetadata.java</a>
                 </td>
                 <td>
@@ -126,20 +140,6 @@ under the License.
                 </td>
                 <td>
                   40
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-neo4j/checkstyle.html#org.apache.streams.neo4j.Neo4jConfiguration.java">org/apache/streams/neo4j/Neo4jConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  67
                 </td>
               </tr>
                           <tr>
@@ -209,7 +209,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  20
+                  19
                 </td>
               </tr>
                           <tr>

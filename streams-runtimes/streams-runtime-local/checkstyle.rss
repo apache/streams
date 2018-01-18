@@ -88,20 +88,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.tasks.StreamsTask.java">org/apache/streams/local/tasks/StreamsTask.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  19
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.tasks.StreamsProcessorTask.java">org/apache/streams/local/tasks/StreamsProcessorTask.java</a>
                 </td>
                 <td>
@@ -111,7 +97,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  54
+                  55
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-local/checkstyle.html#org.apache.streams.local.tasks.StreamsTask.java">org/apache/streams/local/tasks/StreamsTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  18
                 </td>
               </tr>
                           <tr>
@@ -139,7 +139,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  12
+                  13
                 </td>
               </tr>
                           <tr>
@@ -223,7 +223,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  146
+                  147
                 </td>
               </tr>
                           <tr>
@@ -265,7 +265,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  287
+                  286
                 </td>
               </tr>
                           <tr>
@@ -293,7 +293,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  134
+                  133
                 </td>
               </tr>
                           <tr>

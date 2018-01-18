@@ -55,7 +55,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  59
+                  60
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-google/streams-provider-google-gplus/checkstyle.html#org.apache.streams.gplus.provider.GPlusDataCollector.java">org/apache/streams/gplus/provider/GPlusDataCollector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  15
                 </td>
               </tr>
                           <tr>
@@ -74,7 +88,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-google/streams-provider-google-gplus/checkstyle.html#org.apache.streams.gplus.provider.GPlusDataCollector.java">org/apache/streams/gplus/provider/GPlusDataCollector.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-google/streams-provider-google-gplus/checkstyle.html#org.apache.streams.gplus.provider.GPlusActivitySerializer.java">org/apache/streams/gplus/provider/GPlusActivitySerializer.java</a>
                 </td>
                 <td>
                   0
@@ -83,26 +97,12 @@ under the License.
                   0
                 </td>
                 <td>
-                  14
+                  19
                 </td>
               </tr>
                           <tr>
                 <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-google/streams-provider-google-gplus/checkstyle.html#org.apache.streams.gplus.provider.GPlusUserDataProvider.java">org/apache/streams/gplus/provider/GPlusUserDataProvider.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  20
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-google/streams-provider-google-gplus/checkstyle.html#org.apache.streams.gplus.provider.GPlusActivitySerializer.java">org/apache/streams/gplus/provider/GPlusActivitySerializer.java</a>
                 </td>
                 <td>
                   0
@@ -153,7 +153,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  27
+                  28
                 </td>
               </tr>
                           <tr>
@@ -167,7 +167,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  148
+                  147
                 </td>
               </tr>
                           <tr>
@@ -279,7 +279,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  17
+                  16
                 </td>
               </tr>
                       </tbody>
