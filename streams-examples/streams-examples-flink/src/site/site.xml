@@ -18,9 +18,8 @@
   -->
 <project>
     <body>
-        <menu name="Services">
-            <item name="Elasticsearch" href="../../../services/elasticsearch.html"/>
-            <item name="Mongo" href="../../../services/mongo.html"/>
+        <menu name="Setup">
+            <item name="Flink" href="../flink.html"/>
         </menu>
     </body>
 </project>

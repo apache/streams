@@ -50,7 +50,7 @@
     </custom>
     <body>
         <breadcrumbs>
-            <item name="Streams" href="http://streams.apache.org/site/latest/streams-project"/>
+            <item name="Streams" href="http://streams.apache.org"/>
         </breadcrumbs>
         <head>
             <![CDATA[
@@ -70,7 +70,7 @@
             <item name="Architecture" href="architecture.html" />
             <item name="Concepts" href="concepts.html" />
             <item name="Downloads" href="downloads.html" />
-            <item name="Examples" href="http://streams.apache.org/site/latest/streams-examples/" />
+            <item name="Examples" href="streams-examples/index.html" />
             <item name="Frequently Asked Questions" href="faq.html" />
             <item name="Modules" href="modules.html" />
         </menu>

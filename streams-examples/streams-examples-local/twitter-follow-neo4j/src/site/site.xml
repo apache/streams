@@ -19,10 +19,10 @@
 <project>
     <body>
         <menu name="Credentials">
-            <item name="Twitter" href="../../../streams-project/credentials/twitter.html"/>
+            <item name="Twitter" href="../../../credentials/twitter.html"/>
         </menu>
         <menu name="Services">
-            <item name="Neo4j" href="../../../streams-project/services/neo4j.html"/>
+            <item name="Neo4j" href="../../../services/neo4j.html"/>
         </menu>
     </body>
 </project>

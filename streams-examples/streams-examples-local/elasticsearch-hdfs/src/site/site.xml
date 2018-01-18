@@ -19,7 +19,7 @@
 <project>
     <body>
         <menu name="Services">
-            <item name="Elasticsearch" href="../../../streams-project/services/elasticsearch.html"/>
+            <item name="Elasticsearch" href="../../../services/elasticsearch.html"/>
         </menu>
     </body>
 </project>

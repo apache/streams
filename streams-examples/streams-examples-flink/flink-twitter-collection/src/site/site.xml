@@ -19,7 +19,7 @@
 <project>
     <body>
         <menu name="Credentials">
-            <item name="Twitter" href="../../credentials/twitter.html"/>
+            <item name="Twitter" href="../../../credentials/twitter.html"/>
         </menu>
         <menu name="Runtime">
             <item name="Flink" href="../flink.html"/>

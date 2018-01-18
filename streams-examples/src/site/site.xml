@@ -17,10 +17,27 @@
   ~ under the License.
   -->
 <project>
+    <custom>
+        <fluidoSkin>
+            <topBarEnabled>true</topBarEnabled>
+            <navBarStyle>navbar-inverse</navBarStyle>
+            <sideBarEnabled>false</sideBarEnabled>
+            <gitHub>
+                <projectId>apache/streams-examples</projectId>
+                <ribbonOrientation>right</ribbonOrientation>
+                <ribbonColor>black</ribbonColor>
+            </gitHub>
+            <twitter>
+                <user>ApacheStreams</user>
+                <showUser>true</showUser>
+                <showFollowers>true</showFollowers>
+            </twitter>
+        </fluidoSkin>
+    </custom>
     <body>
-        <menu name="Services">
-            <item name="Elasticsearch" href="../../../services/elasticsearch.html"/>
-            <item name="Mongo" href="../../../services/mongo.html"/>
+        <menu name="Examples" inherit="top">
+            <item name="Flink" href="streams-examples-flink/index.html"/>
+            <item name="Local" href="streams-examples-local/index.html"/>
         </menu>
     </body>
 </project>
