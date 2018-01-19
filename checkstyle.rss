@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 364,
-             Errors: 13092,
+      <title>File: 367,
+             Errors: 13240,
              Warnings: 0,
              Infos: 0
       </title>
@@ -615,7 +615,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  40
+                  53
                 </td>
               </tr>
                           <tr>
@@ -713,7 +713,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  224
+                  232
                 </td>
               </tr>
                           <tr>
@@ -1148,6 +1148,20 @@ under the License.
                 </td>
                 <td>
                   137
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.twitter.provider.TwitterRetweetsTask.java">org/apache/streams/twitter/provider/TwitterRetweetsTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
                 </td>
               </tr>
                           <tr>
@@ -2986,6 +3000,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.twitter.provider.TwitterRetweeterIdsTask.java">org/apache/streams/twitter/provider/TwitterRetweeterIdsTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.hdfs.HdfsConstants.java">org/apache/streams/hdfs/HdfsConstants.java</a>
                 </td>
                 <td>
@@ -3374,6 +3402,20 @@ under the License.
                 </td>
                 <td>
                   61
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/checkstyle.html#org.apache.streams.twitter.provider.TwitterEngagersProvider.java">org/apache/streams/twitter/provider/TwitterEngagersProvider.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  82
                 </td>
               </tr>
                           <tr>
@@ -4493,7 +4535,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  90
+                  93
                 </td>
               </tr>
                           <tr>
@@ -5025,7 +5067,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  118
+                  119
                 </td>
               </tr>
                           <tr>
