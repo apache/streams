@@ -97,7 +97,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  31
+                  32
                 </td>
               </tr>
                           <tr>
@@ -125,7 +125,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  29
+                  28
                 </td>
               </tr>
                           <tr>
@@ -139,7 +139,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  171
+                  172
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchPersistDeleter.java">org/apache/streams/elasticsearch/ElasticsearchPersistDeleter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
                 </td>
               </tr>
                           <tr>
@@ -172,20 +186,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchPersistDeleter.java">org/apache/streams/elasticsearch/ElasticsearchPersistDeleter.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  19
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchClientManager.java">org/apache/streams/elasticsearch/ElasticsearchClientManager.java</a>
                 </td>
                 <td>
@@ -195,7 +195,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  24
+                  23
                 </td>
               </tr>
                           <tr>
@@ -214,20 +214,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchConfiguration.java">org/apache/streams/elasticsearch/ElasticsearchConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  59
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration.java">org/apache/streams/elasticsearch/ElasticsearchReaderConfiguration.java</a>
                 </td>
                 <td>
@@ -238,6 +224,20 @@ under the License.
                 </td>
                 <td>
                   75
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-elasticsearch/checkstyle.html#org.apache.streams.elasticsearch.ElasticsearchConfiguration.java">org/apache/streams/elasticsearch/ElasticsearchConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  58
                 </td>
               </tr>
                           <tr>

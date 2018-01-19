@@ -83,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  34
+                  33
                 </td>
               </tr>
                           <tr>
@@ -181,7 +181,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  88
+                  89
                 </td>
               </tr>
                           <tr>
@@ -195,7 +195,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  39
+                  38
                 </td>
               </tr>
                           <tr>
@@ -265,21 +265,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  14
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.data.SysomosTagDefinition.java">org/apache/streams/sysomos/data/SysomosTagDefinition.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  29
+                  13
                 </td>
               </tr>
                           <tr>
@@ -294,6 +280,20 @@ under the License.
                 </td>
                 <td>
                   10
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-sysomos/checkstyle.html#org.apache.streams.sysomos.data.SysomosTagDefinition.java">org/apache/streams/sysomos/data/SysomosTagDefinition.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  30
                 </td>
               </tr>
                           <tr>
@@ -321,7 +321,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  5
+                  6
                 </td>
               </tr>
                       </tbody>

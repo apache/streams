@@ -55,7 +55,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  75
+                  76
                 </td>
               </tr>
                           <tr>
@@ -74,20 +74,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-dropwizard/checkstyle.html#org.apache.streams.dropwizard.StreamsDropwizardModule.java">org/apache/streams/dropwizard/StreamsDropwizardModule.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  4
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-dropwizard/checkstyle.html#org.apache.streams.dropwizard.StreamDropwizardBuilder.java">org/apache/streams/dropwizard/StreamDropwizardBuilder.java</a>
                 </td>
                 <td>
@@ -97,7 +83,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  19
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-dropwizard/checkstyle.html#org.apache.streams.dropwizard.StreamsDropwizardModule.java">org/apache/streams/dropwizard/StreamsDropwizardModule.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
                 </td>
               </tr>
                           <tr>
@@ -111,7 +111,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  23
+                  22
                 </td>
               </tr>
                           <tr>

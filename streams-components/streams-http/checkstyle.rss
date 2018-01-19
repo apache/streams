@@ -55,7 +55,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  72
+                  73
                 </td>
               </tr>
                           <tr>
@@ -69,7 +69,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  70
+                  69
                 </td>
               </tr>
                           <tr>
@@ -116,20 +116,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-components/streams-http/checkstyle.html#org.apache.streams.components.http.HttpPersistWriterConfiguration.java">org/apache/streams/components/http/HttpPersistWriterConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  37
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-components/streams-http/checkstyle.html#org.apache.streams.components.http.HttpProviderConfiguration.java">org/apache/streams/components/http/HttpProviderConfiguration.java</a>
                 </td>
                 <td>
@@ -139,7 +125,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  41
+                  42
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-components/streams-http/checkstyle.html#org.apache.streams.components.http.HttpPersistWriterConfiguration.java">org/apache/streams/components/http/HttpPersistWriterConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  36
                 </td>
               </tr>
                           <tr>
