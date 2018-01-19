@@ -18,7 +18,8 @@
 
 package org.apache.streams.instagram.test.providers;
 
-import org.apache.streams.instagram.provider.recentmedia.InstagramRecentMediaProvider;
+import org.apache.streams.instagram.provider.InstagramCommentsProvider;
+import org.apache.streams.instagram.provider.InstagramEngagersProvider;
 
 import org.hamcrest.Matchers;
 import org.slf4j.Logger;
@@ -33,17 +34,17 @@ import java.io.LineNumberReader;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Integration Test for InstagramRecentMediaProvider.
+ * Integration Test for InstagramEngagersProvider.
  */
-public class InstagramRecentMediaProviderIT {
+public class InstagramEngagersProviderIT {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(InstagramRecentMediaProviderIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InstagramEngagersProviderIT.class);
 
-  @Test(groups = "InstagramRecentMediaProviderIT")
-  public void testInstagramRecentMediaProvider() throws Exception {
+  @Test(groups = "InstagramEngagersProviderIT")
+  public void testInstagramEngagersProvider() throws Exception {
 
-    String configfile = "./target/test-classes/InstagramRecentMediaProviderIT.conf";
-    String outfile = "./target/test-classes/InstagramRecentMediaProviderIT.stdout.txt";
+    String configfile = "./target/test-classes/InstagramEngagersProviderIT.conf";
+    String outfile = "./target/test-classes/InstagramEngagersProviderIT.stdout.txt";
 
     String[] args = new String[2];
     args[0] = configfile;
@@ -51,7 +52,7 @@ public class InstagramRecentMediaProviderIT {
 
     Thread testThread = new Thread(() -> {
       try {
-        InstagramRecentMediaProvider.main(args);
+        InstagramEngagersProvider.main(args);
       } catch ( Exception ex ) {
         LOGGER.error("Test Exception!", ex);
       }

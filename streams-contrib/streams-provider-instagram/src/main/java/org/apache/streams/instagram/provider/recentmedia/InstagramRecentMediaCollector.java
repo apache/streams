@@ -54,6 +54,9 @@ public class InstagramRecentMediaCollector extends InstagramDataCollector<Media>
   @Override
   public void run() {
     for (String userId : this.config.getInfo()) {
+      if( !StringUtils.isNumeric(userId) ) {
+        userId = swapUsernameForId(userId);
+      }
       try {
         collectInstagramDataForUser(userId);
       } catch (InterruptedException ie) {

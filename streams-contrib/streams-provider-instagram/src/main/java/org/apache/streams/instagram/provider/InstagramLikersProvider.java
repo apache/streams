@@ -13,16 +13,13 @@ KIND, either express or implied. See the License for the
 specific language governing permissions and limitations
 under the License. */
 
-package org.apache.streams.instagram.provider.recentmedia;
+package org.apache.streams.instagram.provider;
 
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.instagram.config.InstagramConfiguration;
-import org.apache.streams.instagram.config.InstagramRecentMediaProviderConfiguration;
-import org.apache.streams.instagram.provider.InstagramAbstractProvider;
-import org.apache.streams.instagram.provider.InstagramDataCollector;
+import org.apache.streams.instagram.config.InstagramLikersProviderConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,30 +40,30 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Instagram {@link org.apache.streams.core.StreamsProvider} that provides the recent media data for a group of users.
+ * Instagram {@link org.apache.streams.core.StreamsProvider} that provides likers of all items in a list of media.
  *
  * <p/>
- * Retrieve recent posts from a list of user ids or names.
+ * Retrieve likers of all items in a list of media.
  *
  */
-public class InstagramRecentMediaProvider extends InstagramAbstractProvider {
+public class InstagramLikersProvider extends InstagramAbstractProvider {
 
-  public static final String STREAMS_ID = "InstagramRecentMediaProvider";
+  public static final String STREAMS_ID = "InstagramLikersProvider";
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(InstagramRecentMediaProvider.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InstagramLikersProvider.class);
 
   private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
-  InstagramRecentMediaProviderConfiguration config;
+  InstagramLikersProviderConfiguration config;
 
-  public InstagramRecentMediaProvider(InstagramRecentMediaProviderConfiguration config) {
+  public InstagramLikersProvider(InstagramLikersProviderConfiguration config) {
     super(config);
     this.config = config;
   }
 
   @Override
   protected InstagramDataCollector getInstagramDataCollector() {
-    return new InstagramRecentMediaCollector(client, super.dataQueue, config);
+    return new InstagramLikersCollector(client, super.dataQueue, config);
   }
 
   /**
@@ -85,8 +82,8 @@ public class InstagramRecentMediaProvider extends InstagramAbstractProvider {
    *
    * <p/>
    * mvn exec:java \
-   * -Dexec.mainClass=org.apache.streams.instagram.provider.recentmedia.InstagramRecentMediaProvider \
-   * -Dexec.args="application.conf media.json.txt"
+   * -Dexec.mainClass=org.apache.streams.instagram.provider.recentmedia.InstagramLikersProvider \
+   * -Dexec.args="application.conf likers.json.txt"
    *
    * @param args args
    * @throws Exception Exception
@@ -106,8 +103,8 @@ public class InstagramRecentMediaProvider extends InstagramAbstractProvider {
     Config typesafe  = conf.withFallback(reference).resolve();
 
     StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    InstagramRecentMediaProviderConfiguration config = new ComponentConfigurator<>(InstagramRecentMediaProviderConfiguration.class).detectConfiguration(typesafe, "instagram");
-    InstagramRecentMediaProvider provider = new InstagramRecentMediaProvider(config);
+    InstagramLikersProviderConfiguration config = new ComponentConfigurator<>(InstagramLikersProviderConfiguration.class).detectConfiguration(typesafe, "instagram");
+    InstagramLikersProvider provider = new InstagramLikersProvider(config);
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
     provider.prepare(config);

@@ -36,7 +36,7 @@ public class InstagramUserInfoProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstagramUserInfoProviderIT.class);
 
-  @Test(groups = "providers")
+  @Test(groups = "InstagramUserInfoProviderIT")
   public void testInstagramUserInfoProvider() throws Exception {
 
     String configfile = "./target/test-classes/InstagramUserInfoProviderIT.conf";

@@ -52,7 +52,7 @@ public class InstagramMediaFeedDataConverterIT {
 
   private ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 
-  @Test(dependsOnGroups = "providers")
+  @Test(dependsOnGroups = "InstagramRecentMediaProviderIT")
   public void InstagramMediaFeedDataConverterIT() throws Exception {
     InputStream is = InstagramMediaFeedDataConverterIT.class.getResourceAsStream("/InstagramRecentMediaProviderIT.stdout.txt");
     InputStreamReader isr = new InputStreamReader(is);

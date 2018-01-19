@@ -64,7 +64,6 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
   protected Queue<StreamsDatum> dataQueue;
   private ListeningExecutorService executorService;
 
-
   private List<ListenableFuture<Object>> futures = new ArrayList<>();
 
   private AtomicBoolean isCompleted;
