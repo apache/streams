@@ -26,11 +26,11 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.twitter.TwitterEngagersProviderConfiguration;
 import org.apache.streams.twitter.TwitterTimelineProviderConfiguration;
-import org.apache.streams.twitter.api.StatusesUserTimelineRequest;
-import org.apache.streams.twitter.api.Twitter;
-import org.apache.streams.twitter.api.UsersLookupRequest;
+import org.apache.streams.twitter.api.RetweetsRequest;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
+import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -56,9 +56,8 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -69,43 +68,34 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static org.apache.streams.twitter.provider.TwitterUserInformationProvider.MAPPER;
 
 /**
- * Retrieve recent posts from a list of user ids or names.
+ * Retrieve posts from a list of user ids or names, then provide all of the users who retweeted those posts.
  */
-public class TwitterTimelineProvider implements StreamsProvider, Serializable {
+public class TwitterEngagersProvider extends TwitterTimelineProvider implements StreamsProvider, Serializable {
 
-  private static final String STREAMS_ID = "TwitterTimelineProvider";
+  private static final String STREAMS_ID = "TwitterEngagersProvider";
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProvider.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TwitterEngagersProvider.class);
 
-  public static final int MAX_NUMBER_WAITING = 10000;
-
-  protected TwitterTimelineProviderConfiguration config;
+  private TwitterEngagersProviderConfiguration config;
 
   protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-  public TwitterTimelineProviderConfiguration getConfig() {
+  public TwitterEngagersProviderConfiguration getConfig() {
     return config;
   }
 
-  protected List<String> names = new ArrayList<>();
-  protected List<Long> ids = new ArrayList<>();
-
   protected volatile Queue<StreamsDatum> providerQueue;
-
-  protected int idsCount;
-  protected Twitter client;
-
-  protected ListeningExecutorService executor;
-
-  protected DateTime start;
-  protected DateTime end;
 
   protected final AtomicBoolean running = new AtomicBoolean();
 
-  protected List<ListenableFuture<Object>> futures = new ArrayList<>();
+  private List<ListenableFuture<Object>> futures = new ArrayList<>();
+
+  protected ListeningExecutorService executor;
+
+  StreamsConfiguration streamsConfiguration;
 
   /**
    * To use from command line:
@@ -124,7 +114,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
    * Launch using:
    *
    * <p/>
-   * mvn exec:java -Dexec.mainClass=org.apache.streams.twitter.provider.TwitterTimelineProvider -Dexec.args="application.conf tweets.json"
+   * mvn exec:java -Dexec.mainClass=org.apache.streams.twitter.provider.TwitterEngagersProvider -Dexec.args="application.conf retweeters.json.txt"
    *
    * @param args args
    * @throws Exception Exception
@@ -144,8 +134,8 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     Config typesafe  = testResourceConfig.withFallback(reference).resolve();
 
     StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    TwitterTimelineProviderConfiguration config = new ComponentConfigurator<>(TwitterTimelineProviderConfiguration.class).detectConfiguration(typesafe, "twitter");
-    TwitterTimelineProvider provider = new TwitterTimelineProvider(config);
+    TwitterEngagersProviderConfiguration config = new ComponentConfigurator<>(TwitterEngagersProviderConfiguration.class).detectConfiguration(typesafe, "twitter");
+    TwitterEngagersProvider provider = new TwitterEngagersProvider(config);
 
     ObjectMapper mapper = new StreamsJacksonMapper(Stream.of(TwitterDateTimeFormat.TWITTER_FORMAT).collect(Collectors.toList()));
 
@@ -169,15 +159,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     outStream.flush();
   }
 
-  /**
-   * TwitterUserInformationProvider constructor.
-   * Resolves config from JVM properties 'twitter'.
-   */
-  public TwitterTimelineProvider() {
-    this.config = new ComponentConfigurator<>(TwitterTimelineProviderConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
-  }
-
-  public TwitterTimelineProvider(TwitterTimelineProviderConfiguration config) {
+  public TwitterEngagersProvider(TwitterEngagersProviderConfiguration config) {
     this.config = config;
   }
 
@@ -193,9 +175,17 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
   @Override
   public void prepare(Object configurationObject) {
 
-    if( configurationObject instanceof TwitterTimelineProviderConfiguration ) {
-      this.config = (TwitterTimelineProviderConfiguration)configurationObject;
+    if( configurationObject instanceof TwitterEngagersProviderConfiguration ) {
+      this.config = (TwitterEngagersProviderConfiguration)configurationObject;
+      super.prepare(MAPPER.convertValue(this.config, TwitterTimelineProviderConfiguration.class));
+    } else if( configurationObject instanceof TwitterTimelineProviderConfiguration ) {
+      super.prepare(configurationObject);
+      this.config = MAPPER.convertValue(this.config, TwitterEngagersProviderConfiguration.class);
+    } else {
+      super.prepare(null);
     }
+
+    streamsConfiguration = StreamsConfigurator.detectConfiguration(StreamsConfigurator.getConfig());
 
     try {
       lock.writeLock().lock();
@@ -204,46 +194,12 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
       lock.writeLock().unlock();
     }
 
-    Objects.requireNonNull(providerQueue);
-    Objects.requireNonNull(config.getOauth().getConsumerKey());
-    Objects.requireNonNull(config.getOauth().getConsumerSecret());
-    Objects.requireNonNull(config.getOauth().getAccessToken());
-    Objects.requireNonNull(config.getOauth().getAccessTokenSecret());
-    Objects.requireNonNull(config.getInfo());
-    Objects.requireNonNull(config.getThreadsPerProvider());
-
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
-
-    try {
-      client = getTwitterClient();
-    } catch (InstantiationException e) {
-      LOGGER.error("InstantiationException", e);
-    }
-
-    Objects.requireNonNull(client);
-
-    for (String s : config.getInfo()) {
-      if (s != null) {
-        String potentialScreenName = s.replaceAll("@", "").trim().toLowerCase();
-
-        // See if it is a long, if it is, add it to the user iD list, if it is not, add it to the
-        // screen name list
-        try {
-          ids.add(Long.parseLong(potentialScreenName));
-        } catch (Exception ex) {
-          names.add(potentialScreenName);
-        }
-      }
-    }
-
     executor = MoreExecutors.listeningDecorator(
-        TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(
-            config.getThreadsPerProvider().intValue(),
-            streamsConfiguration.getQueueSize().intValue()
-        )
+      TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(
+        config.getThreadsPerProvider().intValue(),
+        streamsConfiguration.getQueueSize().intValue()
+      )
     );
-
-    submitTimelineThreads(ids, names);
 
   }
 
@@ -252,40 +208,37 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     LOGGER.debug("{} startStream", STREAMS_ID);
 
-    running.set(true);
+    super.startStream();
 
+    do {
+      Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
+      Iterator<StreamsDatum> iterator = super.readCurrent().iterator();
+      while (iterator.hasNext()) {
+        StreamsDatum datum = iterator.next();
+        Tweet tweet = (Tweet) datum.getDocument();
+        submitRetweeterIdsTaskThread(tweet.getId());
+      }
+    }
+    while ( super.isRunning() );
+    super.cleanUp();
     executor.shutdown();
 
   }
 
-  protected void submitTimelineThreads(List<Long> ids, List<String> names) {
+  protected void submitRetweeterIdsTaskThread( Long postId ) {
 
-    for (Long id : ids) {
-      StatusesUserTimelineRequest request = new StatusesUserTimelineRequest();
-      request.setUserId(id);
-      request.setCount(config.getPageSize());
-      TwitterTimelineProviderTask providerTask = new TwitterTimelineProviderTask(
-          this,
-          client,
-          request
-      );
-      ListenableFuture future = executor.submit(providerTask);
-      futures.add(future);
-      LOGGER.info("Thread Submitted: {}", providerTask.request);
-    }
-    for (String name : names) {
-      StatusesUserTimelineRequest request = new StatusesUserTimelineRequest();
-      request.setScreenName(name);
-      request.setCount(config.getPageSize());
-      TwitterTimelineProviderTask providerTask = new TwitterTimelineProviderTask(
-          this,
-          client,
-          request
-      );
-      ListenableFuture future = executor.submit(providerTask);
-      futures.add(future);
-      LOGGER.info("Thread Submitted: {}", providerTask.request);
-    }
+    RetweetsRequest request = new RetweetsRequest();
+    request.setId(postId);
+    request.setCount(100l);
+    TwitterRetweetsTask providerTask = new TwitterRetweetsTask(
+      this,
+      client,
+      request
+    );
+    ListenableFuture future = executor.submit(providerTask);
+    super.futures.add(future);
+    LOGGER.info("Thread Submitted: {}", providerTask.request);
+
   }
 
   @Override
@@ -297,8 +250,20 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     try {
       lock.writeLock().lock();
-      result = new StreamsResultSet(providerQueue);
-      result.setCounter(new DatumStatusCounter());
+      Queue<StreamsDatum> resultQueue = constructQueue();
+      providerQueue.iterator().forEachRemaining(
+        datum -> {
+          Tweet tweet = ((Tweet) datum.getDocument());
+          resultQueue.add(
+            new StreamsDatum(
+              new User()
+                .withId(tweet.getUser().getId())
+                .withIdStr(tweet.getUser().getId().toString())
+            )
+          );
+        }
+      );
+      result = new StreamsResultSet(resultQueue);
       providerQueue = constructQueue();
     } finally {
       lock.writeLock().unlock();
@@ -330,18 +295,9 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     throw new NotImplementedException();
   }
 
-  /**
-   * get Twitter Client from TwitterUserInformationConfiguration.
-   * @return result
-   */
-  public Twitter getTwitterClient() throws InstantiationException {
-
-    return Twitter.getInstance(config);
-
-  }
-
   @Override
   public void cleanUp() {
+    super.cleanUp();
     shutdownAndAwaitTermination(executor);
   }
 

@@ -80,7 +80,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
   private static final String STREAMS_ID = "TwitterUserInformationProvider";
 
-  private static ObjectMapper MAPPER = new StreamsJacksonMapper(Collections.singletonList(TwitterDateTimeFormat.TWITTER_FORMAT));
+  protected static ObjectMapper MAPPER = new StreamsJacksonMapper(Collections.singletonList(TwitterDateTimeFormat.TWITTER_FORMAT));
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterUserInformationProvider.class);
 
