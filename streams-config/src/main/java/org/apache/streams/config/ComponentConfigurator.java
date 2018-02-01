@@ -21,10 +21,14 @@ package org.apache.streams.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigRenderOptions;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ComponentConfigurator supplies serializable configuration beans derived from a specified typesafe path or object.
@@ -50,6 +54,59 @@ public class ComponentConfigurator<T extends Serializable> {
   private static final Logger LOGGER = LoggerFactory.getLogger(ComponentConfigurator.class);
 
   private static final ObjectMapper mapper = new ObjectMapper();
+
+  /**
+   * resolve a serializable configuration pojo compiled from appropriate parts of the global JVM configuration tree.
+   *
+   * the entire object, or fragments of it, will be collected and merged from:
+   *   - the simple class name of the configured class
+   *   - the fully qualified class name of the configured class
+   *   - any of the ancestor packages of the configured class
+   *
+   * @return result
+   */
+  public T detectConfiguration() {
+
+    T pojoConfig = null;
+
+    Config rootConfig = StreamsConfigurator.getConfig();
+
+    Config cascadeConfig = null;
+    String[] canonicalNameParts = StringUtils.split(configClass.getCanonicalName(), '.');
+
+    for( int partIndex = 1; partIndex <= canonicalNameParts.length; partIndex++) {
+      String[] partialPathParts = ArrayUtils.subarray(canonicalNameParts, 0, partIndex);
+      String partialPath = StringUtils.join(partialPathParts, '.');
+
+      if( rootConfig.hasPath(partialPath) ) {
+        Config partialPathConfig = rootConfig.getConfig(partialPath);
+        if( cascadeConfig == null ) {
+          cascadeConfig = partialPathConfig;
+        } else {
+          cascadeConfig = partialPathConfig.withFallback(cascadeConfig);
+        }
+      }
+
+    }
+
+    if( rootConfig.hasPath(configClass.getSimpleName()) ) {
+      Config simpleNameConfig = rootConfig.getConfig(configClass.getSimpleName());
+      if( cascadeConfig == null ) {
+        cascadeConfig = simpleNameConfig;
+      } else {
+        cascadeConfig = simpleNameConfig.withFallback(cascadeConfig);
+      }
+    }
+
+    try {
+      pojoConfig = mapper.readValue(cascadeConfig.root().render(ConfigRenderOptions.concise()), configClass);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      LOGGER.warn("Could not parse:", cascadeConfig);
+    }
+
+    return pojoConfig;
+  }
 
   /**
    * resolve a serializable configuration pojo from a given typesafe config object.
