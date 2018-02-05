@@ -40,7 +40,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
  * Test for
- * @see org.apache.streams.config.ComponentConfigurator
+ * @see ComponentConfigurator
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(StreamsConfigurator.class)
@@ -195,13 +195,13 @@ public class ComponentConfiguratorTest {
   }
 
   @Test
-  public void testDetectConfigurationMultipath() throws Exception {
+  public void testDetectConfigurationAncestory() throws Exception {
 
-    Config testConfig = ConfigFactory.parseResourcesAnySyntax("multipath.conf");
+    Config testConfig = ConfigFactory.parseResourcesAnySyntax("ancestry.conf");
 
     StreamsConfigurator.setConfig(testConfig);
 
-    ComponentConfigurator<ComponentConfiguration> configurator = new ComponentConfigurator<>(ComponentConfiguration.class);
+    ComponentConfigurator<ComponentConfigurationForTestingNumberTwo> configurator = new ComponentConfigurator(ComponentConfigurationForTestingNumberTwo.class);
 
     ComponentConfiguration configuredPojo = configurator.detectConfiguration();
 

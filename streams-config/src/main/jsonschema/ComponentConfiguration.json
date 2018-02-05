@@ -12,15 +12,13 @@
             "type" : "array",
             "items" : {
                 "type" : "string"
-            },
-            "default": ["java.lang.String"]
+            }
         },
         "outClasses": {
             "type" : "array",
             "items" : {
                 "type" : "string"
-            },
-            "default": ["java.lang.String"]
+            }
         }
     }
 }

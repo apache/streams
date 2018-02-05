@@ -72,21 +72,19 @@ public class ComponentConfigurator<T extends Serializable> {
     Config rootConfig = StreamsConfigurator.getConfig();
 
     Config cascadeConfig = null;
-    String[] canonicalNameParts = StringUtils.split(configClass.getCanonicalName(), '.');
 
-    for( int partIndex = 1; partIndex <= canonicalNameParts.length; partIndex++) {
-      String[] partialPathParts = ArrayUtils.subarray(canonicalNameParts, 0, partIndex);
-      String partialPath = StringUtils.join(partialPathParts, '.');
+    List<Class> superclasses = getSuperClasses(configClass);
 
-      if( rootConfig.hasPath(partialPath) ) {
-        Config partialPathConfig = rootConfig.getConfig(partialPath);
-        if( cascadeConfig == null ) {
-          cascadeConfig = partialPathConfig;
+    for( Class superclass : superclasses) {
+      String superclassCanonicalName = superclass.getCanonicalName();
+      if( rootConfig.hasPath(superclassCanonicalName)) {
+        Config superclassConfig = rootConfig.getConfig(superclassCanonicalName);
+        if (cascadeConfig == null) {
+          cascadeConfig = superclassConfig;
         } else {
-          cascadeConfig = partialPathConfig.withFallback(cascadeConfig);
+          cascadeConfig = superclassConfig.withFallback(cascadeConfig);
         }
       }
-
     }
 
     if( rootConfig.hasPath(configClass.getSimpleName()) ) {
@@ -95,6 +93,15 @@ public class ComponentConfigurator<T extends Serializable> {
         cascadeConfig = simpleNameConfig;
       } else {
         cascadeConfig = simpleNameConfig.withFallback(cascadeConfig);
+      }
+    }
+
+    if( rootConfig.hasPath(configClass.getCanonicalName()) ) {
+      Config canonicalNameConfig = rootConfig.getConfig(configClass.getCanonicalName());
+      if( cascadeConfig == null ) {
+        cascadeConfig = canonicalNameConfig;
+      } else {
+        cascadeConfig = canonicalNameConfig.withFallback(cascadeConfig);
       }
     }
 
@@ -145,5 +152,18 @@ public class ComponentConfigurator<T extends Serializable> {
    */
   public T detectConfiguration(Config typesafeConfig, String subConfig) {
     return detectConfiguration( typesafeConfig.getConfig(subConfig));
+  }
+
+  /*
+   * return class hierarchy in order from furthest to nearest ancestor
+   */
+  public static List<Class> getSuperClasses(Class clazz) {
+    List<Class> classList = new ArrayList<Class>();
+    Class superclass = clazz.getSuperclass();
+    while (superclass != null && !superclass.isInterface() && superclass != java.lang.Object.class) {
+      classList.add(0, superclass);
+      superclass = superclass.getSuperclass();
+    }
+    return classList;
   }
 }
