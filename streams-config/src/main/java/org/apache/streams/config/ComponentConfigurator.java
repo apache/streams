@@ -61,7 +61,9 @@ public class ComponentConfigurator<T extends Serializable> {
    * the entire object, or fragments of it, will be collected and merged from:
    *   - the simple class name of the configured class
    *   - the fully qualified class name of the configured class
-   *   - any of the ancestor packages of the configured class
+   *   - any of the ancestor classes of the configured class
+   *   - the configured class's package
+   *   - any of the parent packages of the configured class's package
    *
    * @return result
    */
@@ -85,6 +87,25 @@ public class ComponentConfigurator<T extends Serializable> {
           cascadeConfig = superclassConfig.withFallback(cascadeConfig);
         }
       }
+    }
+
+    String[] canonicalNameParts = StringUtils.split(configClass.getCanonicalName(), '.');
+
+    for( int partIndex = 1; partIndex < canonicalNameParts.length; partIndex++) {
+      String[] partialPathParts = ArrayUtils.subarray(canonicalNameParts, 0, partIndex);
+      String partialPath = StringUtils.join(partialPathParts, '.');
+
+      if( rootConfig.hasPath(partialPath) ) {
+        Config partialPathConfig = rootConfig.getConfig(partialPath).withoutPath(canonicalNameParts[partIndex]);
+        if( !partialPathConfig.root().isEmpty()) {
+          if (cascadeConfig == null) {
+            cascadeConfig = partialPathConfig;
+          } else {
+            cascadeConfig = partialPathConfig.withFallback(cascadeConfig);
+          }
+        }
+      }
+
     }
 
     if( rootConfig.hasPath(configClass.getSimpleName()) ) {

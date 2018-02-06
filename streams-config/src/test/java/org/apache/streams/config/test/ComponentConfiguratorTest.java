@@ -195,13 +195,36 @@ public class ComponentConfiguratorTest {
   }
 
   @Test
-  public void testDetectConfigurationAncestory() throws Exception {
+  public void testDetectConfigurationClassHierarchy() throws Exception {
 
-    Config testConfig = ConfigFactory.parseResourcesAnySyntax("ancestry.conf");
+    Config testConfig = ConfigFactory.parseResourcesAnySyntax("classHierarchy.conf");
 
     StreamsConfigurator.setConfig(testConfig);
 
     ComponentConfigurator<ComponentConfigurationForTestingNumberTwo> configurator = new ComponentConfigurator(ComponentConfigurationForTestingNumberTwo.class);
+
+    ComponentConfiguration configuredPojo = configurator.detectConfiguration();
+
+    Assert.assertThat(configuredPojo, is(notNullValue()));
+
+    Assert.assertThat(configuredPojo.getInClasses(), is(notNullValue()));
+    Assert.assertThat(configuredPojo.getInClasses().size(), is(greaterThan(0)));
+    Assert.assertThat(configuredPojo.getInClasses().get(0), equalTo("java.lang.Integer"));
+
+    Assert.assertThat(configuredPojo.getOutClasses(), is(notNullValue()));
+    Assert.assertThat(configuredPojo.getOutClasses().size(), is(greaterThan(0)));
+    Assert.assertThat(configuredPojo.getOutClasses().get(0), equalTo("java.lang.Float"));
+
+  }
+
+  @Test
+  public void testDetectConfigurationPackageHierarchy() throws Exception {
+
+    Config testConfig = ConfigFactory.parseResourcesAnySyntax("packageHierarchy.conf");
+
+    StreamsConfigurator.setConfig(testConfig);
+
+    ComponentConfigurator<ComponentConfiguration> configurator = new ComponentConfigurator(ComponentConfiguration.class);
 
     ComponentConfiguration configuredPojo = configurator.detectConfiguration();
 
