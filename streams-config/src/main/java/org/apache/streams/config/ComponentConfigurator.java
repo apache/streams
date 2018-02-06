@@ -75,20 +75,6 @@ public class ComponentConfigurator<T extends Serializable> {
 
     Config cascadeConfig = null;
 
-    List<Class> superclasses = getSuperClasses(configClass);
-
-    for( Class superclass : superclasses) {
-      String superclassCanonicalName = superclass.getCanonicalName();
-      if( rootConfig.hasPath(superclassCanonicalName)) {
-        Config superclassConfig = rootConfig.getConfig(superclassCanonicalName);
-        if (cascadeConfig == null) {
-          cascadeConfig = superclassConfig;
-        } else {
-          cascadeConfig = superclassConfig.withFallback(cascadeConfig);
-        }
-      }
-    }
-
     String[] canonicalNameParts = StringUtils.split(configClass.getCanonicalName(), '.');
 
     for( int partIndex = 1; partIndex < canonicalNameParts.length; partIndex++) {
@@ -107,6 +93,21 @@ public class ComponentConfigurator<T extends Serializable> {
       }
 
     }
+
+    List<Class> superclasses = getSuperClasses(configClass);
+
+    for( Class superclass : superclasses) {
+      String superclassCanonicalName = superclass.getCanonicalName();
+      if( rootConfig.hasPath(superclassCanonicalName)) {
+        Config superclassConfig = rootConfig.getConfig(superclassCanonicalName);
+        if (cascadeConfig == null) {
+          cascadeConfig = superclassConfig;
+        } else {
+          cascadeConfig = superclassConfig.withFallback(cascadeConfig);
+        }
+      }
+    }
+
 
     if( rootConfig.hasPath(configClass.getSimpleName()) ) {
       Config simpleNameConfig = rootConfig.getConfig(configClass.getSimpleName());
