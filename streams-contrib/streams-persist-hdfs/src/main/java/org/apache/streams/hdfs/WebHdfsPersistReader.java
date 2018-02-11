@@ -92,7 +92,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
    * WebHdfsPersistReader constructor - resolves HdfsReaderConfiguration from JVM 'hdfs'.
    */
   public WebHdfsPersistReader() {
-    this(new ComponentConfigurator<>(HdfsReaderConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("hdfs")));
+    this(new ComponentConfigurator<>(HdfsReaderConfiguration.class).detectConfiguration());
   }
 
   /**

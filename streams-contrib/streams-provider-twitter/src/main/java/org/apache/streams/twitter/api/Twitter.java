@@ -18,8 +18,9 @@
 
 package org.apache.streams.twitter.api;
 
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.twitter.TwitterConfiguration;
+import org.apache.streams.twitter.config.TwitterConfiguration;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.twitter.converter.TwitterJodaDateSwap;
 import org.apache.streams.twitter.pojo.DirectMessage;
@@ -49,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -143,6 +145,10 @@ public class Twitter implements
 
     this.restClient = restClientBuilder.build();
     this.mapper = StreamsJacksonMapper.getInstance();
+  }
+
+  public static Twitter getInstance() throws InstantiationException {
+    return getInstance(new ComponentConfigurator<>(TwitterConfiguration.class).detectConfiguration());
   }
 
   public static Twitter getInstance(TwitterConfiguration configuration) throws InstantiationException {
@@ -343,6 +349,7 @@ public class Twitter implements
     AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
     return proxy.registerWebhook(url);
   }
+
 
   @Override
   public Boolean deleteWebhook(Long webhookId) {

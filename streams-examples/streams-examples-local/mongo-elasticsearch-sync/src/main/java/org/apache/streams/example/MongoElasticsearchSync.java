@@ -42,7 +42,7 @@ public class MongoElasticsearchSync implements Runnable {
   MongoElasticsearchSyncConfiguration config;
 
   public MongoElasticsearchSync() {
-    this(new ComponentConfigurator<MongoElasticsearchSyncConfiguration>(MongoElasticsearchSyncConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig()));
+    this(new ComponentConfigurator<>(MongoElasticsearchSyncConfiguration.class).detectConfiguration());
   }
 
   public MongoElasticsearchSync(MongoElasticsearchSyncConfiguration config) {

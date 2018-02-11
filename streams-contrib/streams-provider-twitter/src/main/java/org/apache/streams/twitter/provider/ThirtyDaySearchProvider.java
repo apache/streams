@@ -26,7 +26,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.twitter.ThirtyDaySearchProviderConfiguration;
+import org.apache.streams.twitter.config.ThirtyDaySearchProviderConfiguration;
 import org.apache.streams.twitter.api.ThirtyDaySearchRequest;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
@@ -134,7 +134,7 @@ public class ThirtyDaySearchProvider implements StreamsProvider, Serializable {
     Config typesafe  = testResourceConfig.withFallback(reference).resolve();
 
     StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    ThirtyDaySearchProviderConfiguration config = new ComponentConfigurator<>(ThirtyDaySearchProviderConfiguration.class).detectConfiguration(typesafe, "twitter");
+    ThirtyDaySearchProviderConfiguration config = new ComponentConfigurator<>(ThirtyDaySearchProviderConfiguration.class).detectConfiguration();
     ThirtyDaySearchProvider provider = new ThirtyDaySearchProvider(config);
 
     ObjectMapper mapper = new StreamsJacksonMapper(Stream.of(TwitterDateTimeFormat.TWITTER_FORMAT).collect(Collectors.toList()));

@@ -76,7 +76,7 @@ public class Neo4jHttpPersistReader extends SimpleHttpProvider implements Stream
    * GraphVertexReader constructor - resolve GraphReaderConfiguration from JVM 'graph'.
    */
   public Neo4jHttpPersistReader() {
-    this(new ComponentConfigurator<>(Neo4jReaderConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("neo4j")));
+    this(new ComponentConfigurator<>(Neo4jReaderConfiguration.class).detectConfiguration());
   }
 
   /**

@@ -88,8 +88,7 @@ public class CassandraPersistWriter implements StreamsPersistWriter, Runnable, F
   protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
   public CassandraPersistWriter() {
-    this(new ComponentConfigurator<>(CassandraConfiguration.class)
-    .detectConfiguration(StreamsConfigurator.getConfig().getConfig("cassandra")));
+    this(new ComponentConfigurator<>(CassandraConfiguration.class).detectConfiguration());
   }
 
   public CassandraPersistWriter(CassandraConfiguration config) {

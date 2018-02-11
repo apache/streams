@@ -18,9 +18,8 @@
 
 package org.apache.streams.twitter.api;
 
-import org.apache.streams.twitter.TwitterOAuthConfiguration;
+import org.apache.streams.twitter.config.TwitterOAuthConfiguration;
 
-import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;

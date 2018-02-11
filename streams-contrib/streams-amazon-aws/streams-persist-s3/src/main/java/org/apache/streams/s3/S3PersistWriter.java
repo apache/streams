@@ -118,7 +118,7 @@ public class S3PersistWriter implements StreamsPersistWriter, DatumStatusCountab
   }
 
   public S3PersistWriter() {
-    this(new ComponentConfigurator<>(S3WriterConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("s3")));
+    this(new ComponentConfigurator<>(S3WriterConfiguration.class).detectConfiguration());
   }
 
   public S3PersistWriter(S3WriterConfiguration s3WriterConfiguration) {

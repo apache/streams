@@ -67,8 +67,7 @@ public class SimpleHTTPPostPersistWriter implements StreamsPersistWriter {
   protected String authHeader;
 
   public SimpleHTTPPostPersistWriter() {
-    this(new ComponentConfigurator<>(HttpPersistWriterConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("http")));
+    this(new ComponentConfigurator<>(HttpPersistWriterConfiguration.class).detectConfiguration());
   }
 
   public SimpleHTTPPostPersistWriter(HttpPersistWriterConfiguration configuration) {

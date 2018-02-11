@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema",
+    "$license": [
+        "http://www.apache.org/licenses/LICENSE-2.0"
+    ],
+    "id": "#",
+    "type": "object",
+    "javaType" : "org.apache.streams.youtube.YoutubeUserActivityProviderConfiguration",
+    "javaInterfaces": ["java.io.Serializable"],
+    "extends": {"$ref":"YoutubeConfiguration.json"}
+}

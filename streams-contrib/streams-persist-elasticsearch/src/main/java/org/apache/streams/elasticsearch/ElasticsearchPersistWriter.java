@@ -105,8 +105,7 @@ public class ElasticsearchPersistWriter implements StreamsPersistWriter, Seriali
   private final AtomicLong totalSizeInBytes = new AtomicLong(0);
 
   public ElasticsearchPersistWriter() {
-    this(new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch")));
+    this(new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration());
   }
 
   public ElasticsearchPersistWriter(ElasticsearchWriterConfiguration config) {

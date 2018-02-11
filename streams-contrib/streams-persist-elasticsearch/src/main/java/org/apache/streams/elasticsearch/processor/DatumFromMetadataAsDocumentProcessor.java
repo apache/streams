@@ -53,13 +53,7 @@ public class DatumFromMetadataAsDocumentProcessor implements StreamsProcessor, S
   private ObjectMapper mapper;
 
   public DatumFromMetadataAsDocumentProcessor() {
-    this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch"));
-  }
-
-  public DatumFromMetadataAsDocumentProcessor(Config config) {
-    this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch"));
+    this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class).detectConfiguration();
   }
 
   public DatumFromMetadataAsDocumentProcessor(ElasticsearchReaderConfiguration config) {

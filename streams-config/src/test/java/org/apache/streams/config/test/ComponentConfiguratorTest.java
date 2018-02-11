@@ -49,21 +49,20 @@ public class ComponentConfiguratorTest {
   private static final ObjectMapper mapper = new ObjectMapper();
 
   @Test
-  public void testDetectDefaults() throws Exception {
+  public void testDetectTestDefaults() throws Exception {
 
-    Config config = ConfigFactory.load("componentTest");
+    Config testConfig = ConfigFactory.load("componentTest");
+
+    StreamsConfigurator.addConfig(testConfig);
 
     ComponentConfigurator<ComponentConfiguration> configurator = new ComponentConfigurator<>(ComponentConfiguration.class);
-
-    ComponentConfiguration defaultPojo = configurator.detectConfiguration(config.getConfig("defaultComponent"));
+    ComponentConfiguration defaultPojo = configurator.detectConfiguration();
 
     assert(defaultPojo != null);
 
-    ComponentConfiguration configuredPojo = configurator.detectConfiguration(config.getConfig("configuredComponent"));
+    ComponentConfiguration configuredPojo = configurator.detectConfiguration(testConfig.getConfig("configuredComponent"));
 
     assert(configuredPojo != null);
-
-    Assert.assertEquals(configuredPojo,defaultPojo);
 
   }
 

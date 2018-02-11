@@ -83,7 +83,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
   protected HdfsWriterConfiguration hdfsConfiguration;
 
   public WebHdfsPersistWriter() {
-    this(new ComponentConfigurator<>(HdfsWriterConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("hdfs")));
+    this(new ComponentConfigurator<>(HdfsWriterConfiguration.class).detectConfiguration());
   }
 
   public WebHdfsPersistWriter(HdfsWriterConfiguration hdfsConfiguration) {

@@ -16,8 +16,7 @@
         },
         "monitoring_broadcast_interval_ms": {
             "type": "integer",
-            "description": "Milliseconds between publish events",
-            "default": 30000
+            "description": "Milliseconds between publish events"
         }
     }
 }

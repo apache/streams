@@ -42,7 +42,7 @@ public class ElasticsearchHdfs implements Runnable {
   ElasticsearchHdfsConfiguration config;
 
   public ElasticsearchHdfs() {
-    this(new ComponentConfigurator<>(ElasticsearchHdfsConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig()));
+    this(new ComponentConfigurator<>(ElasticsearchHdfsConfiguration.class).detectConfiguration());
   }
 
   public ElasticsearchHdfs(ElasticsearchHdfsConfiguration reindex) {

@@ -42,7 +42,7 @@ public class HdfsElasticsearch implements Runnable {
   HdfsElasticsearchConfiguration config;
 
   public HdfsElasticsearch() {
-    this(new ComponentConfigurator<>(HdfsElasticsearchConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig()));
+    this(new ComponentConfigurator<>(HdfsElasticsearchConfiguration.class).detectConfiguration());
   }
 
   public HdfsElasticsearch(HdfsElasticsearchConfiguration reindex) {

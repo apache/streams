@@ -48,7 +48,7 @@ public class TwitterHistoryElasticsearch implements Runnable {
   TwitterHistoryElasticsearchConfiguration config;
 
   public TwitterHistoryElasticsearch() {
-    this(new ComponentConfigurator<>(TwitterHistoryElasticsearchConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig()));
+    this(new ComponentConfigurator<>(TwitterHistoryElasticsearchConfiguration.class).detectConfiguration());
   }
 
   public TwitterHistoryElasticsearch(TwitterHistoryElasticsearchConfiguration config) {

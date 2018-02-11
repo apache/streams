@@ -7,7 +7,7 @@
   "javaType" : "org.apache.streams.example.TwitterUserstreamElasticsearchConfiguration",
   "javaInterfaces": ["java.io.Serializable"],
   "properties": {
-    "twitter": { "javaType": "org.apache.streams.twitter.TwitterStreamConfiguration", "type": "object", "required": true },
+    "twitter": { "javaType": "org.apache.streams.twitter.config.TwitterStreamConfiguration", "type": "object", "required": true },
     "elasticsearch": { "javaType": "org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration", "type": "object", "required": true }
   }
 }

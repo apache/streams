@@ -33,7 +33,7 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.local.LocalRuntimeConfiguration;
 import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.twitter.TwitterStreamConfiguration;
+import org.apache.streams.twitter.config.TwitterStreamConfiguration;
 import org.apache.streams.twitter.provider.TwitterStreamProvider;
 import org.apache.streams.verbs.ObjectCombination;
 import org.apache.streams.verbs.VerbDefinition;
@@ -66,7 +66,7 @@ public class TwitterUserstreamElasticsearch implements Runnable {
   private TwitterUserstreamElasticsearchConfiguration config;
 
   public TwitterUserstreamElasticsearch() {
-    this(new ComponentConfigurator<>(TwitterUserstreamElasticsearchConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig()));
+    this(new ComponentConfigurator<>(TwitterUserstreamElasticsearchConfiguration.class).detectConfiguration());
 
   }
 

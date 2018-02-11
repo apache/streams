@@ -19,6 +19,7 @@
 package org.apache.streams.mongo.test;
 
 import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -60,12 +61,12 @@ public class MongoPersistIT {
   @BeforeClass
   public void setup() throws Exception {
 
-    Config reference  = ConfigFactory.load();
     File conf_file = new File("target/test-classes/MongoPersistIT.conf");
     assert(conf_file.exists());
+
     Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(MongoConfiguration.class).detectConfiguration(typesafe, "mongo");
+    StreamsConfigurator.addConfig(testResourceConfig);
+    testConfiguration = new ComponentConfigurator<>(MongoConfiguration.class).detectConfiguration();
 
   }
 

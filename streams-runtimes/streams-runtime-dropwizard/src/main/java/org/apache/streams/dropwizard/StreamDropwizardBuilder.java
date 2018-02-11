@@ -18,11 +18,13 @@
 
 package org.apache.streams.dropwizard;
 
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.local.LocalRuntimeConfiguration;
 import org.apache.streams.local.builders.LocalStreamBuilder;
+import org.apache.streams.local.monitoring.MonitoringConfiguration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -37,23 +39,10 @@ import java.util.Map;
 public class StreamDropwizardBuilder extends LocalStreamBuilder implements StreamBuilder {
 
   public StreamDropwizardBuilder() {
-    super();
-  }
-
-  public StreamDropwizardBuilder(StreamsConfiguration streamConfig) {
-    super(new ObjectMapper().convertValue(streamConfig, LocalRuntimeConfiguration.class));
-  }
-
-  public StreamDropwizardBuilder(Map<String, Object> streamConfig) {
-    super(streamConfig);
-  }
-
-  public StreamDropwizardBuilder(int maxQueueCapacity) {
-    super(maxQueueCapacity);
-  }
-
-  public StreamDropwizardBuilder(int maxQueueCapacity, Map<String, Object> streamConfig) {
-    super(maxQueueCapacity, streamConfig);
+    super(
+      new ComponentConfigurator<>(LocalRuntimeConfiguration.class).detectConfiguration(),
+      new ComponentConfigurator<>(MonitoringConfiguration.class).detectConfiguration()
+    );
   }
 
   @Override

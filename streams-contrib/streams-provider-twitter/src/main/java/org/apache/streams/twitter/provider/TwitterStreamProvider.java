@@ -28,7 +28,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.twitter.TwitterStreamConfiguration;
+import org.apache.streams.twitter.config.TwitterStreamConfiguration;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.util.ComponentUtils;
 
@@ -121,7 +121,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
     Config typesafe  = testResourceConfig.withFallback(reference).resolve();
 
     StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    TwitterStreamConfiguration config = new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration(typesafe, "twitter");
+    TwitterStreamConfiguration config = new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration();
     TwitterStreamProvider provider = new TwitterStreamProvider(config);
 
     ObjectMapper mapper = StreamsJacksonMapper.getInstance(Collections.singletonList(TwitterDateTimeFormat.TWITTER_FORMAT));
@@ -175,7 +175,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
   private DatumStatusCounter countersTotal = new DatumStatusCounter();
 
   public TwitterStreamProvider() {
-    this.config = new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig(), "twitter");
+    this.config = new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration();
   }
 
   public TwitterStreamProvider(TwitterStreamConfiguration config) {
@@ -240,6 +240,7 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
       userstreamEndpoint.withUser(false);
       userstreamEndpoint.allReplies(false);
       endpoint = userstreamEndpoint;
+
     } else if (config.getEndpoint().equals("sample") ) {
 
       hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);

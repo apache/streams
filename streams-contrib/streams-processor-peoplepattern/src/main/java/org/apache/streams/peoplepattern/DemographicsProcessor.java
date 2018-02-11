@@ -46,8 +46,7 @@ public class DemographicsProcessor extends SimpleHTTPGetProcessor {
    * DemographicsProcessor constructor - resolves HttpProcessorConfiguration from JVM 'peoplepattern'.
    */
   public DemographicsProcessor() {
-    this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("peoplepattern")));
+    this(new ComponentConfigurator<>(HttpProcessorConfiguration.class).detectConfiguration());
   }
 
   /**

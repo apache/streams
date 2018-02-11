@@ -8,22 +8,5 @@
   "javaInterfaces": ["java.io.Serializable"],
   "extends": {
     "$ref": "FlinkStreamingConfiguration.json"
-  },
-  "properties": {
-    "twitter": {
-      "type": "object",
-      "javaType": "org.apache.streams.twitter.TwitterStreamConfiguration"
-    },
-    "source": {
-      "type": "object",
-      "javaType": "org.apache.streams.hdfs.HdfsReaderConfiguration"
-    },
-    "destination": {
-      "type": "object",
-      "javaType": "org.apache.streams.hdfs.HdfsWriterConfiguration"
-    },
-    "providerWaitMs": {
-      "type": "integer"
-    }
   }
 }

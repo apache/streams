@@ -36,6 +36,7 @@ import org.apache.streams.core.StreamsDatum
 import org.apache.streams.examples.flink.FlinkBase
 import org.apache.streams.examples.flink.twitter.TwitterPostsPipelineConfiguration
 import org.apache.streams.flink.FlinkStreamingConfiguration
+import org.apache.streams.hdfs.{HdfsReaderConfiguration, HdfsWriterConfiguration}
 import org.apache.streams.jackson.StreamsJacksonMapper
 import org.apache.streams.twitter.pojo.Tweet
 import org.apache.streams.twitter.provider.TwitterTimelineProvider
@@ -109,7 +110,7 @@ object FlinkTwitterPostsPipeline extends FlinkBase {
 
 }
 
-class FlinkTwitterPostsPipeline(config: TwitterPostsPipelineConfiguration = new ComponentConfigurator[TwitterPostsPipelineConfiguration](classOf[TwitterPostsPipelineConfiguration]).detectConfiguration(StreamsConfigurator.getConfig)) extends Runnable with java.io.Serializable {
+class FlinkTwitterPostsPipeline(config: TwitterPostsPipelineConfiguration = new ComponentConfigurator(classOf[TwitterPostsPipelineConfiguration]).detectConfiguration()) extends Runnable with java.io.Serializable {
 
   import FlinkTwitterPostsPipeline._
 
@@ -120,9 +121,9 @@ class FlinkTwitterPostsPipeline(config: TwitterPostsPipelineConfiguration = new 
     env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime)
     env.setNumberOfExecutionRetries(0)
 
-    val inPath = buildReaderPath(config.getSource)
+    val inPath = buildReaderPath(new ComponentConfigurator(classOf[HdfsReaderConfiguration]).detectConfiguration())
 
-    val outPath = buildWriterPath(config.getDestination)
+    val outPath = buildWriterPath(new ComponentConfigurator(classOf[HdfsWriterConfiguration]).detectConfiguration())
 
     val ids: DataStream[String] = env.readTextFile(inPath).setParallelism(10).name("ids")
 

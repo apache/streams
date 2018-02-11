@@ -55,11 +55,10 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
   private Producer<String, String> producer;
 
   /**
-   * KafkaPersistWriter constructor - resolves KafkaConfiguration from JVM 'kafka'.
+   * KafkaPersistWriter constructor
    */
   public KafkaPersistWriter() {
-    this.config = new ComponentConfigurator<>(KafkaConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("kafka"));
+    this.config = new ComponentConfigurator<>(KafkaConfiguration.class).detectConfiguration();
     this.persistQueue  = new ConcurrentLinkedQueue<>();
   }
 
@@ -67,8 +66,7 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
    * KafkaPersistWriter constructor - uses supplied persistQueue.
    */
   public KafkaPersistWriter(Queue<StreamsDatum> persistQueue) {
-    this.config = new ComponentConfigurator<>(KafkaConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("kafka"));
+    this.config = new ComponentConfigurator<>(KafkaConfiguration.class).detectConfiguration();
     this.persistQueue = persistQueue;
   }
 

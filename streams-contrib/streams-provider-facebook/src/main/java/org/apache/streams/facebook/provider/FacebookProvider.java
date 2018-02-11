@@ -18,6 +18,7 @@
 
 package org.apache.streams.facebook.provider;
 
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
@@ -74,11 +75,7 @@ public abstract class FacebookProvider implements StreamsProvider {
    * FacebookProvider constructor - resolves FacebookConfiguration from JVM 'facebook'.
    */
   public FacebookProvider() {
-    try {
-      this.configuration = MAPPER.readValue(StreamsConfigurator.getConfig().getConfig("facebook").root().render(ConfigRenderOptions.concise()), FacebookConfiguration.class);
-    } catch (IOException ioe) {
-      LOGGER.error("Exception trying to read default config : {}", ioe);
-    }
+    this.configuration = new ComponentConfigurator<>(FacebookConfiguration.class).detectConfiguration();
   }
 
   /**

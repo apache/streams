@@ -72,11 +72,10 @@ public class SimpleHTTPGetProcessor implements StreamsProcessor {
   protected String authHeader;
 
   /**
-   * SimpleHTTPGetProcessor constructor - resolves HttpProcessorConfiguration from JVM 'http'.
+   * SimpleHTTPGetProcessor constructor
    */
   public SimpleHTTPGetProcessor() {
-    this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("http")));
+    this(new ComponentConfigurator<>(HttpProcessorConfiguration.class).detectConfiguration());
   }
 
   /**

@@ -18,6 +18,8 @@
 
 package org.apache.streams.filebuffer.test;
 
+import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.console.ConsolePersistReader;
 import org.apache.streams.console.ConsolePersistWriter;
 import org.apache.streams.core.StreamBuilder;
@@ -28,6 +30,8 @@ import org.apache.streams.filebuffer.FileBufferPersistReader;
 import org.apache.streams.filebuffer.FileBufferPersistWriter;
 import org.apache.streams.local.builders.LocalStreamBuilder;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.testng.annotations.BeforeClass;
@@ -35,8 +39,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -45,75 +47,75 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class FileBufferPersistIT {
 
-    private FileBufferConfiguration testConfiguration;
+  private FileBufferConfiguration testConfiguration;
 
-    private ConsolePersistReader reader = Mockito.mock(ConsolePersistReader.class);
-    private ConsolePersistWriter writer = Mockito.mock(ConsolePersistWriter.class);
+  private ConsolePersistReader reader = Mockito.mock(ConsolePersistReader.class);
+  private ConsolePersistWriter writer = Mockito.mock(ConsolePersistWriter.class);
 
-    private StreamsDatum testDatum1 = new StreamsDatum("{\"datum\":1}");
-    private StreamsDatum testDatum2 = new StreamsDatum("{\"datum\":2}");
-    private StreamsDatum testDatum3 = new StreamsDatum("{\"datum\":3}");
+  private StreamsDatum testDatum1 = new StreamsDatum("{\"datum\":1}");
+  private StreamsDatum testDatum2 = new StreamsDatum("{\"datum\":2}");
+  private StreamsDatum testDatum3 = new StreamsDatum("{\"datum\":3}");
 
-    @BeforeClass
-    public void prepareTestPersistStream() {
+  @BeforeClass
+  public void prepareTestPersistStream() {
 
-        testConfiguration = new FileBufferConfiguration();
-        testConfiguration.setPath("target/FilePersistIT.txt");
+    Config testConfig = ConfigFactory.load("FileBufferPersistIT.conf");
 
-        File file = new File( testConfiguration.getPath());
-        if( file.exists() )
-            file.delete();
+    StreamsConfigurator.addConfig(testConfig);
 
-        PowerMockito.when(reader.readCurrent())
-                .thenReturn(
-                        new StreamsResultSet(new ConcurrentLinkedQueue<>(
-                            Arrays.asList(testDatum1, testDatum2, testDatum3)))
-                ).thenReturn(null);
+    testConfiguration = new ComponentConfigurator<>(FileBufferConfiguration.class).detectConfiguration();
+
+    File file = new File( testConfiguration.getPath());
+    if( file.exists() )
+      file.delete();
+
+    PowerMockito.when(reader.readCurrent())
+      .thenReturn(
+        new StreamsResultSet(new ConcurrentLinkedQueue<>(
+          Arrays.asList(testDatum1, testDatum2, testDatum3)))
+      ).thenReturn(null);
+  }
+
+  @Test
+  public void testPersistStream() {
+
+    assert(testConfiguration != null);
+
+    StreamBuilder builder = new LocalStreamBuilder();
+
+    FileBufferPersistWriter fileWriter = new FileBufferPersistWriter(testConfiguration);
+    FileBufferPersistReader fileReader = new FileBufferPersistReader(testConfiguration);
+
+    builder.newReadCurrentStream("stdin", reader);
+    builder.addStreamsPersistWriter("writer", fileWriter, 1, "stdin");
+    builder.start();
+
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException ie) {
+      //Handle exception
     }
 
-    @Test
-    public void testPersistStream() {
+    builder.stop();
 
-        assert(testConfiguration != null);
+    builder = new LocalStreamBuilder();
 
-        Map<String, Object> streamConfig = new HashMap<>();
-        streamConfig.put(LocalStreamBuilder.TIMEOUT_KEY, 1000);
+    builder.newReadCurrentStream("reader", fileReader);
+    builder.addStreamsPersistWriter("stdout", writer, 1, "reader");
+    builder.start();
 
-        StreamBuilder builder = new LocalStreamBuilder(1, streamConfig);
-
-        FileBufferPersistWriter fileWriter = new FileBufferPersistWriter(testConfiguration);
-        FileBufferPersistReader fileReader = new FileBufferPersistReader(testConfiguration);
-
-        builder.newReadCurrentStream("stdin", reader);
-        builder.addStreamsPersistWriter("writer", fileWriter, 1, "stdin");
-        builder.start();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ie) {
-            //Handle exception
-        }
-
-        builder.stop();
-
-        builder = new LocalStreamBuilder(1, streamConfig);
-        builder.newReadCurrentStream("reader", fileReader);
-        builder.addStreamsPersistWriter("stdout", writer, 1, "reader");
-
-        builder.start();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ie) {
-            //Handle exception
-        }
-
-        builder.stop();
-
-        Mockito.verify(writer).write(testDatum1);
-        Mockito.verify(writer).write(testDatum2);
-        Mockito.verify(writer).write(testDatum3);
-
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException ie) {
+      //Handle exception
     }
+
+    builder.stop();
+
+    Mockito.verify(writer).write(testDatum1);
+    Mockito.verify(writer).write(testDatum2);
+    Mockito.verify(writer).write(testDatum3);
+
+  }
 
 }

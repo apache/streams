@@ -58,6 +58,10 @@ public class StreamsConfigurator {
     config = newConfig.withFallback(config);
   }
 
+  public static void addConfig(Config newConfig, String path) {
+    config = newConfig.atPath(path).withFallback(config);
+  }
+
   public static void setConfig(Config newConfig) {
     config = newConfig;
   }
@@ -76,10 +80,19 @@ public class StreamsConfigurator {
 
   public static StreamsConfiguration detectConfiguration(Config typesafeConfig) {
 
+    Config streamsConfigurationRoot = null;
+    if( typesafeConfig.hasPath(StreamsConfiguration.class.getCanonicalName())) {
+      streamsConfigurationRoot = typesafeConfig.getConfig(StreamsConfiguration.class.getCanonicalName());
+    } else if (typesafeConfig.hasPath(StreamsConfiguration.class.getSimpleName())) {
+      streamsConfigurationRoot = typesafeConfig.getConfig(StreamsConfiguration.class.getSimpleName());
+    } else {
+      streamsConfigurationRoot = typesafeConfig;
+    }
+
     StreamsConfiguration pojoConfig = null;
 
     try {
-      pojoConfig = mapper.readValue(typesafeConfig.resolve().root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
+      pojoConfig = mapper.readValue(streamsConfigurationRoot.resolve().root().render(ConfigRenderOptions.concise()), StreamsConfiguration.class);
     } catch (Exception e) {
       e.printStackTrace();
       LOGGER.warn("Could not parse:", typesafeConfig);

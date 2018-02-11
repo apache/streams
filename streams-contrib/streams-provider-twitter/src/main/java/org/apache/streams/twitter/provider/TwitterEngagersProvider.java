@@ -21,13 +21,13 @@ package org.apache.streams.twitter.provider;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.twitter.TwitterEngagersProviderConfiguration;
-import org.apache.streams.twitter.TwitterTimelineProviderConfiguration;
+import org.apache.streams.pojo.StreamsJacksonMapperConfiguration;
+import org.apache.streams.twitter.config.TwitterEngagersProviderConfiguration;
+import org.apache.streams.twitter.config.TwitterTimelineProviderConfiguration;
 import org.apache.streams.twitter.api.RetweetsRequest;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.twitter.pojo.Tweet;
@@ -97,6 +97,8 @@ public class TwitterEngagersProvider extends TwitterTimelineProvider implements 
 
   StreamsConfiguration streamsConfiguration;
 
+  RetweetsRequest baseRetweetsRequest;
+
   /**
    * To use from command line:
    *
@@ -126,18 +128,17 @@ public class TwitterEngagersProvider extends TwitterTimelineProvider implements 
     String configfile = args[0];
     String outfile = args[1];
 
-    Config reference = ConfigFactory.load();
     File file = new File(configfile);
     assert (file.exists());
-    Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
 
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
+    Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false)).withFallback(StreamsConfigurator.getConfig());
+    StreamsConfigurator.addConfig(testResourceConfig);
 
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    TwitterEngagersProviderConfiguration config = new ComponentConfigurator<>(TwitterEngagersProviderConfiguration.class).detectConfiguration(typesafe, "twitter");
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+    TwitterEngagersProviderConfiguration config = new ComponentConfigurator<>(TwitterEngagersProviderConfiguration.class).detectConfiguration();
     TwitterEngagersProvider provider = new TwitterEngagersProvider(config);
 
-    ObjectMapper mapper = new StreamsJacksonMapper(Stream.of(TwitterDateTimeFormat.TWITTER_FORMAT).collect(Collectors.toList()));
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance(new StreamsJacksonMapperConfiguration().withDateFormats(Stream.of(TwitterDateTimeFormat.TWITTER_FORMAT).collect(Collectors.toList())));
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
     provider.prepare(config);
@@ -201,6 +202,8 @@ public class TwitterEngagersProvider extends TwitterTimelineProvider implements 
       )
     );
 
+    baseRetweetsRequest = new ComponentConfigurator<>(RetweetsRequest.class).detectConfiguration();
+
   }
 
   @Override
@@ -227,10 +230,9 @@ public class TwitterEngagersProvider extends TwitterTimelineProvider implements 
 
   protected void submitRetweeterIdsTaskThread( Long postId ) {
 
-    RetweetsRequest request = new RetweetsRequest();
+    RetweetsRequest request = new ComponentConfigurator<>(RetweetsRequest.class).detectConfiguration();
     request.setId(postId);
-    request.setCount(100l);
-    TwitterRetweetsTask providerTask = new TwitterRetweetsTask(
+      TwitterRetweetsTask providerTask = new TwitterRetweetsTask(
       this,
       client,
       request

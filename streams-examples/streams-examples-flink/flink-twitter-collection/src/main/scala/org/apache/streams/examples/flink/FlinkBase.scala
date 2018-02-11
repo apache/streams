@@ -42,7 +42,7 @@ trait FlinkBase {
 
   var configUrl : String = _
   var typesafe : Config = _
-  var streamsConfig = StreamsConfigurator.detectConfiguration(StreamsConfigurator.getConfig)
+  var streamsConfig = StreamsConfigurator.detectConfiguration()
   var streamsFlinkConfiguration: StreamsFlinkConfiguration = _
 
   var executionEnvironment: ExecutionEnvironment = _

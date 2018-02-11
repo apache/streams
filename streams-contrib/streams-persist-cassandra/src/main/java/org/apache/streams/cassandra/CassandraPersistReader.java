@@ -83,11 +83,10 @@ public class CassandraPersistReader implements StreamsPersistReader {
   protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
   /**
-   * CassandraPersistReader constructor - resolves CassandraConfiguration from JVM 'cassandra'.
+   * CassandraPersistReader constructor
    */
   public CassandraPersistReader() {
-    this.config = new ComponentConfigurator<>(CassandraConfiguration.class)
-      .detectConfiguration(StreamsConfigurator.getConfig().getConfig("cassandra"));
+    this.config = new ComponentConfigurator<>(CassandraConfiguration.class).detectConfiguration();
   }
 
   /**
@@ -103,8 +102,7 @@ public class CassandraPersistReader implements StreamsPersistReader {
    * @param persistQueue persistQueue
    */
   public CassandraPersistReader(Queue<StreamsDatum> persistQueue) {
-    this.config = new ComponentConfigurator<>(CassandraConfiguration.class)
-      .detectConfiguration(StreamsConfigurator.getConfig().getConfig("cassandra"));
+    this.config = new ComponentConfigurator<>(CassandraConfiguration.class).detectConfiguration();
     this.persistQueue = persistQueue;
   }
 

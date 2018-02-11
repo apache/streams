@@ -71,8 +71,7 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable {
    * KafkaPersistReader constructor - resolves KafkaConfiguration from JVM 'kafka'.
    */
   public KafkaPersistReader() {
-    this.config = new ComponentConfigurator<>(KafkaConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("kafka"));
+    this.config = new ComponentConfigurator<>(KafkaConfiguration.class).detectConfiguration();
     this.persistQueue  = new ConcurrentLinkedQueue<>();
   }
 
@@ -80,8 +79,7 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable {
    * KafkaPersistReader constructor - uses supplied persistQueue.
    */
   public KafkaPersistReader(Queue<StreamsDatum> persistQueue) {
-    this.config = new ComponentConfigurator<>(KafkaConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("kafka"));
+    this.config = new ComponentConfigurator<>(KafkaConfiguration.class).detectConfiguration();
     this.persistQueue = persistQueue;
   }
 

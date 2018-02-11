@@ -42,7 +42,7 @@ public class ElasticsearchReindex implements Runnable {
   ElasticsearchReindexConfiguration config;
 
   public ElasticsearchReindex() {
-    this(new ComponentConfigurator<>(ElasticsearchReindexConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig()));
+    this(new ComponentConfigurator<>(ElasticsearchReindexConfiguration.class).detectConfiguration());
 
   }
 

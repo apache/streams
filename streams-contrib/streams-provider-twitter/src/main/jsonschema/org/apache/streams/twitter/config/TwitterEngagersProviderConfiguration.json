@@ -5,10 +5,10 @@
     ],
     "id": "#",
     "type": "object",
-    "seriazilable": true,
-    "javaType" : "org.apache.streams.twitter.TwitterEngagersProviderConfiguration",
+    "serializable": true,
+    "javaInterfaces": ["java.io.Serializable"],
+    "javaType" : "org.apache.streams.twitter.config.TwitterEngagersProviderConfiguration",
     "extends": {
         "$ref": "TwitterTimelineProviderConfiguration.json"
-    },
-    "javaInterfaces": ["java.io.Serializable"]
+    }
 }
