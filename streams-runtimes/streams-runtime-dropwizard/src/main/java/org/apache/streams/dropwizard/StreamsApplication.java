@@ -131,7 +131,7 @@ public class StreamsApplication extends Application<StreamsDropwizardConfigurati
    */
   public StreamBuilder setup(StreamsConfiguration streamsConfiguration, Set<StreamsProvider> resourceProviders) {
 
-    StreamBuilder builder = new StreamDropwizardBuilder(streamsConfiguration);
+    StreamBuilder builder = new StreamDropwizardBuilder();
 
     List<String> providers = new ArrayList<>();
     for ( StreamsProvider provider: resourceProviders) {

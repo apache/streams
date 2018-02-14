@@ -37,41 +37,42 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestFileBufferPersist {
 
-    private FileBufferConfiguration testConfiguration;
+  private FileBufferConfiguration testConfiguration;
 
-    @Test
-    public void testPersistWriterString() {
+  @Test
+  public void testPersistWriterString() {
 
-        testConfiguration = new FileBufferConfiguration();
-        testConfiguration.setPath("target/TestFilePersist.txt");
+    testConfiguration = new FileBufferConfiguration();
+    testConfiguration.setBuffer("target/TestFilePersist.txt");
 
-        File file = new File( testConfiguration.getPath());
-        if( file.exists() )
-            file.delete();
-
-        FileBufferPersistWriter testPersistWriter = new FileBufferPersistWriter(testConfiguration);
-        testPersistWriter.prepare(testConfiguration);
-
-        String testJsonString = "{\"dummy\":\"true\"}";
-
-        testPersistWriter.write(new StreamsDatum(testJsonString, "test"));
-
-        testPersistWriter.cleanUp();
-
-        FileBufferPersistReader testPersistReader = new FileBufferPersistReader(testConfiguration);
-        try {
-            testPersistReader.prepare(testConfiguration);
-        } catch( Throwable e ) {
-            e.printStackTrace();
-            Assert.fail();
-        }
-
-        StreamsResultSet testResult = testPersistReader.readCurrent();
-
-        testPersistReader.cleanUp();
-
-        assertEquals(1, testResult.size());
-
+    File file = new File( testConfiguration.getBuffer());
+    if( file.exists() ) {
+      file.delete();
     }
+
+    FileBufferPersistWriter testPersistWriter = new FileBufferPersistWriter(testConfiguration);
+    testPersistWriter.prepare(testConfiguration);
+
+    String testJsonString = "{\"dummy\":\"true\"}";
+
+    testPersistWriter.write(new StreamsDatum(testJsonString, "test"));
+
+    testPersistWriter.cleanUp();
+
+    FileBufferPersistReader testPersistReader = new FileBufferPersistReader(testConfiguration);
+    try {
+      testPersistReader.prepare(testConfiguration);
+    } catch( Throwable e ) {
+      e.printStackTrace();
+      Assert.fail();
+    }
+
+    StreamsResultSet testResult = testPersistReader.readCurrent();
+
+    testPersistReader.cleanUp();
+
+    assertEquals(1, testResult.size());
+
+  }
 
 }

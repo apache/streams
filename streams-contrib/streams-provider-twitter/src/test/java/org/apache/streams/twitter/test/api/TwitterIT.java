@@ -19,9 +19,8 @@
 package org.apache.streams.twitter.test.api;
 
 import org.apache.streams.config.ComponentConfigurator;
-import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.twitter.TwitterConfiguration;
+import org.apache.streams.twitter.config.TwitterConfiguration;
 import org.apache.streams.twitter.api.Account;
 import org.apache.streams.twitter.api.AccountActivity;
 import org.apache.streams.twitter.api.AccountSettings;
@@ -76,11 +75,7 @@ import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.pojo.WelcomeMessage;
 import org.apache.streams.twitter.pojo.WelcomeMessageRule;
 
-import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import org.apache.juneau.remoteable.Path;
-import org.apache.juneau.remoteable.QueryIfNE;
-import org.apache.juneau.remoteable.RemoteMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -91,7 +86,6 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.testng.Assert.assertEquals;
@@ -106,24 +100,23 @@ public class TwitterIT {
 
   private static String configfile = "target/test-classes/TwitterIT.conf";
 
-  private static Config application;
   private static TwitterConfiguration config;
 
   private static User user;
   private static AccountSettings settings;
   private static List<Tweet> statusesHomeTimeline;
 
-  @BeforeClass
+  @BeforeClass(alwaysRun = true)
   public void setup() throws Exception {
     File conf = new File(configfile);
     Assert.assertTrue (conf.exists());
     Assert.assertTrue (conf.canRead());
     Assert.assertTrue (conf.isFile());
-    application = ConfigFactory.parseFileAnySyntax(conf).withFallback(ConfigFactory.load());
-    config = new ComponentConfigurator<>(TwitterConfiguration.class).detectConfiguration(application, "twitter");
+    StreamsConfigurator.addConfig(ConfigFactory.parseFileAnySyntax(conf));
+    config = new ComponentConfigurator<>(TwitterConfiguration.class).detectConfiguration();
   }
 
-  @Test(groups = {"Account","AccountVerifyCredentials"})
+  @Test(groups = {"AccountVerifyCredentials"})
   public void testVerifyCredentials() throws Exception {
     Account account = Twitter.getInstance(config);
     nonNull(account);
@@ -419,4 +412,5 @@ public class TwitterIT {
     List<WelcomeMessageRule> welcomeMessageRuleList = welcomeMessageListResponse.getWelcomeMessageRules();
     nonNull(welcomeMessageRuleList);
   }
+
 }

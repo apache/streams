@@ -23,6 +23,7 @@ import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.google.gplus.GPlusConfiguration;
+import org.apache.streams.google.gplus.GPlusUserActivityProviderConfiguration;
 import org.apache.streams.google.gplus.configuration.UserInfo;
 import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
 
@@ -96,15 +97,14 @@ public class GPlusUserActivityProvider extends AbstractGPlusProvider {
     String configfile = args[0];
     String outfile = args[1];
 
-    Config reference = ConfigFactory.load();
     File file = new File(configfile);
     assert (file.exists());
-    Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
 
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
+    Config conf = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
+    StreamsConfigurator.addConfig(conf);
 
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    GPlusConfiguration config = new ComponentConfigurator<>(GPlusConfiguration.class).detectConfiguration(typesafe, "gplus");
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+    GPlusUserActivityProviderConfiguration config = new ComponentConfigurator<>(GPlusUserActivityProviderConfiguration.class).detectConfiguration();
     GPlusUserActivityProvider provider = new GPlusUserActivityProvider(config);
 
     Gson gson = new Gson();

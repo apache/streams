@@ -11,9 +11,9 @@
     },
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
-        "monitoring": {
-            "type" : "object",
-            "$ref": "../../../../../streams-monitoring/src/main/jsonschema/org/apache/streams/local/monitoring/MonitoringConfiguration.json"
+        "maxQueueCapacity": {
+            "type": "integer",
+            "description": "Max Queue Capacity"
         },
         "executorShutdownPauseMs": {
             "type": "integer",

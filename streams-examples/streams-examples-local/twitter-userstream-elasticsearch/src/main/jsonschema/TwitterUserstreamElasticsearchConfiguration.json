@@ -6,8 +6,13 @@
   "type": "object",
   "javaType" : "org.apache.streams.example.TwitterUserstreamElasticsearchConfiguration",
   "javaInterfaces": ["java.io.Serializable"],
+  "extends": {
+    "$comment": "Absolute $ref: http://streams.apache.org/streams-runtimes/streams-runtime-local/LocalRuntimeConfiguration.json",
+    "$ref": "../../../../../../streams-runtimes/streams-runtime-local/src/main/jsonschema/LocalRuntimeConfiguration.json"
+  },
+  "additionalProperties": false,
   "properties": {
-    "twitter": { "javaType": "org.apache.streams.twitter.TwitterStreamConfiguration", "type": "object", "required": true },
+    "twitter": { "javaType": "org.apache.streams.twitter.config.TwitterStreamConfiguration", "type": "object", "required": true },
     "elasticsearch": { "javaType": "org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration", "type": "object", "required": true }
   }
 }

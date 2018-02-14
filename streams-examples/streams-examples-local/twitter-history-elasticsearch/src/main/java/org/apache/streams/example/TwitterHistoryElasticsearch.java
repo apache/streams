@@ -48,7 +48,7 @@ public class TwitterHistoryElasticsearch implements Runnable {
   TwitterHistoryElasticsearchConfiguration config;
 
   public TwitterHistoryElasticsearch() {
-    this(new ComponentConfigurator<>(TwitterHistoryElasticsearchConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig()));
+    this(new StreamsConfigurator<>(TwitterHistoryElasticsearchConfiguration.class).detectCustomConfiguration());
   }
 
   public TwitterHistoryElasticsearch(TwitterHistoryElasticsearchConfiguration config) {
@@ -72,9 +72,7 @@ public class TwitterHistoryElasticsearch implements Runnable {
     ActivityConverterProcessor converter = new ActivityConverterProcessor();
     ElasticsearchPersistWriter writer = new ElasticsearchPersistWriter(config.getElasticsearch());
 
-    LocalRuntimeConfiguration localRuntimeConfiguration =
-        StreamsJacksonMapper.getInstance().convertValue(StreamsConfigurator.detectConfiguration(), LocalRuntimeConfiguration.class);
-    StreamBuilder builder = new LocalStreamBuilder(localRuntimeConfiguration);
+    StreamBuilder builder = new LocalStreamBuilder(config);
 
     builder.newPerpetualStream(TwitterTimelineProvider.class.getCanonicalName(), provider);
     builder.addStreamsProcessor(ActivityConverterProcessor.class.getCanonicalName(), converter, 2, TwitterTimelineProvider.class.getCanonicalName());

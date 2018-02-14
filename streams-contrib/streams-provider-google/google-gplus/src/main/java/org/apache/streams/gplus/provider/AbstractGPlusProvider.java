@@ -93,8 +93,7 @@ public abstract class AbstractGPlusProvider implements StreamsProvider {
   protected Plus plus;
 
   public AbstractGPlusProvider() {
-    this.config = new ComponentConfigurator<>(GPlusConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("gplus"));
+    this.config = new ComponentConfigurator<>(GPlusConfiguration.class).detectConfiguration();
   }
 
   public AbstractGPlusProvider(GPlusConfiguration config) {

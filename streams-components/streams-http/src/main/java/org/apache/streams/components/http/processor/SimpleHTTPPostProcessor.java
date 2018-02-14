@@ -72,11 +72,10 @@ public class SimpleHTTPPostProcessor implements StreamsProcessor {
   protected String authHeader;
 
   /**
-   * SimpleHTTPPostProcessor constructor - resolves HttpProcessorConfiguration from JVM 'http'.
+   * SimpleHTTPPostProcessor constructor
    */
   public SimpleHTTPPostProcessor() {
-    this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("http")));
+    this(new ComponentConfigurator<>(HttpProcessorConfiguration.class).detectConfiguration());
   }
 
   /**

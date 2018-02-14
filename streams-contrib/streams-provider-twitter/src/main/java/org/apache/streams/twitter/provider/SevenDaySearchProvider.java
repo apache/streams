@@ -26,10 +26,8 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.twitter.SevenDaySearchProviderConfiguration;
-import org.apache.streams.twitter.TwitterTimelineProviderConfiguration;
+import org.apache.streams.twitter.config.SevenDaySearchProviderConfiguration;
 import org.apache.streams.twitter.api.SevenDaySearchRequest;
-import org.apache.streams.twitter.api.StatusesUserTimelineRequest;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 
@@ -128,15 +126,14 @@ public class SevenDaySearchProvider implements StreamsProvider, Serializable {
     String configfile = args[0];
     String outfile = args[1];
 
-    Config reference = ConfigFactory.load();
     File file = new File(configfile);
     assert (file.exists());
+
     Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
+    StreamsConfigurator.addConfig(testResourceConfig);
 
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    SevenDaySearchProviderConfiguration config = new ComponentConfigurator<>(SevenDaySearchProviderConfiguration.class).detectConfiguration(typesafe, "twitter");
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+    SevenDaySearchProviderConfiguration config = new ComponentConfigurator<>(SevenDaySearchProviderConfiguration.class).detectConfiguration();
     SevenDaySearchProvider provider = new SevenDaySearchProvider(config);
 
     ObjectMapper mapper = new StreamsJacksonMapper(Stream.of(TwitterDateTimeFormat.TWITTER_FORMAT).collect(Collectors.toList()));
@@ -161,6 +158,10 @@ public class SevenDaySearchProvider implements StreamsProvider, Serializable {
     outStream.flush();
   }
 
+  public SevenDaySearchProvider() {
+    this.config = new ComponentConfigurator<>(SevenDaySearchProviderConfiguration.class).detectConfiguration();
+  }
+
   public SevenDaySearchProvider(SevenDaySearchProviderConfiguration config) {
     this.config = config;
   }
@@ -177,8 +178,8 @@ public class SevenDaySearchProvider implements StreamsProvider, Serializable {
   @Override
   public void prepare(Object configurationObject) {
 
-    if( !(configurationObject instanceof SevenDaySearchProviderConfiguration ) ) {
-      this.config = (SevenDaySearchProviderConfiguration)configurationObject;
+    if( configurationObject instanceof SevenDaySearchProviderConfiguration ) {
+      this.config = (SevenDaySearchProviderConfiguration) configurationObject;
     }
 
     try {

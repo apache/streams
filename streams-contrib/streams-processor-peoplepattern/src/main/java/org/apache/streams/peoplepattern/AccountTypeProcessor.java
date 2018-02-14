@@ -46,8 +46,7 @@ public class AccountTypeProcessor extends SimpleHTTPGetProcessor {
    * AccountTypeProcessor constructor - resolves HttpProcessorConfiguration from JVM 'peoplepattern'.
    */
   public AccountTypeProcessor() {
-    this(new ComponentConfigurator<>(HttpProcessorConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("peoplepattern")));
+    this(new ComponentConfigurator<>(HttpProcessorConfiguration.class).detectConfiguration());
   }
 
   /**

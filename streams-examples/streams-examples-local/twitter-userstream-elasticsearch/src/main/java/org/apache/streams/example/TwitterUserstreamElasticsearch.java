@@ -33,7 +33,7 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.local.LocalRuntimeConfiguration;
 import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.twitter.TwitterStreamConfiguration;
+import org.apache.streams.twitter.config.TwitterStreamConfiguration;
 import org.apache.streams.twitter.provider.TwitterStreamProvider;
 import org.apache.streams.verbs.ObjectCombination;
 import org.apache.streams.verbs.VerbDefinition;
@@ -66,8 +66,7 @@ public class TwitterUserstreamElasticsearch implements Runnable {
   private TwitterUserstreamElasticsearchConfiguration config;
 
   public TwitterUserstreamElasticsearch() {
-    this(new ComponentConfigurator<>(TwitterUserstreamElasticsearchConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig()));
-
+    this(new StreamsConfigurator<>(TwitterUserstreamElasticsearchConfiguration.class).detectCustomConfiguration());
   }
 
   public TwitterUserstreamElasticsearch(TwitterUserstreamElasticsearchConfiguration config) {
@@ -79,6 +78,7 @@ public class TwitterUserstreamElasticsearch implements Runnable {
     LOGGER.info(StreamsConfigurator.getConfig().toString());
 
     TwitterUserstreamElasticsearch userstream = new TwitterUserstreamElasticsearch();
+
     new Thread(userstream).start();
 
   }
@@ -97,9 +97,7 @@ public class TwitterUserstreamElasticsearch implements Runnable {
     SetDeleteIdProcessor setDeleteIdProcessor = new SetDeleteIdProcessor();
     ElasticsearchPersistDeleter deleter = new ElasticsearchPersistDeleter(elasticsearchWriterConfiguration);
 
-    LocalRuntimeConfiguration localRuntimeConfiguration =
-        StreamsJacksonMapper.getInstance().convertValue(StreamsConfigurator.detectConfiguration(), LocalRuntimeConfiguration.class);
-    StreamBuilder builder = new LocalStreamBuilder(localRuntimeConfiguration);
+    StreamBuilder builder = new LocalStreamBuilder();
 
     builder.newPerpetualStream(TwitterStreamProvider.class.getCanonicalName(), stream);
     builder.addStreamsProcessor(ActivityConverterProcessor.class.getCanonicalName(), converter, 2, TwitterStreamProvider.class.getCanonicalName());

@@ -47,13 +47,7 @@ public class DatumFromMetadataProcessor implements StreamsProcessor, Serializabl
   private ElasticsearchReaderConfiguration config;
 
   public DatumFromMetadataProcessor() {
-    this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch"));
-  }
-
-  public DatumFromMetadataProcessor(Config config) {
-    this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch"));
+    this.config = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class).detectConfiguration();
   }
 
   public DatumFromMetadataProcessor(ElasticsearchReaderConfiguration config) {

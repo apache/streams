@@ -5,7 +5,7 @@
   ],
   "id": "#",
   "type": "object",
-  "javaType" : "org.apache.streams.twitter.ThirtyDaySearchProviderConfiguration",
+  "javaType" : "org.apache.streams.twitter.config.ThirtyDaySearchProviderConfiguration",
   "extends": {"$ref":"TwitterConfiguration.json"},
   "javaInterfaces": ["java.io.Serializable"],
   "properties": {
@@ -14,13 +14,11 @@
     },
     "max_items": {
       "type": "integer",
-      "description": "Max items total",
-      "default": 100
+      "description": "Max items total"
     },
     "max_pages": {
       "type": "integer",
-      "description": "Max pages to request",
-      "default": 5
+      "description": "Max pages to request"
     }
   }
 }

@@ -18,6 +18,7 @@
 
 package org.apache.streams.monitoring.tasks;
 
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.local.monitoring.MonitoringConfiguration;
@@ -32,24 +33,19 @@ public class BroadcastMonitorThreadTest {
   private ExecutorService executor;
 
   @Test
-  public void testThreadEmptyBeanConfig() {
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
-    BroadcastMonitorThread thread = new BroadcastMonitorThread(streamsConfiguration);
+  public void testThreadNoConfig() {
+    BroadcastMonitorThread thread = new BroadcastMonitorThread();
+    assert( thread.getWaitTime() > 0);
     testThread(thread);
   }
 
-
-
-
   @Test
-  public void testThreadStreamsConfig() {
+  public void testThreadMonitoringConfig() {
 
-    StreamsConfiguration streams = new StreamsConfiguration();
-    MonitoringConfiguration monitoring = new MonitoringConfiguration();
+    MonitoringConfiguration monitoring = new ComponentConfigurator<>(MonitoringConfiguration.class).detectConfiguration();
     monitoring.setBroadcastURI("http://fakeurl.com/fake");
     monitoring.setMonitoringBroadcastIntervalMs(30000L);
-    streams.setAdditionalProperty("monitoring", monitoring);
-    BroadcastMonitorThread thread = new BroadcastMonitorThread(streams);
+    BroadcastMonitorThread thread = new BroadcastMonitorThread(monitoring);
     testThread(thread);
   }
 

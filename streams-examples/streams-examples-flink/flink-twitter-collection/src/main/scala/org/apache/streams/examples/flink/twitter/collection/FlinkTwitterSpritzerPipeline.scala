@@ -38,8 +38,9 @@ import org.apache.streams.core.StreamsDatum
 import org.apache.streams.examples.flink.FlinkBase
 import org.apache.streams.examples.flink.twitter.TwitterSpritzerPipelineConfiguration
 import org.apache.streams.flink.FlinkStreamingConfiguration
+import org.apache.streams.hdfs.HdfsWriterConfiguration
 import org.apache.streams.jackson.StreamsJacksonMapper
-import org.apache.streams.twitter.TwitterStreamConfiguration
+import org.apache.streams.twitter.config.TwitterStreamConfiguration
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat
 import org.apache.streams.twitter.provider.TwitterStreamProvider
 import org.hamcrest.MatcherAssert
@@ -106,7 +107,7 @@ object FlinkTwitterSpritzerPipeline extends FlinkBase {
 
 }
 
-class FlinkTwitterSpritzerPipeline(config: TwitterSpritzerPipelineConfiguration = new ComponentConfigurator(classOf[TwitterSpritzerPipelineConfiguration]).detectConfiguration(StreamsConfigurator.getConfig)) extends Runnable with java.io.Serializable {
+class FlinkTwitterSpritzerPipeline(config: TwitterSpritzerPipelineConfiguration = new StreamsConfigurator[TwitterSpritzerPipelineConfiguration](classOf[TwitterSpritzerPipelineConfiguration]).detectCustomConfiguration()) extends Runnable with java.io.Serializable {
 
   import FlinkTwitterSpritzerPipeline._
 
@@ -114,12 +115,12 @@ class FlinkTwitterSpritzerPipeline(config: TwitterSpritzerPipelineConfiguration 
 
   override def run(): Unit = {
 
-    val env: StreamExecutionEnvironment = streamEnvironment(MAPPER.convertValue(config, classOf[FlinkStreamingConfiguration]))
+    val env: StreamExecutionEnvironment = streamEnvironment(config)
 
     env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime)
     env.setNumberOfExecutionRetries(0)
 
-    val outPath = buildWriterPath(config.getDestination)
+    val outPath = buildWriterPath(new ComponentConfigurator(classOf[HdfsWriterConfiguration]).detectConfiguration())
 
     val streamSource : DataStream[String] = env.addSource(spritzerSource)
 

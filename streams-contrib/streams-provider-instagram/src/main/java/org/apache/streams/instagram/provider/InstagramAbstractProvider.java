@@ -69,8 +69,7 @@ public abstract class InstagramAbstractProvider implements StreamsProvider {
   private AtomicBoolean isCompleted;
 
   public InstagramAbstractProvider() {
-    this.config = new ComponentConfigurator<>(InstagramConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("instagram"));
+    this.config = new ComponentConfigurator<>(InstagramConfiguration.class).detectConfiguration();
   }
 
   public InstagramAbstractProvider(InstagramConfiguration config) {

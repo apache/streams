@@ -18,7 +18,7 @@
 
 package org.apache.streams.twitter.test.api;
 
-import org.apache.streams.twitter.TwitterOAuthConfiguration;
+import org.apache.streams.twitter.config.TwitterOAuthConfiguration;
 import org.apache.streams.twitter.api.TwitterOAuthRequestInterceptor;
 import org.apache.streams.twitter.api.TwitterSecurity;
 import org.apache.streams.twitter.test.utils.TwitterActivityConvertersTest;
@@ -35,11 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.xml.bind.DatatypeConverter;
 
 import static org.junit.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;

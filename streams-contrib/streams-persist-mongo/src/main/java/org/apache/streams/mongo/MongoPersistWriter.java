@@ -79,8 +79,7 @@ public class MongoPersistWriter implements StreamsPersistWriter, Runnable, Flush
   protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
   public MongoPersistWriter() {
-    this(new ComponentConfigurator<>(MongoConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("mongo")));
+    this(new ComponentConfigurator<>(MongoConfiguration.class).detectConfiguration());
   }
 
   public MongoPersistWriter(MongoConfiguration config) {
