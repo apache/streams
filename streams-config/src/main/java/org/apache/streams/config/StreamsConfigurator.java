@@ -18,6 +18,7 @@
 
 package org.apache.streams.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -26,8 +27,12 @@ import com.typesafe.config.ConfigResolveOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * StreamsConfigurator supplies the entire typesafe tree to runtimes and modules.
@@ -35,11 +40,19 @@ import java.net.URL;
  * StreamsConfigurator also supplies StreamsConfiguration POJO to runtimes and modules.
  *
  */
-public class StreamsConfigurator {
+public class StreamsConfigurator<T extends StreamsConfiguration> {
+
+  private Class<T> configClass;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ComponentConfigurator.class);
 
-  private static final ObjectMapper mapper = new ObjectMapper();
+  private static final ObjectMapper mapper = new ObjectMapper()
+    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    .configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
+
+  public StreamsConfigurator(Class<T> configClass) {
+    this.configClass = configClass;
+  }
 
   /*
       Pull all configuration files from the classpath, system properties, and environment variables
@@ -116,4 +129,46 @@ public class StreamsConfigurator {
 
     return pojoConfig;
   }
+
+  public T detectCustomConfiguration() {
+
+    Config rootConfig = getConfig();
+
+    // for each field of the top-level configuration,
+    //    populate using a ComponentConfigurator from its type.
+
+    ComponentConfigurator<StreamsConfiguration> streamsConfigConfigurator = new ComponentConfigurator(configClass);
+    StreamsConfiguration streamsConfiguration = streamsConfigConfigurator.detectConfiguration();
+
+    Map<String, Object> pojoMap = new HashMap<>();
+
+    try {
+      pojoMap.putAll(mapper.convertValue(streamsConfiguration, Map.class));
+      pojoMap.putAll(mapper.readValue(rootConfig.resolve().root().render(ConfigRenderOptions.concise()), Map.class));
+    } catch (Exception e) {
+      e.printStackTrace();
+      LOGGER.warn("Could not parse:", rootConfig);
+    }
+
+    Field[] fields = configClass.getDeclaredFields();
+
+    for( Field field : fields ) {
+      Class type = field.getType();
+      ComponentConfigurator configurator = new ComponentConfigurator(type);
+      Serializable fieldValue = configurator.detectConfiguration(field.getName());
+      pojoMap.put(field.getName(), fieldValue);
+    }
+
+    T pojoConfig = null;
+
+    try {
+      pojoConfig = mapper.convertValue(pojoMap, configClass);
+    } catch (Exception e) {
+      e.printStackTrace();
+      LOGGER.warn("Could not parse:", rootConfig);
+    }
+
+    return pojoConfig;
+  }
+
 }

@@ -48,6 +48,12 @@ public class ComponentConfiguratorTest {
 
   private static final ObjectMapper mapper = new ObjectMapper();
 
+  /**
+   * Test that basic component properties are resolved from the root of the typesafe
+   * configuration when calling detectConfiguration.
+   *
+   * @throws Exception
+   */
   @Test
   public void testDetectTestDefaults() throws Exception {
 
@@ -66,6 +72,12 @@ public class ComponentConfiguratorTest {
 
   }
 
+  /**
+   * Test that the values detected match what we get rendering the typesafe config with
+   * jackson directly.
+   *
+   * @throws Exception
+   */
   @Test
   public void testDetectConfigurationConfig() throws Exception {
 
@@ -85,6 +97,12 @@ public class ComponentConfiguratorTest {
 
   }
 
+  /**
+   * Test that the values detected from ComponentConfiguration.detectConfiguration(Config) match what
+   * we get rendering a sub-object of the typesafe config with jackson directly.
+   *
+   * @throws Exception
+   */
   @Test
   public void testDetectConfigurationString() throws Exception {
 
@@ -108,6 +126,12 @@ public class ComponentConfiguratorTest {
     Assert.assertEquals(configuredPojo,testPojo);
   }
 
+  /**
+   * Test that the values detected from ComponentConfiguration.detectConfiguration(Config,String) match what
+   * we get rendering a sub-object of the typesafe config with jackson directly.
+   *
+   * @throws Exception
+   */
   @Test
   public void testDetectConfigurationConfigString() throws Exception {
 
@@ -126,6 +150,12 @@ public class ComponentConfiguratorTest {
     Assert.assertEquals(configuredPojo,testPojo);
   }
 
+  /**
+   * Test that ComponentConfiguration.detectConfiguration() picks up properties defined
+   * on a package parent path.
+   *
+   * @throws Exception
+   */
   @Test
   public void testDetectConfigurationCompoundPath() throws Exception {
 
@@ -147,6 +177,12 @@ public class ComponentConfiguratorTest {
 
   }
 
+  /**
+   * Test that ComponentConfiguration.detectConfiguration() picks up properties defined
+   * on the class simple name with no path.
+   *
+   * @throws Exception
+   */
   @Test
   public void testDetectConfigurationSimpleClassName() throws Exception {
 
@@ -170,6 +206,12 @@ public class ComponentConfiguratorTest {
 
   }
 
+  /**
+   * Test that ComponentConfiguration.detectConfiguration() picks up properties defined
+   * on the class canonical name.
+   *
+   * @throws Exception
+   */
   @Test
   public void testDetectConfigurationCanonicalClassName() throws Exception {
 
@@ -193,6 +235,12 @@ public class ComponentConfiguratorTest {
 
   }
 
+  /**
+   * Test that ComponentConfiguration.detectConfiguration() picks up properties defined
+   * from multiple levels of class ancestry in the right order.
+   *
+   * @throws Exception
+   */
   @Test
   public void testDetectConfigurationClassHierarchy() throws Exception {
 
@@ -216,6 +264,12 @@ public class ComponentConfiguratorTest {
 
   }
 
+  /**
+   * Test that ComponentConfiguration.detectConfiguration() picks up properties defined
+   * from multiple levels of package hierarchy in the right order.
+   *
+   * @throws Exception
+   */
   @Test
   public void testDetectConfigurationPackageHierarchy() throws Exception {
 

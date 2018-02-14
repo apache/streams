@@ -1,24 +1,25 @@
 {
-    "$schema": "http://json-schema.org/draft-03/schema",
-    "$license": [
-        "http://www.apache.org/licenses/LICENSE-2.0"
-    ],
-    "id": "#",
-    "type": "object",
-    "javaType" : "org.apache.streams.config.ComponentConfiguration",
-    "javaInterfaces": ["java.io.Serializable"],
-    "properties": {
-        "inClasses": {
-            "type" : "array",
-            "items" : {
-                "type" : "string"
-            }
-        },
-        "outClasses": {
-            "type" : "array",
-            "items" : {
-                "type" : "string"
-            }
-        }
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "type": "object",
+  "javaType" : "org.apache.streams.config.ComponentConfiguration",
+  "javaInterfaces": ["java.io.Serializable"],
+  "additionalProperties": false,
+  "properties": {
+    "inClasses": {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
+    },
+    "outClasses": {
+      "type" : "array",
+      "items" : {
+        "type" : "string"
+      }
     }
+  }
 }
