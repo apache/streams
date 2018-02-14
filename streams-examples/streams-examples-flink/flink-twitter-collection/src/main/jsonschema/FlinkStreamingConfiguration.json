@@ -9,32 +9,21 @@
   "extends": {
     "$ref": "StreamsFlinkConfiguration.json"
   },
+  "additionalProperties": false,
   "properties": {
-    "parallel": {
-      "type": "integer",
-      "default": 1
-    },
-    "providerWaitMs": {
-      "type": "integer",
-      "default": 1000
-    },
     "checkpointIntervalMs": {
-      "type": "integer",
-      "default": 300000
+      "type": "integer"
     },
     "checkpointTimeoutMs": {
-      "type": "integer",
-      "default": 30000
+      "type": "integer"
     },
     "restartAttempts": {
       "type": "integer",
-      "description": "number of restart attempts",
-      "default": 3
+      "description": "number of restart attempts"
     },
     "restartDelayMs": {
       "type": "integer",
-      "description": "delay in milliseconds",
-      "default": 10000
+      "description": "delay in milliseconds"
     }
   }
 }

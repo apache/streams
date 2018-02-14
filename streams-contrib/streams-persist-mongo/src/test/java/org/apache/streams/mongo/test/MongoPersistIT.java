@@ -75,7 +75,7 @@ public class MongoPersistIT {
 
     MongoPersistWriter writer = new MongoPersistWriter(testConfiguration);
 
-    writer.prepare(null);
+    writer.prepare(testConfiguration);
 
     InputStream testActivityFolderStream = MongoPersistIT.class.getClassLoader()
         .getResourceAsStream("activities");

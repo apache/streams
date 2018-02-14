@@ -4,7 +4,7 @@
     "http://www.apache.org/licenses/LICENSE-2.0"
   ],
   "type": "object",
-  "javaType" : "org.apache.streams.example.MongoElasticsearchSyncConfiguration",
+  "javaType" : "org.apache.streams.example.TwitterHistoryElasticsearchConfiguration",
   "javaInterfaces": ["java.io.Serializable"],
   "extends": {
     "$comment": "Absolute $ref: http://streams.apache.org/streams-runtimes/streams-runtime-local/LocalRuntimeConfiguration.json",
@@ -12,7 +12,7 @@
   },
   "additionalProperties": false,
   "properties": {
-    "source": { "javaType": "org.apache.streams.mongo.MongoConfiguration", "type": "object", "required": true },
-    "destination": { "javaType": "org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration", "type": "object", "required": true }
+    "twitter": { "javaType": "org.apache.streams.twitter.config.TwitterTimelineProviderConfiguration", "type": "object", "required": true },
+    "elasticsearch": { "javaType": "org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration", "type": "object", "required": true }
   }
 }

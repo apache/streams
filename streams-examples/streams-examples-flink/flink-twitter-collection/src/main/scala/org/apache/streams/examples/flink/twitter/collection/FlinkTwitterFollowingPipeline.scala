@@ -111,20 +111,20 @@ object FlinkTwitterFollowingPipeline extends FlinkBase {
 
 }
 
-class FlinkTwitterFollowingPipeline(config: TwitterFollowingPipelineConfiguration = new ComponentConfigurator(classOf[TwitterFollowingPipelineConfiguration]).detectConfiguration()) extends Runnable with java.io.Serializable {
+class FlinkTwitterFollowingPipeline(config: TwitterFollowingPipelineConfiguration = new StreamsConfigurator[TwitterFollowingPipelineConfiguration](classOf[TwitterFollowingPipelineConfiguration]).detectCustomConfiguration()) extends Runnable with java.io.Serializable {
 
   import FlinkTwitterFollowingPipeline._
 
   override def run(): Unit = {
 
-    val env: StreamExecutionEnvironment = streamEnvironment(MAPPER.convertValue(config, classOf[FlinkStreamingConfiguration]))
+    val env: StreamExecutionEnvironment = streamEnvironment(config)
 
     env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime)
     env.setNumberOfExecutionRetries(0)
 
-    val inPath = buildReaderPath(new ComponentConfigurator(classOf[HdfsReaderConfiguration]).detectConfiguration())
+    val inPath = buildReaderPath(config.getSource)
 
-    val outPath = buildWriterPath(new ComponentConfigurator(classOf[HdfsWriterConfiguration]).detectConfiguration())
+    val outPath = buildWriterPath(config.getDestination)
 
     val keyed_ids: KeyedStream[String, Int] = env.readTextFile(inPath).setParallelism(10).keyBy( id => (id.hashCode % 100).abs )
 

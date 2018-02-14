@@ -110,13 +110,13 @@ object FlinkTwitterPostsPipeline extends FlinkBase {
 
 }
 
-class FlinkTwitterPostsPipeline(config: TwitterPostsPipelineConfiguration = new ComponentConfigurator(classOf[TwitterPostsPipelineConfiguration]).detectConfiguration()) extends Runnable with java.io.Serializable {
+class FlinkTwitterPostsPipeline(config: TwitterPostsPipelineConfiguration = new StreamsConfigurator[TwitterPostsPipelineConfiguration](classOf[TwitterPostsPipelineConfiguration]).detectCustomConfiguration()) extends Runnable with java.io.Serializable {
 
   import FlinkTwitterPostsPipeline._
 
   override def run(): Unit = {
 
-    val env: StreamExecutionEnvironment = streamEnvironment(MAPPER.convertValue(config, classOf[FlinkStreamingConfiguration]))
+    val env: StreamExecutionEnvironment = streamEnvironment(config)
 
     env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime)
     env.setNumberOfExecutionRetries(0)

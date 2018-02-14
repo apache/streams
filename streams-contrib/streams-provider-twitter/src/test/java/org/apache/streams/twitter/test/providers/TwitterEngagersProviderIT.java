@@ -67,7 +67,7 @@ public class TwitterEngagersProviderIT {
 
     while (outCounter.readLine() != null) {}
 
-    Assert.assertThat(outCounter.getLineNumber(), is(greaterThan(100)));
+    Assert.assertThat(outCounter.getLineNumber(), is(greaterThan(25)));
 
     // this should actually match max items
     // Assert.assertThat(outCounter.getLineNumber(), is(equalTo(100)));

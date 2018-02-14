@@ -71,7 +71,7 @@ public class YoutubeUserActivityProviderIT {
 
     while (outCounter.readLine() != null) {}
 
-    Assert.assertTrue(outCounter.getLineNumber() >= 250);
+    Assert.assertTrue(outCounter.getLineNumber() >= 100);
 
   }
 }

@@ -90,7 +90,7 @@ public class FileBufferPersistWriter implements StreamsPersistWriter, Serializab
 
     mapper = new ObjectMapper();
 
-    File file = new File( config.getPath());
+    File file = new File( config.getBuffer() );
 
     try {
       queueFile = new QueueFile(file);

@@ -65,7 +65,7 @@ public class FileBufferPersistIT {
 
     testConfiguration = new ComponentConfigurator<>(FileBufferConfiguration.class).detectConfiguration();
 
-    File file = new File( testConfiguration.getPath());
+    File file = new File( testConfiguration.getBuffer());
     if( file.exists() )
       file.delete();
 

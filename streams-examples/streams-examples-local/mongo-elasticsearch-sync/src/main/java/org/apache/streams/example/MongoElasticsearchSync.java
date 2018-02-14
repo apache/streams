@@ -42,7 +42,7 @@ public class MongoElasticsearchSync implements Runnable {
   MongoElasticsearchSyncConfiguration config;
 
   public MongoElasticsearchSync() {
-    this(new ComponentConfigurator<>(MongoElasticsearchSyncConfiguration.class).detectConfiguration());
+    this(new StreamsConfigurator<>(MongoElasticsearchSyncConfiguration.class).detectCustomConfiguration());
   }
 
   public MongoElasticsearchSync(MongoElasticsearchSyncConfiguration config) {
@@ -66,9 +66,7 @@ public class MongoElasticsearchSync implements Runnable {
 
     ElasticsearchPersistWriter elasticsearchPersistWriter = new ElasticsearchPersistWriter(config.getDestination());
 
-    LocalRuntimeConfiguration localRuntimeConfiguration =
-        StreamsJacksonMapper.getInstance().convertValue(StreamsConfigurator.detectConfiguration(), LocalRuntimeConfiguration.class);
-    StreamBuilder builder = new LocalStreamBuilder(localRuntimeConfiguration);
+    StreamBuilder builder = new LocalStreamBuilder(config);
 
     builder.newPerpetualStream(MongoPersistReader.class.getCanonicalName(), mongoPersistReader);
     builder.addStreamsPersistWriter(ElasticsearchPersistWriter.class.getCanonicalName(), elasticsearchPersistWriter, 1, MongoPersistReader.class.getCanonicalName());

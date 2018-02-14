@@ -19,7 +19,9 @@
 package org.apache.streams.example.test;
 
 import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
+import org.apache.streams.example.ElasticsearchHdfsConfiguration;
 import org.apache.streams.example.HdfsElasticsearch;
 import org.apache.streams.example.HdfsElasticsearchConfiguration;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -65,12 +67,13 @@ public class HdfsElasticsearchIT {
   @BeforeClass
   public void prepareTest() throws Exception {
 
-    Config reference  = ConfigFactory.load();
     File conf_file = new File("target/test-classes/HdfsElasticsearchIT.conf");
     assert(conf_file.exists());
+
     Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(HdfsElasticsearchConfiguration.class).detectConfiguration(typesafe);
+    StreamsConfigurator.addConfig(testResourceConfig);
+
+    testConfiguration = new StreamsConfigurator<>(HdfsElasticsearchConfiguration.class).detectCustomConfiguration();
     testClient = ElasticsearchClientManager.getInstance(testConfiguration.getDestination()).client();
 
     ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();
@@ -87,7 +90,7 @@ public class HdfsElasticsearchIT {
   }
 
   @Test
-  public void ElasticsearchHdfsIT() throws Exception {
+  public void HdfsElasticsearchIT() throws Exception {
 
     HdfsElasticsearch restore = new HdfsElasticsearch(testConfiguration);
 

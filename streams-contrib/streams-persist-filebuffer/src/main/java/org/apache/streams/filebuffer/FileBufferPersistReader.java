@@ -143,7 +143,7 @@ public class FileBufferPersistReader implements StreamsPersistReader, Serializab
 
     mapper = new ObjectMapper();
 
-    File file = new File( config.getPath());
+    File file = new File( config.getBuffer() );
 
     if ( !file.exists() ) {
       try {
