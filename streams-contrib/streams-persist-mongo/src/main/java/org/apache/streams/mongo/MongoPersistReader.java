@@ -84,8 +84,7 @@ public class MongoPersistReader implements StreamsPersistReader {
    * KafkaPersistReader constructor - resolves KafkaConfiguration from JVM 'mongo'.
    */
   public MongoPersistReader() {
-    this.config = new ComponentConfigurator<>(MongoConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("mongo"));
+    this.config = new ComponentConfigurator<>(MongoConfiguration.class).detectConfiguration();
   }
 
   /**
@@ -101,8 +100,7 @@ public class MongoPersistReader implements StreamsPersistReader {
    * @param persistQueue persistQueue
    */
   public MongoPersistReader(Queue<StreamsDatum> persistQueue) {
-    this.config = new ComponentConfigurator<>(MongoConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("mongo"));
+    this.config = new ComponentConfigurator<>(MongoConfiguration.class).detectConfiguration();
     this.persistQueue = persistQueue;
   }
 

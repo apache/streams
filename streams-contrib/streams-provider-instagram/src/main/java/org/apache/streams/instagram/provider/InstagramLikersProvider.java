@@ -98,12 +98,12 @@ public class InstagramLikersProvider extends InstagramAbstractProvider {
     Config reference = ConfigFactory.load();
     File file = new File(configfile);
     assert (file.exists());
+
     Config conf = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
+    StreamsConfigurator.addConfig(conf);
 
-    Config typesafe  = conf.withFallback(reference).resolve();
-
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    InstagramLikersProviderConfiguration config = new ComponentConfigurator<>(InstagramLikersProviderConfiguration.class).detectConfiguration(typesafe, "instagram");
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+    InstagramLikersProviderConfiguration config = new ComponentConfigurator<>(InstagramLikersProviderConfiguration.class).detectConfiguration();
     InstagramLikersProvider provider = new InstagramLikersProvider(config);
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));

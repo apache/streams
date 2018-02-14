@@ -18,10 +18,12 @@
 
 package org.apache.streams.local.builders;
 
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.core.StreamsProcessor;
+import org.apache.streams.local.LocalRuntimeConfiguration;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 import org.apache.streams.local.queues.ThroughputQueue;
 import org.apache.streams.local.test.processors.PassthroughDatumCounterProcessor;
@@ -168,7 +170,8 @@ public class LocalStreamBuilderTest extends RandomizedTest {
   private void linearStreamNonParallel(int numDatums, int numProcessors) {
     String processorId = "proc";
     try {
-      StreamBuilder builder = new LocalStreamBuilder(10);
+      LocalRuntimeConfiguration conf = new ComponentConfigurator<>(LocalRuntimeConfiguration.class).detectConfiguration();
+      StreamBuilder builder = new LocalStreamBuilder(conf.withMaxQueueCapacity(10l));
       builder.newPerpetualStream("numeric_provider", new NumericMessageProvider(numDatums));
       String connectTo;
       for(int i=0; i < numProcessors; ++i) {
@@ -202,7 +205,8 @@ public class LocalStreamBuilderTest extends RandomizedTest {
     int numProcessors = randomIntBetween(1, 10);
     int numDatums = randomIntBetween(1, 300000);
     try {
-      StreamBuilder builder = new LocalStreamBuilder(50);
+      LocalRuntimeConfiguration conf = new ComponentConfigurator<>(LocalRuntimeConfiguration.class).detectConfiguration();
+      StreamBuilder builder = new LocalStreamBuilder(conf.withMaxQueueCapacity(50l));
       builder.newPerpetualStream("numeric_provider", new NumericMessageProvider(numDatums));
       String connectTo;
       for(int i=0; i < numProcessors; ++i) {
@@ -263,7 +267,8 @@ public class LocalStreamBuilderTest extends RandomizedTest {
   public void testBasicBranch() {
     try {
       int numDatums = randomIntBetween(1, 300000);
-      StreamBuilder builder = new LocalStreamBuilder(50);
+      LocalRuntimeConfiguration conf = new ComponentConfigurator<>(LocalRuntimeConfiguration.class).detectConfiguration();
+      StreamBuilder builder = new LocalStreamBuilder(conf.withMaxQueueCapacity(50l));
       builder.newPerpetualStream("prov1", new NumericMessageProvider(numDatums))
           .addStreamsProcessor("proc1", new PassthroughDatumCounterProcessor("proc1"), 1, "prov1")
           .addStreamsProcessor("proc2", new PassthroughDatumCounterProcessor("proc2"), 1, "prov1")
@@ -284,10 +289,8 @@ public class LocalStreamBuilderTest extends RandomizedTest {
   public void testSlowProcessorBranch() {
     try {
       int numDatums = 30;
-      int timeout = 2000;
-      Map<String, Object> config = new HashMap<>();
-      config.put(LocalStreamBuilder.TIMEOUT_KEY, timeout);
-      StreamBuilder builder = new LocalStreamBuilder(config);
+      LocalRuntimeConfiguration conf = new ComponentConfigurator<>(LocalRuntimeConfiguration.class).detectConfiguration();
+      StreamBuilder builder = new LocalStreamBuilder(conf.withTaskTimeoutMs(2000l));
       builder.newPerpetualStream("prov1", new NumericMessageProvider(numDatums))
           .addStreamsProcessor("proc1", new SlowProcessor(), 1, "prov1")
           .addStreamsPersistWriter("w1", new DatumCounterWriter("writer"), 1, "proc1");
@@ -304,11 +307,13 @@ public class LocalStreamBuilderTest extends RandomizedTest {
   @Test
   public void testConfiguredProviderTimeout() {
     try {
-      Map<String, Object> config = new HashMap<>();
       int timeout = 10000;
-      config.put(LocalStreamBuilder.TIMEOUT_KEY, timeout);
       long start = System.currentTimeMillis();
-      StreamBuilder builder = new LocalStreamBuilder(-1, config);
+      LocalRuntimeConfiguration conf = new ComponentConfigurator<>(LocalRuntimeConfiguration.class).detectConfiguration();
+      StreamBuilder builder = new LocalStreamBuilder((LocalRuntimeConfiguration)conf
+        .withMaxQueueCapacity(-1l)
+        .withProviderTimeoutMs((long)timeout)
+      );
       builder.newPerpetualStream("prov1", new EmptyResultSetProvider())
           .addStreamsProcessor("proc1", new PassthroughDatumCounterProcessor("proc1"), 1, "prov1")
           .addStreamsProcessor("proc2", new PassthroughDatumCounterProcessor("proc2"), 1, "proc1")

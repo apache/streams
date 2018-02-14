@@ -27,11 +27,9 @@ import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.StreamsJacksonMapperConfiguration;
-import org.apache.streams.twitter.TwitterFollowingConfiguration;
-import org.apache.streams.twitter.TwitterUserInformationConfiguration;
+import org.apache.streams.twitter.config.TwitterFollowingConfiguration;
 import org.apache.streams.twitter.api.FollowersIdsRequest;
 import org.apache.streams.twitter.api.FollowersListRequest;
-import org.apache.streams.twitter.api.FollowingIdsRequest;
 import org.apache.streams.twitter.api.FriendsIdsRequest;
 import org.apache.streams.twitter.api.FriendsListRequest;
 import org.apache.streams.twitter.api.Twitter;
@@ -127,10 +125,12 @@ public class TwitterFollowingProvider implements StreamsProvider, Serializable {
 
     File file = new File(configfile);
     assert (file.exists());
-    Config testConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false)).withFallback(StreamsConfigurator.getConfig()).resolve();
 
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(testConfig);
-    TwitterFollowingConfiguration config = new ComponentConfigurator<>(TwitterFollowingConfiguration.class).detectConfiguration(testConfig, "twitter");
+    Config configFile = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults());
+    StreamsConfigurator.addConfig(configFile);
+
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+    TwitterFollowingConfiguration config = new ComponentConfigurator<>(TwitterFollowingConfiguration.class).detectConfiguration();
     TwitterFollowingProvider provider = new TwitterFollowingProvider(config);
 
     StreamsJacksonMapperConfiguration mapperConfiguration = new StreamsJacksonMapperConfiguration()
@@ -164,11 +164,11 @@ public class TwitterFollowingProvider implements StreamsProvider, Serializable {
   public static final int MAX_NUMBER_WAITING = 10000;
 
   public TwitterFollowingProvider() {
-    this.config = new ComponentConfigurator<>(TwitterFollowingConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
+    this.config = new ComponentConfigurator<>(TwitterFollowingConfiguration.class).detectConfiguration();
   }
 
-  public TwitterFollowingProvider(TwitterFollowingConfiguration config) {
-    this.config = config;
+  public TwitterFollowingProvider(TwitterFollowingConfiguration configurationObject) {
+    this.config = configurationObject;
   }
 
   @Override
@@ -177,6 +177,10 @@ public class TwitterFollowingProvider implements StreamsProvider, Serializable {
   }
 
   public void prepare(Object configurationObject) {
+
+    if( configurationObject instanceof TwitterFollowingConfiguration) {
+      this.config = (TwitterFollowingConfiguration) configurationObject;
+    }
 
     Objects.requireNonNull(config);
     Objects.requireNonNull(config.getOauth());

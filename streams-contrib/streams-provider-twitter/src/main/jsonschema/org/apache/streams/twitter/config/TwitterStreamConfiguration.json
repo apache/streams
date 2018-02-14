@@ -5,7 +5,7 @@
     ],
     "id": "#",
     "type": "object",
-    "javaType" : "org.apache.streams.twitter.TwitterStreamConfiguration",
+    "javaType" : "org.apache.streams.twitter.config.TwitterStreamConfiguration",
     "extends": {"$ref":"TwitterConfiguration.json"},
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {

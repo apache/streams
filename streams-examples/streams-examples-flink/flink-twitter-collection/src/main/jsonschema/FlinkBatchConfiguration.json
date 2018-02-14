@@ -8,5 +8,6 @@
   "javaInterfaces": ["java.io.Serializable"],
   "extends": {
     "$ref": "StreamsFlinkConfiguration.json"
-  }
+  },
+  "additionalProperties": false
 }

@@ -46,6 +46,11 @@ public class YoutubeUserActivityProviderIT {
     args[0] = configfile;
     args[1] = outfile;
 
+    File confFile = new File(configfile);
+    assert (confFile.exists());
+    assert (confFile.canRead());
+    assert (confFile.isFile());
+
     Thread testThread = new Thread(() -> {
       try {
         YoutubeUserActivityProvider.main(args);
@@ -66,7 +71,7 @@ public class YoutubeUserActivityProviderIT {
 
     while (outCounter.readLine() != null) {}
 
-    Assert.assertTrue(outCounter.getLineNumber() >= 250);
+    Assert.assertTrue(outCounter.getLineNumber() >= 100);
 
   }
 }

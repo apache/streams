@@ -5,7 +5,7 @@
     ],
     "id": "#",
     "type": "object",
-    "javaType" : "org.apache.streams.twitter.TwitterUserInformationConfiguration",
+    "javaType" : "org.apache.streams.twitter.config.TwitterUserInformationConfiguration",
     "extends": {"$ref":"TwitterConfiguration.json"},
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
@@ -18,8 +18,7 @@
         },
         "page_size": {
             "type": "integer",
-            "description": "Max items per page to request",
-            "default": 200
+            "description": "Max items per page to request"
         }
     }
 }

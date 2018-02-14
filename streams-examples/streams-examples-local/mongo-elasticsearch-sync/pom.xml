@@ -216,6 +216,16 @@
                         <artifactId>streams-persist-mongo</artifactId>
                         <version>${project.version}</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.apache.streams</groupId>
+                        <artifactId>streams-config</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.streams</groupId>
+                        <artifactId>streams-runtime-local</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
                 </dependencies>
             </plugin>
             <plugin>

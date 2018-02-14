@@ -91,11 +91,10 @@ public abstract class YoutubeProvider implements StreamsProvider {
 
   /**
    * YoutubeProvider constructor.
-   * Resolves config from JVM 'youtube'.
    */
   public YoutubeProvider() {
     this.config = new ComponentConfigurator<>(YoutubeConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("youtube"));
+        .detectConfiguration();
 
     Objects.requireNonNull(this.config.getApiKey());
   }

@@ -5,19 +5,17 @@
     ],
     "id": "#",
     "type": "object",
-    "javaType" : "org.apache.streams.twitter.TwitterTimelineProviderConfiguration",
+    "javaType" : "org.apache.streams.twitter.config.TwitterTimelineProviderConfiguration",
     "extends": {"$ref":"TwitterUserInformationConfiguration.json"},
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "max_items": {
             "type": "integer",
-            "description": "Max items per user to collect",
-            "default": 3200
+            "description": "Max items per user to collect"
         },
         "max_pages": {
             "type": "integer",
-            "description": "Max items per page to request",
-            "default": 16
+            "description": "Max items per page to request"
         }
     }
 }

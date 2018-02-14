@@ -41,6 +41,11 @@ public class GPlusUserActivityProviderIT {
     args[0] = configfile;
     args[1] = outfile;
 
+    File confFile = new File(configfile);
+    assert (confFile.exists());
+    assert (confFile.canRead());
+    assert (confFile.isFile());
+
     Thread testThread = new Thread(() -> {
       try {
         GPlusUserActivityProvider.main(args);

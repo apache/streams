@@ -19,6 +19,7 @@
 package org.apache.streams.example.test;
 
 import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.example.MongoElasticsearchSync;
 import org.apache.streams.example.MongoElasticsearchSyncConfiguration;
@@ -64,12 +65,13 @@ public class MongoElasticsearchSyncIT {
   @BeforeClass
   public void prepareTest() throws Exception {
 
-    Config reference  = ConfigFactory.load();
     File conf_file = new File("target/test-classes/MongoElasticsearchSyncIT.conf");
     assert(conf_file.exists());
+
     Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(MongoElasticsearchSyncConfiguration.class).detectConfiguration(typesafe);
+    StreamsConfigurator.addConfig(testResourceConfig);
+
+    testConfiguration = new StreamsConfigurator<>(MongoElasticsearchSyncConfiguration.class).detectCustomConfiguration();
     testClient = ElasticsearchClientManager.getInstance(testConfiguration.getDestination()).client();
 
     ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();

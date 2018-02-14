@@ -100,13 +100,12 @@ public class InstagramUserInfoProvider extends InstagramAbstractProvider {
     Config reference = ConfigFactory.load();
     File file = new File(configfile);
     assert (file.exists());
+
     Config conf = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
+    StreamsConfigurator.addConfig(conf);
 
-    Config typesafe  = conf.withFallback(reference).resolve();
-
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    InstagramUserInfoProviderConfiguration config = new ComponentConfigurator<>(InstagramUserInfoProviderConfiguration.class)
-        .detectConfiguration(typesafe, "instagram");
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+    InstagramUserInfoProviderConfiguration config = new ComponentConfigurator<>(InstagramUserInfoProviderConfiguration.class).detectConfiguration();
     InstagramUserInfoProvider provider = new InstagramUserInfoProvider(config);
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));

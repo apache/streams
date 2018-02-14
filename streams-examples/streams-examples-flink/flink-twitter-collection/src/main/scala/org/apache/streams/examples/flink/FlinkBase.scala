@@ -42,7 +42,7 @@ trait FlinkBase {
 
   var configUrl : String = _
   var typesafe : Config = _
-  var streamsConfig = StreamsConfigurator.detectConfiguration(StreamsConfigurator.getConfig)
+  var streamsConfig = StreamsConfigurator.detectConfiguration()
   var streamsFlinkConfiguration: StreamsFlinkConfiguration = _
 
   var executionEnvironment: ExecutionEnvironment = _
@@ -104,17 +104,6 @@ trait FlinkBase {
     }
   }
 
-  //  def setup(typesafe: Config): Boolean =  {
-  //
-  //    val streamsConfig = StreamsConfigurator.detectConfiguration(typesafe)
-  //
-  //    this.streamsConfig = streamsConfig
-  //
-  //    BASELOGGER.info("Streams Config: " + streamsConfig)
-  //
-  //    setup(streamsConfig)
-  //  }
-
   def setupStreaming(streamingConfiguration: FlinkStreamingConfiguration): Boolean = {
 
     BASELOGGER.info("FsStreamingFlinkConfiguration: " + streamingConfiguration)
@@ -150,7 +139,7 @@ trait FlinkBase {
       val env = ExecutionEnvironment.getExecutionEnvironment
       env
     } else {
-      val env = ExecutionEnvironment.createLocalEnvironment(config.getParallel.toInt)
+      val env = ExecutionEnvironment.createLocalEnvironment(config.getParallelism.toInt)
       env
     }
   }
@@ -175,7 +164,7 @@ trait FlinkBase {
       env
     }
 
-    else StreamExecutionEnvironment.createLocalEnvironment(config.getParallel.toInt)
+    else StreamExecutionEnvironment.createLocalEnvironment(config.getParallelism.toInt)
   }
 
   def buildReaderPath(configObject: HdfsReaderConfiguration) : String = {

@@ -19,6 +19,7 @@
 package org.apache.streams.example.test;
 
 import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.example.TwitterUserstreamElasticsearch;
 import org.apache.streams.example.TwitterUserstreamElasticsearchConfiguration;
@@ -28,6 +29,8 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
@@ -37,6 +40,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeClass;
@@ -44,6 +48,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 
+import static org.hamcrest.number.OrderingComparison.greaterThan;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -62,12 +67,13 @@ public class TwitterUserstreamElasticsearchIT {
   @BeforeClass
   public void prepareTest() throws Exception {
 
-    Config reference  = ConfigFactory.load();
     File conf_file = new File("target/test-classes/TwitterUserstreamElasticsearchIT.conf");
     assert(conf_file.exists());
+
     Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(TwitterUserstreamElasticsearchConfiguration.class).detectConfiguration(typesafe);
+    StreamsConfigurator.addConfig(testResourceConfig);
+    testConfiguration = new StreamsConfigurator<>(TwitterUserstreamElasticsearchConfiguration.class).detectCustomConfiguration();
+
     testClient = ElasticsearchClientManager.getInstance(testConfiguration.getElasticsearch()).client();
 
     ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();
@@ -76,11 +82,16 @@ public class TwitterUserstreamElasticsearchIT {
 
     IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getElasticsearch().getIndex());
     IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
+
     if(indicesExistsResponse.isExists()) {
       DeleteIndexRequest deleteIndexRequest = Requests.deleteIndexRequest(testConfiguration.getElasticsearch().getIndex());
       DeleteIndexResponse deleteIndexResponse = testClient.admin().indices().delete(deleteIndexRequest).actionGet();
       assertTrue(deleteIndexResponse.isAcknowledged());
     };
+
+    CreateIndexRequest createIndexRequest = Requests.createIndexRequest(testConfiguration.getElasticsearch().getIndex());
+    CreateIndexResponse createIndexResponse = testClient.admin().indices().create(createIndexRequest).actionGet();
+    assertTrue(createIndexResponse.isAcknowledged());
 
   }
 
@@ -91,7 +102,7 @@ public class TwitterUserstreamElasticsearchIT {
 
     Thread thread = new Thread(stream);
     thread.start();
-    thread.join(30000);
+    thread.join(60000);
 
     // assert lines in file
     SearchRequestBuilder countRequest = testClient
@@ -101,6 +112,6 @@ public class TwitterUserstreamElasticsearchIT {
 
     count = (int)countResponse.getHits().getTotalHits();
 
-    assertNotEquals(count, 0);
+    assert(count > 0);
   }
 }

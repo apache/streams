@@ -95,8 +95,7 @@ public class SimpleHttpProvider implements StreamsProvider {
    * SimpleHttpProvider constructor - resolves HttpProcessorConfiguration from JVM 'http'.
    */
   public SimpleHttpProvider() {
-    this(new ComponentConfigurator<>(HttpProviderConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("http")));
+    this(new ComponentConfigurator<>(HttpProviderConfiguration.class).detectConfiguration());
   }
 
   /**

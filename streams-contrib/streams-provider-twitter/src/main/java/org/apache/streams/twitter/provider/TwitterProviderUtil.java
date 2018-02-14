@@ -19,7 +19,7 @@
 
 package org.apache.streams.twitter.provider;
 
-import org.apache.streams.twitter.TwitterConfiguration;
+import org.apache.streams.twitter.config.TwitterConfiguration;
 
 /**
  * TwitterProviderUtil contains utilities for Twitter Providers.

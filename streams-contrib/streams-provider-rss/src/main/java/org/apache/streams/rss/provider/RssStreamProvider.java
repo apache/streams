@@ -77,12 +77,12 @@ public class RssStreamProvider implements StreamsProvider {
 
   public RssStreamProvider() {
     this(new ComponentConfigurator<>(RssStreamConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("rss")), false);
+        .detectConfiguration(), false);
   }
 
   public RssStreamProvider(boolean perpetual) {
     this(new ComponentConfigurator<>(RssStreamConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("rss")), perpetual);
+        .detectConfiguration(), perpetual);
   }
 
   public RssStreamProvider(RssStreamConfiguration config) {

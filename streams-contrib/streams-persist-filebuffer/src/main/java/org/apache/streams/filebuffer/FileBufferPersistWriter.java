@@ -56,8 +56,7 @@ public class FileBufferPersistWriter implements StreamsPersistWriter, Serializab
   private QueueFile queueFile;
 
   public FileBufferPersistWriter() {
-    this(new ComponentConfigurator<>(FileBufferConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("filebuffer")));
+    this(new ComponentConfigurator<>(FileBufferConfiguration.class).detectConfiguration());
   }
 
   public FileBufferPersistWriter(FileBufferConfiguration config) {
@@ -91,7 +90,7 @@ public class FileBufferPersistWriter implements StreamsPersistWriter, Serializab
 
     mapper = new ObjectMapper();
 
-    File file = new File( config.getPath());
+    File file = new File( config.getBuffer() );
 
     try {
       queueFile = new QueueFile(file);
