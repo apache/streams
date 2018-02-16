@@ -24,6 +24,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
 import com.typesafe.config.ConfigResolveOptions;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,8 +132,24 @@ public class StreamsConfigurator<T extends StreamsConfiguration> {
   }
 
   public T detectCustomConfiguration() {
-
     Config rootConfig = getConfig();
+    return detectCustomConfiguration(rootConfig);
+  }
+
+  public T detectCustomConfiguration(String path) {
+    Config rootConfig = getConfig();
+    return detectCustomConfiguration(rootConfig, path);
+  }
+
+  public T detectCustomConfiguration(Config rootConfig) {
+    return detectCustomConfiguration(rootConfig, "");
+  }
+
+  public T detectCustomConfiguration(Config rootConfig, String path) {
+
+    if( StringUtils.isNotBlank(path) && rootConfig.hasPath(path) ) {
+      rootConfig = rootConfig.getConfig(path);
+    }
 
     // for each field of the top-level configuration,
     //    populate using a ComponentConfigurator from its type.

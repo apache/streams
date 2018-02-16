@@ -130,6 +130,89 @@ public class StreamsConfiguratorTest {
 
     StreamsConfigurationForTesting customPojo = configurator.detectCustomConfiguration();
 
+    verifyCustomStreamsConfiguration(customPojo);
+
+  }
+
+  /**
+   * Test that a class which uses a configuration class with StreamsConfiguration
+   * as an ancestor can use a typed StreamsConfigurator and detectCustomConfiguration
+   * to populate its fields using ComponentConfigurators automatically, using a
+   * a custom Configuration.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testDetectCustomStreamsConfigurationProvideConfig() throws Exception {
+
+    Config base = StreamsConfigurator.getConfig();
+
+    Config overrides = ConfigFactory.parseResourcesAnySyntax("custom.conf");
+
+    Config combined = overrides.withFallback(base);
+
+    StreamsConfigurator<StreamsConfigurationForTesting> configurator = new StreamsConfigurator<>(StreamsConfigurationForTesting.class);
+
+    StreamsConfigurationForTesting customPojo = configurator.detectCustomConfiguration(combined);
+
+    verifyCustomStreamsConfiguration(customPojo);
+
+  }
+
+  /**
+   * Test that a class which uses a configuration class with StreamsConfiguration
+   * as an ancestor can use a typed StreamsConfigurator and detectCustomConfiguration
+   * to populate its fields using ComponentConfigurators automatically, sourced using
+   * a provided child path.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testDetectCustomStreamsConfigurationProvidePath() throws Exception {
+
+    String testPath = "childPath";
+
+    Config base = StreamsConfigurator.getConfig();
+
+    Config overrides = ConfigFactory.parseResourcesAnySyntax("customChild.conf");
+
+    Config combined = overrides.withFallback(base);
+
+    StreamsConfigurator<StreamsConfigurationForTesting> configurator = new StreamsConfigurator<>(StreamsConfigurationForTesting.class);
+
+    StreamsConfigurationForTesting customPojo = configurator.detectCustomConfiguration(combined, testPath);
+
+    verifyCustomStreamsConfiguration(customPojo);
+  }
+
+  /**
+   * Test that a class which uses a configuration class with StreamsConfiguration
+   * as an ancestor can use a typed StreamsConfigurator and detectCustomConfiguration
+   * to populate its fields using ComponentConfigurators automatically, sourced using a
+   * a custom Configuration and a child path.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testDetectCustomStreamsConfigurationProvideConfigAndPath() throws Exception {
+
+    String testPath = "testPath";
+
+    Config base = StreamsConfigurator.getConfig().atPath(testPath);
+
+    Config overrides = ConfigFactory.parseResourcesAnySyntax("custom.conf").atPath(testPath);
+
+    Config combined = overrides.withFallback(base);
+
+    StreamsConfigurator<StreamsConfigurationForTesting> configurator = new StreamsConfigurator<>(StreamsConfigurationForTesting.class);
+
+    StreamsConfigurationForTesting customPojo = configurator.detectCustomConfiguration(combined, testPath);
+
+    verifyCustomStreamsConfiguration(customPojo);
+
+  }
+
+  private void verifyCustomStreamsConfiguration(StreamsConfigurationForTesting customPojo) {
     Assert.assertThat(customPojo, is(notNullValue()));
 
     Assert.assertThat(customPojo.getParallelism(), is(notNullValue()));
@@ -148,6 +231,6 @@ public class StreamsConfiguratorTest {
     Assert.assertThat(customPojo.getComponentTwo().getOutClasses(), is(notNullValue()));
     Assert.assertThat(customPojo.getComponentTwo().getOutClasses().size(), is(greaterThan(0)));
     Assert.assertThat(customPojo.getComponentTwo().getOutClasses().get(0), equalTo("java.lang.Double"));
-
   }
+
 }
