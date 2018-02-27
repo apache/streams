@@ -155,7 +155,7 @@ public class ComponentConfigurator<T extends Serializable> {
       }
     }
 
-    if( StringUtils.isNotBlank(path) && rootConfig.hasPath(path) ) {
+    if( StringUtils.isNotBlank(path) && !StringUtils.startsWith(path, "$") && rootConfig.hasPath(path) ) {
       Config pathConfig = rootConfig.getConfig(path);
       if( cascadeConfig == null ) {
         cascadeConfig = pathConfig;

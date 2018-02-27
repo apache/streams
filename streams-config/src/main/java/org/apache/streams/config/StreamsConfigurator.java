@@ -24,6 +24,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
 import com.typesafe.config.ConfigResolveOptions;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,9 +172,11 @@ public class StreamsConfigurator<T extends StreamsConfiguration> {
 
     for( Field field : fields ) {
       Class type = field.getType();
-      ComponentConfigurator configurator = new ComponentConfigurator(type);
-      Serializable fieldValue = configurator.detectConfiguration(field.getName());
-      pojoMap.put(field.getName(), fieldValue);
+      if( type != String.class && !ClassUtils.isPrimitiveOrWrapper(type) ) {
+        ComponentConfigurator configurator = new ComponentConfigurator(type);
+        Serializable fieldValue = configurator.detectConfiguration(field.getName());
+        pojoMap.put(field.getName(), fieldValue);
+      }
     }
 
     T pojoConfig = null;
