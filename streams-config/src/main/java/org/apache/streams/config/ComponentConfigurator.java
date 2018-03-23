@@ -171,11 +171,13 @@ public class ComponentConfigurator<T extends Serializable> {
       }
     }
 
-    try {
-      pojoConfig = mapper.readValue(cascadeConfig.root().render(ConfigRenderOptions.concise()), configClass);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      LOGGER.warn("Could not parse:", cascadeConfig);
+    if( cascadeConfig != null && cascadeConfig.root() != null) {
+      try {
+        pojoConfig = mapper.readValue(cascadeConfig.root().render(ConfigRenderOptions.concise()), configClass);
+      } catch (Exception ex) {
+        ex.printStackTrace();
+        LOGGER.warn("Could not parse:", cascadeConfig);
+      }
     }
 
     return pojoConfig;

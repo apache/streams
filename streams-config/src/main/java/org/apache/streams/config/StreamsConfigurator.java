@@ -174,8 +174,14 @@ public class StreamsConfigurator<T extends StreamsConfiguration> {
       Class type = field.getType();
       if( type != String.class && !ClassUtils.isPrimitiveOrWrapper(type) ) {
         ComponentConfigurator configurator = new ComponentConfigurator(type);
-        Serializable fieldValue = configurator.detectConfiguration(field.getName());
-        pojoMap.put(field.getName(), fieldValue);
+        try {
+          Serializable fieldValue = configurator.detectConfiguration(field.getName());
+          if (fieldValue != null) {
+            pojoMap.put(field.getName(), fieldValue);
+          }
+        } catch( Exception e ) {
+          // we swallow any parsing problems that happen at this level
+        }
       }
     }
 
