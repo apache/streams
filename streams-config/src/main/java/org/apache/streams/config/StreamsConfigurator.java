@@ -148,8 +148,11 @@ public class StreamsConfigurator<T extends StreamsConfiguration> {
 
   public T detectCustomConfiguration(Config rootConfig, String path) {
 
+    Config subConfig = null;
     if( StringUtils.isNotBlank(path) && rootConfig.hasPath(path) ) {
-      rootConfig = rootConfig.getConfig(path);
+      subConfig = rootConfig.getConfig(path);
+    } else {
+      subConfig = rootConfig;
     }
 
     // for each field of the top-level configuration,
@@ -175,7 +178,7 @@ public class StreamsConfigurator<T extends StreamsConfiguration> {
       if( type != String.class && !ClassUtils.isPrimitiveOrWrapper(type) ) {
         ComponentConfigurator configurator = new ComponentConfigurator(type);
         try {
-          Serializable fieldValue = configurator.detectConfiguration(field.getName());
+          Serializable fieldValue = configurator.detectConfiguration(subConfig, field.getName());
           if (fieldValue != null) {
             pojoMap.put(field.getName(), fieldValue);
           }
