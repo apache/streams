@@ -10,6 +10,7 @@
         "$ref": "../../../../../streams-config/src/main/jsonschema/StreamsConfiguration.json"
     },
     "javaInterfaces": ["java.io.Serializable"],
+    "additionalProperties": false,
     "properties": {
         "maxQueueCapacity": {
             "type": "integer",

@@ -20,6 +20,7 @@ package org.apache.streams.local.builders;
 
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.DatumStatusCountable;
 import org.apache.streams.core.StreamBuilder;
 import org.apache.streams.core.StreamsPersistWriter;
@@ -88,7 +89,7 @@ public class LocalStreamBuilder implements StreamBuilder {
    * Creates a local stream builder with all configuration resolved by typesafe
    */
   public LocalStreamBuilder() {
-    localRuntimeConfiguration = new ComponentConfigurator<>(LocalRuntimeConfiguration.class).detectConfiguration();
+    localRuntimeConfiguration = new StreamsConfigurator<>(LocalRuntimeConfiguration.class).detectCustomConfiguration();
     monitoringConfiguration = new ComponentConfigurator<>(MonitoringConfiguration.class).detectConfiguration();
   }
 
@@ -98,7 +99,7 @@ public class LocalStreamBuilder implements StreamBuilder {
   }
 
   public LocalStreamBuilder(MonitoringConfiguration monitoringConfiguration) {
-    this.localRuntimeConfiguration = new ComponentConfigurator<>(LocalRuntimeConfiguration.class).detectConfiguration();
+    this.localRuntimeConfiguration = new StreamsConfigurator<>(LocalRuntimeConfiguration.class).detectCustomConfiguration();
     this.monitoringConfiguration = monitoringConfiguration;
   }
 
@@ -451,16 +452,6 @@ public class LocalStreamBuilder implements StreamBuilder {
   protected int getTimeout() {
     //Set the timeout of it is configured, otherwise signal downstream components to use their default
     return localRuntimeConfiguration.getProviderTimeoutMs().intValue();
-  }
-
-  private LocalRuntimeConfiguration convertConfiguration(Map<String, Object> streamConfig) {
-    LocalRuntimeConfiguration config = new LocalRuntimeConfiguration();
-    if( streamConfig != null ) {
-      for( Map.Entry<String, Object> item : streamConfig.entrySet() ) {
-        config.setAdditionalProperty(item.getKey(), item.getValue());
-      }
-    }
-    return config;
   }
 
 }
