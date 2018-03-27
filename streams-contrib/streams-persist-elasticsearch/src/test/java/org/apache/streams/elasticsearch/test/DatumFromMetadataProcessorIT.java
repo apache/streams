@@ -43,9 +43,7 @@ import static org.testng.Assert.assertTrue;
  * Integration Test for
  * @see org.apache.streams.elasticsearch.processor.DatumFromMetadataProcessor
  */
-@Test(  groups={"DatumFromMetadataProcessorIT"},
-        dependsOnGroups={"ElasticsearchPersistWriterIT"}
-     )
+@Test
 public class DatumFromMetadataProcessorIT {
 
   private ElasticsearchReaderConfiguration testConfiguration;
@@ -61,12 +59,7 @@ public class DatumFromMetadataProcessorIT {
   @BeforeClass
   public void prepareTestDatumFromMetadataProcessor() throws Exception {
 
-    Config reference  = ConfigFactory.load();
-    File conf_file = new File("target/test-classes/DatumFromMetadataProcessorIT.conf");
-    assertTrue(conf_file.exists());
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class).detectConfiguration(typesafe, "elasticsearch");
+    testConfiguration = new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class).detectConfiguration( "DatumFromMetadataProcessorIT");
     testClient = ElasticsearchClientManager.getInstance(testConfiguration).client();
 
   }

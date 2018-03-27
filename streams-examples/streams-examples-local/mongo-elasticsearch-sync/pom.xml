@@ -26,8 +26,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>streams-mongo-elasticsearch-sync</artifactId>
-    <name>mongo-elasticsearch-sync</name>
+    <artifactId>streams-example-mongo-elasticsearch-sync</artifactId>
+    <name>streams-example-mongo-elasticsearch-sync</name>
 
     <description>Copies documents from mongodb to elasticsearch.</description>
 
@@ -254,9 +254,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <configuration>
-                    <includes>**/*.json,**/*.conf</includes>
+                    <includes>**/*.json</includes>
                     <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
                     <includeGroupIds>org.apache.streams</includeGroupIds>
+                    <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
                     <includeTypes>test-jar</includeTypes>
                 </configuration>
                 <executions>
@@ -286,7 +287,117 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <phase>
+                            pre-integration-test
+                        </phase>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                        <phase>
+                            post-integration-test
+                        </phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dockerITs</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>skipITs</name>
+                    <value>false</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <configuration combine.self="override">
+                            <startParallel>true</startParallel>
+                            <watchInterval>500</watchInterval>
+                            <logDate>default</logDate>
+                            <verbose>true</verbose>
+                            <autoPull>on</autoPull>
+                            <images>
+                                <image>
+                                    <name>elasticsearch:2.3.5</name>
+                                    <alias>elasticsearch</alias>
+                                    <run>
+                                        <namingStrategy>none</namingStrategy>
+                                        <ports>
+                                            <port>${http.host}:${http.port}:9200</port>
+                                            <port>${tcp.host}:${tcp.port}:9300</port>
+                                        </ports>
+                                        <portPropertyFile>elasticsearch.properties</portPropertyFile>
+                                        <wait>
+                                            <http>
+                                                <url>http://${http.host}:${http.port}</url>
+                                                <method>GET</method>
+                                                <status>200</status>
+                                            </http>
+                                            <time>30000</time>
+                                            <kill>1000</kill>
+                                            <shutdown>500</shutdown>
+                                        </wait>
+                                        <log>
+                                            <enabled>true</enabled>
+                                            <date>default</date>
+                                            <color>cyan</color>
+                                        </log>
+                                    </run>
+                                    <watch>
+                                        <mode>none</mode>
+                                    </watch>
+                                </image>
+                                <image>
+                                    <name>mongo:3.2.0</name>
+                                    <alias>mongo</alias>
+                                    <run>
+                                        <namingStrategy>none</namingStrategy>
+                                        <ports>
+                                            <port>${tcp.host}:${tcp.port}:27017</port>
+                                        </ports>
+                                        <portPropertyFile>mongo.properties</portPropertyFile>
+                                        <log>
+                                            <enabled>true</enabled>
+                                            <date>default</date>
+                                            <color>cyan</color>
+                                        </log>
+                                        <wait>
+                                            <log>waiting for connections on port 27017</log>
+                                            <time>60000</time>
+                                        </wait>
+                                    </run>
+                                    <watch>
+                                        <mode>none</mode>
+                                    </watch>
+                                </image>
+                            </images>
+                        </configuration>
+
+                    </plugin>
+
+                </plugins>
+            </build>
+
+        </profile>
+    </profiles>
 
 </project>

@@ -28,6 +28,10 @@ import org.apache.streams.riak.binary.RiakBinaryPersistReader;
 import org.apache.streams.riak.binary.RiakBinaryPersistWriter;
 import org.apache.streams.riak.pojo.RiakConfiguration;
 
+import com.basho.riak.client.api.RiakCommand;
+import com.basho.riak.client.api.commands.buckets.ListBuckets;
+import com.basho.riak.client.core.NodeStateListener;
+import com.basho.riak.client.core.RiakNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -46,6 +50,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.testng.Assert.assertTrue;
 
@@ -63,16 +70,19 @@ public class RiakBinaryPersistIT {
   private RiakConfiguration testConfiguration;
 
   @BeforeClass
-  public void prepareTest() throws IOException {
+  public void prepareTest() throws Exception {
 
-    Config reference  = ConfigFactory.load();
-    File conf = new File("target/test-classes/RiakBinaryPersistIT.conf");
-    assertTrue(conf.exists());
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(RiakConfiguration.class).detectConfiguration(typesafe, "riak");
+    testConfiguration = new ComponentConfigurator<>(RiakConfiguration.class).detectConfiguration( "RiakBinaryPersistIT");
     testClient = RiakBinaryClient.getInstance(testConfiguration);
 
+    Assert.assertTrue(testClient.client().getRiakCluster().getNodes().size() > 0);
+
+    Thread.sleep(10000);
+    
+    ListBuckets.Builder builder = new ListBuckets.Builder("default");
+
+    testClient.client().execute(builder.build(), 30, TimeUnit.SECONDS);
+  
   }
 
   @Test
@@ -107,6 +117,7 @@ public class RiakBinaryPersistIT {
     testPersistReader.prepare(testConfiguration);
 
     StreamsResultSet readerResultSet = testPersistReader.readAll();
+    Assert.assertNotNull(readerResultSet);
     LOGGER.info("Total Read: {}", readerResultSet.size() );
     Assert.assertEquals(readerResultSet.size(), 89);
 

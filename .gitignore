@@ -23,6 +23,14 @@ NOTICE
 /*.conf
 /*.properties
 
+# Docker Maven Plugin property files
+cassandra.properties
+elasticsearch.properties
+hbase.properties
+mongo.properties
+neo4j.properties
+riak.properties
+
 # OS generated files #
 .DS_Store
 .DS_Store?

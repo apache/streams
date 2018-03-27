@@ -332,7 +332,7 @@
         <clean.plugin.version>2.6</clean.plugin.version>
         <dependency.plugin.version>2.10</dependency.plugin.version>
         <depgraph.plugin.version>1.0.3</depgraph.plugin.version>
-        <docker.plugin.version>0.15.0</docker.plugin.version>
+        <docker.plugin.version>0.24.0</docker.plugin.version>
         <download.plugin.version>1.2.1</download.plugin.version>
         <enforcer.plugin.version>1.4.1</enforcer.plugin.version>
         <failsafe.plugin.version>2.19.1</failsafe.plugin.version>

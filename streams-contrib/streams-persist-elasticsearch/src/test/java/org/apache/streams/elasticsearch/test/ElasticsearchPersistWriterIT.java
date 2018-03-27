@@ -61,9 +61,6 @@ import static org.testng.Assert.assertTrue;
  * @see org.apache.streams.elasticsearch.ElasticsearchPersistWriter
  */
 @Test
-    (
-        groups={"ElasticsearchPersistWriterIT"}
-    )
 public class ElasticsearchPersistWriterIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchPersistWriterIT.class);
@@ -76,12 +73,7 @@ public class ElasticsearchPersistWriterIT {
   @BeforeClass
   public void prepareTestPersistWriter() throws Exception {
 
-    Config reference  = ConfigFactory.load();
-    File conf_file = new File("target/test-classes/ElasticsearchPersistWriterIT.conf");
-    assertTrue(conf_file.exists());
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration(typesafe, "elasticsearch");
+    testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration("ElasticsearchPersistWriterIT");
     testClient = ElasticsearchClientManager.getInstance(testConfiguration).client();
 
     ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();

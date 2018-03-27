@@ -73,9 +73,6 @@ import static org.testng.Assert.assertTrue;
  * using parent/child associated documents.
  */
 @Test
-    (
-        groups={"ElasticsearchParentChildWriterIT"}
-    )
 public class ElasticsearchParentChildWriterIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchParentChildWriterIT.class);
@@ -92,12 +89,7 @@ public class ElasticsearchParentChildWriterIT {
   @BeforeClass
   public void prepareTestParentChildPersistWriter() throws Exception {
 
-    Config reference  = ConfigFactory.load();
-    File conf_file = new File("target/test-classes/ElasticsearchParentChildWriterIT.conf");
-    assertTrue(conf_file.exists());
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration(typesafe, "elasticsearch");
+    testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration( "ElasticsearchParentChildWriterIT");
     testClient = ElasticsearchClientManager.getInstance(testConfiguration).client();
 
     ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();

@@ -63,11 +63,6 @@ public class TwitterHistoryElasticsearchIT {
   @BeforeClass
   public void prepareTest() throws Exception {
 
-    File conf_file = new File("target/test-classes/TwitterHistoryElasticsearchIT.conf");
-    assert(conf_file.exists());
-
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    StreamsConfigurator.addConfig(testResourceConfig);
     testConfiguration = new StreamsConfigurator<>(TwitterHistoryElasticsearchConfiguration.class).detectCustomConfiguration();
 
     testClient = ElasticsearchClientManager.getInstance(testConfiguration.getElasticsearch()).client();
@@ -78,6 +73,7 @@ public class TwitterHistoryElasticsearchIT {
 
     IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getElasticsearch().getIndex());
     IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
+
     if(indicesExistsResponse.isExists()) {
       DeleteIndexRequest deleteIndexRequest = Requests.deleteIndexRequest(testConfiguration.getElasticsearch().getIndex());
       DeleteIndexResponse deleteIndexResponse = testClient.admin().indices().delete(deleteIndexRequest).actionGet();

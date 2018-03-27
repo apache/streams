@@ -175,6 +175,30 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <phase>
+                            pre-integration-test
+                        </phase>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                        <phase>
+                            post-integration-test
+                        </phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -198,16 +222,21 @@
                             <logDate>default</logDate>
                             <verbose>true</verbose>
                             <autoPull>on</autoPull>
+                            <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
                             <images>
                                 <image>
-                                    <name>cassandra:3.9</name>
+                                    <name>cassandra:3.11</name>
                                     <alias>cassandra</alias>
                                     <run>
                                         <namingStrategy>none</namingStrategy>
                                         <ports>
-                                            <port>${cassandra.tcp.host}:${cassandra.tcp.port}:9042</port>
+                                            <port>${tcp.host}:${tcp.port}:9042</port>
                                         </ports>
                                         <portPropertyFile>cassandra.properties</portPropertyFile>
+                                        <wait>
+                                            <log>Starting listening for CQL clients on /0.0.0.0:9042</log>
+                                            <time>60000</time>
+                                        </wait>
                                         <log>
                                             <enabled>true</enabled>
                                             <date>default</date>
@@ -220,7 +249,6 @@
                                 </image>
                             </images>
                         </configuration>
-
                     </plugin>
 
                 </plugins>

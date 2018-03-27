@@ -67,11 +67,6 @@ public class TwitterUserstreamElasticsearchIT {
   @BeforeClass
   public void prepareTest() throws Exception {
 
-    File conf_file = new File("target/test-classes/TwitterUserstreamElasticsearchIT.conf");
-    assert(conf_file.exists());
-
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    StreamsConfigurator.addConfig(testResourceConfig);
     testConfiguration = new StreamsConfigurator<>(TwitterUserstreamElasticsearchConfiguration.class).detectCustomConfiguration();
 
     testClient = ElasticsearchClientManager.getInstance(testConfiguration.getElasticsearch()).client();

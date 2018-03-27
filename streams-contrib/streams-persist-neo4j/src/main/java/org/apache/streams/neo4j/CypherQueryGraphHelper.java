@@ -25,8 +25,11 @@ import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.util.PropertyUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
@@ -40,13 +43,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nullable;
 
 /**
  * Supporting class for interacting with neo4j via rest API
  */
 public class CypherQueryGraphHelper implements QueryGraphHelper, Serializable {
 
-  private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
+  private static final ObjectMapper MAPPER = StreamsJacksonMapper.getInstance()
+    .configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false)
+    .configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CypherQueryGraphHelper.class);
 

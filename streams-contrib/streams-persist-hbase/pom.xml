@@ -140,6 +140,30 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <phase>
+                            pre-integration-test
+                        </phase>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                        <phase>
+                            post-integration-test
+                        </phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -170,21 +194,15 @@
                                     <run>
                                         <namingStrategy>none</namingStrategy>
                                         <ports>
-                                            <port>${zookeeper.tcp.host}:${zookeeper.tcp.port}:2181</port>
-                                            <port>${hbase.tcp.host}:${hbase.tcp.port}:60000</port>
-                                            <port>${hbase.http.host}:${hbase.http.port}:60010</port>
+                                            <port>${tcp.host}:${tcp.port}:60000</port>
+                                            <port>${http.host}:${http.port}:60010</port>
                                         </ports>
                                         <portPropertyFile>hbase.properties</portPropertyFile> --&gt;
                                         <wait>
-                                            <log>hbase startup</log>
-                                            <http>
-                                                <url>http://${hbase.http.host}:${hbase.http.port}</url>
-                                                <method>GET</method>
-                                                <status>200</status>
-                                            </http>
+                                            <log>Master has completed initialization</log>
                                             <time>30000</time>
-                                            <kill>1000</kill>
-                                            <shutdown>500</shutdown>
+                                            <kill>5000</kill>
+                                            <shutdown>5000</shutdown>
                                         </wait>
                                         <log>
                                             <enabled>true</enabled>
