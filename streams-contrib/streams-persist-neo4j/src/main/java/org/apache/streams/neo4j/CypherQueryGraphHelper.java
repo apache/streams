@@ -28,8 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
