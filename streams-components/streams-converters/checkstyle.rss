@@ -116,20 +116,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-components/streams-converters/checkstyle.html#org.apache.streams.converter.BaseStringActivityConverter.java">org/apache/streams/converter/BaseStringActivityConverter.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  21
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-components/streams-converters/checkstyle.html#org.apache.streams.converter.FieldConstants.java">org/apache/streams/converter/FieldConstants.java</a>
                 </td>
                 <td>
@@ -140,6 +126,20 @@ under the License.
                 </td>
                 <td>
                   6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-components/streams-converters/checkstyle.html#org.apache.streams.converter.BaseStringActivityConverter.java">org/apache/streams/converter/BaseStringActivityConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  21
                 </td>
               </tr>
                           <tr>
@@ -181,7 +181,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  67
+                  66
                 </td>
               </tr>
                           <tr>
@@ -237,7 +237,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  58
+                  59
                 </td>
               </tr>
                           <tr>

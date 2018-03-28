@@ -26,7 +26,7 @@ under the License.
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
       <title>File: 56,
-             Errors: 2457,
+             Errors: 2458,
              Warnings: 0,
              Infos: 0
       </title>
@@ -153,7 +153,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  49
+                  48
                 </td>
               </tr>
                           <tr>
@@ -167,7 +167,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  12
+                  13
                 </td>
               </tr>
                           <tr>
@@ -181,7 +181,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  41
+                  42
                 </td>
               </tr>
                           <tr>
@@ -265,7 +265,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  49
+                  50
                 </td>
               </tr>
                           <tr>
@@ -321,7 +321,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  14
+                  15
                 </td>
               </tr>
                           <tr>
@@ -377,7 +377,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  65
+                  66
                 </td>
               </tr>
                           <tr>
@@ -405,7 +405,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  41
+                  42
                 </td>
               </tr>
                           <tr>
@@ -433,7 +433,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  20
+                  19
                 </td>
               </tr>
                           <tr>
@@ -452,20 +452,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.api.Pagination.java">org/apache/streams/instagram/api/Pagination.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  39
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.api.SearchUsersRequest.java">org/apache/streams/instagram/api/SearchUsersRequest.java</a>
                 </td>
                 <td>
@@ -476,6 +462,20 @@ under the License.
                 </td>
                 <td>
                   46
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.api.Pagination.java">org/apache/streams/instagram/api/Pagination.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  39
                 </td>
               </tr>
                           <tr>
@@ -573,12 +573,12 @@ under the License.
                   0
                 </td>
                 <td>
-                  60
+                  59
                 </td>
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.api.CommentsResponse.java">org/apache/streams/instagram/api/CommentsResponse.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.api.UsersInfoResponse.java">org/apache/streams/instagram/api/UsersInfoResponse.java</a>
                 </td>
                 <td>
                   0
@@ -592,7 +592,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.api.UsersInfoResponse.java">org/apache/streams/instagram/api/UsersInfoResponse.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-instagram/checkstyle.html#org.apache.streams.instagram.api.CommentsResponse.java">org/apache/streams/instagram/api/CommentsResponse.java</a>
                 </td>
                 <td>
                   0
@@ -615,7 +615,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  23
+                  22
                 </td>
               </tr>
                           <tr>
@@ -657,7 +657,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  21
+                  20
                 </td>
               </tr>
                           <tr>
@@ -741,7 +741,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  27
+                  28
                 </td>
               </tr>
                           <tr>
@@ -825,7 +825,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  39
+                  38
                 </td>
               </tr>
                       </tbody>

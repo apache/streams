@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 42,
-             Errors: 2542,
+      <title>File: 43,
+             Errors: 2574,
              Warnings: 0,
              Infos: 0
       </title>
@@ -83,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  15
+                  16
                 </td>
               </tr>
                           <tr>
@@ -111,7 +111,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  21
+                  24
                 </td>
               </tr>
                           <tr>
@@ -181,7 +181,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  40
+                  41
                 </td>
               </tr>
                           <tr>
@@ -195,7 +195,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  50
+                  49
                 </td>
               </tr>
                           <tr>
@@ -209,21 +209,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  21
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.Post.java">org/apache/streams/facebook/Post.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  266
+                  22
                 </td>
               </tr>
                           <tr>
@@ -238,6 +224,20 @@ under the License.
                 </td>
                 <td>
                   396
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.Post.java">org/apache/streams/facebook/Post.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  266
                 </td>
               </tr>
                           <tr>
@@ -279,7 +279,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  28
+                  27
                 </td>
               </tr>
                           <tr>
@@ -293,7 +293,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  39
+                  42
                 </td>
               </tr>
                           <tr>
@@ -391,7 +391,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  12
+                  13
                 </td>
               </tr>
                           <tr>
@@ -461,7 +461,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  17
+                  20
                 </td>
               </tr>
                           <tr>
@@ -489,7 +489,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  44
+                  43
                 </td>
               </tr>
                           <tr>
@@ -630,6 +630,20 @@ under the License.
                 </td>
                 <td>
                   40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-facebook/checkstyle.html#org.apache.streams.facebook.FacebookPageFeedProviderConfiguration.java">org/apache/streams/facebook/FacebookPageFeedProviderConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
                 </td>
               </tr>
                       </tbody>

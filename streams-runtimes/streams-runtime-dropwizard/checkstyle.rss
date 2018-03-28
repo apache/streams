@@ -26,7 +26,7 @@ under the License.
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
       <title>File: 6,
-             Errors: 195,
+             Errors: 189,
              Warnings: 0,
              Infos: 0
       </title>
@@ -74,20 +74,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-dropwizard/checkstyle.html#org.apache.streams.dropwizard.StreamDropwizardBuilder.java">org/apache/streams/dropwizard/StreamDropwizardBuilder.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  20
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-dropwizard/checkstyle.html#org.apache.streams.dropwizard.StreamsDropwizardModule.java">org/apache/streams/dropwizard/StreamsDropwizardModule.java</a>
                 </td>
                 <td>
@@ -98,6 +84,20 @@ under the License.
                 </td>
                 <td>
                   3
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-runtimes/streams-runtime-dropwizard/checkstyle.html#org.apache.streams.dropwizard.StreamDropwizardBuilder.java">org/apache/streams/dropwizard/StreamDropwizardBuilder.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  13
                 </td>
               </tr>
                           <tr>
@@ -125,7 +125,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  31
+                  32
                 </td>
               </tr>
                       </tbody>

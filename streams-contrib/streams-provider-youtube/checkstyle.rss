@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 14,
-             Errors: 608,
+      <title>File: 16,
+             Errors: 654,
              Warnings: 0,
              Infos: 0
       </title>
@@ -60,6 +60,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-youtube/checkstyle.html#org.apache.streams.youtube.YoutubeChannelProviderConfiguration.java">org/apache/streams/youtube/YoutubeChannelProviderConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  23
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-contrib/streams-provider-youtube/checkstyle.html#org.apache.streams.youtube.YoutubeConfiguration.java">org/apache/streams/youtube/YoutubeConfiguration.java</a>
                 </td>
                 <td>
@@ -69,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  160
+                  159
                 </td>
               </tr>
                           <tr>
@@ -102,7 +116,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-youtube/checkstyle.html#org.apache.streams.youtube.provider.YoutubeChannelDataCollector.java">org/apache/streams/youtube/provider/YoutubeChannelDataCollector.java</a>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-youtube/checkstyle.html#org.apache.streams.youtube.YoutubeUserActivityProviderConfiguration.java">org/apache/streams/youtube/YoutubeUserActivityProviderConfiguration.java</a>
                 </td>
                 <td>
                   0
@@ -111,7 +125,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  30
+                  23
                 </td>
               </tr>
                           <tr>
@@ -126,6 +140,20 @@ under the License.
                 </td>
                 <td>
                   65
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-youtube/checkstyle.html#org.apache.streams.youtube.provider.YoutubeChannelDataCollector.java">org/apache/streams/youtube/provider/YoutubeChannelDataCollector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  30
                 </td>
               </tr>
                           <tr>
@@ -167,7 +195,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  19
+                  18
                 </td>
               </tr>
                           <tr>
@@ -181,7 +209,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  18
+                  19
                 </td>
               </tr>
                           <tr>
@@ -195,7 +223,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  8
+                  9
                 </td>
               </tr>
                           <tr>
@@ -209,7 +237,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  20
+                  19
                 </td>
               </tr>
                           <tr>
@@ -237,7 +265,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  16
+                  17
                 </td>
               </tr>
                       </tbody>

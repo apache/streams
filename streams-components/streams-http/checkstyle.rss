@@ -26,7 +26,7 @@ under the License.
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
       <title>File: 8,
-             Errors: 579,
+             Errors: 583,
              Warnings: 0,
              Infos: 0
       </title>
@@ -55,7 +55,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  73
+                  74
                 </td>
               </tr>
                           <tr>
@@ -69,7 +69,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  69
+                  70
                 </td>
               </tr>
                           <tr>
@@ -83,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  81
+                  82
                 </td>
               </tr>
                           <tr>
@@ -116,20 +116,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-components/streams-http/checkstyle.html#org.apache.streams.components.http.HttpProviderConfiguration.java">org/apache/streams/components/http/HttpProviderConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  42
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-components/streams-http/checkstyle.html#org.apache.streams.components.http.HttpPersistWriterConfiguration.java">org/apache/streams/components/http/HttpPersistWriterConfiguration.java</a>
                 </td>
                 <td>
@@ -139,7 +125,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  36
+                  37
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-components/streams-http/checkstyle.html#org.apache.streams.components.http.HttpProviderConfiguration.java">org/apache/streams/components/http/HttpProviderConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
                 </td>
               </tr>
                           <tr>
@@ -153,7 +153,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  59
+                  60
                 </td>
               </tr>
                       </tbody>

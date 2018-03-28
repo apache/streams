@@ -60,6 +60,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.StreamsPersistReader.java">org/apache/streams/core/StreamsPersistReader.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.StreamsDatum.java">org/apache/streams/core/StreamsDatum.java</a>
                 </td>
                 <td>
@@ -70,20 +84,6 @@ under the License.
                 </td>
                 <td>
                   137
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.StreamsPersistReader.java">org/apache/streams/core/StreamsPersistReader.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  3
                 </td>
               </tr>
                           <tr>
@@ -102,7 +102,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.StreamsProvider.java">org/apache/streams/core/StreamsProvider.java</a>
+                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.DatumStatusCountable.java">org/apache/streams/core/DatumStatusCountable.java</a>
                 </td>
                 <td>
                   0
@@ -116,7 +116,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.DatumStatusCountable.java">org/apache/streams/core/DatumStatusCountable.java</a>
+                  <a href="https://github.com/apache/streams/streams-core/checkstyle.html#org.apache.streams.core.StreamsProvider.java">org/apache/streams/core/StreamsProvider.java</a>
                 </td>
                 <td>
                   0
@@ -209,7 +209,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  4
+                  3
                 </td>
               </tr>
                       </tbody>

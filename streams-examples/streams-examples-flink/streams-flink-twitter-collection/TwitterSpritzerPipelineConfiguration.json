@@ -9,10 +9,11 @@
   "extends": {
     "$ref": "FlinkStreamingConfiguration.json"
   },
+  "additionalProperties": false,
   "properties": {
     "twitter": {
       "type": "object",
-      "javaType": "org.apache.streams.twitter.TwitterStreamConfiguration"
+      "javaType": "org.apache.streams.twitter.config.TwitterStreamConfiguration"
     },
     "source": {
       "type": "object",
@@ -21,9 +22,6 @@
     "destination": {
       "type": "object",
       "javaType": "org.apache.streams.hdfs.HdfsWriterConfiguration"
-    },
-    "providerWaitMs": {
-      "type": "integer"
     }
   }
 }

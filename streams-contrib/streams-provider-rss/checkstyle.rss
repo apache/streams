@@ -26,7 +26,7 @@ under the License.
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
       <title>File: 9,
-             Errors: 426,
+             Errors: 424,
              Warnings: 0,
              Infos: 0
       </title>
@@ -83,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  45
+                  46
                 </td>
               </tr>
                           <tr>
@@ -97,7 +97,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  78
+                  79
                 </td>
               </tr>
                           <tr>
@@ -111,7 +111,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  32
+                  31
                 </td>
               </tr>
                           <tr>
@@ -125,21 +125,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  58
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-rss/checkstyle.html#org.apache.streams.rss.processor.RssTypeConverter.java">org/apache/streams/rss/processor/RssTypeConverter.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  18
+                  55
                 </td>
               </tr>
                           <tr>
@@ -154,6 +140,20 @@ under the License.
                 </td>
                 <td>
                   85
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-provider-rss/checkstyle.html#org.apache.streams.rss.processor.RssTypeConverter.java">org/apache/streams/rss/processor/RssTypeConverter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  18
                 </td>
               </tr>
                           <tr>

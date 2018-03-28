@@ -55,7 +55,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  94
+                  93
                 </td>
               </tr>
                           <tr>
@@ -102,20 +102,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-verbs/checkstyle.html#org.apache.streams.verbs.ObjectCombinationSpecificOrdering.java">org/apache/streams/verbs/ObjectCombinationSpecificOrdering.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  33
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-verbs/checkstyle.html#org.apache.streams.verbs.VerbDefinitionResolver.java">org/apache/streams/verbs/VerbDefinitionResolver.java</a>
                 </td>
                 <td>
@@ -130,6 +116,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-verbs/checkstyle.html#org.apache.streams.verbs.ObjectCombinationSpecificOrdering.java">org/apache/streams/verbs/ObjectCombinationSpecificOrdering.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  33
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-verbs/checkstyle.html#org.apache.streams.verbs.ObjectCombination.java">org/apache/streams/verbs/ObjectCombination.java</a>
                 </td>
                 <td>
@@ -139,7 +139,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  102
+                  103
                 </td>
               </tr>
                           <tr>

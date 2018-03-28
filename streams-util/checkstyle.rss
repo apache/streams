@@ -83,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  8
+                  9
                 </td>
               </tr>
                           <tr>
@@ -102,20 +102,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.impl.ExponentialBackOffStrategy.java">org/apache/streams/util/api/requests/backoff/impl/ExponentialBackOffStrategy.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  10
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.schema.SchemaStore.java">org/apache/streams/util/schema/SchemaStore.java</a>
                 </td>
                 <td>
@@ -130,6 +116,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.impl.ExponentialBackOffStrategy.java">org/apache/streams/util/api/requests/backoff/impl/ExponentialBackOffStrategy.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  10
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.BackOffException.java">org/apache/streams/util/api/requests/backoff/BackOffException.java</a>
                 </td>
                 <td>
@@ -139,7 +139,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  20
+                  19
                 </td>
               </tr>
                           <tr>
@@ -186,20 +186,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.BackOffStrategy.java">org/apache/streams/util/api/requests/backoff/BackOffStrategy.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  8
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.schema.SchemaStoreImpl.java">org/apache/streams/util/schema/SchemaStoreImpl.java</a>
                 </td>
                 <td>
@@ -214,6 +200,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.BackOffStrategy.java">org/apache/streams/util/api/requests/backoff/BackOffStrategy.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.SerializationUtil.java">org/apache/streams/util/SerializationUtil.java</a>
                 </td>
                 <td>
@@ -223,7 +223,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  9
+                  8
                 </td>
               </tr>
                           <tr>
@@ -242,20 +242,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.impl.LinearTimeBackOffStrategy.java">org/apache/streams/util/api/requests/backoff/impl/LinearTimeBackOffStrategy.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  11
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.schema.Schema.java">org/apache/streams/util/schema/Schema.java</a>
                 </td>
                 <td>
@@ -266,6 +252,20 @@ under the License.
                 </td>
                 <td>
                   29
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.api.requests.backoff.impl.LinearTimeBackOffStrategy.java">org/apache/streams/util/api/requests/backoff/impl/LinearTimeBackOffStrategy.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  11
                 </td>
               </tr>
                           <tr>
@@ -298,20 +298,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.ComponentUtils.java">org/apache/streams/util/ComponentUtils.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  28
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.oauth.tokens.AbstractOauthToken.java">org/apache/streams/util/oauth/tokens/AbstractOauthToken.java</a>
                 </td>
                 <td>
@@ -322,6 +308,20 @@ under the License.
                 </td>
                 <td>
                   4
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-util/checkstyle.html#org.apache.streams.util.ComponentUtils.java">org/apache/streams/util/ComponentUtils.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  28
                 </td>
               </tr>
                           <tr>
@@ -349,7 +349,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  24
+                  25
                 </td>
               </tr>
                       </tbody>

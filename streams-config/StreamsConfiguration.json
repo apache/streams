@@ -7,6 +7,7 @@
     "type": "object",
     "javaType" : "org.apache.streams.config.StreamsConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
+    "additionalProperties": false,
     "properties": {
         "batchFrequencyMs": {
             "type": "integer",
@@ -27,6 +28,10 @@
         "providerTimeoutMs": {
             "type": "integer",
             "description": "Kill the stream if all providers supply nothing for this long."
+        },
+        "providerWaitMs": {
+            "type": "integer",
+            "description": "Wait this long before beginning polling providers."
         },
         "queueSize": {
             "type" : "integer",

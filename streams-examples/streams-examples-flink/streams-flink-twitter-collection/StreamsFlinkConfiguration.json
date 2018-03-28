@@ -10,40 +10,13 @@
     "$comment": "Absolute $ref: http://streams.apache.org/streams-config/StreamsConfiguration.json",
     "$ref": "../../../../../../streams-config/src/main/jsonschema/StreamsConfiguration.json"
   },
+  "additionalProperties": false,
   "properties": {
-    "parallel": {
-      "type": "integer",
-      "default": 1
-    },
-    "providerWaitMs": {
-      "type": "integer",
-      "default": 1000
-    },
-    "checkpointIntervalMs": {
-      "type": "integer",
-      "default": 300000
-    },
-    "checkpointTimeoutMs": {
-      "type": "integer",
-      "default": 30000
-    },
     "test": {
-      "type": "boolean",
-      "default": false
+      "type": "boolean"
     },
     "local": {
-      "type": "boolean",
-      "default": true
-    },
-    "restartAttempts": {
-      "type": "integer",
-      "description": "number of restart attempts",
-      "default": 3
-    },
-    "restartDelayMs": {
-      "type": "integer",
-      "description": "delay in milliseconds",
-      "default": 10000
+      "type": "boolean"
     }
   }
 }

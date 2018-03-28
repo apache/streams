@@ -26,7 +26,7 @@ under the License.
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
       <title>File: 15,
-             Errors: 656,
+             Errors: 660,
              Warnings: 0,
              Infos: 0
       </title>
@@ -55,7 +55,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  25
+                  26
                 </td>
               </tr>
                           <tr>
@@ -111,21 +111,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  29
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-neo4j/checkstyle.html#org.apache.streams.neo4j.CypherQueryResponse.java">org/apache/streams/neo4j/CypherQueryResponse.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  40
+                  30
                 </td>
               </tr>
                           <tr>
@@ -140,6 +126,20 @@ under the License.
                 </td>
                 <td>
                   67
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-neo4j/checkstyle.html#org.apache.streams.neo4j.CypherQueryResponse.java">org/apache/streams/neo4j/CypherQueryResponse.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
                 </td>
               </tr>
                           <tr>
@@ -181,7 +181,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  34
+                  33
                 </td>
               </tr>
                           <tr>
@@ -195,7 +195,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  90
+                  91
                 </td>
               </tr>
                           <tr>
@@ -209,7 +209,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  20
+                  19
                 </td>
               </tr>
                           <tr>
@@ -223,21 +223,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  134
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-neo4j/checkstyle.html#org.apache.streams.neo4j.bolt.Neo4jBoltClient.java">org/apache/streams/neo4j/bolt/Neo4jBoltClient.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  37
+                  135
                 </td>
               </tr>
                           <tr>
@@ -251,7 +237,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  28
+                  29
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-contrib/streams-persist-neo4j/checkstyle.html#org.apache.streams.neo4j.bolt.Neo4jBoltClient.java">org/apache/streams/neo4j/bolt/Neo4jBoltClient.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  38
                 </td>
               </tr>
                       </tbody>

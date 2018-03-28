@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 2,
-             Errors: 86,
+      <title>File: 3,
+             Errors: 97,
              Warnings: 0,
              Infos: 0
       </title>
@@ -55,7 +55,21 @@ under the License.
                   0
                 </td>
                 <td>
-                  58
+                  45
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/apache/streams/streams-examples/streams-examples-local/streams-twitter-history-elasticsearch/checkstyle.html#org.apache.streams.twitter.config.TwitterTimelineProviderConfiguration.java">org/apache/streams/twitter/config/TwitterTimelineProviderConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
                 </td>
               </tr>
                           <tr>
@@ -69,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  28
+                  30
                 </td>
               </tr>
                       </tbody>
