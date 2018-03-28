@@ -19,7 +19,13 @@
   ~ under the License.
   -->
 
-<suite name="ExampleITs">
+<suite name="ExampleITs" preserve-order="true">
+
+    <test name="MongoPersistIT">
+        <classes>
+            <class name="org.apache.streams.mongo.test.MongoPersistIT" />
+        </classes>
+    </test>
 
     <test name="MongoElasticsearchSyncIT">
         <classes>

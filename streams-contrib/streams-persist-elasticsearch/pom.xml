@@ -191,13 +191,9 @@
                 <version>${failsafe.plugin.version}</version>
                 <configuration>
                     <!-- Run integration test suite rather than individual tests. -->
-                    <excludes>
-                        <exclude>**/*Test.java</exclude>
-                        <exclude>**/*Tests.java</exclude>
-                    </excludes>
-                    <includes>
-                        <include>**/*IT.java</include>
-                    </includes>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>target/test-classes/testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
                 </configuration>
             </plugin>
             <plugin>
@@ -218,6 +214,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 
@@ -248,26 +245,19 @@
                                     <run>
                                         <namingStrategy>none</namingStrategy>
                                         <ports>
-                                            <port>${es.http.host}:${es.http.port}:9200</port>
-                                            <port>${es.tcp.host}:${es.tcp.port}:9300</port>
+                                            <port>${http.host}:${http.port}:9200</port>
+                                            <port>${tcp.host}:${tcp.port}:9300</port>
                                         </ports>
                                         <portPropertyFile>elasticsearch.properties</portPropertyFile>
                                         <wait>
-                                            <log>elasticsearch startup</log>
                                             <http>
-                                                <url>http://${es.http.host}:${es.http.port}</url>
+                                                <url>http://${http.host}:${http.port}</url>
                                                 <method>GET</method>
                                                 <status>200</status>
                                             </http>
                                             <time>30000</time>
                                             <kill>1000</kill>
                                             <shutdown>500</shutdown>
-                                            <!--<tcp>-->
-                                            <!--<host>${es.transport.host}</host>-->
-                                            <!--<ports>-->
-                                            <!--<port>${es.transport.port}</port>-->
-                                            <!--</ports>-->
-                                            <!--</tcp>-->
                                         </wait>
                                         <log>
                                             <enabled>true</enabled>
@@ -282,6 +272,26 @@
 
                             </images>
                         </configuration>
+                        <executions>
+                            <execution>
+                                <id>start</id>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <phase>
+                                    pre-integration-test
+                                </phase>
+                            </execution>
+                            <execution>
+                                <id>stop</id>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                                <phase>
+                                    post-integration-test
+                                </phase>
+                            </execution>
+                        </executions>
 
                     </plugin>
 

@@ -67,13 +67,7 @@ public class HdfsElasticsearchIT {
   @BeforeClass
   public void prepareTest() throws Exception {
 
-    File conf_file = new File("target/test-classes/HdfsElasticsearchIT.conf");
-    assert(conf_file.exists());
-
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    StreamsConfigurator.addConfig(testResourceConfig);
-
-    testConfiguration = new StreamsConfigurator<>(HdfsElasticsearchConfiguration.class).detectCustomConfiguration();
+    testConfiguration = new StreamsConfigurator<>(HdfsElasticsearchConfiguration.class).detectCustomConfiguration("HdfsElasticsearchIT");
     testClient = ElasticsearchClientManager.getInstance(testConfiguration.getDestination()).client();
 
     ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();

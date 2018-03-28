@@ -19,35 +19,31 @@
   ~ under the License.
   -->
 
-<suite name="ExampleITs">
+<suite name="ElasticsearchITs" preserve-order="true">
 
     <test name="ElasticsearchPersistWriterIT">
         <classes>
             <class name="org.apache.streams.elasticsearch.test.ElasticsearchPersistWriterIT" />
         </classes>
     </test>
-
+    <test name="ElasticsearchPersistUpdaterIT">
+        <classes>
+            <class name="org.apache.streams.elasticsearch.test.ElasticsearchPersistUpdaterIT" />
+        </classes>
+    </test>
     <test name="ElasticsearchParentChildWriterIT">
         <classes>
             <class name="org.apache.streams.elasticsearch.test.ElasticsearchParentChildWriterIT" />
         </classes>
     </test>
-
-    <test name="ElasticsearchReindexIT">
+    <test name="ElasticsearchParentChildUpdaterIT">
         <classes>
-            <class name="org.apache.streams.example.test.ElasticsearchReindexIT" />
+            <class name="org.apache.streams.elasticsearch.test.ElasticsearchParentChildUpdaterIT" />
         </classes>
     </test>
-
-    <test name="ElasticsearchReindexParentIT">
+    <test name="DatumFromMetadataProcessorIT">
         <classes>
-            <class name="org.apache.streams.example.test.ElasticsearchReindexParentIT" />
-        </classes>
-    </test>
-
-    <test name="ElasticsearchReindexChildIT">
-        <classes>
-            <class name="org.apache.streams.example.test.ElasticsearchReindexChildIT" />
+            <class name="org.apache.streams.elasticsearch.test.DatumFromMetadataProcessorIT" />
         </classes>
     </test>
 

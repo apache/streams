@@ -71,13 +71,7 @@ public class ElasticsearchReindexParentIT {
   @BeforeClass
   public void prepareTest() throws Exception {
 
-    File conf_file = new File("target/test-classes/ElasticsearchReindexParentIT.conf");
-    assert(conf_file.exists());
-
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    StreamsConfigurator.addConfig(testResourceConfig);
-
-    testConfiguration = new StreamsConfigurator<>(ElasticsearchReindexConfiguration.class).detectCustomConfiguration();
+    testConfiguration = new StreamsConfigurator<>(ElasticsearchReindexConfiguration.class).detectCustomConfiguration("ElasticsearchReindexParentIT");
     testClient = ElasticsearchClientManager.getInstance(testConfiguration.getSource()).client();
 
     ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();

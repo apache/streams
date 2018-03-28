@@ -22,6 +22,7 @@ import org.apache.streams.cassandra.CassandraConfiguration;
 import org.apache.streams.cassandra.CassandraPersistReader;
 import org.apache.streams.cassandra.CassandraPersistWriter;
 import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -43,6 +44,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.testng.Assert.assertTrue;
+
 /**
  * Test writing documents
  */
@@ -58,19 +61,15 @@ public class CassandraPersistIT {
 
   @BeforeClass
   public void setup() throws Exception {
-    Config reference = ConfigFactory.load();
-    File conf_file = new File("target/test-classes/CassandraPersistIT.conf");
-    assert(conf_file.exists());
-    Config testResourceConfig = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(CassandraConfiguration.class).detectConfiguration(typesafe, "cassandra");
+    testConfiguration = new ComponentConfigurator<>(CassandraConfiguration.class).detectConfiguration();
+    assertTrue(testConfiguration.getHosts().size() > 0);
   }
 
   @Test
   public void testCassandraPersist() throws Exception {
     CassandraPersistWriter writer = new CassandraPersistWriter(testConfiguration);
 
-    writer.prepare(null);
+    writer.prepare(testConfiguration);
 
     InputStream testActivityFolderStream = CassandraPersistIT.class.getClassLoader()
         .getResourceAsStream("activities");

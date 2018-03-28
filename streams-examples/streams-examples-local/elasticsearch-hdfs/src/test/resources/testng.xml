@@ -19,7 +19,13 @@
   ~ under the License.
   -->
 
-<suite name="ExampleITs">
+<suite name="ExampleITs" preserve-order="true">
+
+    <test name="ElasticsearchPersistWriterIT">
+        <classes>
+            <class name="org.apache.streams.elasticsearch.test.ElasticsearchPersistWriterIT" />
+        </classes>
+    </test>
 
     <test name="ElasticsearchHdfsIT">
         <classes>

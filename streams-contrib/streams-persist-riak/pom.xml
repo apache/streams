@@ -136,6 +136,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 
@@ -164,25 +165,17 @@
                                     <name>lapax/riak</name>
                                     <alias>riak</alias>
                                     <run>
-                                        <env>
-                                            <NEO4J_AUTH>none</NEO4J_AUTH>
-                                        </env>
                                         <namingStrategy>none</namingStrategy>
                                         <ports>
-                                            <port>${riak.http.host}:${riak.http.port}:8098</port>
-                                            <port>${riak.tcp.host}:${riak.tcp.port}:8087</port>
+                                            <port>${http.host}:${http.port}:8098</port>
+                                            <port>${tcp.host}:${tcp.port}:8087</port>
                                         </ports>
                                         <portPropertyFile>riak.properties</portPropertyFile>
                                         <wait>
-                                            <log>riak startup</log>
-                                            <http>
-                                                <url>http://${riak.http.host}:${riak.http.port}</url>
-                                                <method>GET</method>
-                                                <status>200</status>
-                                            </http>
+                                            <log>success: riak entered RUNNING state</log>
                                             <time>30000</time>
-                                            <kill>1000</kill>
-                                            <shutdown>500</shutdown>
+                                            <kill>5000</kill>
+                                            <shutdown>5000</shutdown>
                                         </wait>
                                         <log>
                                             <enabled>true</enabled>
@@ -197,6 +190,26 @@
 
                             </images>
                         </configuration>
+                        <executions>
+                            <execution>
+                                <id>start</id>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <phase>
+                                    pre-integration-test
+                                </phase>
+                            </execution>
+                            <execution>
+                                <id>stop</id>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                                <phase>
+                                    post-integration-test
+                                </phase>
+                            </execution>
+                        </executions>
 
                     </plugin>
 

@@ -56,12 +56,7 @@ public class HbasePersistReaderIT {
   @BeforeClass
   public void prepareTest() throws Exception {
 
-    Config reference  = ConfigFactory.load();
-    File conf_file = new File("target/test-classes/HbasePersistReaderIT.conf");
-    assert(conf_file.exists());
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(HbaseConfiguration.class).detectConfiguration(typesafe, "hbase");
+    testConfiguration = new ComponentConfigurator<>(HbaseConfiguration.class).detectConfiguration("HbasePersistReaderIT");
 
   }
 

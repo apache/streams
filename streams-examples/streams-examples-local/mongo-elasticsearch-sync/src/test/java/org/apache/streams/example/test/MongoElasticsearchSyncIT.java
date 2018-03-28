@@ -65,12 +65,6 @@ public class MongoElasticsearchSyncIT {
   @BeforeClass
   public void prepareTest() throws Exception {
 
-    File conf_file = new File("target/test-classes/MongoElasticsearchSyncIT.conf");
-    assert(conf_file.exists());
-
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    StreamsConfigurator.addConfig(testResourceConfig);
-
     testConfiguration = new StreamsConfigurator<>(MongoElasticsearchSyncConfiguration.class).detectCustomConfiguration();
     testClient = ElasticsearchClientManager.getInstance(testConfiguration.getDestination()).client();
 
@@ -100,7 +94,7 @@ public class MongoElasticsearchSyncIT {
         .setTypes(testConfiguration.getDestination().getType());
     SearchResponse countResponse = countRequest.execute().actionGet();
 
-    assertEquals(89, (int)countResponse.getHits().getTotalHits());
+    assertEquals((int)countResponse.getHits().getTotalHits(), 89);
 
   }
 }

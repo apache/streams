@@ -61,11 +61,6 @@ public class MongoPersistIT {
   @BeforeClass
   public void setup() throws Exception {
 
-    File conf_file = new File("target/test-classes/MongoPersistIT.conf");
-    assert(conf_file.exists());
-
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    StreamsConfigurator.addConfig(testResourceConfig);
     testConfiguration = new ComponentConfigurator<>(MongoConfiguration.class).detectConfiguration();
 
   }

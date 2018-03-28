@@ -64,12 +64,7 @@ public class RiakHttpPersistIT {
   @BeforeClass
   public void prepareTest() throws IOException {
 
-    Config reference  = ConfigFactory.load();
-    File conf = new File("target/test-classes/RiakHttpPersistIT.conf");
-    assertTrue(conf.exists());
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(RiakConfiguration.class).detectConfiguration(typesafe, "riak");
+    testConfiguration = new ComponentConfigurator<>(RiakConfiguration.class).detectConfiguration( "RiakHttpPersistIT");
     testClient = RiakHttpClient.getInstance(testConfiguration);
 
   }

@@ -45,8 +45,8 @@ public class ElasticsearchHdfs implements Runnable {
     this(new StreamsConfigurator<>(ElasticsearchHdfsConfiguration.class).detectCustomConfiguration());
   }
 
-  public ElasticsearchHdfs(ElasticsearchHdfsConfiguration reindex) {
-    this.config = reindex;
+  public ElasticsearchHdfs(ElasticsearchHdfsConfiguration config) {
+    this.config = config;
   }
 
   public static void main(String[] args)
