@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 11,
-             Errors: 340,
+      <title>File: 7,
+             Errors: 256,
              Warnings: 0,
              Infos: 0
       </title>
@@ -56,20 +56,6 @@ under the License.
                 </td>
                 <td>
                   26
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-examples/streams-examples-flink/streams-flink-twitter-collection/checkstyle.html#org.apache.streams.twitter.config.TwitterStreamConfiguration.java">org/apache/streams/twitter/config/TwitterStreamConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  20
                 </td>
               </tr>
                           <tr>
@@ -116,34 +102,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/apache/streams/streams-examples/streams-examples-flink/streams-flink-twitter-collection/checkstyle.html#org.apache.streams.twitter.config.TwitterFollowingConfiguration.java">org/apache/streams/twitter/config/TwitterFollowingConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  21
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-examples/streams-examples-flink/streams-flink-twitter-collection/checkstyle.html#org.apache.streams.twitter.config.TwitterTimelineProviderConfiguration.java">org/apache/streams/twitter/config/TwitterTimelineProviderConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  21
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/apache/streams/streams-examples/streams-examples-flink/streams-flink-twitter-collection/checkstyle.html#org.apache.streams.examples.flink.twitter.TwitterSpritzerPipelineConfiguration.java">org/apache/streams/examples/flink/twitter/TwitterSpritzerPipelineConfiguration.java</a>
                 </td>
                 <td>
@@ -154,20 +112,6 @@ under the License.
                 </td>
                 <td>
                   40
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-examples/streams-examples-flink/streams-flink-twitter-collection/checkstyle.html#org.apache.streams.twitter.config.TwitterUserInformationConfiguration.java">org/apache/streams/twitter/config/TwitterUserInformationConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  22
                 </td>
               </tr>
                           <tr>

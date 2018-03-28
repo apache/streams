@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
-      <title>File: 3,
-             Errors: 111,
+      <title>File: 2,
+             Errors: 90,
              Warnings: 0,
              Infos: 0
       </title>
@@ -44,20 +44,6 @@ under the License.
             </tr>
           </thead>
           <tbody>
-                          <tr>
-                <td>
-                  <a href="https://github.com/apache/streams/streams-examples/streams-examples-local/twitter-userstream-elasticsearch/checkstyle.html#org.apache.streams.twitter.config.TwitterStreamConfiguration.java">org/apache/streams/twitter/config/TwitterStreamConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  21
-                </td>
-              </tr>
                           <tr>
                 <td>
                   <a href="https://github.com/apache/streams/streams-examples/streams-examples-local/twitter-userstream-elasticsearch/checkstyle.html#org.apache.streams.example.TwitterUserstreamElasticsearchConfiguration.java">org/apache/streams/example/TwitterUserstreamElasticsearchConfiguration.java</a>
