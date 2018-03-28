@@ -19,6 +19,7 @@
 package org.apache.streams.example.test;
 
 import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.example.TwitterHistoryElasticsearch;
 import org.apache.streams.example.TwitterHistoryElasticsearchConfiguration;
@@ -62,12 +63,13 @@ public class TwitterHistoryElasticsearchIT {
   @BeforeClass
   public void prepareTest() throws Exception {
 
-    Config reference  = ConfigFactory.load();
     File conf_file = new File("target/test-classes/TwitterHistoryElasticsearchIT.conf");
     assert(conf_file.exists());
+
     Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(TwitterHistoryElasticsearchConfiguration.class).detectConfiguration(typesafe);
+    StreamsConfigurator.addConfig(testResourceConfig);
+    testConfiguration = new StreamsConfigurator<>(TwitterHistoryElasticsearchConfiguration.class).detectCustomConfiguration();
+
     testClient = ElasticsearchClientManager.getInstance(testConfiguration.getElasticsearch()).client();
 
     ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();

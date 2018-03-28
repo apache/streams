@@ -5,7 +5,7 @@
     ],
     "id": "#",
     "type": "object",
-    "javaType" : "org.apache.streams.twitter.TwitterConfiguration",
+    "javaType" : "org.apache.streams.twitter.config.TwitterConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "protocol": {
@@ -42,7 +42,7 @@
         "oauth": {
             "type": "object",
             "dynamic": "true",
-            "javaType" : "org.apache.streams.twitter.TwitterOAuthConfiguration",
+            "javaType" : "org.apache.streams.twitter.config.TwitterOAuthConfiguration",
             "javaInterfaces": ["java.io.Serializable"],
             "properties": {
                 "appName": {

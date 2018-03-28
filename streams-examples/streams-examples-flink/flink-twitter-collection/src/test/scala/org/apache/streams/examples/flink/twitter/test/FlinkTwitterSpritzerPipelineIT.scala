@@ -48,11 +48,11 @@ class FlinkTwitterSpritzerPipelineIT extends FlatSpec {
     val reference: Config = ConfigFactory.load()
     val conf_file: File = new File("target/test-classes/FlinkTwitterSpritzerPipelineIT.conf")
     assert(conf_file.exists())
-    val testResourceConfig: Config = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
 
-    val typesafe: Config = testResourceConfig.withFallback(reference).resolve()
-    val streams: StreamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe)
-    val testConfig = new ComponentConfigurator(classOf[TwitterSpritzerPipelineConfiguration]).detectConfiguration(typesafe)
+    val testResourceConfig = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults.setAllowMissing(false))
+    StreamsConfigurator.addConfig(testResourceConfig)
+
+    val testConfig = new StreamsConfigurator(classOf[TwitterSpritzerPipelineConfiguration]).detectCustomConfiguration()
 
     setup(testConfig)
 

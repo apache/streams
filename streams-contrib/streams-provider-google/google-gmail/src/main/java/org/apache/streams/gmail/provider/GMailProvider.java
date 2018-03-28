@@ -70,8 +70,7 @@ public class GMailProvider implements StreamsProvider, Serializable {
   private ExecutorService executor;
 
   public GMailProvider() {
-    this.config = new ComponentConfigurator<>(GMailConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("gmail"));
+    this.config = new ComponentConfigurator<>(GMailConfiguration.class).detectConfiguration();
   }
 
   public GMailProvider(GMailConfiguration config) {
@@ -79,8 +78,7 @@ public class GMailProvider implements StreamsProvider, Serializable {
   }
 
   public GMailProvider(Class klass) {
-    this.config = new ComponentConfigurator<>(GMailConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("gmail"));
+    this.config = new ComponentConfigurator<>(GMailConfiguration.class).detectConfiguration();
     this.klass = klass;
   }
 

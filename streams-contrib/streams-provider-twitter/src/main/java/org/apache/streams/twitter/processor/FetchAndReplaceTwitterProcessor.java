@@ -20,14 +20,13 @@
 package org.apache.streams.twitter.processor;
 
 import org.apache.streams.config.ComponentConfigurator;
-import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.twitter.TwitterConfiguration;
-import org.apache.streams.twitter.TwitterStreamConfiguration;
+import org.apache.streams.twitter.config.TwitterConfiguration;
+import org.apache.streams.twitter.config.TwitterStreamConfiguration;
 import org.apache.streams.twitter.api.StatusesShowRequest;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.converter.TwitterDocumentClassifier;
@@ -68,7 +67,7 @@ public class FetchAndReplaceTwitterProcessor implements StreamsProcessor {
   private int retryCount;
 
   public FetchAndReplaceTwitterProcessor() {
-    this(new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig(), "twitter"));
+    this(new ComponentConfigurator<>(TwitterStreamConfiguration.class).detectConfiguration());
   }
 
   public FetchAndReplaceTwitterProcessor(TwitterStreamConfiguration config) {

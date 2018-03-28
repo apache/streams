@@ -42,7 +42,7 @@ public class ElasticsearchHdfs implements Runnable {
   ElasticsearchHdfsConfiguration config;
 
   public ElasticsearchHdfs() {
-    this(new ComponentConfigurator<>(ElasticsearchHdfsConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig()));
+    this(new StreamsConfigurator<>(ElasticsearchHdfsConfiguration.class).detectCustomConfiguration());
   }
 
   public ElasticsearchHdfs(ElasticsearchHdfsConfiguration reindex) {
@@ -62,9 +62,7 @@ public class ElasticsearchHdfs implements Runnable {
     ElasticsearchPersistReader elasticsearchPersistReader = new ElasticsearchPersistReader(config.getSource());
     WebHdfsPersistWriter hdfsPersistWriter = new WebHdfsPersistWriter(config.getDestination());
 
-    LocalRuntimeConfiguration localRuntimeConfiguration =
-        StreamsJacksonMapper.getInstance().convertValue(StreamsConfigurator.detectConfiguration(), LocalRuntimeConfiguration.class);
-    StreamBuilder builder = new LocalStreamBuilder(localRuntimeConfiguration);
+    StreamBuilder builder = new LocalStreamBuilder(config);
 
     builder.newPerpetualStream(ElasticsearchPersistReader.class.getCanonicalName(), elasticsearchPersistReader);
     builder.addStreamsPersistWriter(WebHdfsPersistWriter.class.getCanonicalName(), hdfsPersistWriter, 1, ElasticsearchPersistReader.class.getCanonicalName());

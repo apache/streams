@@ -68,8 +68,7 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
    * HbasePersistWriter constructor - resolve HbaseConfiguration from JVM 'hbase'.
    */
   public HbasePersistWriter() {
-    this.config = new ComponentConfigurator<>(HbaseConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("hbase"));
+    this.config = new ComponentConfigurator<>(HbaseConfiguration.class).detectConfiguration();
     this.persistQueue = new ConcurrentLinkedQueue<>();
   }
 

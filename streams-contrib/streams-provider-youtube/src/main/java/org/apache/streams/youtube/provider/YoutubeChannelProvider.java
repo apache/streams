@@ -26,6 +26,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.google.gplus.configuration.UserInfo;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.util.api.requests.backoff.BackOffStrategy;
+import org.apache.streams.youtube.YoutubeChannelProviderConfiguration;
 import org.apache.streams.youtube.YoutubeConfiguration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -80,16 +81,15 @@ public class YoutubeChannelProvider extends YoutubeProvider {
     String configfile = args[0];
     String outfile = args[1];
 
-    Config reference = ConfigFactory.load();
     File file = new File(configfile);
     assert (file.exists());
-    Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
 
-    Config typesafe = testResourceConfig.withFallback(reference).resolve();
+    Config conf = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
+    StreamsConfigurator.addConfig(conf);
 
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    YoutubeConfiguration config = new ComponentConfigurator<>(YoutubeConfiguration.class).detectConfiguration(typesafe, "youtube");
-    YoutubeChannelProvider provider = new YoutubeChannelProvider(config);
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+    YoutubeChannelProviderConfiguration config = new ComponentConfigurator<>(YoutubeChannelProviderConfiguration.class).detectConfiguration();
+    YoutubeUserActivityProvider provider = new YoutubeUserActivityProvider(config);
 
     ObjectMapper mapper = StreamsJacksonMapper.getInstance();
 

@@ -23,107 +23,214 @@ import org.apache.streams.config.StreamsConfigurator;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Map;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
  * Test for {@link org.apache.streams.config.StreamsConfigurator}
  */
 public class StreamsConfiguratorTest {
 
-    @Test
-    public void testDetectConfiguration() throws Exception {
+  /**
+   * Test that basic stream properties are resolved from reference.conf
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testReference() throws Exception {
 
-        Config config = ConfigFactory.load();
+    Config defaultConfig = StreamsConfigurator.getConfig();
 
-        Config detected = StreamsConfigurator.getConfig();
+    assert( defaultConfig.getLong("org.apache.streams.config.StreamsConfiguration.batchFrequencyMs") > 0);
+    assert( defaultConfig.getLong("org.apache.streams.config.StreamsConfiguration.batchSize") > 0);
+    assert( defaultConfig.getLong("org.apache.streams.config.StreamsConfiguration.parallelism") > 0);
+    assert( defaultConfig.getLong("org.apache.streams.config.StreamsConfiguration.providerTimeoutMs") > 0);
+    assert( defaultConfig.getLong("org.apache.streams.config.StreamsConfiguration.queueSize") > 0);
 
-        Assert.assertEquals(config, detected);
+    StreamsConfiguration defaultPojo = StreamsConfigurator.detectConfiguration();
 
-        StreamsConfiguration defaultPojo = StreamsConfigurator.detectConfiguration();
+    assert(defaultPojo != null);
 
-        assert(defaultPojo != null);
+    assert( defaultPojo.getBatchFrequencyMs() > 0);
+    assert( defaultPojo.getBatchSize() > 0);
+    assert( defaultPojo.getParallelism() > 0);
+    assert( defaultPojo.getProviderTimeoutMs() > 0);
+    assert( defaultPojo.getQueueSize() > 0);
 
-        StreamsConfiguration configuredPojo = StreamsConfigurator.detectConfiguration(StreamsConfigurator.getConfig());
+  }
 
-        assert(configuredPojo != null);
+  /**
+   * Test that basic stream properties can be overridden by adding a partial config at the
+   * appropriate path.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testOverride() throws Exception {
 
-        Assert.assertEquals(configuredPojo, defaultPojo);
+    Config overrides = ConfigFactory.empty().withValue("parallelism", ConfigValueFactory.fromAnyRef(100l));
 
-    }
+    StreamsConfigurator.addConfig(overrides, "org.apache.streams.config.StreamsConfiguration");
 
-    @Test
-    public void testReference() throws Exception {
+    Config withOverride = StreamsConfigurator.getConfig();
 
-        Config defaultConfig = StreamsConfigurator.getConfig();
+    assert( withOverride.getLong("org.apache.streams.config.StreamsConfiguration.parallelism") == 100);
 
-        assert( defaultConfig.getLong("batchFrequencyMs") > 0);
-        assert( defaultConfig.getLong("batchSize") > 0);
-        assert( defaultConfig.getLong("parallelism") > 0);
-        assert( defaultConfig.getLong("providerTimeoutMs") > 0);
-        assert( defaultConfig.getLong("queueSize") > 0);
+    StreamsConfiguration defaultPojo = StreamsConfigurator.detectConfiguration();
 
-        StreamsConfiguration defaultPojo = StreamsConfigurator.detectConfiguration();
+    assert( defaultPojo != null);
 
-        assert(defaultPojo != null);
+    assert( defaultPojo.getParallelism() == 100);
 
-        assert( defaultPojo.getBatchFrequencyMs() > 0);
-        assert( defaultPojo.getBatchSize() > 0);
-        assert( defaultPojo.getParallelism() > 0);
-        assert( defaultPojo.getProviderTimeoutMs() > 0);
-        assert( defaultPojo.getQueueSize() > 0);
+  }
 
-    }
+  /**
+   * Test that custom config file includes and internal references work as expected.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testResolve() throws Exception {
 
-    @Test
-    public void testOverride() throws Exception {
+    Config overrides = ConfigFactory.parseResourcesAnySyntax("testResolve.conf");
 
-        Config overrides = ConfigFactory.empty()
-            .withValue("parallelism", ConfigValueFactory.fromAnyRef(100l));
-        StreamsConfigurator.addConfig(overrides);
+    StreamsConfigurator.addConfig(overrides);
 
-        Config withOverride = StreamsConfigurator.getConfig();
+    Config withOverride = StreamsConfigurator.getConfig();
 
-        assert( withOverride.getLong("parallelism") == 100);
+    assert( withOverride.getString("message") != null);
 
-        StreamsConfiguration defaultPojo = StreamsConfigurator.detectConfiguration();
+    assert( withOverride.getConfig("evenmore").getString("message") != null);
 
-        assert( defaultPojo != null);
+    assert( withOverride.getString("samemessage") != null);
 
-        assert( defaultPojo.getParallelism() == 100);
+  }
 
-    }
+  /**
+   * Test that a class which uses a configuration class with StreamsConfiguration
+   * as an ancestor can use a typed StreamsConfigurator and detectCustomConfiguration
+   * to populate its fields using ComponentConfigurators automatically.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testDetectCustomStreamsConfiguration() throws Exception {
 
-    @Test
-    public void testResolve() throws Exception {
+    Config overrides = ConfigFactory.parseResourcesAnySyntax("custom.conf");
 
-        Config overrides = ConfigFactory.parseResourcesAnySyntax("testResolve.conf");
+    StreamsConfigurator.addConfig(overrides);
 
-        StreamsConfigurator.addConfig(overrides);
+    StreamsConfigurator<StreamsConfigurationForTesting> configurator = new StreamsConfigurator<>(StreamsConfigurationForTesting.class);
 
-        Config withOverride = StreamsConfigurator.getConfig();
+    StreamsConfigurationForTesting customPojo = configurator.detectCustomConfiguration();
 
-        assert( withOverride.getString("message") != null);
+    verifyCustomStreamsConfiguration(customPojo);
 
-        assert( withOverride.getConfig("evenmore").getString("message") != null);
+  }
 
-        assert( withOverride.getString("samemessage") != null);
+  /**
+   * Test that a class which uses a configuration class with StreamsConfiguration
+   * as an ancestor can use a typed StreamsConfigurator and detectCustomConfiguration
+   * to populate its fields using ComponentConfigurators automatically, using a
+   * a custom Configuration.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testDetectCustomStreamsConfigurationProvideConfig() throws Exception {
 
-        StreamsConfiguration defaultPojo = StreamsConfigurator.detectConfiguration();
+    Config base = StreamsConfigurator.getConfig();
 
-        assert( defaultPojo != null);
+    Config overrides = ConfigFactory.parseResourcesAnySyntax("custom.conf");
 
-        assert( defaultPojo.getAdditionalProperties().containsKey("message"));
+    Config combined = overrides.withFallback(base);
 
-        assert( defaultPojo.getAdditionalProperties().containsKey("samemessage"));
+    StreamsConfigurator<StreamsConfigurationForTesting> configurator = new StreamsConfigurator<>(StreamsConfigurationForTesting.class);
 
-        assert( defaultPojo.getAdditionalProperties().containsKey("evenmore"));
+    StreamsConfigurationForTesting customPojo = configurator.detectCustomConfiguration(combined);
 
-        assert( defaultPojo.getAdditionalProperties().get("evenmore") instanceof Map);
+    verifyCustomStreamsConfiguration(customPojo);
 
-    }
+  }
+
+  /**
+   * Test that a class which uses a configuration class with StreamsConfiguration
+   * as an ancestor can use a typed StreamsConfigurator and detectCustomConfiguration
+   * to populate its fields using ComponentConfigurators automatically, sourced using
+   * a provided child path.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testDetectCustomStreamsConfigurationProvidePath() throws Exception {
+
+    String testPath = "childPath";
+
+    Config base = StreamsConfigurator.getConfig();
+
+    Config overrides = ConfigFactory.parseResourcesAnySyntax("customChild.conf");
+
+    Config combined = overrides.withFallback(base);
+
+    StreamsConfigurator<StreamsConfigurationForTesting> configurator = new StreamsConfigurator<>(StreamsConfigurationForTesting.class);
+
+    StreamsConfigurationForTesting customPojo = configurator.detectCustomConfiguration(combined, testPath);
+
+    verifyCustomStreamsConfiguration(customPojo);
+  }
+
+  /**
+   * Test that a class which uses a configuration class with StreamsConfiguration
+   * as an ancestor can use a typed StreamsConfigurator and detectCustomConfiguration
+   * to populate its fields using ComponentConfigurators automatically, sourced using a
+   * a custom Configuration and a child path.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testDetectCustomStreamsConfigurationProvideConfigAndPath() throws Exception {
+
+    String testPath = "testPath";
+
+    Config base = StreamsConfigurator.getConfig().atPath(testPath);
+
+    Config overrides = ConfigFactory.parseResourcesAnySyntax("custom.conf").atPath(testPath);
+
+    Config combined = overrides.withFallback(base);
+
+    StreamsConfigurator<StreamsConfigurationForTesting> configurator = new StreamsConfigurator<>(StreamsConfigurationForTesting.class);
+
+    StreamsConfigurationForTesting customPojo = configurator.detectCustomConfiguration(combined, testPath);
+
+    verifyCustomStreamsConfiguration(customPojo);
+
+  }
+
+  private void verifyCustomStreamsConfiguration(StreamsConfigurationForTesting customPojo) {
+    Assert.assertThat(customPojo, is(notNullValue()));
+
+    Assert.assertThat(customPojo.getParallelism(), is(notNullValue()));
+    Assert.assertThat(customPojo.getParallelism(), is(equalTo(1l)));
+
+    Assert.assertThat(customPojo.getComponentOne().getInClasses(), is(notNullValue()));
+    Assert.assertThat(customPojo.getComponentOne().getInClasses().size(), is(greaterThan(0)));
+    Assert.assertThat(customPojo.getComponentOne().getInClasses().get(0), equalTo("java.lang.Integer"));
+    Assert.assertThat(customPojo.getComponentOne().getOutClasses(), is(notNullValue()));
+    Assert.assertThat(customPojo.getComponentOne().getOutClasses().size(), is(greaterThan(0)));
+    Assert.assertThat(customPojo.getComponentOne().getOutClasses().get(0), equalTo("java.lang.String"));
+
+    Assert.assertThat(customPojo.getComponentTwo().getInClasses(), is(notNullValue()));
+    Assert.assertThat(customPojo.getComponentTwo().getInClasses().size(), is(greaterThan(0)));
+    Assert.assertThat(customPojo.getComponentTwo().getInClasses().get(0), equalTo("java.lang.Float"));
+    Assert.assertThat(customPojo.getComponentTwo().getOutClasses(), is(notNullValue()));
+    Assert.assertThat(customPojo.getComponentTwo().getOutClasses().size(), is(greaterThan(0)));
+    Assert.assertThat(customPojo.getComponentTwo().getOutClasses().get(0), equalTo("java.lang.Double"));
+  }
+
 }

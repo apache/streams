@@ -67,8 +67,7 @@ public class ElasticsearchQuery implements Iterable<SearchHit>, Iterator<SearchH
    * ElasticsearchQuery constructor - resolves ElasticsearchReaderConfiguration from JVM 'elasticsearch'.
    */
   public ElasticsearchQuery() {
-    this(new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("elasticsearch")));
+    this(new ComponentConfigurator<>(ElasticsearchReaderConfiguration.class).detectConfiguration());
   }
 
   /**

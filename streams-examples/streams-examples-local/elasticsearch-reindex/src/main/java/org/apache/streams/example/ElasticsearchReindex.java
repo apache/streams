@@ -42,8 +42,7 @@ public class ElasticsearchReindex implements Runnable {
   ElasticsearchReindexConfiguration config;
 
   public ElasticsearchReindex() {
-    this(new ComponentConfigurator<>(ElasticsearchReindexConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig()));
-
+    this(new StreamsConfigurator<>(ElasticsearchReindexConfiguration.class).detectCustomConfiguration());
   }
 
   public ElasticsearchReindex(ElasticsearchReindexConfiguration reindex) {
@@ -67,9 +66,7 @@ public class ElasticsearchReindex implements Runnable {
 
     ElasticsearchPersistWriter elasticsearchPersistWriter = new ElasticsearchPersistWriter(config.getDestination());
 
-    LocalRuntimeConfiguration localRuntimeConfiguration =
-        StreamsJacksonMapper.getInstance().convertValue(StreamsConfigurator.detectConfiguration(), LocalRuntimeConfiguration.class);
-    StreamBuilder builder = new LocalStreamBuilder(localRuntimeConfiguration);
+    StreamBuilder builder = new LocalStreamBuilder(config);
 
     builder.newPerpetualStream(ElasticsearchPersistReader.class.getCanonicalName(), elasticsearchPersistReader);
     builder.addStreamsPersistWriter(ElasticsearchPersistWriter.class.getCanonicalName(), elasticsearchPersistWriter, 1, ElasticsearchPersistReader.class.getCanonicalName());

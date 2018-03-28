@@ -23,6 +23,7 @@ import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.facebook.FacebookConfiguration;
+import org.apache.streams.facebook.FacebookPageFeedProviderConfiguration;
 import org.apache.streams.facebook.provider.FacebookDataCollector;
 import org.apache.streams.facebook.provider.FacebookProvider;
 import org.apache.streams.facebook.provider.page.FacebookPageProvider;
@@ -56,11 +57,11 @@ public class FacebookPageFeedProvider extends FacebookProvider {
   private static ObjectMapper MAPPER = StreamsJacksonMapper.getInstance();
 
   public FacebookPageFeedProvider() {
-    super();
+    super.configuration = new ComponentConfigurator<>(FacebookPageFeedProviderConfiguration.class).detectConfiguration();
   }
 
-  public FacebookPageFeedProvider(FacebookConfiguration config) {
-    super(config);
+  public FacebookPageFeedProvider(FacebookPageFeedProviderConfiguration facebookConfiguration) {
+    super(facebookConfiguration);
   }
 
   @Override
@@ -83,12 +84,12 @@ public class FacebookPageFeedProvider extends FacebookProvider {
     Config reference = ConfigFactory.load();
     File confFile = new File(configfile);
     assert (confFile.exists());
+
     Config conf = ConfigFactory.parseFileAnySyntax(confFile, ConfigParseOptions.defaults().setAllowMissing(false));
+    StreamsConfigurator.addConfig(conf);
 
-    Config typesafe  = conf.withFallback(reference).resolve();
-
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    FacebookConfiguration config = new ComponentConfigurator<>(FacebookConfiguration.class).detectConfiguration(typesafe, "facebook");
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+    FacebookPageFeedProviderConfiguration config = new ComponentConfigurator<>(FacebookPageFeedProviderConfiguration.class).detectConfiguration();
     FacebookPageFeedProvider provider = new FacebookPageFeedProvider(config);
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));

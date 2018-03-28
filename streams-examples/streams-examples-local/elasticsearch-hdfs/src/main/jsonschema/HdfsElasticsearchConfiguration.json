@@ -6,6 +6,11 @@
   "type": "object",
   "javaType" : "org.apache.streams.example.HdfsElasticsearchConfiguration",
   "javaInterfaces": ["java.io.Serializable"],
+  "extends": {
+    "$comment": "Absolute $ref: http://streams.apache.org/streams-runtimes/streams-runtime-local/LocalRuntimeConfiguration.json",
+    "$ref": "../../../../../../streams-runtimes/streams-runtime-local/src/main/jsonschema/LocalRuntimeConfiguration.json"
+  },
+  "additionalProperties": false,
   "properties": {
     "source": { "javaType": "org.apache.streams.hdfs.HdfsReaderConfiguration", "type": "object", "required": true },
     "destination": { "javaType": "org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration", "type": "object", "required": true }

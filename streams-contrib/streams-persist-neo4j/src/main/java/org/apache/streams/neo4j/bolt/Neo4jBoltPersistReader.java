@@ -96,8 +96,7 @@ public class Neo4jBoltPersistReader implements StreamsPersistReader {
    * Neo4jBoltPersistReader constructor - resolves Neo4jReaderConfiguration from JVM 'neo4j'.
    */
   public Neo4jBoltPersistReader() {
-    this.config = new ComponentConfigurator<>(Neo4jReaderConfiguration.class)
-      .detectConfiguration(StreamsConfigurator.getConfig().getConfig("neo4j"));
+    this.config = new ComponentConfigurator<>(Neo4jReaderConfiguration.class).detectConfiguration();
   }
 
   /**

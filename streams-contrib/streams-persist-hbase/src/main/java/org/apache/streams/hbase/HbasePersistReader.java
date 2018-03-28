@@ -60,8 +60,7 @@ public class HbasePersistReader implements StreamsPersistReader, Serializable {
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public HbasePersistReader() {
-        this.config = new ComponentConfigurator<>(HbaseConfiguration.class)
-          .detectConfiguration(StreamsConfigurator.getConfig().getConfig("hbase"));
+        this.config = new ComponentConfigurator<>(HbaseConfiguration.class).detectConfiguration();
     }
 
     private HbasePersistReaderTask task;

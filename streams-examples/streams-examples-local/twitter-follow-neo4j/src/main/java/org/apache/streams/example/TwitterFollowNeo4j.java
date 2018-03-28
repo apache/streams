@@ -54,7 +54,7 @@ public class TwitterFollowNeo4j implements Runnable {
   private TwitterFollowNeo4jConfiguration config;
 
   public TwitterFollowNeo4j() {
-    this(new ComponentConfigurator<>(TwitterFollowNeo4jConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig()));
+    this(new ComponentConfigurator<>(TwitterFollowNeo4jConfiguration.class).detectConfiguration());
   }
 
   public TwitterFollowNeo4j(TwitterFollowNeo4jConfiguration config) {

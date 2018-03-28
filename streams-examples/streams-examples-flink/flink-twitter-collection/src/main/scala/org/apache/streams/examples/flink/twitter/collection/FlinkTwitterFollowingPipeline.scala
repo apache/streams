@@ -36,8 +36,9 @@ import org.apache.streams.core.StreamsDatum
 import org.apache.streams.examples.flink.FlinkBase
 import org.apache.streams.examples.flink.twitter.TwitterFollowingPipelineConfiguration
 import org.apache.streams.flink.{FlinkStreamingConfiguration, StreamsFlinkConfiguration}
+import org.apache.streams.hdfs.{HdfsReaderConfiguration, HdfsWriterConfiguration}
 import org.apache.streams.jackson.StreamsJacksonMapper
-import org.apache.streams.twitter.TwitterFollowingConfiguration
+import org.apache.streams.twitter.config.TwitterFollowingConfiguration
 import org.apache.streams.twitter.pojo.Follow
 import org.apache.streams.twitter.provider.TwitterFollowingProvider
 import org.hamcrest.MatcherAssert
@@ -110,13 +111,13 @@ object FlinkTwitterFollowingPipeline extends FlinkBase {
 
 }
 
-class FlinkTwitterFollowingPipeline(config: TwitterFollowingPipelineConfiguration = new ComponentConfigurator[TwitterFollowingPipelineConfiguration](classOf[TwitterFollowingPipelineConfiguration]).detectConfiguration(StreamsConfigurator.getConfig)) extends Runnable with java.io.Serializable {
+class FlinkTwitterFollowingPipeline(config: TwitterFollowingPipelineConfiguration = new StreamsConfigurator[TwitterFollowingPipelineConfiguration](classOf[TwitterFollowingPipelineConfiguration]).detectCustomConfiguration()) extends Runnable with java.io.Serializable {
 
   import FlinkTwitterFollowingPipeline._
 
   override def run(): Unit = {
 
-    val env: StreamExecutionEnvironment = streamEnvironment(MAPPER.convertValue(config, classOf[FlinkStreamingConfiguration]))
+    val env: StreamExecutionEnvironment = streamEnvironment(config)
 
     env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime)
     env.setNumberOfExecutionRetries(0)
@@ -152,8 +153,8 @@ class FlinkTwitterFollowingPipeline(config: TwitterFollowingPipelineConfiguratio
   }
 
   class FollowingCollectorFlatMapFunction(
-                                           twitterConfiguration : TwitterFollowingConfiguration = new ComponentConfigurator[TwitterFollowingConfiguration](classOf[TwitterFollowingConfiguration]).detectConfiguration(StreamsConfigurator.getConfig.getConfig("twitter")),
-                                           flinkConfiguration : StreamsFlinkConfiguration = new ComponentConfigurator[StreamsFlinkConfiguration](classOf[StreamsFlinkConfiguration]).detectConfiguration(StreamsConfigurator.getConfig)
+                                           twitterConfiguration : TwitterFollowingConfiguration = new ComponentConfigurator(classOf[TwitterFollowingConfiguration]).detectConfiguration(),
+                                           flinkConfiguration : StreamsFlinkConfiguration = new ComponentConfigurator(classOf[StreamsFlinkConfiguration]).detectConfiguration()
                                          ) extends RichFlatMapFunction[String, StreamsDatum] with Serializable {
 
     override def flatMap(input: String, out: Collector[StreamsDatum]): Unit = {

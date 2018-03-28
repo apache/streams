@@ -19,6 +19,7 @@
 package org.apache.streams.example.test;
 
 import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.elasticsearch.ElasticsearchClientManager;
 import org.apache.streams.example.ElasticsearchReindex;
 import org.apache.streams.example.ElasticsearchReindexConfiguration;
@@ -65,12 +66,13 @@ public class ElasticsearchReindexIT {
   @BeforeClass
   public void prepareTest() throws Exception {
 
-    Config reference  = ConfigFactory.load();
     File conf_file = new File("target/test-classes/ElasticsearchReindexIT.conf");
     assert(conf_file.exists());
+
     Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf_file, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(ElasticsearchReindexConfiguration.class).detectConfiguration(typesafe);
+    StreamsConfigurator.addConfig(testResourceConfig);
+
+    testConfiguration = new StreamsConfigurator<>(ElasticsearchReindexConfiguration.class).detectCustomConfiguration();
     testClient = ElasticsearchClientManager.getInstance(testConfiguration.getSource()).client();
 
     ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();

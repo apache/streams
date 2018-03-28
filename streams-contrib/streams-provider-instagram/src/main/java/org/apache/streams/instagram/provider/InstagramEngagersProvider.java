@@ -95,12 +95,12 @@ public class InstagramEngagersProvider extends InstagramAbstractProvider {
     Config reference = ConfigFactory.load();
     File file = new File(configfile);
     assert (file.exists());
+
     Config conf = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
+    StreamsConfigurator.addConfig(conf);
 
-    Config typesafe  = conf.withFallback(reference).resolve();
-
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    InstagramEngagersProviderConfiguration config = new ComponentConfigurator<>(InstagramEngagersProviderConfiguration.class).detectConfiguration(typesafe, "instagram");
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+    InstagramEngagersProviderConfiguration config = new ComponentConfigurator<>(InstagramEngagersProviderConfiguration.class).detectConfiguration();
     InstagramEngagersProvider provider = new InstagramEngagersProvider(config);
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));

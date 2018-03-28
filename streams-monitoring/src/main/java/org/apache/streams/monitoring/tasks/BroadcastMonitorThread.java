@@ -40,6 +40,7 @@ import org.apache.streams.pojo.json.ThroughputQueueBroadcast;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 
 import java.lang.management.ManagementFactory;
@@ -68,18 +69,8 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
 
   private static ObjectMapper objectMapper = StreamsJacksonMapper.getInstance();
 
-  /**
-   * DEPRECATED
-   * Please initialize logging with monitoring object via typesafe.
-   * @param streamConfig streamConfig map.
-   */
-  @Deprecated
-  public BroadcastMonitorThread(Map<String, Object> streamConfig) {
-    this(objectMapper.convertValue(streamConfig, MonitoringConfiguration.class));
-  }
-
-  public BroadcastMonitorThread(StreamsConfiguration streamConfig) {
-    this(objectMapper.convertValue(streamConfig.getAdditionalProperties().get("monitoring"), MonitoringConfiguration.class));
+  public BroadcastMonitorThread() {
+    this(new ComponentConfigurator<>(MonitoringConfiguration.class).detectConfiguration());
   }
 
   /**
@@ -89,9 +80,6 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
   public BroadcastMonitorThread(MonitoringConfiguration configuration) {
 
     this.configuration = configuration;
-    if ( this.configuration == null ) {
-      this.configuration = new ComponentConfigurator<>(MonitoringConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().atPath("monitoring"));
-    }
 
     LOGGER.info("BroadcastMonitorThread created");
 
@@ -126,6 +114,8 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
   @Override
   public void run() {
     LOGGER.info("BroadcastMonitorThread running");
+    Preconditions.checkNotNull(configuration);
+    Preconditions.checkNotNull(configuration.getMonitoringBroadcastIntervalMs());
     while (keepRunning) {
       try {
         List<String> messages = new ArrayList<>();
@@ -170,13 +160,16 @@ public class BroadcastMonitorThread extends NotificationBroadcasterSupport imple
    */
   public void prepare() {
 
+    Preconditions.checkNotNull(configuration);
+    Preconditions.checkNotNull(configuration.getMonitoringBroadcastIntervalMs());
+
     keepRunning = true;
 
     LOGGER.info("BroadcastMonitorThread setup " + this.configuration);
 
     server = ManagementFactory.getPlatformMBeanServer();
 
-    if (this.configuration != null && this.configuration.getBroadcastURI() != null) {
+    if (this.configuration.getBroadcastURI() != null) {
 
       try {
         broadcastUri = new URI(configuration.getBroadcastURI());

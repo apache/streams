@@ -67,8 +67,7 @@ public class FileBufferPersistReader implements StreamsPersistReader, Serializab
   private ExecutorService executor = Executors.newSingleThreadExecutor();
 
   public FileBufferPersistReader() {
-    this(new ComponentConfigurator<>(FileBufferConfiguration.class)
-        .detectConfiguration(StreamsConfigurator.getConfig().getConfig("filebuffer")));
+    this(new ComponentConfigurator<>(FileBufferConfiguration.class).detectConfiguration());
   }
 
   public FileBufferPersistReader(FileBufferConfiguration config) {
@@ -144,7 +143,7 @@ public class FileBufferPersistReader implements StreamsPersistReader, Serializab
 
     mapper = new ObjectMapper();
 
-    File file = new File( config.getPath());
+    File file = new File( config.getBuffer() );
 
     if ( !file.exists() ) {
       try {

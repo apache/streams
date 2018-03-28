@@ -26,13 +26,11 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.twitter.TwitterFollowingConfiguration;
-import org.apache.streams.twitter.TwitterUserInformationConfiguration;
+import org.apache.streams.twitter.config.TwitterFollowingConfiguration;
+import org.apache.streams.twitter.config.TwitterUserInformationConfiguration;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.api.UsersLookupRequest;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
-import org.apache.streams.twitter.pojo.User;
-import org.apache.streams.util.ComponentUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,7 +56,6 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
@@ -143,15 +140,14 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     String configfile = args[0];
     String outfile = args[1];
 
-    Config reference = ConfigFactory.load();
     File file = new File(configfile);
     assert (file.exists());
+
     Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
+    StreamsConfigurator.addConfig(testResourceConfig);
 
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
-    TwitterUserInformationConfiguration config = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration(typesafe, "twitter");
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+    TwitterUserInformationConfiguration config = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration();
     TwitterUserInformationProvider provider = new TwitterUserInformationProvider(config);
 
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
@@ -186,7 +182,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
    * Resolves config from JVM properties 'twitter'.
    */
   public TwitterUserInformationProvider() {
-    this.config = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration(StreamsConfigurator.getConfig().getConfig("twitter"));
+    this.config = new ComponentConfigurator<>(TwitterUserInformationConfiguration.class).detectConfiguration();
   }
 
   public TwitterUserInformationProvider(TwitterUserInformationConfiguration config) {

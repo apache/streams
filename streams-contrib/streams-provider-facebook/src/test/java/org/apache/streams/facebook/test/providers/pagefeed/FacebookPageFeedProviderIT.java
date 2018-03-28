@@ -18,10 +18,13 @@
 
 package org.apache.streams.facebook.test.providers.pagefeed;
 
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.facebook.provider.pagefeed.FacebookPageFeedProvider;
 
+import com.typesafe.config.ConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -43,6 +46,11 @@ public class FacebookPageFeedProviderIT {
     String[] args = new String[2];
     args[0] = configfile;
     args[1] = outfile;
+
+    File conf = new File(configfile);
+    Assert.assertTrue (conf.exists());
+    Assert.assertTrue (conf.canRead());
+    Assert.assertTrue (conf.isFile());
 
     Thread testThread = new Thread(() -> {
       try {
