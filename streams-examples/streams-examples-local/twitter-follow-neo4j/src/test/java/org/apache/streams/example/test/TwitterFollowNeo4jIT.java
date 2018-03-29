@@ -19,6 +19,7 @@
 package org.apache.streams.example.test;
 
 import org.apache.streams.config.ComponentConfigurator;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.example.TwitterFollowNeo4j;
 import org.apache.streams.example.TwitterFollowNeo4jConfiguration;
@@ -43,8 +44,11 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.testng.Assert.assertTrue;
-
 /**
  * TwitterFollowNeo4jIT is an integration test for TwitterFollowNeo4j.
  */
@@ -63,12 +67,7 @@ public class TwitterFollowNeo4jIT {
   @BeforeClass
   public void prepareTest() throws IOException {
 
-    Config reference  = ConfigFactory.load();
-    File conf = new File("target/test-classes/TwitterFollowNeo4jIT.conf");
-    assertTrue(conf.exists());
-    Config testResourceConfig  = ConfigFactory.parseFileAnySyntax(conf, ConfigParseOptions.defaults().setAllowMissing(false));
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-    testConfiguration = new ComponentConfigurator<>(TwitterFollowNeo4jConfiguration.class).detectConfiguration(typesafe);
+    testConfiguration = new StreamsConfigurator<>(TwitterFollowNeo4jConfiguration.class).detectCustomConfiguration();
     testClient = Neo4jBoltClient.getInstance(testConfiguration.getNeo4j());
 
     Session session = testClient.client().session();
@@ -89,18 +88,18 @@ public class TwitterFollowNeo4jIT {
     Neo4jReaderConfiguration vertexReaderConfiguration= MAPPER.convertValue(testConfiguration.getNeo4j(), Neo4jReaderConfiguration.class);
     vertexReaderConfiguration.setQuery("MATCH (v) return v");
     Neo4jBoltPersistReader vertexReader = new Neo4jBoltPersistReader(vertexReaderConfiguration);
-    vertexReader.prepare(null);
+    vertexReader.prepare(vertexReaderConfiguration);
     StreamsResultSet vertexResultSet = vertexReader.readAll();
     LOGGER.info("Total Read: {}", vertexResultSet.size() );
-    assertTrue(vertexResultSet.size() > 100);
+    assertThat(vertexResultSet.size(), greaterThan(100));
 
     Neo4jReaderConfiguration edgeReaderConfiguration= MAPPER.convertValue(testConfiguration.getNeo4j(), Neo4jReaderConfiguration.class);
     edgeReaderConfiguration.setQuery("MATCH (s)-[r]->(d) return r");
     Neo4jBoltPersistReader edgeReader = new Neo4jBoltPersistReader(edgeReaderConfiguration);
-    edgeReader.prepare(null);
+    edgeReader.prepare(edgeReaderConfiguration);
     StreamsResultSet edgeResultSet = edgeReader.readAll();
     LOGGER.info("Total Read: {}", edgeResultSet.size() );
-    assertTrue(edgeResultSet.size() == vertexResultSet.size()-1);
+    assertThat(edgeResultSet.size(), equalTo(vertexResultSet.size()-1));
 
   }
 

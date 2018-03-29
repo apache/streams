@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.wnameless.json.flattener.JsonFlattener;
 import com.github.wnameless.json.unflattener.JsonUnflattener;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.JsonFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -140,6 +141,42 @@ public class PropertyUtil {
     return merged;
   }
 
+  public ObjectNode cleanProperties(ObjectNode content) {
+    return cleanProperties(mapper, content);
+  }
+
+  public static ObjectNode cleanProperties(ObjectMapper mapper, ObjectNode content) {
+
+    ObjectNode cleaned = mapper.createObjectNode();
+
+    Iterator<Map.Entry<String, JsonNode>> fields = content.fields();
+    for ( ; fields.hasNext(); ) {
+      Map.Entry<String, JsonNode> field = fields.next();
+      String fieldId = field.getKey();
+      if( field.getValue() != null && !field.getValue().getNodeType().equals(JsonNodeType.NULL)) {
+        if( field.getValue().getNodeType().equals(JsonNodeType.OBJECT)) {
+          ObjectNode clean = cleanProperties(mapper, field.getValue().deepCopy());
+          if( clean != null && clean.size() > 0 ) {
+            cleaned.put(fieldId, clean);
+          }
+        } else if ( field.getValue().getNodeType().equals(JsonNodeType.ARRAY)) {
+          ArrayNode clean = cleanArray((ArrayNode)field.getValue());
+          if( clean != null && clean.size() > 0 ) {
+            cleaned.put(fieldId, clean);
+          }
+        } else if ( field.getValue().getNodeType().equals(JsonNodeType.STRING)) {
+          String value = content.get(fieldId).asText();
+          if( value != null && StringUtils.isNotBlank(value)) {
+            cleaned.put(fieldId, value);
+          }
+        } else {
+          cleaned.put(fieldId, field.getValue());
+        }
+      }
+    }
+    return cleaned;
+  }
+
   /**
    * merge two arrays.
    * @param content ArrayNode
@@ -148,6 +185,28 @@ public class PropertyUtil {
    */
   private static ArrayNode mergeArrays(ArrayNode content, ArrayNode parent) {
     return parent.deepCopy().addAll(content);
+  }
+
+  /**
+   * clean an array.
+   * @param content ArrayNode
+   * @return cleaned ArrayNode
+   */
+  private static ArrayNode cleanArray(ArrayNode content) {
+    if( content.size() == 0) return null;
+    Iterator<JsonNode> items = content.iterator();
+    for ( ; items.hasNext(); ) {
+      JsonNode item = items.next();
+      if( item == null ) items.remove();
+      if( item.getNodeType().equals(JsonNodeType.OBJECT)) {
+        if( item.size() == 0 ) items.remove();
+      }
+      if( item.getNodeType().equals(JsonNodeType.ARRAY)) {
+        if( item.size() == 0 ) items.remove();
+      }
+    }
+    if( content.size() == 0) return null;
+    else return content;
   }
 
 }

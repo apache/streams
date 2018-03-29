@@ -31,7 +31,7 @@ import org.apache.streams.local.LocalRuntimeConfiguration;
 import org.apache.streams.local.builders.LocalStreamBuilder;
 import org.apache.streams.neo4j.Neo4jConfiguration;
 import org.apache.streams.neo4j.bolt.Neo4jBoltPersistWriter;
-import org.apache.streams.twitter.TwitterFollowingConfiguration;
+import org.apache.streams.twitter.config.TwitterFollowingConfiguration;
 import org.apache.streams.twitter.converter.TwitterDocumentClassifier;
 import org.apache.streams.twitter.converter.TwitterFollowActivityConverter;
 import org.apache.streams.twitter.provider.TwitterFollowingProvider;
@@ -54,7 +54,7 @@ public class TwitterFollowNeo4j implements Runnable {
   private TwitterFollowNeo4jConfiguration config;
 
   public TwitterFollowNeo4j() {
-    this(new ComponentConfigurator<>(TwitterFollowNeo4jConfiguration.class).detectConfiguration());
+    this(new StreamsConfigurator<>(TwitterFollowNeo4jConfiguration.class).detectCustomConfiguration());
   }
 
   public TwitterFollowNeo4j(TwitterFollowNeo4jConfiguration config) {
@@ -79,9 +79,7 @@ public class TwitterFollowNeo4j implements Runnable {
     Neo4jBoltPersistWriter graphPersistWriter = new Neo4jBoltPersistWriter(neo4jConfiguration);
     graphPersistWriter.prepare(neo4jConfiguration);
 
-    LocalRuntimeConfiguration localRuntimeConfiguration =
-        StreamsJacksonMapper.getInstance().convertValue(StreamsConfigurator.detectConfiguration(), LocalRuntimeConfiguration.class);
-    StreamBuilder builder = new LocalStreamBuilder(localRuntimeConfiguration);
+    StreamBuilder builder = new LocalStreamBuilder();
 
     builder.newPerpetualStream(TwitterFollowingProvider.class.getCanonicalName(), followingProvider);
     builder.addStreamsProcessor(TypeConverterProcessor.class.getCanonicalName(), converter, 1, TwitterFollowingProvider.class.getCanonicalName());
