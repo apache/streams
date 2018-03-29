@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "type": "object",
+  "javaType" : "org.apache.streams.example.TwitterFollowNeo4jConfiguration",
+  "javaInterfaces": ["java.io.Serializable"],
+  "extends": {
+    "$comment": "Absolute $ref: http://streams.apache.org/streams-runtimes/streams-runtime-local/LocalRuntimeConfiguration.json",
+    "$ref": "../../../../../../streams-runtimes/streams-runtime-local/src/main/jsonschema/LocalRuntimeConfiguration.json"
+  },
+  "additionalProperties": false,
+  "properties": {
+    "twitter": { "javaType": "org.apache.streams.twitter.config.TwitterFollowingConfiguration", "type": "object", "required": true },
+    "neo4j": { "javaType": "org.apache.streams.neo4j.Neo4jConfiguration", "type": "object", "required": true }
+  }
+}
