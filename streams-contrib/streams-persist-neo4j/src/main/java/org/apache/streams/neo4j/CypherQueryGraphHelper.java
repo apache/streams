@@ -124,6 +124,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper, Serializable {
     String query = createVertex.render();
 
     ObjectNode object = MAPPER.convertValue(activityObject, ObjectNode.class);
+    object = PropertyUtil.getInstance(MAPPER).cleanProperties(object);
     Map<String, Object> props = PropertyUtil.getInstance(MAPPER).flattenToMap(object);
 
     Pair<String, Map<String, Object>> queryPlusParameters = new Pair(createVertex.render(), props);
@@ -171,6 +172,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper, Serializable {
     String query = mergeVertex.render();
 
     ObjectNode object = MAPPER.convertValue(activityObject, ObjectNode.class);
+    object = PropertyUtil.getInstance(MAPPER).cleanProperties(object);
     Map<String, Object> props = PropertyUtil.getInstance(MAPPER).flattenToMap(object);
 
     LOGGER.debug("mergeVertexRequest: ({},{})", query, props);
@@ -191,6 +193,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper, Serializable {
     Pair queryPlusParameters = new Pair(null, new HashMap<>());
 
     ObjectNode object = MAPPER.convertValue(activity, ObjectNode.class);
+    object = PropertyUtil.getInstance(MAPPER).cleanProperties(object);
     Map<String, Object> props = PropertyUtil.getInstance(MAPPER).flattenToMap(object);
 
     ST mergeEdge = new ST(createEdgeStatementTemplate);
@@ -221,6 +224,7 @@ public class CypherQueryGraphHelper implements QueryGraphHelper, Serializable {
     Pair queryPlusParameters = new Pair(null, new HashMap<>());
 
     ObjectNode object = MAPPER.convertValue(activity, ObjectNode.class);
+    object = PropertyUtil.getInstance(MAPPER).cleanProperties(object);
     Map<String, Object> props = PropertyUtil.getInstance(MAPPER).flattenToMap(object);
 
     ST mergeEdge = new ST(createEdgeStatementTemplate);

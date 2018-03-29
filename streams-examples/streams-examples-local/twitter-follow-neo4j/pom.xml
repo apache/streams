@@ -26,8 +26,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>streams-twitter-follow-neo4j</artifactId>
-    <name>twitter-follow-neo4j</name>
+    <artifactId>streams-example-twitter-follow-neo4j</artifactId>
+    <name>streams-example-twitter-follow-neo4j</name>
 
     <description>
         Collects friend or follower connections for a set of twitter users to build a graph database in neo4j.
@@ -188,6 +188,16 @@
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.streams</groupId>
+                        <artifactId>streams-config</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.streams</groupId>
+                        <artifactId>streams-runtime-local</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.streams</groupId>
                         <artifactId>streams-persist-neo4j</artifactId>
                         <version>${project.version}</version>
                     </dependency>
@@ -252,5 +262,91 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dockerITs</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>skipITs</name>
+                    <value>false</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <configuration combine.self="override">
+                            <watchInterval>500</watchInterval>
+                            <logDate>default</logDate>
+                            <verbose>true</verbose>
+                            <autoPull>on</autoPull>
+                            <images>
+                                <image>
+                                    <name>neo4j</name>
+                                    <alias>neo4j</alias>
+                                    <run>
+                                        <env>
+                                            <NEO4J_AUTH>none</NEO4J_AUTH>
+                                        </env>
+                                        <namingStrategy>none</namingStrategy>
+                                        <ports>
+                                            <port>${http.host}:${http.port}:7474</port>
+                                            <port>${tcp.host}:${tcp.port}:7687</port>
+                                        </ports>
+                                        <portPropertyFile>neo4j.properties</portPropertyFile>
+                                        <wait>
+                                            <http>
+                                                <url>http://${http.host}:${http.port}</url>
+                                                <method>GET</method>
+                                                <status>200</status>
+                                            </http>
+                                            <time>30000</time>
+                                            <kill>1000</kill>
+                                            <shutdown>500</shutdown>
+                                        </wait>
+                                        <log>
+                                            <enabled>true</enabled>
+                                            <date>default</date>
+                                            <color>cyan</color>
+                                        </log>
+                                    </run>
+                                    <watch>
+                                        <mode>none</mode>
+                                    </watch>
+                                </image>
+
+                            </images>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>start</id>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <phase>
+                                    pre-integration-test
+                                </phase>
+                            </execution>
+                            <execution>
+                                <id>stop</id>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                                <phase>
+                                    post-integration-test
+                                </phase>
+                            </execution>
+                        </executions>
+
+                    </plugin>
+
+                </plugins>
+            </build>
+
+        </profile>
+    </profiles>
 
 </project>
