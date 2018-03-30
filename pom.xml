@@ -410,6 +410,7 @@
         <module>streams-config</module>
         <module>streams-contrib</module>
         <module>streams-components</module>
+        <module>streams-dist</module>
         <module>streams-examples</module>
         <module>streams-monitoring</module>
         <module>streams-pojo</module>
