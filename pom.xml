@@ -340,6 +340,7 @@
         <failsafe.plugin.version>2.19.1</failsafe.plugin.version>
         <jar.plugin.version>2.6</jar.plugin.version>
         <javadoc.plugin.version>2.10.2</javadoc.plugin.version>
+        <license.plugin.version>1.15</license.plugin.version>
         <pax.plugin.version>1.5</pax.plugin.version>
         <remote-resources.plugin.version>1.4</remote-resources.plugin.version>
         <reports.plugin.version>2.9</reports.plugin.version>
@@ -475,6 +476,10 @@
             </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
             </plugin>
         </plugins>
         <pluginManagement>
@@ -727,6 +732,32 @@
                     </configuration>
                 </plugin>
                 <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>${license.plugin.version}</version>
+                    <configuration>
+                        <excludedGroups>org.apache.streams,org.apache.streams.plugins</excludedGroups>
+                        <excludedLicenses></excludedLicenses>
+                        <failOnBlacklist>true</failOnBlacklist>
+                        <missingFile>${project.basedir}/src/license/THIRD-PARTY.properties</missingFile>
+                        <useMissingFile>true</useMissingFile>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>aggregate-add-third-party</id>
+                            <goals>
+                                <goal>aggregate-add-third-party</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>aggregate-download-licenses</id>
+                            <goals>
+                                <goal>aggregate-download-licenses</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${surefire.plugin.version}</version>
@@ -832,6 +863,11 @@
                     <configuration>
                         <skipIfEmpty>true</skipIfEmpty>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>${license.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>
@@ -1308,6 +1344,24 @@
                 </reportSets>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license.plugin.version}</version>
+                <configuration>
+                    <excludedGroups>org.apache.streams,org.apache.streams.plugins</excludedGroups>
+                    <missingFile>${project.basedir}/src/license/THIRD-PARTY.properties</missingFile>
+                    <useMissingFile>true</useMissingFile>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <inherited>false</inherited>
+                        <reports>
+                                <report>aggregate-third-party-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>${site.plugin.version}</version>
                 <configuration>
@@ -1373,6 +1427,15 @@
                         <artifactId>scalastyle-maven-plugin</artifactId>
                         <configuration>
                             <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <version>${license.plugin.version}</version>
+                        <configuration>
+                            <skipAggregateAddThirdParty>true</skipAggregateAddThirdParty>
+                            <skipAggregateDownloadLicenses>true</skipAggregateDownloadLicenses>
                         </configuration>
                     </plugin>
                 </plugins>
