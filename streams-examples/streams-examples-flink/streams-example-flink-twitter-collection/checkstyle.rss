@@ -26,7 +26,7 @@ under the License.
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
       <title>File: 7,
-             Errors: 256,
+             Errors: 294,
              Warnings: 0,
              Infos: 0
       </title>
@@ -55,7 +55,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  26
+                  30
                 </td>
               </tr>
                           <tr>
@@ -83,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  40
+                  46
                 </td>
               </tr>
                           <tr>
@@ -97,7 +97,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  55
+                  63
                 </td>
               </tr>
                           <tr>
@@ -111,7 +111,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  40
+                  46
                 </td>
               </tr>
                           <tr>
@@ -125,7 +125,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  42
+                  48
                 </td>
               </tr>
                           <tr>
@@ -139,7 +139,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  50
+                  58
                 </td>
               </tr>
                       </tbody>

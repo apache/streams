@@ -26,7 +26,7 @@ under the License.
     <copyright>&#169;2018 The Apache Software Foundation</copyright>
     <item>
       <title>File: 20,
-             Errors: 1179,
+             Errors: 1317,
              Warnings: 0,
              Infos: 0
       </title>
@@ -55,7 +55,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  42
+                  49
                 </td>
               </tr>
                           <tr>
@@ -83,7 +83,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  33
+                  35
                 </td>
               </tr>
                           <tr>
@@ -97,7 +97,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  123
+                  125
                 </td>
               </tr>
                           <tr>
@@ -125,7 +125,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  147
+                  175
                 </td>
               </tr>
                           <tr>
@@ -139,7 +139,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  41
+                  43
                 </td>
               </tr>
                           <tr>
@@ -181,7 +181,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  89
+                  103
                 </td>
               </tr>
                           <tr>
@@ -195,7 +195,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  38
+                  42
                 </td>
               </tr>
                           <tr>
@@ -223,7 +223,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  410
+                  485
                 </td>
               </tr>
                           <tr>
@@ -265,7 +265,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  14
+                  16
                 </td>
               </tr>
                           <tr>
@@ -293,7 +293,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  29
+                  30
                 </td>
               </tr>
                           <tr>
@@ -321,7 +321,7 @@ under the License.
                   0
                 </td>
                 <td>
-                  5
+                  6
                 </td>
               </tr>
                       </tbody>
