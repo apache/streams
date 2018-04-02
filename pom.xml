@@ -477,10 +477,6 @@
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -745,12 +741,14 @@
                     <executions>
                         <execution>
                             <id>aggregate-add-third-party</id>
+                            <phase>validate</phase>
                             <goals>
                                 <goal>aggregate-add-third-party</goal>
                             </goals>
                         </execution>
                         <execution>
                             <id>aggregate-download-licenses</id>
+                            <phase>validate</phase>
                             <goals>
                                 <goal>aggregate-download-licenses</goal>
                             </goals>
@@ -1356,7 +1354,7 @@
                     <reportSet>
                         <inherited>false</inherited>
                         <reports>
-                                <report>aggregate-third-party-report</report>
+                            <report>aggregate-third-party-report</report>
                         </reports>
                     </reportSet>
                 </reportSets>
@@ -1436,6 +1434,8 @@
                         <configuration>
                             <skipAggregateAddThirdParty>true</skipAggregateAddThirdParty>
                             <skipAggregateDownloadLicenses>true</skipAggregateDownloadLicenses>
+                            <skipAddThirdParty>true</skipAddThirdParty>
+                            <skipDownloadLicenses>true</skipDownloadLicenses>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -1618,6 +1618,10 @@
                     <plugin>
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>
