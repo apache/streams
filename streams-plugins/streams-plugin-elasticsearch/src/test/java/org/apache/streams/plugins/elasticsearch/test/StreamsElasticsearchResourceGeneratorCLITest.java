@@ -36,7 +36,7 @@ public class StreamsElasticsearchResourceGeneratorCLITest {
   @Test
   public void testStreamsElasticsearchResourceGeneratorCLI() throws Exception {
 
-    String sourceDirectory = "target/test-classes/activitystreams-schemas";
+    String sourceDirectory = "target/dependency/activitystreams-schemas";
     String targetDirectory = "target/generated-resources/elasticsearch-cli";
 
     StreamsElasticsearchResourceGenerator.main(new String[]{sourceDirectory, targetDirectory});

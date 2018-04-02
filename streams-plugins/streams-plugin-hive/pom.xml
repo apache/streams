@@ -38,6 +38,22 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schema-activitystreams</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>schemas</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schema-activitystreams</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>testdata</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
             <artifactId>streams-config</artifactId>
             <version>${project.version}</version>
             <exclusions>
@@ -172,22 +188,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>resource-dependencies</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeGroupIds>org.apache.streams</includeGroupIds>
-                            <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
-                            <includes>**/*.json</includes>
-                            <includeTypes>jar</includeTypes>
-                            <outputDirectory>${project.build.directory}/test-classes/activitystreams-schemas</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
         </plugins>

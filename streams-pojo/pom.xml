@@ -33,7 +33,22 @@
     <description>Activity json schemas and POJOs, and supporting classes.</description>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schema-activitystreams</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>schemas</classifier>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schema-activitystreams</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>testdata</classifier>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.juneau</groupId>
             <artifactId>juneau-marshall</artifactId>
@@ -174,36 +189,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-schemas</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includes>**/*.json</includes>
-                            <outputDirectory>${project.build.directory}/test-classes/activitystreams-schemas</outputDirectory>
-                            <includeGroupIds>org.apache.streams</includeGroupIds>
-                            <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
-                            <includeTypes>jar</includeTypes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>unpack-testdocs</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includes>**/*.json</includes>
-                            <outputDirectory>${project.build.directory}/test-classes/activitystreams-testdocs</outputDirectory>
-                            <includeGroupIds>org.apache.streams</includeGroupIds>
-                            <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
-                            <includeTypes>test-jar</includeTypes>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.streams.plugins</groupId>
@@ -212,9 +197,9 @@
                 <configuration>
                     <sourcePaths>
                         <sourcePath>${project.basedir}/src/main/jsonschema</sourcePath>
-                        <sourcePath>${project.basedir}/target/test-classes/activitystreams-schemas</sourcePath>
-                        <sourcePath>${project.basedir}/target/test-classes/activitystreams-schemas/objectTypes</sourcePath>
-                        <sourcePath>${project.basedir}/target/test-classes/activitystreams-schemas/verbs</sourcePath>
+                        <sourcePath>${project.basedir}/target/dependency/activitystreams-schemas</sourcePath>
+                        <sourcePath>${project.basedir}/target/dependency/activitystreams-schemas/objectTypes</sourcePath>
+                        <sourcePath>${project.basedir}/target/dependency/activitystreams-schemas/verbs</sourcePath>
                     </sourcePaths>
                     <targetDirectory>${project.basedir}/target/generated-sources/pojo</targetDirectory>
                     <targetPackage>org.apache.streams.pojo.json</targetPackage>

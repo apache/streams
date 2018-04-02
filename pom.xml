@@ -864,6 +864,34 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>${dependency.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>unpack-schemas</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>unpack-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <excludeTransitive>true</excludeTransitive>
+                                <includeGroupIds>org.apache.streams</includeGroupIds>
+                                <includeScope>compile</includeScope>
+                                <includeTypes>zip</includeTypes>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>unpack-test-resources</id>
+                            <phase>process-test-resources</phase>
+                            <goals>
+                                <goal>unpack-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <excludeTransitive>true</excludeTransitive>
+                                <includeGroupIds>org.apache.streams</includeGroupIds>
+                                <includeScope>test</includeScope>
+                                <includeTypes>zip</includeTypes>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -879,60 +907,6 @@
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
                     <version>${docker.plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>${checkstyle.plugin.version}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>com.puppycrawl.tools</groupId>
-                            <artifactId>checkstyle</artifactId>
-                            <version>7.2</version>
-                        </dependency>
-                    </dependencies>
-                    <executions>
-                        <execution>
-                            <id>validate</id>
-                            <phase>validate</phase>
-                            <configuration>
-                                <configLocation>src/main/resources/streams-java-checkstyle.xml</configLocation>
-                                <encoding>UTF-8</encoding>
-                                <consoleOutput>true</consoleOutput>
-                                <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                                <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
-                                <failsOnError>false</failsOnError>
-                            </configuration>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.scalastyle</groupId>
-                    <artifactId>scalastyle-maven-plugin</artifactId>
-                    <version>${scalastyle.plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>validate</id>
-                            <phase>validate</phase>
-                            <configuration>
-                                <verbose>false</verbose>
-                                <failOnViolation>false</failOnViolation>
-                                <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                                <failOnWarning>false</failOnWarning>
-                                <sourceDirectory>${project.basedir}/src/main/scala</sourceDirectory>
-                                <testSourceDirectory>${project.basedir}/src/test/scala</testSourceDirectory>
-                                <!--<configLocation>https://raw.githubusercontent.com/databricks/sbt-databricks/master/scalastyle-config.xml</configLocation>-->
-                                <outputFile>${project.build.directory}/scalastyle-output.xml</outputFile>
-                                <outputEncoding>UTF-8</outputEncoding>
-                            </configuration>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>net.alchim31.maven</groupId>

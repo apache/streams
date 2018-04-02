@@ -18,10 +18,12 @@
 
 package org.apache.streams.util.schema.test;
 
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.util.schema.Schema;
 import org.apache.streams.util.schema.SchemaStore;
 import org.apache.streams.util.schema.SchemaStoreImpl;
 
+import com.typesafe.config.Config;
 import org.junit.Test;
 
 import java.io.File;
@@ -31,10 +33,12 @@ import java.io.File;
  */
 public class SchemaStoreTest {
 
+  Config testconfig = StreamsConfigurator.getConfig().getConfig(SchemaStoreTest.class.getSimpleName());
+
   @Test
   public void indexMediaLink() {
     SchemaStore schemaStore = new SchemaStoreImpl();
-    File file = new File("target/test-classes/activitystreams-schemas/media_link.json");
+    File file = new File(testconfig.getString("medialinkSchema"));
     schemaStore.create(file.toURI());
     assert ( schemaStore.getFileUriCount() == 1);
     assert ( schemaStore.getByUri(file.toURI()).isPresent());
@@ -44,7 +48,7 @@ public class SchemaStoreTest {
   @Test
   public void indexApprove() {
     SchemaStore schemaStore = new SchemaStoreImpl();
-    File file = new File("target/test-classes/activitystreams-schemas/verbs/approve.json");
+    File file = new File(testconfig.getString("approveSchema"));
     schemaStore.create(file.toURI());
     assert ( schemaStore.getFileUriCount() == 4);
     assert ( schemaStore.getByUri(file.toURI()).isPresent());
@@ -54,7 +58,7 @@ public class SchemaStoreTest {
   @Test
   public void indexCollection() {
     SchemaStore schemaStore = new SchemaStoreImpl();
-    File file = new File("target/test-classes/activitystreams-schemas/collection.json");
+    File file = new File(testconfig.getString("collectionSchema"));
     schemaStore.create(file.toURI());
     assert ( schemaStore.getFileUriCount() == 3);
     assert ( schemaStore.getByUri(file.toURI()).isPresent());
@@ -66,14 +70,14 @@ public class SchemaStoreTest {
   @Test
   public void indexUpdate() {
     SchemaStore schemaStore = new SchemaStoreImpl();
-    File file = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
+    File file = new File(testconfig.getString("updateSchema"));
     schemaStore.create(file.toURI());
     assert ( schemaStore.getFileUriCount() == 4);
     assert ( schemaStore.getByUri(file.toURI()).isPresent());
     assert ( schemaStore.getById(schemaStore.getByUri(file.toURI()).get().getId()).isPresent());
     Schema update = schemaStore.getByUri(file.toURI()).get();
     assert ( update.getParent() != null );
-    File parentFile = new File("target/test-classes/activitystreams-schemas/activity.json");
+    File parentFile = new File(testconfig.getString("activitySchema"));
     Schema parent = schemaStore.getByUri(parentFile.toURI()).get();
     assert ( parent != null );
     assert ( update.getParentUri().equals(parent.getUri()));

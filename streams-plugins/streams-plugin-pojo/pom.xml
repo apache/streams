@@ -36,7 +36,16 @@
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-schema-activitystreams</artifactId>
             <version>${project.version}</version>
-            <type>jar</type>
+            <type>zip</type>
+            <classifier>schemas</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schema-activitystreams</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>testdata</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -167,36 +176,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>activitystreams-schemas</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includes>**/*.json</includes>
-                            <includeGroupIds>org.apache.streams</includeGroupIds>
-                            <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
-                            <includeTypes>jar</includeTypes>
-                            <outputDirectory>${project.build.directory}/test-classes/activitystreams-schemas</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>activitystreams-testdocs</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includes>**/*.json</includes>
-                            <includeGroupIds>org.apache.streams</includeGroupIds>
-                            <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
-                            <includeTypes>test-jar</includeTypes>
-                            <outputDirectory>${project.build.directory}/test-classes/activitystreams-testdocs</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
         </plugins>
