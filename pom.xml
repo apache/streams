@@ -446,13 +446,6 @@
         </extensions>
         <plugins>
             <plugin>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.scalastyle</groupId>
-                <artifactId>scalastyle-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
             <plugin>
@@ -686,76 +679,6 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.rat</groupId>
-                    <artifactId>apache-rat-plugin</artifactId>
-                    <version>${apache-rat.plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <excludes>
-                            <exclude>.git</exclude>
-                            <exclude>.gitignore</exclude>
-                            <exclude>.git/**</exclude>
-                            <exclude>.idea/**</exclude>
-                            <exclude>.java-version</exclude>
-                            <exclude>*.conf</exclude>
-                            <exclude>**/DEPENDENCIES</exclude>
-                            <exclude>**/LICENSE</exclude>
-                            <exclude>**/MANIFEST.MF</exclude>
-                            <exclude>**/NOTICE</exclude>
-                            <exclude>**/README.*</exclude>
-                            <exclude>**/target/**</exclude>
-                            <exclude>**/overlays/**</exclude>
-                            <exclude>**/src/test/resources/**/*.csv</exclude>
-                            <exclude>**/src/test/resources/**/*.tsv</exclude>
-                            <exclude>**/src/site/resources/**/*</exclude>
-                            <exclude>**/.gitignore</exclude>
-                            <exclude>**/*.properties</exclude>
-                            <exclude>**/*.iml</exclude>
-                            <exclude>**/*.ini</exclude>
-                            <exclude>**/*.jar</exclude>
-                            <exclude>**/*.svg</exclude>
-                            <exclude>dependency-reduced-pom.xml</exclude>
-                            <exclude>rat.txt</exclude>
-                            <exclude>apache-maven-*/**/*</exclude>
-                        </excludes>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>${license.plugin.version}</version>
-                    <configuration>
-                        <excludedGroups>org.apache.streams,org.apache.streams.plugins</excludedGroups>
-                        <excludedLicenses></excludedLicenses>
-                        <failOnBlacklist>true</failOnBlacklist>
-                        <missingFile>${project.basedir}/src/license/THIRD-PARTY.properties</missingFile>
-                        <useMissingFile>true</useMissingFile>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>aggregate-add-third-party</id>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>aggregate-add-third-party</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>aggregate-download-licenses</id>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>aggregate-download-licenses</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${surefire.plugin.version}</version>
@@ -861,11 +784,6 @@
                     <configuration>
                         <skipIfEmpty>true</skipIfEmpty>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>${license.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>
@@ -1344,7 +1262,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>${license.plugin.version}</version>
                 <configuration>
                     <excludedGroups>org.apache.streams,org.apache.streams.plugins</excludedGroups>
                     <missingFile>${project.basedir}/src/license/THIRD-PARTY.properties</missingFile>
@@ -1402,45 +1319,6 @@
     </reporting>
 
     <profiles>
-        <profile>
-            <id>quick</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <maven.test.skip.exec>true</maven.test.skip.exec>
-                <skipITs>true</skipITs>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.scalastyle</groupId>
-                        <artifactId>scalastyle-maven-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>license-maven-plugin</artifactId>
-                        <version>${license.plugin.version}</version>
-                        <configuration>
-                            <skipAggregateAddThirdParty>true</skipAggregateAddThirdParty>
-                            <skipAggregateDownloadLicenses>true</skipAggregateDownloadLicenses>
-                            <skipAddThirdParty>true</skipAddThirdParty>
-                            <skipDownloadLicenses>true</skipDownloadLicenses>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <id>dist</id>
             <activation>
@@ -1608,11 +1486,7 @@
             </reporting>
         </profile>
         <profile>
-            <id>contrib-check</id>
-            <properties>
-                <skipTests>false</skipTests>
-                <maven.test.skip>false</maven.test.skip>
-            </properties>
+            <id>check</id>
             <build>
                 <plugins>
                     <plugin>
@@ -1623,7 +1497,142 @@
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>license-maven-plugin</artifactId>
                     </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.scalastyle</groupId>
+                        <artifactId>scalastyle-maven-plugin</artifactId>
+                    </plugin>
                 </plugins>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.rat</groupId>
+                            <artifactId>apache-rat-plugin</artifactId>
+                            <version>${apache-rat.plugin.version}</version>
+                            <executions>
+                                <execution>
+                                    <phase>validate</phase>
+                                    <goals>
+                                        <goal>check</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                            <configuration>
+                                <excludes>
+                                    <exclude>.git</exclude>
+                                    <exclude>.gitignore</exclude>
+                                    <exclude>.git/**</exclude>
+                                    <exclude>.idea/**</exclude>
+                                    <exclude>.java-version</exclude>
+                                    <exclude>*.conf</exclude>
+                                    <exclude>**/DEPENDENCIES</exclude>
+                                    <exclude>**/LICENSE</exclude>
+                                    <exclude>**/MANIFEST.MF</exclude>
+                                    <exclude>**/NOTICE</exclude>
+                                    <exclude>**/README.*</exclude>
+                                    <exclude>**/target/**</exclude>
+                                    <exclude>**/overlays/**</exclude>
+                                    <exclude>**/src/test/resources/**/*.csv</exclude>
+                                    <exclude>**/src/test/resources/**/*.tsv</exclude>
+                                    <exclude>**/src/site/resources/**/*</exclude>
+                                    <exclude>**/.gitignore</exclude>
+                                    <exclude>**/*.properties</exclude>
+                                    <exclude>**/*.iml</exclude>
+                                    <exclude>**/*.ini</exclude>
+                                    <exclude>**/*.jar</exclude>
+                                    <exclude>**/*.svg</exclude>
+                                    <exclude>dependency-reduced-pom.xml</exclude>
+                                    <exclude>rat.txt</exclude>
+                                    <exclude>apache-maven-*/**/*</exclude>
+                                </excludes>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>license-maven-plugin</artifactId>
+                            <version>${license.plugin.version}</version>
+                            <configuration>
+                                <excludedGroups>org.apache.streams,org.apache.streams.plugins</excludedGroups>
+                                <failOnBlacklist>true</failOnBlacklist>
+                                <missingFile>${project.basedir}/src/license/THIRD-PARTY.properties</missingFile>
+                                <useMissingFile>true</useMissingFile>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <id>aggregate-add-third-party</id>
+                                    <phase>validate</phase>
+                                    <goals>
+                                        <goal>aggregate-add-third-party</goal>
+                                    </goals>
+                                </execution>
+                                <execution>
+                                    <id>aggregate-download-licenses</id>
+                                    <phase>validate</phase>
+                                    <goals>
+                                        <goal>aggregate-download-licenses</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-checkstyle-plugin</artifactId>
+                            <version>${checkstyle.plugin.version}</version>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>com.puppycrawl.tools</groupId>
+                                    <artifactId>checkstyle</artifactId>
+                                    <version>7.2</version>
+                                </dependency>
+                            </dependencies>
+                            <executions>
+                                <execution>
+                                    <id>validate</id>
+                                    <phase>validate</phase>
+                                    <configuration>
+                                        <configLocation>src/main/resources/streams-java-checkstyle.xml</configLocation>
+                                        <encoding>UTF-8</encoding>
+                                        <consoleOutput>true</consoleOutput>
+                                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                                        <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+                                        <failsOnError>false</failsOnError>
+                                    </configuration>
+                                    <goals>
+                                        <goal>check</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.scalastyle</groupId>
+                            <artifactId>scalastyle-maven-plugin</artifactId>
+                            <version>${scalastyle.plugin.version}</version>
+                            <executions>
+                                <execution>
+                                    <id>validate</id>
+                                    <phase>validate</phase>
+                                    <configuration>
+                                        <verbose>false</verbose>
+                                        <failOnViolation>false</failOnViolation>
+                                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                                        <failOnWarning>false</failOnWarning>
+                                        <sourceDirectory>${project.basedir}/src/main/scala</sourceDirectory>
+                                        <testSourceDirectory>${project.basedir}/src/test/scala</testSourceDirectory>
+                                        <!--<configLocation>https://raw.githubusercontent.com/databricks/sbt-databricks/master/scalastyle-config.xml</configLocation>-->
+                                        <outputFile>${project.build.directory}/scalastyle-output.xml</outputFile>
+                                        <outputEncoding>UTF-8</outputEncoding>
+                                    </configuration>
+                                    <goals>
+                                        <goal>check</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
             </build>
         </profile>
         <profile>
