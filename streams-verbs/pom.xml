@@ -65,6 +65,12 @@
         <dependency>
             <groupId>nz.net.ultraq.jaxb</groupId>
             <artifactId>jaxb-utilities</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsr173_api</artifactId>
+                    <groupId>javax.xml.bind</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

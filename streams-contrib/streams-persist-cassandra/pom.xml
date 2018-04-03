@@ -64,6 +64,10 @@
                     <groupId>com.datastax.cassandra</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.jboss.logging</groupId>
+                    <artifactId>jboss-logging</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
