@@ -29,6 +29,7 @@ import io.dropwizard.testing.junit.ResourceTestRule;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import java.util.List;
 /**
  * Tests {@link: org.apache.streams.dropwizard.GenericWebhookResource}
  */
+@Ignore
 public class GenericWebhookResourceTest {
 
   private static ObjectMapper mapper = StreamsJacksonMapper.getInstance();
