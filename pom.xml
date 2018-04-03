@@ -452,9 +452,6 @@
                 <artifactId>maven-site-plugin</artifactId>
             </plugin>
             <plugin>
-                <artifactId>maven-enforcer-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
             </plugin>
             <plugin>
@@ -610,73 +607,6 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>${build-helper.plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>${enforcer.plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>enforce-java</id>
-                            <goals>
-                                <goal>enforce</goal>
-                            </goals>
-                            <configuration>
-                                <rules>
-                                    <requireJavaVersion>
-                                        <message>Java 8 or higher is required to compile this module</message>
-                                        <version>[${java.version},)</version>
-                                    </requireJavaVersion>
-                                    <requireMavenVersion>
-                                        <message>Maven 3.3.9 or higher is required to compile this module</message>
-                                        <version>[${maven.version},)</version>
-                                    </requireMavenVersion>
-                                </rules>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>enforce-banned-dependencies</id>
-                            <goals>
-                                <goal>enforce</goal>
-                            </goals>
-                            <configuration>
-                                <rules>
-                                    <bannedDependencies>
-                                        <excludes>
-                                            <exclude>org.slf4j:slf4j-log4j12</exclude>
-                                            <exclude>org.slf4j:slf4j-jcl</exclude>
-                                            <exclude>org.slf4j:slf4j-jdk14</exclude>
-                                            <exclude>org.log4j:log4j</exclude>
-                                            <exclude>commons-logging:commons-logging</exclude>
-                                        </excludes>
-                                    </bannedDependencies>
-                                </rules>
-                                <fail>true</fail>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>enforce-no-snapshots</id>
-                            <goals>
-                                <goal>enforce</goal>
-                            </goals>
-                            <configuration>
-                                <rules>
-                                    <requireReleaseDeps>
-                                        <message>No Snapshots Allowed!</message>
-                                        <!-- Don't fail for modules within this project's groupId or sub-groupIds -->
-                                        <excludes>
-                                            <exclude>org.apache.streams:*</exclude>
-                                            <exclude>org.apache.streams.*:*</exclude>
-                                        </excludes>
-                                        <!-- Don't fail for parents being snapshots as the only parent modules are within this project -->
-                                        <failWhenParentIsSnapshot>false</failWhenParentIsSnapshot>
-                                        <onlyWhenRelease>true</onlyWhenRelease>
-                                    </requireReleaseDeps>
-                                </rules>
-                                <fail>true</fail>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -1170,7 +1100,6 @@
             <artifactId>jaxb-utilities</artifactId>
             <version>${jaxbutil.version}</version>
         </dependency>
-        <!-- JsonPath -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
@@ -1479,6 +1408,10 @@
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-checkstyle-plugin</artifactId>
                     </plugin>
                     <plugin>
@@ -1488,6 +1421,71 @@
                 </plugins>
                 <pluginManagement>
                     <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-enforcer-plugin</artifactId>
+                            <version>${enforcer.plugin.version}</version>
+                            <executions>
+                                <execution>
+                                    <id>enforce-java</id>
+                                    <goals>
+                                        <goal>enforce</goal>
+                                    </goals>
+                                    <configuration>
+                                        <rules>
+                                            <requireJavaVersion>
+                                                <message>Java 8 or higher is required to compile this module</message>
+                                                <version>[${java.version},)</version>
+                                            </requireJavaVersion>
+                                            <requireMavenVersion>
+                                                <message>Maven 3.3.9 or higher is required to compile this module</message>
+                                                <version>[${maven.version},)</version>
+                                            </requireMavenVersion>
+                                        </rules>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>enforce-banned-dependencies</id>
+                                    <goals>
+                                        <goal>enforce</goal>
+                                    </goals>
+                                    <configuration>
+                                        <rules>
+                                            <bannedDependencies>
+                                                <excludes>
+                                                    <exclude>org.slf4j:slf4j-log4j12:*:*:compile</exclude>
+                                                    <exclude>org.slf4j:slf4j-jcl:*:*:compile</exclude>
+                                                    <exclude>org.slf4j:slf4j-jdk14:*:*:compile</exclude>
+                                                    <exclude>org.log4j:log4j:*:*:compile</exclude>
+                                                    <exclude>commons-logging:commons-logging:*:*:compile</exclude>
+                                                </excludes>
+                                            </bannedDependencies>
+                                        </rules>
+                                        <fail>true</fail>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>enforce-no-snapshots</id>
+                                    <goals>
+                                        <goal>enforce</goal>
+                                    </goals>
+                                    <configuration>
+                                        <rules>
+                                            <requireReleaseDeps>
+                                                <message>No Snapshots Allowed!</message>
+                                                <excludes>
+                                                    <exclude>org.apache.streams:*</exclude>
+                                                    <exclude>org.apache.streams.*:*</exclude>
+                                                </excludes>
+                                                <failWhenParentIsSnapshot>false</failWhenParentIsSnapshot>
+                                                <onlyWhenRelease>true</onlyWhenRelease>
+                                            </requireReleaseDeps>
+                                        </rules>
+                                        <fail>true</fail>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
                         <plugin>
                             <groupId>org.apache.rat</groupId>
                             <artifactId>apache-rat-plugin</artifactId>
