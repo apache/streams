@@ -31,11 +31,17 @@ import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Test that Activity beans are compatible with the example activities in the spec.
@@ -53,15 +59,12 @@ public class ActivitySerDeTest {
   @Test
   public void testActivitySerDe() throws Exception {
 
-    InputStream testActivityFolderStream = ActivitySerDeTest.class.getClassLoader()
-        .getResourceAsStream("activitystreams-testdocs/activities");
-    List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
-
-    for ( String file : files) {
-      LOGGER.info("File: " + file );
-      LOGGER.info("Serializing: activities/" + file );
-      InputStream testActivityFileStream = ActivitySerDeTest.class.getClassLoader()
-          .getResourceAsStream("activities/" + file);
+    Path testdataDir = Paths.get("target/dependency/activitystreams-testdata");
+    List<Path> schemaPaths = Files.list(testdataDir).collect(Collectors.toList());
+    for( Path schemaPath : schemaPaths ) {
+      LOGGER.info("Path: " + schemaPath );
+      LOGGER.info("Serializing: activities/" + schemaPath );
+      FileInputStream testActivityFileStream = new FileInputStream(schemaPath.toFile());
       Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
       activity.setGenerator(null);
       activity.setLinks(new LinkedList<>());
@@ -91,9 +94,9 @@ public class ActivitySerDeTest {
       String verbName = activity.getVerb();
       String testfile = verbName.toLowerCase() + ".json";
       LOGGER.info("Serializing: activities/" + testfile );
-      assert (ActivitySerDeTest.class.getClassLoader().getResource("activities/" + testfile) != null);
-      InputStream testActivityFileStream = ActivitySerDeTest.class.getClassLoader()
-          .getResourceAsStream("activities/" + testfile);
+      Path testActivityPath = Paths.get("target/dependency/activitystreams-testdata/" + testfile);
+      assert (testActivityPath.toFile().exists());
+      FileInputStream testActivityFileStream = new FileInputStream(testActivityPath.toFile());
       assert (testActivityFileStream != null);
       activity = MAPPER.convertValue(MAPPER.readValue(testActivityFileStream, verbClass), Activity.class);
       String activityString = MAPPER.writeValueAsString(activity);

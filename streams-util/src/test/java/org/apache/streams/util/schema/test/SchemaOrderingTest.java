@@ -18,6 +18,7 @@
 
 package org.apache.streams.util.schema.test;
 
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.util.schema.Schema;
 import org.apache.streams.util.schema.SchemaStore;
 import org.apache.streams.util.schema.SchemaStoreImpl;
@@ -27,6 +28,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.typesafe.config.Config;
 
 import java.io.File;
 import java.util.Arrays;
@@ -38,12 +41,14 @@ import java.util.List;
  */
 public class SchemaOrderingTest {
 
+  Config testconfig = StreamsConfigurator.getConfig().getConfig(SchemaOrderingTest.class.getSimpleName());
+
   @Test
   public void compareVerbParent() {
     SchemaStore schemaStore = new SchemaStoreImpl();
-    File update = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
+    File update = new File(testconfig.getString("updateSchema"));
     schemaStore.create(update.toURI());
-    File activity = new File("target/test-classes/activitystreams-schemas/activity.json");
+    File activity = new File(testconfig.getString("activitySchema"));
     schemaStore.create(activity.toURI());
     assert (schemaStore.compare( schemaStore.getByUri(update.toURI()).get(), schemaStore.getByUri(activity.toURI()).get()) == 1);
     Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
@@ -59,9 +64,9 @@ public class SchemaOrderingTest {
   @Test
   public void compareObjectTypeParent() {
     SchemaStore schemaStore = new SchemaStoreImpl();
-    File alert = new File("target/test-classes/activitystreams-schemas/objectTypes/alert.json");
+    File alert = new File(testconfig.getString("alertSchema"));
     schemaStore.create(alert.toURI());
-    File object = new File("target/test-classes/activitystreams-schemas/object.json");
+    File object = new File(testconfig.getString("objectSchema"));
     schemaStore.create(object.toURI());
     assert (schemaStore.compare( schemaStore.getByUri(object.toURI()).get(), schemaStore.getByUri(alert.toURI()).get()) == -1);
     Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
@@ -77,9 +82,9 @@ public class SchemaOrderingTest {
   @Test
   public void compareUnrelated() {
     SchemaStore schemaStore = new SchemaStoreImpl();
-    File alert = new File("target/test-classes/activitystreams-schemas/objectTypes/alert.json");
+    File alert = new File(testconfig.getString("alertSchema"));
     schemaStore.create(alert.toURI());
-    File update = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
+    File update = new File(testconfig.getString("objectSchema"));
     schemaStore.create(update.toURI());
     // update > alert b/c it's ascii is higher alphabetically
     assert (schemaStore.compare( schemaStore.getByUri(alert.toURI()).get(), schemaStore.getByUri(update.toURI()).get()) != 0);
@@ -88,9 +93,9 @@ public class SchemaOrderingTest {
   @Test
   public void compareVerbFieldRef() {
     SchemaStore schemaStore = new SchemaStoreImpl();
-    File update = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
+    File update = new File(testconfig.getString("updateSchema"));
     schemaStore.create(update.toURI());
-    File object = new File("target/test-classes/activitystreams-schemas/object.json");
+    File object = new File(testconfig.getString("objectSchema"));
     schemaStore.create(object.toURI());
     assert ( schemaStore.compare( schemaStore.getByUri(update.toURI()).get(), schemaStore.getByUri(object.toURI()).get()) == 1);
     Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
@@ -106,9 +111,9 @@ public class SchemaOrderingTest {
   @Test
   public void compareObjectTypeFieldRef() {
     SchemaStore schemaStore = new SchemaStoreImpl();
-    File alert = new File("target/test-classes/activitystreams-schemas/objectTypes/alert.json");
+    File alert = new File(testconfig.getString("alertSchema"));
     schemaStore.create(alert.toURI());
-    File mediaLink = new File("target/test-classes/activitystreams-schemas/media_link.json");
+    File mediaLink = new File(testconfig.getString("medialinkSchema"));
     schemaStore.create(mediaLink.toURI());
     assert ( schemaStore.compare( schemaStore.getByUri(mediaLink.toURI()).get(), schemaStore.getByUri(alert.toURI()).get()) == -1);
     Iterator<Schema> schemaIterator = schemaStore.getSchemaIterator();
@@ -125,9 +130,9 @@ public class SchemaOrderingTest {
   @Test
   public void compareVerbAncestorIndirect() {
     SchemaStore schemaStore = new SchemaStoreImpl();
-    File update = new File("target/test-classes/activitystreams-schemas/verbs/update.json");
+    File update = new File(testconfig.getString("updateSchema"));
     schemaStore.create(update.toURI());
-    File mediaLink = new File("target/test-classes/activitystreams-schemas/media_link.json");
+    File mediaLink = new File(testconfig.getString("medialinkSchema"));
     schemaStore.create(mediaLink.toURI());
     Assert.assertTrue(schemaStore.getByUri(mediaLink.toURI()).isPresent());
     Assert.assertTrue(schemaStore.getByUri(update.toURI()).isPresent());

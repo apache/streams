@@ -55,12 +55,12 @@ public class StreamsPojoSourceGeneratorTest {
     StreamsPojoGenerationConfig config = new StreamsPojoGenerationConfig();
 
     List<String> sourcePaths = Stream.of(
-        "target/test-classes/activitystreams-schemas/activity.json",
-        "target/test-classes/activitystreams-schemas/collection.json",
-        "target/test-classes/activitystreams-schemas/media_link.json",
-        "target/test-classes/activitystreams-schemas/object.json",
-        "target/test-classes/activitystreams-schemas/objectTypes",
-        "target/test-classes/activitystreams-schemas/verbs"
+        "target/dependency/activitystreams-schemas/activity.json",
+        "target/dependency/activitystreams-schemas/collection.json",
+        "target/dependency/activitystreams-schemas/media_link.json",
+        "target/dependency/activitystreams-schemas/object.json",
+        "target/dependency/activitystreams-schemas/objectTypes",
+        "target/dependency/activitystreams-schemas/verbs"
     ).collect(Collectors.toList());
     config.setSourcePaths(sourcePaths);
 

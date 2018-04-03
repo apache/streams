@@ -34,6 +34,22 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schema-activitystreams</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>schemas</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schema-activitystreams</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>testdata</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
@@ -79,10 +95,9 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-schema-activitystreams</artifactId>
+            <artifactId>streams-config</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
@@ -143,36 +158,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-schemas</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includes>**/*.json</includes>
-                            <outputDirectory>${project.build.directory}/test-classes/activitystreams-schemas</outputDirectory>
-                            <includeGroupIds>org.apache.streams</includeGroupIds>
-                            <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
-                            <includeTypes>jar</includeTypes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>unpack-testdocs</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includes>**/*.json</includes>
-                            <outputDirectory>${project.build.directory}/test-classes/activitystreams-testdocs</outputDirectory>
-                            <includeGroupIds>org.apache.streams</includeGroupIds>
-                            <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
-                            <includeTypes>test-jar</includeTypes>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

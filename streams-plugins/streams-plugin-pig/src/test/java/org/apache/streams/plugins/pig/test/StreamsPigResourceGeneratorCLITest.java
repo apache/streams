@@ -36,7 +36,7 @@ public class StreamsPigResourceGeneratorCLITest {
   @Test
   public void testStreamsPigResourceGeneratorCLI() throws Exception {
 
-    String sourceDirectory = "target/test-classes/activitystreams-schemas";
+    String sourceDirectory = "target/dependency/activitystreams-schemas";
     String targetDirectory = "target/generated-resources/pig-cli";
 
     StreamsPigResourceGenerator.main(new String[]{sourceDirectory, targetDirectory});

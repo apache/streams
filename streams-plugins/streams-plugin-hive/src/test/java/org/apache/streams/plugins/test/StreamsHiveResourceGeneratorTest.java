@@ -54,7 +54,7 @@ public class StreamsHiveResourceGeneratorTest {
 
     StreamsHiveGenerationConfig config = new StreamsHiveGenerationConfig();
 
-    String sourceDirectory = "target/test-classes/activitystreams-schemas";
+    String sourceDirectory = "target/dependency/activitystreams-schemas";
 
     config.setSourceDirectory(sourceDirectory);
 

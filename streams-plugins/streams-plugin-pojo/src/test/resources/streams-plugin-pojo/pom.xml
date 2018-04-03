@@ -143,12 +143,12 @@
                 <version>${project.version}</version>
                 <configuration>
                     <sourcePaths>
-                        <sourcePath>target/test-classes/activitystreams-schemas/activity.json</sourcePath>
-                        <sourcePath>target/test-classes/activitystreams-schemas/collection.json</sourcePath>
-                        <sourcePath>target/test-classes/activitystreams-schemas/media_link.json</sourcePath>
-                        <sourcePath>target/test-classes/activitystreams-schemas/object.json</sourcePath>
-                        <sourcePath>target/test-classes/activitystreams-schemas/objectTypes</sourcePath>
-                        <sourcePath>target/test-classes/activitystreams-schemas/verbs</sourcePath>
+                        <sourcePath>target/dependency/activitystreams-schemas/activity.json</sourcePath>
+                        <sourcePath>target/dependency/activitystreams-schemas/collection.json</sourcePath>
+                        <sourcePath>target/dependency/activitystreams-schemas/media_link.json</sourcePath>
+                        <sourcePath>target/dependency/activitystreams-schemas/object.json</sourcePath>
+                        <sourcePath>target/dependency/activitystreams-schemas/objectTypes</sourcePath>
+                        <sourcePath>target/dependency/activitystreams-schemas/verbs</sourcePath>
                     </sourcePaths>
                     <targetPackage>org.apache.streams.pojo.mojo</targetPackage>
                     <targetDirectory>target/generated-sources/pojo-mojo</targetDirectory>
@@ -164,22 +164,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <configuration>
-                    <includes>**/*.json</includes>
-                    <outputDirectory>${project.build.directory}/test-classes/activitystreams-schemas</outputDirectory>
-                    <includeGroupIds>org.apache.streams</includeGroupIds>
-                    <includeArtifactIds>streams-schema-activitystreams</includeArtifactIds>
-                    <includeTypes>jar</includeTypes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>unpack-schemas</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
