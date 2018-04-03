@@ -4,6 +4,13 @@ Copyright 2012 and onward at The Apache Software Foundation
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
+Apache Streams contains subcomponents with separate copyright notices and
+license terms. Your use of the source code for the these subcomponents
+is subject to the terms and conditions of their respective licenses.
+
+The full license text of each license used by any subcomponent
+is maintained in src/license/licenses.
+
 The following dependencies are also licensed under The Apache Software License, 2.0
 
      (The Apache Software License, Version 2.0) ZkClient (com.101tec:zkclient:0.3 - https://github.com/sgroschupf/zkclient)
