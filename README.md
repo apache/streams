@@ -12,5 +12,4 @@ Streams contains libraries and patterns for specifying, publishing, and inter-li
 ### Why is Streams important?
 The project aims to provide simple two-way data interchange with all popular REST APIs in activity streams formats using a universal protocol.  No other active open-source project has this ambitious goal, as well as production-worthy implementations for >10 services.  Streams compatibility with multiple storage back-ends and ability to be embedded within any java-based real-time or batch data processing platform ensures that its interoperability features come with little technical baggage.
 
-## License
-Copyright (c) 2017. Apache Streams is licensed under the [Apache License 2.0](LICENSE). 
+###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0

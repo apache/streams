@@ -1,22 +1,8 @@
-google-gplus
-=====================
+Apache Streams
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-Google+ Provider
+org.apache.streams:streams-provider-google-gplus
+===========================================
 
-Example configuration:
-
-    gplus {
-        googlePlusUsers = [
-            {
-                userId = ""
-            }
-        ]
-        oauth {
-            appName = ""
-            pathToP12KeyFile = "Absolute Path to key file"
-            serviceAccountEmailAddress = ""
-        }
-    }
-    
-
-
+[README.md](src/site/markdown/index.md "README")

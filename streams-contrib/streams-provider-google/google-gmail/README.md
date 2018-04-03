@@ -1,14 +1,8 @@
-google-gmail
-=====================
+Apache Streams
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-GMail Provider
+org.apache.streams:streams-provider-google-gmail
+===========================================
 
-Example configuration:
-
-    gmail {
-        username = ""
-        password = ""
-    }
-    
-
-
+[README.md](src/site/markdown/index.md "README")
