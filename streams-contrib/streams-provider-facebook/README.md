@@ -1,17 +1,8 @@
-streams-provider-facebook
-=====================
+Apache Streams
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
-Facebook Provider
+org.apache.streams:streams-provider-facebook
+===========================================
 
-Example configuration:
-
-    facebook {
-        oauth {
-            appId = ""
-            appSecret = ""
-            accessToken = ""
-        }
-    }
-    
-
-
+[README.md](src/site/markdown/index.md "README")

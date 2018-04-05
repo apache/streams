@@ -1501,29 +1501,21 @@
                             <configuration>
                                 <excludes>
                                     <exclude>.git</exclude>
-                                    <exclude>.gitignore</exclude>
                                     <exclude>.git/**</exclude>
                                     <exclude>.idea/**</exclude>
                                     <exclude>.java-version</exclude>
                                     <exclude>*.conf</exclude>
-                                    <exclude>**/DEPENDENCIES</exclude>
-                                    <exclude>**/LICENSE</exclude>
-                                    <exclude>**/MANIFEST.MF</exclude>
-                                    <exclude>**/NOTICE</exclude>
-                                    <exclude>**/README.*</exclude>
-                                    <exclude>**/target/**</exclude>
-                                    <exclude>**/overlays/**</exclude>
-                                    <exclude>**/src/test/resources/**/*.csv</exclude>
-                                    <exclude>**/src/test/resources/**/*.tsv</exclude>
-                                    <exclude>**/src/site/resources/**/*</exclude>
+                                    <exclude>*.properties</exclude>
                                     <exclude>**/.gitignore</exclude>
-                                    <exclude>**/*.properties</exclude>
                                     <exclude>**/*.iml</exclude>
                                     <exclude>**/*.ini</exclude>
                                     <exclude>**/*.jar</exclude>
                                     <exclude>**/*.svg</exclude>
-                                    <exclude>dependency-reduced-pom.xml</exclude>
-                                    <exclude>rat.txt</exclude>
+                                    <exclude>**/MANIFEST.MF</exclude>
+                                    <exclude>**/src/license/*</exclude>
+                                    <exclude>**/src/license/licenses/*</exclude>
+                                    <exclude>**/src/site/resources/**/*</exclude>
+                                    <exclude>**/.gitignore</exclude>
                                     <exclude>apache-maven-*/**/*</exclude>
                                 </excludes>
                             </configuration>
