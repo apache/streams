@@ -48,9 +48,14 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
@@ -96,14 +101,11 @@ public class ElasticsearchPersistWriterIT {
     ElasticsearchPersistWriter testPersistWriter = new ElasticsearchPersistWriter(testConfiguration);
     testPersistWriter.prepare(null);
 
-    InputStream testActivityFolderStream = ElasticsearchPersistWriterIT.class.getClassLoader()
-        .getResourceAsStream("activities");
-    List<String> files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
-
-    for( String file : files) {
-      LOGGER.info("File: " + file );
-      InputStream testActivityFileStream = ElasticsearchPersistWriterIT.class.getClassLoader()
-          .getResourceAsStream("activities/" + file);
+    Path testdataDir = Paths.get("target/dependency/activitystreams-testdata");
+    List<Path> testdataPaths = Files.list(testdataDir).collect(Collectors.toList());
+    for( Path docPath : testdataPaths ) {
+      LOGGER.info("File: " + docPath );
+      FileInputStream testActivityFileStream = new FileInputStream(docPath.toFile());
       Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
       StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
       testPersistWriter.write( datum );

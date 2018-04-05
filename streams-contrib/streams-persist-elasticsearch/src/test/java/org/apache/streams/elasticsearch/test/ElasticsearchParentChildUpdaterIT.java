@@ -53,10 +53,15 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
@@ -79,7 +84,7 @@ public class ElasticsearchParentChildUpdaterIT {
 
   Set<Class<? extends ActivityObject>> objectTypes;
 
-  List<String> files;
+  List<Path> files;
 
   @BeforeClass
   public void prepareTestParentChildPersistUpdater() throws Exception {
@@ -100,9 +105,8 @@ public class ElasticsearchParentChildUpdaterIT {
         .setScanners(new SubTypesScanner()));
     objectTypes = reflections.getSubTypesOf(ActivityObject.class);
 
-    InputStream testActivityFolderStream = ElasticsearchParentChildUpdaterIT.class.getClassLoader()
-        .getResourceAsStream("activities");
-    files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
+    Path testdataDir = Paths.get("target/dependency/activitystreams-testdata");
+    files = Files.list(testdataDir).collect(Collectors.toList());
 
   }
 
@@ -112,10 +116,9 @@ public class ElasticsearchParentChildUpdaterIT {
     ElasticsearchPersistUpdater testPersistUpdater = new ElasticsearchPersistUpdater(testConfiguration);
     testPersistUpdater.prepare(null);
 
-    for( String file : files) {
-      LOGGER.info("File: " + file );
-      InputStream testActivityFileStream = ElasticsearchParentChildUpdaterIT.class.getClassLoader()
-          .getResourceAsStream("activities/" + file);
+    for( Path docPath : files ) {
+      LOGGER.info("File: " + docPath );
+      FileInputStream testActivityFileStream = new FileInputStream(docPath.toFile());
       Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
       activity.setAdditionalProperty("updated", Boolean.TRUE);
       StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
