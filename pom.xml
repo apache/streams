@@ -336,7 +336,7 @@
         <depgraph.plugin.version>1.0.3</depgraph.plugin.version>
         <docker.plugin.version>0.24.0</docker.plugin.version>
         <download.plugin.version>1.2.1</download.plugin.version>
-        <enforcer.plugin.version>1.4.1</enforcer.plugin.version>
+        <enforcer.plugin.version>3.0.0-M1</enforcer.plugin.version>
         <failsafe.plugin.version>2.19.1</failsafe.plugin.version>
         <jar.plugin.version>2.6</jar.plugin.version>
         <javadoc.plugin.version>2.10.2</javadoc.plugin.version>
@@ -1399,16 +1399,12 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.rat</groupId>
-                        <artifactId>apache-rat-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>license-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-enforcer-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -1417,6 +1413,10 @@
                     <plugin>
                         <groupId>org.scalastyle</groupId>
                         <artifactId>scalastyle-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
                 <pluginManagement>
@@ -1453,11 +1453,11 @@
                                         <rules>
                                             <bannedDependencies>
                                                 <excludes>
-                                                    <exclude>org.slf4j:slf4j-log4j12:*:*:compile</exclude>
-                                                    <exclude>org.slf4j:slf4j-jcl:*:*:compile</exclude>
-                                                    <exclude>org.slf4j:slf4j-jdk14:*:*:compile</exclude>
-                                                    <exclude>org.log4j:log4j:*:*:compile</exclude>
-                                                    <exclude>commons-logging:commons-logging:*:*:compile</exclude>
+                                                    <exclude>org.slf4j:slf4j-log4j12:*:jar:compile</exclude>
+                                                    <exclude>org.slf4j:slf4j-jcl:*:jar:compile</exclude>
+                                                    <exclude>org.slf4j:slf4j-jdk14:*:jar:compile</exclude>
+                                                    <exclude>org.log4j:log4j:*:jar:compile</exclude>
+                                                    <exclude>commons-logging:commons-logging:*:jar:compile</exclude>
                                                 </excludes>
                                             </bannedDependencies>
                                         </rules>
