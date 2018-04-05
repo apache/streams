@@ -16,8 +16,12 @@ target/
 # Maven plug-in generated files #
 DEPENDENCIES
 DISCLAIMER
-LICENSE
 NOTICE
+
+# Sub-module License Metadata #
+/*/src/license
+/*/*/src/license
+/*/*/*/src/license
 
 # Local Configuration Files
 /*.conf
