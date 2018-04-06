@@ -24,7 +24,7 @@
 
     <groupId>org.apache.streams.plugins</groupId>
     <artifactId>streams-plugin-pig-test</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.5.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Test StreamsPigResourceGeneratorMojo</name>
 
@@ -89,8 +89,9 @@
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-schema-activitystreams</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
-            <type>jar</type>
+            <type>zip</type>
+            <classifier>schemas</classifier>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
@@ -99,7 +100,7 @@
             <plugin>
                 <groupId>org.apache.streams.plugins</groupId>
                 <artifactId>streams-plugin-pig</artifactId>
-                <version>0.5.1-SNAPSHOT</version>
+                <version>0.5.2-SNAPSHOT</version>
                 <configuration>
                     <sourcePaths>
                         <sourcePath>target/dependency/activitystreams-schemas/activity.json</sourcePath>
