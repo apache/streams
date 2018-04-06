@@ -84,7 +84,8 @@
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-schema-activitystreams</artifactId>
             <version>${project.version}</version>
-            <type>test-jar</type>
+            <type>zip</type>
+            <classifier>testdata</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -57,11 +57,16 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
@@ -84,12 +89,12 @@ public class ElasticsearchParentChildWriterIT {
 
   Set<Class<? extends ActivityObject>> objectTypes;
 
-  List<String> files;
+  List<Path> files;
 
   @BeforeClass
   public void prepareTestParentChildPersistWriter() throws Exception {
 
-    testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration( "ElasticsearchParentChildWriterIT");
+    testConfiguration = new ComponentConfigurator<>(ElasticsearchWriterConfiguration.class).detectConfiguration("ElasticsearchParentChildWriterIT");
     testClient = ElasticsearchClientManager.getInstance(testConfiguration).client();
 
     ClusterHealthRequest clusterHealthRequest = Requests.clusterHealthRequest();
@@ -98,7 +103,7 @@ public class ElasticsearchParentChildWriterIT {
 
     IndicesExistsRequest indicesExistsRequest = Requests.indicesExistsRequest(testConfiguration.getIndex());
     IndicesExistsResponse indicesExistsResponse = testClient.admin().indices().exists(indicesExistsRequest).actionGet();
-    if(indicesExistsResponse.isExists()) {
+    if (indicesExistsResponse.isExists()) {
       DeleteIndexRequest deleteIndexRequest = Requests.deleteIndexRequest(testConfiguration.getIndex());
       DeleteIndexResponse deleteIndexResponse = testClient.admin().indices().delete(deleteIndexRequest).actionGet();
       assertTrue(deleteIndexResponse.isAcknowledged());
@@ -113,14 +118,14 @@ public class ElasticsearchParentChildWriterIT {
     testClient.admin().indices().putTemplate(putTemplateRequestBuilder.request()).actionGet();
 
     Reflections reflections = new Reflections(new ConfigurationBuilder()
-        .setUrls(ClasspathHelper.forPackage("org.apache.streams.pojo.json"))
-        .setScanners(new SubTypesScanner()));
+      .setUrls(ClasspathHelper.forPackage("org.apache.streams.pojo.json"))
+      .setScanners(new SubTypesScanner()));
     objectTypes = reflections.getSubTypesOf(ActivityObject.class);
 
-    InputStream testActivityFolderStream = ElasticsearchParentChildWriterIT.class.getClassLoader()
-        .getResourceAsStream("activities");
-    files = IOUtils.readLines(testActivityFolderStream, StandardCharsets.UTF_8);
+    Path testdataDir = Paths.get("target/dependency/activitystreams-testdata");
+    files = Files.list(testdataDir).collect(Collectors.toList());
 
+    assert( files.size() > 0);
   }
 
   @Test
@@ -144,10 +149,9 @@ public class ElasticsearchParentChildWriterIT {
       testPersistWriter.write( datum );
     }
 
-    for( String file : files) {
-      LOGGER.info("File: " + file );
-      InputStream testActivityFileStream = ElasticsearchParentChildWriterIT.class.getClassLoader()
-          .getResourceAsStream("activities/" + file);
+    for( Path docPath : files ) {
+      LOGGER.info("File: " + docPath );
+      FileInputStream testActivityFileStream = new FileInputStream(docPath.toFile());
       Activity activity = MAPPER.readValue(testActivityFileStream, Activity.class);
       StreamsDatum datum = new StreamsDatum(activity, activity.getVerb());
       if( !StringUtils.isEmpty(activity.getObject().getObjectType())) {

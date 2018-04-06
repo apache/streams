@@ -93,15 +93,14 @@
             <artifactId>jsr305</artifactId>
             <version>3.0.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-schema-activitystreams</artifactId>
             <version>${project.version}</version>
-            <type>test-jar</type>
+            <type>zip</type>
+            <classifier>testdata</classifier>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-testing</artifactId>
