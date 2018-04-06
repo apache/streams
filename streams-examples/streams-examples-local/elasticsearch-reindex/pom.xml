@@ -92,8 +92,10 @@
         <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-schema-activitystreams</artifactId>
-            <type>test-jar</type>
             <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>testdata</classifier>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
