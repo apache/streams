@@ -21,6 +21,7 @@ package org.apache.streams.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigRenderOptions;
 import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueType;
@@ -163,9 +164,9 @@ public class ComponentConfigurator<T extends Serializable> {
         cascadeConfig = pathConfig.withFallback(cascadeConfig);
       }
     }
-    else if( StringUtils.isBlank(path) ) {
+    else if( path == null || StringUtils.isBlank(path) ) {
       if( cascadeConfig == null ) {
-        cascadeConfig = valuesOnly(rootConfig);
+        cascadeConfig = rootConfig;
       } else {
         cascadeConfig = valuesOnly(rootConfig).withFallback(cascadeConfig);
       }
@@ -229,10 +230,15 @@ public class ComponentConfigurator<T extends Serializable> {
   private Config valuesOnly(Config config) {
     for (String key : config.root().keySet()) {
       LOGGER.debug("key: ", key);
-      ConfigValue value = config.getValue(key);
-      LOGGER.debug("child type: ", value.valueType());
-      if (value.valueType() == ConfigValueType.OBJECT) {
-        config = config.withoutPath(key);
+      try {
+        ConfigValue value = config.getValue(key);
+        LOGGER.debug("child type: ", value.valueType());
+        if (value.valueType() == ConfigValueType.OBJECT) {
+          config = config.withoutPath(key);
+        }
+      } catch(ConfigException configExceptions) {
+        LOGGER.debug("error processing");
+        config = config.withoutPath("\""+key+"\"");
       }
     }
     return config;
