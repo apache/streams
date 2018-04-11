@@ -165,10 +165,10 @@ public class StreamsConfigurator<T extends StreamsConfiguration> {
 
     try {
       pojoMap.putAll(mapper.convertValue(streamsConfiguration, Map.class));
-      pojoMap.putAll(mapper.readValue(rootConfig.resolve().root().render(ConfigRenderOptions.concise()), Map.class));
+      pojoMap.putAll(mapper.readValue(subConfig.resolve().root().render(ConfigRenderOptions.concise()), Map.class));
     } catch (Exception e) {
       e.printStackTrace();
-      LOGGER.warn("Could not parse:", rootConfig);
+      LOGGER.warn("Could not parse:", subConfig);
     }
 
     Field[] fields = configClass.getDeclaredFields();
@@ -178,9 +178,17 @@ public class StreamsConfigurator<T extends StreamsConfiguration> {
       if( type != String.class && !ClassUtils.isPrimitiveOrWrapper(type) ) {
         ComponentConfigurator configurator = new ComponentConfigurator(type);
         try {
-          Serializable fieldValue = configurator.detectConfiguration(subConfig, field.getName());
-          if (fieldValue != null) {
-            pojoMap.put(field.getName(), fieldValue);
+          Serializable rootValue = configurator.detectConfiguration(rootConfig, field.getName());
+          if (rootValue != null) {
+            pojoMap.put(field.getName(), rootValue);
+          }
+        } catch( Exception e ) {
+          // we swallow any parsing problems that happen at this level
+        }
+        try {
+          Serializable pathValue = configurator.detectConfiguration(subConfig, field.getName());
+          if (pathValue != null) {
+            pojoMap.put(field.getName(), pathValue);
           }
         } catch( Exception e ) {
           // we swallow any parsing problems that happen at this level
