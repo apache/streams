@@ -245,12 +245,6 @@ under the License.
 
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-runtime-dropwizard</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.streams</groupId>
             <artifactId>streams-runtime-local</artifactId>
             <version>${project.version}</version>
         </dependency>
