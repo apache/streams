@@ -18,6 +18,8 @@
 
 package org.apache.streams.juneau;
 
+import org.apache.streams.data.util.RFC3339Utils;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.juneau.BeanSession;
 import org.apache.juneau.ClassMeta;
@@ -45,8 +47,8 @@ public class JodaDateSwap extends StringSwap<DateTime> {
   @Override /* PojoSwap */
   public String swap(BeanSession session, DateTime o) {
     DateTimeFormatter dateFormatter = this.dateFormatter;
-    if( StringUtils.isNotBlank(session.getStringProperty("format"))) {
-      dateFormatter = DateTimeFormat.forPattern(session.getStringProperty("format"));
+    if( StringUtils.isNotBlank(session.getProperty("format", String.class, RFC3339Utils.UTC_STANDARD_FMT.toString()))) {
+      dateFormatter = DateTimeFormat.forPattern(session.getProperty("format", String.class, RFC3339Utils.UTC_STANDARD_FMT.toString()));
     }
     return dateFormatter.print(o);
   }
@@ -54,8 +56,8 @@ public class JodaDateSwap extends StringSwap<DateTime> {
   @Override /* PojoSwap */
   public DateTime unswap(BeanSession session, String f, ClassMeta<?> hint) throws ParseException {
     DateTimeFormatter dateFormatter = this.dateFormatter;
-    if( StringUtils.isNotBlank(session.getStringProperty("format"))) {
-      dateFormatter = DateTimeFormat.forPattern(session.getStringProperty("format"));
+    if( StringUtils.isNotBlank(session.getProperty("format", String.class, RFC3339Utils.UTC_STANDARD_FMT.toString()))) {
+      dateFormatter = DateTimeFormat.forPattern(session.getProperty("format", String.class, RFC3339Utils.UTC_STANDARD_FMT.toString()));
     }
     return dateFormatter.parseDateTime(f);
   }
