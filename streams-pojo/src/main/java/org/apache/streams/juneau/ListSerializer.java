@@ -19,23 +19,23 @@
 package org.apache.streams.juneau;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.juneau.PartType;
-import org.apache.juneau.serializer.PartSerializer;
+import org.apache.juneau.httppart.HttpPartType;
+import org.apache.juneau.httppart.HttpPartSerializer;
 
 import java.util.List;
 
 /**
  * Serializes {@link java.util.List} as appropriately delimited {@link String Strings}.
  */
-public class ListSerializer implements PartSerializer {
+public class ListSerializer implements HttpPartSerializer {
 
   @Override
-  public String serialize(PartType type, Object value) {
+  public String serialize(HttpPartType type, Object value) {
     List list = (List) value;
     if( list.size() > 0 ) {
-      if( type.equals(PartType.QUERY)) {
+      if( type.equals(HttpPartType.QUERY)) {
         return StringUtils.join(list, ",");
-      } else if( type.equals(PartType.PATH)) {
+      } else if( type.equals(HttpPartType.PATH)) {
         return StringUtils.join(list, "/");
       }
     }

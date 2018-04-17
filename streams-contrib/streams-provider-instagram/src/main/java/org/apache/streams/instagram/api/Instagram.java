@@ -83,7 +83,7 @@ public class Instagram implements Media, Users {
         .setMaxConnPerRoute(20)
         .setMaxConnTotal(100)
         .build();
-    this.restClient = new RestClientBuilder()
+    this.restClient = RestClient.create()
         .rootUrl(rootUrl)
         .accept(APPLICATION_JSON.getMimeType())
         .httpClient(httpclient, true)
@@ -99,7 +99,7 @@ public class Instagram implements Media, Users {
                 .build())
         .retryable(
             configuration.getRetryMax().intValue(),
-            configuration.getRetrySleepMs(),
+            configuration.getRetrySleepMs().intValue(),
             new InstagramRetryHandler())
         .build();
     this.mapper = StreamsJacksonMapper.getInstance();
