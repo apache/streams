@@ -87,18 +87,6 @@
 
         <dependency>
             <groupId>com.fasterxml</groupId>
-            <artifactId>jackson-xml-databind</artifactId>
-            <version>0.6.2</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>stax2-api</artifactId>
-                    <groupId>org.codehaus.woodstox</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml</groupId>
             <artifactId>aalto-xml</artifactId>
         </dependency>
 

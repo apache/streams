@@ -357,9 +357,8 @@
         <war.plugin.version>2.5</war.plugin.version>
 
         <!-- Library Dependency Versions -->
-        <jackson.version>2.7.9</jackson.version>
-        <jackson-xml-databind.version>0.6.2</jackson-xml-databind.version>
-        <aalto.version>1.0.0</aalto.version>
+        <jackson.version>2.9.5</jackson.version>
+        <aalto.version>1.1.0</aalto.version>
         <joda-time.version>2.9.9</joda-time.version>
         <joda-convert.version>1.8.1</joda-convert.version>
         <json-flattener.version>0.5.0</json-flattener.version>
@@ -1079,11 +1078,12 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
             <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml</groupId>
-            <artifactId>jackson-xml-databind</artifactId>
-            <version>${jackson-xml-databind.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>stax2-api</artifactId>
+                    <groupId>org.codehaus.woodstox</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
