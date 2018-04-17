@@ -121,7 +121,7 @@ public class Twitter implements
       .addInterceptorLast((HttpRequestInterceptor) (httpRequest, httpContext) -> LOGGER.debug(httpRequest.getRequestLine().getUri()))
       .addInterceptorLast((HttpResponseInterceptor) (httpResponse, httpContext) -> LOGGER.debug(httpResponse.getStatusLine().toString()))
       .build();
-    this.restClientBuilder = new RestClientBuilder()
+    this.restClientBuilder = RestClient.create()
       .httpClient(httpclient, true)
       .parser(
         JsonParser.DEFAULT.builder()
@@ -137,7 +137,7 @@ public class Twitter implements
       .rootUrl(rootUrl)
       .retryable(
         configuration.getRetryMax().intValue(),
-        configuration.getRetrySleepMs(),
+        configuration.getRetrySleepMs().intValue(),
         new TwitterRetryHandler());
     if( configuration.getDebug() ) {
       restClientBuilder = restClientBuilder.debug();
