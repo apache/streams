@@ -28,7 +28,7 @@
 
     <groupId>org.apache.streams</groupId>
     <artifactId>apache-streams</artifactId>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>0.6.0</version>
 
     <name>Apache Streams</name>
     <description>Apache Streams</description>
@@ -48,7 +48,7 @@
         <connection>scm:git:https://github.com/apache/streams</connection>
         <developerConnection>scm:git:git@github.com:apache/streams.git</developerConnection>
         <url>scm:git:git@github.com:apache/streams.git</url>
-        <tag>HEAD</tag>
+        <tag>streams-0.6.0-RC1</tag>
     </scm>
 
     <issueManagement>
