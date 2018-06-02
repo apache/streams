@@ -352,7 +352,7 @@
         <shade.plugin.version>3.1.0</shade.plugin.version>
         <site.plugin.version>3.6</site.plugin.version>
         <source.plugin.version>2.4</source.plugin.version>
-        <surefire.plugin.version>2.19.1</surefire.plugin.version>
+        <surefire.plugin.version>2.21.0</surefire.plugin.version>
         <wagon.plugin.version>3.0.0</wagon.plugin.version>
         <war.plugin.version>2.5</war.plugin.version>
 
