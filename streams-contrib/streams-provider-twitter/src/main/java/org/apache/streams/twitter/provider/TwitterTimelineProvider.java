@@ -25,11 +25,14 @@ import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.core.util.ExecutorUtils;
+import org.apache.streams.core.util.QueueUtils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.config.TwitterTimelineProviderConfiguration;
 import org.apache.streams.twitter.api.StatusesUserTimelineRequest;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
+import org.apache.streams.twitter.pojo.Tweet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,10 +57,13 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -71,7 +77,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 /**
  * Retrieve recent posts from a list of user ids or names.
  */
-public class TwitterTimelineProvider implements StreamsProvider, Serializable {
+public class TwitterTimelineProvider implements Callable<Iterator<Tweet>>, StreamsProvider, Serializable {
 
   private static final String STREAMS_ID = "TwitterTimelineProvider";
 
@@ -95,14 +101,17 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
   protected int idsCount;
   protected Twitter client;
 
-  protected ListeningExecutorService executor;
+  protected ExecutorService executor;
 
   protected DateTime start;
   protected DateTime end;
 
+  StreamsConfiguration streamsConfiguration;
+
   protected final AtomicBoolean running = new AtomicBoolean();
 
-  protected List<ListenableFuture<Object>> futures = new ArrayList<>();
+  private List<Callable<Object>> tasks = new ArrayList<>();
+  private List<Future<Object>> futures = new ArrayList<>();
 
   /**
    * To use from command line:
@@ -193,9 +202,11 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
       this.config = (TwitterTimelineProviderConfiguration)configurationObject;
     }
 
+    streamsConfiguration = StreamsConfigurator.detectConfiguration(StreamsConfigurator.getConfig());
+
     try {
       lock.writeLock().lock();
-      providerQueue = constructQueue();
+      providerQueue = QueueUtils.constructQueue();
     } finally {
       lock.writeLock().unlock();
     }
@@ -233,7 +244,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     }
 
     executor = MoreExecutors.listeningDecorator(
-        TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(
+      ExecutorUtils.newFixedThreadPoolWithQueueSize(
             config.getThreadsPerProvider().intValue(),
             streamsConfiguration.getQueueSize().intValue()
         )
@@ -241,16 +252,25 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     submitTimelineThreads(ids, names);
 
+    LOGGER.info("tasks: {}", tasks.size());
+    LOGGER.info("futures: {}", futures.size());
+
   }
 
   @Override
   public void startStream() {
 
-    LOGGER.debug("{} startStream", STREAMS_ID);
+    Objects.requireNonNull(executor);
+
+    LOGGER.info("startStream");
 
     running.set(true);
 
-    executor.shutdown();
+    LOGGER.info("running: {}", running.get());
+
+    ExecutorUtils.shutdownAndAwaitTermination(executor);
+
+    LOGGER.info("running: {}", running.get());
 
   }
 
@@ -260,27 +280,31 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
       StatusesUserTimelineRequest request = new StatusesUserTimelineRequest();
       request.setUserId(id);
       request.setCount(config.getPageSize());
-      TwitterTimelineProviderTask providerTask = new TwitterTimelineProviderTask(
+      Callable providerTask = new TwitterTimelineProviderTask(
           this,
           client,
           request
       );
-      ListenableFuture future = executor.submit(providerTask);
+      LOGGER.info("Thread Created: {}", request);
+      tasks.add(providerTask);
+      Future future = executor.submit(providerTask);
       futures.add(future);
-      LOGGER.info("Thread Submitted: {}", providerTask.request);
+      LOGGER.info("Thread Submitted: {}", request);
     }
     for (String name : names) {
       StatusesUserTimelineRequest request = new StatusesUserTimelineRequest();
       request.setScreenName(name);
       request.setCount(config.getPageSize());
-      TwitterTimelineProviderTask providerTask = new TwitterTimelineProviderTask(
+      Callable providerTask = new TwitterTimelineProviderTask(
           this,
           client,
           request
       );
-      ListenableFuture future = executor.submit(providerTask);
+      LOGGER.info("Thread Created: {}", request);
+      tasks.add(providerTask);
+      Future future = executor.submit(providerTask);
       futures.add(future);
-      LOGGER.info("Thread Submitted: {}", providerTask.request);
+      LOGGER.info("Thread Submitted: {}", request);
     }
   }
 
@@ -294,8 +318,7 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
     try {
       lock.writeLock().lock();
       result = new StreamsResultSet(providerQueue);
-      result.setCounter(new DatumStatusCounter());
-      providerQueue = constructQueue();
+      providerQueue = QueueUtils.constructQueue();
     } finally {
       lock.writeLock().unlock();
     }
@@ -310,10 +333,6 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
     return result;
 
-  }
-
-  protected Queue<StreamsDatum> constructQueue() {
-    return new LinkedBlockingQueue<StreamsDatum>();
   }
 
   public StreamsResultSet readNew(BigInteger sequence) {
@@ -338,35 +357,31 @@ public class TwitterTimelineProvider implements StreamsProvider, Serializable {
 
   @Override
   public void cleanUp() {
-    shutdownAndAwaitTermination(executor);
-  }
-
-  void shutdownAndAwaitTermination(ExecutorService pool) {
-    pool.shutdown(); // Disable new tasks from being submitted
-    try {
-      // Wait a while for existing tasks to terminate
-      if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
-        pool.shutdownNow(); // Cancel currently executing tasks
-        // Wait a while for tasks to respond to being cancelled
-        if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
-          System.err.println("Pool did not terminate");
-        }
-      }
-    } catch (InterruptedException ie) {
-      // (Re-)Cancel if current thread also interrupted
-      pool.shutdownNow();
-      // Preserve interrupt status
-      Thread.currentThread().interrupt();
-    }
+    ExecutorUtils.shutdownAndAwaitTermination(executor);
   }
 
   @Override
   public boolean isRunning() {
-    if (providerQueue.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone()) {
-      LOGGER.info("Completed");
+    LOGGER.debug("providerQueue.isEmpty: {}", providerQueue.isEmpty());
+    LOGGER.debug("providerQueue.size: {}", providerQueue.size());
+    LOGGER.debug("executor.isTerminated: {}", executor.isTerminated());
+    LOGGER.debug("tasks.size(): {}", tasks.size());
+    LOGGER.debug("futures.size(): {}", futures.size());
+    if ( tasks.size() > 0 && tasks.size() == futures.size() && executor.isShutdown() && executor.isTerminated() ) {
       running.set(false);
-      LOGGER.info("Exiting");
     }
+    LOGGER.debug("isRunning: ", running.get());
     return running.get();
+  }
+
+  @Override
+  public Iterator<Tweet> call() {
+    prepare(config);
+    startStream();
+    do {
+      Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
+    } while ( isRunning());
+    cleanUp();
+    return providerQueue.stream().map( x -> (Tweet)x.getDocument()).iterator();
   }
 }

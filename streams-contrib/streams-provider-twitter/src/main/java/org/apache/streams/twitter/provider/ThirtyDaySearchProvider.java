@@ -25,11 +25,15 @@ import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.core.util.ExecutorUtils;
+import org.apache.streams.core.util.QueueUtils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.pojo.StreamsJacksonMapperConfiguration;
 import org.apache.streams.twitter.config.ThirtyDaySearchProviderConfiguration;
 import org.apache.streams.twitter.api.ThirtyDaySearchRequest;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
+import org.apache.streams.twitter.pojo.Tweet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,10 +58,13 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -69,7 +76,7 @@ import java.util.stream.Stream;
 /**
  * Retrieve recent posts from a list of user ids or names.
  */
-public class ThirtyDaySearchProvider implements StreamsProvider, Serializable {
+public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, StreamsProvider, Serializable {
 
   private static final String STREAMS_ID = "ThirtyDaySearchProvider";
 
@@ -91,11 +98,14 @@ public class ThirtyDaySearchProvider implements StreamsProvider, Serializable {
 
   protected Twitter client;
 
-  protected ListeningExecutorService executor;
+  protected ExecutorService executor;
+
+  private List<Callable<Object>> tasks = new ArrayList<>();
+  private List<Future<Object>> futures = new ArrayList<>();
+
+  StreamsConfiguration streamsConfiguration;
 
   protected final AtomicBoolean running = new AtomicBoolean();
-
-  private List<ListenableFuture<Object>> futures = new ArrayList<>();
 
   /**
    * To use from command line:
@@ -137,26 +147,21 @@ public class ThirtyDaySearchProvider implements StreamsProvider, Serializable {
     ThirtyDaySearchProviderConfiguration config = new ComponentConfigurator<>(ThirtyDaySearchProviderConfiguration.class).detectConfiguration();
     ThirtyDaySearchProvider provider = new ThirtyDaySearchProvider(config);
 
-    ObjectMapper mapper = new StreamsJacksonMapper(Stream.of(TwitterDateTimeFormat.TWITTER_FORMAT).collect(Collectors.toList()));
-
     PrintStream outStream = new PrintStream(new BufferedOutputStream(new FileOutputStream(outfile)));
-    provider.prepare(config);
-    provider.startStream();
-    do {
-      Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-      for (StreamsDatum datum : provider.readCurrent()) {
-        String json;
-        try {
-          json = mapper.writeValueAsString(datum.getDocument());
-          outStream.println(json);
-        } catch (JsonProcessingException ex) {
-          System.err.println(ex.getMessage());
-        }
+    ObjectMapper mapper = StreamsJacksonMapper.getInstance(new StreamsJacksonMapperConfiguration().withDateFormats(Stream.of(TwitterDateTimeFormat.TWITTER_FORMAT).collect(Collectors.toList())));
+
+    Iterator<Tweet> results = provider.call();
+
+    results.forEachRemaining(d -> {
+      try {
+        outStream.println(mapper.writeValueAsString(d));
+      } catch( Exception e ) {
+        LOGGER.warn("Exception", e);
       }
-    }
-    while ( provider.isRunning() );
-    provider.cleanUp();
+    });
+
     outStream.flush();
+
   }
 
   public ThirtyDaySearchProvider(ThirtyDaySearchProviderConfiguration config) {
@@ -181,7 +186,7 @@ public class ThirtyDaySearchProvider implements StreamsProvider, Serializable {
 
     try {
       lock.writeLock().lock();
-      providerQueue = constructQueue();
+      providerQueue = QueueUtils.constructQueue();
     } finally {
       lock.writeLock().unlock();
     }
@@ -197,7 +202,7 @@ public class ThirtyDaySearchProvider implements StreamsProvider, Serializable {
     request = new ThirtyDaySearchRequest();
     request.setQuery(config.getQuery());
 
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+    streamsConfiguration = StreamsConfigurator.detectConfiguration();
 
     try {
       client = getTwitterClient();
@@ -208,7 +213,7 @@ public class ThirtyDaySearchProvider implements StreamsProvider, Serializable {
     Objects.requireNonNull(client);
 
     executor = MoreExecutors.listeningDecorator(
-        TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(
+      ExecutorUtils.newFixedThreadPoolWithQueueSize(
             config.getThreadsPerProvider().intValue(),
             streamsConfiguration.getQueueSize().intValue()
         )
@@ -221,25 +226,32 @@ public class ThirtyDaySearchProvider implements StreamsProvider, Serializable {
   @Override
   public void startStream() {
 
-    LOGGER.debug("{} startStream", STREAMS_ID);
+    Objects.requireNonNull(executor);
+
+    LOGGER.info("startStream");
 
     running.set(true);
 
-    executor.shutdown();
+    LOGGER.info("running: {}", running.get());
+
+    ExecutorUtils.shutdownAndAwaitTermination(executor);
+
+    LOGGER.info("running: {}", running.get());
 
   }
 
   protected void submitSearchThread() {
 
-    ThirtyDaySearchProviderTask providerTask = new ThirtyDaySearchProviderTask(
+    Callable providerTask = new ThirtyDaySearchProviderTask(
           this,
           client,
         request
       );
-      ListenableFuture future = executor.submit(providerTask);
-      futures.add(future);
-      LOGGER.info("Thread Submitted: {}", providerTask.request);
-
+    LOGGER.info("Thread Created: {}", request);
+    tasks.add(providerTask);
+    Future future = executor.submit(providerTask);
+    futures.add(future);
+    LOGGER.info("Thread Submitted: {}", request);
   }
 
   @Override
@@ -252,8 +264,7 @@ public class ThirtyDaySearchProvider implements StreamsProvider, Serializable {
     try {
       lock.writeLock().lock();
       result = new StreamsResultSet(providerQueue);
-      result.setCounter(new DatumStatusCounter());
-      providerQueue = constructQueue();
+      providerQueue = QueueUtils.constructQueue();
     } finally {
       lock.writeLock().unlock();
     }
@@ -268,10 +279,6 @@ public class ThirtyDaySearchProvider implements StreamsProvider, Serializable {
 
     return result;
 
-  }
-
-  protected Queue<StreamsDatum> constructQueue() {
-    return new LinkedBlockingQueue<StreamsDatum>();
   }
 
   public StreamsResultSet readNew(BigInteger sequence) {
@@ -296,35 +303,29 @@ public class ThirtyDaySearchProvider implements StreamsProvider, Serializable {
 
   @Override
   public void cleanUp() {
-    shutdownAndAwaitTermination(executor);
-  }
-
-  void shutdownAndAwaitTermination(ExecutorService pool) {
-    pool.shutdown(); // Disable new tasks from being submitted
-    try {
-      // Wait a while for existing tasks to terminate
-      if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
-        pool.shutdownNow(); // Cancel currently executing tasks
-        // Wait a while for tasks to respond to being cancelled
-        if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
-          System.err.println("Pool did not terminate");
-        }
-      }
-    } catch (InterruptedException ie) {
-      // (Re-)Cancel if current thread also interrupted
-      pool.shutdownNow();
-      // Preserve interrupt status
-      Thread.currentThread().interrupt();
-    }
+    ExecutorUtils.shutdownAndAwaitTermination(executor);
   }
 
   @Override
   public boolean isRunning() {
-    if (providerQueue.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone()) {
-      LOGGER.info("Completed");
+    LOGGER.debug("executor.isTerminated: {}", executor.isTerminated());
+    LOGGER.debug("tasks.size(): {}", tasks.size());
+    LOGGER.debug("futures.size(): {}", futures.size());
+    if ( tasks.size() > 0 && tasks.size() == futures.size() && executor.isShutdown() && executor.isTerminated() ) {
       running.set(false);
-      LOGGER.info("Exiting");
     }
+    LOGGER.debug("isRunning: {}", running.get());
     return running.get();
+  }
+
+  @Override
+  public Iterator<Tweet> call() throws Exception {
+    prepare(config);
+    startStream();
+    do {
+      Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
+    } while ( isRunning());
+    cleanUp();
+    return providerQueue.stream().map( x -> ((Tweet)x.getDocument())).iterator();
   }
 }

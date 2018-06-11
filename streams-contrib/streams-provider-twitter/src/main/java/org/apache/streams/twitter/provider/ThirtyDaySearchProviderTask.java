@@ -31,14 +31,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  *  Retrieve recent posts for a single user id.
  */
-public class ThirtyDaySearchProviderTask implements Runnable {
+public class ThirtyDaySearchProviderTask implements Callable<Iterator<Tweet>>, Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ThirtyDaySearchProviderTask.class);
 
@@ -47,6 +49,7 @@ public class ThirtyDaySearchProviderTask implements Runnable {
   protected ThirtyDaySearchProvider provider;
   protected Twitter client;
   protected ThirtyDaySearchRequest request;
+  protected List<Tweet> responseList;
 
   /**
    * ThirtyDaySearchProviderTask constructor.
@@ -74,6 +77,8 @@ public class ThirtyDaySearchProviderTask implements Runnable {
       ThirtyDaySearchResponse response = client.thirtyDaySearch(provider.getConfig().getEnvironment(), request);
 
       List<Tweet> statuses = response.getResults();
+
+      responseList.addAll(statuses);
 
       last_count = statuses.size();
       if( statuses.size() > 0 ) {
@@ -107,6 +112,9 @@ public class ThirtyDaySearchProviderTask implements Runnable {
         && page_count <= provider.getConfig().getMaxPages());
   }
 
-
-
+  @Override
+  public Iterator<Tweet> call() throws Exception {
+    run();
+    return responseList.iterator();
+  }
 }

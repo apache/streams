@@ -22,6 +22,7 @@ import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.api.FollowersIdsRequest;
 import org.apache.streams.twitter.api.FollowersIdsResponse;
+import org.apache.streams.twitter.api.FriendsIdsResponse;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.pojo.Follow;
 import org.apache.streams.twitter.pojo.User;
@@ -32,10 +33,15 @@ import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 /**
  *  Retrieve friend or follower connections for a single user id.
  */
-public class TwitterFollowersIdsProviderTask implements Runnable {
+public class TwitterFollowersIdsProviderTask implements Callable<Iterator<FollowersIdsResponse>>, Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFollowersIdsProviderTask.class);
 
@@ -44,6 +50,7 @@ public class TwitterFollowersIdsProviderTask implements Runnable {
   protected Twitter client;
   protected TwitterFollowingProvider provider;
   protected FollowersIdsRequest request;
+  protected List<FollowersIdsResponse> responseList;
 
   /**
    * TwitterFollowingProviderTask constructor.
@@ -61,6 +68,8 @@ public class TwitterFollowersIdsProviderTask implements Runnable {
   public void run() {
 
     Preconditions.checkArgument(request.getId() != null || request.getScreenName() != null);
+
+    responseList = new ArrayList<>();
 
     LOGGER.info("Thread Starting: {}", request.toString());
 
@@ -80,6 +89,8 @@ public class TwitterFollowersIdsProviderTask implements Runnable {
     do {
 
       FollowersIdsResponse response = client.ids(request);
+
+      responseList.add(response);
 
       last_count = response.getIds().size();
 
@@ -122,4 +133,9 @@ public class TwitterFollowersIdsProviderTask implements Runnable {
             && page_count <= provider.getConfig().getMaxPages());
   }
 
+  @Override
+  public Iterator<FollowersIdsResponse> call() throws Exception {
+    run();
+    return responseList.iterator();
+  }
 }

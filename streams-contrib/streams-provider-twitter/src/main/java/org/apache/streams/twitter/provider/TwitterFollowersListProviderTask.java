@@ -28,13 +28,19 @@ import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.util.ComponentUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  *  Retrieve friend or follower connections for a single user id.
  */
-public class TwitterFollowersListProviderTask implements Runnable {
+public class TwitterFollowersListProviderTask implements Callable<Iterator<FollowersListResponse>>, Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFollowersListProviderTask.class);
 
@@ -43,6 +49,7 @@ public class TwitterFollowersListProviderTask implements Runnable {
   protected Twitter client;
   protected TwitterFollowingProvider provider;
   protected FollowersListRequest request;
+  protected List<FollowersListResponse> responseList;
 
   /**
    * TwitterFollowersListProviderTask constructor.
@@ -59,7 +66,11 @@ public class TwitterFollowersListProviderTask implements Runnable {
   @Override
   public void run() {
 
+    Preconditions.checkArgument(request.getId() != null || request.getScreenName() != null);
+
     LOGGER.info("Thread Starting: {}", request.toString());
+
+    responseList = new ArrayList<>();
 
     getFollowersList(request);
 
@@ -77,6 +88,8 @@ public class TwitterFollowersListProviderTask implements Runnable {
     do {
 
       FollowersListResponse response = client.list(request);
+
+      responseList.add(response);
 
       last_count = response.getUsers().size();
 
@@ -118,4 +131,9 @@ public class TwitterFollowersListProviderTask implements Runnable {
             && page_count <= provider.getConfig().getMaxPages());
   }
 
+  @Override
+  public Iterator<FollowersListResponse> call() throws Exception {
+    run();
+    return responseList.iterator();
+  }
 }
