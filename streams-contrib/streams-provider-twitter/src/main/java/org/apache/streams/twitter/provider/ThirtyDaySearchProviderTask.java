@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -61,6 +62,7 @@ public class ThirtyDaySearchProviderTask implements Callable<Iterator<Tweet>>, R
     this.provider = provider;
     this.client = twitter;
     this.request = request;
+    this.responseList = new ArrayList<>();
   }
 
   int item_count = 0;
