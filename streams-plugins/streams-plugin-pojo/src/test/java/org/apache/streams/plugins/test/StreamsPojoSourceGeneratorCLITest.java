@@ -40,7 +40,7 @@ public class StreamsPojoSourceGeneratorCLITest {
   @Test
   public void testStreamsPojoSourceGeneratorCLI() throws Exception {
 
-    String sourceDirectory = "target/dependency/activitystreams-schemas";
+    String sourceDirectory = "target/dependency/jsonschemaorg-schemas";
     String targetDirectory = "target/generated-sources/test-cli";
 
     StreamsPojoSourceGenerator.main(new String[]{sourceDirectory, targetDirectory});
@@ -52,6 +52,6 @@ public class StreamsPojoSourceGeneratorCLITest {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> testOutputFiles = FileUtils.listFiles(testOutput, StreamsPojoSourceGeneratorTest.javaFilter, true);
-    Assert.assertTrue(testOutputFiles.size() > 133);
+    Assert.assertTrue(testOutputFiles.size() == 10);
   }
 }

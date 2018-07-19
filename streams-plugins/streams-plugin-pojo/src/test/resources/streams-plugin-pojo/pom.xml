@@ -87,7 +87,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-schema-activitystreams</artifactId>
+            <artifactId>streams-schema-jsonschemaorg</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
             <classifier>schemas</classifier>
@@ -144,14 +144,9 @@
                 <version>${project.version}</version>
                 <configuration>
                     <sourcePaths>
-                        <sourcePath>target/dependency/activitystreams-schemas/activity.json</sourcePath>
-                        <sourcePath>target/dependency/activitystreams-schemas/collection.json</sourcePath>
-                        <sourcePath>target/dependency/activitystreams-schemas/media_link.json</sourcePath>
-                        <sourcePath>target/dependency/activitystreams-schemas/object.json</sourcePath>
-                        <sourcePath>target/dependency/activitystreams-schemas/objectTypes</sourcePath>
-                        <sourcePath>target/dependency/activitystreams-schemas/verbs</sourcePath>
+                        <sourcePath>target/dependency/jsonschemaorg-schemas</sourcePath>
                     </sourcePaths>
-                    <targetPackage>org.apache.streams.pojo.mojo</targetPackage>
+                    <targetPackage>org.apache.streams.jsonschema.pojo.mojo</targetPackage>
                     <targetDirectory>target/generated-sources/pojo-mojo</targetDirectory>
                 </configuration>
                 <executions>
