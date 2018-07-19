@@ -52,6 +52,6 @@ public class StreamsPojoSourceGeneratorCLITest {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> testOutputFiles = FileUtils.listFiles(testOutput, StreamsPojoSourceGeneratorTest.javaFilter, true);
-    Assert.assertTrue(testOutputFiles.size() == 10);
+    Assert.assertTrue(testOutputFiles.size() == 7);
   }
 }

@@ -36,7 +36,7 @@ public class StreamsElasticsearchResourceGeneratorCLITest {
   @Test
   public void testStreamsElasticsearchResourceGeneratorCLI() throws Exception {
 
-    String sourceDirectory = "target/dependency/activitystreams-schemas";
+    String sourceDirectory = "target/dependency/jsonschemaorg-schemas";
     String targetDirectory = "target/generated-resources/elasticsearch-cli";
 
     StreamsElasticsearchResourceGenerator.main(new String[]{sourceDirectory, targetDirectory});
@@ -48,6 +48,6 @@ public class StreamsElasticsearchResourceGeneratorCLITest {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> outputCollection = FileUtils.listFiles(testOutput, StreamsElasticsearchResourceGeneratorTest.jsonFilter, true);
-    Assert.assertEquals(outputCollection.size(), 133);
+    Assert.assertEquals(4, outputCollection.size());
   }
 }

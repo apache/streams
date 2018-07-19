@@ -70,6 +70,6 @@ public class StreamsPojoSourceGeneratorTest {
     Assert.assertTrue(config.getTargetDirectory().isDirectory());
 
     Collection<File> targetFiles = FileUtils.listFiles(config.getTargetDirectory(), javaFilter, true);
-    Assert.assertTrue(targetFiles.size() == 10);
+    Assert.assertTrue(targetFiles.size() == 7);
   }
 }

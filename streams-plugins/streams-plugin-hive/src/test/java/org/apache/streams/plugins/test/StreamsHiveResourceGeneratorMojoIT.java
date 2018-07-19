@@ -68,6 +68,6 @@ public class StreamsHiveResourceGeneratorMojoIT {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> outputCollection = FileUtils.listFiles(testOutput, StreamsHiveResourceGeneratorTest.hqlFilter, true);
-    Assert.assertEquals (outputCollection.size(), 133);
+    Assert.assertEquals(4, outputCollection.size());
   }
 }

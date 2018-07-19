@@ -68,6 +68,6 @@ public class StreamsPigResourceGeneratorMojoIT {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> outputCollection = FileUtils.listFiles(testOutput, StreamsPigResourceGeneratorTest.pigFilter, true);
-    Assert.assertEquals(outputCollection.size(), 133 );
+    Assert.assertEquals(4, outputCollection.size());
   }
 }

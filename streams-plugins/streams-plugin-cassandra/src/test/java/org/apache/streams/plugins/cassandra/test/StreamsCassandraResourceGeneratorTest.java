@@ -55,7 +55,7 @@ public class StreamsCassandraResourceGeneratorTest {
 
     StreamsCassandraGenerationConfig config = new StreamsCassandraGenerationConfig();
 
-    String sourceDirectory = "target/dependency/activitystreams-schemas";
+    String sourceDirectory = "target/dependency/jsonschemaorg-schemas";
 
     config.setSourceDirectory(sourceDirectory);
 
@@ -83,7 +83,7 @@ public class StreamsCassandraResourceGeneratorTest {
 
     String typesCqlBytes = new String(java.nio.file.Files.readAllBytes(path));
 
-    Assert.assertEquals(StringUtils.countMatches(typesCqlBytes, "CREATE TYPE"), 133);
+    Assert.assertEquals(4, StringUtils.countMatches(typesCqlBytes, "CREATE TYPE"));
 
   }
 }

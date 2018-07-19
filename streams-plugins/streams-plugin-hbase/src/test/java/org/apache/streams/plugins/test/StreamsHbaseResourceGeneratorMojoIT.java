@@ -68,6 +68,6 @@ public class StreamsHbaseResourceGeneratorMojoIT {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> outputCollection = FileUtils.listFiles(testOutput, StreamsHbaseResourceGeneratorTest.txtFilter, true);
-    Assert.assertEquals(outputCollection.size(), 133);
+    Assert.assertEquals(4, outputCollection.size());
   }
 }

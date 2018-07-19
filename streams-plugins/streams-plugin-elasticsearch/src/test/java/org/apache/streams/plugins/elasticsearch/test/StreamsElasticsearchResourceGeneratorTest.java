@@ -52,7 +52,7 @@ public class StreamsElasticsearchResourceGeneratorTest {
 
     StreamsElasticsearchGenerationConfig config = new StreamsElasticsearchGenerationConfig();
 
-    String sourceDirectory = "target/dependency/activitystreams-schemas";
+    String sourceDirectory = "target/dependency/jsonschemaorg-schemas";
 
     config.setSourceDirectory(sourceDirectory);
 
@@ -72,6 +72,6 @@ public class StreamsElasticsearchResourceGeneratorTest {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> outputCollection = FileUtils.listFiles(testOutput, jsonFilter, true);
-    Assert.assertEquals(outputCollection.size(), 133);
+    Assert.assertEquals(4, outputCollection.size());
   }
 }
