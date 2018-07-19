@@ -337,7 +337,7 @@
         <docker.plugin.version>0.24.0</docker.plugin.version>
         <download.plugin.version>1.2.1</download.plugin.version>
         <enforcer.plugin.version>3.0.0-M1</enforcer.plugin.version>
-        <failsafe.plugin.version>2.19.1</failsafe.plugin.version>
+        <failsafe.plugin.version>2.22.0</failsafe.plugin.version>
         <jar.plugin.version>2.6</jar.plugin.version>
         <javadoc.plugin.version>2.10.2</javadoc.plugin.version>
         <license.plugin.version>1.15</license.plugin.version>
@@ -352,7 +352,7 @@
         <shade.plugin.version>3.1.0</shade.plugin.version>
         <site.plugin.version>3.6</site.plugin.version>
         <source.plugin.version>2.4</source.plugin.version>
-        <surefire.plugin.version>2.21.0</surefire.plugin.version>
+        <surefire.plugin.version>2.22.0</surefire.plugin.version>
         <wagon.plugin.version>3.0.0</wagon.plugin.version>
         <war.plugin.version>2.5</war.plugin.version>
 
