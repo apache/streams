@@ -25,12 +25,15 @@ import org.apache.streams.core.DatumStatusCounter;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsProvider;
 import org.apache.streams.core.StreamsResultSet;
+import org.apache.streams.core.util.ExecutorUtils;
+import org.apache.streams.core.util.QueueUtils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.config.TwitterFollowingConfiguration;
 import org.apache.streams.twitter.config.TwitterUserInformationConfiguration;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.api.UsersLookupRequest;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
+import org.apache.streams.twitter.pojo.User;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,10 +59,12 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -73,7 +78,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 /**
  * Retrieve current profile status from a list of user ids or names.
  */
-public class TwitterUserInformationProvider implements StreamsProvider, Serializable {
+public class TwitterUserInformationProvider implements Callable<Iterator<User>>, StreamsProvider, Serializable {
 
   private static final String STREAMS_ID = "TwitterUserInformationProvider";
 
@@ -91,6 +96,8 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
   protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 
   protected volatile Queue<StreamsDatum> providerQueue;
+
+  StreamsConfiguration streamsConfiguration;
 
   public TwitterUserInformationConfiguration getConfig() {
     return config;
@@ -171,11 +178,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
   }
 
   // TODO: this should be abstracted out
-  public static ExecutorService newFixedThreadPoolWithQueueSize(int numThreads, int queueSize) {
-    return new ThreadPoolExecutor(numThreads, numThreads,
-        5000L, TimeUnit.MILLISECONDS,
-        new ArrayBlockingQueue<>(queueSize, true), new ThreadPoolExecutor.CallerRunsPolicy());
-  }
+
 
   /**
    * TwitterUserInformationProvider constructor.
@@ -214,7 +217,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     Objects.requireNonNull(config.getInfo());
     Objects.requireNonNull(config.getThreadsPerProvider());
 
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
+    streamsConfiguration = StreamsConfigurator.detectConfiguration();
 
     Objects.requireNonNull(streamsConfiguration.getQueueSize());
 
@@ -228,7 +231,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     try {
       lock.writeLock().lock();
-      providerQueue = constructQueue();
+      providerQueue = QueueUtils.constructQueue();
     } finally {
       lock.writeLock().unlock();
     }
@@ -250,7 +253,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     }
 
     executor = MoreExecutors.listeningDecorator(
-        TwitterUserInformationProvider.newFixedThreadPoolWithQueueSize(
+        ExecutorUtils.newFixedThreadPoolWithQueueSize(
             config.getThreadsPerProvider().intValue(),
             streamsConfiguration.getQueueSize().intValue()
         )
@@ -332,8 +335,7 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     try {
       lock.writeLock().lock();
       result = new StreamsResultSet(providerQueue);
-      result.setCounter(new DatumStatusCounter());
-      providerQueue = constructQueue();
+      providerQueue = QueueUtils.constructQueue();
       LOGGER.debug("readCurrent: {} Documents", result.size());
     } finally {
       lock.writeLock().unlock();
@@ -341,10 +343,6 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
 
     return result;
 
-  }
-
-  protected Queue<StreamsDatum> constructQueue() {
-    return new LinkedBlockingQueue<>();
   }
 
   public StreamsResultSet readNew(BigInteger sequence) {
@@ -372,31 +370,23 @@ public class TwitterUserInformationProvider implements StreamsProvider, Serializ
     return running.get();
   }
 
-  void shutdownAndAwaitTermination(ExecutorService pool) {
-    pool.shutdown(); // Disable new tasks from being submitted
-    try {
-      // Wait a while for existing tasks to terminate
-      if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
-        pool.shutdownNow(); // Cancel currently executing tasks
-        // Wait a while for tasks to respond to being cancelled
-        if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
-          System.err.println("Pool did not terminate");
-        }
-      }
-    } catch (InterruptedException ie) {
-      // (Re-)Cancel if current thread also interrupted
-      pool.shutdownNow();
-      // Preserve interrupt status
-      Thread.currentThread().interrupt();
-    }
-  }
-
   protected Twitter getTwitterClient() throws InstantiationException {
     return Twitter.getInstance(config);
   }
 
   @Override
   public void cleanUp() {
-    shutdownAndAwaitTermination(executor);
+    ExecutorUtils.shutdownAndAwaitTermination(executor);
+  }
+
+  @Override
+  public Iterator<User> call() throws Exception {
+    prepare(config);
+    startStream();
+    do {
+      Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
+    } while ( isRunning());
+    cleanUp();
+    return providerQueue.stream().map( x -> (User)x.getDocument()).iterator();
   }
 }

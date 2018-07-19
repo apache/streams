@@ -32,10 +32,15 @@ import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 /**
  *  Retrieve friend or follower connections for a single user id.
  */
-public class TwitterFriendsIdsProviderTask implements Runnable {
+public class TwitterFriendsIdsProviderTask implements Callable<Iterator<FriendsIdsResponse>>, Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFriendsIdsProviderTask.class);
 
@@ -44,6 +49,7 @@ public class TwitterFriendsIdsProviderTask implements Runnable {
   protected Twitter client;
   protected TwitterFollowingProvider provider;
   protected FriendsIdsRequest request;
+  protected List<FriendsIdsResponse> responseList;
 
   /**
    * TwitterFollowingProviderTask constructor.
@@ -61,6 +67,8 @@ public class TwitterFriendsIdsProviderTask implements Runnable {
   public void run() {
 
     Preconditions.checkArgument(request.getId() != null || request.getScreenName() != null);
+
+    responseList = new ArrayList<>();
 
     LOGGER.info("Thread Starting: {}", request.toString());
 
@@ -80,6 +88,8 @@ public class TwitterFriendsIdsProviderTask implements Runnable {
     do {
 
       FriendsIdsResponse response = client.ids(request);
+
+      responseList.add(response);
 
       last_count = response.getIds().size();
 
@@ -123,4 +133,9 @@ public class TwitterFriendsIdsProviderTask implements Runnable {
             && page_count <= provider.getConfig().getMaxPages());
   }
 
+  @Override
+  public Iterator<FriendsIdsResponse> call() throws Exception {
+    run();
+    return responseList.iterator();
+  }
 }

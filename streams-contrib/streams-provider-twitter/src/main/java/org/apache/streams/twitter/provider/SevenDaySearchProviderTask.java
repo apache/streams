@@ -32,14 +32,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  *  Retrieve recent posts for a single user id.
  */
-public class SevenDaySearchProviderTask implements Runnable {
+public class SevenDaySearchProviderTask implements Callable<Iterator<Tweet>>, Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SevenDaySearchProviderTask.class);
 
@@ -48,6 +51,7 @@ public class SevenDaySearchProviderTask implements Runnable {
   protected SevenDaySearchProvider provider;
   protected Twitter client;
   protected SevenDaySearchRequest request;
+  protected List<Tweet> responseList;
 
   /**
    * SevenDaySearchProviderTask constructor.
@@ -59,6 +63,7 @@ public class SevenDaySearchProviderTask implements Runnable {
     this.provider = provider;
     this.client = twitter;
     this.request = request;
+    this.responseList = new ArrayList<>();
   }
 
   int item_count = 0;
@@ -75,6 +80,8 @@ public class SevenDaySearchProviderTask implements Runnable {
       SevenDaySearchResponse response = client.sevenDaySearch(request);
 
       List<Tweet> statuses = response.getStatuses();
+
+      responseList.addAll(statuses);
 
       last_count = statuses.size();
       if( statuses.size() > 0 ) {
@@ -109,6 +116,10 @@ public class SevenDaySearchProviderTask implements Runnable {
             && page_count <= provider.getConfig().getMaxPages());
   }
 
-
+  @Override
+  public Iterator<Tweet> call() throws Exception {
+    run();
+    return responseList.iterator();
+  }
 
 }

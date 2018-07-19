@@ -30,14 +30,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  *  Retrieve recent posts for a single user id.
  */
-public class TwitterTimelineProviderTask implements Runnable {
+public class TwitterTimelineProviderTask implements Callable<Iterator<Tweet>>, Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterTimelineProviderTask.class);
 
@@ -46,6 +49,7 @@ public class TwitterTimelineProviderTask implements Runnable {
   protected TwitterTimelineProvider provider;
   protected Twitter client;
   protected StatusesUserTimelineRequest request;
+  protected List<Tweet> responseList;
 
   /**
    * TwitterTimelineProviderTask constructor.
@@ -68,9 +72,13 @@ public class TwitterTimelineProviderTask implements Runnable {
 
     LOGGER.info("Thread Starting: {}", request.toString());
 
+    responseList = new ArrayList<>();
+
     do {
 
       List<Tweet> statuses = client.userTimeline(request);
+
+      responseList.addAll(statuses);
 
       last_count = statuses.size();
       if( statuses.size() > 0 ) {
@@ -106,5 +114,9 @@ public class TwitterTimelineProviderTask implements Runnable {
   }
 
 
-
+  @Override
+  public Iterator<Tweet> call() throws Exception {
+    run();
+    return responseList.iterator();
+  }
 }

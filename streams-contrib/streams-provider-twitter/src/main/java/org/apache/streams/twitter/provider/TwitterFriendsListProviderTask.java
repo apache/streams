@@ -20,6 +20,8 @@ package org.apache.streams.twitter.provider;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
+import org.apache.streams.twitter.api.FollowersListResponse;
+import org.apache.streams.twitter.api.FriendsIdsResponse;
 import org.apache.streams.twitter.api.FriendsListRequest;
 import org.apache.streams.twitter.api.FriendsListResponse;
 import org.apache.streams.twitter.api.Twitter;
@@ -32,10 +34,15 @@ import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 /**
  *  Retrieve friend or follower connections for a single user id.
  */
-public class TwitterFriendsListProviderTask implements Runnable {
+public class TwitterFriendsListProviderTask implements Callable<Iterator<FriendsListResponse>>, Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFriendsListProviderTask.class);
 
@@ -44,6 +51,7 @@ public class TwitterFriendsListProviderTask implements Runnable {
   protected Twitter client;
   protected TwitterFollowingProvider provider;
   protected FriendsListRequest request;
+  protected List<FriendsListResponse> responseList;
 
   /**
    * TwitterFollowingProviderTask constructor.
@@ -67,9 +75,13 @@ public class TwitterFriendsListProviderTask implements Runnable {
 
     Preconditions.checkArgument(request.getId() != null || request.getScreenName() != null);
 
+    responseList = new ArrayList<>();
+
+    LOGGER.info("Thread Starting: {}", request.toString());
+
     getFriendsList(request);
 
-    LOGGER.info(request.getId() != null ? request.getId().toString() : request.getScreenName() + " Thread Finished");
+    LOGGER.info("Thread Finished: {}", request.toString());
 
   }
 
@@ -78,6 +90,8 @@ public class TwitterFriendsListProviderTask implements Runnable {
     do {
 
       FriendsListResponse response = client.list(request);
+
+      responseList.add(response);
 
       last_count = response.getUsers().size();
 
@@ -121,4 +135,9 @@ public class TwitterFriendsListProviderTask implements Runnable {
             && page_count <= provider.getConfig().getMaxPages());
   }
 
+  @Override
+  public Iterator<FriendsListResponse> call() throws Exception {
+    run();
+    return responseList.iterator();
+  }
 }
