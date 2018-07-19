@@ -18,7 +18,7 @@
         "address": {
           "type": "object",
           "extends": {
-            "$ref": "https://raw.githubusercontent.com/json-schema-org/json-schema-org.github.io/master/draft-03/examples/address"
+            "$ref": "./../../../../../streams-schemas/streams-schema-jsonschemaorg/src/main/jsonschema/address.json"
           }
         },
         "position": {

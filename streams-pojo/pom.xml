@@ -43,6 +43,14 @@
         </dependency>
         <dependency>
             <groupId>org.apache.streams</groupId>
+            <artifactId>streams-schema-jsonschemaorg</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <classifier>schemas</classifier>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.streams</groupId>
             <artifactId>streams-schema-activitystreams</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
@@ -203,6 +211,7 @@
                 <configuration>
                     <sourcePaths>
                         <sourcePath>${project.basedir}/src/main/jsonschema</sourcePath>
+                        <sourcePath>${project.basedir}/target/dependency/jsonschemaorg-schemas</sourcePath>
                         <sourcePath>${project.basedir}/target/dependency/activitystreams-schemas</sourcePath>
                         <sourcePath>${project.basedir}/target/dependency/activitystreams-schemas/objectTypes</sourcePath>
                         <sourcePath>${project.basedir}/target/dependency/activitystreams-schemas/verbs</sourcePath>

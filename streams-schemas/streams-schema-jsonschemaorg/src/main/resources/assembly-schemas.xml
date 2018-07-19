@@ -16,26 +16,18 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <parent>
-        <groupId>org.apache.streams</groupId>
-        <artifactId>apache-streams</artifactId>
-        <version>0.6.1-SNAPSHOT</version>
-    </parent>
-
-    <artifactId>streams-schemas</artifactId>
-    <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
-
-    <description>Aggregator for schema modules</description>
-
-    <modules>
-        <module>streams-schema-activitystreams</module>
-        <module>streams-schema-activitystreams2</module>
-        <module>streams-schema-jsonschemaorg</module>
-    </modules>
-
-</project>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+    <id>schemas</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/jsonschema</directory>
+            <outputDirectory>/jsonschemaorg-schemas</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>

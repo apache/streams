@@ -13,7 +13,7 @@
             "$ref": "../object.json"
         },
         {
-            "$ref": "https://raw.githubusercontent.com/json-schema-org/json-schema-org.github.io/master/draft-03/examples/card"
+            "$ref": "./../../../../streams-schemas/streams-schema-jsonschemaorg/src/main/jsonschema/card.json"
         }
     ],
     "properties": {
