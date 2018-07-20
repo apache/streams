@@ -36,7 +36,7 @@ public class StreamsHiveResourceGeneratorCLITest {
   @Test
   public void testStreamsHiveResourceGeneratorCLI() throws Exception {
 
-    String sourceDirectory = "target/dependency/activitystreams-schemas";
+    String sourceDirectory = "target/dependency/jsonschemaorg-schemas";
     String targetDirectory = "target/generated-resources/hive-cli";
 
     StreamsHiveResourceGenerator.main(new String[]{sourceDirectory, targetDirectory});
@@ -48,6 +48,6 @@ public class StreamsHiveResourceGeneratorCLITest {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> testOutputFiles = FileUtils.listFiles(testOutput, StreamsHiveResourceGeneratorTest.hqlFilter, true);
-    Assert.assertEquals(testOutputFiles.size(), 133);
+    Assert.assertEquals(4, testOutputFiles.size());
   }
 }

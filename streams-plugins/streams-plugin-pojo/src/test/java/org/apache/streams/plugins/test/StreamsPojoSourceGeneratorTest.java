@@ -55,16 +55,11 @@ public class StreamsPojoSourceGeneratorTest {
     StreamsPojoGenerationConfig config = new StreamsPojoGenerationConfig();
 
     List<String> sourcePaths = Stream.of(
-        "target/dependency/activitystreams-schemas/activity.json",
-        "target/dependency/activitystreams-schemas/collection.json",
-        "target/dependency/activitystreams-schemas/media_link.json",
-        "target/dependency/activitystreams-schemas/object.json",
-        "target/dependency/activitystreams-schemas/objectTypes",
-        "target/dependency/activitystreams-schemas/verbs"
+        "target/dependency/jsonschemaorg-schemas"
     ).collect(Collectors.toList());
     config.setSourcePaths(sourcePaths);
 
-    config.setTargetPackage("org.apache.streams.pojo");
+    config.setTargetPackage("org.apache.streams.jsonschema.pojo");
     config.setTargetDirectory("target/generated-sources/pojo");
 
     StreamsPojoSourceGenerator streamsPojoSourceGenerator = new StreamsPojoSourceGenerator(config);
@@ -75,6 +70,6 @@ public class StreamsPojoSourceGeneratorTest {
     Assert.assertTrue(config.getTargetDirectory().isDirectory());
 
     Collection<File> targetFiles = FileUtils.listFiles(config.getTargetDirectory(), javaFilter, true);
-    Assert.assertTrue(targetFiles.size() > 133);
+    Assert.assertTrue(targetFiles.size() == 7);
   }
 }

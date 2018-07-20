@@ -52,7 +52,7 @@ public class StreamsPigResourceGeneratorTest {
 
     StreamsPigGenerationConfig config = new StreamsPigGenerationConfig();
 
-    String sourceDirectory = "target/dependency/activitystreams-schemas";
+    String sourceDirectory = "target/dependency/jsonschemaorg-schemas";
 
     config.setSourceDirectory(sourceDirectory);
 
@@ -72,6 +72,6 @@ public class StreamsPigResourceGeneratorTest {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> outputCollection = FileUtils.listFiles(testOutput, pigFilter, true);
-    Assert.assertEquals(outputCollection.size(), 133);
+    Assert.assertEquals(4, outputCollection.size());
   }
 }

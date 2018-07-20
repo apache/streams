@@ -36,7 +36,7 @@ public class StreamsPigResourceGeneratorCLITest {
   @Test
   public void testStreamsPigResourceGeneratorCLI() throws Exception {
 
-    String sourceDirectory = "target/dependency/activitystreams-schemas";
+    String sourceDirectory = "target/dependency/jsonschemaorg-schemas";
     String targetDirectory = "target/generated-resources/pig-cli";
 
     StreamsPigResourceGenerator.main(new String[]{sourceDirectory, targetDirectory});
@@ -48,6 +48,6 @@ public class StreamsPigResourceGeneratorCLITest {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> outputCollection = FileUtils.listFiles(testOutput, StreamsPigResourceGeneratorTest.pigFilter, true);
-    Assert.assertEquals(outputCollection.size(), 133);
+    Assert.assertEquals(4, outputCollection.size());
   }
 }

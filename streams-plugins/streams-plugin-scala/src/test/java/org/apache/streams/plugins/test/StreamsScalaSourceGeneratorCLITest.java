@@ -55,6 +55,6 @@ public class StreamsScalaSourceGeneratorCLITest {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> outputCollection = FileUtils.listFiles(testOutput, scalaFilter, true);
-    assert ( outputCollection.size() > 133 );
+    assert ( outputCollection.size() >= 4 );
   }
 }

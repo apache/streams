@@ -36,7 +36,7 @@ public class StreamsHbaseResourceGeneratorCLITest {
   @Test
   public void testStreamsHbaseResourceGeneratorCLI() throws Exception {
 
-    String sourceDirectory = "target/dependency/activitystreams-schemas";
+    String sourceDirectory = "target/dependency/jsonschemaorg-schemas";
     String targetDirectory = "target/generated-resources/hbase-cli";
 
     StreamsHbaseResourceGenerator.main(new String[]{sourceDirectory, targetDirectory});
@@ -48,6 +48,6 @@ public class StreamsHbaseResourceGeneratorCLITest {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> outputCollection = FileUtils.listFiles(testOutput, StreamsHbaseResourceGeneratorTest.txtFilter, true);
-    Assert.assertEquals(outputCollection.size(), 133);
+    Assert.assertEquals(4, outputCollection.size());
   }
 }

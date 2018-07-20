@@ -78,6 +78,6 @@ public class StreamsPojoSourceGeneratorMojoIT {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> testOutputFiles = FileUtils.listFiles(testOutput, StreamsPojoSourceGeneratorTest.javaFilter, true);
-    Assert.assertTrue( testOutputFiles.size() > 133);
+    Assert.assertTrue( testOutputFiles.size() == 7);
   }
 }

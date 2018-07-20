@@ -34,19 +34,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.streams</groupId>
-            <artifactId>streams-schema-activitystreams</artifactId>
+            <artifactId>streams-schema-jsonschemaorg</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
             <classifier>schemas</classifier>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-schema-activitystreams</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            <classifier>testdata</classifier>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jsonschema2pojo</groupId>

@@ -23,7 +23,7 @@
 
     <groupId>org.apache.streams.plugins</groupId>
     <artifactId>streams-plugin-cassandra-test</artifactId>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>0.6.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Test StreamsCassandraResourceGeneratorMojo</name>
 
@@ -99,15 +99,10 @@
             <plugin>
                 <groupId>org.apache.streams.plugins</groupId>
                 <artifactId>streams-plugin-cassandra</artifactId>
-                <version>0.5.2-SNAPSHOT</version>
+                <version>0.6.1-SNAPSHOT</version>
                 <configuration>
                     <sourcePaths>
-                        <sourcePath>target/dependency/activitystreams-schemas/activity.json</sourcePath>
-                        <sourcePath>target/dependency/activitystreams-schemas/collection.json</sourcePath>
-                        <sourcePath>target/dependency/activitystreams-schemas/media_link.json</sourcePath>
-                        <sourcePath>target/dependency/activitystreams-schemas/object.json</sourcePath>
-                        <sourcePath>target/dependency/activitystreams-schemas/objectTypes</sourcePath>
-                        <sourcePath>target/dependency/activitystreams-schemas/verbs</sourcePath>
+                        <sourcePath>target/dependency/jsonschemaorg-schemas</sourcePath>
                     </sourcePaths>
                     <targetDirectory>target/generated-resources/test-mojo</targetDirectory>
                 </configuration>

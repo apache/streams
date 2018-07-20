@@ -13,7 +13,7 @@
             "$ref": "../object.json"
         },
         {
-            "$ref": "http://www.json-schema.org/card"
+            "$ref": "./../../../../streams-schemas/streams-schema-jsonschemaorg/src/main/jsonschema/card.json"
         }
     ],
     "properties": {

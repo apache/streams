@@ -19,14 +19,19 @@
 
 package org.apache.streams.plugins.elasticsearch.test;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.ResourceExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,6 +62,18 @@ public class StreamsElasticsearchResourceGeneratorMojoIT {
     verifier.verifyErrorFreeLog();
 
     verifier.resetStreams();
+
+    Path testOutputPath = Paths.get(testDir.getAbsolutePath()).resolve("target/generated-resources/test-mojo");
+
+    File testOutput = testOutputPath.toFile();
+
+    Assert.assertNotNull(testOutput);
+    Assert.assertTrue(testOutput.exists());
+    Assert.assertTrue(testOutput.isDirectory());
+
+    Collection<File> outputCollection = FileUtils.listFiles(testOutput, StreamsElasticsearchResourceGeneratorTest.jsonFilter, true);
+    Assert.assertEquals(4, outputCollection.size());
+
 
   }
 }

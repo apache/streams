@@ -24,7 +24,7 @@
 
     <groupId>org.apache.streams.plugins</groupId>
     <artifactId>streams-plugin-scala-test</artifactId>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>0.6.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Test StreamsPojoScalaMojo</name>
 
@@ -99,11 +99,20 @@
             <plugin>
                 <groupId>org.apache.streams.plugins</groupId>
                 <artifactId>streams-plugin-scala</artifactId>
-                <version>0.5.2-SNAPSHOT</version>
+                <version>0.6.1-SNAPSHOT</version>
                 <configuration>
                     <packages>org.apache.streams.pojo.json</packages>
                     <target>target/generated-sources/scala-mojo</target>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.streams</groupId>
+                        <artifactId>streams-pojo</artifactId>
+                        <version>${project.version}</version>
+                        <scope>test</scope>
+                        <type>jar</type>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <goals>

@@ -54,7 +54,7 @@ public class StreamsHiveResourceGeneratorTest {
 
     StreamsHiveGenerationConfig config = new StreamsHiveGenerationConfig();
 
-    String sourceDirectory = "target/dependency/activitystreams-schemas";
+    String sourceDirectory = "target/dependency/jsonschemaorg-schemas";
 
     config.setSourceDirectory(sourceDirectory);
 
@@ -74,6 +74,6 @@ public class StreamsHiveResourceGeneratorTest {
     Assert.assertTrue(testOutput.isDirectory());
 
     Collection<File> testOutputFiles = FileUtils.listFiles(testOutput, hqlFilter, true);
-    Assert.assertEquals(testOutputFiles.size(), 133);
+    Assert.assertEquals(4, testOutputFiles.size());
   }
 }
