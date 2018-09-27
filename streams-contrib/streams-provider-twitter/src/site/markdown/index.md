@@ -49,6 +49,8 @@ Build with integration testing enabled, using your credentials
 
     mvn clean test verify -DskipITs=false -DargLine="-Dconfig.file=`pwd`/application.conf"
 
+[Experimental Features](experimental.html "Experimental Features")
+
 [JavaDocs](apidocs/index.html "JavaDocs")
 
 ###### Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
