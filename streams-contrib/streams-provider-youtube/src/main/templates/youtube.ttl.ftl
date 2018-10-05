@@ -21,8 +21,8 @@
   <#recover>
     <#stop "NO_PROFILE_INFORMATION">
 </#attempt>
-@prefix : <http://graph.bluesquad.co/youtube#> .
-@prefix ap: <http://streams.apache.org/ns#> .
+@prefix : <${namespace}#> .
+@prefix apst: <http://streams.apache.org/ns#> .
 @prefix as: <http://www.w3.org/ns/activitystreams#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -43,7 +43,7 @@
 </#attempt>
 
 # profile.json
-:${id} a ap:YouTubeProfile .
+:${id} a apst:YouTubeProfile .
 
 :${id}
   as:displayName "${profile.displayName}" ;
