@@ -110,7 +110,7 @@
   vcard:fn "${friend.name}" ;
   vcard:given-name "${nameparts[0]}" ;
 <#if (nameparts?size > 2)>
-  vcard:additional-name "${nameparts[1]}"
+  vcard:additional-name "${nameparts[1]}" ;
   vcard:family-name "${nameparts[2]}" ;
 <#elseif  (nameparts?size == 2)>
   vcard:family-name "${nameparts[1]}" ;
@@ -140,7 +140,7 @@
   vcard:fn "${friend.name}" ;
   vcard:given-name "${nameparts[0]}" ;
 <#if (nameparts?size > 2)>
-  vcard:additional-name "${nameparts[1]}"
+  vcard:additional-name "${nameparts[1]}" ;
   vcard:family-name "${nameparts[2]}" ;
 <#elseif (nameparts?size == 2)>
   vcard:family-name "${nameparts[1]}" ;
