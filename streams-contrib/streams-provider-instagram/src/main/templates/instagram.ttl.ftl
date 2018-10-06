@@ -75,7 +75,7 @@
 
 <#list connections.following as handle, since>
 <#assign fid = "${handle}">
-:${fid} a ap:InstagramProfile ;
+:${fid} a apst:InstagramProfile ;
         as:displayName "${handle}" .
 :${id}-follow-${fid} a as:Follow ;
   as:actor :${id} ;
@@ -95,7 +95,7 @@
 <#assign fids = thread.participants![]>
 <#list fids as fid>
 <#if fid != profile.username>
-:${fid} a ap:InstagramProfile ;
+:${fid} a apst:InstagramProfile ;
         as:displayName "${fid}" .
 :${id}-message-${fid} a as:Note ;
   as:actor :${id} ;
