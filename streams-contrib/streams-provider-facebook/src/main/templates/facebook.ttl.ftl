@@ -112,9 +112,8 @@
 <#if (nameparts?size > 2)>
   vcard:additional-name "${nameparts[1]}"
   vcard:family-name "${nameparts[2]}" ;
-<elif (nameparts?size == 2)>
+<#elseif  (nameparts?size == 2)>
   vcard:family-name "${nameparts[1]}" ;
-</elif>
 </#if>
   .
 
