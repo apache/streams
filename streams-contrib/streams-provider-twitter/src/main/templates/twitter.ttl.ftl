@@ -51,7 +51,7 @@
   .
 
 # profile.js
-<#assign profiles = pp.loadData('json', '${root}/profile.js')>
+<#assign profiles = pp.loadData('json', 'profile.js')>
 <#assign profile = profiles[0].profile>
 
 :${id}
@@ -60,7 +60,7 @@
   .
 
 <#attempt>
-<#assign followers = pp.loadData('json', '${root}/follower.js')>
+<#assign followers = pp.loadData('json', 'follower.js')>
 <#recover>
 </#attempt>
 
@@ -76,7 +76,7 @@
 </#if>
 
 <#attempt>
-<#assign friends = pp.loadData('json', '${root}/following.js')>
+<#assign friends = pp.loadData('json', 'following.js')>
 <#recover>
 </#attempt>
 

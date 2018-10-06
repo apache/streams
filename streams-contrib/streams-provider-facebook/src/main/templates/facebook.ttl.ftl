@@ -104,9 +104,19 @@
 <#if friends??>
 <#list friends.friends as friend>
 <#assign fid=friend.name?replace("\\W","","r")>
-:${fid} 
+<#assign nameparts=friend.name?split(" ")>
+:${fid}
   a apst:FacebookProfile ;
-  vcard:fn "${friend.name}" .
+  vcard:fn "${friend.name}" ;
+  vcard:given-name "${nameparts[0]}" ;
+<#if (nameparts?size > 2)>
+  vcard:additional-name "${nameparts[1]}"
+  vcard:family-name "${nameparts[2]}" ;
+<elif (nameparts?size == 2)>
+  vcard:family-name "${nameparts[1]}" ;
+</elif>
+</#if>
+  .
 
 :${id}-connect-${fid}
   a as:Connect ;
@@ -125,9 +135,19 @@
 <#if friends??>
 <#list friends.friends as friend>
 <#assign fid=friend.name?replace("\\W","","r")>
+<#assign nameparts=friend.name?split(" ")>
 :${fid}
   a apst:FacebookProfile ;
-  vcard:fn "${friend.name}" .
+  vcard:fn "${friend.name}" ;
+  vcard:given-name "${nameparts[0]}" ;
+<#if (nameparts?size > 2)>
+  vcard:additional-name "${nameparts[1]}"
+  vcard:family-name "${nameparts[2]}" ;
+<elif (nameparts?size == 2)>
+  vcard:family-name "${nameparts[1]}" ;
+</elif>
+</#if>
+  .
 
 :${id}-connect-${fid}
   a as:Connect ;

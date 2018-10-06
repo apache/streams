@@ -46,7 +46,7 @@
   as:displayName "${profile.displayName}" ;
   vcard:fn "${profile.name.formattedName}" ;
   vcard:given-name "${profile.name.givenName}" ;
-  vcard:fn "${profile.name.familyName}" ;
+  vcard:family-name "${profile.name.familyName}" ;
   .
 
 <#if profile.email??>
