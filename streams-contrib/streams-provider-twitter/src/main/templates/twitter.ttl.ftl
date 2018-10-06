@@ -41,7 +41,7 @@
 <#stop "NO_ID">
 </#attempt>
 
-:${id} a ap:TwitterProfile .
+:${id} a apst:TwitterProfile .
 
 :${id}
   as:displayName "${account.accountDisplayName}" ;
@@ -67,7 +67,7 @@
 <#if followers??>
 <#list followers as follower>
 <#assign fid = "${follower.follower.accountId}">
-:${fid} a ap:TwitterProfile .
+:${fid} a apst:TwitterProfile .
 :${fid}-follow-${id} a as:Follow ;
   as:actor :${fid} ;
   as:object :${id} .
@@ -83,7 +83,7 @@
 <#if friends??>
 <#list friends as friend>
 <#assign fid = "${friend.following.accountId}">
-:${fid} a ap:TwitterProfile .
+:${fid} a apst:TwitterProfile .
 :${id}-follow-${fid} a as:Follow ;
   as:actor :${id} ;
   as:object :${fid} .
