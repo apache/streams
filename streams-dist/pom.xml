@@ -34,6 +34,12 @@ under the License.
 
         <dependency>
             <groupId>org.apache.streams</groupId>
+            <artifactId>streams-cli</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.streams</groupId>
             <artifactId>streams-config</artifactId>
             <version>${project.version}</version>
         </dependency>

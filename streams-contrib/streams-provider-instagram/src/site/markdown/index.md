@@ -41,9 +41,7 @@ If you only have sandbox credentials, you'll have to edit src/test/resources/*IT
 Resources:
 ----------
 
-[https://elfsight.com/blog/2016/05/how-to-get-instagram-access-token/](https://elfsight.com/blog/2016/05/how-to-get-instagram-access-token/ "https://elfsight.com/blog/2016/05/how-to-get-instagram-access-token/")
-
-[https://smashballoon.com/instagram-feed/find-instagram-user-id/](https://smashballoon.com/instagram-feed/find-instagram-user-id/ "https://smashballoon.com/instagram-feed/find-instagram-user-id/")
+[Experimental Features](experimental.html "Experimental Features")
 
 [JavaDocs](apidocs/index.html "JavaDocs")
 

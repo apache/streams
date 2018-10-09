@@ -41,6 +41,8 @@ Create a local file `gplus.conf` with valid gplus credentials
 Build with integration testing enabled, using your credentials
 
     mvn clean test verify -DskipITs=false -DargLine="-Dconfig.file=`pwd`/gplus.conf"
+
+[Experimental Features](experimental.html "Experimental Features")
     
 [JavaDocs](apidocs/index.html "JavaDocs")
 

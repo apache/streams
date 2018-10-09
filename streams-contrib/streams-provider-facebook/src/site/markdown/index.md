@@ -45,6 +45,7 @@ Confirm that you can get data from testing endpoints with Graph API Explorer:
 
 [https://developers.facebook.com/tools/explorer/](https://developers.facebook.com/tools/explorer/ "https://developers.facebook.com/tools/explorer/")
   
+[Experimental Features](experimental.html "Experimental Features")
   
 [JavaDocs](apidocs/index.html "JavaDocs")
 
