@@ -106,7 +106,6 @@ public class GooglePlusActivitySerDeIT {
           assertNotNull(actor.getUrl());
 
           assertNotNull(activity.getPublished());
-          assertNotNull(activity.getTitle());
           assertNotNull(activity.getUrl());
 
           Map<String, Object> extensions = ExtensionUtil.getInstance().getExtensions(activity);
