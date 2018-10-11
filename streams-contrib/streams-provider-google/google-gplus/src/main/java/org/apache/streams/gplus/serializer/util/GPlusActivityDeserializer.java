@@ -59,7 +59,9 @@ public class GPlusActivityDeserializer extends JsonDeserializer<Activity> {
     try {
       activity.setUrl(node.get("url").asText());
       activity.setEtag(node.get("etag").asText());
-      activity.setTitle(node.get("title").asText());
+      if( node.has("title") ) {
+        activity.setTitle(node.get("title").asText());
+      }
       activity.setPublished(DateTime.parseRfc3339(node.get("published").asText()));
       activity.setUpdated(DateTime.parseRfc3339(node.get("updated").asText()));
       activity.setId(node.get("id").asText());
@@ -86,9 +88,13 @@ public class GPlusActivityDeserializer extends JsonDeserializer<Activity> {
     JsonNode actorNode = node.get("actor");
 
     actor.setId(actorNode.get("id").asText());
-    actor.setDisplayName(actorNode.get("displayName").asText());
-    actor.setUrl(actorNode.get("url").asText());
-
+    if( actorNode.has("displayName") ) {
+      actor.setDisplayName(actorNode.get("displayName").asText());
+    }
+    if( actorNode.has("url") ) {
+      actor.setUrl(actorNode.get("url").asText());
+    }
+    
     Activity.Actor.Image image = new Activity.Actor.Image();
     JsonNode imageNode = actorNode.get("image");
     image.setUrl(imageNode.get("url").asText());
@@ -108,7 +114,9 @@ public class GPlusActivityDeserializer extends JsonDeserializer<Activity> {
     Activity.PlusObject object = new Activity.PlusObject();
     JsonNode objectNode = node.get("object");
     object.setObjectType(objectNode.get("objectType").asText());
-    object.setContent(objectNode.get("content").asText());
+    if( node.has("content") ) {
+      object.setContent(objectNode.get("content").asText());
+    }
     object.setUrl(objectNode.get("url").asText());
 
     Activity.PlusObject.Replies replies = new Activity.PlusObject.Replies();
