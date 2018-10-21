@@ -97,6 +97,13 @@
 </#if>
 
 <#attempt>
+  <#assign your_address_books = pp.loadData('json', 'about_you/your_address_books.json')>
+  <#assign contacts = your_address_books.address_book.address_book>
+  <#recover>
+  <#assign contacts=[]
+</#attempt>
+
+<#attempt>
 <#assign friends = pp.loadData('json', 'friends/friends.json')>
 <#recover>
 </#attempt>
@@ -115,6 +122,17 @@
 <#elseif  (nameparts?size == 2)>
   vcard:family-name "${nameparts[1]}" ;
 </#if>
+<#list contacts as contact>
+  <#if friend.name == contact.name>
+    <#list contact.details![] as detail>
+      <#attempt>
+        <#assign phone=detail.contact_point>
+  vcard:tel "tel:${phone}" ;
+        <#recover>
+      </#attempt>
+    </#list>
+  </#if>
+</#list>
   .
 
 :${id}-connect-${fid}
