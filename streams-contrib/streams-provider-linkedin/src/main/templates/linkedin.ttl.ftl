@@ -117,6 +117,16 @@
 </#if>
 
 <#--
+# Imported Contacts.csv
+# First Name,Last Name,Companies,Title,Email Address,Phone Numbers,Created At,Instant Message Handles,Addresses,Sites,Full Name,Birthday,Location,Bookmarked At,Profiles
+-->
+
+<#attempt>
+  <#assign contacts = pp.loadData('csv', 'Imported Contacts.csv', {'separator':',', 'normalizeHeaders': true})>
+  <#recover>
+</#attempt>
+
+<#--
 # Connections.csv
 # First Name,Last Name,Address,Email Address,Company,Position,Connected On,Websites,Instant Messengers
 -->
@@ -138,6 +148,24 @@
   vcard:email "mailto:${connection.email_address}" ;
   vcard:org "${connection.company?replace("\\W"," ","r")}" ;
   vcard:title "${connection.position?replace("\\W"," ","r")}" ;
+<#list contacts as contact>
+  <#if (contact.first_name == connection.first_name ) && (contact.last_name == connection.last_name)>
+  <#attempt>
+    <#list contact.email_address?split(",") as email_address>
+      <#if email_address != connection.email_address>
+  vcard:email "mailto:${email_address}" ;
+      </#if>
+    </#list>
+  <#recover>
+  </#attempt>
+  <#attempt>
+    <#list contact.phone_numbers?split(",") as phone_number>
+  vcard:tel "tel:${phone_number}" ;
+    </#list>
+    <#recover>
+  </#attempt>
+  </#if>
+</#list>
   .
 
 :${id}-connect-${cid}
