@@ -125,11 +125,13 @@
 <#list contacts as contact>
   <#if friend.name == contact.name>
     <#list contact.details![] as detail>
+      <#if detail.contact_point?starts_with("+")>
       <#attempt>
         <#assign phone=detail.contact_point>
   vcard:tel "tel:${phone}" ;
         <#recover>
       </#attempt>
+      </#if>
     </#list>
   </#if>
 </#list>
