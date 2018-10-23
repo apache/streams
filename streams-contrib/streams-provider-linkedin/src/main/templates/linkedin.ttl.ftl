@@ -110,8 +110,14 @@
 
 <#if phone_numbers??>
 :${id}
-<#list phone_numbers as phone_number>
-  vcard:tel "tel:${phone_number.number}" ;
+<#list phone_numbers as phone_number_obj>
+  <#assign phone_number = pp.loadData('eval', '
+      com.google.i18n.phonenumbers.PhoneNumberUtil phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance();
+      String rawPhoneNumber = "${phone_number_obj.number}";
+      phoneNumber = phoneUtil.parse(rawPhoneNumber, "US");
+      return phoneUtil.format(phoneNumber, com.google.i18n.phonenumbers.PhoneNumberUtil$PhoneNumberFormat.RFC3966);
+    ')>
+  vcard:tel "${phone_number}" ;
 </#list>
   .
 </#if>
@@ -145,22 +151,31 @@
   vcard:fn "${connection.first_name} ${connection.last_name}" ;
   vcard:given-name "${connection.first_name}" ;
   vcard:family-name "${connection.last_name}" ;
+  <#if connection.email_address?? && connection.email_address?contains("@")>
   vcard:email "mailto:${connection.email_address}" ;
+  </#if>
   vcard:org "${connection.company?replace("\\W"," ","r")}" ;
   vcard:title "${connection.position?replace("\\W"," ","r")}" ;
 <#list contacts as contact>
   <#if (contact.first_name == connection.first_name ) && (contact.last_name == connection.last_name)>
   <#attempt>
     <#list contact.email_address?split(",") as email_address>
-      <#if email_address != connection.email_address>
+      <#if email_address?? && email_address?contains("@") && email_address != connection.email_address>
   vcard:email "mailto:${email_address}" ;
       </#if>
     </#list>
   <#recover>
   </#attempt>
   <#attempt>
-    <#list contact.phone_numbers?split(",") as phone_number>
-  vcard:tel "tel:${phone_number}" ;
+    <#list contact.phone_numbers?split(",") as raw_phone_number>
+      <#assign raw_phone_number = pp.loadData('eval', '
+    debug();
+    com.google.i18n.phonenumbers.PhoneNumberUtil phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance();
+    String rawPhoneNumber = "${raw_phone_number}";
+    phoneNumber = phoneUtil.parse(rawPhoneNumber, "US");
+    return phoneUtil.format(phoneNumber, com.google.i18n.phonenumbers.PhoneNumberUtil$PhoneNumberFormat.RFC3966);
+  ')>
+  vcard:tel "${phone_number}" ;
     </#list>
     <#recover>
   </#attempt>
