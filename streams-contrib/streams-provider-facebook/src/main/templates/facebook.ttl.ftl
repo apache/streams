@@ -175,3 +175,43 @@
 
 </#list>
 </#if>
+
+<#assign messagesDirs = pp.loadData('eval', '
+  debug();
+  String[] dirs = new java.io.File(engine.getDataRoot(), "messages").list();
+  return dirs;
+')>
+
+<#if messagesDirs??>
+  <#if (messagesDirs?size > 0)>
+    <#list messagesDirs as messageDir>
+      <#attempt>
+        <#assign messages = pp.loadData('json', 'messages/${messageDir}/message.json')>
+        <#if (messages.participants?? && messages.participants?size == 1 && messages.title??)>
+          <#assign fidraw = "${messages.title}">
+          <#assign fid=fidraw?replace("\\W","","r")>
+          <#list messages.messages as message>
+            <#list friends.friends as friend>
+              <#if friend.name == message.sender_name>
+:${fid}-message-${id}-${message.timestamp}
+a as:Note ;
+as:actor :${fid} ;
+as:object :${id} ;
+as:published "${message.timestamp}" .
+
+              <#elseif fullname == message.sender_name>
+:${id}-message-${fid}-${message.timestamp}
+a as:Note ;
+as:actor :${id} ;
+as:object :${fid} ;
+as:published "${message.timestamp}" .
+
+              </#if>
+            </#list>
+          </#list>
+        </#if>
+      <#recover>
+      </#attempt>
+    </#list>
+  </#if>
+</#if>
