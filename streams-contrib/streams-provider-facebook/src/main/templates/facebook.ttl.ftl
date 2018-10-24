@@ -100,7 +100,7 @@
   <#assign your_address_books = pp.loadData('json', 'about_you/your_address_books.json')>
   <#assign contacts = your_address_books.address_book.address_book>
   <#recover>
-  <#assign contacts=[]
+  <#assign contacts=[]>
 </#attempt>
 
 <#attempt>
@@ -177,7 +177,6 @@
 </#if>
 
 <#assign messagesDirs = pp.loadData('eval', '
-  debug();
   String[] dirs = new java.io.File(engine.getDataRoot(), "messages").list();
   return dirs;
 ')>
