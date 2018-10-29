@@ -156,6 +156,7 @@
   </#if>
   vcard:org "${connection.company?replace("\\W"," ","r")}" ;
   vcard:title "${connection.position?replace("\\W"," ","r")}" ;
+<#if contacts??>
 <#list contacts as contact>
   <#if (contact.first_name == connection.first_name ) && (contact.last_name == connection.last_name)>
   <#attempt>
@@ -169,18 +170,18 @@
   <#attempt>
     <#list contact.phone_numbers?split(",") as raw_phone_number>
       <#assign raw_phone_number = pp.loadData('eval', '
-    debug();
-    com.google.i18n.phonenumbers.PhoneNumberUtil phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance();
-    String rawPhoneNumber = "${raw_phone_number}";
-    phoneNumber = phoneUtil.parse(rawPhoneNumber, "US");
-    return phoneUtil.format(phoneNumber, com.google.i18n.phonenumbers.PhoneNumberUtil$PhoneNumberFormat.RFC3966);
-  ')>
+        com.google.i18n.phonenumbers.PhoneNumberUtil phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance();
+        String rawPhoneNumber = "${raw_phone_number}";
+        phoneNumber = phoneUtil.parse(rawPhoneNumber, "US");
+        return phoneUtil.format(phoneNumber, com.google.i18n.phonenumbers.PhoneNumberUtil$PhoneNumberFormat.RFC3966);
+      ')>
   vcard:tel "${phone_number}" ;
     </#list>
     <#recover>
   </#attempt>
   </#if>
 </#list>
+</#if>
   .
 
 :${id}-connect-${cid}
