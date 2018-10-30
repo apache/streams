@@ -180,14 +180,14 @@
   <#recover>
   </#attempt>
   <#attempt>
-    <#list contact.phone_numbers?split(",") as raw_phone_number>
-      <#assign raw_phone_number = pp.loadData('eval', '
+    <#list contact.phone_numbers?split(",") as raw_contact_phone_number>
+      <#assign contact_phone_number = pp.loadData('eval', '
         com.google.i18n.phonenumbers.PhoneNumberUtil phoneUtil = com.google.i18n.phonenumbers.PhoneNumberUtil.getInstance();
-        String rawPhoneNumber = "${raw_phone_number}";
+        String rawPhoneNumber = "${raw_contact_phone_number}";
         phoneNumber = phoneUtil.parse(rawPhoneNumber, "US");
         return phoneUtil.format(phoneNumber, com.google.i18n.phonenumbers.PhoneNumberUtil$PhoneNumberFormat.RFC3966);
       ')>
-  vcard:tel "${phone_number}" ;
+  vcard:tel "${contact_phone_number}" ;
     </#list>
     <#recover>
   </#attempt>
