@@ -18,6 +18,7 @@
 
 package org.apache.streams.twitter.test.providers;
 
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.twitter.provider.SevenDaySearchProvider;
 import org.apache.streams.twitter.provider.TwitterTimelineProvider;
 
@@ -30,7 +31,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 
-@Test(dependsOnGroups = {"Account"}, groups = {"Providers"})
+/*
+ This IT is disabled by default because the number of results it gets to too dependant on circumstances.
+ */
+@Test(dependsOnGroups = {"Account"}, enabled = false, groups = {"Providers"})
 public class TwitterSevenDaySearchProviderIT {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterSevenDaySearchProviderIT.class);
@@ -65,7 +69,9 @@ public class TwitterSevenDaySearchProviderIT {
 
     while (outCounter.readLine() != null) {}
 
-    Assert.assertEquals (outCounter.getLineNumber(), 100);
+    Integer max_items = StreamsConfigurator.getConfig().getInt("org.apache.streams.twitter.config.SevenDaySearchProviderConfiguration.max_items");
+
+    Assert.assertEquals (outCounter.getLineNumber(), max_items.intValue());
 
   }
 }

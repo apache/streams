@@ -18,6 +18,7 @@
 
 package org.apache.streams.twitter.test.providers;
 
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.twitter.provider.TwitterTimelineProvider;
 
 import org.slf4j.Logger;
@@ -64,7 +65,9 @@ public class TwitterTimelineProviderIT {
 
     while (outCounter.readLine() != null) {}
 
-    Assert.assertEquals (outCounter.getLineNumber(), 1000);
+    Integer max_items = StreamsConfigurator.getConfig().getInt("org.apache.streams.twitter.config.TwitterTimelineProviderConfiguration.max_items");
+
+    Assert.assertEquals (outCounter.getLineNumber(), max_items.intValue());
 
   }
 }

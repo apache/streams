@@ -20,15 +20,14 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.pojo.User;
 
-import org.apache.juneau.remoteable.Body;
-import org.apache.juneau.remoteable.QueryIfNE;
-import org.apache.juneau.remoteable.RemoteMethod;
-import org.apache.juneau.remoteable.Remoteable;
+import org.apache.juneau.http.annotation.Query;
+import org.apache.juneau.remote.RemoteInterface;
+import org.apache.juneau.rest.client.remote.RemoteMethod;
 
 /**
  * Interface for /search methods.
  */
-@Remoteable(path = "https://api.twitter.com/1.1/search")
+@RemoteInterface(path = "https://api.twitter.com/1.1/search")
 public interface SevenDaySearch {
 
   /**
@@ -38,8 +37,8 @@ public interface SevenDaySearch {
    * @see <a href=https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets">https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/tweets.json")
-  public SevenDaySearchResponse sevenDaySearch(@QueryIfNE("*") SevenDaySearchRequest parameters);
+  @RemoteMethod(method ="GET", path = "/tweets.json")
+  public SevenDaySearchResponse sevenDaySearch(@Query(name = "*", skipIfEmpty = true) SevenDaySearchRequest parameters);
 
 }
 

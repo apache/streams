@@ -20,9 +20,9 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.pojo.Tweet;
 
-import org.apache.juneau.remoteable.QueryIfNE;
-import org.apache.juneau.remoteable.RemoteMethod;
-import org.apache.juneau.remoteable.Remoteable;
+import org.apache.juneau.http.annotation.Query;
+import org.apache.juneau.remote.RemoteInterface;
+import org.apache.juneau.rest.client.remote.RemoteMethod;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
  */
-@Remoteable(path = "https://upload.twitter.com/1.1/media")
+@RemoteInterface(path = "https://upload.twitter.com/1.1/media")
 public interface Media {
 
   /**
@@ -42,7 +42,7 @@ public interface Media {
    * @see <a href="https://developer.twitter.com/en/docs/media/upload-media/api-reference/get-media-upload-status">https://developer.twitter.com/en/docs/media/upload-media/api-reference/get-media-upload-status</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/upload")
-  public MediaStatusResponse getMediaStatus(@QueryIfNE MediaStatusRequest parameters );
+  @RemoteMethod(method ="GET", path = "/upload")
+  public MediaStatusResponse getMediaStatus(@Query(name = "*", skipIfEmpty = true) MediaStatusRequest parameters );
 
 }

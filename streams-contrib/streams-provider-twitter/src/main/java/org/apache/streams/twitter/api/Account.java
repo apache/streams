@@ -20,16 +20,16 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.pojo.User;
 
-import org.apache.juneau.remoteable.Body;
-import org.apache.juneau.remoteable.RemoteMethod;
-import org.apache.juneau.remoteable.Remoteable;
+import org.apache.juneau.http.annotation.Body;
+import org.apache.juneau.remote.RemoteInterface;
+import org.apache.juneau.rest.client.remote.RemoteMethod;
 
 import java.util.List;
 
 /**
  * Interface for /account methods.
  */
-@Remoteable(path = "https://api.twitter.com/1.1/account")
+@RemoteInterface(path = "https://api.twitter.com/1.1/account")
 public interface Account {
 
   /**
@@ -39,7 +39,7 @@ public interface Account {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/get-account-settings">https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/get-account-settings</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/settings.json")
+  @RemoteMethod(method = "GET", path = "/settings.json")
   public AccountSettings settings();
 
   /**
@@ -49,7 +49,7 @@ public interface Account {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/get-account-verify_credentials">https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/get-account-verify_credentials</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/verify_credentials.json")
+  @RemoteMethod(method = "GET", path = "/verify_credentials.json")
   public User verifyCredentials();
 
   /**
@@ -59,7 +59,7 @@ public interface Account {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/post-account-update_profile">https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/post-account-update_profile</a>
    *
    */
-  @RemoteMethod(httpMethod = "POST", path = "/update_profile.json")
+  @RemoteMethod(method = "POST", path = "/update_profile.json")
   public User updateProfile(@Body UpdateProfileRequest parameters);
 
   /**
@@ -69,7 +69,7 @@ public interface Account {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/post-account-settings">https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/post-account-settings</a>
    *
    */
-  @RemoteMethod(httpMethod = "POST", path = "/update_settings.json")
+  @RemoteMethod(method = "POST", path = "/update_settings.json")
   public AccountSettings updateSettings(@Body UpdateProfileRequest parameters);
 
 }

@@ -163,119 +163,119 @@ public class Twitter implements
 
   @Override
   public List<Tweet> userTimeline(StatusesUserTimelineRequest parameters) {
-    Statuses restStatuses = restClient.getRemoteableProxy(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
+    Statuses restStatuses = restClient.getRemoteResource(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
     List<Tweet> result = restStatuses.userTimeline(parameters);
     return result;
   }
 
   @Override
   public List<Tweet> retweets(RetweetsRequest parameters) {
-    Statuses restStatuses = restClient.getRemoteableProxy(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
+    Statuses restStatuses = restClient.getRemoteResource(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
     List<Tweet> result = restStatuses.retweets(parameters);
     return result;
   }
 
   @Override
   public RetweeterIdsResponse retweeterIds(RetweeterIdsRequest parameters) {
-    Statuses restStatuses = restClient.getRemoteableProxy(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
+    Statuses restStatuses = restClient.getRemoteResource(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
     RetweeterIdsResponse result = restStatuses.retweeterIds(parameters);
     return result;
   }
 
   @Override
   public List<Tweet> homeTimeline(StatusesHomeTimelineRequest parameters) {
-    Statuses restStatuses = restClient.getRemoteableProxy(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
+    Statuses restStatuses = restClient.getRemoteResource(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
     List<Tweet> result = restStatuses.homeTimeline(parameters);
     return result;
   }
 
   @Override
   public List<Tweet> lookup(StatusesLookupRequest parameters) {
-    Statuses restStatuses = restClient.getRemoteableProxy(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
+    Statuses restStatuses = restClient.getRemoteResource(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
     List<Tweet> result = restStatuses.lookup(parameters);
     return result;
   }
 
   @Override
   public List<Tweet> mentionsTimeline(StatusesMentionsTimelineRequest parameters) {
-    Statuses restStatuses = restClient.getRemoteableProxy(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
+    Statuses restStatuses = restClient.getRemoteResource(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
     List<Tweet> result = restStatuses.mentionsTimeline(parameters);
     return result;
   }
 
   @Override
   public Tweet show(StatusesShowRequest parameters) {
-    Statuses restStatuses = restClient.getRemoteableProxy(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
+    Statuses restStatuses = restClient.getRemoteResource(Statuses.class, TwitterProviderUtil.baseUrl(configuration)+"/statuses");
     Tweet result = restStatuses.show(parameters);
     return result;
   }
 
   @Override
   public FriendsIdsResponse ids(FriendsIdsRequest parameters) {
-    Friends restFriends = restClient.getRemoteableProxy(Friends.class, TwitterProviderUtil.baseUrl(configuration)+"/friends");
+    Friends restFriends = restClient.getRemoteResource(Friends.class, TwitterProviderUtil.baseUrl(configuration)+"/friends");
     FriendsIdsResponse result = restFriends.ids(parameters);
     return result;
   }
 
   @Override
   public FriendsListResponse list(FriendsListRequest parameters) {
-    Friends restFriends = restClient.getRemoteableProxy(Friends.class, TwitterProviderUtil.baseUrl(configuration)+"/friends");
+    Friends restFriends = restClient.getRemoteResource(Friends.class, TwitterProviderUtil.baseUrl(configuration)+"/friends");
     FriendsListResponse result = restFriends.list(parameters);
     return result;
   }
 
   @Override
   public FollowersIdsResponse ids(FollowersIdsRequest parameters) {
-    Followers restFollowers = restClient.getRemoteableProxy(Followers.class, TwitterProviderUtil.baseUrl(configuration)+"/followers");
+    Followers restFollowers = restClient.getRemoteResource(Followers.class, TwitterProviderUtil.baseUrl(configuration)+"/followers");
     FollowersIdsResponse result = restFollowers.ids(parameters);
     return result;
   }
 
   @Override
   public FollowersListResponse list(FollowersListRequest parameters) {
-    Followers restFollowers = restClient.getRemoteableProxy(Followers.class, TwitterProviderUtil.baseUrl(configuration)+"/followers");
+    Followers restFollowers = restClient.getRemoteResource(Followers.class, TwitterProviderUtil.baseUrl(configuration)+"/followers");
     FollowersListResponse result = restFollowers.list(parameters);
     return result;
   }
 
   @Override
   public List<User> lookup(UsersLookupRequest parameters) {
-    Users restUsers = restClient.getRemoteableProxy(Users.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
+    Users restUsers = restClient.getRemoteResource(Users.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
     List<User> result = restUsers.lookup(parameters);
     return result;
   }
 
   @Override
   public List<User> search(UsersSearchRequest parameters) {
-    Users proxy = restClient.getRemoteableProxy(Users.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
+    Users proxy = restClient.getRemoteResource(Users.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
     List<User> result = proxy.search(parameters);
     return result;
   }
 
   @Override
   public User show(UsersShowRequest parameters) {
-    Users restUsers = restClient.getRemoteableProxy(Users.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
+    Users restUsers = restClient.getRemoteResource(Users.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
     User result = restUsers.show(parameters);
     return result;
   }
 
   @Override
   public List<Tweet> list(FavoritesListRequest parameters) {
-    Favorites restFavorites = restClient.getRemoteableProxy(Favorites.class, TwitterProviderUtil.baseUrl(configuration)+"/favorites");
+    Favorites restFavorites = restClient.getRemoteResource(Favorites.class, TwitterProviderUtil.baseUrl(configuration)+"/favorites");
     List<Tweet> result = restFavorites.list(parameters);
     return result;
   }
 
   @Override
   public AccountSettings settings() {
-    Account restAccount = restClient.getRemoteableProxy(Account.class, TwitterProviderUtil.baseUrl(configuration)+"/account");
+    Account restAccount = restClient.getRemoteResource(Account.class, TwitterProviderUtil.baseUrl(configuration)+"/account");
     AccountSettings result = restAccount.settings();
     return result;
   }
 
   @Override
   public User verifyCredentials() {
-    Account restAccount = restClient.getRemoteableProxy(Account.class, TwitterProviderUtil.baseUrl(configuration)+"/account");
+    Account restAccount = restClient.getRemoteResource(Account.class, TwitterProviderUtil.baseUrl(configuration)+"/account");
     User result = restAccount.verifyCredentials();
     return result;
   }
@@ -292,80 +292,80 @@ public class Twitter implements
 
   @Override
   public WelcomeMessagesListResponse listWelcomeMessages(WelcomeMessagesListRequest parameters) {
-    WelcomeMessages proxy = restClient.getRemoteableProxy(WelcomeMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages");
+    WelcomeMessages proxy = restClient.getRemoteResource(WelcomeMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages");
     return proxy.listWelcomeMessages(parameters);
   }
 
   @Override
   public WelcomeMessage showWelcomeMessage(Long id) {
-    WelcomeMessages proxy = restClient.getRemoteableProxy(WelcomeMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages");
+    WelcomeMessages proxy = restClient.getRemoteResource(WelcomeMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages");
     return proxy.showWelcomeMessage(id);
   }
 
   @Override
   public WelcomeMessageNewResponse newWelcomeMessage(WelcomeMessageNewRequest parameters) {
-    WelcomeMessages proxy = restClient.getRemoteableProxy(WelcomeMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages");
+    WelcomeMessages proxy = restClient.getRemoteResource(WelcomeMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages");
     return proxy.newWelcomeMessage(parameters);
   }
 
   @Override
   public void destroyWelcomeMessage(Long id) {
-    WelcomeMessages proxy = restClient.getRemoteableProxy(WelcomeMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages");
+    WelcomeMessages proxy = restClient.getRemoteResource(WelcomeMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages");
     proxy.destroyWelcomeMessage(id);
   }
 
   @Override
   public WelcomeMessageRulesListResponse listWelcomeMessageRules(WelcomeMessageRulesListRequest parameters) {
-    WelcomeMessageRules proxy = restClient.getRemoteableProxy(WelcomeMessageRules.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages/rules");
+    WelcomeMessageRules proxy = restClient.getRemoteResource(WelcomeMessageRules.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages/rules");
     return proxy.listWelcomeMessageRules(parameters);
   }
 
   @Override
   public WelcomeMessageRule showWelcomeMessageRule(Long id) {
-    WelcomeMessageRules proxy = restClient.getRemoteableProxy(WelcomeMessageRules.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages/rules");
+    WelcomeMessageRules proxy = restClient.getRemoteResource(WelcomeMessageRules.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages/rules");
     return proxy.showWelcomeMessageRule(id);
   }
 
   @Override
   public WelcomeMessageRule newWelcomeMessageRule(WelcomeMessageNewRuleRequest body) {
-    WelcomeMessageRules proxy = restClient.getRemoteableProxy(WelcomeMessageRules.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages/rules");
+    WelcomeMessageRules proxy = restClient.getRemoteResource(WelcomeMessageRules.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages/rules");
     return proxy.newWelcomeMessageRule(body);
   }
 
   @Override
   public void destroyWelcomeMessageRule(Long id) {
-    WelcomeMessageRules proxy = restClient.getRemoteableProxy(WelcomeMessageRules.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages/rules");
+    WelcomeMessageRules proxy = restClient.getRemoteResource(WelcomeMessageRules.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages/welcome_messages/rules");
     proxy.destroyWelcomeMessageRule(id);
   }
 
   @Override
   public List<Webhook> getWebhooks() {
-    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
     return proxy.getWebhooks();
   }
 
   @Override
   public Webhook registerWebhook(String url) {
-    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
     return proxy.registerWebhook(url);
   }
 
 
   @Override
   public Boolean deleteWebhook(Long webhookId) {
-    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
     return proxy.deleteWebhook(webhookId);
   }
 
   @Override
   public Boolean putWebhook(Long webhookId) {
-    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
     return proxy.putWebhook(webhookId);
   }
 
   @Override
   public Boolean getWebhookSubscription(Long webhookId) {
-//    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+//    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
 //    return proxy.getWebhookSubscription(webhookId);
     try {
       URIBuilder uriBuilder =
@@ -389,7 +389,7 @@ public class Twitter implements
 
   @Override
   public Boolean registerWebhookSubscriptions(Long webhookId) {
-//    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+//    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
 //    return proxy.registerWebhookSubscriptions(webhookId);
     try {
       URIBuilder uriBuilder =
@@ -412,7 +412,7 @@ public class Twitter implements
 
   @Override
   public Boolean deleteWebhookSubscriptions(Long webhookId) {
-//    AccountActivity proxy = restClient.getRemoteableProxy(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+//    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
 //      return proxy.deleteWebhookSubscriptions(webhookId);
     try {
       URIBuilder uriBuilder =
@@ -435,38 +435,38 @@ public class Twitter implements
 
   @Override
   public EventsListResponse listEvents(EventsListRequest parameters) {
-    DirectMessages proxy = restClient.getRemoteableProxy(DirectMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages");
+    DirectMessages proxy = restClient.getRemoteResource(DirectMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages");
     return proxy.listEvents(parameters);
   }
 
   @Override
   public EventShowResponse showEvent(Long id) {
-    DirectMessages proxy = restClient.getRemoteableProxy(DirectMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages");
+    DirectMessages proxy = restClient.getRemoteResource(DirectMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages");
     return proxy.showEvent(id);
   }
 
   @Override
   public DirectMessageEvent newEvent(MessageCreateRequest event) {
-    DirectMessages proxy = restClient.getRemoteableProxy(DirectMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages");
+    DirectMessages proxy = restClient.getRemoteResource(DirectMessages.class, TwitterProviderUtil.baseUrl(configuration)+"/direct_messages");
     return proxy.newEvent(event);
   }
 
   @Override
   public SevenDaySearchResponse sevenDaySearch(SevenDaySearchRequest event) {
-    SevenDaySearch proxy = restClient.getRemoteableProxy(SevenDaySearch.class, TwitterProviderUtil.baseUrl(configuration)+"/search");
+    SevenDaySearch proxy = restClient.getRemoteResource(SevenDaySearch.class, TwitterProviderUtil.baseUrl(configuration)+"/search");
     return proxy.sevenDaySearch(event);
   }
 
   @Override
   public ThirtyDaySearchResponse thirtyDaySearch(String environment, ThirtyDaySearchRequest searchRequest) {
-    ThirtyDaySearch proxy = restClient.getRemoteableProxy(ThirtyDaySearch.class, TwitterProviderUtil.baseUrl(configuration)+"/"+ThirtyDaySearch.path);
+    ThirtyDaySearch proxy = restClient.getRemoteResource(ThirtyDaySearch.class, TwitterProviderUtil.baseUrl(configuration)+"/"+ThirtyDaySearch.path);
     String env = StringUtils.defaultString(environment, configuration.getEnvironment());
     return proxy.thirtyDaySearch(env, searchRequest);
   }
 
   @Override
   public ThirtyDaySearchCountsResponse thirtyDaySearchCounts(String environment, ThirtyDaySearchCountsRequest searchCountsRequest) {
-    ThirtyDaySearchCounts proxy = restClient.getRemoteableProxy(ThirtyDaySearchCounts.class, TwitterProviderUtil.baseUrl(configuration)+"/"+ThirtyDaySearch.path);
+    ThirtyDaySearchCounts proxy = restClient.getRemoteResource(ThirtyDaySearchCounts.class, TwitterProviderUtil.baseUrl(configuration)+"/"+ThirtyDaySearch.path);
     String env = StringUtils.defaultString(environment, configuration.getEnvironment());
     return proxy.thirtyDaySearchCounts(env, searchCountsRequest);
   }
@@ -498,19 +498,19 @@ public class Twitter implements
 
   @Override
   public List<SuggestedUserCategory> categories(String lang) {
-    SuggestedUsers proxy = restClient.getRemoteableProxy(SuggestedUsers.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
+    SuggestedUsers proxy = restClient.getRemoteResource(SuggestedUsers.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
     return proxy.categories(lang);
   }
 
   @Override
   public SuggestedUserCategory suggestions(String slug, String lang) {
-    SuggestedUsers proxy = restClient.getRemoteableProxy(SuggestedUsers.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
+    SuggestedUsers proxy = restClient.getRemoteResource(SuggestedUsers.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
     return proxy.suggestions(slug, lang);
   }
 
   @Override
   public List<User> members(String slug) {
-    SuggestedUsers proxy = restClient.getRemoteableProxy(SuggestedUsers.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
+    SuggestedUsers proxy = restClient.getRemoteResource(SuggestedUsers.class, TwitterProviderUtil.baseUrl(configuration)+"/users");
     return proxy.members(slug);
   }
 
