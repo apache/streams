@@ -59,6 +59,8 @@
   as:url "${profile.description.website}" ;
   .
 
+<#assign idshash = {} />
+
 <#attempt>
 <#assign followers = pp.loadData('json', 'follower.js')>
 <#recover>
@@ -67,6 +69,7 @@
 <#if followers??>
 <#list followers as follower>
 <#assign fid = "${follower.follower.accountId}">
+<#assign idshash += { fid: fid } />
 :${fid} a apst:TwitterProfile .
 :${fid}-follow-${id} a as:Follow ;
   as:actor :${fid} ;
@@ -83,10 +86,65 @@
 <#if friends??>
 <#list friends as friend>
 <#assign fid = "${friend.following.accountId}">
+<#if idshash[fid]??>
 :${fid} a apst:TwitterProfile .
+<#else>
+  <#assign idshash += { fid: fid } />
+</#if>
+
 :${id}-follow-${fid} a as:Follow ;
   as:actor :${id} ;
   as:object :${fid} .
 
 </#list>
 </#if>
+
+<#attempt>
+  <#assign directmessageheaders = pp.loadData('json', 'direct-message-headers.js')>
+  <#recover>
+</#attempt>
+
+<#if directmessageheaders??>
+  <#list directmessageheaders as directmessageheader>
+    <#assign conversation = directmessageheader.dmConversation/>
+    <#list conversation.messages as message>
+      <#if message.messageCreate??>
+        <#assign senderId = "${message.messageCreate.senderId}">
+        <#assign recipientId = "${message.messageCreate.recipientId}">
+        <#assign messageId = "${message.messageCreate.id}">
+        <#if idshash[senderId]??>
+        <#else>
+:${senderId} a apst:TwitterProfile .
+          <#assign idshash += { senderId: senderId } />
+        </#if>
+        <#if idshash[recipientId]??>
+        <#else>
+:${recipientId} a apst:TwitterProfile .
+          <#assign idshash += { recipientId: recipientId } />
+        </#if>
+:${senderId}-message-${recipientId}-${messageId}
+  a as:Note ;
+  as:actor :${senderId} ;
+  as:object :${recipientId} ;
+        <#attempt>
+        <#assign createdAt_datetime = message.messageCreate.createdAt?datetime.iso>
+        <#assign createdAt_datetime_xsnz = createdAt_datetime?string.xs_nz>
+  as:published "${createdAt_datetime_xsnz}"^^xs:dateTime ;
+        <#recover>
+  # DIRECT MESSAGE TIMESTAMP PROCESSING FAILED
+          <#if message.messageCreate.createdAt??>
+  # message.messageCreate.createdAt: ${message.messageCreate.createdAt}
+          </#if>
+          <#if createdAt_datetime??>
+  # createdAt_datetime: ${createdAt_datetime}
+          </#if>
+          <#if createdAt_datetime_xsnz??>
+  # createdAt_datetime_xsnz: ${createdAt_datetime_xsnz}
+          </#if>
+        </#attempt>
+  .
+      </#if>
+    </#list>
+  </#list>
+</#if>
+
