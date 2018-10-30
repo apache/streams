@@ -31,6 +31,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix xs: <http://www.w3.org/2001/XMLSchema#> .
 @base <${namespace}> .
 
 # account.js
@@ -46,8 +47,21 @@
 :${id}
   as:displayName "${account.accountDisplayName}" ;
   as:name "${account.username}" ;
-  dct:created "${account.createdAt}" ;
   vcard:email "${account.email}" ;
+<#attempt>
+  <#assign createdAt_date = account.createdAt?datetime.iso>
+  <#assign createdAt_xsnz = createdAt_date?string.xs_nz>
+  dct:created "${createdAt_xsnz}"^^xs:dateTime ;
+  <#recover>
+    # CREATED_AT TIMESTAMP PROCESSING FAILED
+    # account.createdAt: ${account.createdAt}
+    <#if createdAt_date??>
+    # createdAt_date: ${createdAt_date}
+    </#if>
+    <#if createdAt_xsnz??>
+    # createdAt_xsnz: ${createdAt_xsnz}
+    </#if>
+</#attempt>
   .
 
 # profile.js

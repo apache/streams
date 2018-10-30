@@ -29,6 +29,7 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xs: <http://www.w3.org/2001/XMLSchema#> .
 @base <${namespace}> .
 
 :${id} a as:Person .
@@ -37,5 +38,5 @@
 
 :${id}
   as:displayName "${person.displayName}" ;
-  dct:created "${now?iso_utc}" ;
+  dct:created "${now?string.xs_nz}"^^xs:dateTime ;
   .

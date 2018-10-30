@@ -35,6 +35,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix xs: <http://www.w3.org/2001/XMLSchema#> .
 @base <${namespace}> .
 
 <#--
@@ -71,11 +72,22 @@
 </#attempt>
 
 <#if registrations??>
-:${id}
-<#list registrations as registration>
-  dct:createdAt "${registration.registration_date}" ;
-</#list>
-  .
+  <#attempt>
+    <#list registrations as registration>
+      <#assign registration_date = registration.registration_date?datetime("MM/dd/YY, HH:mm a")>
+      <#assign registration_xsnz = registration_date?string.xs_nz>
+:${id} dct:createdAt "${registration_xsnz}"^^xs:dateTime .
+    </#list>
+    <#recover>
+    # REGISTRATION TIMESTAMP PROCESSING FAILED
+    # registration.registration_date: ${registration.registration_date}
+      <#if registration_date??>
+    # registration_date: ${registration_date}
+      </#if>
+      <#if registration_xsnz??>
+    # registration_xsnz: ${registration_xsnz}
+      </#if>
+  </#attempt>
 </#if>
 
 <#--  
@@ -188,7 +200,20 @@
   a as:Connect ;
   as:actor :${id} ;
   as:object :${cid} ;
-  as:published "${connection.connected_on}" ;
+<#attempt>
+  <#assign connection_date = connection.connected_on?datetime("MM/dd/YY, HH:mm a")>
+  <#assign connection_xsnz = connection_date?string.xs_nz>
+  as:published "${connection_xsnz}"^^xs:dateTime ;
+  <#recover>
+  # CONNECTION TIMESTAMP PROCESSING FAILED
+  # connection.connected_on: ${connection.connected_on}
+    <#if connection_date??>
+  # connection_date: ${connection_date}
+    </#if>
+    <#if connection_xsnz??>
+  # connection_xsnz: ${connection_xsnz}
+    </#if>
+</#attempt>
   .
 
 </#list>
@@ -216,7 +241,22 @@ From,To,Date,Subject,Content,Direction,Folder
   a as:Note ;
   as:actor :${aid} ;
   as:object :${oid} ;
+  <#attempt>
+    <#assign message_date = message.date?datetime("MM/dd/YY, HH:mm a")>
+    <#assign message_xsnz = message_date?string.xs_nz>
+  as:published "${message_xsnz}"^^xs:dateTime ;
+    <#recover>
+  # MESSAGE TIMESTAMP PROCESSING FAILED
+  # message.date: ${message.date}
+      <#if message_date??>
+  # message_date: ${message_date}
+      </#if>
+      <#if message_xsnz??>
+  # message_xsnz: ${message_xsnz}
+      </#if>
+  </#attempt>
   .
+
 </#list>
 </#if>
 
@@ -238,7 +278,20 @@ First Name,Last Name,Company,Job Title,Text,Creation Date,Status
   a as:Like ;
   as:actor :${id} ;
   as:object :${oid} ;
-  as:published "${recommendation.creation_date}" ;
+  <#attempt>
+    <#assign recommendation_date = recommendation.creation_date?datetime("MM/dd/YY, HH:mm a")>
+    <#assign recommendation_xsnz = recommendation_date?string.xs_nz>
+  as:published "${recommendation_xsnz}"^^xs:dateTime ;
+    <#recover>
+  # MESSAGE TIMESTAMP PROCESSING FAILED
+  # recommendation.creation_date: ${recommendation.creation_date}
+      <#if recommendation_date??>
+  # recommendation_date: ${recommendation_date}
+      </#if>
+      <#if recommendation_xsnz??>
+  # recommendation_xsnz: ${recommendation_xsnz}
+      </#if>
+  </#attempt>
   .
 </#list>
 </#if>
@@ -261,7 +314,20 @@ First Name,Last Name,Company,Job Title,Text,Creation Date,Status
   a as:Like ;
   as:actor :${aid} ;
   as:object :${id} ;
-  as:published "${recommendation.creation_date}" ;
+  <#attempt>
+    <#assign recommendation_date = recommendation.creation_date?datetime("MM/dd/YY, HH:mm a")>
+    <#assign recommendation_xsnz = recommendation_date?string.xs_nz>
+  as:published "${recommendation_xsnz}"^^xs:dateTime ;
+    <#recover>
+  # MESSAGE TIMESTAMP PROCESSING FAILED
+  # recommendation.creation_date: ${recommendation.creation_date}
+      <#if recommendation_date??>
+  # recommendation_date: ${recommendation_date}
+      </#if>
+      <#if recommendation_xsnz??>
+  # recommendation_xsnz: ${recommendation_xsnz}
+      </#if>
+  </#attempt>
   .
 </#list>
 </#if>
