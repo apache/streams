@@ -30,6 +30,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix xs: <http://www.w3.org/2001/XMLSchema#> .
 @base <${namespace}> .
 
 <#-- profile_information/profile_information.json -->
@@ -51,23 +52,40 @@
   as:displayName "${profile_information.profile.username!profile_information.profile.name.full_name!profile_information.profile.name}" ;
 <#elseif profile_information.profile.name??>
     <#if profile_information.profile.name?is_hash>
-    as:displayName "${profile_information.profile.name.full_name}" ;
+  as:displayName "${profile_information.profile.name.full_name}" ;
     <#else>
-    as:displayName "${profile_information.profile.name}" ;
+  as:displayName "${profile_information.profile.name}" ;
     </#if>
 </#if>
 <#if profile_information.profile.name??>
     <#if profile_information.profile.name?is_hash>
-    vcard:fn "${profile_information.profile.name.full_name}" ;
+  vcard:fn "${profile_information.profile.name.full_name}" ;
     <#else>
-    vcard:fn "${profile_information.profile.name}" ;
+  vcard:fn "${profile_information.profile.name}" ;
     </#if>
 </#if>
 <#if profile_information.profile.name?is_hash>
   vcard:given-name "${profile_information.profile.name.first_name}" ;
   vcard:family-name "${profile_information.profile.name.last_name}" ;
 </#if>
-  dct:created "${profile_information.profile.registration_timestamp}" ;
+<#attempt>
+    <#assign registration_millis = profile_information.profile.registration_timestamp*1000>
+    <#assign registration_date = registration_millis?number_to_datetime>
+    <#assign registration_xsnz = registration_date?string.xs_nz>
+  dct:created "${registration_xsnz}"^^xs:dateTime ;
+    <#recover>
+    # REGISTRATION TIMESTAMP PROCESSING FAILED
+    # profile_information.profile.registration_timestamp: ${profile_information.profile.registration_timestamp}
+        <#if registration_millis??>
+    # registration_millis: ${registration_millis}
+        </#if>
+        <#if registration_date??>
+    # registration_date: ${registration_date}
+        </#if>
+        <#if registration_xsnz??>
+    # registration_xsnz: ${registration_xsnz}
+        </#if>
+</#attempt>
   .
 
 <#if profile_information.profile.emails??>
@@ -154,7 +172,7 @@
                             </#if>
                         </#list>
                         <#list telshash?keys as tel>
-:${id} vcard:tel "${tel}" .
+  vcard:tel "${tel}" ;
                         </#list>
                     </#if>
                 </#list>
@@ -165,34 +183,27 @@
   a as:Connect ;
   as:actor :${id} ;
   as:object :${fid} ;
-  as:published "${friend.timestamp}" .
-
+<#attempt>
+    <#assign friend_millis = friend.timestamp*1000>
+    <#assign friend_datetime = friend_millis?number_to_datetime>
+    <#assign friend_xsnz = friend_datetime?string.xs_nz>
+  as:published "${friend_xsnz}"^^xs:dateTime ;
+    <#recover>
+# FRIEND TIMESTAMP PROCESSING FAILED
+# friend.timestamp: ${friend.timestamp}
+        <#if friend_millis??>
+# friend_millis: ${friend_millis}
         </#if>
-    </#list>
-</#if>
-
-<#if friends??>
-    <#list friends.friends as friend>
-        <#assign fid=friend.name?replace("\\W","","r")>
-        <#assign nameparts=friend.name?split(" ")>
-:${fid}
-  a apst:FacebookProfile ;
-  vcard:fn "${friend.name}" ;
-  vcard:given-name "${nameparts[0]}" ;
-        <#if (nameparts?size > 2)>
-  vcard:additional-name "${nameparts[1]}" ;
-  vcard:family-name "${nameparts[2]}" ;
-        <#elseif (nameparts?size == 2)>
-  vcard:family-name "${nameparts[1]}" ;
+        <#if friend_datetime??>
+# friend_datetime: ${friend_datetime}
         </#if>
+        <#if friend_xsnz??>
+# friend_xsnz: ${friend_xsnz}
+        </#if>
+</#attempt>
   .
 
-:${id}-connect-${fid}
-  a as:Connect ;
-  as:actor :${id} ;
-  as:object :${fid} ;
-  as:published "${friend.timestamp}" .
-
+        </#if>
     </#list>
 </#if>
 
@@ -212,19 +223,42 @@
                 <#-- only keep the timestamps of direct messages with friends -->
                     <#if (fid?? && friendshash[fid]??)>
                         <#list messages.messages as message>
+                            <#attempt>
+                                <#assign message_millis = message.timestamp*1000>
+                                <#assign message_datetime = message_millis?number_to_datetime>
+                                <#assign message_xsnz = message_datetime?string.xs_nz>
+                                <#recover>
+# FRIEND TIMESTAMP PROCESSING FAILED
+# message.timestamp: ${message.timestamp}
+                                    <#if message_millis??>
+# message_millis: ${message_millis}
+                                    </#if>
+                                    <#if message_datetime??>
+# message_datetime: ${message_datetime}
+                                    </#if>
+                                    <#if message_xsnz??>
+# message_xsnz: ${message_xsnz}
+                                    </#if>
+                            </#attempt>
                             <#if fullname == message.sender_name>
 :${id}-message-${fid}-${message.timestamp}
-a as:Note ;
-as:actor :${id} ;
-as:object :${fid} ;
-as:published "${message.timestamp}" .
+    a as:Note ;
+    as:actor :${id} ;
+    as:object :${fid} ;
+                                <#if message_xsnz??>
+    as:published "${message_xsnz}"^^xs:dateTime ;
+                                </#if>
+    .
 
                             <#else>
 :${fid}-message-${id}-${message.timestamp}
-a as:Note ;
-as:actor :${fid} ;
-as:object :${id} ;
-as:published "${message.timestamp}" .
+    a as:Note ;
+    as:actor :${fid} ;
+    as:object :${id} ;
+                                <#if message_xsnz??>
+    as:published "${message_xsnz}"^^xs:dateTime ;
+                                </#if>
+    .
 
                             </#if>
                         </#list>

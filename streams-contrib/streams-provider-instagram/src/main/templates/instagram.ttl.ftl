@@ -30,6 +30,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix xs: <http://www.w3.org/2001/XMLSchema#> .
 @base <${namespace}> .
 <#attempt>
 <#assign id="${profile.username}">
@@ -42,19 +43,25 @@
 :${id}
   as:displayName "${profile.username}" ;
   vcard:fn "${profile.name}" ;
-  dct:created "${profile.date_joined}" ;
-  .
-
-:${id}
+<#attempt>
+  <#assign joined_date = profile.date_joined?datetime.iso>
+  <#assign joined_date_xsnz = joined_date?string.xs_nz>
+  dct:created "${joined_date_xsnz}"^^xs:dateTime ;
+  <#recover>
+  # SINCE TIMESTAMP PROCESSING FAILED
+  # profile.date_joined: ${profile.date_joined}
+    <#if joined_date??>
+  # joined_date: ${joined_date}
+    </#if>
+    <#if joined_date_xsnz??>
+  # joined_date_xsnz: ${joined_date_xsnz}
+    </#if>
+</#attempt>
   vcard:email "mailto:${profile.email}" ;
-  .
-
 <#if profile.phone_number??>
-:${profile.username}	
   vcard:tel "tel:${profile.phone_number}" ;
-  .
-
 </#if>
+  .
 
 <#attempt>
 <#assign connections = pp.loadData('json', 'connections.json')>
@@ -66,10 +73,25 @@
 <#assign fid = "${handle}">
 :${fid} a apst:InstagramProfile ;
         as:displayName "${handle}" .
-:${fid}follow${id} a as:Follow ;
+
+:${fid}-follow-${id} a as:Follow ;
   as:actor :${fid} ;
   as:object :${id} ;
-  as:published "${since}" .
+  <#attempt>
+    <#assign since_date = since?datetime.iso>
+    <#assign since_xsnz = since_date?string.xs_nz>
+  as:published "${since_xsnz}"^^xs:dateTime ;
+    <#recover>
+  # SINCE TIMESTAMP PROCESSING FAILED
+  # since: ${since}
+      <#if since_date??>
+  # since_date: ${since_date}
+      </#if>
+      <#if since_xsnz??>
+  # since_xsnz: ${since_xsnz}
+      </#if>
+  </#attempt>
+  .
 
 </#list>
 
@@ -77,10 +99,25 @@
 <#assign fid = "${handle}">
 :${fid} a apst:InstagramProfile ;
         as:displayName "${handle}" .
+
 :${id}-follow-${fid} a as:Follow ;
   as:actor :${id} ;
   as:object :${fid} ;
-  as:published "${since}" .
+<#attempt>
+  <#assign since_date = since?datetime.iso>
+  <#assign since_xsnz = since_date?string.xs_nz>
+  as:published "${since_xsnz}"^^xs:dateTime ;
+  <#recover>
+  # SINCE TIMESTAMP PROCESSING FAILED
+  # since: ${since}
+    <#if since_date??>
+  # since_date: ${since_date}
+    </#if>
+    <#if since_xsnz??>
+  # since_xsnz: ${since_xsnz}
+    </#if>
+</#attempt>
+   .
 
 </#list>
 </#if>
@@ -97,9 +134,27 @@
 <#if fid != profile.username>
 :${fid} a apst:InstagramProfile ;
         as:displayName "${fid}" .
+
 :${id}-message-${fid} a as:Note ;
   as:actor :${id} ;
-  as:object :${fid} .
+  as:object :${fid} ;
+<#attempt>
+  <#assign createdAt_date = thread.created_at?datetime.iso>
+  <#assign createdAt_xsnz = createdAt_date?string.xs_nz>
+  as:published "${createdAt_xsnz}"^^xs:dateTime ;
+  <#recover>
+  # CREATED_AT TIMESTAMP PROCESSING FAILED
+    <#if thread.created_at??>
+  # thread.created_at: ${thread.created_at}
+    </#if>
+    <#if createdAt_date??>
+  # createdAt_date: ${createdAt_date}
+    </#if>
+    <#if createdAt_xsnz??>
+  # createdAt_xsnz: ${createdAt_xsnz}
+    </#if>
+</#attempt>
+  .
 
 </#if>
 </#list>
