@@ -21,10 +21,9 @@ package org.apache.streams.twitter.api;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.Place;
 
-import org.apache.juneau.remoteable.Query;
-import org.apache.juneau.remoteable.QueryIfNE;
-import org.apache.juneau.remoteable.RemoteMethod;
-import org.apache.juneau.remoteable.Remoteable;
+import org.apache.juneau.http.annotation.Query;
+import org.apache.juneau.remote.RemoteInterface;
+import org.apache.juneau.rest.client.remote.RemoteMethod;
 
 import java.util.List;
 
@@ -34,7 +33,7 @@ import java.util.List;
  * @see <a href="https://developer.twitter.com/en/docs/geo/place-information/overview">https://developer.twitter.com/en/docs/geo/place-information/overview</a>
  * @see <a href="https://developer.twitter.com/en/docs/geo/places-near-location/overview">https://developer.twitter.com/en/docs/geo/places-near-location/overview</a>
  */
-@Remoteable(path = "https://api.twitter.com/1.1/geo")
+@RemoteInterface(path = "https://api.twitter.com/1.1/geo")
 public interface Geo {
 
   /**
@@ -45,7 +44,7 @@ public interface Geo {
    * @see <a href="https://developer.twitter.com/en/docs/geo/place-information/api-reference/get-geo-id-place_id">https://developer.twitter.com/en/docs/geo/place-information/api-reference/get-geo-id-place_id</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/id/{place_id}.json")
+  @RemoteMethod(method ="GET", path = "/id/{place_id}.json")
   public Place geoid(@Query("place_id") String place_id);
 
   /**
@@ -56,8 +55,8 @@ public interface Geo {
    * @see <a href="https://developer.twitter.com/en/docs/geo/places-near-location/api-reference/get-geo-search">https://developer.twitter.com/en/docs/geo/places-near-location/api-reference/get-geo-search</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/search.json")
-  public GeoSearchResponse geosearch(@QueryIfNE("*") GeoSearchRequest parameters);
+  @RemoteMethod(method ="GET", path = "/search.json")
+  public GeoSearchResponse geosearch(@Query(name = "*", skipIfEmpty = true) GeoSearchRequest parameters);
 
   /**
    * Given a latitude and a longitude, searches for up to 20 places that can be used as a place_id when updating a status.
@@ -67,7 +66,7 @@ public interface Geo {
    * @see <a href="https://developer.twitter.com/en/docs/geo/places-near-location/api-reference/get-geo-reverse_geocode">https://developer.twitter.com/en/docs/geo/places-near-location/api-reference/get-geo-reverse_geocode</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/reverse_geocode.json")
-  public GeoSearchResponse reverseGeocode(@QueryIfNE("*") GeoSearchRequest parameters);
+  @RemoteMethod(method ="GET", path = "/reverse_geocode.json")
+  public GeoSearchResponse reverseGeocode(@Query(name = "*", skipIfEmpty = true) GeoSearchRequest parameters);
 
 }

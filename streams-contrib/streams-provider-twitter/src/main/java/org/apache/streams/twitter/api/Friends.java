@@ -20,9 +20,9 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.pojo.Tweet;
 
-import org.apache.juneau.remoteable.QueryIfNE;
-import org.apache.juneau.remoteable.RemoteMethod;
-import org.apache.juneau.remoteable.Remoteable;
+import org.apache.juneau.http.annotation.Query;
+import org.apache.juneau.remote.RemoteInterface;
+import org.apache.juneau.rest.client.remote.RemoteMethod;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference</a>
  */
-@Remoteable(path = "https://api.twitter.com/1.1/friends")
+@RemoteInterface(path = "https://api.twitter.com/1.1/friends")
 public interface Friends {
 
   /**
@@ -42,8 +42,8 @@ public interface Friends {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friends-ids</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/ids.json")
-  public FriendsIdsResponse ids( @QueryIfNE("*") FriendsIdsRequest parameters);
+  @RemoteMethod(method ="GET", path = "/ids.json")
+  public FriendsIdsResponse ids( @Query(name = "*", skipIfEmpty = true) FriendsIdsRequest parameters);
 
   /**
    * Returns a cursored collection of user objects for every user the specified user is following.
@@ -53,7 +53,7 @@ public interface Friends {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friends-list">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friends-list</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/list.json")
-  public FriendsListResponse list( @QueryIfNE("*") FriendsListRequest parameters);
+  @RemoteMethod(method ="GET", path = "/list.json")
+  public FriendsListResponse list( @Query(name = "*", skipIfEmpty = true) FriendsListRequest parameters);
 
 }

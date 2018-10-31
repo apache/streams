@@ -20,13 +20,11 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.pojo.Tweet;
 
-import org.apache.juneau.remoteable.Body;
-import org.apache.juneau.remoteable.Path;
-import org.apache.juneau.remoteable.Query;
-import org.apache.juneau.remoteable.QueryIfNE;
-import org.apache.juneau.remoteable.RemoteMethod;
-import org.apache.juneau.remoteable.Remoteable;
-import org.apache.juneau.remoteable.RequestBean;
+import org.apache.juneau.http.annotation.Path;
+import org.apache.juneau.http.annotation.Query;
+import org.apache.juneau.http.annotation.Request;
+import org.apache.juneau.remote.RemoteInterface;
+import org.apache.juneau.rest.client.remote.RemoteMethod;
 
 import java.util.List;
 
@@ -36,7 +34,7 @@ import java.util.List;
  * @see <a href="https://developer.twitter.com/en/docs/tweets/post-and-engage/overview">https://developer.twitter.com/en/docs/tweets/post-and-engage/overview</a>
  * @see <a href="https://developer.twitter.com/en/docs/tweets/timelines/overview">https://developer.twitter.com/en/docs/tweets/timelines/overview</a>
  */
-@Remoteable(path = "https://api.twitter.com/1.1/statuses")
+@RemoteInterface(path = "https://api.twitter.com/1.1/statuses")
 public interface Statuses {
 
   /**
@@ -47,8 +45,8 @@ public interface Statuses {
    * @see <a href="https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-home_timeline">https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-home_timeline</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/home_timeline.json")
-  public List<Tweet> homeTimeline( @QueryIfNE("*") StatusesHomeTimelineRequest parameters );
+  @RemoteMethod(method ="GET", path = "/home_timeline.json")
+  public List<Tweet> homeTimeline( @Query(name = "*", skipIfEmpty = true) StatusesHomeTimelineRequest parameters );
 
   /**
    * Returns fully-hydrated Tweet objects for up to 100 Tweets per request, as specified by comma-separated values passed to the id parameter.
@@ -58,8 +56,8 @@ public interface Statuses {
    * @see <a href="https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-lookup">https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-lookup</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/lookup.json")
-  public List<Tweet> lookup( @QueryIfNE("*") StatusesLookupRequest parameters);
+  @RemoteMethod(method ="GET", path = "/lookup.json")
+  public List<Tweet> lookup( @Query(name = "*", skipIfEmpty = true) StatusesLookupRequest parameters);
 
   /**
    * Returns the 20 most recent mentions (Tweets containing a users’s @screen_name) for the authenticating user.
@@ -73,8 +71,8 @@ public interface Statuses {
    * @see <a href="https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-mentions_timeline">https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-mentions_timeline</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/mentions_timeline.json")
-  public List<Tweet> mentionsTimeline( @QueryIfNE("*") StatusesMentionsTimelineRequest parameters);
+  @RemoteMethod(method ="GET", path = "/mentions_timeline.json")
+  public List<Tweet> mentionsTimeline( @Query(name = "*", skipIfEmpty = true) StatusesMentionsTimelineRequest parameters);
 
   /**
    * Returns a single Tweet, specified by the id parameter. The Tweet’s author will also be embedded within the Tweet.
@@ -84,8 +82,8 @@ public interface Statuses {
    * @see <a href="https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-show-id">https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-show-id</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/show/{id}")
-  public Tweet show( @RequestBean StatusesShowRequest parameters);
+  @RemoteMethod(method ="GET", path = "/show/{id}")
+  public Tweet show( @Request StatusesShowRequest parameters);
 
   /**
    * Returns a collection of the most recent Tweets posted by the user indicated by the screen_name or user_id parameters.
@@ -95,8 +93,8 @@ public interface Statuses {
    * @see <a href="https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-user_timeline">https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-user_timeline</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/user_timeline.json")
-  public List<Tweet> userTimeline( @QueryIfNE("*") StatusesUserTimelineRequest parameters);
+  @RemoteMethod(method ="GET", path = "/user_timeline.json")
+  public List<Tweet> userTimeline( @Query(name = "*", skipIfEmpty = true) StatusesUserTimelineRequest parameters);
 
   /**
    * Returns a collection of the 100 most recent retweets of the Tweet specified by the id parameter.
@@ -106,8 +104,8 @@ public interface Statuses {
    * @see <a href="https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweets-id">https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweets-id</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/retweets/{id}")
-  public List<Tweet> retweets( @RequestBean RetweetsRequest parameters);
+  @RemoteMethod(method ="GET", path = "/retweets/{id}")
+  public List<Tweet> retweets( @Request RetweetsRequest parameters);
 
   /**
    * Returns a collection of up to 100 user IDs belonging to users who have retweeted the Tweet specified by the id parameter.
@@ -117,8 +115,8 @@ public interface Statuses {
    * @see <a href="https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweeters-ids">https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/get-statuses-retweeters-ids</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/retweeters/ids.json")
-  public RetweeterIdsResponse retweeterIds( @QueryIfNE("*") RetweeterIdsRequest parameters);
+  @RemoteMethod(method ="GET", path = "/retweeters/ids.json")
+  public RetweeterIdsResponse retweeterIds( @Query(name = "*", skipIfEmpty = true) RetweeterIdsRequest parameters);
 
   interface StatusesShowRequestAnnotations {
 

@@ -18,20 +18,16 @@
 
 package org.apache.streams.twitter.api;
 
-import org.apache.streams.twitter.pojo.Tweet;
-
-import org.apache.juneau.remoteable.QueryIfNE;
-import org.apache.juneau.remoteable.RemoteMethod;
-import org.apache.juneau.remoteable.Remoteable;
-
-import java.util.List;
+import org.apache.juneau.http.annotation.Query;
+import org.apache.juneau.remote.RemoteInterface;
+import org.apache.juneau.rest.client.remote.RemoteMethod;
 
 /**
  * Interface for /followers methods.
  *
  * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference</a>
  */
-@Remoteable(path = "https://api.twitter.com/1.1/followers")
+@RemoteInterface(path = "https://api.twitter.com/1.1/followers")
 public interface Followers {
 
   /**
@@ -42,8 +38,8 @@ public interface Followers {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/ids.json")
-  public FollowersIdsResponse ids( @QueryIfNE("*") FollowersIdsRequest parameters);
+  @RemoteMethod(method ="GET", path = "/ids.json")
+  public FollowersIdsResponse ids( @Query(name = "*", skipIfEmpty = true) FollowersIdsRequest parameters);
 
   /**
    * Returns a cursored collection of user objects for users following the specified user.
@@ -53,7 +49,7 @@ public interface Followers {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-followers-list">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-followers-list</a>
    *
    */
-  @RemoteMethod(httpMethod = "GET", path = "/list.json")
-  public FollowersListResponse list( @QueryIfNE("*") FollowersListRequest parameters);
+  @RemoteMethod(method ="GET", path = "/list.json")
+  public FollowersListResponse list( @Query(name = "*", skipIfEmpty = true) FollowersListRequest parameters);
 
 }

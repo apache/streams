@@ -110,10 +110,13 @@ public class SevenDaySearchProviderTask implements Callable<Iterator<Tweet>>, Ru
   }
 
   public boolean shouldContinuePulling(int count, int page_count, int item_count) {
-    return (
-        count > 0
-            && item_count < provider.getConfig().getMaxItems()
-            && page_count <= provider.getConfig().getMaxPages());
+    if ( item_count >= provider.getConfig().getMaxItems() ) {
+      return false;
+    } else if (page_count >= provider.getConfig().getMaxPages()) {
+      return false;
+    } else {
+      return ( count > 0 );
+    }
   }
 
   @Override

@@ -18,17 +18,15 @@
 
 package org.apache.streams.twitter.api;
 
-import org.apache.juneau.remoteable.Body;
-import org.apache.juneau.remoteable.Path;
-import org.apache.juneau.remoteable.QueryIfNE;
-import org.apache.juneau.remoteable.RemoteMethod;
-import org.apache.juneau.remoteable.Remoteable;
-
+import org.apache.juneau.http.annotation.Body;
+import org.apache.juneau.http.annotation.Path;
+import org.apache.juneau.remote.RemoteInterface;
+import org.apache.juneau.rest.client.remote.RemoteMethod;
 
 /**
  * Interface for /search methods.
  */
-@Remoteable(path = "https://api.twitter.com/1.1/"+ThirtyDaySearch.path)
+@RemoteInterface(path = "https://api.twitter.com/1.1/"+ThirtyDaySearch.path)
 public interface ThirtyDaySearch {
 
   String path = "tweets/search/30day";
@@ -42,7 +40,7 @@ public interface ThirtyDaySearch {
    * @see <a href=https://developer.twitter.com/en/docs/tweets/search/overview/premium">https://developer.twitter.com/en/docs/tweets/search/overview/premium</a>
    *
    */
-  @RemoteMethod(httpMethod = "POST", path = "/{environment}.json")
+  @RemoteMethod(method ="POST", path = "/{environment}.json")
   public ThirtyDaySearchResponse thirtyDaySearch(@Path("environment") String environment, @Body ThirtyDaySearchRequest searchRequest);
 
 }

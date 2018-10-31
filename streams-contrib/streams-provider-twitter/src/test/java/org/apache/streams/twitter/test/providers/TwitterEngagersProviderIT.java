@@ -18,6 +18,7 @@
 
 package org.apache.streams.twitter.test.providers;
 
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.twitter.provider.TwitterEngagersProvider;
 
 import org.junit.Assert;

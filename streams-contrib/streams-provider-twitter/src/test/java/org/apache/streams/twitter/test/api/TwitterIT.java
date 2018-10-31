@@ -235,8 +235,9 @@ public class TwitterIT {
   public void testRetweets() throws Exception {
     Statuses statuses = Twitter.getInstance(config);
     nonNull(statuses);
+    Long testId = StreamsConfigurator.getConfig().getLong("org.apache.streams.twitter.test.api.TwitterIT.testRetweets.testId");
     RetweetsRequest retweetsRequest = new RetweetsRequest();
-    retweetsRequest.setId(947621735511105538l);
+    retweetsRequest.setId(testId);
     List<Tweet> retweets = statuses.retweets(retweetsRequest);
     nonNull(retweets);
     assertThat("retweets.size() > 0", retweets.size() > 0);
@@ -246,8 +247,9 @@ public class TwitterIT {
   public void testRetweeterIds() throws Exception {
     Statuses statuses = Twitter.getInstance(config);
     nonNull(statuses);
+    Long testId = StreamsConfigurator.getConfig().getLong("org.apache.streams.twitter.test.api.TwitterIT.testRetweeterIds.testId");
     RetweeterIdsRequest retweeterIdsRequest = new RetweeterIdsRequest();
-    retweeterIdsRequest.setId(947621735511105538l);
+    retweeterIdsRequest.setId(testId);
     RetweeterIdsResponse response = statuses.retweeterIds(retweeterIdsRequest);
     nonNull(response);
     List<String> retweeterIds = response.getIds();
@@ -290,8 +292,9 @@ public class TwitterIT {
   public void testUserSearch() throws Exception {
     Users users = Twitter.getInstance(config);
     nonNull(users);
+    String testQuery = StreamsConfigurator.getConfig().getString("org.apache.streams.twitter.test.api.TwitterIT.testUserSearch.testQuery");
     UsersSearchRequest searchRequest = new UsersSearchRequest();
-    searchRequest.setQ("big data");
+    searchRequest.setQ(testQuery);
     List<User> searchResponse = users.search(searchRequest);
     nonNull(searchResponse);
     assertThat("searchResponse.size() > 0", searchResponse.size() > 0);
@@ -301,8 +304,9 @@ public class TwitterIT {
   public void testSevenDaySearch() throws Exception {
     SevenDaySearch search = Twitter.getInstance(config);
     nonNull(search);
+    String testQuery = StreamsConfigurator.getConfig().getString("org.apache.streams.twitter.test.api.TwitterIT.testSevenDaySearch.testQuery");
     SevenDaySearchRequest searchRequest = new SevenDaySearchRequest();
-    searchRequest.setQ("big data");
+    searchRequest.setQ(testQuery);
     SevenDaySearchResponse searchResponse = search.sevenDaySearch(searchRequest);
     nonNull(searchResponse);
     assertThat("searchResponse.getStatuses().size() > 0", searchResponse.getStatuses().size() > 0);
@@ -310,9 +314,9 @@ public class TwitterIT {
 
   @Test(dependsOnGroups = {"Account"}, groups = {"SuggestedUsers"})
   public void testSuggestedUsersCategories() throws Exception {
-    String testLang = "en";
     SuggestedUsers suggestedUsers = Twitter.getInstance(config);
     nonNull(suggestedUsers);
+    String testLang = StreamsConfigurator.getConfig().getString("org.apache.streams.twitter.test.api.TwitterIT.testSuggestedUsersCategories.testLang");
     List<SuggestedUserCategory> categories = suggestedUsers.categories(testLang);
     nonNull(categories);
     assertThat("categories.size() > 0", categories.size() > 0);
@@ -332,8 +336,9 @@ public class TwitterIT {
   public void testThirtyDaySearch() throws Exception {
     ThirtyDaySearch search = Twitter.getInstance(config);
     nonNull(search);
+    String testQuery = StreamsConfigurator.getConfig().getString("org.apache.streams.twitter.test.api.TwitterIT.testThirtyDaySearch.testQuery");
     ThirtyDaySearchRequest searchRequest = new ThirtyDaySearchRequest();
-    searchRequest.setQuery("big data");
+    searchRequest.setQuery(testQuery);
     ThirtyDaySearchResponse searchResponse = search.thirtyDaySearch(config.getEnvironment(), searchRequest);
     nonNull(searchResponse);
     assertThat("searchResponse.getResults().size() > 0", searchResponse.getResults().size() > 0);
@@ -352,8 +357,9 @@ public class TwitterIT {
   public void testThirtyDaySearchCounts() throws Exception {
     ThirtyDaySearchCounts searchCounts = Twitter.getInstance(config);
     nonNull(searchCounts);
+    String testQuery = StreamsConfigurator.getConfig().getString("org.apache.streams.twitter.test.api.TwitterIT.testThirtyDayCounts.testQuery");
     ThirtyDaySearchCountsRequest searchRequest = new ThirtyDaySearchCountsRequest();
-    searchRequest.setQuery("big data");
+    searchRequest.setQuery(testQuery);
     ThirtyDaySearchCountsResponse searchCountsResponse = searchCounts.thirtyDaySearchCounts(config.getEnvironment(), searchRequest);
     nonNull(searchCountsResponse);
     assertThat("searchCountsResponse.getTotalCounts() > 0", searchCountsResponse.getTotalCount() > 0);
