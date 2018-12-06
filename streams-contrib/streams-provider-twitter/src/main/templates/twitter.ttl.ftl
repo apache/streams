@@ -1,4 +1,6 @@
 <#ftl output_format="XML" auto_esc=true>
+<#setting output_encoding="UTF-8">
+<#setting url_escaping_charset="UTF-8">
 <#--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -162,3 +164,55 @@
   </#list>
 </#if>
 
+<#assign usernameshash = {} />
+
+<#attempt>
+  <#assign tweets = pp.loadData('json', 'tweet.js')>
+  <#recover>
+</#attempt>
+
+<#if tweets??>
+  <#list tweets as tweet>
+:${id}-note-${tweet.id}
+  a as:Note ;
+  as:actor :${id} ;
+    <#attempt>
+      <#assign createdAt_datetime = tweet.created_at?datetime("EEE MMM dd HH:mm:ss Z yyyy")>
+      <#assign createdAt_datetime_xsnz = createdAt_datetime?string.xs_nz>
+  as:published "${createdAt_datetime_xsnz}"^^xs:dateTime ;
+      <#recover>
+  # TWEET TIMESTAMP PROCESSING FAILED
+        <#if tweet.created_at??>
+  # tweet.created_at: ${tweet.created_at}
+        </#if>
+        <#if createdAt_datetime??>
+  # createdAt_datetime: ${createdAt_datetime}
+        </#if>
+        <#if createdAt_datetime_xsnz??>
+  # createdAt_datetime_xsnz: ${createdAt_datetime_xsnz}
+        </#if>
+    </#attempt>
+  .
+
+    <#if tweet.entities.user_mentions??>
+      <#list tweet.entities.user_mentions as user_mention>
+        <#if ( user_mention.id?? && user_mention.id?number gt 0 )>
+          <#if idshash[user_mention.id]??>
+          <#else>
+:${user_mention.id} a apst:TwitterProfile .
+
+            <#assign idshash += { user_mention.id_str: user_mention.id_str } />
+          </#if>
+          <#if usernameshash[user_mention.id]??>
+          <#else>
+:${user_mention.id} as:name "${user_mention.screen_name}" .
+
+            <#assign usernameshash += { user_mention.id: user_mention.screen_name } />
+          </#if>
+:${id}-note-${tweet.id} as:cc :${user_mention.id} .
+
+        </#if>
+      </#list>
+    </#if>
+  </#list>
+</#if>
