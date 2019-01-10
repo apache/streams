@@ -30,8 +30,8 @@
     <description>Kafka Module</description>
 
     <properties>
-        <scala.version>2.9.2</scala.version>
-        <kafka.version>0.8.0</kafka.version>
+        <scala.version>2.11</scala.version>
+        <kafka.version>1.0.0</kafka.version>
         <clojure.version>1.2.0</clojure.version>
     </properties>
 

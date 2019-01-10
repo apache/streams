@@ -50,7 +50,7 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
 
   private ObjectMapper mapper = new ObjectMapper();
 
-  private KafkaConfiguration config;
+  private KafkaWriterConfiguration config;
 
   private Producer<String, String> producer;
 
@@ -58,7 +58,7 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
    * KafkaPersistWriter constructor
    */
   public KafkaPersistWriter() {
-    this.config = new ComponentConfigurator<>(KafkaConfiguration.class).detectConfiguration();
+    this.config = new ComponentConfigurator<>(KafkaWriterConfiguration.class).detectConfiguration();
     this.persistQueue  = new ConcurrentLinkedQueue<>();
   }
 
@@ -66,11 +66,11 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
    * KafkaPersistWriter constructor - uses supplied persistQueue.
    */
   public KafkaPersistWriter(Queue<StreamsDatum> persistQueue) {
-    this.config = new ComponentConfigurator<>(KafkaConfiguration.class).detectConfiguration();
+    this.config = new ComponentConfigurator<>(KafkaWriterConfiguration.class).detectConfiguration();
     this.persistQueue = persistQueue;
   }
 
-  public void setConfig(KafkaConfiguration config) {
+  public void setConfig(KafkaWriterConfiguration config) {
     this.config = config;
   }
 

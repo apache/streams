@@ -5,12 +5,16 @@
     ],
     "id": "#",
     "type": "object",
-    "javaType" : "org.apache.streams.kafka.KafkaConfiguration",
+    "javaType" : "org.apache.streams.kafka.KafkaWriterConfiguration",
     "javaInterfaces": ["java.io.Serializable"],
     "properties": {
         "brokerlist": {
             "type": "string",
-            "description": "A comma-delimited list of broker nodes"
+            "description": "A comma-delimited list of broker nodes, used by producer"
+        },
+        "topic": {
+            "type": "string",
+            "description": "A topic to read/write from"
         }
     }
 }
