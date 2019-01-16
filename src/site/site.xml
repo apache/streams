@@ -73,6 +73,7 @@
             <item name="Examples" href="streams-examples/index.html" />
             <item name="Frequently Asked Questions" href="faq.html" />
             <item name="Modules" href="modules.html" />
+            <item name="Roadmap" href="roadmap.html" />
         </menu>
         <menu name="Users">
             <item name="Install Java" href="install/java.html"/>
