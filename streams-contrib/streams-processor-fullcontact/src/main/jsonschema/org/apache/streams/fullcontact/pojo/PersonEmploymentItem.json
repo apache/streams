@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.fullcontact.pojo.PersonEmploymentItem",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the organization/place of employment."
+    },
+    "domain": {
+      "type": "string",
+      "description": "The domain of the organization/place of employment."
+    },
+    "current": {
+      "type": "boolean",
+      "description": "Indicator of whether or not this is the current place of employment."
+    },
+    "title": {
+      "type": "string",
+      "description": "Job or position title."
+    },
+    "start": {
+      "type": "object",
+      "$ref": "./Day.json",
+      "description": "Object representing start date."
+    },
+    "end": {
+      "type": "string",
+      "$ref": "./Day.json",
+      "description": "Object representing start date."
+    }
+  }
+}

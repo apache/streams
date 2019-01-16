@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.fullcontact.api.PersonSubscriptionRequest",
+  "extends": {
+    "$ref": "../pojo/PersonSummary.json"
+  },
+  "properties": {
+    "webhookUrl": {
+      "type": "string",
+      "description": "Some description about webhook URL."
+    },
+    "subscriptionId": {
+      "type": "string",
+      "description": "Some description about webhook URL."
+    }
+  }
+}

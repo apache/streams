@@ -49,6 +49,7 @@
         <module>streams-persist-neo4j</module>
         <module>streams-persist-riak</module>
         <module>streams-amazon-aws</module>
+        <module>streams-processor-fullcontact</module>
         <module>streams-processor-jackson</module>
         <module>streams-processor-json</module>
         <module>streams-processor-urls</module>

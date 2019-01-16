@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.fullcontact.api.EnrichPersonRequest",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "The email address of the contact. (Queryable)"
+    },
+    "emailHash": {
+      "type": "string",
+      "description": "Either an MD5 or SHA-256 hash representation of the email address to query. Be certain to lowercase and trim the email address prior to hashing. (Queryable)"
+    },
+    "twitter": {
+      "type": "string",
+      "description": "Twitter handle of the contact. Acceptable formats include handle (with or without \"@\"), as well as the URL to the profile. (Queryable)"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number of the contact. (Queryable)"
+    }
+  }
+}

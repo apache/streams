@@ -1,0 +1,106 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.fullcontact.pojo.PersonSummary",
+  "properties": {
+    "ageRange": {
+      "type": "string",
+      "description": "Age range of the contact."
+    },
+    "avatar": {
+      "type": "string",
+      "description": "URL of the contact's photo."
+    },
+    "bio": {
+      "type": "string",
+      "description": "Biography of the contact."
+    },
+    "dataAddons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "applied": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          },
+          "docLink": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "details": {
+      "type": "object",
+      "description": "When included, additional details about the contact provided through Data Add-ons will be available here.",
+      "$ref": "./PersonDetails.json"
+    },
+    "email": {
+      "type": "string",
+      "description": "The email address of the contact. (Queryable)"
+    },
+    "emailHash": {
+      "type": "string",
+      "description": "Either an MD5 or SHA-256 hash representation of the email address to query. Be certain to lowercase and trim the email address prior to hashing. (Queryable)"
+    },
+    "facebook": {
+      "type": "string",
+      "description": "URL of the contact's Facebook profile."
+    },
+    "fullName": {
+      "type": "string",
+      "description": "Full name of the contact."
+    },
+    "gender": {
+      "type": "string",
+      "description": "Gender of the contact."
+    },
+    "linkedin": {
+      "type": "string",
+      "description": "URL of the contact's LinkedIn profile."
+    },
+    "location": {
+      "type": "string",
+      "description": "Location of the contact. Depending on data quality, the exactness of this value may vary."
+    },
+    "organization": {
+      "type": "string",
+      "description": "Current or most recent place of work."
+    },
+    "title": {
+      "type": "string",
+      "description": "Current or most recent job title."
+    },
+    "twitter": {
+      "type": "string",
+      "description": "Twitter handle of the contact. Acceptable formats include handle (with or without \"@\"), as well as the URL to the profile. (Queryable)"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number of the contact. (Queryable)"
+    },
+    "updated": {
+      "type": "string",
+      "description": "Date-time last updated."
+    },
+    "website": {
+      "type": "string",
+      "description": "URL of the contact's website."
+    }
+  }
+}

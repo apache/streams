@@ -1,0 +1,222 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.fullcontact.pojo.CompanyDetails",
+  "properties": {
+    "entity": {
+      "type": "object",
+      "javaType": "org.apache.streams.fullcontact.pojo.CompanyEntity",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "founded": {
+          "type": "integer"
+        },
+        "employees": {
+          "type": "integer"
+        }
+      }
+    },
+    "locales": {
+      "type": "array",
+      "items": {
+        "javaType": "org.apache.streams.fullcontact.pojo.CompanyLocale",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "javaType": "org.apache.streams.fullcontact.pojo.CompanyCategory",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "industries": {
+      "type": "array",
+      "items": {
+        "javaType": "org.apache.streams.fullcontact.pojo.CompanyIndustry",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "emails": {
+      "type": "array",
+      "items": {
+        "javaType": "org.apache.streams.fullcontact.pojo.CompanyEmail",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "javaType": "org.apache.streams.fullcontact.pojo.CompanyLocation",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "addressLine1": {
+            "type": "string"
+          },
+          "addressLine2": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "regionCode": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string"
+          },
+          "formatted": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "keyPeople": {
+      "type": "array",
+      "description": "The Key People Data Add-on will return a list of influential individuals within an organization, including their full name, title, and an accompanying photo or avatar.",
+      "items": {
+        "type": "object",
+        "javaType": "org.apache.streams.fullcontact.CompanyKeyPerson",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "description": "The full name of the person."
+          },
+          "title": {
+            "type": "string",
+            "description": "The job title of the person."
+          },
+          "avatar": {
+            "type": "string",
+            "description": "A URL to a photo or avatar of the person."
+          }
+        }
+      }
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "javaType": "org.apache.streams.fullcontact.pojo.CompanyImage",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "phones": {
+      "type": "array",
+      "items": {
+        "javaType": "org.apache.streams.fullcontact.pojo.CompanyPhone",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "profiles": {
+      "type": "object",
+      "javaType": "org.apache.streams.fullcontact.pojo.CompanyProfiles",
+      "description": "The All Social Profiles Data Add-on enables API consumers to retrieve a list of all known social profiles of a given contact, returning data for each social platform such as any applicable usernames/handles, the URL of the platform, any bio that the user supplied, and more.",
+      "additionalProperties": {
+        "$ref": "./CompanyTrafficRank.json"
+      }
+    },
+    "traffic": {
+      "type": "object",
+      "javaType": "org.apache.streams.fullcontact.pojo.CompanyTraffic",
+      "properties": {
+        "countryRank": {
+          "type": "object",
+          "javaType": "org.apache.streams.fullcontact.pojo.CompanyTrafficCountryRank",
+          "additionalProperties": {
+            "$ref": "./CompanyTrafficRank.json"
+          }
+        },
+        "localeRank": {
+          "type": "object",
+          "javaType": "org.apache.streams.fullcontact.pojo.CompanyTrafficLocaleRank",
+          "additionalProperties": {
+            "javaType": "org.apache.streams.fullcontact.pojo.CompanyTrafficRank"
+          }
+        }
+      }
+    },
+    "urls": {
+      "type": "array",
+      "items": {
+        "javaType": "org.apache.streams.fullcontact.pojo.CompanyURL",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    }
+
+  }
+}

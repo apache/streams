@@ -1,0 +1,64 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.fullcontact.pojo.CompanySummary",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the company."
+    },
+    "location": {
+      "type": "string",
+      "description": "The location or address of the company."
+    },
+    "twitter": {
+      "type": "string",
+      "description": "The URL to the twitter profile associated with the company."
+    },
+    "linkedin": {
+      "type": "string",
+      "description": "The URL to the LinkedIn profile associated with the company."
+    },
+    "facebook": {
+      "type": "string",
+      "description": "The URL to the Facebook page associated with the company."
+    },
+    "bio": {
+      "type": "string",
+      "description": "The company's bio."
+    },
+    "logo": {
+      "type": "string",
+      "description": "URL to the logo or image for the company."
+    },
+    "website": {
+      "type": "string",
+      "description": "URL to the company's website."
+    },
+    "founded": {
+      "type": "integer",
+      "description": "The year the company was founded."
+    },
+    "employees": {
+      "type": "integer",
+      "description": "An approximate number of employees with the company."
+    },
+    "locale": {
+      "type": "string",
+      "description": "The locale of the company."
+    },
+    "category": {
+      "type": "string",
+      "description": "The category of the company. Possible values are Adult, Email Provider, Education, SMS, or Other."
+    },
+    "details": {
+      "type": "object",
+      "description": "When included, additional details about the company provided through Data Add-ons will be available here.",
+      "$ref": "./CompanyDetails.json"
+    }
+  }
+}
