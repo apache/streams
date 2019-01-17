@@ -21,7 +21,25 @@
   <#recover>
     <#stop "NO_PROFILE_INFORMATION">
 </#attempt>
-@prefix : <${namespace}#> .
+<#if ID??>
+  <#assign id="${ID}">
+<#else>
+  <#attempt>
+    <#assign raw=profile.name.formattedName>
+    <#assign id=raw?replace("\\W","","r")>
+    <#assign id="${profile.username}">
+    <#recover>
+      <#stop "NO_ID">
+  </#attempt>
+</#if>
+<#if BASE_URI??>
+@prefix : <${BASE_URI}> .
+@base <${BASE_URI}> .
+<#else>
+@base <http://streams.apache.org/streams-contrib/streams-provider-google/google-gplus/> .
+@prefix : <http://streams.apache.org/streams-contrib/streams-provider-linkedin/google-gplus/> .
+</#if>
+<#if PREFIXES??>
 @prefix as: <http://www.w3.org/ns/activitystreams#> .
 @prefix apst: <http://streams.apache.org/ns#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/#> .
@@ -30,14 +48,8 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
-@base <${namespace}> .
-
-<#attempt>
-<#assign raw=profile.name.formattedName>
-<#assign id=raw?replace("\\W","","r")>
-<#recover>
-<#stop "NO_ID">
-</#attempt>
+@prefix xs: <http://www.w3.org/2001/XMLSchema#> .
+</#if>
 
 # profile.json
 :${id} a apst:GooglePlusProfile .

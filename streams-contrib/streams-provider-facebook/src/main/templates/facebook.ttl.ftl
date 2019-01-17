@@ -21,7 +21,14 @@
     <#recover>
         <#stop "NO_PROFILE_INFORMATION">
 </#attempt>
-@prefix : <${namespace}#> .
+<#if BASE_URI??>
+@prefix : <${BASE_URI}> .
+@base <${BASE_URI}> .
+<#else>
+@base <http://streams.apache.org/streams-contrib/streams-provider-facebook/> .
+@prefix : <http://streams.apache.org/streams-contrib/streams-provider-facebook/> .
+</#if>
+<#if PREFIXES??>
 @prefix as: <http://www.w3.org/ns/activitystreams#> .
 @prefix apst: <http://streams.apache.org/ns#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/#> .
@@ -31,20 +38,23 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
 @prefix xs: <http://www.w3.org/2001/XMLSchema#> .
-@base <${namespace}> .
+</#if>
+<#if ID??>
+    <#assign id="${ID}">
+<#else>
+    <#if profile_information.profile.name?is_hash>
+        <#assign fullname=profile_information.profile.name.full_name>
+    <#else>
+        <#assign fullname=profile_information.profile.name>
+    </#if>
+    <#attempt>
+        <#assign id=fullname?replace("\\W","","r")>
+        <#recover>
+            <#stop "NO_ID">
+    </#attempt>
+</#if>
 
 <#-- profile_information/profile_information.json -->
-<#if profile_information.profile.name?is_hash>
-    <#assign fullname=profile_information.profile.name.full_name>
-<#else>
-    <#assign fullname=profile_information.profile.name>
-</#if>
-<#attempt>
-    <#assign id=fullname?replace("\\W","","r")>
-    <#recover>
-        <#stop "NO_ID">
-</#attempt>
-
 :${id} a apst:FacebookProfile .
 
 :${id}

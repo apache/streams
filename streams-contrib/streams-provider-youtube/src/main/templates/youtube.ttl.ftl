@@ -21,26 +21,39 @@
   <#recover>
     <#stop "NO_PROFILE_INFORMATION">
 </#attempt>
-@prefix : <${namespace}#> .
-@prefix apst: <http://streams.apache.org/ns#> .
+<#if BASE_URI??>
+@prefix : <${BASE_URI}> .
+@base <${BASE_URI}> .
+<#else>
+@base <http://streams.apache.org/streams-contrib/streams-provider-youtube/> .
+@prefix : <http://streams.apache.org/streams-contrib/streams-provider-youtube/> .
+</#if>
+<#if PREFIXES??>
 @prefix as: <http://www.w3.org/ns/activitystreams#> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix apst: <http://streams.apache.org/ns#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/#> .
 @prefix dct: <http://purl.org/dc/terms/#> .
-@base <http://graph.bluesquad.co/youtube> .
-
-<#attempt>
-<#assign raw=profile.name.formattedName>
-<#assign id=raw?replace("\\W","","r")>
-<#recover>
-<#stop "NO_ID">
-</#attempt>
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix xs: <http://www.w3.org/2001/XMLSchema#> .
+</#if>
+<#if ID??>
+  <#assign id="${ID}">
+<#else>
+  <#if profile_information.profile.name?is_hash>
+    <#assign fullname=profile_information.profile.name.full_name>
+  <#else>
+    <#assign fullname=profile_information.profile.name>
+  </#if>
+  <#attempt>
+    <#assign raw=profile.name.formattedName>
+    <#assign id=raw?replace("\\W","","r")>
+    <#recover>
+      <#stop "NO_ID">
+  </#attempt>
+</#if>
 
 # profile.json
 :${id} a apst:YouTubeProfile .

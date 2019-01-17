@@ -26,7 +26,23 @@
   <#recover>
     <#stop "NO_PROFILE">
 </#attempt>
-@prefix : <${namespace}#> .
+<#if ID??>
+  <#assign id="${ID}">
+<#else>
+  <#attempt>
+    <#assign id="${profile.username}">
+    <#recover>
+      <#stop "NO_ID">
+  </#attempt>
+</#if>
+<#if BASE_URI??>
+@prefix : <${BASE_URI}> .
+@base <${BASE_URI}> .
+<#else>
+@base <http://streams.apache.org/streams-contrib/streams-provider-linkedin/> .
+@prefix : <http://streams.apache.org/streams-contrib/streams-provider-linkedin/> .
+</#if>
+<#if PREFIXES??>
 @prefix as: <http://www.w3.org/ns/activitystreams#> .
 @prefix apst: <http://streams.apache.org/ns#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/#> .
@@ -36,7 +52,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
 @prefix xs: <http://www.w3.org/2001/XMLSchema#> .
-@base <${namespace}> .
+</#if>
 
 <#--
 # Profile.csv 
