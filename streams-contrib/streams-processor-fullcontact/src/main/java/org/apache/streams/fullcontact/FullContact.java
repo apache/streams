@@ -100,7 +100,7 @@ public class FullContact implements CompanyEnrichment, PersonEnrichment {
     try {
       RestCall call = restClient
         .doPost(baseUrl() + "company.enrich")
-        .input(request);
+        .body(request);
       String responseJson = call.getResponseAsString();
       CompanySummary result = parser.parse(responseJson, CompanySummary.class);
       return result;
@@ -117,7 +117,7 @@ public class FullContact implements CompanyEnrichment, PersonEnrichment {
     try {
       RestCall call = restClient
         .doPost(baseUrl() + "company.enrich")
-        .input(request);
+        .body(request);
       String responseJson = call.getResponseAsString();
       PersonSummary result = parser.parse(responseJson, PersonSummary.class);
       return result;
