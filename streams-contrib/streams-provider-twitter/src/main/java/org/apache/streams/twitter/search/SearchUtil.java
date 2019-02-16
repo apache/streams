@@ -18,8 +18,6 @@
 
 package org.apache.streams.twitter.search;
 
-import org.apache.streams.twitter.api.ThirtyDaySearch;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

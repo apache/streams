@@ -18,7 +18,6 @@
 
 package org.apache.streams.twitter.converter;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.juneau.BeanSession;
 import org.apache.juneau.ClassMeta;
 import org.apache.juneau.parser.ParseException;
@@ -26,7 +25,6 @@ import org.apache.juneau.transform.StringSwap;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
 /**
  * Transforms {@link org.joda.time.DateTime} to {@link String Strings}.

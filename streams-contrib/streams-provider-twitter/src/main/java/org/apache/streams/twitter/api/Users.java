@@ -18,7 +18,6 @@
 
 package org.apache.streams.twitter.api;
 
-import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 
 import org.apache.juneau.http.annotation.Query;

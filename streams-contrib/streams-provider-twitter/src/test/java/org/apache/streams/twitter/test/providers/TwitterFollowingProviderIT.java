@@ -21,10 +21,8 @@ package org.apache.streams.twitter.test.providers;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.twitter.provider.TwitterFollowingProvider;
 
-import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigParseOptions;
-import com.typesafe.config.ConfigValue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;

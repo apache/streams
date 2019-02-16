@@ -25,16 +25,17 @@ import org.apache.streams.core.StreamsProcessor;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.json.Activity;
-import org.apache.streams.twitter.config.TwitterConfiguration;
-import org.apache.streams.twitter.config.TwitterStreamConfiguration;
 import org.apache.streams.twitter.api.StatusesShowRequest;
 import org.apache.streams.twitter.api.Twitter;
+import org.apache.streams.twitter.config.TwitterConfiguration;
+import org.apache.streams.twitter.config.TwitterStreamConfiguration;
 import org.apache.streams.twitter.converter.TwitterDocumentClassifier;
 import org.apache.streams.twitter.pojo.Delete;
 import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

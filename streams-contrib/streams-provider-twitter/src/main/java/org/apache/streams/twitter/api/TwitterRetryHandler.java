@@ -18,13 +18,7 @@
 
 package org.apache.streams.twitter.api;
 
-import org.apache.streams.util.api.requests.backoff.AbstractBackOffStrategy;
-import org.apache.streams.util.api.requests.backoff.BackOffException;
-import org.apache.streams.util.api.requests.backoff.impl.LinearTimeBackOffStrategy;
-
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpRequestRetryHandler;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.apache.juneau.json.JsonParser;
 import org.apache.juneau.parser.ParseException;
@@ -33,9 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.ws.rs.core.Response;
 
 /**
  *  Handle expected and unexpected exceptions.

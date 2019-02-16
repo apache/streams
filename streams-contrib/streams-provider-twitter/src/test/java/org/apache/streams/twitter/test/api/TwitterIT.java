@@ -20,7 +20,6 @@ package org.apache.streams.twitter.test.api;
 
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.twitter.config.TwitterConfiguration;
 import org.apache.streams.twitter.api.Account;
 import org.apache.streams.twitter.api.AccountActivity;
 import org.apache.streams.twitter.api.AccountSettings;
@@ -70,12 +69,14 @@ import org.apache.streams.twitter.api.WelcomeMessageRulesListResponse;
 import org.apache.streams.twitter.api.WelcomeMessages;
 import org.apache.streams.twitter.api.WelcomeMessagesListRequest;
 import org.apache.streams.twitter.api.WelcomeMessagesListResponse;
+import org.apache.streams.twitter.config.TwitterConfiguration;
 import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.pojo.WelcomeMessage;
 import org.apache.streams.twitter.pojo.WelcomeMessageRule;
 
 import com.typesafe.config.ConfigFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -89,7 +90,6 @@ import java.util.stream.Collectors;
 import static java.util.Objects.nonNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 /**
  * Integration Tests for all implemented Twitter endpoints.

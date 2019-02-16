@@ -18,7 +18,6 @@
 
 package org.apache.streams.twitter.test.providers;
 
-import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.twitter.provider.TwitterEngagersProvider;
 
 import org.junit.Assert;
@@ -30,7 +29,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.greaterThan;
 
 @Test(dependsOnGroups = {"Account"}, groups = {"Providers"})

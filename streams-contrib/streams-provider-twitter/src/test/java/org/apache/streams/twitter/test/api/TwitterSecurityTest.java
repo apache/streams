@@ -18,9 +18,9 @@
 
 package org.apache.streams.twitter.test.api;
 
-import org.apache.streams.twitter.config.TwitterOAuthConfiguration;
 import org.apache.streams.twitter.api.TwitterOAuthRequestInterceptor;
 import org.apache.streams.twitter.api.TwitterSecurity;
+import org.apache.streams.twitter.config.TwitterOAuthConfiguration;
 import org.apache.streams.twitter.test.utils.TwitterActivityConvertersTest;
 
 import org.apache.http.HttpHost;
@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 /**
  * Unit Tests for twitter request signing.

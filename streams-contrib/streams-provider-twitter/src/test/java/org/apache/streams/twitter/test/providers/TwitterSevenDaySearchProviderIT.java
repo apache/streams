@@ -20,7 +20,6 @@ package org.apache.streams.twitter.test.providers;
 
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.twitter.provider.SevenDaySearchProvider;
-import org.apache.streams.twitter.provider.TwitterTimelineProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
