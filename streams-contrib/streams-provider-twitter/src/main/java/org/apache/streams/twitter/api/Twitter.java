@@ -32,6 +32,7 @@ import org.apache.streams.twitter.pojo.WelcomeMessageRule;
 import org.apache.streams.twitter.provider.TwitterProviderUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpRequestInterceptor;
@@ -50,14 +51,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-//import org.apache.juneau.rest.client.RestClientBuilder;
 
 /**
  * Implementation of all twitter interfaces using juneau.

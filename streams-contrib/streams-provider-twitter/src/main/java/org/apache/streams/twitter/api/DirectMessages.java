@@ -20,8 +20,6 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.pojo.DirectMessage;
 import org.apache.streams.twitter.pojo.DirectMessageEvent;
-import org.apache.streams.twitter.pojo.User;
-import org.apache.streams.twitter.pojo.WelcomeMessage;
 
 import org.apache.juneau.http.annotation.Body;
 import org.apache.juneau.http.annotation.Query;

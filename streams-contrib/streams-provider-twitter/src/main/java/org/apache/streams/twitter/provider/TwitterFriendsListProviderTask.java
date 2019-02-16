@@ -20,8 +20,6 @@ package org.apache.streams.twitter.provider;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.twitter.api.FollowersListResponse;
-import org.apache.streams.twitter.api.FriendsIdsResponse;
 import org.apache.streams.twitter.api.FriendsListRequest;
 import org.apache.streams.twitter.api.FriendsListResponse;
 import org.apache.streams.twitter.api.Twitter;
@@ -31,6 +29,7 @@ import org.apache.streams.util.ComponentUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

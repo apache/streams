@@ -18,7 +18,6 @@
 
 package org.apache.streams.twitter.api;
 
-import org.apache.streams.twitter.pojo.WelcomeMessage;
 import org.apache.streams.twitter.pojo.WelcomeMessageRule;
 
 import org.apache.juneau.http.annotation.Body;

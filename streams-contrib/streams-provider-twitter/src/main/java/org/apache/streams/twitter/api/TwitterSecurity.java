@@ -25,13 +25,12 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.StringJoiner;
 import java.util.TreeSet;
-import java.util.UUID;
+
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;

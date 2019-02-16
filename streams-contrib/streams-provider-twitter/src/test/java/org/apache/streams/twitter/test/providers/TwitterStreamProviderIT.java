@@ -29,7 +29,6 @@ import java.io.FileReader;
 import java.io.LineNumberReader;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.testng.Assert.assertTrue;
 

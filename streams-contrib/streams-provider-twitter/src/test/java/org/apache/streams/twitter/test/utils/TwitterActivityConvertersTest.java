@@ -29,6 +29,7 @@ import org.apache.streams.twitter.pojo.Retweet;
 import org.apache.streams.twitter.pojo.Tweet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
