@@ -18,6 +18,7 @@
 
 package org.apache.streams.fullcontact;
 
+import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.fullcontact.api.EnrichCompanyRequest;
 import org.apache.streams.fullcontact.api.EnrichPersonRequest;
 import org.apache.streams.fullcontact.config.FullContactConfiguration;
@@ -33,6 +34,8 @@ import org.apache.juneau.rest.client.RestClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -50,7 +53,23 @@ public class FullContact implements CompanyEnrichment, PersonEnrichment {
   RestClientBuilder restClientBuilder;
   RestClient restClient;
 
-  private FullContact(FullContactConfiguration configuration) throws InstantiationException {
+  private static Map<FullContactConfiguration, FullContact> INSTANCE_MAP = new ConcurrentHashMap<>();
+
+  public static FullContact getInstance() throws InstantiationException {
+    return getInstance(new ComponentConfigurator<>(FullContactConfiguration.class).detectConfiguration());
+  }
+
+  public static FullContact getInstance(FullContactConfiguration configuration) throws InstantiationException {
+    if (INSTANCE_MAP.containsKey(configuration) && INSTANCE_MAP.get(configuration) != null) {
+      return INSTANCE_MAP.get(configuration);
+    } else {
+      FullContact fullContact = new FullContact(configuration);
+      INSTANCE_MAP.put(configuration, fullContact);
+      return INSTANCE_MAP.get(configuration);
+    }
+  }
+
+  private FullContact(FullContactConfiguration configuration) {
     this.configuration = configuration;
     this.parser = JsonParser.DEFAULT.builder()
       .ignoreUnknownBeanProperties(true)
