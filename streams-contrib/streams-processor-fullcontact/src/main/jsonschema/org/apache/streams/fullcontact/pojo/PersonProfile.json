@@ -19,6 +19,10 @@
       "type": "integer",
       "description": "Number of profiles or topics the user is following, if applicable."
     },
+    "score": {
+      "type": "integer",
+      "description": "Only present on klout profiles."
+    },
     "service": {
       "type": "string"
     },

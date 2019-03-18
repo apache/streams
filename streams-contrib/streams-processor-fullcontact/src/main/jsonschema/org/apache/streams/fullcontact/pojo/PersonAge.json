@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.fullcontact.pojo.PersonAge",
+  "properties": {
+    "birthday": {
+      "type": "object",
+      "$ref": "./Day.json"
+    },
+    "range": {
+      "type": "string"
+    },
+    "value": {
+      "type": "integer"
+    }
+  }
+}
