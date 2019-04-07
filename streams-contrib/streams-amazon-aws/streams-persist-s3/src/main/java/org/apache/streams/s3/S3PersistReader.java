@@ -18,6 +18,8 @@
 
 package org.apache.streams.s3;
 
+import org.apache.streams.config.StreamsConfiguration;
+import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.converter.LineReadWriteUtil;
 import org.apache.streams.core.DatumStatusCountable;
 import org.apache.streams.core.DatumStatusCounter;
@@ -61,6 +63,8 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
   private static final Logger LOGGER = LoggerFactory.getLogger(S3PersistReader.class);
   public static final String STREAMS_ID = "S3PersistReader";
   protected static final char DELIMITER = '\t';
+
+  StreamsConfiguration streamsConfiguration;
 
   private S3ReaderConfiguration s3ReaderConfiguration;
   private AmazonS3Client amazonS3Client;
@@ -119,7 +123,10 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
   @Override
   public void prepare(Object configurationObject) {
 
+    streamsConfiguration = StreamsConfigurator.detectConfiguration();
+
     lineReaderUtil = LineReadWriteUtil.getInstance(s3ReaderConfiguration);
+
     // Connect to S3
     synchronized (this) {
       // Create the credentials Object
@@ -183,7 +190,7 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
       LOGGER.error("There are no files to read");
     }
 
-    this.persistQueue = Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(10000));
+    this.persistQueue = Queues.synchronizedQueue(new LinkedBlockingQueue<StreamsDatum>(streamsConfiguration.getQueueSize().intValue()));
     this.executor = Executors.newSingleThreadExecutor();
   }
 
@@ -192,7 +199,12 @@ public class S3PersistReader implements StreamsPersistReader, DatumStatusCountab
   }
 
   public StreamsResultSet readAll() {
-    startStream();
+    LOGGER.debug("readAll");
+    Thread thread = new Thread(new S3PersistReaderTask(this));
+    try {
+      thread.start();
+      thread.join(streamsConfiguration.getProviderTimeoutMs());
+    } catch( InterruptedException ie) {}
     return new StreamsResultSet(persistQueue);
   }
 
