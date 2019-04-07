@@ -7,10 +7,13 @@
   "id": "#",
   "javaType": "org.apache.streams.fullcontact.pojo.PersonDetails",
   "properties": {
+    "age": {
+      "$ref": "./PersonAge.json"
+    },
     "education": {
       "type": "array",
       "items": {
-        "type": "string"
+        "$ref": "./PersonEducationItem.json"
       }
     },
     "emails": {
@@ -34,6 +37,10 @@
         "$ref": "./PersonEmploymentItem.json"
       }
     },
+    "gender": {
+      "type": "string",
+      "description": "Gender of the contact."
+    },
     "interests": {
       "type": "array",
       "description": "The Affinities Data Add-on enables API consumers to better understand the interests of a contact. The data returned includes a list of interests that have been attributed to the contact, along with the level of affinity for the given interest and the category that the interest is within.",
@@ -44,8 +51,11 @@
     "locations": {
       "type": "array",
       "items": {
-        "type": "string"
+        "$ref": "./LocationItem.json"
       }
+    },
+    "name": {
+      "$ref": "./PersonName.json"
     },
     "phones": {
       "type": "array",
@@ -78,6 +88,13 @@
     },
     "profiles": {
       "$ref": "./PersonProfiles.json"
+    },
+    "topics": {
+      "type": "array",
+      "description": "The Topics Data Add-on includes a list of topics or subjects that the contact is associated with. This information is determined based off of several indicators of the contact's online and social presence.",
+      "items": {
+        "$ref": "./PersonInterestItem.json"
+      }
     },
     "urls": {
       "type": "array",

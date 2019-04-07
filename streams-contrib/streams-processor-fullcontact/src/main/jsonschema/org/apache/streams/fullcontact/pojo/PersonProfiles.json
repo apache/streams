@@ -53,6 +53,9 @@
     "getsatisfaction": {
       "$ref": "./PersonProfile.json"
     },
+    "github": {
+      "$ref": "./PersonProfile.json"
+    },
     "goodreads": {
       "$ref": "./PersonProfile.json"
     },
