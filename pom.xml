@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>19</version>
+        <version>21</version>
     </parent>
 
     <groupId>org.apache.streams</groupId>
@@ -326,7 +326,7 @@
         </release.repository.url>
 
         <!-- Plugin and Plugin Dependency Versions -->
-        <apache-rat.plugin.version>0.12</apache-rat.plugin.version>
+        <apache-rat.plugin.version>0.13</apache-rat.plugin.version>
         <build-helper.plugin.version>1.8</build-helper.plugin.version>
         <bundle.plugin.version>1.4.3</bundle.plugin.version>
         <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
@@ -1533,7 +1533,7 @@
                                     <exclude>**/src/license/*</exclude>
                                     <exclude>**/src/license/licenses/*</exclude>
                                     <exclude>**/src/site/resources/**/*</exclude>
-                                    <exclude>**/.gitignore</exclude>
+                                    <exclude>**/target/**</exclude>
                                     <exclude>apache-maven-*/**/*</exclude>
                                 </excludes>
                             </configuration>

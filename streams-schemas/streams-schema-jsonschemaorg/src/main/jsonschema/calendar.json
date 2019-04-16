@@ -1,4 +1,9 @@
 {
+	"$schema": "http://json-schema.org/draft-03/schema",
+	"$license": [
+		"https://creativecommons.org/licenses/by-sa/3.0/legalcode",
+		"http://www.apache.org/licenses/LICENSE-2.0"
+	],
 	"description" : "A representation of an event",
 	"type" : "object",
 	"properties" : {
