@@ -1,0 +1,44 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.peopledatalabs.pojo.Primary",
+  "properties": {
+    "job": {
+      "$ref": "./ExperienceItem.json"
+    },
+    "location": {
+      "$ref": "./Location.json"
+    },
+    "name": {
+      "$ref": "./Name.json"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "personal_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "work_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "other_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "linkedin": {
+      "type": "string"
+    }
+  }
+}

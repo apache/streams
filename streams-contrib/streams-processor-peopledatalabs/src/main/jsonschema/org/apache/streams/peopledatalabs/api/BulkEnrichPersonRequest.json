@@ -1,0 +1,286 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.peopledatalabs.api.BulkEnrichPersonRequest",
+  "type": "object",
+  "required": ["requests"],
+  "properties": {
+    "min_likelihood": {
+      "type": "integer",
+      "description": "Minimum likelihood score a match must have to return a 200.",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "required": {
+      "type": "string",
+      "examples": [
+        "emails",
+        "profiles",
+        "profiles.network:linkedin",
+        "experience.company AND emails",
+        "locations.street_address OR phone_numbers"
+      ],
+      "description": "Required parameter specifying data points/attributes a match must meet to return a 200 (see https://docs.peopledatalabs.com/docs/required-parameter)."
+    },
+    "titlecase": {
+      "type": "string",
+      "enum": [
+        "true"
+      ],
+      "description": "If set to `true`, data points in a match will be returned titlecased."
+    },
+    "requests": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "javaType": "org.apache.streams.peopledatalabs.api.BulkEnrichPersonRequestItem",
+        "required": ["params"],
+        "properties": {
+          "min_likelihood": {
+            "type": "integer",
+            "description": "Minimum likelihood score a match must have to return a 200. Defined only for this request, overrides any global min_likelihood specified in the root of the request body.",
+            "minimum": 0,
+            "maximum": 10
+          },
+          "required": {
+            "type": "string",
+            "examples": [
+              "emails",
+              "profiles",
+              "profiles.network:linkedin",
+              "experience.company AND emails",
+              "locations.street_address OR phone_numbers"
+            ],
+            "description": "Required parameter specifying data points/attributes a match must meet to return a 200 (see https://docs.peopledatalabs.com/docs/required-parameter). Defined only for this request, overrides any global min_likelihood specified in the root of the request body."
+          },
+          "titlecase": {
+            "type": "string",
+            "enum": [
+              "true"
+            ],
+            "description": "If set to `true`, data points in a match will be returned titlecased. Defined only for this request, overrides any global min_likelihood specified in the root of the request body."
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "additionalProperties": true
+            },
+            "description": "Object containing any information which should be returned in the response object for this request."
+          },
+          "params": {
+            "type": "object",
+            "description": "Object containing request parameters for this request (see https://docs.peopledatalabs.com/docs/fields).",
+            "properties": {
+              "first_name": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "Bob",
+                  "Cassandra"
+                ]
+              },
+              "middle_name": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "jane",
+                  "andrew"
+                ]
+              },
+              "last_name": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "johnson",
+                  "Jackson"
+                ]
+              },
+              "email": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "henry.lewis@gmail.com",
+                  "bob_rosser@ibm.com",
+                  "sandra.l.ying@verizon.net"
+                ]
+              },
+              "phone": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "1 541-672 0829",
+                  "5032915720 ext. 5",
+                  "+1 (415)674-3928"
+                ]
+              },
+              "profile": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "www.linkedin.com/in/seanthorne",
+                  "twitter.com/seanthorne5",
+                  "github.com/seanthorne"
+                ]
+              },
+              "school": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "University of Oregon",
+                  "Rice University",
+                  "UNC - Chapel Hill",
+                  "www.uoregon.edu"
+                ]
+              },
+              "company": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "Nike Inc."
+                ]
+              },
+              "location": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "SF Bay Area",
+                  "New York, New York",
+                  "Miami, FL, U.S.A",
+                  "472 W. Chester Blvd, Portland, OR 97214"
+                ]
+              },
+              "name": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "Dr. Patrick L. Ryan",
+                  "Sir Richard Starkey"
+                ]
+              },
+              "locality": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "Miami",
+                  "Roseburg"
+                ]
+              },
+              "region": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "British Columbia",
+                  "OR",
+                  "South Carolina"
+                ]
+              },
+              "country": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "United States",
+                  "USA",
+                  "u.s.a",
+                  "France",
+                  "UAE"
+                ]
+              },
+              "street_address": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "482 Main Blvd."
+                ]
+              },
+              "postal_code": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "97215-3829",
+                  "97214"
+                ]
+              },
+              "lid": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "145991517"
+                ],
+                "description": "A linkedin id"
+              },
+              "ip": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "50.196.25.114"
+                ]
+              },
+              "birth_date": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "1992-03-28",
+                  "1953",
+                  "December 1928"
+                ]
+              },
+              "gender": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "examples": [
+                  "male",
+                  "female",
+                  "M",
+                  "F"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

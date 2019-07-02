@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.peopledatalabs.pojo.PhoneNumber",
+  "properties": {
+    "E164": {
+      "type": "string"
+    },
+    "number": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "country_code": {
+      "type": "string"
+    },
+    "national_number": {
+      "type": "string"
+    },
+    "area_code": {
+      "type": "string"
+    }
+  }
+}

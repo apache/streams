@@ -1,0 +1,86 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.peopledatalabs.pojo.Person",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "birth_date_fuzzy": {
+      "type": "string"
+    },
+    "birth_date": {
+      "type": "string"
+    },
+    "gender": {
+      "type": "string"
+    },
+    "primary": {
+      "$ref": "./Primary.json"
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "./Profile.json"
+      }
+    },
+    "emails": {
+      "type": "array",
+      "items": {
+        "$ref": "./Email.json"
+      }
+    },
+    "phone_numbers": {
+      "type": "array",
+      "items": {
+        "$ref": "./PhoneNumber.json"
+      }
+    },
+    "names": {
+      "type": "array",
+      "items": {
+        "$ref": "./Name.json"
+      }
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "$ref": "./Location.json"
+      }
+    },
+    "experience": {
+      "type": "array",
+      "items": {
+        "$ref": "./ExperienceItem.json"
+      }
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "$ref": "./EducationItem.json"
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "$ref": "./SkillItem.json"
+      }
+    },
+    "industries": {
+      "type": "array",
+      "items": {
+        "$ref": "./IndustryItem.json"
+      }
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "$ref": "./InterestItem.json"
+      }
+    }
+  }
+}

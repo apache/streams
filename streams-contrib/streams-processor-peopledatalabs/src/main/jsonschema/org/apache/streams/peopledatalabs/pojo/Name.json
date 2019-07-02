@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.peopledatalabs.pojo.Name",
+  "properties": {
+    "first_name": {
+      "type": "string"
+    },
+    "last_name": {
+      "type": "string"
+    },
+    "suffix": {
+      "type": "string"
+    },
+    "middle_name": {
+      "type": "string"
+    },
+    "middle_initial": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "clean": {
+      "type": "string"
+    },
+    "is_primary": {
+      "type": "boolean"
+    }
+  }
+}

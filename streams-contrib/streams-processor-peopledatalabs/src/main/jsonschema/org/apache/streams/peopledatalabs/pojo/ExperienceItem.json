@@ -1,0 +1,62 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.peopledatalabs.pojo.ExperienceItem",
+  "properties": {
+    "company": {
+      "type": "object",
+      "javaType": "org.apache.streams.peopledatalabs.pojo.Company",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string"
+        },
+        "founded": {
+          "type": "string"
+        },
+        "industry": {
+          "type": "string"
+        },
+        "location": {
+          "$ref": "./Location.json"
+        },
+        "profiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "website": {
+          "type": "string"
+        }
+      }
+    },
+    "title": {
+      "$ref": "./Title.json"
+    },
+    "type": {
+      "type": "string"
+    },
+    "is_primary": {
+      "type": "boolean"
+    },
+    "most_recent": {
+      "type": "boolean"
+    },
+    "last_updated": {
+      "type": "string"
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "$ref": "./Location.json"
+      }
+    }
+  }
+}

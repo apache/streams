@@ -53,6 +53,7 @@
         <module>streams-processor-jackson</module>
         <module>streams-processor-json</module>
         <module>streams-processor-urls</module>
+        <module>streams-processor-peopledatalabs</module>
         <module>streams-processor-peoplepattern</module>
         <module>streams-provider-facebook</module>
         <module>streams-provider-google</module>
