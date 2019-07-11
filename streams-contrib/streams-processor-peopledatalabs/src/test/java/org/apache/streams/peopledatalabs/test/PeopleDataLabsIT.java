@@ -63,8 +63,9 @@ public class PeopleDataLabsIT {
     @Test
     public void testSearchByEmail() throws Exception {
         PersonEnrichment personEnrichment = PeopleDataLabs.getInstance(config);
+        String email = StreamsConfigurator.getConfig().getString("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT.testSearchByEmail.email");
         EnrichPersonRequest req = new EnrichPersonRequest()
-            .withEmail("sean@peopledatalabs.com");
+            .withEmail(email);
         EnrichPersonResponse response = personEnrichment.enrichPerson(req);
         nonNull(response);
         nonNull(response.getStatus());
@@ -77,8 +78,9 @@ public class PeopleDataLabsIT {
     @Test
     public void testSearchByLinkedinUrl() throws Exception {
         PersonEnrichment personEnrichment = PeopleDataLabs.getInstance(config);
+        String profile = StreamsConfigurator.getConfig().getString("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT.testSearchByLinkedinUrl.profile");
         EnrichPersonRequest req = new EnrichPersonRequest()
-            .withProfile("linkedin.com/in/seanthorne");
+            .withProfile(profile);
         EnrichPersonResponse response = personEnrichment.enrichPerson(req);
         nonNull(response);
         nonNull(response.getStatus());
@@ -91,10 +93,13 @@ public class PeopleDataLabsIT {
     @Test
     public void testSearchByNameLocationCompany() throws Exception {
         PersonEnrichment personEnrichment = PeopleDataLabs.getInstance(config);
+        String name = StreamsConfigurator.getConfig().getString("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT.testSearchByNameLocationCompany.name");
+        String location = StreamsConfigurator.getConfig().getString("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT.testSearchByNameLocationCompany.location");
+        String company = StreamsConfigurator.getConfig().getString("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT.testSearchByNameLocationCompany.company");
         EnrichPersonRequest req = new EnrichPersonRequest()
-            .withName("Sean Thorne")
-            .withLocation("San Francisco")
-            .withCompany("People Data Labs");
+            .withName(name)
+            .withLocation(location)
+            .withCompany(company);
         EnrichPersonResponse response = personEnrichment.enrichPerson(req);
         nonNull(response);
         nonNull(response.getStatus());
@@ -107,12 +112,13 @@ public class PeopleDataLabsIT {
     @Test
     public void testBulkEnrichment() throws Exception {
         PersonEnrichment personEnrichment = PeopleDataLabs.getInstance(config);
+        List<String> emails = StreamsConfigurator.getConfig().getStringList("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT.testBulkEnrichment.emails");
         BulkEnrichPersonRequestItem item1 = new BulkEnrichPersonRequestItem()
-                .withParams(new Params().withEmail(Lists.newArrayList("sblackmon@apache.org")));
+                .withParams(new Params().withEmail(Lists.newArrayList(emails.get(0))));
         BulkEnrichPersonRequestItem item2 = new BulkEnrichPersonRequestItem()
-                .withParams(new Params().withEmail(Lists.newArrayList("smarthi@apache.org")));
+                .withParams(new Params().withEmail(Lists.newArrayList(emails.get(1))));
         BulkEnrichPersonRequestItem item3 = new BulkEnrichPersonRequestItem()
-                .withParams(new Params().withEmail(Lists.newArrayList("jfrazee@apache.org")));
+                .withParams(new Params().withEmail(Lists.newArrayList(emails.get(2))));
         List<BulkEnrichPersonRequestItem> reqList = Lists.newArrayList(item1, item2, item3);
         BulkEnrichPersonRequest bulkRequest = new BulkEnrichPersonRequest().withRequests(reqList);
         List<EnrichPersonResponse> response = personEnrichment.bulkEnrichPerson(bulkRequest);
