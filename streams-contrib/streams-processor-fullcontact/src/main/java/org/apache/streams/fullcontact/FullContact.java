@@ -34,6 +34,7 @@ import org.apache.juneau.rest.client.RestClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.StringReader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -47,11 +48,11 @@ public class FullContact implements CompanyEnrichment, PersonEnrichment {
 
   private FullContactConfiguration configuration;
 
-  JsonParser parser;
-  JsonSerializer serializer;
+  protected JsonParser parser;
+  protected JsonSerializer serializer;
 
-  RestClientBuilder restClientBuilder;
-  RestClient restClient;
+  protected RestClientBuilder restClientBuilder;
+  protected RestClient restClient;
 
   private static Map<FullContactConfiguration, FullContact> INSTANCE_MAP = new ConcurrentHashMap<>();
 
@@ -88,6 +89,9 @@ public class FullContact implements CompanyEnrichment, PersonEnrichment {
       .parser(parser)
       .serializer(serializer)
       .rootUrl(baseUrl());
+    if(configuration.getDebug() == true) {
+      this.restClientBuilder.debug();
+    }
     this.restClient = restClientBuilder.build();
   }
 
@@ -98,9 +102,12 @@ public class FullContact implements CompanyEnrichment, PersonEnrichment {
   @Override
   public CompanySummary enrichCompany(EnrichCompanyRequest request) {
     try {
+      String requestJson = serializer.serialize(request);
       RestCall call = restClient
         .doPost(baseUrl() + "company.enrich")
-        .input(request);
+        .accept("application/json")
+        .contentType("application/json")
+        .body(new StringReader(requestJson));
       String responseJson = call.getResponseAsString();
       CompanySummary result = parser.parse(responseJson, CompanySummary.class);
       return result;
@@ -115,9 +122,12 @@ public class FullContact implements CompanyEnrichment, PersonEnrichment {
   @Override
   public PersonSummary enrichPerson(EnrichPersonRequest request) {
     try {
+      String requestJson = serializer.serialize(request);
       RestCall call = restClient
-        .doPost(baseUrl() + "company.enrich")
-        .input(request);
+        .doPost(baseUrl() + "person.enrich")
+        .accept("application/json")
+        .contentType("application/json")
+        .body(new StringReader(requestJson));
       String responseJson = call.getResponseAsString();
       PersonSummary result = parser.parse(responseJson, PersonSummary.class);
       return result;

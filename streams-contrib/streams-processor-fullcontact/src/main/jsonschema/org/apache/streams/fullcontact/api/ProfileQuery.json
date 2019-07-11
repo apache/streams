@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.fullcontact.api.ProfileQuery",
+  "properties": {
+    "service": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string",
+      "description": "URL to the profile on the social platform."
+    },
+    "userid": {
+      "type": "string",
+      "description": "User ID associated with the profile."
+    },
+    "username": {
+      "type": "string",
+      "description": "Displayable username of the profile."
+    }
+  }
+}

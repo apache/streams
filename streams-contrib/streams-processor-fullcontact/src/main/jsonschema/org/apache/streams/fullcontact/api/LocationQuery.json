@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.fullcontact.api.LocationQuery",
+  "properties": {
+    "addressLine1": {
+      "type": "string",
+      "description": "The first address line for each location. Only queryable when provided in conjunction with name."
+    },
+    "addressLine2": {
+      "type": "string",
+      "description": "The second address line for each location. Only queryable when provided in conjunction with name."
+    },
+    "city": {
+      "type": "string",
+      "description": "The city of each location. Only queryable when provided in conjunction with name."
+    },
+    "region": {
+      "type": "string",
+      "description": "The region of each location. This is often the state or province. Only queryable when provided in conjunction with name."
+    },
+    "regionCode": {
+      "type": "string",
+      "description": "The region code of each location. Only queryable when provided in conjunction with name."
+    },
+    "postalCode": {
+      "type": "string",
+      "description": "The postal or ZIP code for each location. Can accept Zip + 4 or Zip. Only queryable when provided in conjunction with name."
+    }
+  }
+}

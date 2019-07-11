@@ -8,6 +8,9 @@
   "javaInterfaces": ["java.io.Serializable"],
   "javaType": "org.apache.streams.fullcontact.config.FullContactConfiguration",
   "properties": {
+    "debug": {
+      "type": "boolean"
+    },
     "token": {
       "type": "string"
     }
