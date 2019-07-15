@@ -1,0 +1,106 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.peopledatalabs.api.EnrichPersonRequest",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The person's full name, at least first and last.",
+      "examples": [
+        "Jennifer C. Jackson"
+      ]
+    },
+    "first_name": {
+      "type": "string",
+      "description": "The person's first name",
+      "examples": [
+        "Jennifer"
+      ]
+    },
+    "last_name": {
+      "type": "string",
+      "description": "The person's last name",
+      "examples": [
+        "Jackson"
+      ]
+    },
+    "middle_name": {
+      "type": "string",
+      "description": "The person's middle",
+      "examples": [
+        "Cassandra"
+      ]
+    },
+    "location": {
+      "type": "string",
+      "description": "The location in which a person lives. Can be anything from a street address to a country name",
+      "examples": [
+        "Medford, OR USA"
+      ]
+    },
+    "locality": {
+      "type": "string",
+      "description": "A locality in which the person lives",
+      "examples": [
+        "Boise"
+      ]
+    },
+    "region": {
+      "type": "string",
+      "description": "A state or region in which the person lives",
+      "examples": [
+        "Idaho"
+      ]
+    },
+    "country": {
+      "type": "string",
+      "description": "A country in which the person lives",
+      "examples": [
+        "United States"
+      ]
+    },
+    "company": {
+      "type": "string",
+      "description": "A name, website, or social url of a company where the person has worked",
+      "examples": [
+        "Amazon Web Services"
+      ]
+    },
+    "school": {
+      "type": "string",
+      "description": "A name, website, or social url of a university or college the person has attended",
+      "examples": [
+        "university of iowa"
+      ]
+    },
+    "phone": {
+      "type": "string",
+      "description": "A phone number the person has used",
+      "examples": [
+        "+1 541-672 2910"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "description": "An email the person has used",
+      "examples": [
+        "renee.c.paulsen1959@yahoo.com"
+      ]
+    },
+    "email_hash": {
+      "type": "string",
+      "description": "A sha256 email hash",
+      "examples": [
+        "e206e6cd7fa5f9499fd6d2d943dcf7d9c1469bad351061483f5ce7181663b8d4"
+      ]
+    },
+    "profile": {
+      "type": "string",
+      "description": "A social profile the person has used."
+    }
+  }
+}

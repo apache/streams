@@ -1,0 +1,56 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.peopledatalabs.pojo.Location",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "locality": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "subregion": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "continent": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "geo": {
+      "type": "boolean"
+    },
+    "postal_code": {
+      "type": "string"
+    },
+    "zip_plus_4": {
+      "type": "string"
+    },
+    "street_address": {
+      "type": "string"
+    },
+    "address_line_2": {
+      "type": "string"
+    },
+    "most_recent": {
+      "type": "boolean"
+    },
+    "is_primary": {
+      "type": "boolean"
+    },
+    "last_updated": {
+      "type": "string"
+    }
+  }
+}
