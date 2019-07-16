@@ -9,19 +9,42 @@
   "properties": {
     "email": {
       "type": "string",
-      "description": "The email address of the contact. (Queryable)"
+      "description": "One email addresses of the contact. Can accept cleartext, an MD5 or SHA-256 hash representation of the email address to query. Be certain to lowercase and trim the email address prior to hashing. There is a limit of 10 hashed emails (Queryable)"
     },
-    "emailHash": {
-      "type": "string",
-      "description": "Either an MD5 or SHA-256 hash representation of the email address to query. Be certain to lowercase and trim the email address prior to hashing. (Queryable)"
-    },
-    "twitter": {
-      "type": "string",
-      "description": "Twitter handle of the contact. Acceptable formats include handle (with or without \"@\"), as well as the URL to the profile. (Queryable)"
+    "emails": {
+      "type": "array",
+      "description": "One or many email addresses of the contact. Can accept cleartext, an MD5 or SHA-256 hash representation of the email address to query. Be certain to lowercase and trim the email address prior to hashing. (Queryable)",
+      "items": {
+        "type": "string"
+      }
     },
     "phone": {
       "type": "string",
       "description": "Phone number of the contact. (Queryable)"
+    },
+    "phones": {
+      "type": "array",
+      "description": "One or many phone numbers of the contact. (Queryable)",
+      "items": {
+        "type": "string"
+      }
+    },
+    "location": {
+      "$ref": "./LocationQuery.json"
+    },
+    "name": {
+      "$ref": "./NameQuery.json"
+    },
+    "profiles": {
+      "type": "array",
+      "description": "URLs, IDs and usernames to the profiles on the social platform. (Queryable)",
+      "items": {
+        "$ref": "./ProfileQuery.json"
+      }
+    },
+    "twitter": {
+      "type": "string",
+      "description": "Twitter handle of the contact. Acceptable formats include handle (with or without \"@\"), as well as the URL to the profile. (Queryable)"
     }
   }
 }

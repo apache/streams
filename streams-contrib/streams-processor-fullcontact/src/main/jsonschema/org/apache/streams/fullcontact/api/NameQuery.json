@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.fullcontact.api.NameQuery",
+  "properties": {
+    "full": {
+      "type": "string",
+      "description": "Full name of the contact (givenName, familyName). Only queryable when provided in conjunction with postal address."
+    },
+    "given": {
+      "type": "string",
+      "description": "The given name (first name) of the individual. Only queryable when provided in conjunction with postal address."
+    },
+    "family": {
+      "type": "string",
+      "description": "The family name (last name) of the individual. Only queryable when provided in conjunction with postal address."
+    }
+  }
+}
