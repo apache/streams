@@ -96,7 +96,7 @@ object PersonEnrichmentProcessor {
     } else System.out
 
     val input = Source.fromInputStream(inputStream)
-    val inputLines = input.getLines()
+    val inputLines = input.getLines().filter(!_.startsWith("#"))
     val inputDatums = inputLines.map(entry => new StreamsDatum(entry))
 
     val outStream = new PrintStream(new BufferedOutputStream(outputStream))

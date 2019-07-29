@@ -87,7 +87,7 @@
       }
     },
     "profiles": {
-      "$ref": "./PersonProfiles.json"
+      "$ref": "./SocialProfiles.json"
     },
     "topics": {
       "type": "array",

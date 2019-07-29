@@ -114,7 +114,7 @@ class FullContactSocialGraph(in: InputStream, out: OutputStream ) extends Callab
   override def call() : FullContactSocialGraphStats = {
 
     val input = Source.fromInputStream (inputStream)
-    val inputLines = input.getLines()
+    val inputLines = input.getLines().toSeq
 
     // sequence of all PersonSummary
     val personSummaries = inputLines.map (JsonParser.DEFAULT.parse (_, classOf[PersonSummary] ) ).toSeq
@@ -125,14 +125,14 @@ class FullContactSocialGraph(in: InputStream, out: OutputStream ) extends Callab
     val uniqueInterests = FullContactUtils.uniqueInterests (allInterestItems.toIterator).toSeq
     val topicHierarchy = FullContactUtils.topicHierarchy (allInterestItems.toIterator).toSeq
 
-    val allProfiles = FullContactUtils.allProfiles (personSummaries.toIterator).seq
-    val allProfileRelationships = FullContactUtils.allProfileRelationships (personSummaries.toIterator).seq
+    val allProfiles = FullContactUtils.allProfiles (personSummaries.toIterator).toSeq
+    val allProfileRelationships = FullContactUtils.allProfileRelationships (personSummaries.toIterator).toSeq
 
-    val allEmploymentItems = FullContactUtils.allEmploymentItems (personSummaries.toIterator).seq
-    val uniqueEmployers = FullContactUtils.uniqueEmployers (allEmploymentItems).seq
+    val allEmploymentItems = FullContactUtils.allEmploymentItems (personSummaries.toIterator).toSeq
+    val uniqueEmployers = FullContactUtils.uniqueEmployers (allEmploymentItems.toIterator).toSeq
 
-    val allUrlRelationships = FullContactUtils.allUrlRelationships (personSummaries.toIterator).seq
-    val allImageRelationships = FullContactUtils.allImageRelationships (personSummaries.toIterator).seq
+    val allUrlRelationships = FullContactUtils.allUrlRelationships (personSummaries.toIterator).toSeq
+    val allImageRelationships = FullContactUtils.allImageRelationships (personSummaries.toIterator).toSeq
 
     personSummaries.flatMap (FullContactUtils.safe_personSummaryAsTurtle).foreach (outputStream.println (_) )
     allOrganizations.flatMap (FullContactUtils.safe_organizationAsTurtle).foreach (outputStream.println (_) )
@@ -144,7 +144,7 @@ class FullContactSocialGraph(in: InputStream, out: OutputStream ) extends Callab
     allImageRelationships.flatMap (FullContactUtils.safe_imageRelationshipAsTurtle).foreach (outputStream.println (_) )
 
     allProfiles.flatMap (FullContactUtils.safe_profileAsTurtle).foreach (outputStream.println (_) )
-    allProfileRelationships.flatMap (FullContactUtils.safe_personProfileRelationshipAsTurtle).foreach (outputStream.println (_) )
+    allProfileRelationships.flatMap (FullContactUtils.safe_SocialProfileRelationshipAsTurtle).foreach (outputStream.println (_) )
 
     FullContactSocialGraphStats(
       inputLines = inputLines.size,

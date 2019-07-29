@@ -124,7 +124,7 @@
       "description": "The Key People Data Add-on will return a list of influential individuals within an organization, including their full name, title, and an accompanying photo or avatar.",
       "items": {
         "type": "object",
-        "javaType": "org.apache.streams.fullcontact.CompanyKeyPerson",
+        "javaType": "org.apache.streams.fullcontact.pojo.CompanyKeyPerson",
         "properties": {
           "fullName": {
             "type": "string",
@@ -155,7 +155,7 @@
           "label": {
             "type": "string"
           },
-          "url": {
+          "value": {
             "type": "string"
           }
         }
@@ -176,12 +176,7 @@
       }
     },
     "profiles": {
-      "type": "object",
-      "javaType": "org.apache.streams.fullcontact.pojo.CompanyProfiles",
-      "description": "The All Social Profiles Data Add-on enables API consumers to retrieve a list of all known social profiles of a given contact, returning data for each social platform such as any applicable usernames/handles, the URL of the platform, any bio that the user supplied, and more.",
-      "additionalProperties": {
-        "$ref": "./CompanyTrafficRank.json"
-      }
+      "$ref": "./SocialProfiles.json"
     },
     "traffic": {
       "type": "object",
@@ -211,12 +206,11 @@
           "label": {
             "type": "string"
           },
-          "url": {
+          "value": {
             "type": "string"
           }
         }
       }
     }
-
   }
 }

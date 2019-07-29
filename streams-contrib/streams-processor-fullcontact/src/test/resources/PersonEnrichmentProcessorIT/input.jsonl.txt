@@ -14,9 +14,5 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-include "../../../../../fullcontact.conf"
-org.apache.streams.fullcontact.FullContactSocialGraph {
-  input = "target/test-classes/PersonEnrichmentProcessorIT/output.jsonl"
-#  input = "target/test-classes/FullContactSocialGraphIT/input.jsonl.txt"
-  output = "target/test-classes/FullContactSocialGraphIT/output.ttl"
-}
+{"email": "steve@blackmon.org"}
+{"emails": ["m.ben.franklin@gmail.com"]}
