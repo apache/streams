@@ -103,7 +103,7 @@
                     <annotationStyle>jackson2</annotationStyle>
                     <customAnnotator>org.apache.streams.plugins.JuneauPojoAnnotator</customAnnotator>
                     <generateBuilders>true</generateBuilders>
-                    <includeAdditionalProperties>false</includeAdditionalProperties>
+                    <includeAdditionalProperties>true</includeAdditionalProperties>
                     <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
                     <outputDirectory>${project.basedir}/target/generated-sources/pojo</outputDirectory>
                     <propertyWordDelimiters></propertyWordDelimiters>
@@ -124,6 +124,27 @@
                 </dependencies>
             </plugin>
             <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>scala-compile-first</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>scala-test-compile</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
@@ -140,6 +161,17 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${failsafe.plugin.version}</version>
+                <configuration>
+                    <!-- Run integration test suite rather than individual tests. -->
+                    <suiteXmlFiles>
+                        <suiteXmlFile>target/test-classes/testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
             </plugin>
         </plugins>
     </build>

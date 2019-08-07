@@ -64,6 +64,12 @@ object PersonEnrichmentProcessor {
     * java -cp streams-dist-jar-with-dependencies.jar -Dconfig.file=./application.conf org.apache.streams.fullcontact.provider.PersonEnrichmentProcessor
     *
     * <p/>
+    * Input stream should contain a series of new-line-seperated json-serialized `EnrichPersonRequest` objects.
+    *
+    * <p/>
+    * Output stream will contain a series of new-line-seperated json-serialized `PersonSummary` objects.
+    *
+    * <p/>
     * Input to the process is:
     *   A file if application.conf contains an 'input' key
     *   A file if -Dinput= is specified
@@ -90,7 +96,7 @@ object PersonEnrichmentProcessor {
     } else System.out
 
     val input = Source.fromInputStream(inputStream)
-    val inputLines = input.getLines()
+    val inputLines = input.getLines().filter(!_.startsWith("#"))
     val inputDatums = inputLines.map(entry => new StreamsDatum(entry))
 
     val outStream = new PrintStream(new BufferedOutputStream(outputStream))

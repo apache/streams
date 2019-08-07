@@ -11,6 +11,9 @@
     "debug": {
       "type": "boolean"
     },
+    "delay_ms": {
+      "type": "integer"
+    },
     "token": {
       "type": "string"
     }

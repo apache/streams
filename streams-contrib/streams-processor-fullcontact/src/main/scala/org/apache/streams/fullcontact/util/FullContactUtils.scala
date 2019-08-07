@@ -37,7 +37,7 @@ case class Organization(name : String, domain : String)
 
 case class OrganizationRelationship(personId : String, orgId : String)
 
-case class PersonProfileRelationship(personId : String, profileUri : String)
+case class SocialProfileRelationship(personId : String, profileUri : String)
 
 case class ImageRelationship( entityUri : String, url : String, label : String)
 
@@ -106,11 +106,11 @@ object FullContactUtils {
     input.getFullName.replaceAll("\\W","")
   }
 
-  def profileUsername( input : PersonProfile ) : String = {
+  def profileUsername( input : SocialProfile ) : String = {
     input.getUsername.replaceAll("\\W","")
   }
 
-  def profileNamespaceAndId( profile : PersonProfile ) : (String,String) = {
+  def profileNamespaceAndId( profile : SocialProfile ) : (String,String) = {
     profile.getService match {
       case "angellist" => (apst_angellist_ns,profileId(profile))
       case "twitter" => (apst_twitter_ns,profileId(profile))
@@ -124,7 +124,7 @@ object FullContactUtils {
 
   def uriFromNamespaceAndId( ns_id : (String, String) ) = s"${ns_id._1}${ns_id._2}"
   
-  def profilePrefixAndType( profile : PersonProfile ) : (String,String) = {
+  def profilePrefixAndType( profile : SocialProfile ) : (String,String) = {
     profile.getService match {
       case "angellist" => ("fc","Profile")
       case "twitter" => ("apst","TwitterProfile")
@@ -136,7 +136,7 @@ object FullContactUtils {
     }
   }
 
-  def profileId( profile : PersonProfile ) : String = {
+  def profileId( profile : SocialProfile ) : String = {
     val idOrUsername = {
       if( profile.getUserid.nonEmpty ) profile.getUserid
       else if ( profile.getUsername.nonEmpty ) profile.getUsername
@@ -149,8 +149,8 @@ object FullContactUtils {
     topic.id
   }
 
-  def selectProfiles( profiles : PersonProfiles) : Seq[PersonProfile] = {
-    val list = new ListBuffer[PersonProfile]
+  def selectProfiles( profiles : SocialProfiles) : Seq[SocialProfile] = {
+    val list = new ListBuffer[SocialProfile]
     list += profiles.getAngellist
     list += profiles.getFacebook
     list += profiles.getFacebookpage
@@ -162,8 +162,8 @@ object FullContactUtils {
     list
   }
 
-  def personProfileRelationships( summary : PersonSummary ) : Seq[PersonProfileRelationship] = {
-    val list = new ListBuffer[PersonProfileRelationship]
+  def SocialProfileRelationships( summary : PersonSummary ) : Seq[SocialProfileRelationship] = {
+    val list = new ListBuffer[SocialProfileRelationship]
     for( profile <- selectProfiles(summary.getDetails.getProfiles())) {
       val person_id = Try(personId(summary))
       val profile_uri = Try(uriFromNamespaceAndId(profileNamespaceAndId(profile)))
@@ -173,7 +173,7 @@ object FullContactUtils {
           profile_uri.isSuccess &&
           profile_uri.get != null &&
             !profile_uri.get.isEmpty ) {
-        val rel = PersonProfileRelationship(person_id.get, profile_uri.get)
+        val rel = SocialProfileRelationship(person_id.get, profile_uri.get)
         list += rel
       }
     }
@@ -208,12 +208,12 @@ object FullContactUtils {
     input.flatMap(person => person.getDetails.getEmployment.map(employment => Organization(employment.getName, employment.getDomain))).toSet.toIterator
   }
 
-  def allProfiles( input : Iterator[PersonSummary] ) : Iterator[PersonProfile] = {
+  def allProfiles( input : Iterator[PersonSummary] ) : Iterator[SocialProfile] = {
     input.flatMap(summary => selectProfiles(summary.getDetails.getProfiles))
   }
 
-  def allProfileRelationships( input : Iterator[PersonSummary] ) : Iterator[PersonProfileRelationship] = {
-    input.flatMap(personProfileRelationships)
+  def allProfileRelationships( input : Iterator[PersonSummary] ) : Iterator[SocialProfileRelationship] = {
+    input.flatMap(SocialProfileRelationships)
   }
 
   def allEmploymentItems( input : Iterator[PersonSummary] ) : Iterator[PersonEmploymentItem] = {
@@ -354,16 +354,16 @@ object FullContactUtils {
     Try(organizationAsTurtle(organization)).toOption
   }
 
-  def personProfileRelationshipAsTurtle(relationship: PersonProfileRelationship): String = {
+  def SocialProfileRelationshipAsTurtle(relationship: SocialProfileRelationship): String = {
     s"<${relationship.profileUri}> as:describes ${fc_person_prefix}:${relationship.personId} ."
   }
 
-  def safe_personProfileRelationshipAsTurtle(relationship: PersonProfileRelationship): Option[String] = {
+  def safe_SocialProfileRelationshipAsTurtle(relationship: SocialProfileRelationship): Option[String] = {
     import scala.util.Try
-    Try(personProfileRelationshipAsTurtle(relationship)).toOption
+    Try(SocialProfileRelationshipAsTurtle(relationship)).toOption
   }
 
-  def profileAsTurtle(profile: PersonProfile): String = {
+  def profileAsTurtle(profile: SocialProfile): String = {
     val id = profileId(profile)
     val uri = uriFromNamespaceAndId(profileNamespaceAndId(profile))
     val prefix_type = profilePrefixAndType(profile)
@@ -386,7 +386,7 @@ object FullContactUtils {
     sb.toString
   }
 
-  def safe_profileAsTurtle(profile: PersonProfile): Option[String] = {
+  def safe_profileAsTurtle(profile: SocialProfile): Option[String] = {
     Try(profileAsTurtle(profile)).toOption
   }
 
@@ -422,7 +422,7 @@ object FullContactUtils {
     if( root.getDetails.getUrls != null && !root.getDetails.getUrls.isEmpty)
       root.getDetails.getUrls.foreach (
         url => {
-          sb.append(s"""${fc_org_prefix}:${id} vcard:url "${url.getUrl}" . """).append("\n")
+          sb.append(s"""${fc_org_prefix}:${id} vcard:url "${url.getValue}" . """).append("\n")
         }
       )
     sb.toString

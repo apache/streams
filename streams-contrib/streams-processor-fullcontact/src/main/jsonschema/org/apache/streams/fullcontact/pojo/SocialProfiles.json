@@ -1,0 +1,171 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.fullcontact.pojo.SocialProfiles",
+  "description": "The All Social Profiles Data Add-on enables API consumers to retrieve a list of all known social profiles of a given contact, returning data for each social platform such as any applicable usernames/handles, the URL of the platform, any bio that the user supplied, and more.",
+  "properties": {
+    "aboutme": {
+      "$ref": "./SocialProfile.json"
+    },
+    "angellist": {
+      "$ref": "./SocialProfile.json"
+    },
+    "bandcamp": {
+      "$ref": "./SocialProfile.json"
+    },
+    "behance": {
+      "$ref": "./SocialProfile.json"
+    },
+    "blogger": {
+      "$ref": "./SocialProfile.json"
+    },
+    "crunchbase": {
+      "$ref": "./SocialProfile.json"
+    },
+    "delicious": {
+      "$ref": "./SocialProfile.json"
+    },
+    "deviantart": {
+      "$ref": "./SocialProfile.json"
+    },
+    "dribbble": {
+      "$ref": "./SocialProfile.json"
+    },
+    "facebook": {
+      "$ref": "./SocialProfile.json"
+    },
+    "facebookpage": {
+      "$ref": "./SocialProfile.json"
+    },
+    "flavorsme": {
+      "$ref": "./SocialProfile.json"
+    },
+    "flickr": {
+      "$ref": "./SocialProfile.json"
+    },
+    "foursquare": {
+      "$ref": "./SocialProfile.json"
+    },
+    "getsatisfaction": {
+      "$ref": "./SocialProfile.json"
+    },
+    "github": {
+      "$ref": "./SocialProfile.json"
+    },
+    "goodreads": {
+      "$ref": "./SocialProfile.json"
+    },
+    "google": {
+      "$ref": "./SocialProfile.json"
+    },
+    "googleplus": {
+      "$ref": "./SocialProfile.json"
+    },
+    "gravatar": {
+      "$ref": "./SocialProfile.json"
+    },
+    "hackernews": {
+      "$ref": "./SocialProfile.json"
+    },
+    "hiim": {
+      "$ref": "./SocialProfile.json"
+    },
+    "identica": {
+      "$ref": "./SocialProfile.json"
+    },
+    "instagram": {
+      "$ref": "./SocialProfile.json"
+    },
+    "intensedebate": {
+      "$ref": "./SocialProfile.json"
+    },
+    "keybase": {
+      "$ref": "./SocialProfile.json"
+    },
+    "klout": {
+      "$ref": "./SocialProfile.json"
+    },
+    "lastfm": {
+      "$ref": "./SocialProfile.json"
+    },
+    "linkedin": {
+      "$ref": "./SocialProfile.json"
+    },
+    "livejournal": {
+      "$ref": "./SocialProfile.json"
+    },
+    "medium": {
+      "$ref": "./SocialProfile.json"
+    },
+    "myspace": {
+      "$ref": "./SocialProfile.json"
+    },
+    "pandora": {
+      "$ref": "./SocialProfile.json"
+    },
+    "pinboard": {
+      "$ref": "./SocialProfile.json"
+    },
+    "pinterest": {
+      "$ref": "./SocialProfile.json"
+    },
+    "plancast": {
+      "$ref": "./SocialProfile.json"
+    },
+    "posterous": {
+      "$ref": "./SocialProfile.json"
+    },
+    "quora": {
+      "$ref": "./SocialProfile.json"
+    },
+    "reddit": {
+      "$ref": "./SocialProfile.json"
+    },
+    "reverbnation": {
+      "$ref": "./SocialProfile.json"
+    },
+    "scribd": {
+      "$ref": "./SocialProfile.json"
+    },
+    "slideshare": {
+      "$ref": "./SocialProfile.json"
+    },
+    "soundcloud": {
+      "$ref": "./SocialProfile.json"
+    },
+    "spotify": {
+      "$ref": "./SocialProfile.json"
+    },
+    "tripit": {
+      "$ref": "./SocialProfile.json"
+    },
+    "tumblr": {
+      "$ref": "./SocialProfile.json"
+    },
+    "twitter": {
+      "$ref": "./SocialProfile.json"
+    },
+    "vimeo": {
+      "$ref": "./SocialProfile.json"
+    },
+    "weibo": {
+      "$ref": "./SocialProfile.json"
+    },
+    "wordpress": {
+      "$ref": "./SocialProfile.json"
+    },
+    "yahoo": {
+      "$ref": "./SocialProfile.json"
+    },
+    "yelp": {
+      "$ref": "./SocialProfile.json"
+    },
+    "youtube": {
+      "$ref": "./SocialProfile.json"
+    }
+  }
+}
