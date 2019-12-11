@@ -245,4 +245,18 @@ public class FullContactIT {
         assertThat("response contains a non-empty fullName", StringUtils.isNotBlank(response.getFullName()));
     }
 
+    @Test
+    public void testHandlesMissCorrectly() throws Exception {
+        PersonEnrichment personEnrichment = FullContact.getInstance(config);
+        String email = StreamsConfigurator.getConfig().getString("org.apache.streams.fullcontact.test.FullContactIT.testHandlesMissCorrectly.emailHash");
+        EnrichPersonRequest req = new EnrichPersonRequest()
+                .withEmail(email);
+        EnrichPersonResponse response = personEnrichment.enrichPerson(req);
+        nonNull(response);
+        nonNull(response.getStatus());
+        assertEquals(response.getStatus(), new Long(404));
+        nonNull(response.getMessage());
+        assertEquals(response.getMessage(), "Profile not found");
+    }
+
 }

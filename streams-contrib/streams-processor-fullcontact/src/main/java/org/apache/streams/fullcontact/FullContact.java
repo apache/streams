@@ -18,9 +18,11 @@
 
 package org.apache.streams.fullcontact;
 
+import org.apache.juneau.rest.client.RestCallException;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.fullcontact.api.EnrichCompanyRequest;
 import org.apache.streams.fullcontact.api.EnrichPersonRequest;
+import org.apache.streams.fullcontact.api.EnrichPersonResponse;
 import org.apache.streams.fullcontact.config.FullContactConfiguration;
 import org.apache.streams.fullcontact.pojo.CompanySummary;
 import org.apache.streams.fullcontact.pojo.PersonSummary;
@@ -120,20 +122,21 @@ public class FullContact implements CompanyEnrichment, PersonEnrichment {
   }
 
   @Override
-  public PersonSummary enrichPerson(EnrichPersonRequest request) {
+  public EnrichPersonResponse enrichPerson(EnrichPersonRequest request) {
     try {
       String requestJson = serializer.serialize(request);
       RestCall call = restClient
-        .doPost(baseUrl() + "person.enrich")
-        .accept("application/json")
-        .contentType("application/json")
-        .body(new StringReader(requestJson));
+              .doPost(baseUrl() + "person.enrich")
+              .accept("application/json")
+              .contentType("application/json")
+              .ignoreErrors()
+              .body(new StringReader(requestJson));
       String responseJson = call.getResponseAsString();
-      PersonSummary result = parser.parse(responseJson, PersonSummary.class);
-      return result;
+      EnrichPersonResponse response = parser.parse(responseJson, EnrichPersonResponse.class);
+      return response;
     } catch( Exception e ) {
       LOGGER.error("Exception", e);
-      return new PersonSummary();
+      return new EnrichPersonResponse().withMessage(e.getMessage());
     } finally {
       Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
     }

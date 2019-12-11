@@ -19,7 +19,7 @@
 package org.apache.streams.fullcontact;
 
 import org.apache.streams.fullcontact.api.EnrichPersonRequest;
-import org.apache.streams.fullcontact.pojo.PersonSummary;
+import org.apache.streams.fullcontact.api.EnrichPersonResponse;
 
 import org.apache.juneau.http.annotation.Body;
 import org.apache.juneau.remote.RemoteInterface;
@@ -29,6 +29,6 @@ import org.apache.juneau.rest.client.remote.RemoteMethod;
 public interface PersonEnrichment {
 
   @RemoteMethod(method ="POST")
-  public PersonSummary enrichPerson(@Body EnrichPersonRequest request);
+  public EnrichPersonResponse enrichPerson(@Body EnrichPersonRequest request);
 
 }
