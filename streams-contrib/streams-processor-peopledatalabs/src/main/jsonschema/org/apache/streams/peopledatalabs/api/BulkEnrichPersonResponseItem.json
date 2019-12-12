@@ -5,7 +5,7 @@
     "http://www.apache.org/licenses/LICENSE-2.0"
   ],
   "id": "#",
-  "javaType": "org.apache.streams.peopledatalabs.api.EnrichPersonResponse",
+  "javaType": "org.apache.streams.peopledatalabs.api.BulkEnrichPersonResponseItem",
   "properties": {
     "status": {
       "type": "integer"
@@ -24,18 +24,6 @@
     },
     "data": {
       "$ref": "../pojo/Person.json"
-    },
-    "error": {
-      "type": "object",
-      "javaType": "org.apache.streams.peopledatalabs.api.EnrichPersonResponseError",
-      "properties": {
-        "type": {
-          "type": "string"
-        },
-        "message": {
-          "type": "string"
-        }
-      }
     }
   }
 }

@@ -18,6 +18,10 @@
 
 package org.apache.streams.peopledatalabs;
 
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
+import org.apache.juneau.ObjectMap;
+import org.apache.juneau.rest.client.RestCallException;
 import org.apache.streams.config.ComponentConfigurator;
 
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -27,6 +31,7 @@ import org.apache.juneau.rest.client.RestCall;
 import org.apache.juneau.rest.client.RestClient;
 import org.apache.juneau.rest.client.RestClientBuilder;
 import org.apache.streams.peopledatalabs.api.BulkEnrichPersonRequest;
+import org.apache.streams.peopledatalabs.api.BulkEnrichPersonResponseItem;
 import org.apache.streams.peopledatalabs.api.EnrichPersonRequest;
 import org.apache.streams.peopledatalabs.api.EnrichPersonResponse;
 import org.apache.streams.peopledatalabs.config.PeopleDataLabsConfiguration;
@@ -103,12 +108,18 @@ public class PeopleDataLabs implements PersonEnrichment {
   @Override
   public EnrichPersonResponse enrichPerson(EnrichPersonRequest request) {
     try {
-      PersonEnrichment personEnrichment = restClient.getRemoteResource(PersonEnrichment.class);
-//      RestCall call = restClient
-//        .doGet(baseUrl() + "person")
-//        .body(request);
-      //String responseJson = call.getResponseAsString();
-      EnrichPersonResponse result = personEnrichment.enrichPerson(request);
+      // TODO: use juneau remoting here once upgraded and tested
+      //      PersonEnrichment personEnrichment = restClient.getRemoteResource(PersonEnrichment.class);
+      String requestJson = serializer.serialize(request);
+      ObjectMap requestParams = new ObjectMap(requestJson);
+      RestCall call = restClient
+          .doGet(baseUrl() + "person")
+          .accept("application/json")
+          .contentType("application/json")
+          .ignoreErrors()
+          .queryIfNE(requestParams);
+      String responseJson = call.getResponseAsString();
+      EnrichPersonResponse result = parser.parse(responseJson, EnrichPersonResponse.class);
       return result;
     } catch( Exception e ) {
       LOGGER.error("Exception", e);
@@ -120,18 +131,20 @@ public class PeopleDataLabs implements PersonEnrichment {
   }
 
   @Override
-  public List<EnrichPersonResponse> bulkEnrichPerson(BulkEnrichPersonRequest request) {
+  public List<BulkEnrichPersonResponseItem> bulkEnrichPerson(BulkEnrichPersonRequest request) {
     try {
-      //PersonEnrichment personEnrichment = restClient.getRemoteResource(PersonEnrichment.class);
-      //List<EnrichPersonResponse> result = personEnrichment.bulkEnrichPerson(request);
+      // TODO: use juneau remoting here once upgraded and tested
+      //    PersonEnrichment personEnrichment = restClient.getRemoteResource(PersonEnrichment.class);
+      //    List<EnrichPersonResponse> result = personEnrichment.bulkEnrichPerson(request);
       String requestJson = serializer.serialize(request);
       RestCall call = restClient
         .doPost(baseUrl() + "person/bulk")
         .accept("application/json")
         .contentType("application/json")
+        .ignoreErrors()
         .body(new StringReader(requestJson));
       String responseJson = call.getResponseAsString();
-      List<EnrichPersonResponse> result = parser.parse(responseJson, List.class, EnrichPersonResponse.class);
+      List<BulkEnrichPersonResponseItem> result = parser.parse(responseJson, List.class, BulkEnrichPersonResponseItem.class);
       return result;
     } catch( Exception e ) {
       LOGGER.error("Exception", e);
