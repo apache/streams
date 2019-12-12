@@ -18,6 +18,8 @@
 
 package org.apache.streams.peopledatalabs;
 
+import org.apache.juneau.rest.client.RestCallException;
+import org.apache.streams.peopledatalabs.api.BulkEnrichPersonResponseItem;
 import org.apache.streams.peopledatalabs.api.EnrichPersonRequest;
 import org.apache.streams.peopledatalabs.api.BulkEnrichPersonRequest;
 import org.apache.streams.peopledatalabs.api.EnrichPersonResponse;
@@ -36,6 +38,6 @@ public interface PersonEnrichment {
     public EnrichPersonResponse enrichPerson(@Query(name = "*", skipIfEmpty = true) EnrichPersonRequest request);
 
     @RemoteMethod(method ="POST", path="/person/bulk")
-    public List<EnrichPersonResponse> bulkEnrichPerson(@Body(required = true) BulkEnrichPersonRequest request);
+    public List<BulkEnrichPersonResponseItem> bulkEnrichPerson(@Body(required = true) BulkEnrichPersonRequest request);
 
 }

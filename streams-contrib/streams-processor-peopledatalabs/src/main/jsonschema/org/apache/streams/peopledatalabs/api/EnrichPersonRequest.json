@@ -42,11 +42,25 @@
         "Medford, OR USA"
       ]
     },
+    "street_address": {
+      "type": "string",
+      "description": "A street address in which the person lives",
+      "examples": [
+        "1234 Main Street"
+      ]
+    },
     "locality": {
       "type": "string",
       "description": "A locality in which the person lives",
       "examples": [
         "Boise"
+      ]
+    },
+    "postal_code": {
+      "type": "string",
+      "description": "The postal code in which the person lives, must be used with either a country or a region.",
+      "examples": [
+        "83701"
       ]
     },
     "region": {
@@ -100,7 +114,24 @@
     },
     "profile": {
       "type": "string",
-      "description": "A social profile the person has used."
+      "description": "A social profile the person has used.  \nList of supported profiles: linkedin\ntwitter\nfacebook\ngithub\nxing\ngravatar\nindeed\nklout\nmeetup\nfoursquare\nangellist\nquora\npinterest\nflickr\naboutme\nyoutube\nvimeo\ngoogle\nwordpress\ninstagram\ncrunchbase\ndribbble\nmyspace\nbehance\nmedium\nsoundcloud\nreddit\ngitlab",
+      "examples": [
+        "https://linkedin.com/in/seanthorne"
+      ]
+    },
+    "lid": {
+      "type": "string",
+      "description": "A LinkedIn numerical ID.",
+      "examples": [
+        "145991517"
+      ]
+    },
+    "birth_date": {
+      "type": "string",
+      "description": "The person's birth date. Either the year, or a full birth date",
+      "examples": [
+        "1996-10-01"
+      ]
     }
   }
 }

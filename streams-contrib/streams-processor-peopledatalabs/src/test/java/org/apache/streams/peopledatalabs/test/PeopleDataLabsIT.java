@@ -18,6 +18,7 @@
 
 package org.apache.streams.peopledatalabs.test;
 
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
@@ -46,9 +47,11 @@ public class PeopleDataLabsIT {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeopleDataLabsIT.class);
 
-    private static String configfile = "target/test-classes/PeopleDataLabsIT.conf";
+    private static String configfile = "target/test-classes/PeopleDataLabsIT/PeopleDataLabsIT.conf";
 
     private static PeopleDataLabsConfiguration config;
+
+    private static Config testsconfig;
 
     @BeforeClass(alwaysRun = true)
     public void setup() throws Exception {
@@ -58,12 +61,13 @@ public class PeopleDataLabsIT {
         Assert.assertTrue (conf.isFile());
         StreamsConfigurator.addConfig(ConfigFactory.parseFileAnySyntax(conf));
         config = new ComponentConfigurator<>(PeopleDataLabsConfiguration.class).detectConfiguration();
+        testsconfig = StreamsConfigurator.getConfig().getConfig("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT");
     }
 
     @Test
     public void testSearchByEmail() throws Exception {
         PersonEnrichment personEnrichment = PeopleDataLabs.getInstance(config);
-        String email = StreamsConfigurator.getConfig().getString("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT.testSearchByEmail.email");
+        String email = testsconfig.getString("testSearchByEmail.email");
         EnrichPersonRequest req = new EnrichPersonRequest()
             .withEmail(email);
         EnrichPersonResponse response = personEnrichment.enrichPerson(req);
@@ -76,9 +80,24 @@ public class PeopleDataLabsIT {
     }
 
     @Test
+    public void testSearchByEmailHash() throws Exception {
+        PersonEnrichment personEnrichment = PeopleDataLabs.getInstance(config);
+        String emailHash = testsconfig.getString("testSearchByEmailHash.emailHash");
+        EnrichPersonRequest req = new EnrichPersonRequest()
+                .withEmailHash(emailHash);
+        EnrichPersonResponse response = personEnrichment.enrichPerson(req);
+        nonNull(response);
+        nonNull(response.getStatus());
+        nonNull(response.getMetadata());
+        nonNull(response.getData());
+        assertEquals(response.getStatus(), new Long(200));
+        assertThat("response contains at least one email address", response.getData().getEmails().size() >= 1);
+    }
+
+    @Test
     public void testSearchByLinkedinUrl() throws Exception {
         PersonEnrichment personEnrichment = PeopleDataLabs.getInstance(config);
-        String profile = StreamsConfigurator.getConfig().getString("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT.testSearchByLinkedinUrl.profile");
+        String profile = testsconfig.getString("testSearchByLinkedinUrl.profile");
         EnrichPersonRequest req = new EnrichPersonRequest()
             .withProfile(profile);
         EnrichPersonResponse response = personEnrichment.enrichPerson(req);
@@ -93,9 +112,10 @@ public class PeopleDataLabsIT {
     @Test
     public void testSearchByNameLocationCompany() throws Exception {
         PersonEnrichment personEnrichment = PeopleDataLabs.getInstance(config);
-        String name = StreamsConfigurator.getConfig().getString("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT.testSearchByNameLocationCompany.name");
-        String location = StreamsConfigurator.getConfig().getString("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT.testSearchByNameLocationCompany.location");
-        String company = StreamsConfigurator.getConfig().getString("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT.testSearchByNameLocationCompany.company");
+        Config testconfig = testsconfig.getConfig("testSearchByNameLocationCompany");
+        String name = testconfig.getString("name");
+        String location = testconfig.getString("location");
+        String company = testconfig.getString("company");
         EnrichPersonRequest req = new EnrichPersonRequest()
             .withName(name)
             .withLocation(location)
@@ -112,7 +132,7 @@ public class PeopleDataLabsIT {
     @Test
     public void testBulkEnrichment() throws Exception {
         PersonEnrichment personEnrichment = PeopleDataLabs.getInstance(config);
-        List<String> emails = StreamsConfigurator.getConfig().getStringList("org.apache.streams.peopledatalabs.test.PeopleDataLabsIT.testBulkEnrichment.emails");
+        List<String> emails = testsconfig.getStringList("testBulkEnrichment.emails");
         BulkEnrichPersonRequestItem item1 = new BulkEnrichPersonRequestItem()
                 .withParams(new Params().withEmail(Lists.newArrayList(emails.get(0))));
         BulkEnrichPersonRequestItem item2 = new BulkEnrichPersonRequestItem()
@@ -121,8 +141,27 @@ public class PeopleDataLabsIT {
                 .withParams(new Params().withEmail(Lists.newArrayList(emails.get(2))));
         List<BulkEnrichPersonRequestItem> reqList = Lists.newArrayList(item1, item2, item3);
         BulkEnrichPersonRequest bulkRequest = new BulkEnrichPersonRequest().withRequests(reqList);
-        List<EnrichPersonResponse> response = personEnrichment.bulkEnrichPerson(bulkRequest);
+        List<BulkEnrichPersonResponseItem> response = personEnrichment.bulkEnrichPerson(bulkRequest);
         nonNull(response);
         assertThat("response contains three response items", response.size() == 3);
     }
+
+    @Test
+    public void testHandlesMissCorrectly() throws Exception {
+        PersonEnrichment personEnrichment = PeopleDataLabs.getInstance(config);
+        Config testconfig = testsconfig.getConfig("testHandlesMissCorrectly");
+        String emailHash = testconfig.getString("emailHash");
+        EnrichPersonRequest req = new EnrichPersonRequest()
+                .withEmailHash(emailHash);
+        EnrichPersonResponse response = personEnrichment.enrichPerson(req);
+        nonNull(response);
+        nonNull(response.getStatus());
+        nonNull(response.getMetadata());
+        nonNull(response.getData());
+        assertEquals(response.getStatus(), new Long(404));
+        nonNull(response.getError());
+        assertEquals(response.getError().getType(), "not_found");
+        nonNull(response.getError().getMessage());
+    }
+
 }
