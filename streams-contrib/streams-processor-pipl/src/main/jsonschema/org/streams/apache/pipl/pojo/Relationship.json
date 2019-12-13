@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.Relationship",
+  "extends": {
+    "$ref": "./Person.json"
+  },
+  "properties": {
+    "@type": {
+      "type": "string",
+      "description": "Either one of 'work’, 'family’, 'friend’ or 'other’. Default is 'friend’"
+    },
+    "@subtype": {
+      "type": "string",
+      "description": "A free text providing further info on the association. For example, Father."
+    }
+  }
+}

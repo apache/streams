@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaInterfaces": ["java.io.Serializable"],
+  "javaType": "org.apache.streams.pipl.config.PiplConfiguration",
+  "properties": {
+    "debug": {
+      "type": "boolean"
+    },
+    "key": {
+      "type": "string"
+    }
+  }
+}

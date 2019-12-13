@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.Phone",
+  "properties": {
+    "@type": {
+      "type": "string",
+      "description": "One of 'mobile’, 'home_phone’, 'home_fax’, 'work_phone’,'work_fax’ or 'pager’. No default value."
+    },
+    "@do_not_call": {
+      "type": "boolean",
+      "description": "When the indicator is marked as true, this indicates that the US phone number is listed in the National Do Not Call Registry and should not to be contacted for telemarketing purposes.\n\nThis indicator can be used solely for the purpose of complying with the US law for preventing phone calls to numbers listed on the DNC list.\n\nWe constantly update the DNC registry to be current, this indication should only be used at the same day the API response was received."
+    },
+    "country_code": {
+      "type": "integer",
+      "description": "International call country code. See ITU-T Recommendation E.164"
+    },
+    "number": {
+      "type": "integer",
+      "description": "Phone number."
+    },
+    "extension": {
+      "type": "integer",
+      "description": "Extension."
+    },
+    "raw": {
+      "type": "string",
+      "description": "An unparsed phone. Request only."
+    },
+    "display": {
+      "type": "string",
+      "description": "The full national phone for display purposes. Response only."
+    },
+    "display_international": {
+      "type": "string",
+      "description": "The full international phone for display purposes. Response only."
+    }
+  }
+}

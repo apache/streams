@@ -1,0 +1,83 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.FieldCount",
+  "properties": {
+    "emails": {
+      "type": "integer",
+      "description": "The sum of emails."
+    },
+    "relationships": {
+      "type": "integer",
+      "description": "The sum of relationships."
+    },
+    "usernames": {
+      "type": "integer",
+      "description": "The sum of usernames."
+    },
+    "user_ids": {
+      "type": "integer",
+      "description": "The sum of user ids."
+    },
+    "jobs": {
+      "type": "integer",
+      "description": "The sum of jobs."
+    },
+    "addresses": {
+      "type": "integer",
+      "description": "The sum of addresses."
+    },
+    "ethnicities": {
+      "type": "integer",
+      "description": "The sum of ethnicities."
+    },
+    "phones": {
+      "type": "integer",
+      "description": "The sum of both mobile and landline phones."
+    },
+    "mobile_phones": {
+      "type": "integer",
+      "description": "The sum of mobile phones."
+    },
+    "landline_phones": {
+      "type": "integer",
+      "description": "The sum of landline (non-mobile) phones."
+    },
+    "educations": {
+      "type": "integer",
+      "description": "The sum of educations."
+    },
+    "languages": {
+      "type": "integer",
+      "description": "The sum of languages."
+    },
+    "social_profiles": {
+      "type": "integer",
+      "description": "The sum of social profile sources."
+    },
+    "names": {
+      "type": "integer",
+      "description": "The sum of names."
+    },
+    "dobs": {
+      "type": "integer",
+      "description": "The sum of dates of birth."
+    },
+    "images": {
+      "type": "integer",
+      "description": "The sum of images."
+    },
+    "genders": {
+      "type": "integer",
+      "description": "The sum of genders."
+    },
+    "origin_countries": {
+      "type": "integer",
+      "description": "The sum of origin countries."
+    }
+  }
+}
