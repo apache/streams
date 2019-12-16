@@ -5,8 +5,14 @@
     "http://www.apache.org/licenses/LICENSE-2.0"
   ],
   "id": "#",
-  "javaType": "org.apache.streams.pipl.api.SearchRequest",
+  "javaType": "org.apache.streams.pipl.api.FullPersonSearchRequest",
+  "extends": {
+    "$ref": "./SearchRequest.json"
+  },
   "properties": {
+    "person": {
+      "$ref": "../pojo/Person.json"
+    },
     "key": {
       "type": "string",
       "description": "Your API key, this is our way to identify you and authorize your call."

@@ -11,6 +11,10 @@
       "type": "string",
       "description": "Either one of 'personal’ or 'work’. Default is 'personal’."
     },
+    "@valid_since": {
+      "type": "string",
+      "description": "Valid since (YYYY-mm-DD)"
+    },
     "address": {
       "type": "string",
       "description": "Valid email address in simple form. No brackets of any kind."

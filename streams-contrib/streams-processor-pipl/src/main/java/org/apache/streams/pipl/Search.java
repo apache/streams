@@ -20,14 +20,23 @@ package org.apache.streams.pipl;
 
 import org.apache.juneau.http.annotation.Body;
 import org.apache.juneau.remote.RemoteInterface;
+import org.apache.juneau.remoteable.QueryIfNE;
 import org.apache.juneau.rest.client.remote.RemoteMethod;
-import org.apache.streams.pipl.api.SearchRequest;
+import org.apache.streams.pipl.api.BasicSearchRequest;
+import org.apache.streams.pipl.api.FullPersonSearchRequest;
+import org.apache.streams.pipl.api.SearchPointerRequest;
 import org.apache.streams.pipl.api.SearchResponse;
 
 @RemoteInterface(path = "https://api.pipl.com/search")
 public interface Search {
 
+  @RemoteMethod(method ="GET")
+  public SearchResponse basicSearch(@QueryIfNE("*") BasicSearchRequest request);
+
   @RemoteMethod(method ="POST")
-  public SearchResponse search(@Body SearchRequest request);
+  public SearchResponse fullPersonSearch(@Body FullPersonSearchRequest request);
+
+  @RemoteMethod(method ="POST")
+  public SearchResponse pointerSearch(@Body SearchPointerRequest request);
 
 }

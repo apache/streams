@@ -37,6 +37,7 @@
     </properties>
 
     <modules>
+        <module>streams-amazon-aws</module>
         <module>streams-persist-cassandra</module>
         <module>streams-persist-console</module>
         <module>streams-persist-elasticsearch</module>
@@ -48,22 +49,22 @@
         <module>streams-persist-mongo</module>
         <module>streams-persist-neo4j</module>
         <module>streams-persist-riak</module>
-        <module>streams-amazon-aws</module>
         <module>streams-processor-fullcontact</module>
         <module>streams-processor-jackson</module>
         <module>streams-processor-json</module>
-        <module>streams-processor-urls</module>
         <module>streams-processor-peopledatalabs</module>
         <module>streams-processor-peoplepattern</module>
+        <module>streams-processor-pipl</module>
+        <module>streams-processor-regex</module>
+        <module>streams-processor-urls</module>
         <module>streams-provider-facebook</module>
         <module>streams-provider-google</module>
         <module>streams-provider-instagram</module>
         <module>streams-provider-linkedin</module>
         <module>streams-provider-moreover</module>
-        <module>streams-provider-twitter</module>
         <module>streams-provider-sysomos</module>
+        <module>streams-provider-twitter</module>
         <module>streams-provider-rss</module>
-        <module>streams-processor-regex</module>
         <module>streams-provider-youtube</module>
     </modules>
 

@@ -5,7 +5,7 @@
     "http://www.apache.org/licenses/LICENSE-2.0"
   ],
   "id": "#",
-  "javaType": "org.apache.streams.pipl.pojo.UserId",
+  "javaType": "org.apache.streams.pipl.pojo.Url",
   "properties": {
     "@source_id": {
       "type": "string",

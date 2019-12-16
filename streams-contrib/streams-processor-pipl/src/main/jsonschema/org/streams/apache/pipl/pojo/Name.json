@@ -11,6 +11,10 @@
       "type": "string",
       "description": "Either one of ‘present’, 'maiden’, 'former’ or 'alias’. Default is 'present’"
     },
+    "@valid_since": {
+      "type": "string",
+      "description": "Valid since (YYYY-mm-DD)"
+    },
     "first": {
       "type": "string",
       "description": "First name."

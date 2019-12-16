@@ -5,15 +5,15 @@
     "http://www.apache.org/licenses/LICENSE-2.0"
   ],
   "id": "#",
-  "javaType": "org.apache.streams.pipl.pojo.Image",
+  "javaType": "org.apache.streams.pipl.api.SearchPointerRequest",
   "properties": {
-    "url": {
+    "search_pointer": {
       "type": "string",
-      "description": "Image URL"
+      "description": "search pointer."
     },
-    "thumbnail_token": {
+    "key": {
       "type": "string",
-      "description": "A special token that can be used with our thumbnail server."
+      "description": "Your API key, this is our way to identify you and authorize your call."
     }
   }
 }

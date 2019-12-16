@@ -27,6 +27,10 @@
       "type": "string",
       "description": "An internal ID which identifies the search on our systems. Useful for debugging."
     },
+    "top_match": {
+      "type": "boolean",
+      "description": "Whether top match was set in request."
+    },
     "query": {
       "$ref": "../pojo/Person.json",
       "description": "A person object representing your search parameters. Useful to see how we understood your search"

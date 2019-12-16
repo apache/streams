@@ -23,20 +23,17 @@ import org.apache.juneau.ObjectMap;
 import org.apache.juneau.json.JsonParser;
 import org.apache.juneau.json.JsonSerializer;
 import org.apache.juneau.rest.client.RestCall;
-import org.apache.juneau.rest.client.RestCallException;
 import org.apache.juneau.rest.client.RestClient;
 import org.apache.juneau.rest.client.RestClientBuilder;
 import org.apache.streams.config.ComponentConfigurator;
-import org.apache.streams.pipl.api.SearchRequest;
+import org.apache.streams.pipl.api.BasicSearchRequest;
+import org.apache.streams.pipl.api.FullPersonSearchRequest;
+import org.apache.streams.pipl.api.SearchPointerRequest;
 import org.apache.streams.pipl.api.SearchResponse;
 import org.apache.streams.pipl.config.PiplConfiguration;
-import org.apache.streams.pipl.pojo.Person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -86,7 +83,6 @@ public class Pipl implements Search {
       .contentType("application/json")
       .disableCookieManagement()
       .disableRedirectHandling()
-      .query("key", configuration.getKey())
       .parser(parser)
       .serializer(serializer)
       .rootUrl(baseUrl());
@@ -101,10 +97,30 @@ public class Pipl implements Search {
   }
 
   @Override
-  public SearchResponse search(SearchRequest request) {
+  public SearchResponse basicSearch(BasicSearchRequest request) {
     try {
-//      Search search = restClient.getRemoteResource(Search.class);
-//      SearchResponse result = search.search(request);
+      String requestJson = serializer.serialize(request);
+      ObjectMap requestMap = parser.parse(requestJson, ObjectMap.class);
+      requestMap.put("key", configuration.getKey());
+      RestCall call = restClient
+              .doGet(baseUrl() + "search")
+              .queryIfNE(requestMap)
+              .ignoreErrors();
+      String responseJson = call.getResponseAsString();
+      SearchResponse response = parser.parse(responseJson, SearchResponse.class);
+      return response;
+    } catch( Exception e ) {
+      LOGGER.error("Exception", e);
+      return new SearchResponse()
+              .withHttpStatusCode(500l);
+    } finally {
+      Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+    }
+  }
+
+  @Override
+  public SearchResponse fullPersonSearch(FullPersonSearchRequest request) {
+    try {
       String requestJson = serializer.serialize(request);
       ObjectMap requestMap = parser.parse(requestJson, ObjectMap.class);
       Object person = requestMap.remove("person");
@@ -112,8 +128,29 @@ public class Pipl implements Search {
       requestMap.put("person", personJson);
       RestCall call = restClient
           .doPost(baseUrl() + "search")
+          .query("key", configuration.getKey())
           .query(requestMap)
           .ignoreErrors();
+      String responseJson = call.getResponseAsString();
+      SearchResponse response = parser.parse(responseJson, SearchResponse.class);
+      return response;
+    } catch( Exception e ) {
+      LOGGER.error("Exception", e);
+      return new SearchResponse()
+              .withHttpStatusCode(500l);
+    } finally {
+      Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+    }
+  }
+
+  @Override
+  public SearchResponse pointerSearch(SearchPointerRequest request) {
+    try {
+      RestCall call = restClient
+              .doPost(baseUrl() + "search")
+              .query("key", configuration.getKey())
+              .query(request.getSearchPointer())
+              .ignoreErrors();
       String responseJson = call.getResponseAsString();
       SearchResponse response = parser.parse(responseJson, SearchResponse.class);
       return response;

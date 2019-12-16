@@ -11,6 +11,10 @@
       "type": "string",
       "description": "Either one of 'home’, 'work’ or 'old’. Default is 'home’"
     },
+    "@valid_since": {
+      "type": "string",
+      "description": "Valid since (YYYY-mm-DD)"
+    },
     "country": {
       "type": "string",
       "description": "Alpha-2 ISO 3166 country code"

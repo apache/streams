@@ -7,7 +7,7 @@
   "id": "#",
   "javaType": "org.apache.streams.pipl.pojo.DateOfBirth",
   "properties": {
-    "date_of_birth": {
+    "date_range": {
       "$ref": "./DateRange.json"
     },
     "display": {

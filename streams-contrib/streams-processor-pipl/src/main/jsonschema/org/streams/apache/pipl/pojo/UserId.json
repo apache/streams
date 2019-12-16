@@ -5,15 +5,11 @@
     "http://www.apache.org/licenses/LICENSE-2.0"
   ],
   "id": "#",
-  "javaType": "org.apache.streams.pipl.pojo.Image",
+  "javaType": "org.apache.streams.pipl.pojo.UserId",
   "properties": {
-    "url": {
+    "content": {
       "type": "string",
-      "description": "Image URL"
-    },
-    "thumbnail_token": {
-      "type": "string",
-      "description": "A special token that can be used with our thumbnail server."
+      "description": "A person’s user id in the format of user_id@service."
     }
   }
 }

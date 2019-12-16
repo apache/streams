@@ -1,0 +1,82 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.api.BasicSearchRequest",
+  "extends": {
+    "$ref": "./SearchRequest.json"
+  },
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Email address."
+    },
+    "phone": {
+      "type": "string",
+      "description": "Home/work/mobile phone number. We’ll try to parse the number using libphonenumber."
+    },
+    "username": {
+      "type": "string",
+      "description": "Username/screen-name, minimum 3 characters. There’s an advanced option to search by username or user-id at a specific service like superman@facebook."
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Unique ID in a supported service, must include the service name."
+    },
+    "url": {
+      "type": "string",
+      "description": "Profile URL in a supported service. This URL will be parsed to a username or user_id object."
+    },
+    "first_name": {
+      "type": "string",
+      "description": "First name, minimum 2 characters."
+    },
+    "last_name": {
+      "type": "string",
+      "description": "Last name, minimum 2 characters."
+    },
+    "middle_name": {
+      "type": "string",
+      "description": "Middle name or middle initial."
+    },
+    "raw_name": {
+      "type": "string",
+      "description": "Full Name. Use this parameter if the accurate name parts (first/middle/last) are not available, this parameter will only be used in absence of first_name and last_name."
+    },
+    "country": {
+      "type": "string",
+      "description": "A two-letter, Alpha-2 ISO-3166 country code."
+    },
+    "state": {
+      "type": "string",
+      "description": "A United States, Canada, Great Britain or Australia state code. If a US state is provided and no country specified, we’ll assume the country to be US."
+    },
+    "city": {
+      "type": "string",
+      "description": "City."
+    },
+    "street": {
+      "type": "string",
+      "description": "Street."
+    },
+    "house": {
+      "type": "string",
+      "description": "House number."
+    },
+    "zipcode": {
+      "type": "string",
+      "description": "ZIP Code."
+    },
+    "raw_address": {
+      "type": "string",
+      "description": "Full Address. Use this parameter if the accurate address parts (country/state/city…) are not available."
+    },
+    "age": {
+      "type": "string",
+      "description": "String, an exact (YY) or approximate (YY-YY) age."
+    }
+  }
+}
