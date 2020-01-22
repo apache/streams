@@ -26,7 +26,7 @@
         <version>0.6.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>streams-processor-sprinklr</artifactId>
+    <artifactId>streams-provider-sprinklr</artifactId>
     <name>${project.artifactId}</name>
 
     <description>Sprinklr API Processors</description>

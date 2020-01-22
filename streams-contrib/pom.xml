@@ -56,17 +56,15 @@
         <module>streams-processor-peopledatalabs</module>
         <module>streams-processor-peoplepattern</module>
         <module>streams-processor-regex</module>
-        <module>streams-processor-sprinklr</module>
-        <module>streams-processor-urls</module>
         <module>streams-provider-facebook</module>
         <module>streams-provider-google</module>
         <module>streams-provider-instagram</module>
         <module>streams-provider-linkedin</module>
         <module>streams-provider-moreover</module>
         <module>streams-provider-twitter</module>
+        <module>streams-provider-sprinklr</module>
         <module>streams-provider-sysomos</module>
         <module>streams-provider-rss</module>
-        <module>streams-processor-regex</module>
         <module>streams-provider-youtube</module>
     </modules>
 
