@@ -55,7 +55,7 @@ public class SprinklrBootstrapIT {
         Config parsedConfig = ConfigFactory.parseFileAnySyntax(conf);
         StreamsConfigurator.addConfig(parsedConfig);
         config = new ComponentConfigurator<>(SprinklrConfiguration.class).detectConfiguration();
-        testsconfig = StreamsConfigurator.getConfig().getConfig("org.apache.streams.sprinklr.config");
+        testsconfig = StreamsConfigurator.getConfig().getConfig("org.apache.streams.sprinklr.config.SprinklrConfiguration");
     }
 
     @Test
