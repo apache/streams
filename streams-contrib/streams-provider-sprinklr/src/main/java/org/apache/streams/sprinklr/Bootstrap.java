@@ -23,7 +23,7 @@ import org.apache.juneau.remoteable.QueryIfNE;
 import org.apache.juneau.rest.client.remote.RemoteMethod;
 import org.apache.streams.sprinklr.api.PartnerAccountsResponse;
 
-@RemoteInterface(path = "https://api2.sprinklr.com/api/v1/bootstrap/resources")
+@RemoteInterface(path = "https://api2.sprinklr.com/api/")
 public interface Bootstrap {
 
     @RemoteMethod(method = "GET")
