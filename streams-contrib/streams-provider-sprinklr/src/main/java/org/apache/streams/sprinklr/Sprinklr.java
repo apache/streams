@@ -29,10 +29,13 @@ import org.apache.juneau.rest.client.RestClient;
 import org.apache.juneau.rest.client.RestClientBuilder;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.sprinklr.api.PartnerAccountsResponse;
+import org.apache.streams.sprinklr.api.SocialProfileRequest;
+import org.apache.streams.sprinklr.api.SocialProfileResponse;
 import org.apache.streams.sprinklr.config.SprinklrConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  *  Implementation of api.sprinklr.com interfaces using juneau.
  */
 
-public class Sprinklr implements Bootstrap {
+public class Sprinklr implements Bootstrap, Profiles {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Sprinklr.class);
 
@@ -121,5 +124,25 @@ public class Sprinklr implements Bootstrap {
         }
     }
 
-
+    @Override
+    public List<SocialProfileResponse> getSocialProfile(SocialProfileRequest request) {
+        try {
+            String requestJson = serializer.serialize(request);
+            ObjectMap requestParams = new ObjectMap(requestJson);
+            RestCall call = restClient
+                    .doGet(baseUrl() + "v1/profile")
+                    .accept("application/json")
+                    .contentType("application/json")
+                    .ignoreErrors()
+                    .queryIfNE(requestParams);
+            String responseJson = call.getResponseAsString();
+            List<SocialProfileResponse> result = parser.parse(responseJson, List.class, SocialProfileResponse.class);
+            return result;
+        } catch( Exception e ) {
+            LOGGER.error("Exception", e);
+            return new ArrayList<>();
+        } finally {
+            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        }
+    }
 }
