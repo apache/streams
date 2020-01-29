@@ -9,9 +9,9 @@
   "properties": {
     "PARTNER_ACCOUNTS": {
       "type": "array",
-      "description": "List of authenticated SocialAccount objects.",
+      "description": "List of authenticated PartnerAccount objects.",
       "items": {
-        "$ref": "../pojo/SocialAccount.json"
+        "$ref": "../pojo/PartnerAccount.json"
       }
     }
   }
