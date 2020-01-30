@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.thedatagroup.api.DemographicsAppendResponseLifeStyles",
+  "properties": {
+    "book": {
+      "$ref": "./DemographicsAppendResponseLifeStylesBook.json"
+    },
+    "apparel": {
+      "$ref": "./DemographicsAppendResponseLifeStylesApparel.json"
+    },
+    "value_shopper": {
+      "type": "boolean"
+    },
+    "interests": {
+      "$ref": "./DemographicsAppendResponseLifeStylesInterests.json"
+    },
+    "pet": {
+      "type": "string",
+      "values": [
+        "HAS_PETS",
+        "EQUESTRIAN",
+        "CAT",
+        "DOG"
+      ]
+    }
+  }
+}

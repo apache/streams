@@ -55,6 +55,7 @@
         <module>streams-processor-urls</module>
         <module>streams-processor-peopledatalabs</module>
         <module>streams-processor-peoplepattern</module>
+        <module>streams-processor-thedatagroup</module>
         <module>streams-provider-facebook</module>
         <module>streams-provider-google</module>
         <module>streams-provider-instagram</module>

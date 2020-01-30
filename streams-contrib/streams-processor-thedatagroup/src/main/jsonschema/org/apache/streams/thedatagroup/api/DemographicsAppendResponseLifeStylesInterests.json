@@ -1,0 +1,116 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.thedatagroup.api.DemographicsAppendResponseLifeStylesInterests",
+  "properties": {
+    "home_and_garden": {
+      "type": "string",
+      "values": [
+        "SEWING_AND_KNITTING",
+        "WOODWORKING",
+        "PHOTOGRAPHY",
+        "HOME_AND_GARDEN"
+      ]
+    },
+    "motercycling": {
+      "type": "boolean"
+    },
+    "sports": {
+      "type": "string",
+      "values": [
+        "GENERAL_INTEREST",
+        "BASEBALL",
+        "FOOTBALL",
+        "GOLF",
+        "TENNIS",
+        "RACING"
+      ]
+    },
+    "self_improvement": {
+      "type": "string",
+      "values": [
+        "HEALTH_AND_MEDICAL",
+        "DIETING_WEIGHT_LOSS",
+        "SELF_IMPROVEMENT"
+      ]
+    },
+    "gambling": {
+      "type": "boolean"
+    },
+    "collectibles": {
+      "type": "string",
+      "values": [
+        "GENERAL_INTEREST",
+        "ANTIQUES_INTEREST",
+        "SPORTS_INTEREST"
+      ]
+    },
+    "technology": {
+      "type": "boolean"
+    },
+    "outdoors": {
+      "type": "string",
+      "values": [
+        "GENERAL_INTEREST",
+        "SNOW_SPORTS",
+        "WATER_SPORTS",
+        "HUNTING_AND_FISHING"
+      ]
+    },
+    "fitness": {
+      "type": "string",
+      "values": [
+        "HEALTH_EXERCISE",
+        "RUNNING",
+        "WALKING",
+        "AEROBICS"
+      ]
+    },
+    "home_improvement": {
+      "type": "string",
+      "values": [
+        "GENERAL_INTEREST",
+        "DIY_INTEREST"
+      ]
+    },
+    "cooking": {
+      "type": "string",
+      "values": [
+        "GOURMET_FOOD_AND_WINE",
+        "COOKING",
+        "NATURAL_FOODS"
+      ]
+    },
+    "auto_parts": {
+      "type": "boolean"
+    },
+    "investing": {
+      "type": "boolean"
+    },
+    "boating": {
+      "type": "boolean"
+    },
+    "travel": {
+      "type": "string",
+      "values": [
+        "TRAVEL",
+        "DOMESTIC",
+        "INTERNATIONAL",
+        "CRUISE"
+      ]
+    },
+    "arts": {
+      "type": "string",
+      "values": [
+        "ARTS_INTEREST",
+        "AVID_MUSIC_LISTENER",
+        "ANTIQUES_INTEREST",
+        "PERFORMING_ARTS_INTEREST"
+      ]
+    }
+  }
+}
