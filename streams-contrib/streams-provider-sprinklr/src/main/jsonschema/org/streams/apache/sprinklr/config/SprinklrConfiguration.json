@@ -18,7 +18,10 @@
       "type": "string"
     },
     "rows": {
-      "type": "number"
+      "type": "integer"
+    },
+    "start": {
+      "type": "integer"
     },
     "key": {
       "type": "string"

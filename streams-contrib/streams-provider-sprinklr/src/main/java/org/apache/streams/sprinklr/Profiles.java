@@ -36,4 +36,6 @@ public interface Profiles {
     @RemoteMethod(method = "GET")
     public List<ProfileConversationsResponse> getProfileConversations(ProfileConversationsRequest request);
 
+    @RemoteMethod(method = "GET")
+    public List<ProfileConversationsResponse> getAllProfileConversations(ProfileConversationsRequest request);
 }

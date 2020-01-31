@@ -20,6 +20,7 @@ package org.apache.streams.sprinklr;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHeader;
 import org.apache.juneau.ObjectMap;
 import org.apache.juneau.json.JsonParser;
@@ -149,35 +150,82 @@ public class Sprinklr implements Bootstrap, Profiles {
 
     @Override
     public List<ProfileConversationsResponse> getProfileConversations(ProfileConversationsRequest request) {
-        int start = 0;
-        int rows = configuration.getRows().intValue();
-        int responseCode;
+        try {
+            String requestJson = serializer.serialize(request);
+            ObjectMap requestParams = new ObjectMap(requestJson);
+            RestCall call = restClient
+                    .doGet(baseUrl() + "v1/profile/conversations")
+                    .accept("application/json")
+                    .contentType("application/json")
+                    .ignoreErrors()
+                    .queryIfNE(requestParams);
+            String responseJson = call.getResponseAsString();
+            List<ProfileConversationsResponse> result = parser.parse(responseJson, List.class, ProfileConversationsResponse.class);
+            return result;
+        } catch( Exception e ) {
+            LOGGER.error("Exception", e);
+            return new ArrayList<>();
+        } finally {
+            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    public List<ProfileConversationsResponse> getAllProfileConversations(ProfileConversationsRequest request) {
+        long start = 0;
+
+        List<ProfileConversationsResponse> chunkList = new ArrayList<>();
         List<ProfileConversationsResponse> retList = new ArrayList<>();
 
         do {
-            try {
-                String requestJson = serializer.serialize(request);
-                ObjectMap requestMap = new ObjectMap(requestJson);
-                requestMap.put("start", start);
-                RestCall call = restClient
-                        .doGet(baseUrl() + "v1/profile/conversations")
-                        .accept("application/json")
-                        .contentType("application/json")
-                        .ignoreErrors()
-                        .queryIfNE(requestMap);
-                responseCode = call.getResponseCode();
-                String responseJson = call.getResponseAsString();
-                List<ProfileConversationsResponse> responseList = parser.parse(responseJson, List.class, ProfileConversationsResponse.class);
-                start += rows;
-                retList.addAll(responseList);
-            } catch ( Exception e ) {
-                LOGGER.error("Exception", e);
-                return new ArrayList<>();
-            } finally {
-                Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-            }
-        } while (responseCode < 400);
+            // Construct a new ProfileConversationsRequest object for this chunk of responses
+            ProfileConversationsRequest thisRequest = new ProfileConversationsRequest()
+                    .withSnType(configuration.getSnType())
+                    .withSnUserId(configuration.getSnUserId())
+                    .withRows(configuration.getRows())
+                    .withStart(start);
+            chunkList = getProfileConversations(thisRequest);
+            retList.addAll(chunkList);
+            start += configuration.getRows();
+        } while (!(chunkList.isEmpty()));
 
         return retList;
     }
+
+
+
+//    @Override
+//    public List<ProfileConversationsResponse> getProfileConversations(ProfileConversationsRequest request) {
+//        int start = 0;
+//        int rows = configuration.getRows().intValue();
+//        int responseCode;
+//        List<ProfileConversationsResponse> retList = new ArrayList<>();
+//
+//        do {
+//            try {
+//                String requestJson = serializer.serialize(request);
+//                ObjectMap requestMap = new ObjectMap(requestJson);
+//                requestMap.put("start", start);
+//                RestCall call = restClient
+//                        .doGet(baseUrl() + "v1/profile/conversations")
+//                        .accept("application/json")
+//                        .contentType("application/json")
+//                        .ignoreErrors()
+//                        .queryIfNE(requestMap);
+//                HttpResponse response = call.getResponse();
+//                responseCode = response.getStatusLine().getStatusCode();
+//                String responseJson = response.getEntity().getContent().toString();
+//                List<ProfileConversationsResponse> responseList = parser.parse(responseJson, List.class, ProfileConversationsResponse.class);
+//                start += rows;
+//                retList.addAll(responseList);
+//            } catch ( Exception e ) {
+//                LOGGER.error("Exception", e);
+//                return new ArrayList<>();
+//            } finally {
+//                Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+//            }
+//        } while (responseCode < 400);
+//
+//        return retList;
+//    }
 }

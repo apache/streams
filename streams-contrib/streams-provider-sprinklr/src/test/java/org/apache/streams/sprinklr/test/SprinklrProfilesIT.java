@@ -78,9 +78,21 @@ public class SprinklrProfilesIT {
         ProfileConversationsRequest request = new ProfileConversationsRequest()
                 .withSnType(config.getSnType())
                 .withSnUserId(config.getSnUserId())
-                .withRows(config.getRows());
+                .withRows(config.getRows())
+                .withStart(config.getStart());
         List<ProfileConversationsResponse> response = sprinklr.getProfileConversations(request);
         Assert.assertFalse(response.isEmpty());
-        System.out.println(response);
+    }
+
+    @Test
+    public void testGetAllProfileConversations() throws Exception {
+        Sprinklr sprinklr = Sprinklr.getInstance(config);
+        ProfileConversationsRequest request = new ProfileConversationsRequest()
+                .withSnType(config.getSnType())
+                .withSnUserId(config.getSnUserId())
+                .withRows(config.getRows());
+        List<ProfileConversationsResponse> response = sprinklr.getAllProfileConversations(request);
+        Assert.assertFalse(response.isEmpty());
+        Assert.assertTrue(response.size() > config.getRows());
     }
 }
