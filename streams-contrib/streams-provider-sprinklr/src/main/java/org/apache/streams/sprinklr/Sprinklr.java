@@ -151,36 +151,33 @@ public class Sprinklr implements Bootstrap, Profiles {
     public List<ProfileConversationsResponse> getProfileConversations(ProfileConversationsRequest request) {
         int start = 0;
         int rows = configuration.getRows().intValue();
+        int responseCode;
         List<ProfileConversationsResponse> retList = new ArrayList<>();
 
-        while (true) {
+        do {
             try {
                 String requestJson = serializer.serialize(request);
                 ObjectMap requestMap = new ObjectMap(requestJson);
                 requestMap.put("start", start);
-                List<ProfileConversationsResponse> responseList = getProfileConversationsHelper(requestMap);
-                retList.addAll(responseList);
+                RestCall call = restClient
+                        .doGet(baseUrl() + "v1/profile/conversations")
+                        .accept("application/json")
+                        .contentType("application/json")
+                        .ignoreErrors()
+                        .queryIfNE(requestMap);
+                responseCode = call.getResponseCode();
+                String responseJson = call.getResponseAsString();
+                List<ProfileConversationsResponse> responseList = parser.parse(responseJson, List.class, ProfileConversationsResponse.class);
                 start += rows;
-            } catch( RestCallException e ) {
-                return retList;
+                retList.addAll(responseList);
             } catch ( Exception e ) {
                 LOGGER.error("Exception", e);
                 return new ArrayList<>();
             } finally {
                 Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
             }
-        }
-    }
+        } while (responseCode < 400);
 
-    public List<ProfileConversationsResponse> getProfileConversationsHelper(ObjectMap requestMap) throws IOException, ParseException {
-        RestCall call = restClient
-                .doGet(baseUrl() + "v1/profile/conversations")
-                .accept("application/json")
-                .contentType("application/json")
-                .ignoreErrors()
-                .queryIfNE(requestMap);
-        String responseJson = call.getResponseAsString();
-        List<ProfileConversationsResponse> result = parser.parse(responseJson, List.class, ProfileConversationsResponse.class);
-        return result;
+        return retList;
     }
 }
