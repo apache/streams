@@ -191,41 +191,4 @@ public class Sprinklr implements Bootstrap, Profiles {
 
         return retList;
     }
-
-
-
-//    @Override
-//    public List<ProfileConversationsResponse> getProfileConversations(ProfileConversationsRequest request) {
-//        int start = 0;
-//        int rows = configuration.getRows().intValue();
-//        int responseCode;
-//        List<ProfileConversationsResponse> retList = new ArrayList<>();
-//
-//        do {
-//            try {
-//                String requestJson = serializer.serialize(request);
-//                ObjectMap requestMap = new ObjectMap(requestJson);
-//                requestMap.put("start", start);
-//                RestCall call = restClient
-//                        .doGet(baseUrl() + "v1/profile/conversations")
-//                        .accept("application/json")
-//                        .contentType("application/json")
-//                        .ignoreErrors()
-//                        .queryIfNE(requestMap);
-//                HttpResponse response = call.getResponse();
-//                responseCode = response.getStatusLine().getStatusCode();
-//                String responseJson = response.getEntity().getContent().toString();
-//                List<ProfileConversationsResponse> responseList = parser.parse(responseJson, List.class, ProfileConversationsResponse.class);
-//                start += rows;
-//                retList.addAll(responseList);
-//            } catch ( Exception e ) {
-//                LOGGER.error("Exception", e);
-//                return new ArrayList<>();
-//            } finally {
-//                Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-//            }
-//        } while (responseCode < 400);
-//
-//        return retList;
-//    }
 }
