@@ -20,6 +20,8 @@ package org.apache.streams.sprinklr;
 
 import org.apache.juneau.remote.RemoteInterface;
 import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.streams.sprinklr.api.ProfileConversationsRequest;
+import org.apache.streams.sprinklr.api.ProfileConversationsResponse;
 import org.apache.streams.sprinklr.api.SocialProfileRequest;
 import org.apache.streams.sprinklr.api.SocialProfileResponse;
 
@@ -30,5 +32,8 @@ public interface Profiles {
 
     @RemoteMethod(method = "GET")
     public List<SocialProfileResponse> getSocialProfile(SocialProfileRequest request);
+
+    @RemoteMethod(method = "GET")
+    public List<ProfileConversationsResponse> getProfileConversations(ProfileConversationsRequest request);
 
 }

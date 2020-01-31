@@ -24,17 +24,18 @@ import org.apache.http.message.BasicHeader;
 import org.apache.juneau.ObjectMap;
 import org.apache.juneau.json.JsonParser;
 import org.apache.juneau.json.JsonSerializer;
+import org.apache.juneau.parser.ParseException;
 import org.apache.juneau.rest.client.RestCall;
 import org.apache.juneau.rest.client.RestClient;
 import org.apache.juneau.rest.client.RestClientBuilder;
+import org.apache.juneau.rest.client.RestCallException;
 import org.apache.streams.config.ComponentConfigurator;
-import org.apache.streams.sprinklr.api.PartnerAccountsResponse;
-import org.apache.streams.sprinklr.api.SocialProfileRequest;
-import org.apache.streams.sprinklr.api.SocialProfileResponse;
+import org.apache.streams.sprinklr.api.*;
 import org.apache.streams.sprinklr.config.SprinklrConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -144,5 +145,42 @@ public class Sprinklr implements Bootstrap, Profiles {
         } finally {
             Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
         }
+    }
+
+    @Override
+    public List<ProfileConversationsResponse> getProfileConversations(ProfileConversationsRequest request) {
+        int start = 0;
+        int rows = configuration.getRows().intValue();
+        List<ProfileConversationsResponse> retList = new ArrayList<>();
+
+        while (true) {
+            try {
+                String requestJson = serializer.serialize(request);
+                ObjectMap requestMap = new ObjectMap(requestJson);
+                requestMap.put("start", start);
+                List<ProfileConversationsResponse> responseList = getProfileConversationsHelper(requestMap);
+                retList.addAll(responseList);
+                start += rows;
+            } catch( RestCallException e ) {
+                return retList;
+            } catch ( Exception e ) {
+                LOGGER.error("Exception", e);
+                return new ArrayList<>();
+            } finally {
+                Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+            }
+        }
+    }
+
+    public List<ProfileConversationsResponse> getProfileConversationsHelper(ObjectMap requestMap) throws IOException, ParseException {
+        RestCall call = restClient
+                .doGet(baseUrl() + "v1/profile/conversations")
+                .accept("application/json")
+                .contentType("application/json")
+                .ignoreErrors()
+                .queryIfNE(requestMap);
+        String responseJson = call.getResponseAsString();
+        List<ProfileConversationsResponse> result = parser.parse(responseJson, List.class, ProfileConversationsResponse.class);
+        return result;
     }
 }

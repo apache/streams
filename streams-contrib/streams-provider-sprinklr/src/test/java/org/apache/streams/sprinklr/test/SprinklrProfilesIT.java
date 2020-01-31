@@ -23,6 +23,8 @@ import com.typesafe.config.ConfigFactory;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.sprinklr.Sprinklr;
+import org.apache.streams.sprinklr.api.ProfileConversationsRequest;
+import org.apache.streams.sprinklr.api.ProfileConversationsResponse;
 import org.apache.streams.sprinklr.api.SocialProfileRequest;
 import org.apache.streams.sprinklr.api.SocialProfileResponse;
 import org.apache.streams.sprinklr.config.SprinklrConfiguration;
@@ -68,5 +70,17 @@ public class SprinklrProfilesIT {
                 .withSnUserId(config.getSnUserId());
         List<SocialProfileResponse> response = sprinklr.getSocialProfile(request);
         Assert.assertFalse(response.isEmpty());
+    }
+
+    @Test
+    public void testGetProfileConversations() throws Exception {
+        Sprinklr sprinklr = Sprinklr.getInstance(config);
+        ProfileConversationsRequest request = new ProfileConversationsRequest()
+                .withSnType(config.getSnType())
+                .withSnUserId(config.getSnUserId())
+                .withRows(config.getRows());
+        List<ProfileConversationsResponse> response = sprinklr.getProfileConversations(request);
+        Assert.assertFalse(response.isEmpty());
+        System.out.println(response);
     }
 }

@@ -5,26 +5,31 @@
     "http://www.apache.org/licenses/LICENSE-2.0"
   ],
   "id": "#",
-  "javaInterfaces": ["java.io.Serializable"],
-  "javaType": "org.apache.streams.sprinklr.config.SprinklrConfiguration",
+  "javaType": "org.apache.streams.sprinklr.pojo.MessageKey",
   "properties": {
-    "debug": {
-      "type": "boolean"
+    "universalMessageId": {
+      "type": "string"
     },
     "snType": {
       "type": "string"
     },
-    "snUserId": {
-      "type": "string"
-    },
-    "rows": {
+    "msgType": {
       "type": "number"
     },
-    "key": {
+    "snMsgId": {
       "type": "string"
     },
-    "Authorization": {
+    "sourceId": {
+      "type": "number"
+    },
+    "sourceType": {
       "type": "string"
+    },
+    "snCreatedTimeYearMonth": {
+      "type": "string"
+    },
+    "snCreatedTime": {
+      "type": "number"
     }
   }
 }
