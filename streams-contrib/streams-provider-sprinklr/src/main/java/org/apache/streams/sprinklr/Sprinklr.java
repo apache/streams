@@ -174,19 +174,23 @@ public class Sprinklr implements Bootstrap, Profiles {
     public List<ProfileConversationsResponse> getAllProfileConversations(ProfileConversationsRequest request) {
         long start = 0;
 
+        String snType = request.getSnType();
+        String snUserId = request.getSnUserId();
+        Long rows = request.getRows();
+
         List<ProfileConversationsResponse> chunkList = new ArrayList<>();
         List<ProfileConversationsResponse> retList = new ArrayList<>();
 
         do {
             // Construct a new ProfileConversationsRequest object for this chunk of responses
             ProfileConversationsRequest thisRequest = new ProfileConversationsRequest()
-                    .withSnType(configuration.getSnType())
-                    .withSnUserId(configuration.getSnUserId())
-                    .withRows(configuration.getRows())
+                    .withSnType(snType)
+                    .withSnUserId(snUserId)
+                    .withRows(rows)
                     .withStart(start);
             chunkList = getProfileConversations(thisRequest);
             retList.addAll(chunkList);
-            start += configuration.getRows();
+            start += rows;
         } while (!(chunkList.isEmpty()));
 
         return retList;

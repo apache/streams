@@ -65,9 +65,13 @@ public class SprinklrProfilesIT {
     @Test
     public void testGetSocialProfile() throws Exception {
         Sprinklr sprinklr = Sprinklr.getInstance(config);
+        String snType = StreamsConfigurator.getConfig()
+                .getString("org.apache.streams.sprinklr.config.SprinklrConfiguration.testGetSocialProfile.snType");
+        String snUserId = StreamsConfigurator.getConfig()
+                .getString("org.apache.streams.sprinklr.config.SprinklrConfiguration.testGetSocialProfile.snUserId");
         SocialProfileRequest request = new SocialProfileRequest()
-                .withSnType(config.getSnType())
-                .withSnUserId(config.getSnUserId());
+                .withSnType(snType)
+                .withSnUserId(snUserId);
         List<SocialProfileResponse> response = sprinklr.getSocialProfile(request);
         Assert.assertFalse(response.isEmpty());
     }
@@ -75,11 +79,19 @@ public class SprinklrProfilesIT {
     @Test
     public void testGetProfileConversations() throws Exception {
         Sprinklr sprinklr = Sprinklr.getInstance(config);
+        String snType = StreamsConfigurator.getConfig()
+                .getString("org.apache.streams.sprinklr.config.SprinklrConfiguration.testGetProfileConversations.snType");
+        String snUserId = StreamsConfigurator.getConfig()
+                .getString("org.apache.streams.sprinklr.config.SprinklrConfiguration.testGetProfileConversations.snUserId");
+        Long rows = StreamsConfigurator.getConfig()
+                .getLong("org.apache.streams.sprinklr.config.SprinklrConfiguration.testGetProfileConversations.rows");
+        Long start = StreamsConfigurator.getConfig()
+                .getLong("org.apache.streams.sprinklr.config.SprinklrConfiguration.testGetProfileConversations.start");
         ProfileConversationsRequest request = new ProfileConversationsRequest()
-                .withSnType(config.getSnType())
-                .withSnUserId(config.getSnUserId())
-                .withRows(config.getRows())
-                .withStart(config.getStart());
+                .withSnType(snType)
+                .withSnUserId(snUserId)
+                .withRows(rows)
+                .withStart(start);
         List<ProfileConversationsResponse> response = sprinklr.getProfileConversations(request);
         Assert.assertFalse(response.isEmpty());
     }
@@ -87,12 +99,18 @@ public class SprinklrProfilesIT {
     @Test
     public void testGetAllProfileConversations() throws Exception {
         Sprinklr sprinklr = Sprinklr.getInstance(config);
+        String snType = StreamsConfigurator.getConfig()
+                .getString("org.apache.streams.sprinklr.config.SprinklrConfiguration.testGetAllProfileConversations.snType");
+        String snUserId = StreamsConfigurator.getConfig()
+                .getString("org.apache.streams.sprinklr.config.SprinklrConfiguration.testGetAllProfileConversations.snUserId");
+        Long rows = StreamsConfigurator.getConfig()
+                .getLong("org.apache.streams.sprinklr.config.SprinklrConfiguration.testGetAllProfileConversations.rows");
         ProfileConversationsRequest request = new ProfileConversationsRequest()
-                .withSnType(config.getSnType())
-                .withSnUserId(config.getSnUserId())
-                .withRows(config.getRows());
+                .withSnType(snType)
+                .withSnUserId(snUserId)
+                .withRows(rows);
         List<ProfileConversationsResponse> response = sprinklr.getAllProfileConversations(request);
         Assert.assertFalse(response.isEmpty());
-        Assert.assertTrue(response.size() > config.getRows());
+        Assert.assertTrue(response.size() > rows);
     }
 }
