@@ -30,9 +30,11 @@ import org.apache.juneau.rest.client.RestCall;
 import org.apache.juneau.rest.client.RestClient;
 import org.apache.juneau.rest.client.RestClientBuilder;
 import org.apache.juneau.rest.client.RestCallException;
+
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.sprinklr.api.*;
 import org.apache.streams.sprinklr.config.SprinklrConfiguration;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,155 +46,157 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- *  Implementation of api.sprinklr.com interfaces using juneau.
+ * Implementation of api.sprinklr.com interfaces using juneau.
  */
 
 public class Sprinklr implements Bootstrap, Profiles {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Sprinklr.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Sprinklr.class);
 
-    private SprinklrConfiguration configuration;
+  private SprinklrConfiguration configuration;
 
-    JsonParser parser;
-    JsonSerializer serializer;
+  JsonParser parser;
+  JsonSerializer serializer;
 
-    RestClientBuilder restClientBuilder;
-    RestClient restClient;
+  RestClientBuilder restClientBuilder;
+  RestClient restClient;
 
-    public static Map<SprinklrConfiguration, Sprinklr> INSTANCE_MAP = new ConcurrentHashMap<>();
+  public static Map<SprinklrConfiguration, Sprinklr> INSTANCE_MAP = new ConcurrentHashMap<>();
 
-    public static Sprinklr getInstance() throws InstantiationException {
-        return getInstance(new ComponentConfigurator<>(SprinklrConfiguration.class).detectConfiguration());
+  public static Sprinklr getInstance() throws InstantiationException {
+    return getInstance(new ComponentConfigurator<>(SprinklrConfiguration.class).detectConfiguration());
+  }
+
+  public static Sprinklr getInstance(SprinklrConfiguration configuration) throws InstantiationException {
+    if (INSTANCE_MAP.containsKey(configuration) && INSTANCE_MAP.get(configuration) != null) {
+      return INSTANCE_MAP.get(configuration);
+    } else {
+      Sprinklr sprinklr = new Sprinklr(configuration);
+      INSTANCE_MAP.put(configuration, sprinklr);
+      return INSTANCE_MAP.get(configuration);
+    }
+  }
+
+  private Sprinklr(SprinklrConfiguration configuration) {
+    this.configuration = configuration;
+    this.parser = JsonParser.DEFAULT.builder()
+        .ignoreUnknownBeanProperties(true)
+        .build();
+    this.serializer = JsonSerializer.DEFAULT.builder()
+        .trimEmptyCollections(true)
+        .trimEmptyMaps(true)
+        .build();
+    this.restClientBuilder = RestClient.create()
+        .accept("application/json")
+        .contentType("application/json")
+        .disableCookieManagement()
+        .disableRedirectHandling()
+        .parser(parser)
+        .serializer(serializer)
+        .rootUrl(baseUrl());
+    if (configuration.getDebug() == true) {
+      this.restClientBuilder.debug();
     }
 
-    public static Sprinklr getInstance(SprinklrConfiguration configuration) throws InstantiationException {
-        if (INSTANCE_MAP.containsKey(configuration) && INSTANCE_MAP.get(configuration) != null) {
-            return INSTANCE_MAP.get(configuration);
-        } else {
-            Sprinklr sprinklr = new Sprinklr(configuration);
-            INSTANCE_MAP.put(configuration, sprinklr);
-            return INSTANCE_MAP.get(configuration);
-        }
+    ArrayList<Header> defaultHeaders = new ArrayList<>();
+    defaultHeaders.add(new BasicHeader("key", configuration.getKey()));
+    defaultHeaders.add(new BasicHeader("Authorization", configuration.getAuthorization()));
+
+    restClientBuilder.setDefaultHeaders(defaultHeaders);
+    this.restClient = restClientBuilder.build();
+  }
+
+  private String baseUrl() {
+    return "https://api2.sprinklr.com/api/";
+  }
+
+  @Override
+  public PartnerAccountsResponse getPartnerAccounts() {
+    try {
+      ObjectMap requestMap = new ObjectMap();
+      requestMap.put("types", "PARTNER_ACCOUNTS");
+      RestCall call = restClient
+          .doGet(baseUrl() + "v1/bootstrap/resources")
+          .queryIfNE(requestMap)
+          .ignoreErrors();
+      String responseJson = call.getResponseAsString();
+      PartnerAccountsResponse response = parser.parse(responseJson, PartnerAccountsResponse.class);
+      return response;
+    } catch (Exception e) {
+      LOGGER.error("Exception", e);
+      return new PartnerAccountsResponse();
+    } finally {
+      Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
     }
+  }
 
-    private Sprinklr(SprinklrConfiguration configuration) {
-        this.configuration = configuration;
-        this.parser = JsonParser.DEFAULT.builder()
-                .ignoreUnknownBeanProperties(true)
-                .build();
-        this.serializer = JsonSerializer.DEFAULT.builder()
-                .trimEmptyCollections(true)
-                .trimEmptyMaps(true)
-                .build();
-        this.restClientBuilder = RestClient.create()
-                .accept("application/json")
-                .contentType("application/json")
-                .disableCookieManagement()
-                .disableRedirectHandling()
-                .parser(parser)
-                .serializer(serializer)
-                .rootUrl(baseUrl());
-        if(configuration.getDebug() == true) {
-            this.restClientBuilder.debug();
-        }
-
-        ArrayList<Header> defaultHeaders = new ArrayList<>();
-        defaultHeaders.add(new BasicHeader("key", configuration.getKey()));
-        defaultHeaders.add(new BasicHeader("Authorization", configuration.getAuthorization()));
-
-        restClientBuilder.setDefaultHeaders(defaultHeaders);
-        this.restClient = restClientBuilder.build();
+  @Override
+  public List<SocialProfileResponse> getSocialProfile(SocialProfileRequest request) {
+    try {
+      String requestJson = serializer.serialize(request);
+      ObjectMap requestParams = new ObjectMap(requestJson);
+      RestCall call = restClient
+          .doGet(baseUrl() + "v1/profile")
+          .accept("application/json")
+          .contentType("application/json")
+          .ignoreErrors()
+          .queryIfNE(requestParams);
+      String responseJson = call.getResponseAsString();
+      List<SocialProfileResponse> result = parser.parse(responseJson, List.class, SocialProfileResponse.class);
+      return result;
+    } catch (Exception e) {
+      LOGGER.error("Exception", e);
+      return new ArrayList<>();
+    } finally {
+      Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
     }
+  }
 
-    private String baseUrl() { return "https://api2.sprinklr.com/api/"; }
-
-    @Override
-    public PartnerAccountsResponse getPartnerAccounts() {
-        try {
-            ObjectMap requestMap = new ObjectMap();
-            requestMap.put("types", "PARTNER_ACCOUNTS");
-            RestCall call = restClient
-                    .doGet(baseUrl() + "v1/bootstrap/resources")
-                    .queryIfNE(requestMap)
-                    .ignoreErrors();
-            String responseJson = call.getResponseAsString();
-            PartnerAccountsResponse response = parser.parse(responseJson, PartnerAccountsResponse.class);
-            return response;
-        } catch ( Exception e ) {
-            LOGGER.error("Exception", e);
-            return new PartnerAccountsResponse();
-        } finally {
-            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-        }
+  @Override
+  public List<ProfileConversationsResponse> getProfileConversations(ProfileConversationsRequest request) {
+    try {
+      String requestJson = serializer.serialize(request);
+      ObjectMap requestParams = new ObjectMap(requestJson);
+      RestCall call = restClient
+          .doGet(baseUrl() + "v1/profile/conversations")
+          .accept("application/json")
+          .contentType("application/json")
+          .ignoreErrors()
+          .queryIfNE(requestParams);
+      String responseJson = call.getResponseAsString();
+      List<ProfileConversationsResponse> result = parser.parse(responseJson, List.class, ProfileConversationsResponse.class);
+      return result;
+    } catch (Exception e) {
+      LOGGER.error("Exception", e);
+      return new ArrayList<>();
+    } finally {
+      Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
     }
+  }
 
-    @Override
-    public List<SocialProfileResponse> getSocialProfile(SocialProfileRequest request) {
-        try {
-            String requestJson = serializer.serialize(request);
-            ObjectMap requestParams = new ObjectMap(requestJson);
-            RestCall call = restClient
-                    .doGet(baseUrl() + "v1/profile")
-                    .accept("application/json")
-                    .contentType("application/json")
-                    .ignoreErrors()
-                    .queryIfNE(requestParams);
-            String responseJson = call.getResponseAsString();
-            List<SocialProfileResponse> result = parser.parse(responseJson, List.class, SocialProfileResponse.class);
-            return result;
-        } catch( Exception e ) {
-            LOGGER.error("Exception", e);
-            return new ArrayList<>();
-        } finally {
-            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-        }
-    }
+  @Override
+  public List<ProfileConversationsResponse> getAllProfileConversations(ProfileConversationsRequest request) {
+    long start = 0;
 
-    @Override
-    public List<ProfileConversationsResponse> getProfileConversations(ProfileConversationsRequest request) {
-        try {
-            String requestJson = serializer.serialize(request);
-            ObjectMap requestParams = new ObjectMap(requestJson);
-            RestCall call = restClient
-                    .doGet(baseUrl() + "v1/profile/conversations")
-                    .accept("application/json")
-                    .contentType("application/json")
-                    .ignoreErrors()
-                    .queryIfNE(requestParams);
-            String responseJson = call.getResponseAsString();
-            List<ProfileConversationsResponse> result = parser.parse(responseJson, List.class, ProfileConversationsResponse.class);
-            return result;
-        } catch( Exception e ) {
-            LOGGER.error("Exception", e);
-            return new ArrayList<>();
-        } finally {
-            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-        }
-    }
+    String snType = request.getSnType();
+    String snUserId = request.getSnUserId();
+    Long rows = request.getRows();
 
-    @Override
-    public List<ProfileConversationsResponse> getAllProfileConversations(ProfileConversationsRequest request) {
-        long start = 0;
+    List<ProfileConversationsResponse> chunkList = new ArrayList<>();
+    List<ProfileConversationsResponse> retList = new ArrayList<>();
 
-        String snType = request.getSnType();
-        String snUserId = request.getSnUserId();
-        Long rows = request.getRows();
+    do {
+      // Construct a new ProfileConversationsRequest object for this chunk of responses
+      ProfileConversationsRequest thisRequest = new ProfileConversationsRequest()
+          .withSnType(snType)
+          .withSnUserId(snUserId)
+          .withRows(rows)
+          .withStart(start);
+      chunkList = getProfileConversations(thisRequest);
+      retList.addAll(chunkList);
+      start += rows;
+    } while (!(chunkList.isEmpty()));
 
-        List<ProfileConversationsResponse> chunkList = new ArrayList<>();
-        List<ProfileConversationsResponse> retList = new ArrayList<>();
-
-        do {
-            // Construct a new ProfileConversationsRequest object for this chunk of responses
-            ProfileConversationsRequest thisRequest = new ProfileConversationsRequest()
-                    .withSnType(snType)
-                    .withSnUserId(snUserId)
-                    .withRows(rows)
-                    .withStart(start);
-            chunkList = getProfileConversations(thisRequest);
-            retList.addAll(chunkList);
-            start += rows;
-        } while (!(chunkList.isEmpty()));
-
-        return retList;
-    }
+    return retList;
+  }
 }
