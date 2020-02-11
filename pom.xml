@@ -205,7 +205,7 @@
             <id>central-repo</id>
             <name>Maven Repository</name>
             <!-- HTTPS is unavailable for Maven Central -->
-            <url>http://repo.maven.apache.org/maven2</url>
+            <url>https://repo.maven.apache.org/maven2</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -238,7 +238,7 @@
         <repository>
             <id>clojars-repo</id>
             <name>Clojars Repository</name>
-            <url>http://clojars.org/repo</url>
+            <url>https://clojars.org/repo</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
