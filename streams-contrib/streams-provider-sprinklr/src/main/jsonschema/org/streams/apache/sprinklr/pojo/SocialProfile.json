@@ -1,0 +1,65 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.sprinklr.pojo.SocialProfile",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "snId": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "following": {
+      "type": "number"
+    },
+    "followers": {
+      "type": "number"
+    },
+    "favCount": {
+      "type": "number"
+    },
+    "reach": {
+      "type": "number"
+    },
+    "statusCount": {
+      "type": "number"
+    },
+    "url": {
+      "type": "string"
+    },
+    "profileImageUrl": {
+      "type": "string"
+    },
+    "largeProfileImageUrl": {
+      "type": "string"
+    },
+    "coverImageUrl": {
+      "type": "string"
+    },
+    "snCreatedTime": {
+      "type": "number"
+    },
+    "snModifiedTime": {
+      "type": "number"
+    },
+    "verified": {
+      "type": "boolean"
+    },
+    "unSubscribed": {
+      "type": "boolean"
+    }
+  }
+}

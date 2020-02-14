@@ -1,0 +1,222 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.sprinklr.api.ProfileConversationsResponse",
+  "properties": {
+    "replyStatusId": {
+      "type": "string"
+    },
+    "favorite": {
+      "type": "boolean"
+    },
+    "promotedOnly": {
+      "type": "boolean"
+    },
+    "fromVerifiedProfile": {
+      "type": "boolean"
+    },
+    "categoryName": {
+      "type": "string"
+    },
+    "generator": {
+      "type": "string"
+    },
+    "feedbackDM": {
+      "type": "boolean"
+    },
+    "partnerId": {
+      "type": "number"
+    },
+    "clientId": {
+      "type": "number"
+    },
+    "sourceId": {
+      "type": "number"
+    },
+    "accountId": {
+      "type": "number"
+    },
+    "sourceType": {
+      "type": "string"
+    },
+    "snType": {
+      "type": "string"
+    },
+    "snMsgId": {
+      "type": "string"
+    },
+    "messageType": {
+      "type": "number"
+    },
+    "messageSubType": {
+      "type": "number"
+    },
+    "universalMessageId": {
+      "type": "string"
+    },
+    "postId": {
+      "type": "number"
+    },
+    "postAuthorId": {
+      "type": "number"
+    },
+    "campaignId": {
+      "type": "number"
+    },
+    "campaignClientId": {
+      "type": "number"
+    },
+    "clientAndCampaignId": {
+      "type": "string"
+    },
+    "isAutoImported": {
+      "type": "boolean"
+    },
+    "permalink": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "actualText": {
+      "type": "string"
+    },
+    "textEntities": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "array",
+          "items": {
+            "$ref": "../pojo/TextEntity.json"
+          }
+        }
+      }
+    },
+    "senderProfile": {
+      "$ref": "../pojo/SocialProfile.json"
+    },
+    "receiverProfile": {
+      "$ref": "../pojo/SocialProfile.json"
+    },
+    "mentionedProfiles": {
+      "type": "array",
+      "items": {
+        "$ref": "../pojo/SocialProfile.json"
+      }
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": "number"
+        },
+        "long": {
+          "type": "number"
+        }
+      }
+    },
+    "language": {
+      "type": "string"
+    },
+    "conversationId": {
+      "type": "string"
+    },
+    "parentSnMsgId": {
+      "type": "string"
+    },
+    "parentSnCreatedTimeYearMonth": {
+      "type": "string"
+    },
+    "parentMsgType": {
+      "type": "number"
+    },
+    "deleted": {
+      "type": "boolean"
+    },
+    "archived": {
+      "type": "boolean"
+    },
+    "brandPost": {
+      "type": "boolean"
+    },
+    "parentBrandPost": {
+      "type": "boolean"
+    },
+    "hasBrandComment": {
+      "type": "boolean"
+    },
+    "hasBrandResponded": {
+      "type": "boolean"
+    },
+    "hasScheduledComment": {
+      "type": "boolean"
+    },
+    "hasParentPost": {
+      "type": "boolean"
+    },
+    "hasApplicationConversation": {
+      "type": "boolean"
+    },
+    "rootUniversalMessageId": {
+      "type": "string"
+    },
+    "isSharedPost": {
+      "type": "string"
+    },
+    "hasConversation": {
+      "type": "boolean"
+    },
+    "accountType": {
+      "type": "string"
+    },
+    "conversationMessages": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "../pojo/ConversationMessage.json"
+          }
+        },
+        "hasMore": {
+          "type": "boolean"
+        }
+      }
+    },
+    "defaultActionTime": {
+      "type": "number"
+    },
+    "additionalInformation": {
+      "type": "object",
+      "properties": {
+        "mEI": {
+          "type": "object",
+          "properties": {
+            "eng": {
+              "type": "boolean"
+            },
+            "mC": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "hasChildren": {
+      "type": "boolean"
+    },
+    "parentUniversalMessageKey": {
+      "$ref": "../pojo/MessageKey.json"
+    },
+    "altPUMK": {
+      "$ref": "../pojo/MessageKey.json"
+    },
+    "detectedSurveyMessage": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.sprinklr.pojo.MessageKey",
+  "properties": {
+    "universalMessageId": {
+      "type": "string"
+    },
+    "snType": {
+      "type": "string"
+    },
+    "msgType": {
+      "type": "number"
+    },
+    "snMsgId": {
+      "type": "string"
+    },
+    "sourceId": {
+      "type": "number"
+    },
+    "sourceType": {
+      "type": "string"
+    },
+    "snCreatedTimeYearMonth": {
+      "type": "string"
+    },
+    "snCreatedTime": {
+      "type": "number"
+    }
+  }
+}
