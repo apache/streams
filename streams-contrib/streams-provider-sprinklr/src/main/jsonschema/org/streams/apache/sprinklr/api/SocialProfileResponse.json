@@ -1,0 +1,76 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.sprinklr.api.SocialProfileResponse",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Internal Sprinklr platform ID."
+    },
+    "contactInfo": {
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string"
+        }
+      }
+    },
+    "socialProfiles": {
+      "type": "array",
+      "description": "List of SocialProfile objects matching specified criteria.",
+      "items": {
+        "$ref": "../pojo/SocialProfile.json"
+      }
+    },
+    "socialScoreCard": {
+      "type": "object",
+      "properties": {
+        "participationIndex": {
+          "type": "number"
+        },
+        "influencerIndex": {
+          "type": "number"
+        },
+        "spamIndex": {
+          "type": "number"
+        }
+      }
+    },
+    "snCreatedTime": {
+      "type": "number"
+    },
+    "snModifiedTime": {
+      "type": "number"
+    },
+    "createdTime": {
+      "type": "number"
+    },
+    "modifiedTime": {
+      "type": "number"
+    },
+    "additional": {
+      "type": "object",
+      "properties": {
+        "pT": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "LST_INFLUENCER_SCORE_UPDATED": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "exactMatch": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.sprinklr.api.SocialProfileRequest",
+  "properties": {
+    "snType": {
+      "type": "string",
+      "description": "Social network for the profile being requested."
+    },
+    "snUserId": {
+      "type": "string",
+      "description": "Social ID for the profile being requested."
+    }
+  }
+}

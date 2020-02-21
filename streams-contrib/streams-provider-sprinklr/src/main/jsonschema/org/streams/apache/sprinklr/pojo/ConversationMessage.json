@@ -1,0 +1,243 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.sprinklr.pojo.ConversationMessage.json",
+  "properties": {
+    "rootUniversalMessageId": {
+      "type": "string"
+    },
+    "campaignId": {
+      "type": "number"
+    },
+    "snType": {
+      "type": "string"
+    },
+    "messageType": {
+      "type": "number"
+    },
+    "messageSubType": {
+      "type": "number"
+    },
+    "conversationId": {
+      "type": "string"
+    },
+    "isSharedPost": {
+      "type": "boolean"
+    },
+    "partnerId": {
+      "type": "number"
+    },
+    "hasBrandComment": {
+      "type": "boolean"
+    },
+    "clientAndCampaignId": {
+      "type": "string"
+    },
+    "parentSnMsgId": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "hasParentPost": {
+      "type": "boolean"
+    },
+    "mediaList": {
+      "type": "array"
+    },
+    "parentMsgType": {
+      "type": "number"
+    },
+    "accountId": {
+      "type": "number"
+    },
+    "archived": {
+      "type": "boolean"
+    },
+    "snStats": {
+      "type": "object",
+      "properties": {
+        "reC": {
+          "type": "number"
+        }
+      }
+    },
+    "campaignClientId": {
+      "type": "number"
+    },
+    "hasChildren": {
+      "type": "boolean"
+    },
+    "isSenderFollower": {
+      "type": "boolean"
+    },
+    "parentBrandPost": {
+      "type": "boolean"
+    },
+    "snModifiedTime": {
+      "type": "number"
+    },
+    "postMessageId": {
+      "type": "number"
+    },
+    "senderProfile": {
+      "$ref": "../pojo/SocialProfile.json"
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": "number"
+        },
+        "lon": {
+          "type": "number"
+        }
+      }
+    },
+    "geoTarget": {
+      "type": "object",
+      "properties": {
+        "countries": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      }
+    },
+    "parentSnCreatedTimeYearMonth": {
+      "type": "string"
+    },
+    "workflowComments": {
+      "type": "array"
+    },
+    "sourceType": {
+      "type": "string"
+    },
+    "modifiedTime": {
+      "type": "number"
+    },
+    "deleted": {
+      "type": "boolean"
+    },
+    "brandPost": {
+      "type": "boolean"
+    },
+    "receiverProfile": {
+      "$ref": "../pojo/SocialProfile.json"
+    },
+    "altPUMK": {
+      "$ref": "../pojo/MessageKey.json"
+    },
+    "accountType": {
+      "type": "string"
+    },
+    "userActions": {
+      "type": "array"
+    },
+    "defaultActionTime": {
+      "type": "number"
+    },
+    "postId": {
+      "type": "number"
+    },
+    "parentUniversalMessageKey": {
+      "$ref": "../pojo/MessageKey.json"
+    },
+    "actualText": {
+      "type": "string"
+    },
+    "textEntities": {
+      "bio": {
+        "type": "array",
+        "items": {
+          "$ref": "../pojo/TextEntity.json"
+        }
+      }
+    },
+    "permalink": {
+      "type": "string"
+    },
+    "actionTime": {
+      "type": "number"
+    },
+    "language": {
+      "type": "string"
+    },
+    "sourceId": {
+      "type": "number"
+    },
+    "additionalInformation": {
+      "required": [
+        "mEI"
+      ],
+      "type": "object",
+      "properties": {
+        "mEI": {
+          "required": [
+            "eng",
+            "mC"
+          ],
+          "type": "object",
+          "properties": {
+            "mC": {
+              "type": "string"
+            },
+            "eng": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "clientId": {
+      "type": "number"
+    },
+    "hasConversation": {
+      "type": "boolean"
+    },
+    "detectedSurveyMessage": {
+      "type": "boolean"
+    },
+    "snMsgId": {
+      "type": "string"
+    },
+    "hasApplicationConversation": {
+      "type": "boolean"
+    },
+    "hasScheduledComment": {
+      "type": "boolean"
+    },
+    "createdTime": {
+      "type": "number"
+    },
+    "postAuthorId": {
+      "type": "number"
+    },
+    "isAutoImported": {
+      "type": "boolean"
+    },
+    "snCreatedTime": {
+      "type": "number"
+    },
+    "hasBrandResponded": {
+      "type": "boolean"
+    },
+    "universalMessageId": {
+      "type": "string"
+    },
+    "mentionedProfiles": {
+      "type": "array",
+      "items": {
+        "$ref": "../pojo/SocialProfile.json"
+      }
+    },
+    "snCreatedTimeYearMonth": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.sprinklr.pojo.PartnerAccount",
+  "properties": {
+    "accountId": {
+      "type": "number",
+      "description": "Sprinklr internal reference ID for this account."
+    },
+    "accountType": {
+      "type": "string",
+      "description": "The name of the social platform this account is on."
+    },
+    "accountUserId": {
+      "type": "string",
+      "description": "External platform-specific reference ID for this account."
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Indicates whether this account is active."
+    },
+    "screenName": {
+      "type": "string",
+      "description": "Handle of this account on the social platform."
+    },
+    "profileImgUrl": {
+      "type": "string",
+      "description": "URL of this account's profile picture."
+    },
+    "ownerUserId": {
+      "type": "number",
+      "description": "Internal reference ID for the Sprinklr user that authenticated this account."
+    },
+    "snType": {
+      "type": "string",
+      "description": "The name of the social platform associated with the handle."
+    },
+    "userPermissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Sprinklr user permissions."
+    },
+    "report": {
+      "type": "string",
+      "description": ""
+    }
+  }
+}

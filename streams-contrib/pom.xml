@@ -62,6 +62,7 @@
         <module>streams-provider-instagram</module>
         <module>streams-provider-linkedin</module>
         <module>streams-provider-moreover</module>
+        <module>streams-provider-sprinklr</module>
         <module>streams-provider-sysomos</module>
         <module>streams-provider-twitter</module>
         <module>streams-provider-rss</module>
