@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaInterfaces": ["java.io.Serializable"],
+  "javaType": "org.apache.streams.thedatagroup.config.TheDataGroupConfiguration",
+  "properties": {
+    "debug": {
+      "type": "boolean"
+    },
+    "AuthorizationToken": {
+      "type": "string"
+    },
+    "x-api-key": {
+      "type": "string"
+    }
+  }
+}

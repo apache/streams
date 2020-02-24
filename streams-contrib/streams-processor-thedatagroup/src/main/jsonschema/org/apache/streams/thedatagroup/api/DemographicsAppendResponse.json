@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.thedatagroup.api.DemographicsAppendResponse",
+  "properties": {
+    "address": {
+      "$ref" : "./DemographicsAppendResponseAddress.json"
+    },
+    "phones": {
+      "type": "array",
+      "items": {
+        "$ref" : "./DemographicsAppendResponsePhones.json"
+      }
+    },
+    "category_match": {
+      "type": "string",
+      "values": [
+        "ADDRESS",
+        "HOUSEHOLD",
+        "INDIVIDUAL",
+        "NAME_AND_ZIP",
+        "NONE"
+      ]
+    },
+    "life_styles": {
+      "$ref" : "./DemographicsAppendResponseLifeStyles.json"
+    },
+    "demographics": {
+      "$ref" : "./DemographicsAppendResponseDemographics.json"
+    }
+  }
+}
