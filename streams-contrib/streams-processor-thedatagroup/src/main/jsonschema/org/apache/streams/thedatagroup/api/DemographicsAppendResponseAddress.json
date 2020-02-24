@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.thedatagroup.api.DemographicsAppendResponseAddress",
+  "properties": {
+    "zipcode": {
+      "type" : "string"
+    },
+    "unit_number": {
+      "type" : "string"
+    },
+    "city": {
+      "type" : "string"
+    },
+    "post_direction": {
+      "type" : "string"
+    },
+    "street_number": {
+      "type" : "string"
+    },
+    "pre_direction": {
+      "type" : "string"
+    },
+    "street_type": {
+      "type" : "string"
+    },
+    "state": {
+      "type" : "string"
+    },
+    "unit_type": {
+      "type" : "string"
+    },
+    "street_name": {
+      "type" : "string"
+    }
+  }
+}

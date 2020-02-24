@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.thedatagroup.api.MobileAppendResponse",
+  "properties": {
+    "address": {
+      "$ref" : "./DemographicsAppendResponseAddress.json"
+    },
+    "first_name": {
+      "type": "string"
+    },
+    "last_name": {
+      "type": "string"
+    },
+    "phone": {
+      "$ref" : "./PhoneAppendResponseItem.json"
+    }
+  }
+}
