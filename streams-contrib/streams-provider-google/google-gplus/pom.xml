@@ -40,7 +40,7 @@
         <repository>
             <id>typesafe</id>
             <name>typesafe</name>
-            <url>http://repo.typesafe.com/typesafe/repo</url>
+            <url>https://repo.typesafe.com/typesafe/repo</url>
         </repository>
     </repositories>
 
