@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.thedatagroup.api.DemographicsAppendResponseDemographicsFamily",
+  "properties": {
+    "is_single_parent": {
+      "type" : "boolean"
+    },
+    "children": {
+      "$ref" : "./DemographicsAppendResponseDemographicsFamilyChildren.json"
+    },
+    "married": {
+      "type": "string",
+      "values": [
+        "INFERRED_MARRIED",
+        "INFERRED_SINGLE",
+        "SINGLE",
+        "MARRIED"
+      ]
+    }
+  }
+}

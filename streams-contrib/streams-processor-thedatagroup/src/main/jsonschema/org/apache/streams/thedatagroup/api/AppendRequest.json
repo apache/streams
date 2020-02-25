@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.thedatagroup.api.AppendRequest",
+  "properties": {
+    "address_1": {
+      "type": "string",
+      "description": "The address to use in the request."
+    },
+    "address_2": {
+      "type": "string",
+      "description": "The address to use in the request."
+    },
+    "first_name": {
+      "type": "string",
+      "description": "The first name to use in the request."
+    },
+    "last_name": {
+      "type": "string",
+      "description": "The last name to use in the request."
+    },
+    "city": {
+      "type": "string",
+      "description": "The city to use in the request. You must provider either both the city and state, or the zipcode."
+    },
+    "state": {
+      "type": "string",
+      "description": "The state to use in the request, abbreviated. You must provider either both the city and state, or the zipcode."
+    },
+    "zipcode": {
+      "type": "string",
+      "description": "The zipcode to use in the request. You must provider either the zipcode, or both the city and state."
+    }
+  }
+}

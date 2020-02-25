@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.thedatagroup.api.DemographicsAppendResponseDemographicsPersonRace",
+  "properties": {
+    "percent_hispanic": {
+      "type": "integer"
+    },
+    "percent_black": {
+      "type": "integer"
+    },
+    "percent_white": {
+      "type": "integer"
+    },
+    "percent_asian": {
+      "type": "integer"
+    }
+  }
+}

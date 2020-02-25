@@ -1,0 +1,76 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.thedatagroup.api.DemographicsAppendResponseDemographicsResidence",
+  "properties": {
+    "homeowner": {
+      "type": "string",
+      "values": [
+        "TENANT",
+        "OWNER",
+        "SINGLE",
+        "MARRIED"
+      ]
+    },
+    "has_pool": {
+      "type" : "boolean"
+    },
+    "estimated_market_value": {
+      "type": "string",
+      "values": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S"
+      ]
+    },
+    "length_of_residence": {
+      "type": "integer"
+    },
+    "year_home_built": {
+      "type": "integer"
+    },
+    "median_house_value": {
+      "type": "string",
+      "values": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I"
+      ]
+    },
+    "dwelling": {
+      "$ref": "./DemographicsAppendResponseDemographicsResidenceDwelling.json"
+    },
+    "is_mobile_home": {
+      "type": "integer"
+    },
+    "has_fireplace": {
+      "type": "integer"
+    }
+  }
+}

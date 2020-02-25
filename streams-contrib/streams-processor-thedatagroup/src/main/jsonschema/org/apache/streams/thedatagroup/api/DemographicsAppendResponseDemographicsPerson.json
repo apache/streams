@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.thedatagroup.api.DemographicsAppendResponsePhones",
+  "properties": {
+    "education": {
+      "$ref" : "./DemographicsAppendResponseDemographicsPersonEducation.json"
+    },
+    "gender": {
+      "type": "string",
+      "values": [
+        "M",
+        "F",
+        "U"
+      ]
+    },
+    "ethnicity": {
+      "type": "string",
+      "values": [
+        "ASIAN",
+        "AFRICAN_AMERICAN",
+        "HISPANIC"
+      ]
+    },
+    "race": {
+      "$ref" : "./DemographicsAppendResponseDemographicsPersonRace.json"
+    },
+    "date_of_birth": {
+      "type" : "string"
+    },
+    "worker_type": {
+      "$ref" : "./DemographicsAppendResponseDemographicsPersonWorkerType.json"
+    },
+    "percent_mail_order_respondent": {
+      "type" : "integer"
+    },
+    "language": {
+      "$ref" : "./DemographicsAppendResponseDemographicsPersonLanguage.json"
+    },
+    "finances": {
+      "$ref" : "./DemographicsAppendResponseDemographicsPersonFinances.json"
+    },
+    "is_senior": {
+      "type" : "boolean"
+    },
+    "age": {
+      "type" : "integer"
+    }
+  }
+}

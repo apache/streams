@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.thedatagroup.api.DemographicsAppendResponseLifeStylesApparel",
+  "properties": {
+    "men": {
+      "type": "string",
+      "values": [
+        "PURCHASED",
+        "PURCHASED_BIG_AND_TALL"
+      ]
+    },
+    "women": {
+      "type": "string",
+      "values": [
+        "PURCHASED",
+        "PURCHASED_PLUS_SIZE"
+      ]
+    },
+    "child": {
+      "type": "boolean"
+    }
+  }
+}
