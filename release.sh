@@ -27,7 +27,6 @@ if [[ -z "$REL" || -z "$DEV" ]]; then
     exit 1
 fi
 
-
 mkdir -p /tmp/streams_release
 mkdir -p logs
 
@@ -57,71 +56,18 @@ cd streams-$REL
 
 printInfo
 
-mvn clean verify $REPO > ../logs/streams_unittests.txt
+mvn -Pcheck apache-rat:check -e -DskipTests=true -Drat.excludeSubprojects=false $REPO  > ../logs/streams_ratcheck.txt
+checkStatus ../logs/streams_ratcheck.txt
+
+mvn clean test $REPO > ../logs/streams_unittests.txt
 checkStatus ../logs/streams_unittests.txt
 
-mvn $REPO clean apache-rat:check -e -DskipTests=true  > ../logs/streams-project_apache-rat_check.txt
-checkStatus ../logs/streams-project_apache-rat_check.txt
+mvn -Papache-release $REPO release:prepare -DpushChanges=false -DautoVersionSubmodules=true -DreleaseVersion=$REL -DdevelopmentVersion=$DEV-SNAPSHOT -Dtag=streams-project-$REL > ../logs/streams_release-prepare.txt
+checkStatus ../logs/streams_release-prepare.txt
 
-cp ../streams-c84fa47bd759.p12 .
-cp ../*.conf .
+mvn -Papache-release $REPO clean install release:perform -Darguments='-Dmaven.test.skip.exec=true' -Dgoals=deploy -DlocalRepoDirectory=. -DlocalCheckout=true > ../logs/streams_release-perform.txt
+checkStatus ../logs/streams_release-perform.txt
 
-mvn -PdockerITs $REPO docker:start > ../logs/streams_docker-start.txt
-checkStatus ../logs/streams_docker-start.txt
-
-sleep 30
-docker ps
-head *.properties
-
-mvn clean verify $REPO -DskipTests=true -DskipITs=false > ../logs/streams_integrationtests.txt
-checkStatus ../logs/streams_integrationtests.txt
-
-mvn -PdockerITs $REPO docker:stop > ../logs/streams_docker-stop.txt
-checkStatus ../logs/streams_docker-stop.txt
-
-mvn -Papache-release $REPO release:prepare -DpushChanges=false -DautoVersionSubmodules=true -DreleaseVersion=$REL -DdevelopmentVersion=$DEV-SNAPSHOT -Dtag=streams-project-$REL > ../logs/streams-project_release-prepare.txt
-checkStatus ../logs/streams-project_release-prepare.txt
-
-mvn -Papache-release $REPO clean install release:perform -Darguments='-Dmaven.test.skip.exec=true' -Dgoals=deploy -DlocalRepoDirectory=. -DlocalCheckout=true > ../logs/streams-project_release-perform.txt
-checkStatus ../logs/streams-project_release-perform.txt
-
-cd ..
-
-#streams-examples
-git clone https://git-wip-us.apache.org/repos/asf/streams-examples.git ./streams-examples-$REL
-cd streams-examples-$REL
-
-printInfo
-
-mvn $REPO clean apache-rat:check -e -DskipTests > ../logs/streams-examples_apache-rat_check.txt
-checkStatus ../logs/streams-examples_apache-rat_check.txt
-
-mvn $REPO clean verify > ../logs/streams-examples_unittests.txt
-checkStatus ../logs/streams-examples_unittests.txt
-
-cp ../streams-c84fa47bd759.p12 .
-cp ../*.conf .
-
-mvn $REPO -PdockerITs -N docker:start > ../logs/streams-examples_docker-start.txt
-checkStatus ../logs/streams-examples_docker-start.txt
-
-sleep 30
-docker ps
-head *.properties
-
-mvn $REPO clean verify -DskipTests=true -DskipITs=false  > ../logs/streams-examples_integrationtests.txt
-checkStatus ../logs/streams-examples_integrationtests.txt
-
-mvn $REPO -Papache-release release:prepare -DpushChanges=false -DautoVersionSubmodules=true -DreleaseVersion=$REL -DdevelopmentVersion=$DEV-SNAPSHOT -Dtag=streams-examples-$REL > ../logs/streams-examples_release-prepare.txt
-checkStatus ../logs/streams-examples_release-prepare.txt
-
-mvn $REPO -Papache-release clean install release:perform -Darguments='-Dmaven.test.skip.exec=true' -Dgoals=deploy -DlocalRepoDirectory=. -DlocalCheckout=true > ../logs/streams-examples_release-perform.txt
-checkStatus ../logs/streams-examples_release-perform.txt
-
-git push origin master
-git push origin streams-examples-$REL
-
-cd ../streams-$REL
 git push origin master
 git push origin streams-project-$REL
 

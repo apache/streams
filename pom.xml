@@ -1530,11 +1530,12 @@
                                     <exclude>**/*.jar</exclude>
                                     <exclude>**/*.svg</exclude>
                                     <exclude>**/MANIFEST.MF</exclude>
-                                    <exclude>**/src/license/*</exclude>
-                                    <exclude>**/src/license/licenses/*</exclude>
+                                    <exclude>**/src/test/resources/*</exclude>
                                     <exclude>**/src/site/resources/**/*</exclude>
                                     <exclude>**/target/**</exclude>
                                     <exclude>apache-maven-*/**/*</exclude>
+                                    <exclude>**/src/license/*</exclude>
+                                    <exclude>**/src/license/licenses/*</exclude>
                                 </excludes>
                             </configuration>
                         </plugin>
