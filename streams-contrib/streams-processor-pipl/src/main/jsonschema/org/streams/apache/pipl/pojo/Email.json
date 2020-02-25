@@ -1,0 +1,35 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.Email",
+  "properties": {
+    "@type": {
+      "type": "string",
+      "description": "Either one of 'personal’ or 'work’. Default is 'personal’."
+    },
+    "@valid_since": {
+      "type": "string",
+      "description": "Valid since (YYYY-mm-DD)"
+    },
+    "address": {
+      "type": "string",
+      "description": "Valid email address in simple form. No brackets of any kind."
+    },
+    "address_md5": {
+      "type": "string",
+      "description": "MD5 hash of the address."
+    },
+    "@disposable": {
+      "type": "boolean",
+      "description": "Whether this is a disposable email (for example guerillamail.com). Response only. Omitted if false."
+    },
+    "@email_provider": {
+      "type": "boolean",
+      "description": "Whether this email came from a public provider (such as gmail.com). Response only."
+    }
+  }
+}

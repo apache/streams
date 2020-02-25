@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.DateRange",
+  "properties": {
+    "start": {
+      "type": "string",
+      "description": "Start date of this range in 'YYYY-MM-DD’ format."
+    },
+    "end": {
+      "type": "string",
+      "description": "End date of this range in 'YYYY-MM-DD’ format."
+    }
+  }
+}

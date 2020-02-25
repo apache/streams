@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.Language",
+  "properties": {
+    "@inferred": {
+      "type": "boolean",
+      "description": "Inferred or not."
+    },
+    "language": {
+      "type": "string",
+      "description": "A 2-letter language code"
+    },
+    "region": {
+      "type": "string",
+      "description": "Country code"
+    },
+    "display": {
+      "type": "string",
+      "description": "The representation of this language (for example “en_US”)"
+    }
+  }
+}

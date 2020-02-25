@@ -1,0 +1,59 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.api.SearchRequest",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Your API key, this is our way to identify you and authorize your call."
+    },
+    "pretty": {
+      "type": "boolean",
+      "description": "Indicates whether you want the response to be \"pretty-printed\" (with indentation)."
+    },
+    "minimum_probability": {
+      "type": "number",
+      "description": "0 – 1. The minimum acceptable probability for inferred data."
+    },
+    "infer_persons": {
+      "type": "boolean",
+      "description": "whether the API should return persons made up solely from data inferred by statistical analysis from your search query."
+    },
+    "minimum_match": {
+      "type": "number",
+      "description": "0 – 1. The minimum required match score for possible persons to be returned."
+    },
+    "show_sources": {
+      "type": "string",
+      "description": "true/false/all/matching. all - all sources are shown. matching or true - only sources from the person. false - don’t show sources."
+    },
+    "hide_sponsored": {
+      "type": "boolean",
+      "description": "Whether to omit results marked \"sponsored\" (when additional data from this source is available behind a website paywall)."
+    },
+    "live_feeds": {
+      "type": "boolean",
+      "description": "Whether to use live data sources."
+    },
+    "match_requirements": {
+      "type": "string",
+      "description": "A condition to specify what fields you must get back. Responses not meeting the criteria will return empty and won’t be charged."
+    },
+    "source_category_requirements": {
+      "type": "string",
+      "description": "A condition to specify what source categories you must get back. Responses with no persons that meet the criteria will return empty and won’t be charged."
+    },
+    "callback": {
+      "type": "string",
+      "description": "For JSONP support in JavaScript applications. Only alphanumeric characters and underscores are allowed"
+    },
+    "top_match": {
+      "type": "boolean",
+      "description": "\"top_match=true\" returns the best high-ranking Person match to your search. The API will only return a highly probable Person OR a No Match (when no highly probable profile is found). It never returns a Possible Persons’ response."
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.Address",
+  "properties": {
+    "@type": {
+      "type": "string",
+      "description": "Either one of 'home’, 'work’ or 'old’. Default is 'home’"
+    },
+    "@valid_since": {
+      "type": "string",
+      "description": "Valid since (YYYY-mm-DD)"
+    },
+    "country": {
+      "type": "string",
+      "description": "Alpha-2 ISO 3166 country code"
+    },
+    "state": {
+      "type": "string",
+      "description": "2 letters state code, if country is one of US, Canada or Brazil. 3 letters state code if country is Australia or UK."
+    },
+    "city": {
+      "type": "string",
+      "description": "City name"
+    },
+    "street": {
+      "type": "string",
+      "description": "Street name"
+    },
+    "house": {
+      "type": "string",
+      "description": "House number"
+    },
+    "apartment": {
+      "type": "string",
+      "description": "Apartment number"
+    },
+    "zip_code": {
+      "type": "string",
+      "description": "Postal zip code"
+    },
+    "po_box": {
+      "type": "string",
+      "description": "Post Office box number"
+    },
+    "raw": {
+      "type": "string",
+      "description": "An unparsed full address. Request only."
+    },
+    "display": {
+      "type": "string",
+      "description": "The full address for display purposes. Response only."
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.Job",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Job title"
+    },
+    "organization": {
+      "type": "string",
+      "description": "The name of the employing organization"
+    },
+    "industry": {
+      "type": "string",
+      "description": "The employing organization industry"
+    },
+    "date_range": {
+      "$ref": "./DateRange.json"
+    },
+    "display": {
+      "type": "string",
+      "description": "The full job headline for display purposes. Response only."
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.Image",
+  "properties": {
+    "url": {
+      "type": "string",
+      "description": "Image URL"
+    },
+    "thumbnail_token": {
+      "type": "string",
+      "description": "A special token that can be used with our thumbnail server."
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.DateOfBirth",
+  "properties": {
+    "date_range": {
+      "$ref": "./DateRange.json"
+    },
+    "display": {
+      "type": "string",
+      "description": "The person’s estimated age represented by this DOB for display purposes. For example, '47 years old’. If age > 80 the format is 'Born 1927’. Response only."
+    }
+  }
+}

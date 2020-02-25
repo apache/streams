@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.Ethnicity",
+  "properties": {
+    "content": {
+      "type": "string",
+      "description": "One of the following: 'white’, 'black’, 'american_indian’, 'alaska_native’, 'chinese’, 'filipino’, 'other_asian’, 'japanese’, 'korean’, 'vietnamese’, 'native_hawaiian’, 'guamanian’, 'chamorro’, 'samoan’, 'other_pacific_islander’, 'other’."
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.Source",
+  "extends": {
+    "$ref": "./Person.json"
+  },
+  "description": "https://docs.pipl.com/reference#source",
+  "properties": {
+    "@id": {
+      "type": "string",
+      "description": "Unique identifier of this source in our systems. Useful for debugging"
+    },
+    "@name": {
+      "type": "string",
+      "description": "Data Source name."
+    },
+    "@category": {
+      "type": "string",
+      "description": "Data Source category."
+    },
+    "@domain": {
+      "type": "string",
+      "description": "Data Source domain."
+    },
+    "@person_id": {
+      "type": "string",
+      "description": "The id of the person this source belongs to."
+    },
+    "@sponsored": {
+      "type": "boolean",
+      "description": "Indicating whether additional data from this source is available behind a website paywall. Omitted if false."
+    },
+    "@origin_url": {
+      "type": "string",
+      "description": "The url of the web page holding this information. Only shown if the data is available online."
+    },
+    "@match": {
+      "type": "number",
+      "description": "0-1. The match score of the person this source belongs to."
+    },
+    "@premium": {
+      "type": "boolean",
+      "description": "Whether this is a premium data source. Omitted if false."
+    },
+    "display": {
+      "type": "string",
+      "description": "The full address for display purposes. Response only."
+    }
+  }
+}
