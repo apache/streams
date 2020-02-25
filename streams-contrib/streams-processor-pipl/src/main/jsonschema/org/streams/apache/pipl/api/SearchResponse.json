@@ -1,0 +1,76 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.api.SearchResponse",
+  "properties": {
+    "@http_status_code": {
+      "type": "integer",
+      "description": "The HTTP status code of the response. Successful calls will be 200."
+    },
+    "@visible_sources": {
+      "type": "integer",
+      "description": "The number of sources returned in the sources array (if show_sources is not false)."
+    },
+    "@available_sources": {
+      "type": "integer",
+      "description": "The number of sources we know of that are relevant to the search."
+    },
+    "@persons_count": {
+      "type": "integer",
+      "description": "The number of persons returned in this API response."
+    },
+    "@search_id": {
+      "type": "string",
+      "description": "An internal ID which identifies the search on our systems. Useful for debugging."
+    },
+    "top_match": {
+      "type": "boolean",
+      "description": "Whether top match was set in request."
+    },
+    "query": {
+      "$ref": "../pojo/Person.json",
+      "description": "A person object representing your search parameters. Useful to see how we understood your search"
+    },
+    "match_requirements": {
+      "type": "string",
+      "description": "The canonical way to express the match requirement you’ve sent. Useful to see how we’ve parsed your criteria."
+    },
+    "available_data": {
+      "$ref": "../pojo/AvailableData.json",
+      "description": "An available_data object. A summary of the data we have for this search."
+    },
+    "error": {
+      "type": "string",
+      "description": "An error message, explaining an error that prevented your search from being run."
+    },
+    "warnings": {
+      "type": "array",
+      "description": "An array of warning strings.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "person": {
+      "$ref": "../pojo/Person.json",
+      "description": "A person object containing the data about the person you are searching for - if a single person was matched to your query."
+    },
+    "possible_persons": {
+      "type": "array",
+      "description": "An array of person objects containing possible matches.",
+      "items": {
+        "$ref": "../pojo/Person.json"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "description": "An array of source objects, in case you need to see where the data came from.",
+      "items": {
+        "$ref": "../pojo/Source.json"
+      }
+    }
+  }
+}

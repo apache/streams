@@ -1,0 +1,118 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.pojo.Person",
+  "properties": {
+    "@id": {
+      "type": "string",
+      "description": "An identifier of this person in this response. To be used in conjunction with @person_id in the Source object. Only shown if the response includes a single person object."
+    },
+    "@inferred": {
+      "type": "boolean",
+      "description": "Whether this person is made up solely from data inferred by statistical analysis from your search query. You can control inference using the minimum_probability parameter, and inference of persons using the infer_persons parameter."
+    },
+    "@search_pointer": {
+      "type": "string",
+      "description": "A special string crafted by the API for follow up searches."
+    },
+    "@match": {
+      "type": "number",
+      "description": "0-1. The level of confidence we have that this is the person you’re looking for."
+    },
+    "names": {
+      "type": "array",
+      "items": {
+        "$ref": "./Name.json"
+      }
+    },
+    "emails": {
+      "type": "array",
+      "items": {
+        "$ref": "./Email.json"
+      }
+    },
+    "usernames": {
+      "type": "array",
+      "items": {
+        "$ref": "./Username.json"
+      }
+    },
+    "phones": {
+      "type": "array",
+      "items": {
+        "$ref": "./Phone.json"
+      }
+    },
+    "gender": {
+      "$ref": "./Gender.json"
+    },
+    "dob": {
+      "$ref": "./DateOfBirth.json"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "$ref": "./Language.json"
+      }
+    },
+    "ethnicities": {
+      "type": "array",
+      "items": {
+        "$ref": "./Ethnicity.json"
+      }
+    },
+    "origin_countries": {
+      "type": "array",
+      "items": {
+        "$ref": "./OriginCountry.json"
+      }
+    },
+    "addresses": {
+      "type": "array",
+      "items": {
+        "$ref": "./Address.json"
+      }
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "$ref": "./Job.json"
+      }
+    },
+    "educations": {
+      "type": "array",
+      "items": {
+        "$ref": "./Education.json"
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "$ref": "./Relationship.json"
+      }
+    },
+    "user_ids": {
+      "type": "array",
+      "items": {
+        "$ref": "./UserId.json"
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "$ref": "./Image.json"
+      }
+    },
+    "urls": {
+      "type": "array",
+      "items": {
+        "$ref": "./Url.json"
+      }
+    }
+  }
+}
+The level of confidence we have that this is the person you’re looking for.

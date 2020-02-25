@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.pipl.api.SearchPointerRequest",
+  "properties": {
+    "search_pointer": {
+      "type": "string",
+      "description": "search pointer."
+    },
+    "key": {
+      "type": "string",
+      "description": "Your API key, this is our way to identify you and authorize your call."
+    }
+  }
+}
