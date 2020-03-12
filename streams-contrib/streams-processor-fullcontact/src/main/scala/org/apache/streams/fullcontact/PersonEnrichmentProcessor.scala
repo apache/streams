@@ -51,25 +51,25 @@ object PersonEnrichmentProcessor {
   /**
     * To use from command line:
     *
-    * <p/>
+    * <p></p>
     * Supply (at least) the following required configuration in application.conf:
     *
-    * <p/>
+    * <p></p>
     * org.apache.streams.fullcontact.config.FullContactConfiguration.token = ""
     *
-    * <p/>
+    * <p></p>
     * Launch syntax:
     *
-    * <p/>
+    * <p></p>
     * java -cp streams-dist-jar-with-dependencies.jar -Dconfig.file=./application.conf org.apache.streams.fullcontact.provider.PersonEnrichmentProcessor
     *
-    * <p/>
+    * <p></p>
     * Input stream should contain a series of new-line-seperated json-serialized `EnrichPersonRequest` objects.
     *
-    * <p/>
+    * <p></p>
     * Output stream will contain a series of new-line-seperated json-serialized `PersonSummary` objects.
     *
-    * <p/>
+    * <p></p>
     * Input to the process is:
     *   A file if application.conf contains an 'input' key
     *   A file if -Dinput= is specified

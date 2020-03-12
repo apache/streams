@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Instagram provider that pulls UserInfoData from Instagram.
  *
- * <p/>
+ * <p></p>
  * Retrieve latest user details from a list of user ids or names.
  */
 public class InstagramUserInfoProvider extends InstagramAbstractProvider {
@@ -71,18 +71,18 @@ public class InstagramUserInfoProvider extends InstagramAbstractProvider {
   /**
    * To use from command line:
    *
-   * <p/>
+   * <p></p>
    * Supply (at least) the following required configuration in application.conf:
    *
-   * <p/>
+   * <p></p>
    * instagram.clientKey
    * instagram.usersInfo.authorizedTokens
    * instagram.usersInfo.users
    *
-   * <p/>
+   * <p></p>
    * Launch using:
    *
-   * <p/>
+   * <p></p>
    * mvn exec:java \
    * -Dexec.mainClass=org.apache.streams.instagram.provider.userinfo.InstagramUserInfoProvider \
    * -Dexec.args="application.conf userinfo.json"

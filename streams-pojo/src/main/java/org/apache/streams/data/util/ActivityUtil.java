@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * Utility class for managing activities
  *
- * <p/>
+ * <p></p>
  * Deprecated: Use {@link org.apache.streams.pojo.extensions.ExtensionUtil}
  */
 @Deprecated

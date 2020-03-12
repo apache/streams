@@ -66,7 +66,7 @@ public class StreamsCassandraResourceGenerator implements Runnable {
   /**
    * Run from CLI without Maven
    *
-   * <p/>
+   * <p></p>
    * java -jar streams-plugin-cassandra-jar-with-dependencies.jar StreamsCassandraResourceGenerator src/main/jsonschema target/generated-resources
    *
    * @param args [sourceDirectory, targetDirectory]

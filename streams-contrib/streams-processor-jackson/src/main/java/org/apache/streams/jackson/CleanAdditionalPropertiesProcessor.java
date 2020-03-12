@@ -37,7 +37,7 @@ import java.util.Map;
  * This processor walks an input objectnode and corrects any artifacts
  * that may have occured from improper serialization of jackson beans.
  *
- * <p/>
+ * <p></p>
  * The logic is also available for inclusion in other module via static import.
  */
 public class CleanAdditionalPropertiesProcessor implements StreamsProcessor {

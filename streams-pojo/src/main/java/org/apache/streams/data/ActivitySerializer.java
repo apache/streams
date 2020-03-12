@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Serializes and deserializes Activities
  *
- * <p/>
+ * <p></p>
  * Deprecated: Switch all modules to use {@link org.apache.streams.data.ActivityConverter}
  */
 @Deprecated

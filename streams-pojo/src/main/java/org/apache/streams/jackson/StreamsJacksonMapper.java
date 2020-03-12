@@ -37,10 +37,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * StreamsJacksonMapper is the recommended interface to jackson for any streams component.
  *
- * <p/>
+ * <p></p>
  * Date-time formats that must be supported can be specified with constructor arguments.
  *
- * <p/>
+ * <p></p>
  * If no Date-time formats are specified, streams will use reflection to find formats.
  */
 public class StreamsJacksonMapper extends ObjectMapper {

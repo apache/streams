@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Ensures generic ObjectNode representation of an Activity can be converted to Activity.
  *
- * <p/>
+ * <p></p>
  * BaseObjectNodeActivityConverter is included by default in all
  * {@link ActivityConverterProcessor}
  *

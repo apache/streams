@@ -122,13 +122,13 @@ public class TestGPlusUserActivityCollector extends RandomizedTest {
 
   /**
    * Creates a randomized activity and randomized date range.
-   * <p/>
+   * <p></p>
    * The activity feed is separated into three chunks,
    * |. . . data too recent to be in date range . . .||. . . data in date range. . .||. . . data too old to be in date range|
    * [index 0, ............................................................................................., index length-1]
-   * <p/>
+   * <p></p>
    * Inside of those chunks data has no order, but the list is ordered by those three chunks.
-   * <p/>
+   * <p></p>
    * The test will check to see if the num of data in the date range make onto the output queue.
    */
   @Test

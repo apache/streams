@@ -90,19 +90,19 @@ public class TwitterStreamProvider implements StreamsProvider, Serializable, Dat
   /**
    * To use from command line:
    *
-   * <p/>
+   * <p></p>
    * Supply (at least) the following required configuration in application.conf:
    *
-   * <p/>
+   * <p></p>
    * twitter.oauth.consumerKey
    * twitter.oauth.consumerSecret
    * twitter.oauth.accessToken
    * twitter.oauth.accessTokenSecret
    *
-   * <p/>
+   * <p></p>
    * Launch using:
    *
-   * <p/>
+   * <p></p>
    * mvn exec:java -Dexec.mainClass=org.apache.streams.twitter.provider.TwitterStreamProvider -Dexec.args="application.conf tweets.json"
    *
    * @param args

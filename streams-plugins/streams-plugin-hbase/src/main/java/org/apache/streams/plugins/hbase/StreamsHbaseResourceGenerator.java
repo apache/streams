@@ -61,7 +61,7 @@ public class StreamsHbaseResourceGenerator implements Runnable {
   /**
    * Run from CLI without Maven
    *
-   * <p/>
+   * <p></p>
    * java -jar streams-plugin-hbase-jar-with-dependencies.jar StreamsHbaseResourceGenerator src/main/jsonschema target/generated-resources
    *
    * @param args [sourceDirectory, targetDirectory]

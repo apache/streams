@@ -33,7 +33,7 @@ import java.util.Queue;
 
 /**
  * Executes on all of the Instagram requests to collect the media feed data.
- * <p/>
+ * <p></p>
  * If errors/exceptions occur when trying to gather data for a particular user, that user is skipped and the collector
  * move on to the next user.  If a rate limit exception occurs it employs an exponential back off strategy.
  */

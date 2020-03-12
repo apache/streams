@@ -28,7 +28,7 @@ import java.util.Optional;
 /**
  * A SchemaStore resolves and indexes json schemas and makes their properties available.
  *
- * <p/>
+ * <p></p>
  * Implementations include
  * - SchemaStoreImpl
  */

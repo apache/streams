@@ -51,16 +51,16 @@ import java.util.concurrent.TimeUnit;
  * Streams Provider which collects Page Profiles in the ID List contained in the
  * FacebookConfiguration object
  *
- * <p/>
+ * <p></p>
  * To use from command line,
  *
- * <p/>
+ * <p></p>
  * Launch using:
  *
- * <p/>
+ * <p></p>
  * mvn exec:java -Dexec.mainClass=org.apache.streams.facebook.provider.page.FacebookPageProvider -Dexec.args="application.conf pages.json"
  *
- * <p/>
+ * <p></p>
  * Supply (at least) the following required configuration in application.conf:
  *
  * <p>

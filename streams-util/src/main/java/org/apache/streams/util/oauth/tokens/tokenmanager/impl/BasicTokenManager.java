@@ -29,7 +29,7 @@ import java.util.Collection;
  * </p>
  * When adding tokens to the pool of available tokens, the manager will not add tokens that are already in the pool.
  *
- * <p/>
+ * <p></p>
  * The manager class is thread safe.
  */
 public class BasicTokenManager<T> implements SimpleTokenManager<T> {

@@ -68,7 +68,7 @@ public class StreamsElasticsearchResourceGenerator implements Runnable {
   /**
    * Run from CLI without Maven
    *
-   * <p/>
+   * <p></p>
    * java -jar streams-plugin-elasticsearch-jar-with-dependencies.jar StreamsElasticsearchResourceGenerator src/main/jsonschema target/generated-resources
    *
    * @param args [sourceDirectory, targetDirectory]

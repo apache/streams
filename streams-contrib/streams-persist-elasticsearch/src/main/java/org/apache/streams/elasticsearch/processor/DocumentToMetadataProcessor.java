@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * Moves a json representation of metadata out of the document to the metadata field.
  *
- * <p/>
+ * <p></p>
  * This is useful if you have a list of document metadata references in the document field,
  * for example loaded from a file, and need them in the metadata field.
  */

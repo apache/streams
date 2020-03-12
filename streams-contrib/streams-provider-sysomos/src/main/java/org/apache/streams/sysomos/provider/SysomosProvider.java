@@ -61,7 +61,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Streams Provider for the Sysomos Heartbeat API
- * <p/>
+ * <p></p>
  * Configuration:
  * The provider takes either a Map[String,Object] containing the mode (backfill and terminate OR continuous) and a
  * Map[String,String] of heartbeat IDs to document target ids or a string of the format
@@ -113,11 +113,11 @@ public class SysomosProvider implements StreamsProvider {
 
   /**
    * To use from command line:
-   * <p/>
+   * <p></p>
    * Supply configuration similar to src/test/resources/rss.conf
-   * <p/>
+   * <p></p>
    * Launch using:
-   * <p/>
+   * <p></p>
    * mvn exec:java -Dexec.mainClass=org.apache.streams.rss.provider.RssStreamProvider -Dexec.args="rss.conf articles.json"
    * @param args args
    * @throws Exception Exception

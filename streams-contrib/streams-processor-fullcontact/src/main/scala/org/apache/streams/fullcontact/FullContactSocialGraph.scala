@@ -48,16 +48,16 @@ object FullContactSocialGraph {
   /**
     * To use from command line:
     *
-    * <p/>
+    * <p></p>
     * java -cp streams-dist-jar-with-dependencies.jar -Dconfig.file=application.conf org.apache.streams.fullcontact.SocialGraphCli
     *
-    * <p/>
+    * <p></p>
     * Input stream should contain a series of json-serialized `PersonSummary` objects.
     *
-    * <p/>
+    * <p></p>
     * Output stream will contain a TTL-serialized social graph.
     *
-    * <p/>
+    * <p></p>
     * Input to the process is:
     *   A file if application.conf contains an 'input' key
     *   A file if -Dinput= is specified

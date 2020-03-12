@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * Ensures generic String Json representation of an Activity can be converted to Activity
  *
- * <p/>
+ * <p></p>
  * BaseObjectNodeActivityConverter is included by default in all
  * {@link org.apache.streams.converter.ActivityConverterProcessor}
  *

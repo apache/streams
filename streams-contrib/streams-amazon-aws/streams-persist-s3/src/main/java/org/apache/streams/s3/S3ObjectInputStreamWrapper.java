@@ -35,10 +35,10 @@ import java.io.InputStream;
  * and transfer the entire file. If you are only reading the first 50 lines of a 5,000,000 line file
  * this becomes problematic.
  *
- * <p/>
+ * <p></p>
  * This class operates as a wrapper to fix the aforementioned nuances.
  *
- * <p/>
+ * <p></p>
  * Reference:
  * http://stackoverflow.com/questions/17782937/connectionpooltimeoutexception-when-iterating-objects-in-s3
  */

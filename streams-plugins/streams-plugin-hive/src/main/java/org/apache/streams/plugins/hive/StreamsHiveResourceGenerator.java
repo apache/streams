@@ -67,7 +67,7 @@ public class StreamsHiveResourceGenerator implements Runnable {
   /**
    * Run from CLI without Maven
    *
-   * <p/>
+   * <p></p>
    * java -jar streams-plugin-hive-jar-with-dependencies.jar StreamsHiveResourceGenerator src/main/jsonschema target/generated-resources
    *
    * @param args [sourceDirectory, targetDirectory]

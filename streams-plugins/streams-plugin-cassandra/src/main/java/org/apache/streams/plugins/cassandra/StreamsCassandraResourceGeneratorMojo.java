@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * Run within a module containing a src/main/jsonschema directory.
  *
- * <p/>
+ * <p></p>
  * mvn org.apache.streams.plugins:streams-plugin-cassandra:0.5.1:generate-resources
  *
  */

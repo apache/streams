@@ -37,10 +37,10 @@ import java.util.List;
 /**
  * ComponentConfigurator supplies serializable configuration beans derived from a specified typesafe path or object.
  *
- * <p/>
+ * <p></p>
  * Typically a component will select a 'default' typesafe path to be used if no other path or object is provided.
  *
- * <p/>
+ * <p></p>
  * For example, streams-persist-elasticsearch will use 'elasticsearch' by default, but an implementation
  *   such as github.com/apache/streams-examples/local/elasticsearch-reindex
  *   can resolve a reader from elasticsearch.source

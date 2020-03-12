@@ -35,11 +35,11 @@ import java.util.List;
 /**
  * TypeConverterProcessor converts between String json and jackson-compatible POJO objects.
  *
- * <p/>
+ * <p></p>
  * Activity is one supported jackson-compatible POJO, so JSON String and objects with structual similarities
  *   to Activity can be converted to Activity objects.
  *
- * <p/>
+ * <p></p>
  * However, conversion to Activity should probably use {@link org.apache.streams.converter.ActivityConverterProcessor}
  *
  */

@@ -43,7 +43,7 @@ import javax.management.ObjectName;
  * A {@link java.util.concurrent.BlockingQueue} implementation that allows the measure measurement of how
  * data flows through the queue.  Is also a {@code MBean} so the flow statistics can be viewed through
  * JMX. Registration of the bean happens whenever a constructor receives a non-null id.
- * <p/>
+ * <p></p>
  * !!! Warning !!!
  * Only the necessary methods for the local streams runtime are implemented.  All other methods throw a
  * {@link org.apache.commons.lang.NotImplementedException}.

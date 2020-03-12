@@ -23,7 +23,7 @@ import org.apache.streams.converter.ActivityConverterProcessor;
 /**
  * This class performs conversion of a twitter event to a specified outClass.
  *
- * <p/>
+ * <p></p>
  * Deprecated: use TypeConverterProcessor and ActivityConverterProcessor instead
  */
 @Deprecated

@@ -26,7 +26,7 @@ import java.io.Serializable;
 /**
  * Converts non-ActivityObject documents to ActivityObjects and back.
  *
- * <p/>
+ * <p></p>
  * Each converter may return zero or one alternative representations.
  */
 public interface ActivityObjectConverter<T> extends Serializable {

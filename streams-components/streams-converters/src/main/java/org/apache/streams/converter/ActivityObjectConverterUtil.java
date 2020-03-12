@@ -45,16 +45,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * ActivityObjectConverterUtil converts document into all possible ActivityObject
  * representations based on registered DocumentClassifiers and ActivityObjectConverters.
  *
- * <p/>
+ * <p></p>
  * Implementations and contributed modules may implement DocumentClassifiers
  * and ActivityObjectConverters to translate additional document types into desired
  * ActivityObject formats.
  *
- * <p/>
+ * <p></p>
  * A DocumentClassifier's reponsibility is to recognize document formats and label them,
  * using a jackson-compatible POJO class.
  *
- * <p/>
+ * <p></p>
  * An ActivityObjectConverter's reponsibility is to converting a raw document associated with an
  * incoming POJO class into an activity object.
  *

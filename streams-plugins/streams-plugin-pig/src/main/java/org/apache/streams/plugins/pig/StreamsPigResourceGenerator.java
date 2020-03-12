@@ -50,7 +50,7 @@ import static org.apache.streams.util.schema.FileUtil.writeFile;
 /**
  * Embed within your own java code
  *
- * <p/>
+ * <p></p>
  * StreamsPigGenerationConfig config = new StreamsPigGenerationConfig();
  * config.setSourceDirectory("src/main/jsonschema");
  * config.setTargetDirectory("target/generated-resources");
@@ -73,7 +73,7 @@ public class StreamsPigResourceGenerator implements Runnable {
   /**
    * Run from CLI without Maven
    *
-   * <p/>
+   * <p></p>
    * java -jar streams-plugin-pig-jar-with-dependencies.jar StreamsPigResourceGenerator src/main/jsonschema target/generated-resources
    *
    * @param args [sourceDirectory, targetDirectory]

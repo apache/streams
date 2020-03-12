@@ -46,7 +46,7 @@ public class LinkResolver implements Serializable {
      * can happen. If you notice a redirect that was not followed to the proper place please
      * submit a bug at :
      * https://issues.apache.org/jira/browse/STREAMS
-     * <p/>
+     * <p></p>
      * Purpose              URL
      * -------------        ----------------------------------------------------------------
      * [Status Codes]       http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
@@ -408,7 +408,7 @@ public class LinkResolver implements Serializable {
     /**
      * Goal is to get the different parts of the URL path. This can be used
      * in a classifier to help us determine if we are working with
-     * <p/>
+     * <p></p>
      * Reference:
      * http://stackoverflow.com/questions/10046178/pattern-matching-for-url-classification
      *

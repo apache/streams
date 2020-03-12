@@ -80,7 +80,7 @@ public interface RequestBuilder {
   /**
    * Returns the full url need to execute a request.
    *
-   * <p/>
+   * <p></p>
    * Example:
    * http://api.sysomos.com/dev/v1/heartbeat/content?apiKey=YOUR
    * -APIKEY&hid=YOUR-HEARTBEAT-ID&offset=0&size=10&

@@ -45,7 +45,7 @@ import java.util.stream.Stream;
 /**
  * Embed within your own java code
  *
- * <p/>
+ * <p></p>
  * StreamsScalaGenerationConfig config = new StreamsScalaGenerationConfig();
  * config.setTargetDirectory("target/generated-sources/scala");
  * config.setTargetPackage("com.example");
@@ -68,7 +68,7 @@ public class StreamsScalaSourceGenerator implements Runnable {
   /**
    * Run from CLI without Maven
    *
-   * <p/>
+   * <p></p>
    * java -jar streams-plugin-scala-jar-with-dependencies.jar StreamsScalaSourceGenerator target/generated-sources
    *
    * @param args [targetDirectory, targetPackage]

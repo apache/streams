@@ -33,7 +33,7 @@ import java.util.List;
  * HoconConverterProcessor is a utility processor for converting any datum document
  * with translation rules expressed as HOCON in the classpath or at a URL.
  *
- * <p/>
+ * <p></p>
  * To use this capability without a dedicated stream processor, just use HoconConverterUtil.
  */
 public class HoconConverterProcessor implements StreamsProcessor {

@@ -39,7 +39,7 @@ import java.util.List;
  * StreamsDateTimeDeserializer is a supporting class for
  * @see {@link org.apache.streams.jackson.StreamsJacksonMapper}
  *
- * <p/>
+ * <p></p>
  * Converting date-time strings other than RFC3339 to joda DateTime objects requires
  * additional formats to be provided when instantiating StreamsJacksonMapper.
  */

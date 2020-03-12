@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * Ensures generic String and ObjectNode documents can be converted to Activity
  *
- * <p/>
+ * <p></p>
  * BaseDocumentClassifier is included by default in all
  * @see org.apache.streams.converter.ActivityConverterProcessor
  *

@@ -34,12 +34,12 @@ import java.util.List;
  * ActivityObjectConverterProcessor is a utility processor for converting any datum document
  * to an Activity.
  *
- * <p/>
+ * <p></p>
  * By default it will handle string json and objectnode representation of existing Activities,
  * translating them into the POJO representation(s) preferred by each registered/detected
  * ActivityConverter.
  *
- * <p/>
+ * <p></p>
  * To use this capability without a dedicated stream processor, just use ActivityConverterUtil.
  */
 public class ActivityObjectConverterProcessor implements StreamsProcessor {

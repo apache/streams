@@ -39,7 +39,7 @@ import java.io.IOException;
 /**
  * This class assist with handling twitter's date-time format during conversion
  *
- * <p/>
+ * <p></p>
  * Deprecated: use StreamsJacksonMapper.getInstance() with TwitterDateTimeFormat on the classpath instead
  */
 @Deprecated

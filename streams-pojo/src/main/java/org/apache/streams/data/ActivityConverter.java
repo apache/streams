@@ -27,22 +27,22 @@ import java.util.List;
 /**
  * Converts non-Activity documents to Activities and back.
  *
- * <p/>
+ * <p></p>
  * Each converter may one, several, or zero activities.
  *
- * <p/>
+ * <p></p>
  * The recommended approach for deriving multiple activities from a source document is:
  *
- * <p/>
+ * <p></p>
  *   1) Return one activity for each occurance of a verb, from the same ActivityConverter, if the activities are of like type.
  *
- * <p/>
+ * <p></p>
  *      For example, BlogShareConverter would convert a blog containing two shares into two Activities with verb: share
  *
- * <p/>
+ * <p></p>
  *   2) Create multiple ActivityConverters, if the activities are not of like type.
  *
- * <p/>
+ * <p></p>
  *      For example, a blog post that is both a post and a share should be transformed by two seperate Converters, individually
  *      or simultaneously applied.
  */

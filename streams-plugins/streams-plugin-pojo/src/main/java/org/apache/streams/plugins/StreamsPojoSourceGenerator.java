@@ -32,7 +32,7 @@ import java.util.Objects;
 /**
  * Embed within your own java code
  *
- * <p/>
+ * <p></p>
  * StreamsPojoGenerationConfig config = new StreamsPojoGenerationConfig();
  * config.setSourceDirectory("src/main/jsonschema");
  * config.setTargetDirectory("target/generated-sources/pojo");
@@ -51,7 +51,7 @@ public class StreamsPojoSourceGenerator implements Runnable {
   /**
    * Run from CLI without Maven
    *
-   * <p/>
+   * <p></p>
    * java -jar streams-plugin-pojo-jar-with-dependencies.jar StreamsPojoSourceGenerator src/main/jsonschema target/generated-sources
    *
    * @param args [sourceDirectory, targetDirectory, targetPackage]

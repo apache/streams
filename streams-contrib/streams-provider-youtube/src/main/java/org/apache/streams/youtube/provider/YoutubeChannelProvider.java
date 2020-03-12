@@ -60,16 +60,16 @@ public class YoutubeChannelProvider extends YoutubeProvider {
 
   /**
    * To use from command line:
-   * <p/>
+   * <p></p>
    * Supply (at least) the following required configuration in application.conf:
-   * <p/>
+   * <p></p>
    * youtube.oauth.pathToP12KeyFile
    * youtube.oauth.serviceAccountEmailAddress
    * youtube.apiKey
    * youtube.youtubeUsers
-   * <p/>
+   * <p></p>
    * Launch using:
-   * <p/>
+   * <p></p>
    * mvn exec:java -Dexec.mainClass=org.apache.streams.youtube.provider.YoutubeUserActivityProvider -Dexec.args="application.conf tweets.json"
    * @param args args
    * @throws Exception Exception

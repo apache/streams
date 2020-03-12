@@ -35,7 +35,7 @@ public class SerializationUtil {
   /**
    * serialize Object as byte array.
    *
-   * <p/>
+   * <p></p>
    * BORROwED FROM APACHE STORM PROJECT
    *
    * @param obj Object
@@ -56,7 +56,7 @@ public class SerializationUtil {
   /**
    * deserialize byte array as Object.
    *
-   * <p/>
+   * <p></p>
    * BORROwED FROM APACHE STORM PROJECT
    *
    * @param serialized byte[]

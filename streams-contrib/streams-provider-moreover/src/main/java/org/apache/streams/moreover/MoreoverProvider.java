@@ -141,13 +141,13 @@ public class MoreoverProvider implements StreamsProvider {
   /**
    * To use from command line:
    *
-   * <p/>
+   * <p></p>
    * Supply configuration similar to src/test/resources/rss.conf
    *
-   * <p/>
+   * <p></p>
    * Launch using:
    *
-   * <p/>
+   * <p></p>
    * mvn exec:java -Dexec.mainClass=org.apache.streams.moreover.MoreoverProvider -Dexec.args="rss.conf articles.json"
    *
    * @param args args

@@ -47,22 +47,22 @@ import java.util.concurrent.TimeUnit;
 /**
  *  Retrieve current profile status for a list of accounts.
  *
- *  <p/>
+ *  <p></p>
  *  To use from command line:
  *
- *  <p/>
+ *  <p></p>
  *  Supply (at least) the following required configuration in application.conf:
  *
- *  <p/>
+ *  <p></p>
  *  gplus.oauth.pathToP12KeyFile
  *  gplus.oauth.serviceAccountEmailAddress
  *  gplus.apiKey
  *  gplus.googlePlusUsers
  *
- *  <p/>
+ *  <p></p>
  *  Launch using:
  *
- *  <p/>
+ *  <p></p>
  *  mvn exec:java -Dexec.mainClass=org.apache.streams.gplus.provider.GPlusUserDataProvider -Dexec.args="application.conf profiles.json"
  */
 public class GPlusUserDataProvider extends AbstractGPlusProvider {

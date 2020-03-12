@@ -45,22 +45,22 @@ import java.util.concurrent.TimeUnit;
 /**
  *  Retrieve recent activity from a list of accounts.
  *
- *  <p/>
+ *  <p></p>
  *  To use from command line:
  *
- *  <p/>
+ *  <p></p>
  *  Supply (at least) the following required configuration in application.conf:
  *
- *  <p/>
+ *  <p></p>
  *  gplus.oauth.pathToP12KeyFile
  *  gplus.oauth.serviceAccountEmailAddress
  *  gplus.apiKey
  *  gplus.googlePlusUsers
  *
- *  <p/>
+ *  <p></p>
  *  Launch using:
  *
- *  <p/>
+ *  <p></p>
  *  mvn exec:java -Dexec.mainClass=org.apache.streams.gplus.provider.GPlusUserActivityProvider -Dexec.args="application.conf activity.json"
  */
 public class GPlusUserActivityProvider extends AbstractGPlusProvider {

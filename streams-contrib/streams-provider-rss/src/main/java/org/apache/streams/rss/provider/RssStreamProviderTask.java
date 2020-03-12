@@ -47,19 +47,19 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * A {@link java.lang.Runnable} task that queues rss feed data.
  *
- * <p/>
+ * <p></p>
  * <code>RssStreamProviderTask</code> reads the content of an rss feed and queues the articles from
  * the feed inform of a {@link com.fasterxml.jackson.databind.node.ObjectNode} wrapped in a {@link org.apache.streams.core.StreamsDatum}.
  * The task can filter articles by a published date.  If the task cannot parse the date of the article or the article does not contain a
  * published date, by default the task will attempt to queue article.
  *
- * <p/>
+ * <p></p>
  * A task can be run in perpetual mode which will store the article urls in a static variable.  The next time a
  * <code>RssStreamProviderTask</code> is run, it will not queue data that was seen the previous time the rss feed was read.
  * This is an attempt to reduce multiple copies of an article from being output by a
  * {@link org.apache.streams.rss.provider.RssStreamProvider}.
  *
- * <p/>
+ * <p></p>
  * ** Warning! **
  * It still is possible to output multiples of the same article.  If multiple tasks executions for the same rss feed overlap
  * in execution time, it possible that the previously seen articles static variable will not have been updated in time.

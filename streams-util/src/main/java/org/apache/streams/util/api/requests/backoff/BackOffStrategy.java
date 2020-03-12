@@ -19,7 +19,7 @@ package org.apache.streams.util.api.requests.backoff;
  * BackOffStrategy will cause the current thread to sleep for a specific amount of time. This is used to adhere to
  * api rate limits.
  *
- * <p/>
+ * <p></p>
  * The example below illustrates using a BackOffStrategy to slow down requests when you hit a rate limit exception.
  *
  * <code>
