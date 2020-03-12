@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-contrib</artifactId>
-        <version>0.6.1-SNAPSHOT</version>
+        <version>0.6.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-processor-peopledatalabs</artifactId>
@@ -116,7 +116,7 @@
                     <includeAdditionalProperties>false</includeAdditionalProperties>
                     <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
                     <outputDirectory>${project.basedir}/target/generated-sources/pojo</outputDirectory>
-                    <propertyWordDelimiters></propertyWordDelimiters>
+                    <propertyWordDelimiters />
                     <removeOldOutput>true</removeOldOutput>
                     <serializable>true</serializable>
                     <sourcePaths>
