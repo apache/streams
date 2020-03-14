@@ -20,7 +20,7 @@
     <parent>
         <artifactId>streams-amazon-aws</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.6.1</version>
+        <version>0.6.2-SNAPSHOT-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
