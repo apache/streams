@@ -4,6 +4,10 @@ Copyright 2012 and onward at The Apache Software Foundation
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
+This product includes works derived from Apache NiFi, Copyright (c) 2014-2020
+Apache Software Foundation, licensed under the Apache License, Version 2.0.
+The code can be found in .github/workflows/streams-ci-workflow.yml.
+
 Apache Streams contains subcomponents with separate copyright notices and
 license terms. Your use of the source code for the these subcomponents
 is subject to the terms and conditions of their respective licenses.

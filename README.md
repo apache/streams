@@ -1,6 +1,7 @@
-# Apache Streams
+<img src="http://streams.apache.org/images/streams_logo.jpg" width="250" alt="Apache Streams logo showing a mountain stream"/>
 
-## Overview
+[![apache-streams-build](https://github.com/apache/streams/workflows/build/badge.svg)](https://github.com/apache/streams/actions)
+
 Apache Streams unifies a diverse world of digital profiles and online activities into common formats and vocabularies, and makes these datasets accessible across a variety of databases, devices, and platforms for streaming, browsing, search, sharing, and analytics use-cases.
 
 ### What is Streams?
