@@ -66,18 +66,18 @@ public class SchemaValidationTest {
     for (String file : files) {
       if ( !file.startsWith(".") ) {
 
-        LOGGER.info("Test File: activities/" + file);
+        LOGGER.debug("Test File: activities/" + file);
         String testFileString = new String(Files.readAllBytes(Paths.get("target/test-classes/activities/" + file)));
-        LOGGER.info("Test Document JSON: " + testFileString);
+        LOGGER.debug("Test Document JSON: " + testFileString);
         JsonNode testNode = MAPPER.readValue(testFileString, ObjectNode.class);
-        LOGGER.info("Test Document Object:" + testNode);
-        LOGGER.info("Test Schema File: " + "target/classes/verbs/" + file);
+        LOGGER.debug("Test Document Object:" + testNode);
+        LOGGER.debug("Test Schema File: " + "target/classes/verbs/" + file);
         String testSchemaString = new String(Files.readAllBytes(Paths.get("target/classes/verbs/" + file)));
-        LOGGER.info("Test Schema JSON: " + testSchemaString);
+        LOGGER.debug("Test Schema JSON: " + testSchemaString);
         JsonNode testSchemaNode = MAPPER.readValue(testFileString, ObjectNode.class);
-        LOGGER.info("Test Schema Object:" + testSchemaNode);
+        LOGGER.debug("Test Schema Object:" + testSchemaNode);
         JsonSchema testSchema = factory.getSchema(testSchemaNode);
-        LOGGER.info("Test Schema:" + testSchema);
+        LOGGER.debug("Test Schema:" + testSchema);
 
         Set<ValidationMessage> errors = testSchema.validate(testNode);
         assertThat(errors.size(), is(0));

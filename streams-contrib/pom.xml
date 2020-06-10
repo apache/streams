@@ -22,7 +22,7 @@
     <parent>
         <artifactId>apache-streams</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.6.2-SNAPSHOT-SNAPSHOT</version>
+        <version>0.6.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>streams-contrib</artifactId>
