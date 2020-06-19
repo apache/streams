@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "$license": [
+    "http://www.apache.org/licenses/LICENSE-2.0"
+  ],
+  "id": "#",
+  "javaType": "org.apache.streams.twitter.api.WebhooksResponse",
+  "javaInterfaces": [
+    "java.io.Serializable"
+  ],
+  "description": "https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-webhook-config",
+  "properties": {
+    "environments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "environment_name": {
+            "type": "string"
+          },
+          "webhooks": {
+            "type": "array",
+            "items": {
+              "$ref": "./Webhook.json"
+            }
+          }
+        }
+      }
+    }
+  }
+}
