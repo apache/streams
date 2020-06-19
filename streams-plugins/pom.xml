@@ -34,11 +34,12 @@
     <name>streams-plugins</name>
 
     <properties>
-        <maven-plugin.version>3.3.3</maven-plugin.version>
-        <maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
-        <maven-plugin-tools.version>3.3</maven-plugin-tools.version>
+        <maven-plugin.version>3.6.3</maven-plugin.version>
+        <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
+        <maven-plugin-plugin.version>3.6.0</maven-plugin-plugin.version>
+        <maven-plugin-tools.version>3.6.0</maven-plugin-tools.version>
         <maven-plugin-testing.version>3.3.0</maven-plugin-testing.version>
-        <maven-verifier.version>1.6</maven-verifier.version>
+        <maven-verifier.version>1.7.2</maven-verifier.version>
     </properties>
 
     <modules>
@@ -66,7 +67,7 @@
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-aether-provider</artifactId>
-                <version>${maven-plugin.version}</version>
+                <version>${maven-aether-provider.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugins</groupId>

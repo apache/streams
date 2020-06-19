@@ -151,7 +151,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.4</version>
+                <version>3.6.0</version>
                 <configuration>
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
                 </configuration>
@@ -181,7 +181,7 @@
                         </goals>
                         <configuration>
                             <sourceDir>target/generated-sources/scala</sourceDir>
-                            <target>target/testClasses/scala</target>
+                            <outputDir>target/testClasses/scala</outputDir>
                         </configuration>
                     </execution>
                 </executions>

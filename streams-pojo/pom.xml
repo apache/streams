@@ -79,7 +79,7 @@
 
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-scala_${scala.suffix}</artifactId>
+            <artifactId>jackson-module-scala_${scala.binary.version}</artifactId>
         </dependency>
 
         <dependency>
@@ -261,4 +261,19 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>java-11</id>
+            <activation>
+                <jdk>(1.8,)</jdk>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>javax.annotation</groupId>
+                    <artifactId>javax.annotation-api</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>

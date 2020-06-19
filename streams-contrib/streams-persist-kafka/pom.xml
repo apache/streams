@@ -30,7 +30,7 @@
     <description>Kafka Module</description>
 
     <properties>
-        <scala.version>2.11</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
         <kafka.version>1.0.0</kafka.version>
         <clojure.version>1.2.0</clojure.version>
     </properties>
@@ -58,7 +58,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_${scala.version}</artifactId>
+            <artifactId>kafka_${scala.binary.version}</artifactId>
             <version>${kafka.version}</version>
             <exclusions>
                 <exclusion>
