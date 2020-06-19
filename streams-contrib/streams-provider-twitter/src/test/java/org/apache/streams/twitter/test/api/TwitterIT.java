@@ -18,6 +18,7 @@
 
 package org.apache.streams.twitter.test.api;
 
+import com.typesafe.config.ConfigFactory;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.twitter.api.Account;
@@ -62,7 +63,7 @@ import org.apache.streams.twitter.api.Users;
 import org.apache.streams.twitter.api.UsersLookupRequest;
 import org.apache.streams.twitter.api.UsersSearchRequest;
 import org.apache.streams.twitter.api.UsersShowRequest;
-import org.apache.streams.twitter.api.Webhook;
+import org.apache.streams.twitter.api.WebhooksResponse;
 import org.apache.streams.twitter.api.WelcomeMessageRules;
 import org.apache.streams.twitter.api.WelcomeMessageRulesListRequest;
 import org.apache.streams.twitter.api.WelcomeMessageRulesListResponse;
@@ -74,9 +75,6 @@ import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.twitter.pojo.WelcomeMessage;
 import org.apache.streams.twitter.pojo.WelcomeMessageRule;
-
-import com.typesafe.config.ConfigFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -389,7 +387,7 @@ public class TwitterIT {
   public void testGetWebhooks() throws Exception {
     AccountActivity accountActivity = Twitter.getInstance(config);
     nonNull(accountActivity);
-    List<Webhook> webhooks = accountActivity.getWebhooks();
+    WebhooksResponse webhooks = accountActivity.getWebhooks();
     nonNull(webhooks);
   }
 

@@ -51,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -337,42 +338,58 @@ public class Twitter implements
   }
 
   @Override
-  public List<Webhook> getWebhooks() {
+  public WebhooksResponse getWebhooks() {
     AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
     return proxy.getWebhooks();
   }
 
   @Override
-  public Webhook registerWebhook(String url) {
+  public List<Webhook> getWebhooks(String env_name) {
     AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
-    return proxy.registerWebhook(url);
-  }
-
-
-  @Override
-  public Boolean deleteWebhook(Long webhookId) {
-    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
-    return proxy.deleteWebhook(webhookId);
+    return proxy.getWebhooks(env_name);
   }
 
   @Override
-  public Boolean putWebhook(Long webhookId) {
+  public Webhook registerWebhook(String env_name, String url) {
     AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
-    return proxy.putWebhook(webhookId);
+    return proxy.registerWebhook(env_name, url);
   }
 
   @Override
-  public Boolean getWebhookSubscription(Long webhookId) {
+  public Boolean deleteWebhook(String env_name, Long webhookId) {
+    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+    return proxy.deleteWebhook(env_name, webhookId);
+  }
+
+  @Override
+  public Boolean putWebhook(String env_name, Long webhookId) {
+    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+    return proxy.putWebhook(env_name, webhookId);
+  }
+
+  @Override
+  public SubscriptionsCountResponse getSubscriptionsCount() throws InvocationTargetException, RestCallException {
+    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+    return proxy.getSubscriptionsCount();
+  }
+
+  @Override
+  public SubscriptionsListResponse getSubscriptionsList(String env_name) throws InvocationTargetException, RestCallException {
+    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
+    return proxy.getSubscriptionsList(env_name);
+  }
+
+  @Override
+  public Boolean getSubscriptions(String env_name) throws InvocationTargetException, RestCallException {
 //    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
-//    return proxy.getWebhookSubscription(webhookId);
+//    return proxy.getSubscriptions(env_name);
     try {
-      URIBuilder uriBuilder =
-        new URIBuilder()
-          .setPath("/account_activity/webhooks/"+webhookId+"/subscriptions.json");
+      URIBuilder uriBuilder = new URIBuilder()
+              .setPath("/account_activity/all/"+env_name+"/subscriptions.json");
       RestCall restCall = restClient.doGet(uriBuilder.build().toString());
       try {
         int statusCode = restCall
-          .getResponse().getStatusLine().getStatusCode();
+                .getResponse().getStatusLine().getStatusCode();
         return statusCode == 204;
       } catch (RestCallException e) {
         LOGGER.warn("RestCallException", e);
@@ -386,16 +403,16 @@ public class Twitter implements
   }
 
   @Override
-  public Boolean registerWebhookSubscriptions(Long webhookId) {
+  public Boolean newSubscription(String env_name) throws InvocationTargetException, RestCallException {
 //    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
-//    return proxy.registerWebhookSubscriptions(webhookId);
+//    return proxy.newSubscription(env_name);
     try {
-      URIBuilder uriBuilder =
-        new URIBuilder()
-          .setPath("/account_activity/webhooks/"+webhookId+"/subscriptions.json");
+      URIBuilder uriBuilder = new URIBuilder()
+              .setPath("/account_activity/all/"+env_name+"/subscriptions.json");
       RestCall restCall = restClient.doPost(uriBuilder.build().toString());
       try {
-        int statusCode = restCall.getResponse().getStatusLine().getStatusCode();
+        int statusCode = restCall
+                .getResponse().getStatusLine().getStatusCode();
         return statusCode == 204;
       } catch (RestCallException e) {
         LOGGER.warn("RestCallException", e);
@@ -409,16 +426,16 @@ public class Twitter implements
   }
 
   @Override
-  public Boolean deleteWebhookSubscriptions(Long webhookId) {
+  public Boolean deleteWebhookSubscriptions(String env_name, String user_id) throws InvocationTargetException, RestCallException {
 //    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
-//      return proxy.deleteWebhookSubscriptions(webhookId);
+//    return proxy.deleteWebhookSubscriptions(env_name, user_id);
     try {
-      URIBuilder uriBuilder =
-        new URIBuilder()
-          .setPath("/account_activity/webhooks/"+webhookId+"/subscriptions.json");
+      URIBuilder uriBuilder = new URIBuilder()
+          .setPath("/account_activity/all/"+env_name+"/subscriptions/"+user_id+".json");
       RestCall restCall = restClient.doDelete(uriBuilder.build().toString());
       try {
-        int statusCode = restCall.getResponse().getStatusLine().getStatusCode();
+        int statusCode = restCall
+          .getResponse().getStatusLine().getStatusCode();
         return statusCode == 204;
       } catch (RestCallException e) {
         LOGGER.warn("RestCallException", e);
