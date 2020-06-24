@@ -368,6 +368,27 @@ public class Twitter implements
   }
 
   @Override
+  public Boolean reenableWebhook(String env_name, Long webhookId) {
+    try {
+      URIBuilder uriBuilder = new URIBuilder()
+              .setPath("/account_activity/all/"+env_name+"/webhooks/"+webhookId+".json");
+      RestCall restCall = restClient.doPut(uriBuilder.build().toString());
+      try {
+        int statusCode = restCall
+                .getResponse().getStatusLine().getStatusCode();
+        return statusCode == 204;
+      } catch (RestCallException e) {
+        LOGGER.warn("RestCallException", e);
+      }
+    } catch (IOException e) {
+      LOGGER.warn("IOException", e);
+    } catch (URISyntaxException e) {
+      LOGGER.warn("URISyntaxException", e);
+    }
+    return false;
+  }
+
+  @Override
   public SubscriptionsCountResponse getSubscriptionsCount() throws InvocationTargetException, RestCallException {
     AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
     return proxy.getSubscriptionsCount();
@@ -380,7 +401,7 @@ public class Twitter implements
   }
 
   @Override
-  public Boolean getSubscriptions(String env_name) throws InvocationTargetException, RestCallException {
+  public Boolean getSubscriptions(String env_name) {
 //    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
 //    return proxy.getSubscriptions(env_name);
     try {
@@ -403,7 +424,7 @@ public class Twitter implements
   }
 
   @Override
-  public Boolean newSubscription(String env_name) throws InvocationTargetException, RestCallException {
+  public Boolean newSubscription(String env_name) {
 //    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
 //    return proxy.newSubscription(env_name);
     try {
@@ -426,7 +447,7 @@ public class Twitter implements
   }
 
   @Override
-  public Boolean deleteWebhookSubscriptions(String env_name, String user_id) throws InvocationTargetException, RestCallException {
+  public Boolean deleteWebhookSubscriptions(String env_name, String user_id) {
 //    AccountActivity proxy = restClient.getRemoteResource(AccountActivity.class, TwitterProviderUtil.baseUrl(configuration)+"/account_activity");
 //    return proxy.deleteWebhookSubscriptions(env_name, user_id);
     try {

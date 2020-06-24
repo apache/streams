@@ -26,7 +26,6 @@ import org.apache.juneau.rest.client.remote.RemoteMethod;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Interface for /account_activity methods.
@@ -51,6 +50,7 @@ public interface AccountActivity {
   /**
    * Alternatively, this endpoint can be used with an environment name to only return webhook URLS for the given environment: GET account_activity/all/:env_name/webhooks (see second example)
    *
+   * @param env_name Environment Name
    * @return List\<Webhook\>
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-webhook-config</a>
    *
@@ -63,6 +63,8 @@ public interface AccountActivity {
    *
    * Only one webhook URL can be registered to an application.
    *
+   * @param env_name Environment Name
+   * @param url Webhook URL
    * @return Webhook
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/new-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/new-webhook-config</a>
    *
@@ -73,6 +75,8 @@ public interface AccountActivity {
   /**
    * Removes the webhook from the provided application’s configuration. The webhook ID can be accessed by making a call to GET /1.1/account_activity/webhooks.
    *
+   * @param env_name Environment Name
+   * @param webhookId Webhook ID. Defined in resource path.
    * @return Boolean
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/delete-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/delete-webhook-config</a>
    *
@@ -83,13 +87,25 @@ public interface AccountActivity {
   /**
    * Triggers the challenge response check (CRC) for the given webhook’s URL. If the check is successful, returns 204 and reenables the webhook by setting its status to valid.
    *
+   * @param env_name Environment Name
    * @param webhookId Webhook ID. Defined in resource path.
    * @return Boolean
-   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/validate-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/validate-webhook-config</a>
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/aaa-premium</a>
    *
    */
   @RemoteMethod(method = "PUT", path = "/all/{env_name}/webhooks/{webhookId}.json")
   public Boolean putWebhook(@Path("env_name") String env_name, @Path("webhookId") Long webhookId);
+
+  /**
+   * Triggers the challenge response check (CRC) for the given enviroments webhook for all activites. If the check is successful, returns 204 and reenables the webhook by setting its status to valid.
+   *
+   * @param env_name Environment Name
+   * @param webhookId Webhook ID. Defined in resource path.
+   * @return Boolean
+   * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/validate-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/validate-webhook-config</a>
+   */
+  @RemoteMethod(method = "PUT", path = "/all/{env_name}/webhooks/{webhookId}.json")
+  public Boolean reenableWebhook(@Path("env_name") String env_name, @Path("webhookId") Long webhookId) throws InvocationTargetException, RestCallException;
 
   /**
    * Returns the count of subscriptions that are currently active on your account for all activities. Note that the /count endpoint requires application-only OAuth, so that you should make requests using a bearer token instead of user context.
@@ -99,9 +115,7 @@ public interface AccountActivity {
    *
    */
   @RemoteMethod(method = "GET", path = "/all/subscriptions/count.json")
-  public SubscriptionsCountResponse getSubscriptionsCount()
-          throws InvocationTargetException, RestCallException
-  ;
+  public SubscriptionsCountResponse getSubscriptionsCount() throws InvocationTargetException, RestCallException;
 
   /**
    * Returns a list of the current All Activity type subscriptions. Note that the /list endpoint requires application-only OAuth, so requests should be made using a bearer token instead of user context.
@@ -112,9 +126,7 @@ public interface AccountActivity {
    *
    */
   @RemoteMethod(method = "GET", path = "/all/{env_name}/subscriptions/list.json")
-  public SubscriptionsListResponse getSubscriptionsList(@Path("env_name") String env_name)
-      throws InvocationTargetException, RestCallException
-  ;
+  public SubscriptionsListResponse getSubscriptionsList(@Path("env_name") String env_name) throws InvocationTargetException, RestCallException;
 
   /**
    * Provides a way to determine if a webhook configuration is subscribed to the provided user’s events. If the provided user context has an active subscription with provided application, returns 204 OK. If the response code is not 204, then the user does not have an active subscription. See HTTP Response code and error messages below for details.
@@ -125,9 +137,8 @@ public interface AccountActivity {
    *
    */
   @RemoteMethod(method = "GET", path = "/all/{env_name}/subscriptions.json")
-  public Boolean getSubscriptions(@Path("env_name") String env_name)
-          throws InvocationTargetException, RestCallException
-  ;
+  public Boolean getSubscriptions(@Path("env_name") String env_name) throws InvocationTargetException, RestCallException;
+
   /**
    * Subscribes the provided application to all events for the provided environment for all message types. After activation, all events for the requesting user will be sent to the application’s webhook via POST request.
    *
@@ -137,9 +148,7 @@ public interface AccountActivity {
    *
    */
   @RemoteMethod(method = "POST", path = "/all/{env_name}/subscriptions.json")
-  public Boolean newSubscription(@Path("env_name") String env_name)
-      throws InvocationTargetException, RestCallException
-  ;
+  public Boolean newSubscription(@Path("env_name") String env_name) throws InvocationTargetException, RestCallException;
 
   /**
    * Deactivates subscription for the specified webhook and user id. After deactivation, all events for the requesting user will no longer be sent to the webhook URL. Note, that this endpoint requires application-only OAuth, so requests should be made using a bearer token instead of user context.
@@ -151,9 +160,6 @@ public interface AccountActivity {
    *
    */
   @RemoteMethod(method = "DELETE", path = "/all/{env_name}/subscriptions/{user_id}.json")
-  public Boolean deleteWebhookSubscriptions(@Path("env_name") String env_name, @Path("user_id") String user_id)
-      throws InvocationTargetException, RestCallException
-  ;
-
+  public Boolean deleteWebhookSubscriptions(@Path("env_name") String env_name, @Path("user_id") String user_id) throws InvocationTargetException, RestCallException;
 
 }
