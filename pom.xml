@@ -71,14 +71,14 @@
             <post>dev@streams.apache.org</post>
             <subscribe>dev-subscribe@streams.apache.org</subscribe>
             <unsubscribe>dev-unsubscribe@streams.apache.org</unsubscribe>
-            <archive>http://mail-archives.apache.org/mod_mbox/incubator-streams-dev/</archive>
+            <archive>http://mail-archives.apache.org/mod_mbox/streams-dev/</archive>
         </mailingList>
         <mailingList>
             <name>Commits Mailing List</name>
             <post>commits@streams.apache.org</post>
             <subscribe>commits-subscribe@streams.apache.org</subscribe>
             <unsubscribe>commits-unsubscribe@streams.apache.org</unsubscribe>
-            <archive>http://mail-archives.apache.org/mod_mbox/incubator-streams-commits/</archive>
+            <archive>http://mail-archives.apache.org/mod_mbox/streams-commits/</archive>
         </mailingList>
     </mailingLists>
 
@@ -518,8 +518,6 @@
                                 <resourceBundles combine.children="append">
                                     <!-- Will generate META-INF/DEPENDENCIES META-INF/LICENSE META-INF/NOTICE -->
                                     <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
-                                    <!-- Will generate META-INF/DISCLAIMER  -->
-                                    <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
                                 </resourceBundles>
                                 <properties>
                                     <projectName>${notice.file.project.name}</projectName>
