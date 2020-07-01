@@ -28,7 +28,7 @@ Copies documents into a different index
 
     sbtx -210 -sbt-create
     set resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
-    set libraryDependencies += "org.apache.streams" % "elasticsearch-reindex" % "0.4-incubating-SNAPSHOT"
+    set libraryDependencies += "org.apache.streams" % "elasticsearch-reindex" % "0.6.1"
     set fork := true
     set javaOptions +="-Dconfig.file=application.conf"
     run org.apache.streams.example.ElasticsearchReindex

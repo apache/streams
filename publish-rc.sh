@@ -27,7 +27,7 @@ fi
 
 mkdir -p dist
 cd dist
-svn co https://dist.apache.org/repos/dist/dev/incubator/streams dev
+svn co https://dist.apache.org/repos/dist/dev/streams dev
 cd dev
 mkdir $REL
 cd $REL
