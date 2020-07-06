@@ -1,32 +1,23 @@
 ##Release Process
 
-There are two distinct sets of artifacts in two repositories that are typically released together:  apache-streams and apache-streams-examples.
+apache-streams artifacts include streams source code, convenience jars by module, and a binary/byte-code release
 
-apache-streams artifacts include streams source code and convenience jars by module.  
+###NOTE:
 
-apache-streams-examples source code builds ready-to-run stand-alone examples as uber-jars.
+Prior to your first release, you'll need to refer to [Release Setup Information](/release-setup.html).
 
-Releases must be built and published in the following order:
-
-* apache-streams
-* apache-streams-examples
-
-In the instructions below, ${project.name} should be one of these top-level repository aggregator pom project names.
-
-###NOTE: 
+Prior to each release you perform, you'll need to refer to [Release Preparation](/release-preparation.html).
 
 As a streams release manager, you probably want to use the release.sh and publish-rc.sh scripts in the root of apache-streams.
 
 To perform a release manually, or to better understand what's going on, read the instructions below.
 
-In either case, you'll need to first refer to [Release Setup Information](/release-setup.html).
-                               
 ###Common Release Steps
 
 1. Environment setup for releasing artifacts (same for SNAPSHOTs and releases)    
 
     1. Use the latest Sun 1.8.x JDK
-    2. Use Maven 3.3.9 or later
+    2. Use Maven 3.6.3 or later
     3. Make sure the [Release Setup](release-setup.html) steps have been performed.
 
 2. Prepare the source for release:

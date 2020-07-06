@@ -331,18 +331,18 @@
         <apache-rat.plugin.version>0.13</apache-rat.plugin.version>
         <build-helper.plugin.version>1.8</build-helper.plugin.version>
         <bundle.plugin.version>1.4.3</bundle.plugin.version>
-        <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
+        <checkstyle.plugin.version>3.1.1</checkstyle.plugin.version>
         <compiler.plugin.version>3.0</compiler.plugin.version>
         <clean.plugin.version>2.6</clean.plugin.version>
         <dependency.plugin.version>2.10</dependency.plugin.version>
         <depgraph.plugin.version>1.0.3</depgraph.plugin.version>
         <docker.plugin.version>0.24.0</docker.plugin.version>
         <download.plugin.version>1.2.1</download.plugin.version>
-        <enforcer.plugin.version>3.0.0-M1</enforcer.plugin.version>
+        <enforcer.plugin.version>3.0.0-M3</enforcer.plugin.version>
         <failsafe.plugin.version>2.22.0</failsafe.plugin.version>
         <jar.plugin.version>2.6</jar.plugin.version>
         <javadoc.plugin.version>3.2.0</javadoc.plugin.version>
-        <license.plugin.version>3.0</license.plugin.version>
+        <license.plugin.version>2.0.0</license.plugin.version>
         <pax.plugin.version>1.5</pax.plugin.version>
         <remote-resources.plugin.version>1.4</remote-resources.plugin.version>
         <reports.plugin.version>2.9</reports.plugin.version>
@@ -1188,6 +1188,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
+                <version>${license.plugin.version}</version>
                 <configuration>
                     <excludedGroups>org.apache.streams,org.apache.streams.plugins</excludedGroups>
                     <missingFile>${project.basedir}/src/license/THIRD-PARTY.properties</missingFile>
@@ -1492,11 +1493,11 @@
                                     <configuration>
                                         <rules>
                                             <requireJavaVersion>
-                                                <message>Java 8 or higher is required to compile this module</message>
+                                                <message>Java ${java.version} or higher is required to compile this module</message>
                                                 <version>[${java.version},)</version>
                                             </requireJavaVersion>
                                             <requireMavenVersion>
-                                                <message>Maven 3.3.9 or higher is required to compile this module</message>
+                                                <message>${maven.version} or higher is required to compile this module</message>
                                                 <version>[${maven.version},)</version>
                                             </requireMavenVersion>
                                         </rules>
@@ -1584,9 +1585,12 @@
                             <artifactId>license-maven-plugin</artifactId>
                             <version>${license.plugin.version}</version>
                             <configuration>
+                                <acceptPomPackaging>true</acceptPomPackaging>
                                 <excludedGroups>org.apache.streams,org.apache.streams.plugins</excludedGroups>
                                 <failOnBlacklist>true</failOnBlacklist>
-                                <missingFile>${project.basedir}/src/license/THIRD-PARTY.properties</missingFile>
+                                <failOnMissing>true</failOnMissing>
+                                <licenseMergesFile>${session.executionRootDirectory}/src/license/licenseMerges.txt</licenseMergesFile>
+                                <missingFile>${session.executionRootDirectory}/src/license/licenseMissingFile.properties</missingFile>
                                 <useMissingFile>true</useMissingFile>
                             </configuration>
                             <executions>
@@ -1626,7 +1630,7 @@
                                         <encoding>UTF-8</encoding>
                                         <consoleOutput>true</consoleOutput>
                                         <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                                        <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+                                        <testSourceDirectories>${project.basedir}/src/test/java</testSourceDirectories>
                                         <failsOnError>false</failsOnError>
                                     </configuration>
                                     <goals>
