@@ -28,6 +28,12 @@ Certain aspects of the release managers job are less structured and amenable to 
 
         Every license must be reflected in streams-dist/LICENSE
 
+        Licenses which contain a copyright notice must be present in this file
+
+        For licenses which fall under the 'Category B' designation, each dependency must be enumerated, associated with its license, and a url to its homepage.
+
+        NOTE: target/generated-sources/license/THIRD-PARTY.txt and src/license/licenses.xml are helpful during this step.
+
     3. Update binary/bytecode NOTICE file
 
         Instructions TBD
