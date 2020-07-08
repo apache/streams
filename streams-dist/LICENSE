@@ -215,30 +215,95 @@ is maintained in src/license/licenses.
 Apache Streams binary release includes bundled dependencies declaring "The 2-Clause BSD License".
 For details, see src/license/licenses/The 2-Clause BSD License.html
 Permanent URL: https://opensource.org/licenses/BSD-2-Clause
+Relevant License Text:
+
+        Copyright <YEAR> <COPYRIGHT HOLDER>
+
+        Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+        1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+        2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+===========================================================================
 
 Apache Streams binary release includes bundled dependencies declaring "The 3-Clause BSD License".
 For details, see src/license/licenses/The 3-Clause BSD License.html
 Permanent URL: https://opensource.org/licenses/BSD-3-Clause
+Relevant License Text:
+
+        Copyright <YEAR> <COPYRIGHT HOLDER>
+
+        Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+        1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+        2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+        3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+===========================================================================
 
 Apache Streams binary release includes bundled dependencies declaring "CC0 1.0 Universal License".
 For details, see src/license/licenses/CC0 1.0 Universal License.html
 Permanent URL: http://creativecommons.org/publicdomain/zero/1.0/
 
+===========================================================================
+
 Apache Streams binary release includes bundled dependencies declaring "Common Development and Distribution License".
-For details, see src/license/licenses/bsd 3-clause - bsd-3-clause.txt.html
+For details, see src/license/licenses/Common Development and Distribution License.html
 Permanent URL: https://javaee.github.io/glassfish/LICENSE
+The following bundled dependencies utilize Common Development and Distribution License:
+
+     (Common Development and Distribution License) (GNU General Public Library) Streaming API for XML (javax.xml.stream:stax-api:1.0-2 - no url defined)
+     (Common Development and Distribution License) (GPL2 w/ CPE) JAXB API bundle for GlassFish V3 (javax.xml.bind:jaxb-api:2.2.2 - https://jaxb.dev.java.net/)
+     (Common Development and Distribution License) (GPL2 w/ CPE) JAXB CORE (com.sun.xml.bind:jaxb-core:2.2.7 - http://jaxb.java.net/)
+     (Common Development and Distribution License) (GPL2 w/ CPE) JAXB Reference Implementation (com.sun.xml.bind:jaxb-impl:2.2.7 - http://jaxb.java.net/)
+     (Common Development and Distribution License) (GPL2 w/ CPE) Java Architecture for XML Binding (javax.xml.bind:jaxb-api:2.2.7 - http://jaxb.java.net/)
+     (Common Development and Distribution License) (GPL2 w/ CPE) istack common utility code runtime (com.sun.istack:istack-commons-runtime:2.16 - http://java.net/istack-commons/istack-commons-runtime/)
+     (Common Development and Distribution License) (GPL2 w/ CPE) jersey-client (com.sun.jersey:jersey-client:1.9 - https://jersey.java.net/jersey-client/)
+     (Common Development and Distribution License) (GPL2 w/ CPE) jersey-core (com.sun.jersey:jersey-core:1.9 - https://jersey.java.net/jersey-core/)
+     (Common Development and Distribution License) (GPL2 w/ CPE) jersey-json (com.sun.jersey:jersey-json:1.9 - https://jersey.java.net/jersey-json/)
+     (Common Development and Distribution License) (GPL2 w/ CPE) jersey-server (com.sun.jersey:jersey-server:1.9 - https://jersey.java.net/jersey-server/)
+     (Common Development and Distribution License) (GPLv2+CE) JavaMail API (javax.mail:mail:1.4.2 - http://java.sun.com/projects/javamail/mail)
+     (Common Development and Distribution License) Codemodel Core (com.sun.codemodel:codemodel:2.6 - http://codemodel.java.net/codemodel/)
+     (Common Development and Distribution License) JSR-250 Common Annotations for the JavaTM Platform (javax.annotation:jsr250-api:1.0 - http://jcp.org/aboutJava/communityprocess/final/jsr250/index.html)
+     (Common Development and Distribution License) JavaBeans Activation Framework (JAF) (javax.activation:activation:1.1 - http://java.sun.com/products/javabeans/jaf/index.jsp)
+     (Common Development and Distribution License) jsr311-api (javax.ws.rs:jsr311-api:1.1.1 - https://jsr311.dev.java.net)
+     (Common Development and Distribution License) servlet-api (javax.servlet:servlet-api:2.5 - no url defined)
+
+===========================================================================
 
 Apache Streams binary release includes bundled dependencies declaring "Eclipse Public License".
 For details, see src/license/licenses/Eclipse Public License - Version 1.0.html
 Permanent URL: http://www.eclipse.org/legal/epl-v10.html
 
+===========================================================================
+
 Apache Streams binary release includes bundled dependencies declaring "The Apache Software License, Version 1.1".
 For details, see src/license/licenses/Apache Software License, Version 1.1.txt
 Permanent URL: http://www.apache.org/licenses/LICENSE-1.1
 
+===========================================================================
+
 Apache Streams binary release includes bundled dependencies declaring "The MIT License".
 For details, see src/license/licenses/The MIT License.html
 Permanent URL: https://opensource.org/licenses/MIT
+Relevant License Text:
+
+        Copyright <YEAR> <COPYRIGHT HOLDER>
+
+        Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+        The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+===========================================================================
 
 
 
