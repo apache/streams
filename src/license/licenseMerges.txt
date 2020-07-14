@@ -23,7 +23,9 @@ The 3-Clause BSD License|BSD 3-Clause
 The 3-Clause BSD License|BSD 3-clause
 The 3-Clause BSD License|BSD License 3
 The 3-Clause BSD License|New BSD License
+The 3-Clause BSD License|New BSD license
 The 3-Clause BSD License|The BSD 3-Clause License
+The 3-Clause BSD License|The BSD License
 The 3-Clause BSD License|The New BSD License
 Common Development and Distribution License|CDDL
 Common Development and Distribution License|CDDL 1.1

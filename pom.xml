@@ -368,7 +368,7 @@
         <clojure.version>1.4.0</clojure.version>
         <doxia.version>1.7</doxia.version>
         <facebook4j.version>2.4.7</facebook4j.version>
-        <fmpp.version>0.9.15</fmpp.version>
+        <fmpp.version>0.9.16</fmpp.version>
         <freemarker.version>2.3.28</freemarker.version>
         <guava.version>20.0</guava.version>
         <httpcomponents.core.version>4.4.8</httpcomponents.core.version>
@@ -1588,11 +1588,13 @@
                             <version>${license.plugin.version}</version>
                             <configuration>
                                 <acceptPomPackaging>true</acceptPomPackaging>
-                                <excludedGroups>org.apache.streams,org.apache.streams.plugins</excludedGroups>
+                                <excludedGroups>^org.apache.streams.*</excludedGroups>
                                 <failOnBlacklist>true</failOnBlacklist>
                                 <failOnMissing>true</failOnMissing>
                                 <licenseMergesFile>${session.executionRootDirectory}/src/license/licenseMerges.txt</licenseMergesFile>
                                 <missingFile>${session.executionRootDirectory}/src/license/licenseMissingFile.properties</missingFile>
+                                <outputDirectory>src/license</outputDirectory>
+                                <thirdPartyFilename>THIRD-PARTY.txt</thirdPartyFilename>
                                 <useMissingFile>true</useMissingFile>
                             </configuration>
                             <executions>

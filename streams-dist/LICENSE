@@ -278,9 +278,46 @@ The following bundled dependencies utilize Common Development and Distribution L
 
 ===========================================================================
 
+Apache Streams binary release includes bundled dependencies declaring "Common Public License - Version 1.0".
+For details, see src/license/licenses/Common Public License - Version 1.0.html
+Permanent URL: https://opensource.org/licenses/cpl1.0.php
+The following bundled dependencies utilize Common Public License - Version 1.0:
+
+    (Common Public License - v 1.0) (GNU General Public License Version 2) (GNU Lesser General Public License Version 2.1) jnr-posix (com.github.jnr:jnr-posix:3.0.27 - http://nexus.sonatype.org/oss-repository-hosting.html/jnr-posix)
+
+===========================================================================
+
 Apache Streams binary release includes bundled dependencies declaring "Eclipse Public License".
 For details, see src/license/licenses/Eclipse Public License - Version 1.0.html
 Permanent URL: http://www.eclipse.org/legal/epl-v10.html
+
+===========================================================================
+
+Apache Streams binary release includes bundled dependencies declaring "Java HTML Tidy License".
+For details, see src/license/licenses/JB License.txt.html
+Permanent URL: http://jtidy.sourceforge.net/license.html
+The following bundled dependencies utilize Java HTML Tidy License:
+
+    (Java HTML Tidy License) JTidy (net.sf.jtidy:jtidy:r938 - http://jtidy.sourceforge.net)
+
+===========================================================================
+
+Apache Streams binary release includes bundled dependencies declaring "JBCrypt License".
+For details, see src/license/licenses/JBCrypt License.txt
+Permanent URL: http://www.mindrot.org/files/jBCrypt/LICENSE
+The following bundled dependencies utilize JBCrypt License:
+
+    (ISC/BSD License) jbcrypt (org.mindrot:jbcrypt:0.3m - http://www.mindrot.org/)
+
+===========================================================================
+
+Apache Streams binary release includes bundled dependencies declaring "Plexus Classworlds License".
+For details, see src/license/licenses/Plexus Classworlds License.html
+Permanent URL: https://spdx.org/licenses/Plexus.htm
+The following bundled dependencies utilize Plexus Classworlds License:
+
+    (Plexus Classworlds License) Copyright 2001-2016 (C) MetaStuff, Ltd. and DOM4J contributors. All Rights Reserved.) dom4j (dom4j:dom4j:1.1 - no url defined)
+    (Plexus Classworlds License) Copyright 2002 (C) The Codehaus. All Rights Reserved.) classworlds (classworlds:classworlds:1.1-alpha-2 - http://classworlds.codehaus.org/)
 
 ===========================================================================
 
@@ -304,6 +341,20 @@ Relevant License Text:
         THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ===========================================================================
+
+Apache Streams binary release includes some bundled dependencies utilizing an open-source license, but containing additional copyright notices.
+
+    (Copyright (c) 2000-2011 INRIA, France Telecom.  All rights reserved.) ASM Core (asm:asm:3.1 - http://asm.objectweb.org/asm/)
+
+        ASM: a very small and fast Java bytecode manipulation framework
+        Copyright (c) 2000-2011 INRIA, France Telecom
+        All rights reserved.
+
+     (Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.) jsp-api (javax.servlet.jsp:jsp-api:2.1 - no url defined)
+
+     (Copyright 2001-2016 (C) MetaStuff, Ltd. and DOM4J contributors. All Rights Reserved.) dom4j (dom4j:dom4j:1.1 - no url defined)
+     (Copyright 2002 (C) The Codehaus. All Rights Reserved.) classworlds (classworlds:classworlds:1.1-alpha-2 - http://classworlds.codehaus.org/)
+
 
 
 
