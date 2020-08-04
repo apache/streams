@@ -66,7 +66,7 @@ trait FlinkBase {
     if(StringUtils.isNotEmpty(configUrl)) {
       BASELOGGER.info("StreamsConfigurator.resolveConfig(configUrl): {}", StreamsConfigurator.resolveConfig(configUrl))
       try {
-        typesafe = StreamsConfigurator.resolveConfig(configUrl).withFallback(StreamsConfigurator.getConfig).resolve()
+        typesafe = StreamsConfigurator.resolveConfig(configUrl)
       } catch {
         case mue: MalformedURLException => {
           BASELOGGER.error("Invalid Configuration URL: ", mue)
@@ -77,6 +77,7 @@ trait FlinkBase {
           return false
         }
       }
+      StreamsConfigurator.addConfig(typesafe)
     }
     else {
       typesafe = StreamsConfigurator.getConfig
@@ -177,9 +178,10 @@ trait FlinkBase {
     }
     else if (configObject.getScheme.toString.equals("s3")) {
       inPathBuilder = configObject.getScheme + "://" + configObject.getPath + "/" + configObject.getReaderPath
-    } else {
-      throw new Exception("scheme not recognized: " + configObject.getScheme)
     }
+//    else {
+//      throw new Exception("scheme not recognized: " + configObject.getScheme)
+//    }
     inPathBuilder
   }
 
@@ -193,9 +195,10 @@ trait FlinkBase {
     }
     else if( configObject.getScheme.toString.equals("s3")) {
       outPathBuilder = configObject.getScheme + "://" + configObject.getPath + "/" + configObject.getWriterPath
-    } else {
-      throw new Exception("output scheme not recognized: " + configObject.getScheme)
     }
+//    else {
+//      throw new Exception("output scheme not recognized: " + configObject.getScheme)
+//    }
     outPathBuilder
   }
 

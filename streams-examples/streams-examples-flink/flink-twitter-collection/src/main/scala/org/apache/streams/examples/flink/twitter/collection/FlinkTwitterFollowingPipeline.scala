@@ -19,32 +19,28 @@
 package org.apache.streams.examples.flink.twitter.collection
 
 import java.util.Objects
-import java.util.concurrent.TimeUnit
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.common.util.concurrent.Uninterruptibles
 import org.apache.commons.lang3.StringUtils
-import org.apache.flink.api.common.functions.RichFlatMapFunction
+import org.apache.flink.api.common.JobExecutionResult
+import org.apache.flink.api.common.serialization.SimpleStringEncoder
 import org.apache.flink.api.scala._
 import org.apache.flink.core.fs.FileSystem
+import org.apache.flink.core.fs.Path
 import org.apache.flink.streaming.api.TimeCharacteristic
-import org.apache.flink.streaming.api.scala.{DataStream, KeyedStream, StreamExecutionEnvironment}
-import org.apache.flink.streaming.connectors.fs.bucketing.BucketingSink
-import org.apache.flink.util.Collector
-import org.apache.streams.config.{ComponentConfigurator, StreamsConfigurator}
+import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
+import org.apache.flink.streaming.api.scala.DataStream
+import org.apache.flink.streaming.api.scala.KeyedStream
+import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.streams.config.StreamsConfigurator
 import org.apache.streams.core.StreamsDatum
 import org.apache.streams.examples.flink.FlinkBase
 import org.apache.streams.examples.flink.twitter.TwitterFollowingPipelineConfiguration
-import org.apache.streams.flink.{FlinkStreamingConfiguration, StreamsFlinkConfiguration}
-import org.apache.streams.hdfs.{HdfsReaderConfiguration, HdfsWriterConfiguration}
 import org.apache.streams.jackson.StreamsJacksonMapper
-import org.apache.streams.twitter.config.TwitterFollowingConfiguration
 import org.apache.streams.twitter.pojo.Follow
-import org.apache.streams.twitter.provider.TwitterFollowingProvider
 import org.hamcrest.MatcherAssert
-import org.slf4j.{Logger, LoggerFactory}
-
-import scala.collection.JavaConversions._
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
   * FlinkTwitterFollowingPipeline collects friends or followers of all profiles from a
@@ -58,8 +54,12 @@ object FlinkTwitterFollowingPipeline extends FlinkBase {
   private val MAPPER: ObjectMapper = StreamsJacksonMapper.getInstance()
 
   override def main(args: Array[String]) = {
-    super.main(args)
-    val jobConfig = new ComponentConfigurator[TwitterFollowingPipelineConfiguration](classOf[TwitterFollowingPipelineConfiguration]).detectConfiguration(typesafe)
+    if( args.length > 0 ) {
+      LOGGER.info("Args: {}", args)
+      configUrl = args(0)
+    }
+    if( !setup(configUrl) ) System.exit(1)
+    val jobConfig = new StreamsConfigurator(classOf[TwitterFollowingPipelineConfiguration]).detectCustomConfiguration()
     if( !setup(jobConfig) ) System.exit(1)
     val pipeline: FlinkTwitterFollowingPipeline = new FlinkTwitterFollowingPipeline(jobConfig)
     val thread = new Thread(pipeline)
@@ -119,6 +119,7 @@ class FlinkTwitterFollowingPipeline(config: TwitterFollowingPipelineConfiguratio
 
     val env: StreamExecutionEnvironment = streamEnvironment(config)
 
+    env.setParallelism(streamsConfig.getParallelism().toInt)
     env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime)
     env.setNumberOfExecutionRetries(0)
 
@@ -126,54 +127,54 @@ class FlinkTwitterFollowingPipeline(config: TwitterFollowingPipelineConfiguratio
 
     val outPath = buildWriterPath(config.getDestination)
 
-    val keyed_ids: KeyedStream[String, Int] = env.readTextFile(inPath).setParallelism(10).keyBy( id => (id.hashCode % 100).abs )
+    val ids: DataStream[String] = env.readTextFile(inPath)
+
+    val keyed_ids: KeyedStream[String, Int] = ids.
+      name("keyed_ids").
+      setParallelism(streamsConfig.getParallelism().toInt).
+      keyBy( id => (id.hashCode % streamsConfig.getParallelism().toInt).abs )
 
     // these datums contain 'Follow' objects
-    val followDatums: DataStream[StreamsDatum] =
-      keyed_ids.flatMap(new FollowingCollectorFlatMapFunction(config.getTwitter)).setParallelism(10)
+    val followDatums: DataStream[StreamsDatum] = keyed_ids.
+      flatMap(new FollowingCollectorFlatMapFunction(streamsConfig, config.getTwitter, streamsFlinkConfiguration)).
+      name("followDatums").
+      setParallelism(streamsConfig.getParallelism().toInt)
 
-    val follows: DataStream[Follow] = followDatums
+    val follows: DataStream[Follow] = followDatums.
+      name("follows")
       .map(datum => datum.getDocument.asInstanceOf[Follow])
 
-    val jsons: DataStream[String] = follows
+    val jsons: DataStream[String] = follows.
+      name("jsons")
       .map(follow => {
         val MAPPER = StreamsJacksonMapper.getInstance
         MAPPER.writeValueAsString(follow)
-      })
+      }).
+      setParallelism(streamsConfig.getParallelism().toInt)
 
-    if( config.getTest == false )
-      jsons.addSink(new BucketingSink[String](outPath)).setParallelism(3)
-    else
-      jsons.writeAsText(outPath,FileSystem.WriteMode.OVERWRITE)
-        .setParallelism(env.getParallelism)
+    val keyed_jsons: KeyedStream[String, Int] = jsons.
+      name("keyed_jsons").
+      setParallelism(streamsConfig.getParallelism().toInt).
+      keyBy( id => (id.hashCode % streamsConfig.getParallelism().toInt).abs )
 
-    // if( test == true ) jsons.print();
+    val fileSink : StreamingFileSink[String] = StreamingFileSink.
+      forRowFormat(new Path(outPath), new SimpleStringEncoder[String]("UTF-8")).
+      build()
 
-    env.execute(STREAMS_ID)
-  }
-
-  class FollowingCollectorFlatMapFunction(
-                                           twitterConfiguration : TwitterFollowingConfiguration = new ComponentConfigurator(classOf[TwitterFollowingConfiguration]).detectConfiguration(),
-                                           flinkConfiguration : StreamsFlinkConfiguration = new ComponentConfigurator(classOf[StreamsFlinkConfiguration]).detectConfiguration()
-                                         ) extends RichFlatMapFunction[String, StreamsDatum] with Serializable {
-
-    override def flatMap(input: String, out: Collector[StreamsDatum]): Unit = {
-      collectConnections(input, out)
+    if( config.getTest == true ) {
+      keyed_jsons.writeAsText(outPath,FileSystem.WriteMode.OVERWRITE)
+    } else {
+      keyed_jsons.name("fileSink").addSink(fileSink)
     }
 
-    def collectConnections(id : String, out : Collector[StreamsDatum]) = {
-      val twitProvider: TwitterFollowingProvider =
-        new TwitterFollowingProvider(
-          twitterConfiguration.withInfo(List(toProviderId(id))).asInstanceOf[TwitterFollowingConfiguration]
-        )
-      twitProvider.prepare(twitProvider)
-      twitProvider.startStream()
-      var iterator: Iterator[StreamsDatum] = null
-      do {
-        Uninterruptibles.sleepUninterruptibly(flinkConfiguration.getProviderWaitMs, TimeUnit.MILLISECONDS)
-        twitProvider.readCurrent().iterator().toList.map(out.collect(_))
-      } while( twitProvider.isRunning )
-    }
+    val result: JobExecutionResult = env.execute("FlinkTwitterFollowingPipeline")
+
+    LOGGER.info("JobExecutionResult: {}", result.getJobExecutionResult)
+
+    LOGGER.info("JobExecutionResult.getNetRuntime: {}", result.getNetRuntime())
+
+    LOGGER.info("JobExecutionResult.getAllAccumulatorResults: {}", MAPPER.writeValueAsString(result.getAllAccumulatorResults()))
+
   }
 
 }

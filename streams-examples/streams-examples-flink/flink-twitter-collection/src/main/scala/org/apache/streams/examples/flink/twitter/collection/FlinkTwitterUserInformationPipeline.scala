@@ -24,26 +24,34 @@ import java.util.concurrent.TimeUnit
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.util.concurrent.Uninterruptibles
 import org.apache.commons.lang3.StringUtils
+import org.apache.flink.api.common.JobExecutionResult
 import org.apache.flink.api.common.functions.RichFlatMapFunction
+import org.apache.flink.api.common.serialization.SimpleStringEncoder
 import org.apache.flink.api.scala._
 import org.apache.flink.core.fs.FileSystem
+import org.apache.flink.core.fs.Path
 import org.apache.flink.streaming.api.TimeCharacteristic
+import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
+import org.apache.flink.streaming.api.scala.DataStream
+import org.apache.flink.streaming.api.scala.KeyedStream
+import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.streaming.api.scala.WindowedStream
 import org.apache.flink.streaming.api.scala.function.WindowFunction
-import org.apache.flink.streaming.api.scala.{DataStream, KeyedStream, StreamExecutionEnvironment, WindowedStream}
 import org.apache.flink.streaming.api.windowing.windows.GlobalWindow
-import org.apache.flink.streaming.connectors.fs.bucketing.BucketingSink
 import org.apache.flink.util.Collector
-import org.apache.streams.config.{ComponentConfigurator, StreamsConfigurator}
+import org.apache.streams.config.ComponentConfigurator
+import org.apache.streams.config.StreamsConfigurator
 import org.apache.streams.core.StreamsDatum
 import org.apache.streams.examples.flink.FlinkBase
 import org.apache.streams.examples.flink.twitter.TwitterUserInformationPipelineConfiguration
-import org.apache.streams.flink.FlinkStreamingConfiguration
-import org.apache.streams.hdfs.{HdfsReaderConfiguration, HdfsWriterConfiguration}
+import org.apache.streams.hdfs.HdfsReaderConfiguration
+import org.apache.streams.hdfs.HdfsWriterConfiguration
 import org.apache.streams.jackson.StreamsJacksonMapper
 import org.apache.streams.twitter.pojo.User
 import org.apache.streams.twitter.provider.TwitterUserInformationProvider
 import org.hamcrest.MatcherAssert
-import org.slf4j.{Logger, LoggerFactory}
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConversions._
 
@@ -59,8 +67,12 @@ object FlinkTwitterUserInformationPipeline extends FlinkBase {
   private val MAPPER: ObjectMapper = StreamsJacksonMapper.getInstance()
 
   override def main(args: Array[String]) = {
-    super.main(args)
-    val jobConfig = new ComponentConfigurator[TwitterUserInformationPipelineConfiguration](classOf[TwitterUserInformationPipelineConfiguration]).detectConfiguration(typesafe)
+    if( args.length > 0 ) {
+      LOGGER.info("Args: {}", args)
+      configUrl = args(0)
+    }
+    if( !setup(configUrl) ) System.exit(1)
+    val jobConfig = new StreamsConfigurator(classOf[TwitterUserInformationPipelineConfiguration]).detectCustomConfiguration()
     if( !setup(jobConfig) ) System.exit(1)
     val pipeline: FlinkTwitterUserInformationPipeline = new FlinkTwitterUserInformationPipeline(jobConfig)
     val thread = new Thread(pipeline)
@@ -115,11 +127,13 @@ object FlinkTwitterUserInformationPipeline extends FlinkBase {
 class FlinkTwitterUserInformationPipeline(config: TwitterUserInformationPipelineConfiguration = new StreamsConfigurator[TwitterUserInformationPipelineConfiguration](classOf[TwitterUserInformationPipelineConfiguration]).detectCustomConfiguration()) extends Runnable with java.io.Serializable {
 
   import FlinkTwitterUserInformationPipeline._
+  //import FlinkBase.streamsConfig
 
   override def run(): Unit = {
 
     val env: StreamExecutionEnvironment = streamEnvironment(config)
 
+    env.setParallelism(streamsConfig.getParallelism().toInt)
     env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime)
     env.setNumberOfExecutionRetries(0)
 
@@ -127,7 +141,7 @@ class FlinkTwitterUserInformationPipeline(config: TwitterUserInformationPipeline
 
     val outPath = buildWriterPath(new ComponentConfigurator(classOf[HdfsWriterConfiguration]).detectConfiguration())
 
-    val ids: DataStream[String] = env.readTextFile(inPath).setParallelism(10).name("ids")
+    val ids: DataStream[String] = env.readTextFile(inPath).setParallelism(env.getParallelism).name("ids")
 
     val keyed_ids: KeyedStream[String, Int] = ids.name("keyed_ids").keyBy( id => (id.hashCode % 100).abs )
 
@@ -135,7 +149,7 @@ class FlinkTwitterUserInformationPipeline(config: TwitterUserInformationPipeline
 
     val idLists: DataStream[List[String]] = idWindows.apply[List[String]] (new idListWindowFunction()).name("idLists")
 
-    val userDatums: DataStream[StreamsDatum] = idLists.flatMap(new profileCollectorFlatMapFunction).setParallelism(10).name("userDatums")
+    val userDatums: DataStream[StreamsDatum] = idLists.flatMap(new profileCollectorFlatMapFunction).setParallelism(env.getParallelism).name("userDatums")
 
     val user: DataStream[User] = userDatums.map(datum => datum.getDocument.asInstanceOf[User]).name("users")
 
@@ -145,15 +159,29 @@ class FlinkTwitterUserInformationPipeline(config: TwitterUserInformationPipeline
         MAPPER.writeValueAsString(user)
       }).name("jsons")
 
-    if( config.getTest == false )
-      jsons.addSink(new BucketingSink[String](outPath)).setParallelism(3).name("hdfs")
-    else
-      jsons.writeAsText(outPath,FileSystem.WriteMode.OVERWRITE)
-        .setParallelism(env.getParallelism)
+    val keyed_jsons: KeyedStream[String, Int] = jsons.
+      setParallelism(streamsConfig.getParallelism().toInt).
+      keyBy( id => (id.hashCode % streamsConfig.getParallelism().toInt).abs )
 
-    LOGGER.info("StreamExecutionEnvironment: {}", env.toString )
+    val fileSink : StreamingFileSink[String] = StreamingFileSink.
+      forRowFormat(new Path(outPath), new SimpleStringEncoder[String]("UTF-8")).
+      build()
 
-    env.execute(STREAMS_ID)
+    if( config.getTest == true ) {
+      keyed_jsons.writeAsText(outPath,FileSystem.WriteMode.OVERWRITE)
+    } else {
+      keyed_jsons.addSink(fileSink)
+    }
+
+    val result: JobExecutionResult = env.execute("FlinkTwitterUserInformationPipeline")
+
+    LOGGER.info("JobExecutionResult: {}", result.getJobExecutionResult)
+
+    LOGGER.info("JobExecutionResult.getNetRuntime: {}", result.getNetRuntime())
+
+    LOGGER.info("JobExecutionResult.getAllAccumulatorResults: {}", MAPPER.writeValueAsString(result.getAllAccumulatorResults()))
+
+
   }
 
   class idListWindowFunction extends WindowFunction[String, List[String], Int, GlobalWindow] {
