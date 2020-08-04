@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package com.peoplepattern.streams.twitter.collection
+package org.apache.streams.examples.flink.twitter.test
 
 import java.io.File
 import java.nio.file.{Files, Paths}
@@ -36,7 +36,7 @@ import scala.io.Source
 /**
   * FlinkTwitterPostsPipelineIT is an integration test for FlinkTwitterPostsPipeline.
   */
-class FlinkTwitterPostsPipelineIT extends FlatSpec  {
+class FlinkTwitterPostsPipelineIT {
 
   private val LOGGER: Logger = LoggerFactory.getLogger(classOf[FlinkTwitterPostsPipelineIT])
 

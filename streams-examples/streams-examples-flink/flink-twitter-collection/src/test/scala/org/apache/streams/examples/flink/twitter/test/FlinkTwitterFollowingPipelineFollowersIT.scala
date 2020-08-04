@@ -36,7 +36,7 @@ import scala.io.Source
 /**
   * FlinkTwitterFollowingPipelineFollowersIT is an integration test for FlinkTwitterFollowingPipeline.
   */
-class FlinkTwitterFollowingPipelineFollowersIT extends FlatSpec {
+class FlinkTwitterFollowingPipelineFollowersIT {
 
   private val LOGGER: Logger = LoggerFactory.getLogger(classOf[FlinkTwitterFollowingPipelineFollowersIT])
 

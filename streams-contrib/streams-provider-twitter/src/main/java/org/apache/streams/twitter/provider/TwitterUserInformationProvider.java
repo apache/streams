@@ -40,6 +40,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.typesafe.config.Config;
@@ -56,6 +57,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.lang.Runnable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,6 +66,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -103,14 +107,15 @@ public class TwitterUserInformationProvider implements Callable<Iterator<User>>,
 
   protected Twitter client;
 
-  protected ListeningExecutorService executor;
+  protected ExecutorService executor;
 
   protected DateTime start;
   protected DateTime end;
 
   protected final AtomicBoolean running = new AtomicBoolean();
 
-  private List<ListenableFuture<Object>> futures = new ArrayList<>();
+  private List<Runnable> tasks = new ArrayList<>();
+  private List<Future<Object>> futures = new ArrayList<>();
 
   /**
    * To use from command line:
@@ -165,10 +170,11 @@ public class TwitterUserInformationProvider implements Callable<Iterator<User>>,
           System.err.println(ex.getMessage());
         }
       }
+      outStream.flush();
     }
     while ( provider.isRunning());
     provider.cleanUp();
-    outStream.flush();
+    outStream.close();
   }
 
   // TODO: this should be abstracted out
@@ -199,29 +205,10 @@ public class TwitterUserInformationProvider implements Callable<Iterator<User>>,
   public void prepare(Object configurationObject) {
 
     if ( configurationObject instanceof TwitterFollowingConfiguration ) {
-      config = (TwitterUserInformationConfiguration) configurationObject;
+      this.config = (TwitterUserInformationConfiguration) configurationObject;
     }
 
-    Objects.requireNonNull(config);
-    Objects.requireNonNull(config.getOauth());
-    Objects.requireNonNull(config.getOauth().getConsumerKey());
-    Objects.requireNonNull(config.getOauth().getConsumerSecret());
-    Objects.requireNonNull(config.getOauth().getAccessToken());
-    Objects.requireNonNull(config.getOauth().getAccessTokenSecret());
-    Objects.requireNonNull(config.getInfo());
-    Objects.requireNonNull(config.getThreadsPerProvider());
-
-    streamsConfiguration = StreamsConfigurator.detectConfiguration();
-
-    Objects.requireNonNull(streamsConfiguration.getQueueSize());
-
-    try {
-      client = getTwitterClient();
-    } catch (InstantiationException e) {
-      LOGGER.error("InstantiationException", e);
-    }
-
-    Objects.requireNonNull(client);
+    streamsConfiguration = StreamsConfigurator.detectConfiguration(StreamsConfigurator.getConfig());
 
     try {
       lock.writeLock().lock();
@@ -231,6 +218,22 @@ public class TwitterUserInformationProvider implements Callable<Iterator<User>>,
     }
 
     Objects.requireNonNull(providerQueue);
+    Objects.requireNonNull(config);
+    Objects.requireNonNull(config.getOauth());
+    Objects.requireNonNull(config.getOauth().getConsumerKey());
+    Objects.requireNonNull(config.getOauth().getConsumerSecret());
+    Objects.requireNonNull(config.getOauth().getAccessToken());
+    Objects.requireNonNull(config.getOauth().getAccessTokenSecret());
+    Objects.requireNonNull(config.getInfo());
+    Objects.requireNonNull(config.getThreadsPerProvider());
+
+    try {
+      client = getTwitterClient();
+    } catch (InstantiationException e) {
+      LOGGER.error("InstantiationException", e);
+    }
+
+    Objects.requireNonNull(client);
 
     for (String s : config.getInfo()) {
       if (s != null) {
@@ -247,7 +250,7 @@ public class TwitterUserInformationProvider implements Callable<Iterator<User>>,
     }
 
     executor = MoreExecutors.listeningDecorator(
-        ExecutorUtils.newFixedThreadPoolWithQueueSize(
+      ExecutorUtils.newFixedThreadPoolWithQueueSize(
             config.getThreadsPerProvider().intValue(),
             streamsConfiguration.getQueueSize().intValue()
         )
@@ -255,12 +258,38 @@ public class TwitterUserInformationProvider implements Callable<Iterator<User>>,
 
     Objects.requireNonNull(executor);
 
-    // Twitter allows for batches up to 100 per request, but you cannot mix types
     submitUserInformationThreads(ids, names);
+
+    LOGGER.info("tasks: {}", tasks.size());
+    LOGGER.info("futures: {}", futures.size());
+
+  }
+
+  @Override
+  public void startStream() {
+
+    Objects.requireNonNull(executor);
+
+    LOGGER.info("startStream");
+
+    running.set(true);
+
+    LOGGER.info("running: {}", running.get());
+
+    ExecutorUtils.shutdownAndAwaitTermination(executor);
+
+    LOGGER.info("running: {}", running.get());
+
   }
 
   protected void submitUserInformationThreads(List<Long> ids, List<String> names) {
 
+    /*
+    while( idsIndex < ids.size() ) {
+      from = idsIndex
+      to = Math.min( idsIndex + 100, ids.size() - idsIndex
+    }
+     */
     int idsIndex = 0;
     while( idsIndex + 100 < ids.size() ) {
       List<Long> batchIds = ids.subList(idsIndex, idsIndex + 100);
@@ -268,7 +297,8 @@ public class TwitterUserInformationProvider implements Callable<Iterator<User>>,
           this,
           client,
           new UsersLookupRequest().withUserId(batchIds));
-      ListenableFuture future = executor.submit(providerTask);
+      tasks.add(providerTask);
+      Future future = executor.submit((Callable)providerTask);
       futures.add(future);
       LOGGER.info("Thread Submitted: {}", providerTask.request);
       idsIndex += 100;
@@ -279,7 +309,8 @@ public class TwitterUserInformationProvider implements Callable<Iterator<User>>,
           this,
           client,
           new UsersLookupRequest().withUserId(batchIds));
-      ListenableFuture future = executor.submit(providerTask);
+      tasks.add(providerTask);
+      Future future = executor.submit((Callable)providerTask);
       futures.add(future);
       LOGGER.info("Thread Submitted: {}", providerTask.request);
     }
@@ -291,7 +322,8 @@ public class TwitterUserInformationProvider implements Callable<Iterator<User>>,
           this,
           client,
           new UsersLookupRequest().withScreenName(batchNames));
-      ListenableFuture future = executor.submit(providerTask);
+      tasks.add(providerTask);
+      Future future = executor.submit((Callable)providerTask);
       futures.add(future);
       LOGGER.info("Thread Submitted: {}", providerTask.request);
       namesIndex += 100;
@@ -302,7 +334,8 @@ public class TwitterUserInformationProvider implements Callable<Iterator<User>>,
           this,
           client,
           new UsersLookupRequest().withScreenName(batchNames));
-      ListenableFuture future = executor.submit(providerTask);
+      tasks.add(providerTask);
+      Future future = executor.submit((Callable)providerTask);
       futures.add(future);
       LOGGER.info("Thread Submitted: {}", providerTask.request);
     }
@@ -310,27 +343,16 @@ public class TwitterUserInformationProvider implements Callable<Iterator<User>>,
   }
 
   @Override
-  public void startStream() {
-
-    Objects.requireNonNull(executor);
-
-    LOGGER.info("startStream: {} Threads", futures.size());
-
-    running.set(true);
-
-    executor.shutdown();
-  }
-
-  @Override
   public StreamsResultSet readCurrent() {
 
     StreamsResultSet result;
+
+    LOGGER.debug("Providing {} docs", providerQueue.size());
 
     try {
       lock.writeLock().lock();
       result = new StreamsResultSet(providerQueue);
       providerQueue = QueueUtils.constructQueue();
-      LOGGER.debug("readCurrent: {} Documents", result.size());
     } finally {
       lock.writeLock().unlock();
     }
@@ -347,25 +369,36 @@ public class TwitterUserInformationProvider implements Callable<Iterator<User>>,
   @Override
   public StreamsResultSet readRange(DateTime start, DateTime end) {
     LOGGER.debug("{} readRange", STREAMS_ID);
-    this.start = start;
-    this.end = end;
-    readCurrent();
-    return (StreamsResultSet)providerQueue.iterator();
-  }
-
-
-  @Override
-  public boolean isRunning() {
-    if ( providerQueue.isEmpty() && executor.isTerminated() && Futures.allAsList(futures).isDone() ) {
-      LOGGER.info("All Threads Completed");
-      running.set(false);
-      LOGGER.info("Exiting");
-    }
-    return running.get();
+    throw new NotImplementedException();
   }
 
   protected Twitter getTwitterClient() throws InstantiationException {
     return Twitter.getInstance(config);
+  }
+
+  @Override
+  public boolean isRunning() {
+    LOGGER.debug("providerQueue.isEmpty: {}", providerQueue.isEmpty());
+    LOGGER.debug("providerQueue.size: {}", providerQueue.size());
+    LOGGER.debug("executor.isTerminated: {}", executor.isTerminated());
+    LOGGER.debug("tasks.size(): {}", tasks.size());
+    LOGGER.debug("futures.size(): {}", futures.size());
+    boolean allTasksComplete;
+    if( futures.size() > 0) {
+      allTasksComplete = true;
+      for(Future<?> future : futures){
+        allTasksComplete |= !future.isDone(); // check if future is done
+      }
+    } else {
+      allTasksComplete = false;
+    }
+    LOGGER.debug("allTasksComplete: {}", allTasksComplete);
+    boolean finished = allTasksComplete && tasks.size() > 0 && tasks.size() == futures.size() && executor.isShutdown() && executor.isTerminated();
+    LOGGER.debug("finished: {}", finished);
+    if ( finished ) {
+      running.set(false);
+    }
+    return running.get();
   }
 
   @Override

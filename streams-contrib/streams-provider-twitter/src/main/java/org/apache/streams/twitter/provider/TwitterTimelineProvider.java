@@ -206,6 +206,7 @@ public class TwitterTimelineProvider implements Callable<Iterator<Tweet>>, Strea
     }
 
     Objects.requireNonNull(providerQueue);
+    Objects.requireNonNull(config);
     Objects.requireNonNull(config.getOauth().getConsumerKey());
     Objects.requireNonNull(config.getOauth().getConsumerSecret());
     Objects.requireNonNull(config.getOauth().getAccessToken());
@@ -243,6 +244,8 @@ public class TwitterTimelineProvider implements Callable<Iterator<Tweet>>, Strea
             streamsConfiguration.getQueueSize().intValue()
         )
     );
+
+    Objects.requireNonNull(executor);
 
     submitTimelineThreads(ids, names);
 
@@ -323,6 +326,8 @@ public class TwitterTimelineProvider implements Callable<Iterator<Tweet>>, Strea
       running.set(false);
 
       LOGGER.info("Exiting");
+    } else {
+      LOGGER.info("Not Finished Yet...");
     }
 
     return result;
@@ -350,22 +355,34 @@ public class TwitterTimelineProvider implements Callable<Iterator<Tweet>>, Strea
   }
 
   @Override
-  public void cleanUp() {
-    ExecutorUtils.shutdownAndAwaitTermination(executor);
-  }
-
-  @Override
   public boolean isRunning() {
     LOGGER.debug("providerQueue.isEmpty: {}", providerQueue.isEmpty());
     LOGGER.debug("providerQueue.size: {}", providerQueue.size());
+    LOGGER.debug("executor.isShutdown: {}", executor.isShutdown());
     LOGGER.debug("executor.isTerminated: {}", executor.isTerminated());
     LOGGER.debug("tasks.size(): {}", tasks.size());
     LOGGER.debug("futures.size(): {}", futures.size());
-    if ( tasks.size() > 0 && tasks.size() == futures.size() && executor.isShutdown() && executor.isTerminated() ) {
+    boolean allTasksComplete;
+    if( futures.size() > 0) {
+      allTasksComplete = true;
+      for(Future<?> future : futures){
+        allTasksComplete |= !future.isDone(); // check if future is done
+      }
+    } else {
+      allTasksComplete = false;
+    }
+    LOGGER.debug("allTasksComplete: {}", allTasksComplete);
+    boolean finished = tasks.size() > 0 && tasks.size() == futures.size() && executor.isShutdown() && executor.isTerminated() && allTasksComplete && providerQueue.size() == 0;
+    LOGGER.debug("finished: {}", finished);
+    if ( finished ) {
       running.set(false);
     }
-    LOGGER.debug("isRunning: ", running.get());
     return running.get();
+  }
+
+  @Override
+  public void cleanUp() {
+    ExecutorUtils.shutdownAndAwaitTermination(executor);
   }
 
   @Override

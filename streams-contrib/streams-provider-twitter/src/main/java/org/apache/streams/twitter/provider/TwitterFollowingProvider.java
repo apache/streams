@@ -332,6 +332,8 @@ public class TwitterFollowingProvider implements Callable<Iterator<Follow>>, Str
   }
 
   public boolean isRunning() {
+    LOGGER.debug("providerQueue.isEmpty: {}", providerQueue.isEmpty());
+    LOGGER.debug("providerQueue.size: {}", providerQueue.size());
     LOGGER.debug("executor.isShutdown: {}", executor.isShutdown());
     LOGGER.debug("executor.isTerminated: {}", executor.isTerminated());
     LOGGER.debug("tasks.size(): {}", tasks.size());
@@ -346,7 +348,7 @@ public class TwitterFollowingProvider implements Callable<Iterator<Follow>>, Str
       allTasksComplete = false;
     }
     LOGGER.debug("allTasksComplete: {}", allTasksComplete);
-    boolean finished = allTasksComplete && tasks.size() > 0 && tasks.size() == futures.size() && executor.isShutdown() && executor.isTerminated();
+    boolean finished = tasks.size() > 0 && tasks.size() == futures.size() && executor.isShutdown() && executor.isTerminated() && allTasksComplete && providerQueue.size() == 0;
     LOGGER.debug("finished: {}", finished);
     if ( finished ) {
       running.set(false);

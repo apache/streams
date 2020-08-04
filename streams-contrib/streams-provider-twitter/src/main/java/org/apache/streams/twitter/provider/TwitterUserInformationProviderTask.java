@@ -23,6 +23,7 @@ import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.api.UsersLookupRequest;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
+import org.apache.streams.twitter.pojo.Tweet;
 import org.apache.streams.twitter.pojo.User;
 import org.apache.streams.util.ComponentUtils;
 
@@ -31,14 +32,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  *  Retrieve recent posts for a single user id.
  */
-public class TwitterUserInformationProviderTask implements Runnable {
+public class TwitterUserInformationProviderTask implements Callable<Iterator<User>>, Runnable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwitterUserInformationProviderTask.class);
 
@@ -47,6 +51,7 @@ public class TwitterUserInformationProviderTask implements Runnable {
   protected TwitterUserInformationProvider provider;
   protected Twitter client;
   protected UsersLookupRequest request;
+  protected List<User> responseList;
 
   /**
    * TwitterTimelineProviderTask constructor.
@@ -60,19 +65,37 @@ public class TwitterUserInformationProviderTask implements Runnable {
     this.request = request;
   }
 
+  int item_count = 0;
+
   @Override
   public void run() {
 
     LOGGER.info("Thread Starting: {}", request.toString());
 
+    responseList = new ArrayList<>();
+
     List<User> users = client.lookup(request);
 
-    for (User user : users) {
-      ComponentUtils.offerUntilSuccess(new StreamsDatum(user), provider.providerQueue);
+    responseList.addAll(users);
+
+    int item_count = 0;
+
+    if( users.size() > 0 ) {
+      for (User user : users) {
+        ComponentUtils.offerUntilSuccess(new StreamsDatum(user), provider.providerQueue);
+        LOGGER.debug("User: {}", user.getIdStr());
+      }
     }
 
     LOGGER.info("Thread Finished: {}", request.toString());
 
+    LOGGER.info("item_count: {} ", item_count);
+
   }
 
+  @Override
+  public Iterator<User> call() throws Exception {
+    run();
+    return responseList.iterator();
+  }
 }

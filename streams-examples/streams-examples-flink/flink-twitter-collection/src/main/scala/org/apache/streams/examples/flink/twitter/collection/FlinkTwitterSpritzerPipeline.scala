@@ -25,26 +25,32 @@ import java.util.concurrent.TimeUnit
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.util.concurrent.Uninterruptibles
 import org.apache.commons.lang3.StringUtils
-import org.apache.flink.api.common.functions.StoppableFunction
+import org.apache.flink.api.common.JobExecutionResult
+import org.apache.flink.api.common.serialization.SimpleStringEncoder
 import org.apache.flink.api.scala._
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.core.fs.FileSystem
+import org.apache.flink.core.fs.Path
 import org.apache.flink.streaming.api.TimeCharacteristic
-import org.apache.flink.streaming.api.functions.source.{RichSourceFunction, SourceFunction}
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-import org.apache.flink.streaming.connectors.fs.bucketing.BucketingSink
-import org.apache.streams.config.{ComponentConfigurator, StreamsConfigurator}
+import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
+import org.apache.flink.streaming.api.functions.source.RichSourceFunction
+import org.apache.flink.streaming.api.functions.source.SourceFunction
+import org.apache.flink.streaming.api.scala.KeyedStream
+import org.apache.flink.streaming.api.scala.DataStream
+import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.streams.config.ComponentConfigurator
+import org.apache.streams.config.StreamsConfigurator
 import org.apache.streams.core.StreamsDatum
 import org.apache.streams.examples.flink.FlinkBase
 import org.apache.streams.examples.flink.twitter.TwitterSpritzerPipelineConfiguration
-import org.apache.streams.flink.FlinkStreamingConfiguration
 import org.apache.streams.hdfs.HdfsWriterConfiguration
 import org.apache.streams.jackson.StreamsJacksonMapper
 import org.apache.streams.twitter.config.TwitterStreamConfiguration
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat
 import org.apache.streams.twitter.provider.TwitterStreamProvider
 import org.hamcrest.MatcherAssert
-import org.slf4j.{Logger, LoggerFactory}
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConversions._
 
@@ -122,25 +128,37 @@ class FlinkTwitterSpritzerPipeline(config: TwitterSpritzerPipelineConfiguration 
 
     val outPath = buildWriterPath(new ComponentConfigurator(classOf[HdfsWriterConfiguration]).detectConfiguration())
 
-    val streamSource : DataStream[String] = env.addSource(spritzerSource)
+    val jsons : DataStream[String] = env.addSource(spritzerSource)
 
-    if( config.getTest == false )
-      streamSource.addSink(new BucketingSink[String](outPath)).setParallelism(3).name("hdfs")
-    else
-      streamSource.writeAsText(outPath,FileSystem.WriteMode.OVERWRITE)
-        .setParallelism(env.getParallelism)
+    val keyed_jsons: KeyedStream[String, Int] = jsons.
+      setParallelism(streamsConfig.getParallelism().toInt).
+      keyBy( id => (id.hashCode % streamsConfig.getParallelism().toInt).abs )
 
-    // if( test == true ) jsons.print();
+    val fileSink : StreamingFileSink[String] = StreamingFileSink.
+      forRowFormat(new Path(outPath), new SimpleStringEncoder[String]("UTF-8")).
+      build()
 
-    env.execute(STREAMS_ID)
+    if( config.getTest == true ) {
+      keyed_jsons.writeAsText(outPath,FileSystem.WriteMode.OVERWRITE)
+    } else {
+      keyed_jsons.addSink(fileSink)
+    }
+
+    val result: JobExecutionResult = env.execute("FlinkTwitterPostsPipeline")
+
+    LOGGER.info("JobExecutionResult: {}", result.getJobExecutionResult)
+
+    LOGGER.info("JobExecutionResult.getNetRuntime: {}", result.getNetRuntime())
+
+    LOGGER.info("JobExecutionResult.getAllAccumulatorResults: {}", MAPPER.writeValueAsString(result.getAllAccumulatorResults()))
 
   }
 
   def stop(): Unit = {
-    spritzerSource.stop()
+    spritzerSource.cancel()
   }
 
-  class SpritzerSource(sourceConfig: TwitterStreamConfiguration) extends RichSourceFunction[String] with Serializable with StoppableFunction {
+  class SpritzerSource(sourceConfig: TwitterStreamConfiguration) extends RichSourceFunction[String] with Serializable /*with StoppableFunction*/ {
 
     var mapper: ObjectMapper = _
 
@@ -167,9 +185,9 @@ class FlinkTwitterSpritzerPipeline(config: TwitterSpritzerPipelineConfiguration 
       close()
     }
 
-    override def stop(): Unit = {
-      close()
-    }
+//    override def stop(): Unit = {
+//      close()
+//    }
   }
 
 
