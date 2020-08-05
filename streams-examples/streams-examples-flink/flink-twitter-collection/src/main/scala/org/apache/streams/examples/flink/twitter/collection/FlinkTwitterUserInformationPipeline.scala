@@ -170,7 +170,7 @@ class FlinkTwitterUserInformationPipeline(config: TwitterUserInformationPipeline
     if( config.getTest == true ) {
       keyed_jsons.writeAsText(outPath,FileSystem.WriteMode.OVERWRITE)
     } else {
-      keyed_jsons.addSink(fileSink)
+      keyed_jsons.addSink(fileSink).name("fileSink")
     }
 
     val result: JobExecutionResult = env.execute("FlinkTwitterUserInformationPipeline")
