@@ -19,7 +19,7 @@
   ~ under the License.
   -->
 
-<suite name="ExampleFlinkITs" preserve-order="true">
+<suite name="ExampleFlinkITs" allow-return-values="true" preserve-order="true">
 
     <test name="FlinkTwitterUserInformationPipelineIT">
         <classes>
