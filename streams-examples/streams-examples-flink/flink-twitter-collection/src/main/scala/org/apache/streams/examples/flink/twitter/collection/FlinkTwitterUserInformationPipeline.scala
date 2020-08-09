@@ -133,7 +133,6 @@ class FlinkTwitterUserInformationPipeline(config: TwitterUserInformationPipeline
 
     val env: StreamExecutionEnvironment = streamEnvironment(config)
 
-    env.setParallelism(streamsConfig.getParallelism().toInt)
     env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime)
     env.setNumberOfExecutionRetries(0)
 
