@@ -114,6 +114,7 @@ object FlinkTwitterFollowingPipeline extends FlinkBase {
 class FlinkTwitterFollowingPipeline(config: TwitterFollowingPipelineConfiguration = new StreamsConfigurator[TwitterFollowingPipelineConfiguration](classOf[TwitterFollowingPipelineConfiguration]).detectCustomConfiguration()) extends Runnable with java.io.Serializable {
 
   import FlinkTwitterFollowingPipeline._
+  import FlinkTwitterFollowingPipeline.rollingPolicy
 
   override def run(): Unit = {
 
@@ -159,7 +160,8 @@ class FlinkTwitterFollowingPipeline(config: TwitterFollowingPipelineConfiguratio
 
     val fileSink : StreamingFileSink[String] = StreamingFileSink.
       forRowFormat(new Path(outPath), new SimpleStringEncoder[String]("UTF-8")).
-      build()
+      withRollingPolicy(rollingPolicy).
+      withBucketAssigner(basePathBucketAssigner).build();
 
     if( config.getTest == true ) {
       keyed_jsons.writeAsText(outPath,FileSystem.WriteMode.OVERWRITE)

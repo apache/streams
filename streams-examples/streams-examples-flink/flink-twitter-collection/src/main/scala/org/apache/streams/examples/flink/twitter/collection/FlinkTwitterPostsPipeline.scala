@@ -162,7 +162,8 @@ class FlinkTwitterPostsPipeline(config: TwitterPostsPipelineConfiguration = new 
 
     val fileSink : StreamingFileSink[String] = StreamingFileSink.
       forRowFormat(new Path(outPath), new SimpleStringEncoder[String]("UTF-8")).
-      build()
+      withRollingPolicy(rollingPolicy).
+      withBucketAssigner(basePathBucketAssigner).build();
 
     if( config.getTest == true ) {
       keyed_jsons.writeAsText(outPath,FileSystem.WriteMode.OVERWRITE)

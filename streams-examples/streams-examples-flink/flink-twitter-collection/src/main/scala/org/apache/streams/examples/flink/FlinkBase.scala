@@ -19,12 +19,15 @@
 package org.apache.streams.examples.flink
 
 import java.net.MalformedURLException
+import java.util.concurrent.TimeUnit
 
 import com.typesafe.config.Config
 import org.apache.commons.lang3.StringUtils
 import org.apache.flink.api.common.restartstrategy.RestartStrategies
 import org.apache.flink.api.scala.ExecutionEnvironment
 import org.apache.flink.streaming.api.CheckpointingMode
+import org.apache.flink.streaming.api.functions.sink.filesystem.bucketassigners.BasePathBucketAssigner
+import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.streams.config.{ComponentConfigurator, StreamsConfigurator}
 import org.apache.streams.flink.{FlinkBatchConfiguration, FlinkStreamingConfiguration, StreamsFlinkConfiguration}
@@ -47,6 +50,13 @@ trait FlinkBase {
 
   var executionEnvironment: ExecutionEnvironment = _
   var streamExecutionEnvironment: StreamExecutionEnvironment = _
+
+  final val basePathBucketAssigner : BasePathBucketAssigner[String] = new BasePathBucketAssigner()
+  final val rollingPolicy: DefaultRollingPolicy[String, String] = DefaultRollingPolicy.builder()
+    .withRolloverInterval(TimeUnit.MINUTES.toMillis(15))
+    .withInactivityInterval(TimeUnit.MINUTES.toMillis(5))
+    .withMaxPartSize(1024 * 1024 * 1024)
+    .build()
 
   /*
    Basic stuff for every flink job
