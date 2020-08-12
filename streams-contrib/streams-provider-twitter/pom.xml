@@ -31,6 +31,7 @@
 
     <properties>
         <skipITs>true</skipITs>
+        <jsonschema2pojo.plugin.version>1.0.2</jsonschema2pojo.plugin.version>
     </properties>
 
     <dependencies>
@@ -147,15 +148,46 @@
         </testResources>
         <plugins>
             <plugin>
-                <groupId>org.apache.streams.plugins</groupId>
-                <artifactId>streams-plugin-pojo</artifactId>
-                <version>${project.version}</version>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                <version>${jsonschema2pojo.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.streams</groupId>
+                        <artifactId>streams-persist-hdfs</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.streams.plugins</groupId>
+                        <artifactId>streams-plugin-pojo</artifactId>
+                        <version>${streams.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
+                    <annotationStyle>jackson2</annotationStyle>
+                    <customAnnotator>org.apache.streams.plugins.JuneauPojoAnnotator</customAnnotator>
+                    <generateBuilders>true</generateBuilders>
+                    <includeAdditionalProperties>false</includeAdditionalProperties>
+                    <includeDynamicAccessors>true</includeDynamicAccessors>
+                    <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
+                    <outputDirectory>${project.basedir}/target/generated-sources/pojo</outputDirectory>
+                    <propertyWordDelimiters></propertyWordDelimiters>
+                    <removeOldOutput>true</removeOldOutput>
+                    <serializable>true</serializable>
                     <sourcePaths>
                         <sourcePath>${project.basedir}/src/main/jsonschema</sourcePath>
                     </sourcePaths>
-                    <targetDirectory>${project.basedir}/target/generated-sources/pojo</targetDirectory>
-                    <targetPackage>org.apache.streams.twitter.pojo</targetPackage>
+                    <useDoubleNumbers>true</useDoubleNumbers>
+                    <useLongIntegers>true</useLongIntegers>
+                    <useJodaDates>false</useJodaDates>
                 </configuration>
             </plugin>
             <plugin>
