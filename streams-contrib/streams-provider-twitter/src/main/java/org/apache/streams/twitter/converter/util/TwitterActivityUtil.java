@@ -41,6 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +87,7 @@ public class TwitterActivityUtil {
       throw new ActivityConversionException("Unable to determine activity id");
     }
     try {
-      activity.setPublished(tweet.getCreatedAt());
+      activity.setPublished(new DateTime(tweet.getCreatedAt()));
     } catch ( Exception ex ) {
       throw new ActivityConversionException("Unable to determine publishedDate", ex);
     }
@@ -323,7 +324,7 @@ public class TwitterActivityUtil {
 
     Map<String, Object> likes = new HashMap<>();
     likes.put("perspectival", tweet.getFavorited());
-    likes.put("count", tweet.getAdditionalProperties().get("favorite_count"));
+    likes.put("count", tweet.getFavoriteCount());
 
     extensions.put("likes", likes);
 

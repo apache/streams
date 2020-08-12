@@ -32,14 +32,16 @@
     <description>Collects twitter documents using flink.</description>
 
     <properties>
-        <testng.version>6.9.10</testng.version>
         <hdfs.version>2.7.0</hdfs.version>
         <flink.version>1.11.1</flink.version>
+        <testng.version>6.9.10</testng.version>
         <scala.version>2.11.12</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
         <scalapc.version>1.1.0</scalapc.version>
         <scalatest.version>3.0.0</scalatest.version>
         <scalaxml.version>1.1.0</scalaxml.version>
+
+        <jsonschema2pojo.plugin.version>1.0.2</jsonschema2pojo.plugin.version>
     </properties>
 
     <dependencies>
@@ -394,22 +396,9 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.streams.plugins</groupId>
-                <artifactId>streams-plugin-pojo</artifactId>
-                <configuration>
-                    <sourcePaths>
-                        <sourcePath>${project.basedir}/src/main/jsonschema</sourcePath>
-                    </sourcePaths>
-                    <targetDirectory>${project.basedir}/target/generated-sources/pojo</targetDirectory>
-                    <targetPackage>org.apache.streams.examples.flink.twitter</targetPackage>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-sources</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+                <version>${jsonschema2pojo.plugin.version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.streams</groupId>
@@ -417,12 +406,66 @@
                         <version>${project.version}</version>
                     </dependency>
                     <dependency>
-                        <groupId>org.apache.streams</groupId>
-                        <artifactId>streams-provider-twitter</artifactId>
-                        <version>${project.version}</version>
+                        <groupId>org.apache.streams.plugins</groupId>
+                        <artifactId>streams-plugin-pojo</artifactId>
+                        <version>${streams.version}</version>
                     </dependency>
                 </dependencies>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <annotationStyle>jackson2</annotationStyle>
+                    <customAnnotator>org.apache.streams.plugins.JuneauPojoAnnotator</customAnnotator>
+                    <generateBuilders>true</generateBuilders>
+                    <includeAdditionalProperties>false</includeAdditionalProperties>
+                    <includeDynamicAccessors>true</includeDynamicAccessors>
+                    <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
+                    <outputDirectory>${project.basedir}/target/generated-sources/pojo</outputDirectory>
+                    <propertyWordDelimiters></propertyWordDelimiters>
+                    <removeOldOutput>true</removeOldOutput>
+                    <serializable>true</serializable>
+                    <sourcePaths>
+                        <sourcePath>${project.basedir}/src/main/jsonschema</sourcePath>
+<!--                        <sourcePath>${project.basedir}/../../../streams-contrib/streams-provider-twitter/src/main/jsonschema</sourcePath>-->
+                    </sourcePaths>
+                    <useDoubleNumbers>true</useDoubleNumbers>
+                    <useLongIntegers>true</useLongIntegers>
+                    <useJodaDates>false</useJodaDates>
+                </configuration>
             </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.streams.plugins</groupId>-->
+<!--                <artifactId>streams-plugin-pojo</artifactId>-->
+<!--                <configuration>-->
+<!--                    <targetDirectory>${project.basedir}/target/generated-sources/pojo</targetDirectory>-->
+<!--                    <targetPackage>org.apache.streams.examples.flink.twitter</targetPackage>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>generate-sources</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <dependencies>-->
+<!--                    <dependency>-->
+<!--                        <groupId>org.apache.streams</groupId>-->
+<!--                        <artifactId>streams-persist-hdfs</artifactId>-->
+<!--                        <version>${project.version}</version>-->
+<!--                    </dependency>-->
+<!--                    <dependency>-->
+<!--                        <groupId>org.apache.streams</groupId>-->
+<!--                        <artifactId>streams-provider-twitter</artifactId>-->
+<!--                        <version>${project.version}</version>-->
+<!--                    </dependency>-->
+<!--                </dependencies>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>

@@ -13,15 +13,15 @@
   "properties": {
     "twitter": {
       "type": "object",
-      "javaType": "org.apache.streams.twitter.config.TwitterUserInformationConfiguration"
+      "$ref": "../../../../../../streams-contrib/streams-provider-twitter/src/main/jsonschema/org/apache/streams/twitter/config/TwitterUserInformationConfiguration.json"
     },
     "source": {
       "type": "object",
-      "javaType": "org.apache.streams.hdfs.HdfsReaderConfiguration"
+      "$ref": "../../../../../../streams-contrib/streams-persist-hdfs/src/main/jsonschema/org/apache/streams/hdfs/HdfsReaderConfiguration.json"
     },
     "destination": {
       "type": "object",
-      "javaType": "org.apache.streams.hdfs.HdfsWriterConfiguration"
+      "$ref": "../../../../../../streams-contrib/streams-persist-hdfs/src/main/jsonschema/org/apache/streams/hdfs/HdfsWriterConfiguration.json"
     }
   }
 }

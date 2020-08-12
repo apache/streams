@@ -21,6 +21,7 @@ package org.apache.streams.twitter.api;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.config.TwitterConfiguration;
+import org.apache.streams.twitter.converter.TwitterDateSwap;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.twitter.converter.TwitterJodaDateSwap;
 import org.apache.streams.twitter.pojo.DirectMessage;
@@ -125,11 +126,11 @@ public class Twitter implements
       .parser(
         JsonParser.DEFAULT.builder()
           .ignoreUnknownBeanProperties(true)
-          .pojoSwaps(TwitterJodaDateSwap.class)
+          .pojoSwaps(TwitterJodaDateSwap.class, TwitterDateSwap.class)
           .build())
       .serializer(
         JsonSerializer.DEFAULT.builder()
-          .pojoSwaps(TwitterJodaDateSwap.class)
+          .pojoSwaps(TwitterJodaDateSwap.class, TwitterDateSwap.class)
           .trimEmptyCollections(true)
           .trimEmptyMaps(true)
           .build())
