@@ -21,7 +21,6 @@ package org.apache.streams.twitter.test.api;
 import org.apache.streams.twitter.api.TwitterOAuthRequestInterceptor;
 import org.apache.streams.twitter.api.TwitterSecurity;
 import org.apache.streams.twitter.config.TwitterOAuthConfiguration;
-import org.apache.streams.twitter.test.utils.TwitterActivityConvertersTest;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.methods.HttpPost;
@@ -45,7 +44,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class TwitterSecurityTest {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(TwitterActivityConvertersTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TwitterSecurityTest.class);
 
   private TwitterSecurity security = new TwitterSecurity();
 

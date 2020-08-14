@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -60,6 +61,9 @@ public class StreamsJacksonModule extends SimpleModule {
         LOGGER.warn("Exception getting format from " + dateTimeFormatClass);
       }
     }
+
+    addSerializer(Date.class, new StreamsDateSerializer(Date.class));
+    addDeserializer(Date.class, new StreamsDateDeserializer(Date.class, dateTimeFormats));
 
     addSerializer(DateTime.class, new StreamsDateTimeSerializer(DateTime.class));
     addDeserializer(DateTime.class, new StreamsDateTimeDeserializer(DateTime.class, dateTimeFormats));
