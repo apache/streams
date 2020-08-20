@@ -135,14 +135,9 @@ class FlinkTwitterFollowingPipeline(config: TwitterFollowingPipelineConfiguratio
       keyBy( id => (id.hashCode % streamsConfig.getParallelism().toInt).abs )
 
     // these datums contain 'Follow' objects
-    val followDatums: DataStream[StreamsDatum] = keyed_ids.
+    val follows: DataStream[Follow] = keyed_ids.
       flatMap(new FollowingCollectorFlatMapFunction(streamsConfig, config.getTwitter, streamsFlinkConfiguration)).
-      name("followDatums").
-      setParallelism(streamsConfig.getParallelism().toInt)
-
-    val follows: DataStream[Follow] = followDatums.
       name("follows")
-      .map(datum => datum.getDocument.asInstanceOf[Follow])
 
     val jsons: DataStream[String] = follows.
       name("jsons")

@@ -117,7 +117,7 @@ class FlinkTwitterSpritzerPipeline(config: TwitterSpritzerPipelineConfiguration 
 
   import FlinkTwitterSpritzerPipeline._
 
-  val spritzerSource = new SpritzerSource(config.getTwitter)
+  val spritzerSource = new SpritzerSource(streamsConfig, config.getTwitter, streamsFlinkConfiguration)
 
   override def run(): Unit = {
 
@@ -159,38 +159,5 @@ class FlinkTwitterSpritzerPipeline(config: TwitterSpritzerPipelineConfiguration 
   def stop(): Unit = {
     spritzerSource.cancel()
   }
-
-  class SpritzerSource(sourceConfig: TwitterStreamConfiguration) extends RichSourceFunction[String] with Serializable /*with StoppableFunction*/ {
-
-    var mapper: ObjectMapper = _
-
-    var twitProvider: TwitterStreamProvider = _
-
-    @throws[Exception]
-    override def open(parameters: Configuration): Unit = {
-      mapper = StreamsJacksonMapper.getInstance(TwitterDateTimeFormat.TWITTER_FORMAT)
-      twitProvider = new TwitterStreamProvider( sourceConfig )
-      twitProvider.prepare(twitProvider)
-      twitProvider.startStream()
-    }
-
-    override def run(ctx: SourceFunction.SourceContext[String]): Unit = {
-      var iterator: Iterator[StreamsDatum] = null
-      do {
-        Uninterruptibles.sleepUninterruptibly(config.getProviderWaitMs, TimeUnit.MILLISECONDS)
-        iterator = twitProvider.readCurrent().iterator()
-        iterator.toList.map(datum => ctx.collect(mapper.writeValueAsString(datum.getDocument)))
-      } while( twitProvider.isRunning )
-    }
-
-    override def cancel(): Unit = {
-      close()
-    }
-
-//    override def stop(): Unit = {
-//      close()
-//    }
-  }
-
 
 }

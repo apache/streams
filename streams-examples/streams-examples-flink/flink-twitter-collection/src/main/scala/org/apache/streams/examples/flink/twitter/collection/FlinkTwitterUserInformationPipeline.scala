@@ -41,8 +41,8 @@ import org.apache.flink.streaming.api.windowing.windows.GlobalWindow
 import org.apache.flink.util.Collector
 import org.apache.streams.config.ComponentConfigurator
 import org.apache.streams.config.StreamsConfigurator
-import org.apache.streams.core.StreamsDatum
 import org.apache.streams.examples.flink.FlinkBase
+import org.apache.streams.examples.flink.FlinkBase.toProviderId
 import org.apache.streams.examples.flink.twitter.TwitterUserInformationPipelineConfiguration
 import org.apache.streams.hdfs.HdfsReaderConfiguration
 import org.apache.streams.hdfs.HdfsWriterConfiguration
@@ -148,11 +148,9 @@ class FlinkTwitterUserInformationPipeline(config: TwitterUserInformationPipeline
 
     val idLists: DataStream[List[String]] = idWindows.apply[List[String]] (new idListWindowFunction()).name("idLists")
 
-    val userDatums: DataStream[StreamsDatum] = idLists.flatMap(new profileCollectorFlatMapFunction).setParallelism(env.getParallelism).name("userDatums")
+    val users: DataStream[User] = idLists.flatMap(new UserInformationCollectorFlatMapFunction(streamsConfig, config.getTwitter, streamsFlinkConfiguration)).setParallelism(env.getParallelism).name("users")
 
-    val user: DataStream[User] = userDatums.map(datum => datum.getDocument.asInstanceOf[User]).name("users")
-
-    val jsons: DataStream[String] = user
+    val jsons: DataStream[String] = users
       .map(user => {
         val MAPPER = StreamsJacksonMapper.getInstance
         MAPPER.writeValueAsString(user)
@@ -166,7 +164,6 @@ class FlinkTwitterUserInformationPipeline(config: TwitterUserInformationPipeline
       forRowFormat(new Path(outPath), new SimpleStringEncoder[String]("UTF-8")).
       withRollingPolicy(rollingPolicy).
       withBucketAssigner(basePathBucketAssigner).build();
-
 
     if( config.getTest == true ) {
       keyed_jsons.writeAsText(outPath,FileSystem.WriteMode.OVERWRITE)
@@ -192,23 +189,4 @@ class FlinkTwitterUserInformationPipeline(config: TwitterUserInformationPipeline
     }
   }
 
-  class profileCollectorFlatMapFunction extends RichFlatMapFunction[List[String], StreamsDatum] with Serializable {
-    override def flatMap(input: List[String], out: Collector[StreamsDatum]): Unit = {
-      collectProfiles(input, out)
-    }
-    def collectProfiles(ids : List[String], out : Collector[StreamsDatum]) = {
-      val twitterConfiguration = config.getTwitter
-      val twitProvider: TwitterUserInformationProvider =
-        new TwitterUserInformationProvider(
-          twitterConfiguration.withInfo(ids)
-        )
-      twitProvider.prepare(twitProvider)
-      twitProvider.startStream()
-      var iterator: Iterator[StreamsDatum] = null
-      do {
-        Uninterruptibles.sleepUninterruptibly(config.getProviderWaitMs, TimeUnit.MILLISECONDS)
-        twitProvider.readCurrent().iterator().toList.map(out.collect(_))
-      } while( twitProvider.isRunning )
-    }
-  }
 }

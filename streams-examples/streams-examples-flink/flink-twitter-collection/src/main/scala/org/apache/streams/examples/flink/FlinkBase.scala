@@ -38,6 +38,16 @@ import org.slf4j.LoggerFactory
 /**
   * FlinkBase is a base class with capabilities common to all of the streams flink examples.
   */
+object FlinkBase {
+  def toProviderId(input : String) : String = {
+    if( input.startsWith("@") )
+      return input.substring(1)
+    if( input.contains(':'))
+      input.substring(input.lastIndexOf(':')+1)
+    else input
+  }
+}
+
 trait FlinkBase {
 
   private val BASELOGGER = LoggerFactory.getLogger("FlinkBase")
@@ -210,14 +220,6 @@ trait FlinkBase {
 //      throw new Exception("output scheme not recognized: " + configObject.getScheme)
 //    }
     outPathBuilder
-  }
-
-  def toProviderId(input : String) : String = {
-    if( input.startsWith("@") )
-      return input.substring(1)
-    if( input.contains(':'))
-      input.substring(input.lastIndexOf(':')+1)
-    else input
   }
 
 }
