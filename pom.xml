@@ -848,6 +848,9 @@
                     <groupId>net.alchim31.maven</groupId>
                     <artifactId>scala-maven-plugin</artifactId>
                     <version>${scala.plugin.version}</version>
+                    <configuration>
+                        <recompileMode>all</recompileMode>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
