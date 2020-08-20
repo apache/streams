@@ -142,12 +142,10 @@ class FlinkTwitterPostsPipeline(config: TwitterPostsPipelineConfiguration = new 
       setParallelism(streamsConfig.getParallelism().toInt).
       keyBy( id => (id.hashCode % streamsConfig.getParallelism().toInt).abs )
 
-    // these datums contain 'Tweet' objects
-    val tweetDatums: DataStream[StreamsDatum] =
-      keyed_ids.flatMap(new postCollectorFlatMapFunction).setParallelism(env.getParallelism).name("tweetDatums")
-
-    val tweets: DataStream[Tweet] = tweetDatums
-      .map(datum => datum.getDocument.asInstanceOf[Tweet]).name("tweets")
+    val tweets: DataStream[Tweet] = keyed_ids.
+      flatMap(new TimelineCollectorFlatMapFunction(streamsConfig, config.getTwitter, streamsFlinkConfiguration)).
+      setParallelism(env.getParallelism).
+      name("tweets")
 
     val jsons: DataStream[String] = tweets
       .map(tweet => {
@@ -179,25 +177,5 @@ class FlinkTwitterPostsPipeline(config: TwitterPostsPipelineConfiguration = new 
     LOGGER.info("JobExecutionResult.getAllAccumulatorResults: {}", MAPPER.writeValueAsString(result.getAllAccumulatorResults()))
 
   }
-
-  class postCollectorFlatMapFunction extends RichFlatMapFunction[String, StreamsDatum] with Serializable {
-    override def flatMap(input: String, out: Collector[StreamsDatum]): Unit = {
-      collectPosts(input, out)
-    }
-    def collectPosts(id : String, out : Collector[StreamsDatum]) = {
-      val twitterConfiguration = config.getTwitter
-      twitterConfiguration.setInfo(List(toProviderId(id)))
-      val twitProvider: TwitterTimelineProvider =
-        new TwitterTimelineProvider(twitterConfiguration)
-      twitProvider.prepare(twitProvider)
-      twitProvider.startStream()
-      var iterator: Iterator[StreamsDatum] = null
-      do {
-        Uninterruptibles.sleepUninterruptibly(config.getProviderWaitMs, TimeUnit.MILLISECONDS)
-        twitProvider.readCurrent().iterator().toList.map(out.collect(_))
-      } while( twitProvider.isRunning )
-    }
-  }
-
 
 }
