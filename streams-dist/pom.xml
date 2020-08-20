@@ -57,6 +57,12 @@ under the License.
         </dependency>
 
         <dependency>
+            <groupId>org.apache.streams.examples</groupId>
+            <artifactId>streams-example-flink-twitter-collection</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-filters</artifactId>
             <version>${project.version}</version>
