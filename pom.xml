@@ -1253,8 +1253,21 @@
 
     <profiles>
         <profile>
+            <id>java-8</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <jdk>1.8</jdk>
+            </activation>
+            <properties>
+                <java.version>8</java.version>
+                <maven.compiler.source>${java.version}</maven.compiler.source>
+                <maven.compiler.target>${java.version}</maven.compiler.target>
+            </properties>
+        </profile>
+        <profile>
             <id>java-11</id>
             <activation>
+                <activeByDefault>false</activeByDefault>
                 <jdk>(1.8,)</jdk>
             </activation>
             <properties>
