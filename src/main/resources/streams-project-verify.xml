@@ -1,0 +1,171 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<maven2-moduleset plugin="maven-plugin@3.4">
+  <actions/>
+  <description>Disabled cnstantly failing job.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <org.datadog.jenkins.plugins.datadog.DatadogJobProperty plugin="datadog@0.7.1">
+      <emitOnCheckout>false</emitOnCheckout>
+    </org.datadog.jenkins.plugins.datadog.DatadogJobProperty>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>10</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.29.4">
+      <projectUrl>git@github.com:apache/streams.git/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+    <org.jenkinsci.plugins.mavenrepocleaner.MavenRepoCleanerProperty plugin="maven-repo-cleaner@1.2">
+      <notOnThisProject>false</notOnThisProject>
+    </org.jenkinsci.plugins.mavenrepocleaner.MavenRepoCleanerProperty>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.31">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.plugins.throttleconcurrents.ThrottleJobProperty plugin="throttle-concurrents@2.0.1">
+      <maxConcurrentPerNode>0</maxConcurrentPerNode>
+      <maxConcurrentTotal>0</maxConcurrentTotal>
+      <categories class="java.util.concurrent.CopyOnWriteArrayList"/>
+      <throttleEnabled>false</throttleEnabled>
+      <throttleOption>project</throttleOption>
+      <limitOneJobWithMatchingParams>false</limitOneJobWithMatchingParams>
+      <paramsToUseForLimit></paramsToUseForLimit>
+      <configVersion>1</configVersion>
+    </hudson.plugins.throttleconcurrents.ThrottleJobProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.12.1">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://github.com/apache/streams.git</url>
+        <credentialsId>b205a645-1ea7-4dfd-973d-c14ac43cab07</credentialsId>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <gitTool>Default</gitTool>
+    <browser class="hudson.plugins.git.browser.KilnGit">
+      <url></url>
+    </browser>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <assignedNode>ubuntu</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>true</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>JDK 1.8 (latest)</jdk>
+  <triggers>
+    <jenkins.triggers.ReverseBuildTrigger>
+      <spec></spec>
+      <upstreamProjects>streams-project</upstreamProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+        <completeBuild>true</completeBuild>
+      </threshold>
+    </jenkins.triggers.ReverseBuildTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <rootModule>
+    <groupId>org.apache.streams</groupId>
+    <artifactId>apache-streams</artifactId>
+  </rootModule>
+  <goals>clean verify -PdockerITs -DskipTests=true -DskipITs=false</goals>
+  <mavenName>Maven 3.5.2</mavenName>
+  <mavenOpts>-Xmx2g -Xms256m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8</mavenOpts>
+  <aggregatorStyleBuild>true</aggregatorStyleBuild>
+  <incrementalBuild>false</incrementalBuild>
+  <ignoreUpstremChanges>true</ignoreUpstremChanges>
+  <ignoreUnsuccessfulUpstreams>false</ignoreUnsuccessfulUpstreams>
+  <archivingDisabled>false</archivingDisabled>
+  <siteArchivingDisabled>false</siteArchivingDisabled>
+  <fingerprintingDisabled>false</fingerprintingDisabled>
+  <resolveDependencies>false</resolveDependencies>
+  <processPlugins>false</processPlugins>
+  <mavenValidationLevel>-1</mavenValidationLevel>
+  <runHeadless>false</runHeadless>
+  <disableTriggerDownstreamProjects>false</disableTriggerDownstreamProjects>
+  <blockTriggerWhenBuilding>true</blockTriggerWhenBuilding>
+  <settings class="org.jenkinsci.plugins.configfiles.maven.job.MvnSettingsProvider" plugin="config-file-provider@3.6.2">
+    <settingsConfigId>org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig1346838839769</settingsConfigId>
+  </settings>
+  <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+  <reporters/>
+  <publishers/>
+  <buildWrappers/>
+  <prebuilders>
+    <hudson.tasks.Shell>
+      <command>cat &gt; twitter.conf &lt;&lt; EOF
+org.apache.streams.twitter.config.TwitterConfiguration {
+  environment = &quot;development&quot;
+  oauth {
+    consumerKey = &quot;kMGbDK13VUYZ8iPdNikkYgjQO&quot;
+    consumerSecret = &quot;ic3KV4mprV4ePWxVY9QR5kDMShzO6KCqMOUshfL9ZpVjnhfYPz&quot;
+    accessToken = &quot;42232950-jPaNcij7c5vWA6kL5gVX8hYVh0ztcWH68Y9RF3sgn&quot;
+    accessTokenSecret = &quot;ndcCzxcyJvfb29XXiorrObgx9klgrc1fd8RS1pLsfyXo7&quot;
+  }
+}
+EOF
+cat &gt; facebook.conf &lt;&lt; EOF
+org.apache.streams.facebook.FacebookConfiguration {
+  oauth {
+    appId = &quot;299258633581961&quot;
+    appSecret = 03b887d68ee4a3117f9f087330fe8c8f
+  }
+  userAccessTokens = [
+    EAACEdEose0cBADhxSnyuv9BtCVivelR8BpZCSvmXsWrGKAZAP1ZBzvBcWzLdtov6ZA6BOmIKjzl5QHZAIKTjZBTKfNB4MGlX2vlZB6JI7iOFqGA23n9ONOGLhkU2WwqfxwrXA9PkygoSJOjc9gAM44kZCkIG58eZCOwVYFza7GQAwKeWptLHv5NLGBhZA2eZANfoxcZD
+  ]
+}
+EOF
+cat &gt; instagram.conf &lt;&lt; EOF
+org.apache.streams.instagram.config.InstagramConfiguration {
+  oauth {
+    clientId = &quot;b389fcbeca2a40a89afa591a8468e4dc&quot;
+    clientSecret = &quot;81f81f0962334f30804d7ea0f23f4f6c&quot;
+    accessToken = &quot;1646021441.b389fcb.7e101812614f4597b8b2cfa5da0ab9f0&quot;
+  }
+}
+EOF
+cat &gt; gplus.conf &lt;&lt; EOF
+org.apache.streams.google.gplus.GPlusConfiguration {
+  apiKey = 79d9f9ca2796d1ec5334faf8d6efaa6456a297e6
+  oauth {
+    serviceAccountEmailAddress = &quot;streamsdev@adroit-particle-764.iam.gserviceaccount.com&quot;
+    pathToP12KeyFile = &quot;streams-c84fa47bd759.p12&quot;
+  }
+}
+EOF
+cat &gt; youtube.conf &lt;&lt; EOF
+org.apache.streams.youtube.YoutubeConfiguration {
+  apiKey = 79d9f9ca2796d1ec5334faf8d6efaa6456a297e6
+  oauth {
+    serviceAccountEmailAddress = &quot;streamsdev@adroit-particle-764.iam.gserviceaccount.com&quot;
+    pathToP12KeyFile = &quot;streams-c84fa47bd759.p12&quot;
+  }
+}
+EOF
+</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>curl -O http://people.apache.org/~sblackmon/streams-c84fa47bd759.p12</command>
+    </hudson.tasks.Shell>
+  </prebuilders>
+  <postbuilders/>
+  <runPostStepsIfResult>
+    <name>FAILURE</name>
+    <ordinal>2</ordinal>
+    <color>RED</color>
+    <completeBuild>true</completeBuild>
+  </runPostStepsIfResult>
+</maven2-moduleset>
