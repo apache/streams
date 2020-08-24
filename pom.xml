@@ -849,6 +849,9 @@
                     <artifactId>scala-maven-plugin</artifactId>
                     <version>${scala.plugin.version}</version>
                     <configuration>
+                        <args>
+                            <arg>-nobootcp</arg>
+                        </args>
                         <recompileMode>all</recompileMode>
                     </configuration>
                 </plugin>
