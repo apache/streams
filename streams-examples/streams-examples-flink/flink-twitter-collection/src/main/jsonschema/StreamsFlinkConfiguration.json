@@ -12,10 +12,10 @@
   },
   "additionalProperties": false,
   "properties": {
-    "test": {
+    "local": {
       "type": "boolean"
     },
-    "local": {
+    "test": {
       "type": "boolean"
     }
   }

@@ -29,6 +29,9 @@ import org.apache.flink.streaming.api.CheckpointingMode
 import org.apache.flink.streaming.api.functions.sink.filesystem.bucketassigners.BasePathBucketAssigner
 import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.streaming.api.scala.function.AllWindowFunction
+import org.apache.flink.streaming.api.windowing.windows.GlobalWindow
+import org.apache.flink.util.Collector
 import org.apache.streams.config.{ComponentConfigurator, StreamsConfigurator}
 import org.apache.streams.flink.{FlinkBatchConfiguration, FlinkStreamingConfiguration, StreamsFlinkConfiguration}
 import org.apache.streams.hdfs.{HdfsConfiguration, HdfsReaderConfiguration, HdfsWriterConfiguration}
@@ -46,6 +49,14 @@ object FlinkBase {
       input.substring(input.lastIndexOf(':')+1)
     else input
   }
+
+  class idListWindowFunction extends AllWindowFunction[String, List[String], GlobalWindow] {
+    override def apply(window: GlobalWindow, input: Iterable[String], out: Collector[List[String]]): Unit = {
+      if( input.nonEmpty )
+        out.collect(input.map(id => toProviderId(id)).toList)
+    }
+  }
+
 }
 
 trait FlinkBase {

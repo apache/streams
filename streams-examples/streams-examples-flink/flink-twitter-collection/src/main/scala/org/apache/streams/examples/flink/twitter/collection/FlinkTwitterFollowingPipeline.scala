@@ -29,12 +29,14 @@ import org.apache.flink.core.fs.FileSystem
 import org.apache.flink.core.fs.Path
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
+import org.apache.flink.streaming.api.scala.AllWindowedStream
 import org.apache.flink.streaming.api.scala.DataStream
 import org.apache.flink.streaming.api.scala.KeyedStream
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.streaming.api.windowing.windows.GlobalWindow
 import org.apache.streams.config.StreamsConfigurator
-import org.apache.streams.core.StreamsDatum
 import org.apache.streams.examples.flink.FlinkBase
+import org.apache.streams.examples.flink.FlinkBase.idListWindowFunction
 import org.apache.streams.examples.flink.twitter.TwitterFollowingPipelineConfiguration
 import org.apache.streams.jackson.StreamsJacksonMapper
 import org.apache.streams.twitter.pojo.Follow
@@ -129,13 +131,12 @@ class FlinkTwitterFollowingPipeline(config: TwitterFollowingPipelineConfiguratio
 
     val ids: DataStream[String] = env.readTextFile(inPath)
 
-    val keyed_ids: KeyedStream[String, Int] = ids.
-      name("keyed_ids").
-      setParallelism(streamsConfig.getParallelism().toInt).
-      keyBy( id => (id.hashCode % streamsConfig.getParallelism().toInt).abs )
+    val idWindows: AllWindowedStream[String, GlobalWindow] = ids.countWindowAll(100)
+
+    val idLists: DataStream[List[String]] = idWindows.apply[List[String]] (new idListWindowFunction()).name("idLists")
 
     // these datums contain 'Follow' objects
-    val follows: DataStream[Follow] = keyed_ids.
+    val follows: DataStream[Follow] = idLists.
       flatMap(new FollowingCollectorFlatMapFunction(streamsConfig, config.getTwitter, streamsFlinkConfiguration)).
       name("follows")
 

@@ -19,41 +19,32 @@
 package org.apache.streams.examples.flink.twitter.collection
 
 import java.util.Objects
-import java.util.concurrent.TimeUnit
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.common.util.concurrent.Uninterruptibles
 import org.apache.commons.lang3.StringUtils
 import org.apache.flink.api.common.JobExecutionResult
-import org.apache.flink.api.common.functions.RichFlatMapFunction
 import org.apache.flink.api.common.serialization.SimpleStringEncoder
 import org.apache.flink.api.scala._
 import org.apache.flink.core.fs.FileSystem
 import org.apache.flink.core.fs.Path
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
+import org.apache.flink.streaming.api.scala.AllWindowedStream
 import org.apache.flink.streaming.api.scala.DataStream
-import org.apache.flink.streaming.api.scala.KeyedStream
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
-import org.apache.flink.streaming.api.scala.WindowedStream
-import org.apache.flink.streaming.api.scala.function.WindowFunction
 import org.apache.flink.streaming.api.windowing.windows.GlobalWindow
-import org.apache.flink.util.Collector
 import org.apache.streams.config.ComponentConfigurator
 import org.apache.streams.config.StreamsConfigurator
 import org.apache.streams.examples.flink.FlinkBase
-import org.apache.streams.examples.flink.FlinkBase.toProviderId
+import org.apache.streams.examples.flink.FlinkBase.idListWindowFunction
 import org.apache.streams.examples.flink.twitter.TwitterUserInformationPipelineConfiguration
 import org.apache.streams.hdfs.HdfsReaderConfiguration
 import org.apache.streams.hdfs.HdfsWriterConfiguration
 import org.apache.streams.jackson.StreamsJacksonMapper
 import org.apache.streams.twitter.pojo.User
-import org.apache.streams.twitter.provider.TwitterUserInformationProvider
 import org.hamcrest.MatcherAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
-import scala.collection.JavaConversions._
 
 /**
   * FlinkTwitterPostsPipeline collects the current user profile of a
@@ -142,9 +133,7 @@ class FlinkTwitterUserInformationPipeline(config: TwitterUserInformationPipeline
 
     val ids: DataStream[String] = env.readTextFile(inPath).setParallelism(env.getParallelism).name("ids")
 
-    val keyed_ids: KeyedStream[String, Int] = ids.name("keyed_ids").keyBy( id => (id.hashCode % 100).abs )
-
-    val idWindows: WindowedStream[String, Int, GlobalWindow] = keyed_ids.countWindow(100)
+    val idWindows: AllWindowedStream[String, GlobalWindow] = ids.countWindowAll(100)
 
     val idLists: DataStream[List[String]] = idWindows.apply[List[String]] (new idListWindowFunction()).name("idLists")
 
@@ -156,19 +145,15 @@ class FlinkTwitterUserInformationPipeline(config: TwitterUserInformationPipeline
         MAPPER.writeValueAsString(user)
       }).name("jsons")
 
-    val keyed_jsons: KeyedStream[String, Int] = jsons.
-      setParallelism(streamsConfig.getParallelism().toInt).
-      keyBy( id => (id.hashCode % streamsConfig.getParallelism().toInt).abs )
-
     val fileSink : StreamingFileSink[String] = StreamingFileSink.
       forRowFormat(new Path(outPath), new SimpleStringEncoder[String]("UTF-8")).
       withRollingPolicy(rollingPolicy).
       withBucketAssigner(basePathBucketAssigner).build();
 
     if( config.getTest == true ) {
-      keyed_jsons.writeAsText(outPath,FileSystem.WriteMode.OVERWRITE)
+      jsons.writeAsText(outPath,FileSystem.WriteMode.OVERWRITE)
     } else {
-      keyed_jsons.addSink(fileSink).name("fileSink")
+      jsons.addSink(fileSink).name("fileSink")
     }
 
     val result: JobExecutionResult = env.execute("FlinkTwitterUserInformationPipeline")
@@ -180,13 +165,6 @@ class FlinkTwitterUserInformationPipeline(config: TwitterUserInformationPipeline
     LOGGER.info("JobExecutionResult.getAllAccumulatorResults: {}", MAPPER.writeValueAsString(result.getAllAccumulatorResults()))
 
 
-  }
-
-  class idListWindowFunction extends WindowFunction[String, List[String], Int, GlobalWindow] {
-    override def apply(key: Int, window: GlobalWindow, input: Iterable[String], out: Collector[List[String]]): Unit = {
-      if( input.nonEmpty )
-        out.collect(input.map(id => toProviderId(id)).toList)
-    }
   }
 
 }
