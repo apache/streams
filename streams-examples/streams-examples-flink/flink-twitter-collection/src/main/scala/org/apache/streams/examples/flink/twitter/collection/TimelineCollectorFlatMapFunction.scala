@@ -24,20 +24,20 @@ class TimelineCollectorFlatMapFunction(
                                         streamsConfiguration : StreamsConfiguration,
                                         twitterConfiguration : TwitterTimelineProviderConfiguration,
                                         streamsFlinkConfiguration : StreamsFlinkConfiguration
-                                      ) extends RichFlatMapFunction[String, Tweet] with Serializable {
+                                      ) extends RichFlatMapFunction[List[String], Tweet] with Serializable {
   var userids : IntCounter = new IntCounter()
   var posts : IntCounter = new IntCounter()
   override def open(parameters: Configuration): Unit = {
     getRuntimeContext().addAccumulator("TimelineCollectorFlatMapFunction.userids", this.userids)
     getRuntimeContext().addAccumulator("TimelineCollectorFlatMapFunction.posts", this.posts)
   }
-  override def flatMap(input: String, out: Collector[Tweet]): Unit = {
+  override def flatMap(input: List[String], out: Collector[Tweet]): Unit = {
     userids.add(input.size)
     collectPosts(input, out)
   }
-  def collectPosts(id : String, out : Collector[Tweet]) = {
+  def collectPosts(ids : List[String], out : Collector[Tweet]) = {
     try {
-      val conf = twitterConfiguration.withInfo(List(toProviderId(id))).asInstanceOf[TwitterTimelineProviderConfiguration]
+      val conf = twitterConfiguration.withInfo(ids.map(toProviderId(_)))
       val twitProvider: TwitterTimelineProvider = new TwitterTimelineProvider(conf)
       twitProvider.prepare(conf)
       twitProvider.startStream()

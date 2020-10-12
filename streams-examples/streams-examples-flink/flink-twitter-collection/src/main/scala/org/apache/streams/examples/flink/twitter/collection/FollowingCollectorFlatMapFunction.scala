@@ -22,7 +22,7 @@ class FollowingCollectorFlatMapFunction(
                                          streamsConfiguration : StreamsConfiguration,
                                          twitterConfiguration : TwitterFollowingConfiguration = new ComponentConfigurator(classOf[TwitterFollowingConfiguration]).detectConfiguration(),
                                          flinkConfiguration : StreamsFlinkConfiguration = new ComponentConfigurator(classOf[StreamsFlinkConfiguration]).detectConfiguration()
-                                       ) extends RichFlatMapFunction[String, Follow] with Serializable {
+                                       ) extends RichFlatMapFunction[List[String], Follow] with Serializable {
 
   var userids : IntCounter = new IntCounter()
   var follows : IntCounter = new IntCounter()
@@ -32,13 +32,13 @@ class FollowingCollectorFlatMapFunction(
     getRuntimeContext().addAccumulator("FlinkTwitterFollowingPipeline.follows", this.follows)
   }
 
-  override def flatMap(input: String, out: Collector[Follow]): Unit = {
+  override def flatMap(input: List[String], out: Collector[Follow]): Unit = {
     userids.add(input.size)
     collectConnections(input, out)
   }
 
-  def collectConnections(id : String, out : Collector[Follow]) = {
-    val conf = twitterConfiguration.withInfo(List(toProviderId(id))).asInstanceOf[TwitterFollowingConfiguration]
+  def collectConnections(ids : List[String], out : Collector[Follow]) = {
+    val conf = twitterConfiguration.withInfo(ids.map(toProviderId(_)))
     val twitProvider: TwitterFollowingProvider = new TwitterFollowingProvider(conf)
     twitProvider.prepare(twitProvider)
     twitProvider.startStream()

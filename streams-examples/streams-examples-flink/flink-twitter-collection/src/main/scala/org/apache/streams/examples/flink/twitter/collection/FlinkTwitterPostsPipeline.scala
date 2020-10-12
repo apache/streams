@@ -19,38 +19,33 @@
 package org.apache.streams.examples.flink.twitter.collection
 
 import java.util.Objects
-import java.util.concurrent.TimeUnit
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.common.util.concurrent.Uninterruptibles
 import org.apache.commons.lang3.StringUtils
 import org.apache.flink.api.common.JobExecutionResult
-import org.apache.flink.api.common.functions.RichFlatMapFunction
 import org.apache.flink.api.common.serialization.SimpleStringEncoder
 import org.apache.flink.api.scala._
 import org.apache.flink.core.fs.FileSystem
 import org.apache.flink.core.fs.Path
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
+import org.apache.flink.streaming.api.scala.AllWindowedStream
 import org.apache.flink.streaming.api.scala.DataStream
 import org.apache.flink.streaming.api.scala.KeyedStream
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
-import org.apache.flink.util.Collector
+import org.apache.flink.streaming.api.windowing.windows.GlobalWindow
 import org.apache.streams.config.ComponentConfigurator
 import org.apache.streams.config.StreamsConfigurator
-import org.apache.streams.core.StreamsDatum
 import org.apache.streams.examples.flink.FlinkBase
+import org.apache.streams.examples.flink.FlinkBase.idListWindowFunction
 import org.apache.streams.examples.flink.twitter.TwitterPostsPipelineConfiguration
 import org.apache.streams.hdfs.HdfsReaderConfiguration
 import org.apache.streams.hdfs.HdfsWriterConfiguration
 import org.apache.streams.jackson.StreamsJacksonMapper
 import org.apache.streams.twitter.pojo.Tweet
-import org.apache.streams.twitter.provider.TwitterTimelineProvider
 import org.hamcrest.MatcherAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
-import scala.collection.JavaConversions._
 
 /**
   * FlinkTwitterPostsPipeline collects recent posts from all profiles from a
@@ -138,11 +133,11 @@ class FlinkTwitterPostsPipeline(config: TwitterPostsPipelineConfiguration = new 
 
     val ids: DataStream[String] = env.readTextFile(inPath).name("ids")
 
-    val keyed_ids: KeyedStream[String, Int] = ids.name("keyed_ids").
-      setParallelism(streamsConfig.getParallelism().toInt).
-      keyBy( id => (id.hashCode % streamsConfig.getParallelism().toInt).abs )
+    val idWindows: AllWindowedStream[String, GlobalWindow] = ids.countWindowAll(100)
 
-    val tweets: DataStream[Tweet] = keyed_ids.
+    val idLists: DataStream[List[String]] = idWindows.apply[List[String]] (new idListWindowFunction()).name("idLists")
+
+    val tweets: DataStream[Tweet] = idLists.
       flatMap(new TimelineCollectorFlatMapFunction(streamsConfig, config.getTwitter, streamsFlinkConfiguration)).
       setParallelism(env.getParallelism).
       name("tweets")
