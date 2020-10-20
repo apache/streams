@@ -18,14 +18,12 @@
 
 package org.apache.streams.twitter.provider;
 
-import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.api.SevenDaySearchRequest;
 import org.apache.streams.twitter.api.SevenDaySearchResponse;
 import org.apache.streams.twitter.api.Twitter;
 import org.apache.streams.twitter.converter.TwitterDateTimeFormat;
 import org.apache.streams.twitter.pojo.Tweet;
-import org.apache.streams.util.ComponentUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,7 +38,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- *  Retrieve recent posts for a single user id.
+ *  Retrieve recent posts from standard seven day search.
  */
 public class SevenDaySearchProviderTask implements Callable<Iterator<Tweet>>, Runnable {
 
@@ -51,7 +49,7 @@ public class SevenDaySearchProviderTask implements Callable<Iterator<Tweet>>, Ru
   protected SevenDaySearchProvider provider;
   protected Twitter client;
   protected SevenDaySearchRequest request;
-  protected List<Tweet> responseList;
+  protected List<Tweet> responseList = new ArrayList<>();
 
   /**
    * SevenDaySearchProviderTask constructor.
@@ -63,15 +61,15 @@ public class SevenDaySearchProviderTask implements Callable<Iterator<Tweet>>, Ru
     this.provider = provider;
     this.client = twitter;
     this.request = request;
-    this.responseList = new ArrayList<>();
   }
 
   int item_count = 0;
   int last_count = 0;
   int page_count = 0;
+  Long maxId = null;
 
   @Override
-  public void run() {
+  public Iterator<Tweet> call() throws Exception {
 
     LOGGER.info("Thread Starting: {}", request.toString());
 
@@ -81,48 +79,55 @@ public class SevenDaySearchProviderTask implements Callable<Iterator<Tweet>>, Ru
 
       List<Tweet> statuses = response.getStatuses();
 
+      last_count = statuses.size();
+
+      page_count++;
+
       responseList.addAll(statuses);
 
-      last_count = statuses.size();
       if( statuses.size() > 0 ) {
 
         for (Tweet status : statuses) {
 
           if (item_count < provider.getConfig().getMaxItems()) {
-            ComponentUtils.offerUntilSuccess(new StreamsDatum(status), provider.providerQueue);
+            responseList.add(status);
             item_count++;
           }
 
         }
 
         Stream<Long> statusIds = statuses.stream().map(status -> status.getId());
-        long minId = statusIds.reduce(Math::min).get();
-        page_count++;
-        request.setMaxId(new Long(minId).toString());
+        maxId = statusIds.reduce(Math::min).get();
+        request.setMaxId(maxId.toString());
 
       }
+
+      LOGGER.info("item_count: {} last_count: {} page_count: {} ", item_count, last_count, page_count);
 
     }
     while (shouldContinuePulling(last_count, page_count, item_count));
 
-    LOGGER.info("item_count: {} last_count: {} page_count: {} ", item_count, last_count, page_count);
-    
+    return responseList.iterator();
   }
 
-  public boolean shouldContinuePulling(int count, int page_count, int item_count) {
+  public boolean shouldContinuePulling(int item_count, int last_count, int page_count) {
+    boolean shouldContinuePulling = last_count > 0;
     if ( item_count >= provider.getConfig().getMaxItems() ) {
       return false;
     } else if (page_count >= provider.getConfig().getMaxPages()) {
       return false;
-    } else {
-      return ( count > 0 );
     }
+    LOGGER.info("shouldContinuePulling: ", shouldContinuePulling);
+    return shouldContinuePulling;
   }
 
   @Override
-  public Iterator<Tweet> call() throws Exception {
-    run();
-    return responseList.iterator();
+  public void run() {
+    try {
+      this.call();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
 }

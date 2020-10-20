@@ -31,7 +31,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -67,6 +69,7 @@ public class TwitterTimelineProviderTask implements Callable<Iterator<Tweet>>, R
   int item_count = 0;
   int last_count = 0;
   int page_count = 0;
+  Date earliest_timestamp = new Date(Long.MAX_VALUE);
 
   @Override
   public void run() {
@@ -86,9 +89,19 @@ public class TwitterTimelineProviderTask implements Callable<Iterator<Tweet>>, R
 
         for (Tweet status : statuses) {
 
+          earliest_timestamp = Date.from(Instant.ofEpochMilli(Math.min(earliest_timestamp.getTime(), status.getCreatedAt().getTime())));
+
           if (item_count < provider.getConfig().getMaxItems()) {
-            ComponentUtils.offerUntilSuccess(new StreamsDatum(status), provider.providerQueue);
-            item_count++;
+
+            if( (provider.getConfig().getMinTimestamp() != null &&
+                  earliest_timestamp.after(provider.getConfig().getMinTimestamp())) ||
+                provider.getConfig().getMinTimestamp() == null ) {
+
+              ComponentUtils.offerUntilSuccess(new StreamsDatum(status), provider.providerQueue);
+              item_count++;
+
+            }
+
           }
 
         }
@@ -101,14 +114,17 @@ public class TwitterTimelineProviderTask implements Callable<Iterator<Tweet>>, R
       }
 
     }
-    while (shouldContinuePulling(last_count, page_count, item_count));
+    while (shouldContinuePulling(last_count, page_count, item_count, earliest_timestamp));
 
     LOGGER.info("item_count: {} last_count: {} page_count: {} ", item_count, last_count, page_count);
     
   }
 
-  public boolean shouldContinuePulling(int count, int page_count, int item_count) {
-    if (item_count == provider.getConfig().getMaxItems()) {
+  public boolean shouldContinuePulling(int count, int page_count, int item_count, Date earliest_timestamp) {
+    if (provider.getConfig().getMinTimestamp() != null &&
+          earliest_timestamp.before(provider.getConfig().getMinTimestamp())) {
+      return false;
+    } else if (item_count == provider.getConfig().getMaxItems()) {
       return false;
     } else if (page_count == provider.getConfig().getMaxPages()) {
       return false;

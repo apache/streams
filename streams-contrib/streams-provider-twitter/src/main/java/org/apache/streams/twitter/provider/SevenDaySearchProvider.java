@@ -42,6 +42,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 
+import org.apache.commons.collections.iterators.IteratorChain;
 import org.apache.commons.lang.NotImplementedException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -59,6 +60,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -97,8 +100,9 @@ public class SevenDaySearchProvider implements Callable<Iterator<Tweet>>, Stream
 
   StreamsConfiguration streamsConfiguration;
 
-  private List<Callable<Object>> tasks = new ArrayList<>();
-  private List<Future<Object>> futures = new ArrayList<>();
+  private List<Callable<Iterator<Tweet>>> tasks = new ArrayList<>();
+  private List<Future<Iterator<Tweet>>> futures = new ArrayList<>();
+  private CompletionService<Iterator<Tweet>> completionService;
 
   protected final AtomicBoolean running = new AtomicBoolean();
 
@@ -199,7 +203,15 @@ public class SevenDaySearchProvider implements Callable<Iterator<Tweet>>, Stream
 
     request = new SevenDaySearchRequest();
     request.setQ(config.getQ());
-
+    request.setGeocode(config.getGeocode());
+    if( !Objects.isNull(config.getIncludeEntities()) ) {
+      request.setIncludeEntities(config.getIncludeEntities().toString());
+    }
+    request.setLang(config.getLang());
+    request.setLocale(config.getLocale());
+    if( !Objects.isNull(config.getResultType())) {
+      request.setResultType(config.getResultType());
+    }
     streamsConfiguration = StreamsConfigurator.detectConfiguration();
 
     try {
@@ -216,6 +228,8 @@ public class SevenDaySearchProvider implements Callable<Iterator<Tweet>>, Stream
             streamsConfiguration.getQueueSize().intValue()
         )
     );
+
+    completionService = new ExecutorCompletionService<>(executor);
 
     submitSearchThread();
 
@@ -240,16 +254,16 @@ public class SevenDaySearchProvider implements Callable<Iterator<Tweet>>, Stream
 
   protected void submitSearchThread() {
 
-      Callable providerTask = new SevenDaySearchProviderTask(
-          this,
-          client,
-        request
-      );
-      LOGGER.info("Thread Created: {}", request);
-      tasks.add(providerTask);
-      Future future = executor.submit(providerTask);
-      futures.add(future);
-      LOGGER.info("Thread Submitted: {}", request);
+    Callable providerTask = new SevenDaySearchProviderTask(
+      this,
+      client,
+      request
+    );
+    LOGGER.info("Thread Created: {}", request);
+    tasks.add(providerTask);
+    Future<Iterator<Tweet>> future = completionService.submit(providerTask);
+    futures.add(future);
+    LOGGER.info("Thread Submitted: {}", request);
 
   }
 
@@ -324,8 +338,15 @@ public class SevenDaySearchProvider implements Callable<Iterator<Tweet>>, Stream
     do {
       Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
     } while ( isRunning());
+    IteratorChain chain = new IteratorChain();
+    int received = 0;
+    while(received < tasks.size()) {
+      Future<Iterator<Tweet>> resultFuture = completionService.take();
+      Iterator<Tweet> result = resultFuture.get();
+      chain.addIterator(result);
+      received ++;
+    }
     cleanUp();
-    return providerQueue.stream().map( x -> ((Tweet)x.getDocument())).distinct().iterator();
-
+    return chain;
   }
 }
