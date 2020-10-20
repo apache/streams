@@ -16,6 +16,15 @@
         "max_pages": {
             "type": "integer",
             "description": "Max items per page to request"
+        },
+        "min_timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Earliest timestamp permitted"
+        },
+        "page_size": {
+            "type": "integer",
+            "description": "Max items per page to request"
         }
     }
 }
