@@ -13,6 +13,11 @@
       "required": true,
       "type": "string"
     },
+    "tag": {
+      "description": "Tags can be used to segregate rules and their matching data into different logical groups. If a rule tag is provided, the rule tag is included in the 'matching_rules' attribute.\n\nIt is recommended to assign rule-specific UUIDs to rule tags and maintain desired mappings on the client side.",
+      "required": false,
+      "type": "string"
+    },
     "fromDate": {
       "description": "The oldest UTC timestamp (back to 3/21/2006) from which the activities will be provided. Timestamp is in minute granularity and is inclusive (i.e. 12:00 includes the 00 minute).",
       "required": false,

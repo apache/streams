@@ -19,6 +19,25 @@
     "max_pages": {
       "type": "integer",
       "description": "Max pages to request"
+    },
+    "page_size": {
+      "type": "integer",
+      "description": "Requested items per page"
+    },
+    "geocode": {
+      "type": "string"
+    },
+    "lang": {
+      "type": "string"
+    },
+    "locale": {
+      "type": "string"
+    },
+    "result_type": {
+      "type": "string"
+    },
+    "include_entities": {
+      "type": "boolean"
     }
   }
 }

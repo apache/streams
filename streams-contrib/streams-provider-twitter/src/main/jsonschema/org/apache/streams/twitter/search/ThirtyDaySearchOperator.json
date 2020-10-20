@@ -121,6 +121,18 @@
         "type": "string"
       }
     },
+    "profile_country": {
+      "description": "Exact match on the “countryCode” field from the “address” object in the Profile Geo enrichment.\nUses a normalized set of two-letter country codes, based on ISO-3166-1-alpha-2 specification. This operator is provided in lieu of an operator for “country” field from the “address” object to be concise.",
+      "type": "string"
+    },
+    "profile_region": {
+      "description": "Matches on the “region” field from the “address” object in the Profile Geo enrichment.\nThis is an exact full string match. It is not necessary to escape characters with a backslash. For example, if matching something with a slash, use “one/two”, not “one\\/two”. Use double quotes to match substrings that contain whitespace or punctuation.",
+      "type": "string"
+    },
+    "profile_locality": {
+      "description": "Matches on the “locality” field from the “address” object in the Profile Geo enrichment.\nThis is an exact full string match. It is not necessary to escape characters with a backslash. For example, if matching something with a slash, use “one/two”, not “one\\/two”. Use double quotes to match substrings that contain whitespace or punctuation.",
+      "type": "string"
+    },
     "time_zones": {
       "description": "Matches Tweets where the user-selected time zone specified in a user’s profile settings matches a given string.",
       "type": "array",
@@ -135,6 +147,11 @@
         "type": "string"
       }
     },
+    "has_geo": {
+      "description": "Matches Tweets that have Tweet-specific geo location data provided from Twitter. This can be either “geo” lat-long coordinate, or a “location” in the form of a Twitter “Place”, with corresponding display name, geo polygon, and other fields.",
+      "type": "boolean",
+      "default": false
+    },
     "has_images": {
       "description": "A boolean search operator that returns all Tweets that contain a native images (e.g. pic.twitter.com).",
       "type": "boolean",
@@ -145,18 +162,23 @@
       "type": "boolean",
       "default": false
     },
+    "has_media": {
+      "description": "Matches Tweets that contain a media url classified by Twitter, e.g. pic.twitter.com.",
+      "type": "boolean",
+      "default": false
+    },
     "has_mentions": {
       "description": "Matches Tweets that mention another Twitter user.",
       "type": "boolean",
       "default": false
     },
-    "has_videos": {
-      "description": "A boolean search operator that returns all Tweets that contain native videos (does not include vine, periscope).",
+    "has_profile_geo": {
+      "description": "Matches Tweets that have any Profile Geo metadata, regardless of the actual value.",
       "type": "boolean",
       "default": false
     },
-    "has_media": {
-      "description": "Matches Tweets that contain a media url classified by Twitter, e.g. pic.twitter.com.",
+    "has_videos": {
+      "description": "A boolean search operator that returns all Tweets that contain native videos (does not include vine, periscope).",
       "type": "boolean",
       "default": false
     },
