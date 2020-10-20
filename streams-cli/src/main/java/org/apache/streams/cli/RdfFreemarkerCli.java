@@ -41,6 +41,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import freemarker.template.SimpleHash;
 import freemarker.template.Template;
+import org.apache.streams.config.StreamsConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,7 @@ public class RdfFreemarkerCli implements Callable {
   public RdfFreemarkerCli(String[] args) {
     ConfigFactory.invalidateCaches();
     this.args = args;
-    this.typesafe = ConfigFactory.load();
+    this.typesafe = StreamsConfigurator.getConfig();
   }
 
   public Boolean call() throws Exception {
@@ -168,6 +169,7 @@ public class RdfFreemarkerCli implements Callable {
       settings.execute();
     } catch( Exception ex ) {
       LOGGER.error("settings.execute() Exception", ex);
+      ex.printStackTrace();
       return false;
     }
     LOGGER.info("settings.execute() Success");
