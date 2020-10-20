@@ -88,6 +88,15 @@ public class SearchUtil {
     for( String time_zone : operator.getTimeZones()) {
       stringJoiner.add("time_zone:" + time_zone);
     }
+    if( operator.getProfileCountry() != null) {
+      stringJoiner.add("profile_country:" + operator.getProfileCountry());
+    }
+    if( operator.getProfileRegion() != null) {
+      stringJoiner.add("profile_region:" + operator.getProfileRegion());
+    }
+    if( operator.getProfileLocality() != null) {
+      stringJoiner.add("profile_locality:" + operator.getProfileLocality());
+    }
     if( operator.getHasImages() ) {
       stringJoiner.add("has:images");
     }
@@ -97,8 +106,8 @@ public class SearchUtil {
     if( operator.getHasMedia() ) {
       stringJoiner.add("has:media");
     }
-    if( operator.getHasImages() ) {
-      stringJoiner.add("has:image");
+    if( operator.getHasProfileGeo() ) {
+      stringJoiner.add("has:profile_geo");
     }
     if( operator.getHasVideos() ) {
       stringJoiner.add("has:video");

@@ -12,6 +12,9 @@
     "query": {
       "$ref": "../api/ThirtyDaySearchRequest.json#properties/query"
     },
+    "tag": {
+      "$ref": "../api/ThirtyDaySearchRequest.json#properties/tag"
+    },
     "max_items": {
       "type": "integer",
       "description": "Max items total"
@@ -19,6 +22,10 @@
     "max_pages": {
       "type": "integer",
       "description": "Max pages to request"
+    },
+    "page_size": {
+      "type": "integer",
+      "description": "Requested items per page"
     }
   }
 }

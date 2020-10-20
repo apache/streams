@@ -123,6 +123,50 @@
         },
         "status": {
             "$ref": "tweet.json"
+        },
+        "derived": {
+            "type": "object",
+            "properties": {
+                "locations": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "javaType" : "org.apache.streams.twitter.pojo.DerivedLocation",
+                        "properties": {
+                            "country": {
+                                "type": "string"
+                            },
+                            "country_code": {
+                                "type": "string"
+                            },
+                            "locality": {
+                                "type": "string"
+                            },
+                            "region": {
+                                "type": "string"
+                            },
+                            "sub_region": {
+                                "type": "string"
+                            },
+                            "full_name": {
+                                "type": "string"
+                            },
+                            "geo": {
+                                "type": "object",
+                                "properties": {
+                                    "coordinates": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
