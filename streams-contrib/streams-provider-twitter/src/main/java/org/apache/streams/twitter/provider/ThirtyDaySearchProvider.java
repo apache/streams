@@ -18,15 +18,10 @@
 
 package org.apache.streams.twitter.provider;
 
-import org.apache.commons.collections.iterators.IteratorChain;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsProvider;
-import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.core.util.ExecutorUtils;
-import org.apache.streams.core.util.QueueUtils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.StreamsJacksonMapperConfiguration;
 import org.apache.streams.twitter.api.ThirtyDaySearchRequest;
@@ -43,8 +38,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.joda.time.DateTime;
+import org.apache.commons.collections.iterators.IteratorChain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +47,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Queue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -72,7 +67,7 @@ import java.util.stream.Stream;
 /**
  * Retrieve recent posts from a list of user ids or names.
  */
-public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, StreamsProvider, Serializable {
+public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, Serializable {
 
   private static final String STREAMS_ID = "ThirtyDaySearchProvider";
 
@@ -266,14 +261,14 @@ public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, Strea
     startStream();
     do {
       Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-    } while ( isRunning());
+    } while (isRunning());
     IteratorChain chain = new IteratorChain();
     int received = 0;
-    while(received < tasks.size()) {
+    while (received < tasks.size()) {
       Future<Iterator<Tweet>> resultFuture = completionService.take();
       Iterator<Tweet> result = resultFuture.get();
       chain.addIterator(result);
-      received ++;
+      received++;
     }
     cleanUp();
     return chain;
