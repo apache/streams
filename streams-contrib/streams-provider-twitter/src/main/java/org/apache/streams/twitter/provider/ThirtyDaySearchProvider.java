@@ -21,11 +21,7 @@ package org.apache.streams.twitter.provider;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
-import org.apache.streams.core.StreamsDatum;
-import org.apache.streams.core.StreamsProvider;
-import org.apache.streams.core.StreamsResultSet;
 import org.apache.streams.core.util.ExecutorUtils;
-import org.apache.streams.core.util.QueueUtils;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.pojo.StreamsJacksonMapperConfiguration;
 import org.apache.streams.twitter.api.ThirtyDaySearchRequest;
@@ -42,8 +38,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.joda.time.DateTime;
+import org.apache.commons.collections.iterators.IteratorChain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,13 +47,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Queue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +67,7 @@ import java.util.stream.Stream;
 /**
  * Retrieve recent posts from a list of user ids or names.
  */
-public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, StreamsProvider, Serializable {
+public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, Serializable {
 
   private static final String STREAMS_ID = "ThirtyDaySearchProvider";
 
@@ -87,16 +83,15 @@ public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, Strea
     return config;
   }
 
-  protected volatile Queue<StreamsDatum> providerQueue;
-
   protected ThirtyDaySearchRequest request;
 
   protected Twitter client;
 
   protected ExecutorService executor;
 
-  private List<Callable<Object>> tasks = new ArrayList<>();
-  private List<Future<Object>> futures = new ArrayList<>();
+  private List<Callable<Iterator<Tweet>>> tasks = new ArrayList<>();
+  private List<Future<Iterator<Tweet>>> futures = new ArrayList<>();
+  private CompletionService<Iterator<Tweet>> completionService;
 
   StreamsConfiguration streamsConfiguration;
 
@@ -131,14 +126,12 @@ public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, Strea
     String configfile = args[0];
     String outfile = args[1];
 
-    Config reference = ConfigFactory.load();
     File file = new File(configfile);
     assert (file.exists());
     Config testResourceConfig = ConfigFactory.parseFileAnySyntax(file, ConfigParseOptions.defaults().setAllowMissing(false));
+    StreamsConfigurator.addConfig(testResourceConfig);
 
-    Config typesafe  = testResourceConfig.withFallback(reference).resolve();
-
-    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration(typesafe);
+    StreamsConfiguration streamsConfiguration = StreamsConfigurator.detectConfiguration();
     ThirtyDaySearchProviderConfiguration config = new ComponentConfigurator<>(ThirtyDaySearchProviderConfiguration.class).detectConfiguration();
     ThirtyDaySearchProvider provider = new ThirtyDaySearchProvider(config);
 
@@ -163,30 +156,16 @@ public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, Strea
     this.config = config;
   }
 
-  public Queue<StreamsDatum> getProviderQueue() {
-    return this.providerQueue;
-  }
-
-  @Override
   public String getId() {
     return STREAMS_ID;
   }
 
-  @Override
   public void prepare(Object configurationObject) {
 
     if( !(configurationObject instanceof ThirtyDaySearchProviderConfiguration ) ) {
       this.config = (ThirtyDaySearchProviderConfiguration)configurationObject;
     }
 
-    try {
-      lock.writeLock().lock();
-      providerQueue = QueueUtils.constructQueue();
-    } finally {
-      lock.writeLock().unlock();
-    }
-
-    Objects.requireNonNull(providerQueue);
     Objects.requireNonNull(config.getOauth().getConsumerKey());
     Objects.requireNonNull(config.getOauth().getConsumerSecret());
     Objects.requireNonNull(config.getOauth().getAccessToken());
@@ -196,7 +175,8 @@ public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, Strea
 
     request = new ThirtyDaySearchRequest();
     request.setQuery(config.getQuery());
-
+    request.setTag(config.getTag());
+    request.setMaxResults(config.getPageSize());
     streamsConfiguration = StreamsConfigurator.detectConfiguration();
 
     try {
@@ -214,11 +194,12 @@ public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, Strea
         )
     );
 
+    completionService = new ExecutorCompletionService<>(executor);
+
     submitSearchThread();
 
   }
 
-  @Override
   public void startStream() {
 
     Objects.requireNonNull(executor);
@@ -238,52 +219,15 @@ public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, Strea
   protected void submitSearchThread() {
 
     Callable providerTask = new ThirtyDaySearchProviderTask(
-          this,
-          client,
-        request
-      );
+      this,
+      client,
+      request
+    );
     LOGGER.info("Thread Created: {}", request);
     tasks.add(providerTask);
-    Future future = executor.submit(providerTask);
+    Future<Iterator<Tweet>> future = completionService.submit(providerTask);
     futures.add(future);
     LOGGER.info("Thread Submitted: {}", request);
-  }
-
-  @Override
-  public StreamsResultSet readCurrent() {
-
-    StreamsResultSet result;
-
-    LOGGER.debug("Providing {} docs", providerQueue.size());
-
-    try {
-      lock.writeLock().lock();
-      result = new StreamsResultSet(providerQueue);
-      providerQueue = QueueUtils.constructQueue();
-    } finally {
-      lock.writeLock().unlock();
-    }
-
-    if ( result.size() == 0 && providerQueue.isEmpty() && executor.isTerminated() ) {
-      LOGGER.info("Finished.  Cleaning up...");
-
-      running.set(false);
-
-      LOGGER.info("Exiting");
-    }
-
-    return result;
-
-  }
-
-  public StreamsResultSet readNew(BigInteger sequence) {
-    LOGGER.debug("{} readNew", STREAMS_ID);
-    throw new NotImplementedException();
-  }
-
-  public StreamsResultSet readRange(DateTime start, DateTime end) {
-    LOGGER.debug("{} readRange", STREAMS_ID);
-    throw new NotImplementedException();
   }
 
   /**
@@ -296,12 +240,10 @@ public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, Strea
 
   }
 
-  @Override
   public void cleanUp() {
     ExecutorUtils.shutdownAndAwaitTermination(executor);
   }
 
-  @Override
   public boolean isRunning() {
     LOGGER.debug("executor.isTerminated: {}", executor.isTerminated());
     LOGGER.debug("tasks.size(): {}", tasks.size());
@@ -314,13 +256,21 @@ public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, Strea
   }
 
   @Override
-  public Iterator<Tweet> call() throws Exception {
+  public Iterator<Tweet> call() throws InterruptedException, ExecutionException {
     prepare(config);
     startStream();
     do {
       Uninterruptibles.sleepUninterruptibly(streamsConfiguration.getBatchFrequencyMs(), TimeUnit.MILLISECONDS);
-    } while ( isRunning());
+    } while (isRunning());
+    IteratorChain chain = new IteratorChain();
+    int received = 0;
+    while (received < tasks.size()) {
+      Future<Iterator<Tweet>> resultFuture = completionService.take();
+      Iterator<Tweet> result = resultFuture.get();
+      chain.addIterator(result);
+      received++;
+    }
     cleanUp();
-    return providerQueue.stream().map( x -> ((Tweet)x.getDocument())).iterator();
+    return chain;
   }
 }

@@ -58,6 +58,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Implementation of all twitter interfaces using juneau.
@@ -110,8 +112,8 @@ public class Twitter implements
       .setDefaultRequestConfig(
         RequestConfig.custom()
           .setConnectionRequestTimeout(5000)
-          .setConnectTimeout(5000)
-          .setSocketTimeout(5000)
+          .setConnectTimeout(60000)
+          .setSocketTimeout(60000)
           .setCookieSpec("easy")
           .build()
       )
@@ -122,6 +124,7 @@ public class Twitter implements
       .addInterceptorLast((HttpResponseInterceptor) (httpResponse, httpContext) -> LOGGER.debug(httpResponse.getStatusLine().toString()))
       .build();
     this.restClientBuilder = RestClient.create()
+      .executorService(Executors.newCachedThreadPool(), false)
       .httpClient(httpclient, true)
       .parser(
         JsonParser.DEFAULT.builder()
@@ -138,7 +141,8 @@ public class Twitter implements
       .retryable(
         configuration.getRetryMax().intValue(),
         configuration.getRetrySleepMs().intValue(),
-        new TwitterRetryHandler());
+        new TwitterRetryHandler()
+      );
     if( configuration.getDebug() ) {
       restClientBuilder = restClientBuilder.debug();
     }

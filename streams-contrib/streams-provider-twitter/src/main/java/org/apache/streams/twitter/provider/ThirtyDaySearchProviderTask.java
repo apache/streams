@@ -18,6 +18,7 @@
 
 package org.apache.streams.twitter.provider;
 
+import com.google.common.base.Strings;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.jackson.StreamsJacksonMapper;
 import org.apache.streams.twitter.api.ThirtyDaySearchRequest;
@@ -32,15 +33,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
- *  Retrieve recent posts for a single user id.
+ *  Retrieve recent posts from premium thirty day search.
  */
 public class ThirtyDaySearchProviderTask implements Callable<Iterator<Tweet>>, Runnable {
 
@@ -51,7 +51,7 @@ public class ThirtyDaySearchProviderTask implements Callable<Iterator<Tweet>>, R
   protected ThirtyDaySearchProvider provider;
   protected Twitter client;
   protected ThirtyDaySearchRequest request;
-  protected List<Tweet> responseList;
+  protected List<Tweet> responseList = new ArrayList<>();
 
   /**
    * ThirtyDaySearchProviderTask constructor.
@@ -63,15 +63,15 @@ public class ThirtyDaySearchProviderTask implements Callable<Iterator<Tweet>>, R
     this.provider = provider;
     this.client = twitter;
     this.request = request;
-    this.responseList = new ArrayList<>();
   }
 
   int item_count = 0;
   int last_count = 0;
   int page_count = 0;
+  String next = null;
 
   @Override
-  public void run() {
+  public Iterator<Tweet> call() throws Exception {
 
     LOGGER.info("Thread Starting: {}", request.toString());
 
@@ -81,46 +81,47 @@ public class ThirtyDaySearchProviderTask implements Callable<Iterator<Tweet>>, R
 
       List<Tweet> statuses = response.getResults();
 
+      last_count = statuses.size();
+
+      // count items but dont truncate response b/c we already paid for them
+      item_count += statuses.size();
+
+      page_count++;
+
       responseList.addAll(statuses);
 
-      last_count = statuses.size();
-      if( statuses.size() > 0 ) {
+      next = response.getNext();
 
-        for (Tweet status : statuses) {
+      request.setNext(next);
 
-          if (item_count < provider.getConfig().getMaxItems()) {
-            ComponentUtils.offerUntilSuccess(new StreamsDatum(status), provider.providerQueue);
-            item_count++;
-          }
-
-        }
-
-        Stream<Long> statusIds = statuses.stream().map(status -> status.getId());
-        page_count++;
-        request.setNext(response.getNext());
-
-      }
+      LOGGER.info("item_count: {} last_count: {} page_count: {} next: {} ", item_count, last_count, page_count, next);
 
     }
-    while (shouldContinuePulling(last_count, page_count, item_count));
+    while (shouldContinuePulling(last_count, page_count, item_count, next));
 
-    LOGGER.info("item_count: {} last_count: {} page_count: {} ", item_count, last_count, page_count);
-
+    return responseList.iterator();
   }
 
-  public boolean shouldContinuePulling(int count, int page_count, int item_count) {
-    if (item_count >= provider.getConfig().getMaxItems()) {
-      return false;
-    } else if (page_count >= provider.getConfig().getMaxPages()) {
-      return false;
-    } else {
-      return (count > 0);
+  public boolean shouldContinuePulling(int count, int page_count, int item_count, String next) {
+    boolean shouldContinuePulling = count > 0;
+    if (Strings.isNullOrEmpty(next)) {
+      shouldContinuePulling = false;
     }
+    if (item_count >= provider.getConfig().getMaxItems()) {
+      shouldContinuePulling = false;
+    } else if (page_count >= provider.getConfig().getMaxPages()) {
+      shouldContinuePulling = false;
+    }
+    LOGGER.info("shouldContinuePulling: ", shouldContinuePulling);
+    return shouldContinuePulling;
   }
 
   @Override
-  public Iterator<Tweet> call() throws Exception {
-    run();
-    return responseList.iterator();
+  public void run() {
+    try {
+      this.call();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }
