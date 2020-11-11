@@ -26,6 +26,12 @@
     "page_size": {
       "type": "integer",
       "description": "Requested items per page"
+    },
+    "fromDate": {
+      "$ref": "../api/ThirtyDaySearchRequest.json#properties/fromDate"
+    },
+    "toDate": {
+      "$ref": "../api/ThirtyDaySearchRequest.json#properties/toDate"
     }
   }
 }
