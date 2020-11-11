@@ -18,6 +18,7 @@
 
 package org.apache.streams.twitter.provider;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.config.StreamsConfigurator;
@@ -177,6 +178,12 @@ public class ThirtyDaySearchProvider implements Callable<Iterator<Tweet>>, Seria
     request.setQuery(config.getQuery());
     request.setTag(config.getTag());
     request.setMaxResults(config.getPageSize());
+    if( StringUtils.isNotBlank(request.getFromDate())) {
+      request.setFromDate(request.getFromDate());
+    }
+    if( StringUtils.isNotBlank(request.getToDate())) {
+      request.setToDate(request.getToDate());
+    }
     streamsConfiguration = StreamsConfigurator.detectConfiguration();
 
     try {
