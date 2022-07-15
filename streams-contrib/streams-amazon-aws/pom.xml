@@ -33,7 +33,7 @@
     <description>Amazon AWS Modules</description>
 
     <properties>
-        <amazonaws.version>1.11.184</amazonaws.version>
+        <amazonaws.version>1.12.261</amazonaws.version>
     </properties>
 
     <modules>
