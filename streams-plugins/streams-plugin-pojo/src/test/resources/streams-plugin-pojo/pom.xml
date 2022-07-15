@@ -29,7 +29,7 @@
     <name>Test StreamsPojoMojo</name>
 
     <properties>
-        <jackson.version>2.9.8</jackson.version>
+        <jackson.version>2.12.6.1</jackson.version>
         <juneau.version>7.2.1</juneau.version>
         <commons-lang3.version>3.4</commons-lang3.version>
     </properties>
