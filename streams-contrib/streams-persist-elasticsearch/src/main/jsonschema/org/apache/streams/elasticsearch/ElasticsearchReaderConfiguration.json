@@ -29,7 +29,7 @@
         },
         "_search": {
             "type": "object",
-            "javaType" : "java.util.Map",
+            "existingJavaType" : "java.util.Map",
             "description": "Search definition"
         }
     }

@@ -12,7 +12,15 @@
   },
   "additionalProperties": false,
   "properties": {
-    "twitter": { "javaType": "org.apache.streams.twitter.config.TwitterStreamConfiguration", "type": "object", "required": true },
-    "elasticsearch": { "javaType": "org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration", "type": "object", "required": true }
+    "twitter": {
+      "existingJavaType": "org.apache.streams.twitter.config.TwitterStreamConfiguration",
+      "type": "object",
+      "required": true
+    },
+    "elasticsearch": {
+      "existingJavaType": "org.apache.streams.elasticsearch.ElasticsearchWriterConfiguration",
+      "type": "object",
+      "required": true
+    }
   }
 }

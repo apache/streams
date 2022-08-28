@@ -19,11 +19,15 @@
 
 package org.apache.streams.plugins;
 
+import org.apache.maven.plugin.MojoExecutionException;
+import org.jsonschema2pojo.GenerationConfig;
 import org.jsonschema2pojo.Jsonschema2Pojo;
+import org.jsonschema2pojo.RuleLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -40,13 +44,14 @@ import java.util.Objects;
  * generator.run();
  *
  */
-public class StreamsPojoSourceGenerator implements Runnable {
+public class StreamsPojoSourceGenerator {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsPojoSourceGenerator.class);
 
   private static final String LS = System.getProperty("line.separator");
 
   private StreamsPojoGenerationConfig config;
+  private RuleLogger ruleLogger;
 
   /**
    * Run from CLI without Maven
@@ -56,7 +61,7 @@ public class StreamsPojoSourceGenerator implements Runnable {
    *
    * @param args [sourceDirectory, targetDirectory, targetPackage]
    * */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     StreamsPojoGenerationConfig config = new StreamsPojoGenerationConfig();
 
     String sourceDirectory = "src/main/jsonschema";
@@ -78,22 +83,25 @@ public class StreamsPojoSourceGenerator implements Runnable {
     config.setTargetDirectory(targetDirectory);
 
     StreamsPojoSourceGenerator streamsPojoSourceGenerator = new StreamsPojoSourceGenerator(config);
-    streamsPojoSourceGenerator.run();
+    streamsPojoSourceGenerator.execute();
   }
 
   public StreamsPojoSourceGenerator(StreamsPojoGenerationConfig config) {
     this.config = config;
   }
 
-  @Override
-  public void run() {
+  public void execute() throws MojoExecutionException {
 
     Objects.requireNonNull(config);
+    GenerationConfig generationConfig = (GenerationConfig) config;
+
+    ruleLogger = new StreamsPojoRuleLogger();
 
     try {
-      Jsonschema2Pojo.generate(config);
-    } catch (Throwable ex) {
+      Jsonschema2Pojo.generate(generationConfig, ruleLogger);
+    } catch (IOException ex) {
       LOGGER.error("{} {}", ex.getClass(), ex.getMessage());
+      throw new MojoExecutionException(ex.getMessage(), ex);
     }
   }
 

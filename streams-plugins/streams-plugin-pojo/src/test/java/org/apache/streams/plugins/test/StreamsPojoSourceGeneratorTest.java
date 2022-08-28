@@ -63,7 +63,7 @@ public class StreamsPojoSourceGeneratorTest {
     config.setTargetDirectory("target/generated-sources/pojo");
 
     StreamsPojoSourceGenerator streamsPojoSourceGenerator = new StreamsPojoSourceGenerator(config);
-    streamsPojoSourceGenerator.run();
+    streamsPojoSourceGenerator.execute();
 
     Assert.assertNotNull(config.getTargetDirectory());
     Assert.assertTrue(config.getTargetDirectory().exists());

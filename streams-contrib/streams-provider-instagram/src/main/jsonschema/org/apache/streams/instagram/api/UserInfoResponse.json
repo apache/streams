@@ -14,10 +14,10 @@
       "$ref": "../pojo/UserInfo.json"
     },
     "meta": {
-      "javaType": "org.apache.streams.instagram.api.Meta"
+      "$ref": "Meta.json"
     },
     "pagination": {
-      "javaType": "org.apache.streams.instagram.api.Pagination"
+      "$ref": "Pagination.json"
     }
   }
 }

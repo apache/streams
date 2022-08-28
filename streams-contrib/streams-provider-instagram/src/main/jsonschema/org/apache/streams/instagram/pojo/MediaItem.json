@@ -5,19 +5,19 @@
     "http://www.apache.org/licenses/LICENSE-2.0"
   ],
   "id": "#",
-  "javaType": "org.apache.streams.instagram.api.MediaResponse",
+  "javaType": "org.apache.streams.instagram.pojo.MediaItem",
   "javaInterfaces": [
     "java.io.Serializable"
   ],
   "properties": {
-    "data": {
-      "$ref": "../pojo/Media.json"
+    "height": {
+      "type": "number"
     },
-    "meta": {
-      "$ref": "Meta.json"
+    "width": {
+      "type": "number"
     },
-    "pagination": {
-      "$ref": "Pagination.json"
+    "url": {
+      "type": "string"
     }
   }
 }

@@ -138,36 +138,6 @@
             </testResource>
         </testResources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.streams.plugins</groupId>
-                <artifactId>streams-plugin-pojo</artifactId>
-                <version>${project.version}</version>
-                <configuration>
-                    <sourcePaths>
-                        <sourcePath>${project.basedir}/src/main/jsonschema</sourcePath>
-                    </sourcePaths>
-                    <targetDirectory>${project.basedir}/target/generated-sources/pojo</targetDirectory>
-                    <targetPackage>org.apache.streams.linkedin.pojo</targetPackage>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>target/generated-sources/pojo</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
              <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>

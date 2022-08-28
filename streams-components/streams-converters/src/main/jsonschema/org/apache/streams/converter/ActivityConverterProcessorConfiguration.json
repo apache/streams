@@ -11,14 +11,14 @@
         "classifiers": {
             "type": "array",
             "items": {
-                "javaType": "org.apache.streams.data.DocumentClassifier",
+                "existingJavaType": "org.apache.streams.data.DocumentClassifier",
                 "type": "object"
             }
         },
         "converters": {
             "type": "array",
             "items": {
-                "javaType": "org.apache.streams.data.ActivityConverter",
+                "existingJavaType": "org.apache.streams.data.ActivityConverter",
                 "type": "object"
             }
         }

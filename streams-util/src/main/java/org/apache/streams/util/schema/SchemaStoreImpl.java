@@ -63,7 +63,7 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
       if (uri.toString().contains("#") && !uri.toString().endsWith("#")) {
         Schema newSchema = new Schema(baseUri, baseNode, null, true);
         this.schemas.put(baseUri, newSchema);
-        JsonNode childContent = this.fragmentResolver.resolve(baseNode, '#' + StringUtils.substringAfter(uri.toString(), "#"));
+        JsonNode childContent = this.fragmentResolver.resolve(baseNode, '#' + StringUtils.substringAfter(uri.toString(), "#"), "#");
         this.schemas.put(uri, new Schema(uri, childContent, newSchema, false));
       } else {
         if ( baseNode.has("extends") && baseNode.get("extends").isObject()) {
@@ -120,7 +120,8 @@ public class SchemaStoreImpl extends Ordering<Schema> implements SchemaStore {
           ? parent.getId().resolve(path)
           : URI.create(path);
       if (this.selfReferenceWithoutParentFile(parent, path)) {
-        this.schemas.put(id, new Schema(id, this.fragmentResolver.resolve(parent.getParentContent(), path), parent, false));
+        Schema newSchema = new Schema(id, this.fragmentResolver.resolve(parent.getParentContent(), path, "#"), parent, false);
+        this.schemas.put(id, newSchema);
         return this.schemas.get(id);
       } else {
         return this.create(id);
