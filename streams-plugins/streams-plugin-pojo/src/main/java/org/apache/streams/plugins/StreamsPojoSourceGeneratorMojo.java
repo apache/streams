@@ -88,7 +88,8 @@ public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
     config.setTargetDirectory(targetDirectory);
 
     StreamsPojoSourceGenerator streamsPojoSourceGenerator = new StreamsPojoSourceGenerator(config);
-    streamsPojoSourceGenerator.run();
+
+    streamsPojoSourceGenerator.execute();
 
   }
 

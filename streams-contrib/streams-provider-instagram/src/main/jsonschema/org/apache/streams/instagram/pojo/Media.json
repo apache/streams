@@ -56,19 +56,13 @@
       "type": "object",
       "properties": {
         "low_resolution": {
-          "description": "this should be org.apache.streams.pojo.json.MediaLink, ../../../../../../../../../../streams-schemas/streams-schema-activitystreams/src/main/jsonschema/media_link.json",
-          "type": "object",
-          "javaType": "org.apache.streams.pojo.json.ImageParent"
+          "$ref": "./MediaItem.json"
         },
         "standard_resolution": {
-          "description": "this should be org.apache.streams.pojo.json.MediaLink, ../../../../../../../../../../streams-schemas/streams-schema-activitystreams/src/main/jsonschema/media_link.json",
-          "type": "object",
-          "javaType": "org.apache.streams.pojo.json.ImageParent"
+          "$ref": "./MediaItem.json"
         },
         "thumbnail": {
-          "description": "this should be org.apache.streams.pojo.json.MediaLink, ../../../../../../../../../../streams-schemas/streams-schema-activitystreams/src/main/jsonschema/media_link.json",
-          "type": "object",
-          "javaType": "org.apache.streams.pojo.json.ImageParent"
+          "$ref": "./MediaItem.json"
         }
       }
     },
@@ -121,19 +115,13 @@
       "type": "object",
       "properties": {
         "low_resolution": {
-          "description": "this should be org.apache.streams.pojo.json.MediaLink, ../../../../../../../../../../streams-schemas/streams-schema-activitystreams/src/main/jsonschema/media_link.json",
-          "type": "object",
-          "javaType": "org.apache.streams.pojo.json.ImageParent"
+          "$ref": "./MediaItem.json"
         },
         "standard_resolution": {
-          "description": "this should be org.apache.streams.pojo.json.MediaLink, ../../../../../../../../../../streams-schemas/streams-schema-activitystreams/src/main/jsonschema/media_link.json",
-          "type": "object",
-          "javaType": "org.apache.streams.pojo.json.ImageParent"
+          "$ref": "./MediaItem.json"
         },
         "thumbnail": {
-          "description": "this should be org.apache.streams.pojo.json.MediaLink, ../../../../../../../../../../streams-schemas/streams-schema-activitystreams/src/main/jsonschema/media_link.json",
-          "type": "object",
-          "javaType": "org.apache.streams.pojo.json.ImageParent"
+          "$ref": "./MediaItem.json"
         }
       }
     },

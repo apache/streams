@@ -12,14 +12,14 @@
             "type": "array",
             "items": {
                 "type": "object",
-                "javaType": "org.apache.streams.data.DocumentClassifier"
+                "existingJavaType": "org.apache.streams.data.DocumentClassifier"
             }
         },
         "converters": {
             "type": "array",
             "items": {
                 "type": "object",
-                "javaType": "org.apache.streams.data.ActivityObjectConverter"
+                "existingJavaType": "org.apache.streams.data.ActivityObjectConverter"
             }
         }
     }

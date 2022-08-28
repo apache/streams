@@ -12,7 +12,15 @@
   },
   "additionalProperties": false,
   "properties": {
-    "source": { "javaType": "org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration", "type": "object", "required": true },
-    "destination": { "javaType": "org.apache.streams.hdfs.HdfsWriterConfiguration", "type": "object", "required": true }
+    "source": {
+      "existingJavaType": "org.apache.streams.elasticsearch.ElasticsearchReaderConfiguration",
+      "type": "object",
+      "required": true
+    },
+    "destination": {
+      "existingJavaType": "org.apache.streams.hdfs.HdfsWriterConfiguration",
+      "type": "object",
+      "required": true
+    }
   }
 }

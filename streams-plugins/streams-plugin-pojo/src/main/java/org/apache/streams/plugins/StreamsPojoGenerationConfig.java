@@ -106,10 +106,10 @@ public class StreamsPojoGenerationConfig extends DefaultGenerationConfig {
     return true;
   }
 
-  @Override
-  public boolean isUseCommonsLang3() {
-    return true;
-  }
+//  @Override
+//  public boolean isUseCommonsLang3() {
+//    return true;
+//  }
 
   //    @Override
   //    public boolean isIncludeAdditionalProperties() {

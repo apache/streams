@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.node.ValueNode;
 import com.github.wnameless.json.flattener.JsonFlattener;
 import com.github.wnameless.json.unflattener.JsonUnflattener;
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.JsonFactory;
+import com.fasterxml.jackson.core.JsonFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
