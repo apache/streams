@@ -106,16 +106,6 @@ public class StreamsPojoGenerationConfig extends DefaultGenerationConfig {
     return true;
   }
 
-//  @Override
-//  public boolean isUseCommonsLang3() {
-//    return true;
-//  }
-
-  //    @Override
-  //    public boolean isIncludeAdditionalProperties() {
-  //        return true;
-  //    }
-
   @Override
   public Class<? extends Annotator> getCustomAnnotator() {
     return JuneauPojoAnnotator.class;
