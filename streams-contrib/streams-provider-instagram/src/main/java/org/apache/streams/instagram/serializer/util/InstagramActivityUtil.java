@@ -21,7 +21,14 @@ package org.apache.streams.instagram.serializer.util;
 
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.exceptions.ActivitySerializerException;
-import org.apache.streams.instagram.pojo.*;
+import org.apache.streams.instagram.pojo.Comment;
+import org.apache.streams.instagram.pojo.Comments;
+import org.apache.streams.instagram.pojo.Images;
+import org.apache.streams.instagram.pojo.Media;
+import org.apache.streams.instagram.pojo.MediaItem;
+import org.apache.streams.instagram.pojo.UserInfo;
+import org.apache.streams.instagram.pojo.UserInfoCounts;
+import org.apache.streams.instagram.pojo.Videos;
 import org.apache.streams.pojo.extensions.ExtensionUtil;
 import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.pojo.json.ActivityObject;
