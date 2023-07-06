@@ -30,7 +30,7 @@
     <description>Cassandra Module</description>
 
     <properties>
-        <cassandra.version>3.11.0</cassandra.version>
+        <cassandra.version>4.0.10</cassandra.version>
         <cassandra-driver.version>3.3.0</cassandra-driver.version>
     </properties>
 
