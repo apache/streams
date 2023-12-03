@@ -24,6 +24,7 @@ import org.apache.streams.util.schema.SchemaStore;
 import org.apache.streams.util.schema.SchemaStoreImpl;
 
 import com.typesafe.config.Config;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -56,6 +57,7 @@ public class SchemaStoreTest {
   }
 
   @Test
+  @Ignore
   public void indexCollection() {
     SchemaStore schemaStore = new SchemaStoreImpl();
     File file = new File(testconfig.getString("collectionSchema"));

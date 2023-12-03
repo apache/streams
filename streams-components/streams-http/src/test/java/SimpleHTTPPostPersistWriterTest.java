@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -45,6 +46,7 @@ import static org.mockito.Matchers.any;
  * @see org.apache.streams.components.http.persist.SimpleHTTPPostPersistWriter
  */
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest({HttpClients.class, CloseableHttpResponse.class, CloseableHttpResponse.class})
 public class SimpleHTTPPostPersistWriterTest {
 

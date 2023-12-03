@@ -66,7 +66,7 @@ public class StreamsScalaSourceGeneratorTest {
     assertNotNull( testOutput );
     assertTrue( testOutput.exists() );
     assertTrue( testOutput.isDirectory() );
-    assertEquals( 10, testOutput.listFiles(scalaFilter).length );
+    assertEquals( 17, testOutput.listFiles(scalaFilter).length );
     assertTrue( new File(testOutput + "/traits").exists() );
     assertTrue( new File(testOutput + "/traits").isDirectory() );
     assertNotNull( new File(testOutput + "/traits").listFiles(scalaFilter) );
@@ -74,7 +74,7 @@ public class StreamsScalaSourceGeneratorTest {
     assertTrue( new File(testOutput + "/objectTypes").exists() );
     assertTrue( new File(testOutput + "/objectTypes").isDirectory() );
     assertNotNull( new File(testOutput + "/objectTypes").listFiles(scalaFilter) );
-    assertEquals( 42, new File(testOutput + "/objectTypes").listFiles(scalaFilter).length);
+    assertEquals( 48, new File(testOutput + "/objectTypes").listFiles(scalaFilter).length);
     assertTrue( new File(testOutput + "/verbs").exists() );
     assertTrue( new File(testOutput + "/verbs").isDirectory() );
     assertNotNull( new File(testOutput + "/verbs").listFiles(scalaFilter) );

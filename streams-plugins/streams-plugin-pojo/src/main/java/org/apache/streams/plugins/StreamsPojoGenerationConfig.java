@@ -107,6 +107,16 @@ public class StreamsPojoGenerationConfig extends DefaultGenerationConfig {
   }
 
   @Override
+  public boolean isSerializable() {
+    return true;
+  }
+
+  @Override
+  public boolean isIncludeGeneratedAnnotation() {
+    return false;
+  }
+
+  @Override
   public Class<? extends Annotator> getCustomAnnotator() {
     return JuneauPojoAnnotator.class;
   }

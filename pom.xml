@@ -395,8 +395,8 @@
         <zookeeper.version>3.4.5</zookeeper.version>
 
         <!-- Test Library Dependency Versions -->
-        <mockito.version>1.10.19</mockito.version>
-        <powermock.version>1.7.1</powermock.version>
+        <mockito.version>2.0.2-beta</mockito.version>
+        <powermock.version>1.7.4</powermock.version>
         <testng.version>6.11</testng.version>
 
         <!-- osgi configuration -->
@@ -1268,7 +1268,7 @@
             <id>java-11</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
-                <jdk>(1.8,)</jdk>
+                <jdk>(1.11,)</jdk>
             </activation>
             <properties>
                 <java.version>11</java.version>
