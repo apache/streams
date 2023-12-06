@@ -305,10 +305,10 @@
     <properties>
 
         <!-- Language Library Version Properties -->
-        <java.version>1.8</java.version>
-        <scala.version>2.11.12</scala.version>
-        <scala.binary.version>2.11</scala.binary.version>
-        <maven.version>3.6.3</maven.version>
+        <java.version>17</java.version>
+        <scala.version>2.12.18</scala.version>
+        <scala.binary.version>2.12</scala.binary.version>
+        <maven.version>3.9.3</maven.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
@@ -331,14 +331,14 @@
         <apache-rat.plugin.version>0.13</apache-rat.plugin.version>
         <build-helper.plugin.version>1.8</build-helper.plugin.version>
         <bundle.plugin.version>1.4.3</bundle.plugin.version>
-        <checkstyle.plugin.version>3.1.1</checkstyle.plugin.version>
-        <compiler.plugin.version>3.0</compiler.plugin.version>
-        <clean.plugin.version>2.6</clean.plugin.version>
-        <dependency.plugin.version>2.10</dependency.plugin.version>
+        <checkstyle.plugin.version>3.3.1</checkstyle.plugin.version>
+        <compiler.plugin.version>3.11.0</compiler.plugin.version>
+        <clean.plugin.version>3.3.2</clean.plugin.version>
+        <dependency.plugin.version>3.6.1</dependency.plugin.version>
         <depgraph.plugin.version>1.0.3</depgraph.plugin.version>
         <docker.plugin.version>0.24.0</docker.plugin.version>
         <download.plugin.version>1.2.1</download.plugin.version>
-        <enforcer.plugin.version>3.0.0-M3</enforcer.plugin.version>
+        <enforcer.plugin.version>3.4.1</enforcer.plugin.version>
         <failsafe.plugin.version>2.22.0</failsafe.plugin.version>
         <jar.plugin.version>2.6</jar.plugin.version>
         <javadoc.plugin.version>3.2.0</javadoc.plugin.version>
@@ -346,21 +346,21 @@
         <pax.plugin.version>1.5</pax.plugin.version>
         <remote-resources.plugin.version>1.4</remote-resources.plugin.version>
         <reports.plugin.version>2.9</reports.plugin.version>
-        <resources.plugin.version>2.7</resources.plugin.version>
+        <resources.plugin.version>3.3.1</resources.plugin.version>
         <scala.plugin.version>4.4.0</scala.plugin.version>
         <scalastyle.plugin.version>0.8.0</scalastyle.plugin.version>
-        <scm.plugin.version>1.9.5</scm.plugin.version>
-        <scmpublish.plugin.version>1.1</scmpublish.plugin.version>
-        <shade.plugin.version>3.1.0</shade.plugin.version>
-        <site.plugin.version>3.6</site.plugin.version>
-        <source.plugin.version>2.4</source.plugin.version>
-        <surefire.plugin.version>2.22.0</surefire.plugin.version>
+        <scm.plugin.version>2.0.1</scm.plugin.version>
+        <scmpublish.plugin.version>3.2.1</scmpublish.plugin.version>
+        <shade.plugin.version>3.5.1</shade.plugin.version>
+        <site.plugin.version>4.0.0-M12</site.plugin.version>
+        <source.plugin.version>3.3.0</source.plugin.version>
+        <surefire.plugin.version>3.2.2</surefire.plugin.version>
         <wagon.plugin.version>3.0.0</wagon.plugin.version>
-        <war.plugin.version>2.5</war.plugin.version>
+        <war.plugin.version>3.4.0</war.plugin.version>
 
         <!-- Library Dependency Versions -->
         <aalto.version>1.1.0</aalto.version>
-        <commons-codec.version>1.10</commons-codec.version>
+        <commons-codec.version>1.16.0</commons-codec.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-io.version>2.5</commons-io.version>
         <commons-lang3.version>3.6</commons-lang3.version>
@@ -373,7 +373,7 @@
         <guava.version>20.0</guava.version>
         <httpcomponents.core.version>4.4.8</httpcomponents.core.version>
         <httpcomponents.client.version>4.5.4</httpcomponents.client.version>
-        <jackson.version>2.9.8</jackson.version>
+        <jackson.version>2.16.0</jackson.version>
         <joda-time.version>2.9.9</joda-time.version>
         <joda-convert.version>1.8.1</joda-convert.version>
         <json-flattener.version>0.5.0</json-flattener.version>
@@ -387,7 +387,7 @@
         <junit.version>4.12</junit.version>
         <netty.version>3.8.0.Final</netty.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <log4j.version>1.2.17</log4j.version>
+        <log4j.version>2.22.0</log4j.version>
         <logback.version>1.2.3</logback.version>
         <hamcrest.version>1.3</hamcrest.version>
         <reflections.version>0.9.11</reflections.version>
@@ -395,9 +395,18 @@
         <zookeeper.version>3.4.5</zookeeper.version>
 
         <!-- Test Library Dependency Versions -->
-        <mockito.version>2.0.2-beta</mockito.version>
-        <powermock.version>1.7.4</powermock.version>
+        <mockito.version>4.11.0</mockito.version>
+        <powermock.version>2.0.9</powermock.version>
+        <surefire.version>3.2.2</surefire.version>
         <testng.version>6.11</testng.version>
+
+        <!-- maven plugin module helper versions -->
+        <maven-plugin.version>3.9.6</maven-plugin.version>
+        <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
+        <maven-plugin-plugin.version>3.10.2</maven-plugin-plugin.version>
+        <maven-plugin-tools.version>3.10.2</maven-plugin-tools.version>
+        <maven-plugin-testing.version>3.3.0</maven-plugin-testing.version>
+        <maven-verifier.version>1.8.0</maven-verifier.version>
 
         <!-- osgi configuration -->
         <org.osgi.service.http.port>8080</org.osgi.service.http.port>
@@ -407,7 +416,7 @@
         <skipTests>false</skipTests>
 
         <!-- avoid intermittent build failures in streams-plugins -->
-        <jvm.options>-Djava.util.Arrays.useLegacyMergeSort=true</jvm.options>
+        <jvm.options>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED -Djava.util.Arrays.useLegacyMergeSort=true</jvm.options>
 
     </properties>
 
@@ -939,9 +948,34 @@
             <version>${juneau.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>3.0.0-M4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>3.0.0-M4</version>
+        </dependency>
+        <dependency>
             <groupId>com.typesafe</groupId>
             <artifactId>config</artifactId>
             <version>${typesafe.config.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>javax.activation</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.4.0-b180830.0359</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
@@ -995,13 +1029,13 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
+            <artifactId>mockito-inline</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
-            <artifactId>powermock</artifactId>
+            <artifactId>powermock-core</artifactId>
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
@@ -1013,7 +1047,7 @@
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
+            <artifactId>powermock-api-mockito2</artifactId>
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
@@ -1038,7 +1072,7 @@
             <version>${slf4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
+            <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>
         </dependency>
@@ -1114,6 +1148,11 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml</groupId>
             <artifactId>aalto-xml</artifactId>
             <version>${aalto.version}</version>
@@ -1143,6 +1182,88 @@
                     <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-aether-provider</artifactId>
+            <version>${maven-aether-provider.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>${resources.plugin.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.maven</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-artifact</artifactId>
+            <version>${maven-plugin.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-compat</artifactId>
+            <version>${maven-plugin.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-verifier</artifactId>
+            <version>${maven-verifier.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>${maven-plugin.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.sonatype.aether</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-plugin-plugin</artifactId>
+            <version>${maven-plugin-plugin.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>${maven-plugin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-tools-api</artifactId>
+            <version>${maven-plugin-tools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <version>${maven-plugin-tools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-tools-generators</artifactId>
+            <version>${maven-plugin-tools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-testing</groupId>
+            <artifactId>maven-plugin-testing-harness</artifactId>
+            <version>${maven-plugin-testing.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     </dependencyManagement>
@@ -1255,20 +1376,21 @@
         <profile>
             <id>java-8</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
                 <jdk>1.8</jdk>
             </activation>
             <properties>
                 <java.version>8</java.version>
                 <maven.compiler.source>${java.version}</maven.compiler.source>
                 <maven.compiler.target>${java.version}</maven.compiler.target>
+                <jvm.options>-Djava.util.Arrays.useLegacyMergeSort=true</jvm.options>
             </properties>
         </profile>
         <profile>
             <id>java-11</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
-                <jdk>(1.11,)</jdk>
+                <jdk>(11,)</jdk>
             </activation>
             <properties>
                 <java.version>11</java.version>
@@ -1276,35 +1398,48 @@
                 <maven.compiler.target>${java.version}</maven.compiler.target>
                 <maven.compiler.release>${java.version}</maven.compiler.release>
             </properties>
-            <dependencyManagement>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                        <version>2.4.0-b180830.0359</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-core</artifactId>
-                        <version>3.0.0-M4</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-impl</artifactId>
-                        <version>3.0.0-M4</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.sun.activation</groupId>
-                        <artifactId>javax.activation</artifactId>
-                        <version>1.2.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>javax.annotation</groupId>
-                        <artifactId>javax.annotation-api</artifactId>
-                        <version>1.3.2</version>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
+<!--            <dependencyManagement>-->
+<!--                <dependencies>-->
+<!--                    <dependency>-->
+<!--                        <groupId>javax.xml.bind</groupId>-->
+<!--                        <artifactId>jaxb-api</artifactId>-->
+<!--                        <version>2.4.0-b180830.0359</version>-->
+<!--                    </dependency>-->
+<!--                    <dependency>-->
+<!--                        <groupId>com.sun.xml.bind</groupId>-->
+<!--                        <artifactId>jaxb-core</artifactId>-->
+<!--                        <version>3.0.0-M4</version>-->
+<!--                    </dependency>-->
+<!--                    <dependency>-->
+<!--                        <groupId>com.sun.xml.bind</groupId>-->
+<!--                        <artifactId>jaxb-impl</artifactId>-->
+<!--                        <version>3.0.0-M4</version>-->
+<!--                    </dependency>-->
+<!--                    <dependency>-->
+<!--                        <groupId>com.sun.activation</groupId>-->
+<!--                        <artifactId>javax.activation</artifactId>-->
+<!--                        <version>1.2.0</version>-->
+<!--                    </dependency>-->
+<!--                    <dependency>-->
+<!--                        <groupId>javax.annotation</groupId>-->
+<!--                        <artifactId>javax.annotation-api</artifactId>-->
+<!--                        <version>1.3.2</version>-->
+<!--                    </dependency>-->
+<!--                </dependencies>-->
+<!--            </dependencyManagement>-->
+        </profile>
+        <profile>
+            <id>java-17</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <jdk>(17,)</jdk>
+            </activation>
+            <properties>
+                <java.version>17</java.version>
+                <maven.compiler.source>${java.version}</maven.compiler.source>
+                <maven.compiler.target>${java.version}</maven.compiler.target>
+                <maven.compiler.release>${java.version}</maven.compiler.release>
+            </properties>
         </profile>
         <profile>
             <id>dist</id>

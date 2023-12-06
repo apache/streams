@@ -18,6 +18,9 @@
 
 package org.apache.streams.kafka;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.collections.ListUtils;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
@@ -25,11 +28,9 @@ import org.apache.streams.core.StreamsPersistReader;
 import org.apache.streams.core.StreamsResultSet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kafka.consumer.Consumer;
-import kafka.consumer.ConsumerConfig;
-import kafka.consumer.KafkaStream;
-import kafka.consumer.Whitelist;
-import kafka.javaapi.consumer.ConsumerConnector;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+
 import kafka.serializer.StringDecoder;
 import kafka.utils.VerifiableProperties;
 import org.joda.time.DateTime;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Queue;
@@ -61,9 +63,7 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable {
 
   private KafkaReaderConfiguration config;
 
-  private ConsumerConnector consumerConnector;
-
-  public List<KafkaStream<String, String>> inStreams;
+  protected Consumer<String, String> consumer;
 
   private ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -98,18 +98,14 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable {
     Properties props = new Properties();
     props.setProperty("serializer.encoding", "UTF8");
 
-    ConsumerConfig consumerConfig = new ConsumerConfig(props);
+    consumer = new KafkaConsumer(props);
+    List<String> topics = ListUtils.EMPTY_LIST;
+    topics.add(config.getTopic());
 
-    consumerConnector = Consumer.createJavaConsumerConnector(consumerConfig);
-
-    Whitelist topics = new Whitelist(config.getTopic());
+    consumer.subscribe(topics);
     VerifiableProperties vprops = new VerifiableProperties(props);
 
-    inStreams = consumerConnector.createMessageStreamsByFilter(topics, 1, new StringDecoder(vprops), new StringDecoder(vprops));
-
-    for (final KafkaStream stream : inStreams) {
-      executor.submit(new KafkaPersistReaderTask(this, stream));
-    }
+    executor.submit(new KafkaPersistReaderTask(this));
 
   }
 
@@ -155,7 +151,7 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable {
 
   @Override
   public void cleanUp() {
-    consumerConnector.shutdown();
+    consumer.close();
     while ( !executor.isTerminated()) {
       try {
         executor.awaitTermination(5, TimeUnit.SECONDS);

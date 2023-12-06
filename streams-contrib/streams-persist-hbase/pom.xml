@@ -30,8 +30,8 @@
     <description>HBase Module</description>
 
     <properties>
-        <hadoop-common.version>2.7.0</hadoop-common.version>
-        <hbase.version>1.2.3</hbase.version>
+        <hadoop-common.version>3.2.4</hadoop-common.version>
+        <hbase.version>1.7.2</hbase.version>
     </properties>
 
     <dependencies>

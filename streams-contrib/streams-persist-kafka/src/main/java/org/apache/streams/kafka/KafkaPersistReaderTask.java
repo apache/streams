@@ -18,13 +18,14 @@
 
 package org.apache.streams.kafka;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.streams.core.StreamsDatum;
 
-import kafka.consumer.KafkaStream;
-import kafka.message.MessageAndMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.Random;
 
 /**
@@ -36,22 +37,20 @@ public class KafkaPersistReaderTask implements Runnable {
   private static final Logger LOGGER = LoggerFactory.getLogger(KafkaPersistReaderTask.class);
 
   private KafkaPersistReader reader;
-  private KafkaStream<String,String> stream;
 
-  public KafkaPersistReaderTask(KafkaPersistReader reader, KafkaStream<String,String> stream) {
+  public KafkaPersistReaderTask(KafkaPersistReader reader) {
     this.reader = reader;
-    this.stream = stream;
   }
 
   @Override
   public void run() {
 
-    MessageAndMetadata<String,String> item;
+    ConsumerRecords<String,String> records = reader.consumer.poll(Duration.ofMillis(100));
+
     while (true) {
 
-      for (MessageAndMetadata<String, String> aStream : stream) {
-        item = aStream;
-        reader.persistQueue.add(new StreamsDatum(item.message()));
+      for (ConsumerRecord<String, String> record : records) {
+        reader.persistQueue.add(new StreamsDatum(record.value(), record.key()));
       }
       try {
         Thread.sleep(new Random().nextInt(100));

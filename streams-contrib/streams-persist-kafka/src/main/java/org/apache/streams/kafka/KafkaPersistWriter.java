@@ -18,6 +18,10 @@
 
 package org.apache.streams.kafka;
 
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
@@ -26,9 +30,6 @@ import org.apache.streams.util.GuidUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kafka.javaapi.producer.Producer;
-import kafka.producer.KeyedMessage;
-import kafka.producer.ProducerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
 
   private KafkaWriterConfiguration config;
 
-  private Producer<String, String> producer;
+  protected Producer<String, String> producer;
 
   /**
    * KafkaPersistWriter constructor
@@ -85,9 +86,7 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
     props.put("partitioner.class", "org.apache.streams.kafka.StreamsPartitioner");
     props.put("request.required.acks", "1");
 
-    ProducerConfig config = new ProducerConfig(props);
-
-    producer = new Producer<>(config);
+    producer = new KafkaProducer<>(props);
 
     new Thread(new KafkaPersistWriterTask(this)).start();
   }
@@ -118,7 +117,7 @@ public class KafkaPersistWriter implements StreamsPersistWriter, Serializable, R
 
       String hash = GuidUtils.generateGuid(text);
 
-      KeyedMessage<String, String> data = new KeyedMessage<>(config.getTopic(), hash, text);
+      ProducerRecord<String, String> data = new ProducerRecord<>(config.getTopic(), hash, text);
 
       producer.send(data);
 

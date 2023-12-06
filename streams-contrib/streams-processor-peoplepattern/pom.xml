@@ -49,6 +49,10 @@
             <artifactId>streams-pojo</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.streams</groupId>
+            <artifactId>streams-pojo-extensions</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
@@ -76,7 +80,6 @@
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -123,15 +126,10 @@
                     <artifactId>streams-plugin-pojo</artifactId>
                     <version>${project.version}</version>
                     <configuration>
-                        <addCompileSourceRoot>true</addCompileSourceRoot>
-                        <generateBuilders>true</generateBuilders>
                         <sourcePaths>
                             <sourcePath>${project.basedir}/src/main/jsonschema/org/apache/streams/peoplepattern</sourcePath>
                         </sourcePaths>
-                        <outputDirectory>target/generated-sources/jsonschema2pojo</outputDirectory>
                         <targetPackage>org.apache.streams.peoplepattern</targetPackage>
-                        <useLongIntegers>true</useLongIntegers>
-                        <useJodaDates>true</useJodaDates>
                     </configuration>
                 </plugin>
         </plugins>

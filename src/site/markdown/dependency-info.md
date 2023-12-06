@@ -20,8 +20,8 @@ Browse the "Project Modules" index of streams-project to find artifacts you migh
 
 <pre class="prettyprint">&lt;dependency&gt;
   &lt;groupId&gt;org.apache.streams&lt;/groupId&gt;
-  &lt;artifactId&gt;streams-master&lt;/artifactId&gt;
-  &lt;version&gt;0.5.1&lt;/version&gt;
+  &lt;artifactId&gt;streams-core&lt;/artifactId&gt;
+  &lt;version&gt;0.6.1&lt;/version&gt;
   &lt;type&gt;pom&lt;/type&gt;
 &lt;/dependency&gt;</pre>
 
@@ -35,7 +35,7 @@ Browse the "Project Modules" index of streams-project to find artifacts you migh
 
 <div class="source">
 
-<pre class="prettyprint">'org.apache.streams:apache-streams:pom:0.5.1'</pre>
+<pre class="prettyprint">'org.apache.streams:streams-core:jar:0.6.1'</pre>
 
 </div>
 
@@ -47,8 +47,8 @@ Browse the "Project Modules" index of streams-project to find artifacts you migh
 
 <div class="source">
 
-<pre class="prettyprint">&lt;dependency org=&quot;org.apache.streams&quot; name=&quot;streams-master&quot; rev=&quot;0.5.1&quot;&gt;
-  &lt;artifact name=&quot;streams-master&quot; type=&quot;pom&quot; /&gt;
+<pre class="prettyprint">&lt;dependency org=&quot;org.apache.streams&quot; name=&quot;streams-core&quot; rev=&quot;0.6.1&quot;&gt;
+  &lt;artifact name=&quot;streams-core&quot; type=&quot;jar&quot; /&gt;
 &lt;/dependency&gt;</pre>
 
 </div>
@@ -60,7 +60,7 @@ Browse the "Project Modules" index of streams-project to find artifacts you migh
 <h3><a name="Groovy_Grape"></a>Groovy Grape</h3><a name="Groovy_Grape"></a>
 
 <div class="source"><pre class="prettyprint">@Grapes(
-@Grab(group='org.apache.streams', module='streams-master', version='0.5.1')
+@Grab(group='org.apache.streams', module='streams-core', version='0.6.1')
 )</pre>
 
 </div>
@@ -71,7 +71,7 @@ Browse the "Project Modules" index of streams-project to find artifacts you migh
 
 <h3><a name="Gradle"></a>Gradle</h3><a name="Gradle"></a>
 
-<div class="source"><pre class="prettyprint">compile 'org.apache.streams:streams-master:0.5.1'</pre>
+<div class="source"><pre class="prettyprint">compile 'org.apache.streams:streams-core:0.6.1'</pre>
 
 </div>
 
@@ -82,7 +82,7 @@ Browse the "Project Modules" index of streams-project to find artifacts you migh
 
 <div class="source">
 
-<pre class="prettyprint">[org.apache.streams/streams-master &quot;0.5.1&quot;]</pre>
+<pre class="prettyprint">[org.apache.streams/streams-core &quot;0.6.1&quot;]</pre>
 
 </div>
 
@@ -94,7 +94,7 @@ Browse the "Project Modules" index of streams-project to find artifacts you migh
 
 <div class="source">
 
-<pre class="prettyprint">libraryDependencies += &quot;org.apache.streams&quot; % &quot;streams-master&quot; % &quot;0.5.1&quot;</pre>
+<pre class="prettyprint">libraryDependencies += &quot;org.apache.streams&quot; % &quot;streams-core&quot; % &quot;0.6.1&quot;</pre>
 
 </div>
 

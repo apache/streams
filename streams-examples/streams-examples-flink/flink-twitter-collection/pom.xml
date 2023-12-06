@@ -35,8 +35,8 @@
         <hdfs.version>2.7.0</hdfs.version>
         <flink.version>1.11.1</flink.version>
         <testng.version>6.9.10</testng.version>
-        <scala.version>2.11.12</scala.version>
-        <scala.binary.version>2.11</scala.binary.version>
+        <scala.version>2.12.18</scala.version>
+        <scala.binary.version>2.12</scala.binary.version>
         <scalapc.version>1.1.0</scalapc.version>
         <scalatest.version>3.0.0</scalatest.version>
         <scalaxml.version>1.1.0</scalaxml.version>

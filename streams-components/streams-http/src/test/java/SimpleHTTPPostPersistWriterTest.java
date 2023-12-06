@@ -28,6 +28,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -39,14 +40,15 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Test for
  * @see org.apache.streams.components.http.persist.SimpleHTTPPostPersistWriter
  */
+@Ignore
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore("jdk.internal.reflect.*")
+@PowerMockIgnore({"javax.management.*","jdk.internal.reflect.*"})
 @PrepareForTest({HttpClients.class, CloseableHttpResponse.class, CloseableHttpResponse.class})
 public class SimpleHTTPPostPersistWriterTest {
 

@@ -30,7 +30,7 @@
     <description>HDFS Module</description>
 
     <properties>
-        <hdfs.version>2.7.0</hdfs.version>
+        <hdfs.version>3.2.4</hdfs.version>
     </properties>
 
     <dependencies>
