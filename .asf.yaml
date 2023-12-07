@@ -1,0 +1,14 @@
+github:
+  del_branch_on_merge: true
+  description: "Apache Streams"
+  homepage: https://streams.apache.org/
+  features:
+    - issues: true
+    - projects: true
+  ghp_branch: gh_pages
+  ghp_path: /
+  labels:
+    - apache
+    - streams
+  protected_branches:
+    master: {}
