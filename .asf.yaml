@@ -3,8 +3,8 @@ github:
   description: "Apache Streams"
   homepage: https://streams.apache.org/
   features:
-    - issues: true
-    - projects: true
+    issues: true
+    projects: true
   ghp_branch: gh_pages
   ghp_path: /
   labels:
