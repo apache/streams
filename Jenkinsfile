@@ -25,7 +25,7 @@ timestamps {
             def MAVEN_3_LATEST=tool name: 'maven_3_latest', type: 'hudson.tasks.Maven$MavenInstallation'
 
 			withEnv(["Path+JDK=$JAVA_JDK_17/bin","Path+MAVEN=$MAVEN_3_LATEST/bin","JAVA_HOME=$JAVA_JDK_17"]) {
-                sh "mvn -P 'java-17' clean install deploy"
+                sh "mvn -P 'java-17' clean install"
 			}
 		}
 
