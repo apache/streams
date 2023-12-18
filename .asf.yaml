@@ -5,7 +5,7 @@ github:
   features:
     issues: true
     projects: true
-  ghp_branch: gh_pages
+  ghp_branch: gh-pages
   ghp_path: /
   labels:
     - apache
