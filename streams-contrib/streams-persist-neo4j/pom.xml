@@ -104,6 +104,10 @@
             <version>3.0.1</version>
         </dependency>
         <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-schema-activitystreams</artifactId>
             <version>${project.version}</version>
@@ -118,13 +122,6 @@
             <scope>test</scope>
             <type>test-jar</type>
         </dependency>
-
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>

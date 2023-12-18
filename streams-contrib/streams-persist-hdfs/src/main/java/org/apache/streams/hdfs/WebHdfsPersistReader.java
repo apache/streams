@@ -152,7 +152,7 @@ public class WebHdfsPersistReader implements StreamsPersistReader, DatumStatusCo
 
       ugi.doAs((PrivilegedExceptionAction<Void>) () -> {
         Configuration conf = new Configuration();
-        conf.set(CommonConfigurationKeysPublic.HADOOP_SECURITY_AUTHENTICATION, "kerberos");
+        //conf.set(CommonConfigurationKeysPublic.HADOOP_SECURITY_AUTHENTICATION, "kerberos");
         conf.set("fs.hdfs.impl", DistributedFileSystem.class.getName());
         conf.set("fs.file.impl", LocalFileSystem.class.getName());
         LOGGER.info("WebURI : {}", getURI().toString());

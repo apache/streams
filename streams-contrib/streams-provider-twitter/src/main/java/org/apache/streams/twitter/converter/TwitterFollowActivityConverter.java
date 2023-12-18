@@ -25,7 +25,7 @@ import org.apache.streams.pojo.json.Provider;
 import org.apache.streams.twitter.converter.util.TwitterActivityUtil;
 import org.apache.streams.twitter.pojo.Follow;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.List;

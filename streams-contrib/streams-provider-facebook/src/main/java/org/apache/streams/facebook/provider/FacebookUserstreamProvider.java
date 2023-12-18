@@ -38,7 +38,7 @@ import facebook4j.Post;
 import facebook4j.ResponseList;
 import facebook4j.conf.ConfigurationBuilder;
 import facebook4j.json.DataObjectFactory;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

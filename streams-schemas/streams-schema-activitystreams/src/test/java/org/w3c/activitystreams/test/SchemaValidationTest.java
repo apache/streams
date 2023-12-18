@@ -22,9 +22,7 @@ package org.w3c.activitystreams.test;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.ValidationMessage;
+import com.networknt.schema.*;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -57,7 +55,7 @@ public class SchemaValidationTest {
   @Test
   public void testValidateToSchema() throws Exception {
 
-    JsonSchemaFactory factory = new JsonSchemaFactory();
+    JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
 
     InputStream testActivityFolderStream = SchemaValidationTest.class.getClassLoader()
         .getResourceAsStream("activities");

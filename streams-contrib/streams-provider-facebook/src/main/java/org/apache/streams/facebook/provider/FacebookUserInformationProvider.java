@@ -39,7 +39,7 @@ import facebook4j.Paging;
 import facebook4j.ResponseList;
 import facebook4j.User;
 import facebook4j.conf.ConfigurationBuilder;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

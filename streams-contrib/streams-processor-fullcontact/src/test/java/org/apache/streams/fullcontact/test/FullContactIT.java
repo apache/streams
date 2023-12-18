@@ -22,7 +22,8 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.juneau.json.JsonParser;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
@@ -254,7 +255,7 @@ public class FullContactIT {
         EnrichPersonResponse response = personEnrichment.enrichPerson(req);
         nonNull(response);
         nonNull(response.getStatus());
-        assertEquals(response.getStatus(), new Long(404));
+        assertEquals(response.getStatus(), HttpStatus.SC_BAD_REQUEST);
         nonNull(response.getMessage());
         assertEquals(response.getMessage(), "Profile not found");
     }

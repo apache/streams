@@ -24,7 +24,7 @@ import org.apache.streams.pojo.json.Activity;
 import com.moreover.api.Article;
 import com.moreover.api.ArticlesResponse;
 import com.moreover.api.ObjectFactory;
-import org.apache.commons.lang.SerializationException;
+import org.apache.commons.lang3.SerializationException;
 
 import java.io.StringReader;
 import java.util.LinkedList;

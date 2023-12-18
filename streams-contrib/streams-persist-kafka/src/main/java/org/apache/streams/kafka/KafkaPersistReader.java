@@ -18,8 +18,7 @@
 
 package org.apache.streams.kafka;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.config.StreamsConfigurator;
@@ -99,7 +98,7 @@ public class KafkaPersistReader implements StreamsPersistReader, Serializable {
     props.setProperty("serializer.encoding", "UTF8");
 
     consumer = new KafkaConsumer(props);
-    List<String> topics = ListUtils.EMPTY_LIST;
+    List<String> topics = ListUtils.emptyIfNull(null);
     topics.add(config.getTopic());
 
     consumer.subscribe(topics);

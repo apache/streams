@@ -27,7 +27,7 @@ import org.apache.streams.elasticsearch.processor.DatumFromMetadataProcessor;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.elasticsearch.client.Client;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;

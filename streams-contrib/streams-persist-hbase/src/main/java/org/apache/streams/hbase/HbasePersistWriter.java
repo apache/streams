@@ -18,8 +18,10 @@
 
 package org.apache.streams.hbase;
 
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.streams.config.ComponentConfigurator;
-import org.apache.streams.config.StreamsConfigurator;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.core.StreamsPersistWriter;
 import org.apache.streams.util.GuidUtils;
@@ -29,12 +31,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.HConnection;
-import org.apache.hadoop.hbase.client.HConnectionManager;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.HTableInterface;
-import org.apache.hadoop.hbase.client.HTablePool;
-import org.apache.hadoop.hbase.client.Put;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,10 +49,11 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HbasePersistWriter.class);
 
-  protected HConnection connection;
-  protected HTablePool pool;
-  protected HTableInterface table;
+  protected ConnectionFactory connectionFactory;
+  protected Connection connection;
   protected HTableDescriptor descriptor;
+
+  protected BufferedMutator bufferedMutator;
 
   protected volatile Queue<StreamsDatum> persistQueue;
 
@@ -98,29 +95,19 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
 
     //pool = new HTablePool(configuration, 10);
     try {
-      connection = HConnectionManager.createConnection(configuration);
+      connection = ConnectionFactory.createConnection(configuration);
     } catch (Exception ex) {
       ex.printStackTrace();
       return;
     }
 
     try {
-      //    table = new HTable(configuration, config.getTable());
-      //    table = (HTable) pool.getTable(config.getTable());
-      table = new HTable(configuration, config.getTable().getBytes());
-      table.setAutoFlush(true);
+      bufferedMutator = connection.getBufferedMutator(TableName.valueOf(config.getTable()));
     } catch (Exception ex) {
       ex.printStackTrace();
       return;
     }
     //
-
-    try {
-      descriptor = table.getTableDescriptor();
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      return;
-    }
 
     try {
       LOGGER.info("Table : {}", descriptor);
@@ -156,7 +143,7 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
       }
       try {
         byte[] value = node.binaryValue();
-        put.add(config.getFamily().getBytes(), config.getQualifier().getBytes(), value);
+        bufferedMutator.mutate(put);
       } catch (IOException ex) {
         ex.printStackTrace();
         LOGGER.warn("Failure adding object: {}", streamsDatum.getDocument().toString());
@@ -171,31 +158,25 @@ public class HbasePersistWriter implements StreamsPersistWriter, Flushable, Clos
         return;
       }
       put.setId(GuidUtils.generateGuid(node.toString()));
-      try {
-        byte[] value = node.binaryValue();
-        put.add(config.getFamily().getBytes(), config.getQualifier().getBytes(), value);
-      } catch (IOException ex) {
-        ex.printStackTrace();
-        LOGGER.warn("Failure preparing put: {}", streamsDatum.getDocument().toString());
-        return;
-      }
 
     }
+
     try {
-      table.put(put);
+      bufferedMutator.mutate(put);
     } catch (IOException ex) {
       ex.printStackTrace();
-      LOGGER.warn("Failure executin put: {}", streamsDatum.getDocument().toString());
+      LOGGER.warn("Failure preparing put: {}", streamsDatum.getDocument().toString());
+      return;
     }
 
   }
 
   public void flush() throws IOException {
-    table.flushCommits();
+    bufferedMutator.flush();
   }
 
   public synchronized void close() throws IOException {
-    table.close();
+    bufferedMutator.close();
   }
 
   @Override

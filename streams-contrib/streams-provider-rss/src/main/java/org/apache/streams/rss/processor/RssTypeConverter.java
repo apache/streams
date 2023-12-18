@@ -24,7 +24,7 @@ import org.apache.streams.pojo.json.Activity;
 import org.apache.streams.rss.serializer.SyndEntryActivitySerializer;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;

@@ -82,13 +82,34 @@
             <artifactId>json-path-assert</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.19.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.googlecode.gmail4j</groupId>
             <artifactId>gmail4j</artifactId>
             <version>0.4</version>
             <exclusions>
                 <exclusion>
+                    <groupId>commons-httpclient</groupId>
+                    <artifactId>commons-httpclient</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.rometools</groupId>
+                    <artifactId>rome</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.java.dev.rome</groupId>
+                    <artifactId>rome</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

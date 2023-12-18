@@ -276,7 +276,7 @@ public class StreamsScalaSourceGenerator implements Runnable {
     stringBuffer.append("package ");
     stringBuffer.append(pojoClass.getPackage().getName().replace(".pojo.json", ".scala"));
     stringBuffer.append(LS);
-    stringBuffer.append("import org.apache.commons.lang.builder.{HashCodeBuilder, EqualsBuilder, ToStringBuilder}");
+    stringBuffer.append("import org.apache.commons.lang3.builder.{HashCodeBuilder, EqualsBuilder, ToStringBuilder}");
     stringBuffer.append(LS);
     stringBuffer.append("class ").append(pojoClass.getSimpleName());
     stringBuffer.append(" (");

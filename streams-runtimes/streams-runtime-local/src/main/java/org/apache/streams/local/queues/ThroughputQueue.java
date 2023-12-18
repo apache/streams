@@ -19,7 +19,7 @@ package org.apache.streams.local.queues;
 
 import org.apache.streams.local.builders.LocalStreamBuilder;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ import javax.management.ObjectName;
  * <p></p>
  * !!! Warning !!!
  * Only the necessary methods for the local streams runtime are implemented.  All other methods throw a
- * {@link org.apache.commons.lang.NotImplementedException}.
+ * {@link org.apache.commons.lang3.NotImplementedException}.
  */
 public class ThroughputQueue<E> implements BlockingQueue<E>, ThroughputQueueMXBean {
 

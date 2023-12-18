@@ -21,7 +21,7 @@ package org.apache.streams.twitter.test.search;
 import org.apache.streams.twitter.search.SearchUtil;
 import org.apache.streams.twitter.search.ThirtyDaySearchOperator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.testng.collections.Lists;

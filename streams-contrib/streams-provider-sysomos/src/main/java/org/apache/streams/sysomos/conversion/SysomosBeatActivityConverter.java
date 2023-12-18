@@ -25,7 +25,7 @@ import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.pojo.json.Provider;
 
 import com.sysomos.xml.BeatApi;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import java.util.HashMap;

@@ -23,7 +23,7 @@ import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.pojo.json.ActivityObject;
 import org.apache.streams.twitter.pojo.User;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 import static org.apache.streams.twitter.converter.util.TwitterActivityUtil.buildActor;
 

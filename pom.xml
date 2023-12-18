@@ -201,18 +201,18 @@
     </developers>
 
     <repositories>
-        <repository>
-            <id>central-repo</id>
-            <name>Maven Repository</name>
-            <!-- HTTPS is unavailable for Maven Central -->
-            <url>https://repo.maven.apache.org/maven2</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
+<!--        <repository>-->
+<!--            <id>central-repo</id>-->
+<!--            <name>Maven Repository</name>-->
+<!--            &lt;!&ndash; HTTPS is unavailable for Maven Central &ndash;&gt;-->
+<!--            <url>https://repo.maven.apache.org/maven2</url>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
         <repository>
             <id>apache-repo</id>
             <name>Apache Repository</name>
@@ -235,28 +235,28 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>clojars-repo</id>
-            <name>Clojars Repository</name>
-            <url>https://clojars.org/repo</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>cloudera-repo</id>
-            <name>Cloudera Repository</name>
-            <url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
+<!--        <repository>-->
+<!--            <id>clojars-repo</id>-->
+<!--            <name>Clojars Repository</name>-->
+<!--            <url>https://clojars.org/repo</url>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--        <repository>-->
+<!--            <id>cloudera-repo</id>-->
+<!--            <name>Cloudera Repository</name>-->
+<!--            <url>https://repository.cloudera.com/artifactory/cloudera-repos</url>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
     </repositories>
 
     <pluginRepositories>
@@ -354,59 +354,62 @@
         <shade.plugin.version>3.5.1</shade.plugin.version>
         <site.plugin.version>4.0.0-M12</site.plugin.version>
         <source.plugin.version>3.3.0</source.plugin.version>
-        <surefire.plugin.version>3.2.2</surefire.plugin.version>
+        <surefire.plugin.version>3.2.3</surefire.plugin.version>
         <wagon.plugin.version>3.0.0</wagon.plugin.version>
         <war.plugin.version>3.4.0</war.plugin.version>
 
         <!-- Library Dependency Versions -->
         <aalto.version>1.1.0</aalto.version>
+        <avro.version>1.11.3</avro.version>
         <commons-codec.version>1.16.0</commons-codec.version>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <commons-io.version>2.5</commons-io.version>
-        <commons-lang3.version>3.6</commons-lang3.version>
-        <commons-validator.version>1.6</commons-validator.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
+        <commons-io.version>2.15.1</commons-io.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
+        <commons-text.version>1.11.0</commons-text.version>
+        <commons-validator.version>1.7</commons-validator.version>
         <clojure.version>1.4.0</clojure.version>
         <doxia.version>1.7</doxia.version>
         <facebook4j.version>2.4.7</facebook4j.version>
         <fmpp.version>0.9.16</fmpp.version>
-        <freemarker.version>2.3.28</freemarker.version>
-        <guava.version>20.0</guava.version>
-        <httpcomponents.core.version>4.4.8</httpcomponents.core.version>
-        <httpcomponents.client.version>4.5.4</httpcomponents.client.version>
+        <freemarker.version>2.3.32</freemarker.version>
+        <guava.version>32.1.3-jre</guava.version>
+        <httpcomponents.core.version>4.4.16</httpcomponents.core.version>
+        <httpcomponents.client.version>4.5.13</httpcomponents.client.version>
         <jackson.version>2.16.0</jackson.version>
-        <joda-time.version>2.9.9</joda-time.version>
         <joda-convert.version>1.8.1</joda-convert.version>
-        <json-flattener.version>0.5.0</json-flattener.version>
-        <json-path.version>2.4.0</json-path.version>
-        <json-schema-validator.version>0.1.10</json-schema-validator.version>
+        <joda-time.version>2.9.9</joda-time.version>
+        <json-path.version>2.8.0</json-path.version>
+        <json-schema-validator.version>1.1.0</json-schema-validator.version>
         <juneau.version>7.2.1</juneau.version>
-        <jsonschema2pojo.version>1.1.2</jsonschema2pojo.version>
+        <jsonschema2pojo.version>1.2.1</jsonschema2pojo.version>
         <jaxb2.version>0.15.3</jaxb2.version>
         <jaxb2-basics.version>0.13.1</jaxb2-basics.version>
         <jaxbutil.version>2.1.0</jaxbutil.version>
-        <junit.version>4.12</junit.version>
-        <netty.version>3.8.0.Final</netty.version>
-        <slf4j.version>1.7.25</slf4j.version>
+        <netty.version>4.1.94.Final</netty.version>
+        <slf4j.version>2.0.9</slf4j.version>
         <log4j.version>2.22.0</log4j.version>
-        <logback.version>1.2.3</logback.version>
-        <hamcrest.version>1.3</hamcrest.version>
-        <reflections.version>0.9.11</reflections.version>
-        <typesafe.config.version>1.3.2</typesafe.config.version>
-        <zookeeper.version>3.4.5</zookeeper.version>
+        <logback.version>1.2.9</logback.version>
+        <protobuf.version>3.16.3</protobuf.version>
+        <hamcrest.version>2.2</hamcrest.version>
+        <reflections.version>0.10.2</reflections.version>
+        <typesafe.config.version>1.4.2</typesafe.config.version>
+        <zookeeper.version>3.9.1</zookeeper.version>
 
         <!-- Test Library Dependency Versions -->
+        <junit.version>4.13.2</junit.version>
         <mockito.version>4.11.0</mockito.version>
         <powermock.version>2.0.9</powermock.version>
-        <surefire.version>3.2.2</surefire.version>
-        <testng.version>6.11</testng.version>
+        <surefire.version>3.2.3</surefire.version>
+        <testng.version>7.8.0</testng.version>
 
         <!-- maven plugin module helper versions -->
-        <maven-plugin.version>3.9.6</maven-plugin.version>
+        <maven-plugin.version>3.9.0</maven-plugin.version>
         <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
-        <maven-plugin-plugin.version>3.10.2</maven-plugin-plugin.version>
-        <maven-plugin-tools.version>3.10.2</maven-plugin-tools.version>
+        <maven-plugin-plugin.version>3.9.0</maven-plugin-plugin.version>
+        <maven-plugin-tools.version>3.9.0</maven-plugin-tools.version>
         <maven-plugin-testing.version>3.3.0</maven-plugin-testing.version>
-        <maven-verifier.version>1.8.0</maven-verifier.version>
+        <maven-verifier.version>2.0.0-M1</maven-verifier.version>
 
         <!-- osgi configuration -->
         <org.osgi.service.http.port>8080</org.osgi.service.http.port>
@@ -427,7 +430,7 @@
         <module>streams-contrib</module>
         <module>streams-components</module>
         <module>streams-dist</module>
-        <module>streams-examples</module>
+<!--        <module>streams-examples</module>-->
         <module>streams-monitoring</module>
         <module>streams-pojo</module>
         <module>streams-pojo-extensions</module>
@@ -875,9 +878,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery</artifactId>
+            <version>3.7.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.webjars</groupId>
+                    <artifactId>jquery</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -888,9 +903,9 @@
     <dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${protobuf.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -898,9 +913,19 @@
             <version>${commons-codec.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>${commons-collections.version}</version>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>${commons-text.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${commons-collections4.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-validator</groupId>
@@ -978,6 +1003,11 @@
             <version>1.3.2</version>
         </dependency>
         <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+        <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>${reflections.version}</version>
@@ -993,21 +1023,20 @@
             <version>${fmpp.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>${avro.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
+            <artifactId>hamcrest</artifactId>
             <version>${hamcrest.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>json-schema-validator</artifactId>
             <version>${json-schema-validator.version}</version>
             <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>com.github.wnameless</groupId>
-            <artifactId>json-flattener</artifactId>
-            <version>${json-flattener.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -1024,6 +1053,10 @@
                 <exclusion>
                     <groupId>org.beanshell</groupId>
                     <artifactId>bsh</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.webjars</groupId>
+                    <artifactId>jquery</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -1093,7 +1126,7 @@
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty</artifactId>
+            <artifactId>netty-all</artifactId>
             <version>${netty.version}</version>
         </dependency>
         <dependency>
@@ -1187,6 +1220,7 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-aether-provider</artifactId>
             <version>${maven-aether-provider.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
@@ -1209,18 +1243,21 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-compat</artifactId>
             <version>${maven-plugin.version}</version>
-            <scope>test</scope>
+<!--            <scope>test</scope>-->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-verifier</artifactId>
             <version>${maven-verifier.version}</version>
-            <scope>test</scope>
+<!--            <scope>test</scope>-->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
             <version>${maven-plugin.version}</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.sonatype.aether</groupId>
@@ -1232,6 +1269,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-plugin-plugin</artifactId>
             <version>${maven-plugin-plugin.version}</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -1243,21 +1281,25 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>${maven-plugin.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-tools-api</artifactId>
             <version>${maven-plugin-tools.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
             <version>${maven-plugin-tools.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-tools-generators</artifactId>
             <version>${maven-plugin-tools.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
@@ -1385,6 +1427,16 @@
                 <maven.compiler.target>${java.version}</maven.compiler.target>
                 <jvm.options>-Djava.util.Arrays.useLegacyMergeSort=true</jvm.options>
             </properties>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.testng</groupId>
+                        <artifactId>testng</artifactId>
+                        <version>7.5.1</version>
+                        <scope>test</scope>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
         </profile>
         <profile>
             <id>java-11</id>
@@ -1453,6 +1505,7 @@
                         <artifactId>maven-shade-plugin</artifactId>
                         <version>${shade.plugin.version}</version>
                         <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <outputDirectory>dist</outputDirectory>
                             <outputFile>dist/${project.artifactId}-jar-with-dependencies.jar</outputFile>
                             <filters>

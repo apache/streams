@@ -19,6 +19,7 @@ under the License.
 
 package org.apache.streams.converter;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.streams.data.ActivityConverter;
 import org.apache.streams.exceptions.ActivityConversionException;
 import org.apache.streams.jackson.StreamsJacksonMapper;
@@ -26,7 +27,6 @@ import org.apache.streams.pojo.json.Activity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

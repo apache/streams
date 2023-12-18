@@ -35,7 +35,7 @@
         <elasticsearch.version>2.4.6</elasticsearch.version>
         <lucene.version>5.5.4</lucene.version>
         <docker.repo>apachestreams</docker.repo>
-        <hdfs.version>2.7.0</hdfs.version>
+        <hdfs.version>3.3.6</hdfs.version>
     </properties>
 
     <dependencies>
@@ -59,15 +59,8 @@
             <type>test-jar</type>
         </dependency>
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-            <version>1.3</version>
+            <artifactId>hamcrest</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -140,7 +140,7 @@ public class WebHdfsPersistWriter implements StreamsPersistWriter, Flushable, Cl
       ugi.doAs(new PrivilegedExceptionAction<Void>() {
         public Void run() throws Exception {
           Configuration conf = new Configuration();
-          conf.set(CommonConfigurationKeysPublic.HADOOP_SECURITY_AUTHENTICATION, "kerberos");
+         // conf.set(CommonConfigurationKeysPublic.HADOOP_SECURITY_AUTHENTICATION, "kerberos");
           LOGGER.info("WebURI : {}", getURI().toString());
           client = FileSystem.get(getURI(), conf);
           LOGGER.info("Connected to WebHDFS");

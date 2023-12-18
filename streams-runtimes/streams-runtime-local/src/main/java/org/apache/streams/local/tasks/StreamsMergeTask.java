@@ -22,7 +22,7 @@ import org.apache.streams.config.StreamsConfiguration;
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.local.counters.StreamsTaskCounter;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
