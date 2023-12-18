@@ -51,7 +51,7 @@ jobs:
             ~/.m2/repository/
             !~/.m2/repository/org/apache/streams
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ hashFiles('.github/workflows/*.yml') }}
-      - name: mvn -B -V clean install -ff -ntp -DskipTests=${{ matrix.java_version == '11' }}
+      - name: mvn -B -V clean install -ff -ntp -P 'java-${{ matrix.java_version }}'
         env:
-          MAVEN_OPTS: -Xmx1g -XX:ReservedCodeCacheSize=1g -XX:+UseG1GC -Dorg.slf4j.simpleLogger.defaultLogLevel=INFO
-        run: mvn -B -V clean install -ff -ntp -DskipTests=${{ matrix.java_version == '11' }}
+          MAVEN_OPTS: -Xmx3g -XX:ReservedCodeCacheSize=1g -XX:+UseG1GC -Dorg.slf4j.simpleLogger.defaultLogLevel=INFO
+        run: mvn -B -V clean install -ff -ntp -P 'java-${{ matrix.java_version }}'
