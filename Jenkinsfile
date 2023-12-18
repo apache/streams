@@ -21,12 +21,11 @@ timestamps {
 
 		stage ('Streams - Build') {
 
-			withEnv(["JAVA_HOME=${ tool 'JDK 17 (latest)' }", "PATH=$PATH:${env.JAVA_HOME}/bin"]) {
+            def JAVA_JDK_17=tool name: 'jdk_17_latest', type: 'hudson.model.JDK'
+            def MAVEN_3_LATEST=tool name: 'maven_3_latest', type: 'hudson.tasks.Maven$MavenInstallation'
 
-				withMaven(jdk: 'JDK 17 (latest)', maven: 'Maven 3.9.3') {
-					sh "mvn -P 'java-17' clean install deploy"
-				}
-
+			withEnv(["Path+JDK=$JAVA_JDK_17/bin","Path+MAVEN=$MAVEN_3_LATEST/bin","JAVA_HOME=$JAVA_JDK_14"]) {
+                sh "mvn -P 'java-17' clean install deploy"
 			}
 		}
 
