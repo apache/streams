@@ -1,4 +1,6 @@
-#### Git
+## Installing Git
+
+Many operating systems come with git pre-installed.
 
     git -version
 
@@ -8,7 +10,7 @@
 | git version < 2.7 | You should upgrade git for security reasons |
 | git version > 2.7 | You are all good |
 
-If you need to install docker, start here:
+If you need to install or upgrade git, this is a good resource:
 
 [https://git-scm.com/book/en/v2/Getting-Started-Installing-Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 

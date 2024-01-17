@@ -76,48 +76,30 @@
             <item name="Roadmap" href="roadmap.html" />
         </menu>
         <menu name="Users">
-            <item name="Install Java" href="install/java.html"/>
-            <item name="Install Docker" href="install/docker.html"/>
-            <item name="Install SBT" href="install/sbt.html"/>
-            <item name="Credentials">
-                <item name="Twitter" href="credentials/twitter.html" />
-            </item>
-            <item name="Services">
-                <item name="Cassandra" href="services/cassandra.html" />
-                <item name="Elasticsearch" href="services/elasticsearch.html" />
-                <item name="Mongo" href="services/mongo.html" />
-                <item name="Neo4j" href="services/neo4j.html" />
-                <item name="Riak" href="services/riak.html" />
-            </item>
+            <item name="Install Java" href="tools/java.html"/>
+            <item name="Install Docker" href="tools/docker.html"/>
         </menu>
         <menu name="Developers">
-            <item name="Install Git" href="install/git.html"/>
-            <item name="Install Maven" href="install/maven.html"/>
+            <item name="Install SDKMAN" href="tools/general.html"/>
+            <item name="Install Git" href="tools/git.html"/>
+            <item name="Install Maven" href="tools/maven.html"/>
             <item name="Versions Supported" href="versions.html"/>
-            <item name="Release Setup" href="release-setup.html" />
-            <item name="Release Process" href="release.html" />
+            <item name="Release Management">
+                <item name="Release Steps" href="processes/release-steps.html" />
+                <item name="Release Manager Setup" href="processes/release-manager-setup.html" />
+                <item name="Release Workstation Setup" href="processes/release-workstation-setup.html" />
+                <item name="Release Preparation" href="processes/release-preparation.html" />
+            </item>
             <item name="Website Management" href="website.html" />
             <item name="Coding Conventions" href="code-conventions.html"/>
             <item name="Changelog" href="changelog.html" />
         </menu>
-        <!--<menu name="Details">-->
-            <!--<item name="Mailing Lists" href="mail-lists.html" />-->
-            <!--<item name="Project Team" href="team-list.html" />-->
-            <!--<item name="Continuous Integration" href="integration.html"/>-->
-            <!--<item name="Issue Tracking" href="issue-tracking.html" />-->
-            <!--<item name="Source Repositories" href="source-repository.html" />-->
-            <!--<item name="Dependency Info" href="dependency-info.html" />-->
-            <!--<item name="Dependency Management" href="dependency-management.html" />-->
-            <!--<item name="Distribution Management" href="distribution-management.html" />-->
-            <!--<item name="Plugin Management" href="plugin-management.html" />-->
-            <!---->
-            <!--<item name="Project License" href="license.html" />-->
-        <!--</menu>-->
         <menu name="Reports" ref="reports" inherit="top"/>
         <menu name="Other Resources">
             <item name="ActivityStreams Homepage" href="http://activitystrea.ms" />
-            <item name="ActivityStreams Specifications" href="http://activitystrea.ms/specs/" />
-            <item name="Streams Blog" href="http://blogs.apache.org/streams/" />
+            <item name="ActivityStreams 1.0 Specifications" href="http://activitystrea.ms/specs/" />
+            <item name="ActivityStreams 2.0 Specifications" href="http://www.w3.org/TR/activitystreams-core/" />
+            <item name="ActivityPub Specificaion" href="https://www.w3.org/TR/activitypub/" />
             <item name="Streams Proposal Wiki Page" href="http://wiki.apache.org/incubator/StreamsProposal" />
             <item name="Apache Foundation Info" href="http://www.apache.org/" />
             <item name="Sponsorship" href="http://www.apache.org/foundation/sponsorship.html" />

@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>21</version>
+        <version>31</version>
     </parent>
 
     <groupId>org.apache.streams</groupId>
@@ -528,7 +528,7 @@
                             </goals>
                             <configuration>
                                 <resourceBundles combine.children="append">
-                                    <!-- Will generate META-INF/DEPENDENCIES META-INF/LICENSE META-INF/NOTICE -->
+                                    <!-- Will generate META-INF/DEPENDENCIES META-INF/LICENSE.txt META-INF/NOTICE -->
                                     <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
                                 </resourceBundles>
                                 <properties>
@@ -1796,7 +1796,7 @@
                                 <excludedGroups>^org.apache.streams.*</excludedGroups>
                                 <failOnBlacklist>true</failOnBlacklist>
                                 <failOnMissing>true</failOnMissing>
-                                <licenseMergesFile>${session.executionRootDirectory}/src/license/licenseMerges.txt</licenseMergesFile>
+                                <licenseMergesUrl>file://${session.executionRootDirectory}/src/license/licenseMerges.txt</licenseMergesUrl>
                                 <missingFile>${session.executionRootDirectory}/src/license/licenseMissingFile.properties</missingFile>
                                 <outputDirectory>src/license</outputDirectory>
                                 <thirdPartyFilename>THIRD-PARTY.txt</thirdPartyFilename>

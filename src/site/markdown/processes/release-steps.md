@@ -1,20 +1,24 @@
-##Release Process
+## Release Steps
 
 apache-streams artifacts include streams source code, convenience jars by module, and a binary/byte-code release
 
-###NOTE:
+Prior to your first release, you'll need to refer to the following process guides: 
 
-Prior to your first release, you'll need to refer to [Release Setup Information](/release-setup.html).
+ * [Release Manager Setup](release-manager-setup.html)
 
-Prior to each release you perform, you'll need to refer to [Release Preparation](/release-preparation.html).
+ * [Release Workstation Setup](release-workstation-setup.html)
+
+Prior to each release you perform, you'll need to refer to the following process guides:
+
+ * [Release Preparation](release-preparation.html).
 
 As a streams release manager, you probably want to use the release.sh and publish-rc.sh scripts in the root of apache-streams.
 
 To perform a release manually, or to better understand what's going on, read the instructions below.
 
-###Common Release Steps
+### Release Steps
 
-1. Environment setup for releasing artifacts (same for SNAPSHOTs and releases)    
+1. Environment setup for releasing artifacts    
 
     1. Use the latest Sun 1.8.x JDK
     2. Use Maven 3.6.3 or later
