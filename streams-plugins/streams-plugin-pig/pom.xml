@@ -28,7 +28,7 @@
         <groupId>org.apache.streams.plugins</groupId>
         <artifactId>streams-plugins</artifactId>
         <version>0.6.2-SNAPSHOT</version>
-        <relativePath>..</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <properties>

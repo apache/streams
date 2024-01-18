@@ -23,7 +23,7 @@ under the License.
         <groupId>org.apache.streams</groupId>
         <artifactId>apache-streams</artifactId>
         <version>0.6.2-SNAPSHOT</version>
-        <relativePath>..</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>streams-dist</artifactId>
@@ -90,18 +90,6 @@ under the License.
             <groupId>org.apache.streams</groupId>
             <artifactId>streams-persist-console</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-persist-elasticsearch</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>snakeyaml</artifactId>
-                    <groupId>org.yaml</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>

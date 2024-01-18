@@ -201,18 +201,6 @@
     </developers>
 
     <repositories>
-<!--        <repository>-->
-<!--            <id>central-repo</id>-->
-<!--            <name>Maven Repository</name>-->
-<!--            &lt;!&ndash; HTTPS is unavailable for Maven Central &ndash;&gt;-->
-<!--            <url>https://repo.maven.apache.org/maven2</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
         <repository>
             <id>apache-repo</id>
             <name>Apache Repository</name>
@@ -235,28 +223,17 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-<!--        <repository>-->
-<!--            <id>clojars-repo</id>-->
-<!--            <name>Clojars Repository</name>-->
-<!--            <url>https://clojars.org/repo</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--        <repository>-->
-<!--            <id>cloudera-repo</id>-->
-<!--            <name>Cloudera Repository</name>-->
-<!--            <url>https://repository.cloudera.com/artifactory/cloudera-repos</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
+        <repository>
+            <id>central-repo</id>
+            <name>Maven Repository</name>
+            <url>https://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -277,6 +254,17 @@
             <url>https://repository.apache.org/content/repositories/snapshots</url>
             <releases>
                 <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>central-repo</id>
+            <name>Maven Repository</name>
+            <url>https://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
@@ -336,7 +324,7 @@
         <clean.plugin.version>3.3.2</clean.plugin.version>
         <dependency.plugin.version>3.6.1</dependency.plugin.version>
         <depgraph.plugin.version>1.0.3</depgraph.plugin.version>
-        <docker.plugin.version>0.24.0</docker.plugin.version>
+        <docker.plugin.version>0.43.4</docker.plugin.version>
         <download.plugin.version>1.2.1</download.plugin.version>
         <enforcer.plugin.version>3.4.1</enforcer.plugin.version>
         <failsafe.plugin.version>2.22.0</failsafe.plugin.version>
@@ -386,10 +374,10 @@
         <jaxb2.version>0.15.3</jaxb2.version>
         <jaxb2-basics.version>0.13.1</jaxb2-basics.version>
         <jaxbutil.version>2.1.0</jaxbutil.version>
-        <netty.version>4.1.94.Final</netty.version>
+        <netty.version>4.1.105.Final</netty.version>
         <slf4j.version>2.0.9</slf4j.version>
         <log4j.version>2.22.0</log4j.version>
-        <logback.version>1.2.9</logback.version>
+        <logback.version>1.4.14</logback.version>
         <protobuf.version>3.16.3</protobuf.version>
         <hamcrest.version>2.2</hamcrest.version>
         <reflections.version>0.10.2</reflections.version>
