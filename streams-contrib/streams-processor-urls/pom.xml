@@ -24,6 +24,7 @@
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-contrib</artifactId>
         <version>0.6.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>streams-processor-urls</artifactId>
