@@ -16,19 +16,57 @@
 # limitations under the License.
 #
 
-REL=$1
-DEV=$2
-REPO="-Dmaven.repo.local=/tmp/streams_release"
+usage() {
+echo "Usage: $0 "
+echo "[-v RELEASE_VERSION (required) (e.g. 1.0.0)]"
+echo "[-d DEVELOPMENT_VERSION (required) (e.g. 1.0.1)]"
+echo "[-r RELEASE_CANDIDATE (default: 1)]"
+1>&2; exit 1;
+}
 
-if [[ -z "$REL" || -z "$DEV" ]]; then
-    echo "You must specify a release and new dev version"
-    echo "Useage: ./release.sh <new_version> <new_dev_version>"
-    echo "Example: ./release.sh 0.5.1 0.6.0-SNAPSHOT"
-    exit 1
+while getopts ":v:d:r:" OPTION; do
+    case $OPTION in
+        v) export RELEASE_VERSION=${OPTARG};;
+        d) export DEVELOPMENT_VERSION=${OPTARG};;
+        r) export RELEASE_CANDIDATE=${OPTARG};;
+        \?) usage; exit 1;;
+    esac
+done
+
+if [ -z "${RELEASE_VERSION}" ]; then
+  echo "RELEASE_VERSION (-v) is not set!";
+  usage
+  exit 1;
+fi
+if [ -z "${DEVELOPMENT_VERSION}" ]; then
+  echo "DEVELOPMENT_VERSION (-d) is not set!";
+  exit 1;
+fi
+if [ -z "${RELEASE_CANDIDATE}" ]; then
+  echo "RELEASE_CANDIDATE (-r) is not set";
+  echo "Using default value '1'";
+  exit 1;
 fi
 
-mkdir -p /tmp/streams_release
-mkdir -p logs
+if [ -z `which docker` ]; then
+  echo "docker is not configured!";
+  exit 1;
+fi
+if [ -z `which gpg` ]; then
+  echo "gpg is not configured!";
+  exit 1;
+fi
+if [ -z `which mvn` ]; then
+  echo "mvn is not configured!";
+  exit 1;
+fi
+
+mkdir -p /tmp/streams_release_repository
+rm -rf /tmp/streams_release_repository/*
+mkdir -p /tmp/streams_release_source
+rm -rf /tmp/streams_release_source/*
+mkdir -p /tmp/streams_release_logs
+rm -rf /tmp/streams_release_logs/*
 
 printInfo() {
     echo "\n"
@@ -45,33 +83,54 @@ printInfo() {
 checkStatus() {
     local output=$1
     if [[ -z "$(tail $output | egrep 'BUILD SUCCESS')" ]]; then
-        echo "Release failed"
-        exit 1
+        echo "Release failed!"
+        echo "Check $output for more details."
+        exit 1;
     fi
 }
 
 #streams
-git clone https://github.com/apache/streams.git ./streams-$REL
-cd streams-$REL
+git clone https://github.com/apache/streams.git /tmp/streams_release_source
+cd /tmp/streams_release_source
 
 printInfo
 
-mvn -Pcheck apache-rat:check -e -DskipTests=true -Drat.excludeSubprojects=false $REPO  > ../logs/streams_ratcheck.txt
-checkStatus ../logs/streams_ratcheck.txt
+set -x
 
-mvn clean test $REPO > ../logs/streams_unittests.txt
-checkStatus ../logs/streams_unittests.txt
+mvn -Pcheck \
+  apache-rat:check \
+  -Drat.excludeSubprojects=false \
+  -e -DskipTests=true \
+  | tee /tmp/streams_release_logs/streams_ratcheck.txt
+checkStatus /tmp/streams_release_logs/streams_ratcheck.txt
 
-mvn -Papache-release $REPO release:prepare -DpushChanges=false -DautoVersionSubmodules=true -DreleaseVersion=$REL -DdevelopmentVersion=$DEV-SNAPSHOT -Dtag=streams-project-$REL > ../logs/streams_release-prepare.txt
-checkStatus ../logs/streams_release-prepare.txt
+mvn clean test \
+  | tee /tmp/streams_release_logs/streams_unittests.txt
+checkStatus /tmp/streams_release_logs/streams_unittests.txt
 
-mvn -Papache-release $REPO clean install release:perform -Darguments='-Dmaven.test.skip.exec=true' -Dgoals=deploy -DlocalRepoDirectory=. -DlocalCheckout=true > ../logs/streams_release-perform.txt
-checkStatus ../logs/streams_release-perform.txt
+mvn -Papache-release \
+  release:prepare \
+  -DpushChanges=false \
+  -DautoVersionSubmodules=true \
+  -DreleaseVersion=${RELEASE_VERSION} \
+  -DdevelopmentVersion=${DEVELOPMENT_VERSION}-SNAPSHOT \
+  -Dtag=apache-streams-${RELEASE_VERSION}-rc${RELEASE_CANDIDATE} \
+  | tee /tmp/streams_release_logs/streams_release-prepare.txt
+checkStatus /tmp/streams_release_logs/streams_release-prepare.txt
+
+mvn -Papache-release \
+  clean install release:perform \
+  -Darguments='-Dmaven.test.skip.exec=true' \
+  -Dgoals=deploy \
+  -DlocalRepoDirectory=. \
+  -DlocalCheckout=true \
+  | tee /tmp/streams_release_logs/streams_release-perform.txt
+checkStatus /tmp/streams_release_logs/streams_release-perform.txt
 
 git push origin master
-git push origin streams-project-$REL
+git push origin apache-streams-$REL
 
-cd..
+cd -
 
 cat << EOM
 ##################################################################

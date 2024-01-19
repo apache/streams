@@ -43,7 +43,7 @@ To perform a release manually, or to better understand what's going on, read the
 
 4. Verify the source has the required license headers before trying to release:
 
-        mvn -Papache-release clean apache-rat:check -e -DskipTests
+        mvn -Pcheck -Papache-release clean apache-rat:check -e -DskipTests
 
 5. Do a dry run of the release:prepare step:  
 
