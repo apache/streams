@@ -23,7 +23,7 @@
     <parent>
         <artifactId>apache-streams</artifactId>
         <groupId>org.apache.streams</groupId>
-        <version>0.6.2-SNAPSHOT</version>
+        <version>0.7.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.apache.streams</groupId>
         <artifactId>streams-contrib</artifactId>
-        <version>0.6.2-SNAPSHOT</version>
+        <version>0.7.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -160,7 +160,7 @@
                     <dependency>
                         <groupId>org.apache.streams.plugins</groupId>
                         <artifactId>streams-plugin-pojo</artifactId>
-                        <version>0.6.2-SNAPSHOT</version>
+                        <version>0.7.0</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -179,7 +179,7 @@
                     <includeDynamicAccessors>true</includeDynamicAccessors>
                     <includeHashcodeAndEquals>true</includeHashcodeAndEquals>
                     <outputDirectory>${project.basedir}/target/generated-sources/pojo</outputDirectory>
-                    <propertyWordDelimiters></propertyWordDelimiters>
+                    <propertyWordDelimiters />
                     <removeOldOutput>true</removeOldOutput>
                     <serializable>true</serializable>
                     <sourcePaths>
