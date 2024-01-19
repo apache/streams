@@ -75,7 +75,7 @@
                 <executions>
                     <execution>
                         <id>schemas</id>
-                        <phase>package</phase>
+                        <phase>process-test-resources</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
