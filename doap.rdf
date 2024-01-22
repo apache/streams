@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+         https://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<rdf:RDF xml:lang="en"
+         xmlns="http://usefulinc.com/ns/doap#"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:asfext="http://projects.apache.org/ns/asfext#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/">
+
+  <Project rdf:about="https://streams.apache.org">
+    <created>2024-01-22</created>
+    <license rdf:resource="https://spdx.org/licenses/Apache-2.0" />
+    <name>Apache Streams</name>
+    <homepage rdf:resource="https://streams.apache.org" />
+    <asfext:pmc rdf:resource="https://streams.apache.org" />
+    <shortdesc>Apache Streams unifies a diverse world of digital profiles and online activities into common formats and vocabularies, and makes these datasets accessible across a variety of databases, devices, and platforms for streaming, browsing, search, sharing, and analytics use-cases.</shortdesc>
+    <description>
+    Apache Streams contains JRE-based modules that developers can use to easily integrate with online data sources and build polyglot indexes of activities, entities, and relationships - all based on public standards such as Activity Streams, or other published organizational standards.
+    Streams contains libraries and patterns for specifying, publishing, and inter-linking schemas, and assists with conversion of activities (posts, shares, likes, follows, etc.) and objects (profiles, pages, photos, videos, etc.) between the representation, format, and encoding preferred by supported data providers (Twitter, Instagram, etc.), and storage services (Cassandra, Elasticsearch, HBase, HDFS, Neo4J, etc.)
+    The project aims to provide simple two-way data interchange with all popular REST APIs in activity streams formats using a universal protocol. No other active open-source project has this ambitious goal, as well as production-worthy implementations for >10 services. Streams compatibility with multiple storage back-ends and ability to be embedded within any java-based real-time or batch data processing platform ensures that its interoperability features come with little technical baggage.
+    </description>
+    <bug-database rdf:resource="https://github.com/orgs/apache/projects/309" />
+    <mailing-list rdf:resource="https://lists.apache.org/list.html?dev@streams.apache.org" />
+    <download-page rdf:resource="https://github.com/apache/streams/tags" />
+    <programming-language>Java</programming-language>
+    <programming-language>Scala</programming-language>
+    <category rdf:resource="https://projects.apache.org/category/content" />
+    <release>
+      <version>
+        <name>apache-streams-0.7.0</name>
+        <created>2024-01-19</created>
+        <revision>0.7.0</revision>
+      </version>
+    </release>
+</Project>
