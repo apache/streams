@@ -18,21 +18,19 @@
 
 package org.apache.streams.fullcontact;
 
-import org.apache.juneau.rest.client.RestCallException;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.fullcontact.api.EnrichCompanyRequest;
 import org.apache.streams.fullcontact.api.EnrichPersonRequest;
 import org.apache.streams.fullcontact.api.EnrichPersonResponse;
 import org.apache.streams.fullcontact.config.FullContactConfiguration;
 import org.apache.streams.fullcontact.pojo.CompanySummary;
-import org.apache.streams.fullcontact.pojo.PersonSummary;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+
 import org.apache.juneau.json.JsonParser;
 import org.apache.juneau.json.JsonSerializer;
-import org.apache.juneau.rest.client.RestCall;
 import org.apache.juneau.rest.client.RestClient;
-import org.apache.juneau.rest.client.RestClientBuilder;
+import org.apache.juneau.rest.client.RestRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +51,7 @@ public class FullContact implements CompanyEnrichment, PersonEnrichment {
   protected JsonParser parser;
   protected JsonSerializer serializer;
 
-  protected RestClientBuilder restClientBuilder;
+  protected RestClient.Builder restClientBuilder;
   protected RestClient restClient;
 
   private static Map<FullContactConfiguration, FullContact> INSTANCE_MAP = new ConcurrentHashMap<>();
@@ -74,10 +72,10 @@ public class FullContact implements CompanyEnrichment, PersonEnrichment {
 
   private FullContact(FullContactConfiguration configuration) {
     this.configuration = configuration;
-    this.parser = JsonParser.DEFAULT.builder()
-      .ignoreUnknownBeanProperties(true)
+    this.parser = JsonParser.DEFAULT.copy()
+      .ignoreUnknownBeanProperties()
       .build();
-    this.serializer = JsonSerializer.DEFAULT.builder()
+    this.serializer = JsonSerializer.DEFAULT.copy()
       .trimEmptyCollections(true)
       .trimEmptyMaps(true)
       .build();
@@ -105,11 +103,11 @@ public class FullContact implements CompanyEnrichment, PersonEnrichment {
   public CompanySummary enrichCompany(EnrichCompanyRequest request) {
     try {
       String requestJson = serializer.serialize(request);
-      RestCall call = restClient
-        .doPost(baseUrl() + "company.enrich")
+      RestRequest call = restClient
+        .post(baseUrl() + "company.enrich")
         .accept("application/json")
         .contentType("application/json")
-        .body(new StringReader(requestJson));
+        .content(new StringReader(requestJson));
       String responseJson = call.getResponseAsString();
       CompanySummary result = parser.parse(responseJson, CompanySummary.class);
       return result;
@@ -125,12 +123,12 @@ public class FullContact implements CompanyEnrichment, PersonEnrichment {
   public EnrichPersonResponse enrichPerson(EnrichPersonRequest request) {
     try {
       String requestJson = serializer.serialize(request);
-      RestCall call = restClient
-              .doPost(baseUrl() + "person.enrich")
+      RestRequest call = restClient
+              .post(baseUrl() + "person.enrich")
               .accept("application/json")
               .contentType("application/json")
-              .ignoreErrors()
-              .body(new StringReader(requestJson));
+              .content(new StringReader(requestJson))
+              .ignoreErrors();
       String responseJson = call.getResponseAsString();
       EnrichPersonResponse response = parser.parse(responseJson, EnrichPersonResponse.class);
       return response;

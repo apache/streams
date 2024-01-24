@@ -19,13 +19,13 @@
 package org.apache.streams.twitter.api;
 
 import org.apache.juneau.http.annotation.Query;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteGet;
 
 /**
  * Interface for /search methods.
  */
-@RemoteInterface(path = "https://api.twitter.com/1.1/search")
+@Remote(path = "https://api.twitter.com/1.1/search")
 public interface SevenDaySearch {
 
   /**
@@ -35,8 +35,8 @@ public interface SevenDaySearch {
    * @see <a href=https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets">https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/tweets.json")
-  public SevenDaySearchResponse sevenDaySearch(@Query(name = "*", skipIfEmpty = true) SevenDaySearchRequest parameters);
+  @RemoteGet(path = "/tweets.json")
+  public SevenDaySearchResponse sevenDaySearch(@Query(name = "*") SevenDaySearchRequest parameters);
 
 }
 

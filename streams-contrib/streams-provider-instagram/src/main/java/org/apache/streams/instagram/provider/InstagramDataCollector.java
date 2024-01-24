@@ -27,7 +27,6 @@ import org.apache.streams.util.api.requests.backoff.impl.ExponentialBackOffStrat
 import org.apache.streams.util.oauth.tokens.tokenmanager.SimpleTokenManager;
 import org.apache.streams.util.oauth.tokens.tokenmanager.impl.BasicTokenManager;
 
-import org.apache.juneau.internal.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

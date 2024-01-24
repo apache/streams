@@ -21,10 +21,11 @@ package org.apache.streams.twitter.api;
 import org.apache.streams.twitter.pojo.DirectMessage;
 import org.apache.streams.twitter.pojo.DirectMessageEvent;
 
-import org.apache.juneau.http.annotation.Body;
+import org.apache.juneau.http.annotation.Content;
 import org.apache.juneau.http.annotation.Query;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteGet;
+import org.apache.juneau.http.remote.RemotePost;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ import java.util.List;
  *
  * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
  */
-@RemoteInterface(path = "https://api.twitter.com/1.1/direct_messages")
+@Remote(path = "https://api.twitter.com/1.1/direct_messages")
 public interface DirectMessages {
 
   /**
@@ -44,8 +45,8 @@ public interface DirectMessages {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/list-events">https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/list-events</a>
    *
    */
-  @RemoteMethod(method = "GET", path = "/events/list.json")
-  public EventsListResponse listEvents(@Query(name = "*", skipIfEmpty = true) EventsListRequest parameters);
+  @RemoteGet(path = "/events/list.json")
+  public EventsListResponse listEvents(@Query(name = "*") EventsListRequest parameters);
 
   /**
    * Returns a single Direct Message event by the given id.
@@ -54,7 +55,7 @@ public interface DirectMessages {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/get-event">https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/get-event</a>
    *
    */
-  @RemoteMethod(method = "GET", path = "/events/show.json")
+  @RemoteGet(path = "/events/show.json")
   public EventShowResponse showEvent(@Query("id") Long id);
 
   /**
@@ -65,8 +66,8 @@ public interface DirectMessages {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/new-event">https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/new-event</a>
    *
    */
-  @RemoteMethod(method = "POST", path = "/events/new.json")
-  public DirectMessageEvent newEvent(@Body MessageCreateRequest event);
+  @RemotePost(path = "/events/new.json")
+  public DirectMessageEvent newEvent(@Content MessageCreateRequest event);
 
   /**
    * Publishes a new message_create event resulting in a Direct Message sent to a specified user from the authenticating user. Returns an event in the requested format if successful.
@@ -76,7 +77,7 @@ public interface DirectMessages {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/new-event">https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/new-event</a>
    *
    */
-  @RemoteMethod(method = "POST", path = "/destroy.json")
+  @RemotePost(path = "/destroy.json")
   public DirectMessage destroy(@Query("id") Long id);
 
   /**
@@ -87,7 +88,7 @@ public interface DirectMessages {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/new-event">https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/new-event</a>
    *
    */
-  @RemoteMethod(method = "GET", path = "/show.json")
+  @RemoteGet(path = "/show.json")
   public DirectMessage show(@Query("id") Long id);
 
   /**
@@ -98,8 +99,8 @@ public interface DirectMessages {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/get-messages">https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/get-messages</a>
    *
    */
-  @RemoteMethod(method = "GET", path = ".json")
-  public List<DirectMessage> list(@Query(name = "*", skipIfEmpty = true) DirectMessagesListRequest parameters);
+  @RemoteGet(path = ".json")
+  public List<DirectMessage> list(@Query(name = "*") DirectMessagesListRequest parameters);
 
   /**
    * Returns the 20 most recent direct messages sent to the authenticating user. Includes detailed information about the sender and recipient user. You can request up to 200 direct messages per call, and only the most recent 200 DMs will be available using this endpoint.
@@ -109,8 +110,8 @@ public interface DirectMessages {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/get-sent-message">https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/get-sent-message</a>
    *
    */
-  @RemoteMethod(method = "GET", path = "/sent.json")
-  public List<DirectMessage> sent(@Query(name = "*", skipIfEmpty = true) DirectMessagesSentRequest parameters);
+  @RemoteGet(path = "/sent.json")
+  public List<DirectMessage> sent(@Query(name = "*") DirectMessagesSentRequest parameters);
 
   /**
    * Destroys the direct message specified in the required ID parameter. The authenticating user must be the recipient of the specified direct message.
@@ -120,6 +121,6 @@ public interface DirectMessages {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/new-event">https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference/new-event</a>
    *
    */
-  @RemoteMethod(method = "POST", path = "/new.json")
-  public DirectMessage newDM(@Body DirectMessageNewRequest parameters);
+  @RemotePost(path = "/new.json")
+  public DirectMessage newDM(@Content DirectMessageNewRequest parameters);
 }

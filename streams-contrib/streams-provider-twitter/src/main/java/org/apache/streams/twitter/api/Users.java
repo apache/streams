@@ -21,8 +21,8 @@ package org.apache.streams.twitter.api;
 import org.apache.streams.twitter.pojo.User;
 
 import org.apache.juneau.http.annotation.Query;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteGet;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
  */
-@RemoteInterface(path = "https://api.twitter.com/1.1/users")
+@Remote(path = "https://api.twitter.com/1.1/users")
 public interface Users {
 
   /**
@@ -42,8 +42,8 @@ public interface Users {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-lookup">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-lookup</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/lookup.json")
-  public List<User> lookup( @Query(name = "*", skipIfEmpty = true) UsersLookupRequest parameters);
+  @RemoteGet(path = "/lookup.json")
+  public List<User> lookup( @Query(name = "*") UsersLookupRequest parameters);
 
   /**
    * Provides a simple, relevance-based search interface to public user accounts on Twitter. Try querying by topical interest, full name, company name, location, or other criteria. Exact match searches are not supported.
@@ -55,8 +55,8 @@ public interface Users {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-search">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-search</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/search.json")
-  public List<User> search( @Query(name = "*", skipIfEmpty = true) UsersSearchRequest parameters);
+  @RemoteGet(path = "/search.json")
+  public List<User> search( @Query(name = "*") UsersSearchRequest parameters);
 
   /**
    * Returns a variety of information about the user specified by the required user_id or screen_name parameter. The author’s most recent Tweet will be returned inline when possible.
@@ -65,7 +65,7 @@ public interface Users {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-show">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-show</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/show.json")
-  public User show( @Query(name = "*", skipIfEmpty = true) UsersShowRequest parameters);
+  @RemoteGet(path = "/show.json")
+  public User show( @Query(name = "*") UsersShowRequest parameters);
 
 }

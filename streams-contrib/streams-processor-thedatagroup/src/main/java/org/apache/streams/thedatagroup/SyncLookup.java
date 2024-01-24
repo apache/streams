@@ -18,27 +18,28 @@
 
 package org.apache.streams.thedatagroup;
 
-import org.apache.juneau.http.annotation.Body;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
 import org.apache.streams.thedatagroup.api.EmailLookupRequest;
 import org.apache.streams.thedatagroup.api.IpLookupRequest;
 import org.apache.streams.thedatagroup.api.LookupResponse;
 import org.apache.streams.thedatagroup.api.PhoneLookupRequest;
 
-@RemoteInterface(path = "https://api.thedatagroup.com/v3/sync/lookup")
+import org.apache.juneau.http.annotation.Content;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemotePost;
+
+@Remote(path = "https://api.thedatagroup.com/v3/sync/lookup")
 public interface SyncLookup {
 
-  @RemoteMethod(method ="POST", path="/email")
-  public LookupResponse lookupEmail(@Body EmailLookupRequest request);
+  @RemotePost(path="/email")
+  public LookupResponse lookupEmail(@Content EmailLookupRequest request);
 
-  @RemoteMethod(method ="POST", path="/mobile")
-  public LookupResponse lookupMobile(@Body PhoneLookupRequest request);
+  @RemotePost(path="/mobile")
+  public LookupResponse lookupMobile(@Content PhoneLookupRequest request);
 
-  @RemoteMethod(method ="POST", path="/ip")
-  public LookupResponse lookupIp(@Body IpLookupRequest request);
+  @RemotePost(path="/ip")
+  public LookupResponse lookupIp(@Content IpLookupRequest request);
 
-  @RemoteMethod(method ="POST", path="/phone")
-  public LookupResponse lookupPhone(@Body PhoneLookupRequest request);
+  @RemotePost(path="/phone")
+  public LookupResponse lookupPhone(@Content PhoneLookupRequest request);
 
 }

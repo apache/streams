@@ -20,9 +20,12 @@ package org.apache.streams.twitter.api;
 
 import org.apache.juneau.http.annotation.Path;
 import org.apache.juneau.http.annotation.Query;
-import org.apache.juneau.remote.RemoteInterface;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteDelete;
+import org.apache.juneau.http.remote.RemoteGet;
+import org.apache.juneau.http.remote.RemotePost;
+import org.apache.juneau.http.remote.RemotePut;
 import org.apache.juneau.rest.client.RestCallException;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -32,7 +35,7 @@ import java.util.List;
  *
  * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/overview">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/overview</a>
  */
-@RemoteInterface(path = "https://api.twitter.com/1.1/account_activity")
+@Remote(path = "https://api.twitter.com/1.1/account_activity")
 public interface AccountActivity {
 
   /**
@@ -44,7 +47,7 @@ public interface AccountActivity {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-webhook-config</a>
    *
    */
-  @RemoteMethod(method = "GET", path = "/all/webhooks.json")
+  @RemoteGet(path = "/all/webhooks.json")
   public WebhooksResponse getWebhooks();
 
   /**
@@ -55,7 +58,7 @@ public interface AccountActivity {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-webhook-config</a>
    *
    */
-  @RemoteMethod(method = "GET", path = "/all/{env_name}/webhooks.json")
+  @RemoteGet(path = "/all/{env_name}/webhooks.json")
   public List<Webhook> getWebhooks(@Path("env_name") String env_name);
 
   /**
@@ -69,7 +72,7 @@ public interface AccountActivity {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/new-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/new-webhook-config</a>
    *
    */
-  @RemoteMethod(method = "POST", path = "/all/{env_name}/webhooks.json")
+  @RemotePost(path = "/all/{env_name}/webhooks.json")
   public Webhook registerWebhook(@Path("env_name") String env_name, @Query("url") String url);
 
   /**
@@ -81,7 +84,7 @@ public interface AccountActivity {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/delete-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/delete-webhook-config</a>
    *
    */
-  @RemoteMethod(method = "DELETE", path = "/all/{env_name}/webhooks/{webhookId}.json")
+  @RemoteDelete(path = "/all/{env_name}/webhooks/{webhookId}.json")
   public Boolean deleteWebhook(@Path("env_name") String env_name, @Path("webhookId") Long webhookId);
 
   /**
@@ -93,7 +96,7 @@ public interface AccountActivity {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/aaa-premium</a>
    *
    */
-  @RemoteMethod(method = "PUT", path = "/all/{env_name}/webhooks/{webhookId}.json")
+  @RemotePut(path = "/all/{env_name}/webhooks/{webhookId}.json")
   public Boolean putWebhook(@Path("env_name") String env_name, @Path("webhookId") Long webhookId);
 
   /**
@@ -104,7 +107,7 @@ public interface AccountActivity {
    * @return Boolean
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/validate-webhook-config">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/validate-webhook-config</a>
    */
-  @RemoteMethod(method = "PUT", path = "/all/{env_name}/webhooks/{webhookId}.json")
+  @RemotePut(path = "/all/{env_name}/webhooks/{webhookId}.json")
   public Boolean reenableWebhook(@Path("env_name") String env_name, @Path("webhookId") Long webhookId) throws InvocationTargetException, RestCallException;
 
   /**
@@ -114,7 +117,7 @@ public interface AccountActivity {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-subscription">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-subscription</a>
    *
    */
-  @RemoteMethod(method = "GET", path = "/all/subscriptions/count.json")
+  @RemoteGet(path = "/all/subscriptions/count.json")
   public SubscriptionsCountResponse getSubscriptionsCount() throws InvocationTargetException, RestCallException;
 
   /**
@@ -125,7 +128,7 @@ public interface AccountActivity {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-subscription">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-subscription</a>
    *
    */
-  @RemoteMethod(method = "GET", path = "/all/{env_name}/subscriptions/list.json")
+  @RemoteGet(path = "/all/{env_name}/subscriptions/list.json")
   public SubscriptionsListResponse getSubscriptionsList(@Path("env_name") String env_name) throws InvocationTargetException, RestCallException;
 
   /**
@@ -136,7 +139,7 @@ public interface AccountActivity {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-subscription">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/get-subscription</a>
    *
    */
-  @RemoteMethod(method = "GET", path = "/all/{env_name}/subscriptions.json")
+  @RemoteGet(path = "/all/{env_name}/subscriptions.json")
   public Boolean getSubscriptions(@Path("env_name") String env_name) throws InvocationTargetException, RestCallException;
 
   /**
@@ -147,7 +150,7 @@ public interface AccountActivity {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/new-subscription">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/new-subscription</a>
    *
    */
-  @RemoteMethod(method = "POST", path = "/all/{env_name}/subscriptions.json")
+  @RemotePost(path = "/all/{env_name}/subscriptions.json")
   public Boolean newSubscription(@Path("env_name") String env_name) throws InvocationTargetException, RestCallException;
 
   /**
@@ -159,7 +162,7 @@ public interface AccountActivity {
    * @see <a href=https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/delete-subscription">https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/delete-subscription</a>
    *
    */
-  @RemoteMethod(method = "DELETE", path = "/all/{env_name}/subscriptions/{user_id}.json")
+  @RemoteDelete(path = "/all/{env_name}/subscriptions/{user_id}.json")
   public Boolean deleteWebhookSubscriptions(@Path("env_name") String env_name, @Path("user_id") String user_id) throws InvocationTargetException, RestCallException;
 
 }

@@ -22,9 +22,9 @@ import org.apache.streams.instagram.config.InstagramConfiguration;
 import org.apache.streams.instagram.pojo.UserRecentMediaRequest;
 import org.apache.streams.instagram.provider.InstagramProviderUtil;
 import org.apache.streams.jackson.StreamsJacksonMapper;
-import org.apache.streams.juneau.JodaDateSwap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.utils.URIBuilder;
@@ -32,10 +32,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.juneau.json.JsonParser;
 import org.apache.juneau.json.JsonSerializer;
-import org.apache.juneau.rest.client.RestCall;
+import org.apache.juneau.rest.client.BasicHttpRequestRetryHandler;
 import org.apache.juneau.rest.client.RestCallException;
 import org.apache.juneau.rest.client.RestClient;
-import org.apache.juneau.rest.client.RestClientBuilder;
+import org.apache.juneau.rest.client.RestRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,22 +86,22 @@ public class Instagram implements Media, Users {
     this.restClient = RestClient.create()
         .rootUrl(rootUrl)
         .accept(APPLICATION_JSON.getMimeType())
-        .httpClient(httpclient, true)
+        .httpClient(httpclient)
         .pooled()
         .parser(
-            JsonParser.DEFAULT.builder()
-                .ignoreUnknownBeanProperties(true)
-                .pojoSwaps(JodaDateSwap.class)
+            JsonParser.DEFAULT.copy()
+                .ignoreUnknownBeanProperties()
                 .build())
         .serializer(
-            JsonSerializer.DEFAULT.builder()
-                .pojoSwaps(JodaDateSwap.class)
+            JsonSerializer.DEFAULT.copy()
                 .build())
-        .retryable(
-            configuration.getRetryMax().intValue(),
-            configuration.getRetrySleepMs().intValue(),
-            new InstagramRetryHandler())
-        .build();
+        .retryHandler(
+            new BasicHttpRequestRetryHandler(
+                configuration.getRetryMax().intValue(),
+                configuration.getRetrySleepMs().intValue(),
+                true
+            )
+        ).build();
     this.mapper = StreamsJacksonMapper.getInstance();
   }
 
@@ -134,7 +134,7 @@ public class Instagram implements Media, Users {
       uriBuilder.addParameter("access_token", configuration.getOauth().getAccessToken());
       String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
       uriBuilder.addParameter("sig", sig);
-      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      RestRequest restCall = restClient.get(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
             .getResponseAsString();
@@ -165,7 +165,7 @@ public class Instagram implements Media, Users {
       uriBuilder.addParameter("access_token", configuration.getOauth().getAccessToken());
       String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
       uriBuilder.addParameter("sig", sig);
-      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      RestRequest restCall = restClient.get(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
             .getResponseAsString();
@@ -205,7 +205,7 @@ public class Instagram implements Media, Users {
       }
       String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
       uriBuilder.addParameter("sig", sig);
-      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      RestRequest restCall = restClient.get(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
             .getResponseAsString();
@@ -245,7 +245,7 @@ public class Instagram implements Media, Users {
       }
       String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
       uriBuilder.addParameter("sig", sig);
-      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      RestRequest restCall = restClient.get(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
             .getResponseAsString();
@@ -282,7 +282,7 @@ public class Instagram implements Media, Users {
       }
       String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
       uriBuilder.addParameter("sig", sig);
-      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      RestRequest restCall = restClient.get(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
             .getResponseAsString();
@@ -319,7 +319,7 @@ public class Instagram implements Media, Users {
       }
       String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
       uriBuilder.addParameter("sig", sig);
-      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      RestRequest restCall = restClient.get(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
             .getResponseAsString();
@@ -351,7 +351,7 @@ public class Instagram implements Media, Users {
       uriBuilder.addParameter("media_id", media_id);
       String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
       uriBuilder.addParameter("sig", sig);
-      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      RestRequest restCall = restClient.get(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
             .getResponseAsString();
@@ -382,7 +382,7 @@ public class Instagram implements Media, Users {
       uriBuilder.addParameter("access_token", configuration.getOauth().getAccessToken());
       String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
       uriBuilder.addParameter("sig", sig);
-      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      RestRequest restCall = restClient.get(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
             .getResponseAsString();
@@ -413,7 +413,7 @@ public class Instagram implements Media, Users {
       uriBuilder.addParameter("access_token", configuration.getOauth().getAccessToken());
       String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
       uriBuilder.addParameter("sig", sig);
-      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      RestRequest restCall = restClient.get(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
             .getResponseAsString();
@@ -444,7 +444,7 @@ public class Instagram implements Media, Users {
       uriBuilder.addParameter("access_token", configuration.getOauth().getAccessToken());
       String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
       uriBuilder.addParameter("sig", sig);
-      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      RestRequest restCall = restClient.get(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
             .getResponseAsString();
@@ -478,7 +478,7 @@ public class Instagram implements Media, Users {
       uriBuilder.addParameter("lng", parameters.getLng().toString());
       String sig = oauthSigner.generateSignature(uriBuilder.build().toString());
       uriBuilder.addParameter("sig", sig);
-      RestCall restCall = restClient.doGet(uriBuilder.build().toString());
+      RestRequest restCall = restClient.get(uriBuilder.build().toString());
       try {
         String restResponseEntity = restCall
             .getResponseAsString();

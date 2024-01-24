@@ -18,26 +18,26 @@
 
 package org.apache.streams.peopledatalabs;
 
-import org.apache.juneau.rest.client.RestCallException;
+import org.apache.streams.peopledatalabs.api.BulkEnrichPersonRequest;
 import org.apache.streams.peopledatalabs.api.BulkEnrichPersonResponseItem;
 import org.apache.streams.peopledatalabs.api.EnrichPersonRequest;
-import org.apache.streams.peopledatalabs.api.BulkEnrichPersonRequest;
 import org.apache.streams.peopledatalabs.api.EnrichPersonResponse;
 
-import org.apache.juneau.http.annotation.Body;
+import org.apache.juneau.http.annotation.Content;
 import org.apache.juneau.http.annotation.Query;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteGet;
+import org.apache.juneau.http.remote.RemotePost;
 
 import java.util.List;
 
-@RemoteInterface(path = "https://api.peopledatalabs.com/v4")
+@Remote(path = "https://api.peopledatalabs.com/v4")
 public interface PersonEnrichment {
 
-    @RemoteMethod(method ="GET", path="/person")
-    public EnrichPersonResponse enrichPerson(@Query(name = "*", skipIfEmpty = true) EnrichPersonRequest request);
+    @RemoteGet(path="/person")
+    public EnrichPersonResponse enrichPerson(@Query(name = "*") EnrichPersonRequest request);
 
-    @RemoteMethod(method ="POST", path="/person/bulk")
-    public List<BulkEnrichPersonResponseItem> bulkEnrichPerson(@Body(required = true) BulkEnrichPersonRequest request);
+    @RemotePost(path="/person/bulk")
+    public List<BulkEnrichPersonResponseItem> bulkEnrichPerson(@Content BulkEnrichPersonRequest request);
 
 }
