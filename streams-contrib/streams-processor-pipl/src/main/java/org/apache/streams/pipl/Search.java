@@ -18,25 +18,27 @@
 
 package org.apache.streams.pipl;
 
-import org.apache.juneau.http.annotation.Body;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.remoteable.QueryIfNE;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
 import org.apache.streams.pipl.api.BasicSearchRequest;
 import org.apache.streams.pipl.api.FullPersonSearchRequest;
 import org.apache.streams.pipl.api.SearchPointerRequest;
 import org.apache.streams.pipl.api.SearchResponse;
 
-@RemoteInterface(path = "https://api.pipl.com/search")
+import org.apache.juneau.http.annotation.Content;
+import org.apache.juneau.http.annotation.Query;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteGet;
+import org.apache.juneau.http.remote.RemotePost;
+
+@Remote(path = "https://api.pipl.com/search")
 public interface Search {
 
-  @RemoteMethod(method ="GET")
-  public SearchResponse basicSearch(@QueryIfNE("*") BasicSearchRequest request);
+  @RemoteGet
+  public SearchResponse basicSearch(@Query("*") BasicSearchRequest request);
 
-  @RemoteMethod(method ="POST")
-  public SearchResponse fullPersonSearch(@Body FullPersonSearchRequest request);
+  @RemotePost
+  public SearchResponse fullPersonSearch(@Content FullPersonSearchRequest request);
 
-  @RemoteMethod(method ="POST")
-  public SearchResponse pointerSearch(@Body SearchPointerRequest request);
+  @RemotePost
+  public SearchResponse pointerSearch(@Content SearchPointerRequest request);
 
 }

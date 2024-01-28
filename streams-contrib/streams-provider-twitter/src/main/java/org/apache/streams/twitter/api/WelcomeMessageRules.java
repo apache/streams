@@ -20,17 +20,19 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.pojo.WelcomeMessageRule;
 
-import org.apache.juneau.http.annotation.Body;
+import org.apache.juneau.http.annotation.Content;
 import org.apache.juneau.http.annotation.Query;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteDelete;
+import org.apache.juneau.http.remote.RemoteGet;
+import org.apache.juneau.http.remote.RemotePost;
 
 /**
  * Interface for /direct_messages/welcome_messages/rules methods.
  *
  * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
  */
-@RemoteInterface(path = "https://api.twitter.com/1.1/direct_messages/welcome_messages/rules")
+@Remote(path = "https://api.twitter.com/1.1/direct_messages/welcome_messages/rules")
 public interface WelcomeMessageRules {
 
   /**
@@ -40,8 +42,8 @@ public interface WelcomeMessageRules {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/list-welcome-message-rules">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/list-welcome-message-rules</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/list.json")
-  public WelcomeMessageRulesListResponse listWelcomeMessageRules(@Query(name = "*", skipIfEmpty = true) WelcomeMessageRulesListRequest parameters);
+  @RemoteGet(path = "/list.json")
+  public WelcomeMessageRulesListResponse listWelcomeMessageRules(@Query(name = "*") WelcomeMessageRulesListRequest parameters);
 
   /**
    * Returns a Welcome Message Rule by the given id.
@@ -50,7 +52,7 @@ public interface WelcomeMessageRules {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/get-welcome-message-rule">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/get-welcome-message-rule</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/show.json")
+  @RemoteGet(path = "/show.json")
   public WelcomeMessageRule showWelcomeMessageRule(@Query("id") Long id);
 
   /**
@@ -64,8 +66,8 @@ public interface WelcomeMessageRules {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/new-welcome-message-rule">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/new-welcome-message-rule</a>
    *
    */
-  @RemoteMethod(method ="POST", path = "/new.json")
-  public WelcomeMessageRule newWelcomeMessageRule(@Body WelcomeMessageNewRuleRequest body);
+  @RemotePost(path = "/new.json")
+  public WelcomeMessageRule newWelcomeMessageRule(@Content WelcomeMessageNewRuleRequest body);
 
   /**
    * Deletes a Welcome Message Rule by the given id.
@@ -73,7 +75,7 @@ public interface WelcomeMessageRules {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/delete-welcome-message-rule">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/delete-welcome-message-rule</a>
    *
    */
-  @RemoteMethod(method ="DELETE", path = "/destroy.json")
+  @RemoteDelete(path = "/destroy.json")
   public void destroyWelcomeMessageRule(@Query("id") Long id);
 
 }

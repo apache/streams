@@ -18,19 +18,20 @@
 
 package org.apache.streams.pipl;
 
-import com.google.common.util.concurrent.Uninterruptibles;
-import org.apache.juneau.ObjectMap;
-import org.apache.juneau.json.JsonParser;
-import org.apache.juneau.json.JsonSerializer;
-import org.apache.juneau.rest.client.RestCall;
-import org.apache.juneau.rest.client.RestClient;
-import org.apache.juneau.rest.client.RestClientBuilder;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.pipl.api.BasicSearchRequest;
 import org.apache.streams.pipl.api.FullPersonSearchRequest;
 import org.apache.streams.pipl.api.SearchPointerRequest;
 import org.apache.streams.pipl.api.SearchResponse;
 import org.apache.streams.pipl.config.PiplConfiguration;
+
+import com.google.common.util.concurrent.Uninterruptibles;
+
+import org.apache.juneau.collections.JsonMap;
+import org.apache.juneau.json.JsonParser;
+import org.apache.juneau.json.JsonSerializer;
+import org.apache.juneau.rest.client.RestClient;
+import org.apache.juneau.rest.client.RestRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public class Pipl implements Search {
   JsonParser parser;
   JsonSerializer serializer;
 
-  RestClientBuilder restClientBuilder;
+  RestClient.Builder restClientBuilder;
   RestClient restClient;
 
   private static Map<PiplConfiguration, Pipl> INSTANCE_MAP = new ConcurrentHashMap<>();
@@ -71,18 +72,17 @@ public class Pipl implements Search {
 
   private Pipl(PiplConfiguration configuration) {
     this.configuration = configuration;
-    this.parser = JsonParser.DEFAULT.builder()
-      .ignoreUnknownBeanProperties(true)
+    this.parser = JsonParser.DEFAULT.copy()
+      .ignoreUnknownBeanProperties()
       .build();
-    this.serializer = JsonSerializer.DEFAULT.builder()
+    this.serializer = JsonSerializer.DEFAULT.copy()
       .trimEmptyCollections(true)
       .trimEmptyMaps(true)
       .build();
     this.restClientBuilder = RestClient.create()
-      .accept("application/json")
-      .contentType("application/json")
       .disableCookieManagement()
       .disableRedirectHandling()
+      .json()
       .parser(parser)
       .serializer(serializer)
       .rootUrl(baseUrl());
@@ -100,11 +100,11 @@ public class Pipl implements Search {
   public SearchResponse basicSearch(BasicSearchRequest request) {
     try {
       String requestJson = serializer.serialize(request);
-      ObjectMap requestMap = parser.parse(requestJson, ObjectMap.class);
+      JsonMap requestMap = parser.parse(requestJson, JsonMap.class);
       requestMap.put("key", configuration.getKey());
-      RestCall call = restClient
-              .doGet(baseUrl() + "search")
-              .queryIfNE(requestMap)
+      RestRequest call = restClient
+              .get(baseUrl() + "search")
+              .queryDataBean(requestMap)
               .ignoreErrors();
       String responseJson = call.getResponseAsString();
       SearchResponse response = parser.parse(responseJson, SearchResponse.class);
@@ -122,14 +122,14 @@ public class Pipl implements Search {
   public SearchResponse fullPersonSearch(FullPersonSearchRequest request) {
     try {
       String requestJson = serializer.serialize(request);
-      ObjectMap requestMap = parser.parse(requestJson, ObjectMap.class);
+      JsonMap requestMap = parser.parse(requestJson, JsonMap.class);
       Object person = requestMap.remove("person");
       String personJson = serializer.serialize(person);
       requestMap.put("person", personJson);
-      RestCall call = restClient
-          .doPost(baseUrl() + "search")
-          .query("key", configuration.getKey())
-          .query(requestMap)
+      RestRequest call = restClient
+          .post(baseUrl() + "search")
+          .queryData("key", configuration.getKey())
+          .queryDataBean(requestMap)
           .ignoreErrors();
       String responseJson = call.getResponseAsString();
       SearchResponse response = parser.parse(responseJson, SearchResponse.class);
@@ -146,10 +146,10 @@ public class Pipl implements Search {
   @Override
   public SearchResponse pointerSearch(SearchPointerRequest request) {
     try {
-      RestCall call = restClient
-              .doPost(baseUrl() + "search")
-              .query("key", configuration.getKey())
-              .query(request.getSearchPointer())
+      RestRequest call = restClient
+              .post(baseUrl() + "search")
+              .queryData("key", configuration.getKey())
+              .queryDataBean(request.getSearchPointer())
               .ignoreErrors();
       String responseJson = call.getResponseAsString();
       SearchResponse response = parser.parse(responseJson, SearchResponse.class);

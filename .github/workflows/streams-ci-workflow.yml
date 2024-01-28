@@ -32,14 +32,14 @@ jobs:
     strategy:
       matrix:
         os: ['Ubuntu']
-        java_version: ['8', '11', '17']
+        java_version: ['11', '17']
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}-latest
     name: ${{ matrix.os }} - Java ${{ matrix.java_version }}
     steps:
       - name: Checkout apache/streams.git
         uses: actions/checkout@v4
-      - name: Set up Java ${{ matrix.java_version }} 
+      - name: Set up Java ${{ matrix.java_version }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -51,7 +51,7 @@ jobs:
             ~/.m2/repository/
             !~/.m2/repository/org/apache/streams
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}-${{ hashFiles('.github/workflows/*.yml') }}
-      - name: mvn -B -V clean install -ff -ntp -P 'java-${{ matrix.java_version }}'
+      - name: mvn -B -V clean install -ff -ntp -P 'jdk${{ matrix.java_version }}'
         env:
           MAVEN_OPTS: -Xmx3g -XX:ReservedCodeCacheSize=1g -XX:+UseG1GC -Dorg.slf4j.simpleLogger.defaultLogLevel=INFO
-        run: mvn -B -V clean install -ff -ntp -P 'java-${{ matrix.java_version }}'
+        run: mvn -B -V clean install -ff -ntp -P 'jdk${{ matrix.java_version }}'

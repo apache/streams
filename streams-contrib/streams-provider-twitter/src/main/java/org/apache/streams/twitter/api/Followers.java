@@ -19,15 +19,15 @@
 package org.apache.streams.twitter.api;
 
 import org.apache.juneau.http.annotation.Query;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteGet;
 
 /**
  * Interface for /followers methods.
  *
  * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference</a>
  */
-@RemoteInterface(path = "https://api.twitter.com/1.1/followers")
+@Remote(path = "https://api.twitter.com/1.1/followers")
 public interface Followers {
 
   /**
@@ -38,8 +38,8 @@ public interface Followers {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-followers-ids</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/ids.json")
-  public FollowersIdsResponse ids( @Query(name = "*", skipIfEmpty = true) FollowersIdsRequest parameters);
+  @RemoteGet(path = "/ids.json")
+  public FollowersIdsResponse ids( @Query(name = "*") FollowersIdsRequest parameters);
 
   /**
    * Returns a cursored collection of user objects for users following the specified user.
@@ -49,7 +49,7 @@ public interface Followers {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-followers-list">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-followers-list</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/list.json")
-  public FollowersListResponse list( @Query(name = "*", skipIfEmpty = true) FollowersListRequest parameters);
+  @RemoteGet(path = "/list.json")
+  public FollowersListResponse list( @Query(name = "*") FollowersListRequest parameters);
 
 }

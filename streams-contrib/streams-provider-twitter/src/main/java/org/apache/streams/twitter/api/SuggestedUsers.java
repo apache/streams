@@ -22,8 +22,8 @@ import org.apache.streams.twitter.pojo.User;
 
 import org.apache.juneau.http.annotation.Path;
 import org.apache.juneau.http.annotation.Query;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteGet;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
  */
-@RemoteInterface(path = "https://api.twitter.com/1.1/users")
+@Remote(path = "https://api.twitter.com/1.1/users")
 public interface SuggestedUsers {
 
   /**
@@ -43,8 +43,8 @@ public interface SuggestedUsers {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/suggestions.json")
-  public List<SuggestedUserCategory> categories(@Query(name = "lang", skipIfEmpty = true) String lang);
+  @RemoteGet(path = "/suggestions.json")
+  public List<SuggestedUserCategory> categories(@Query(name = "lang") String lang);
 
   /**
    * Access the users in a given category of the Twitter suggested user list.
@@ -55,8 +55,8 @@ public interface SuggestedUsers {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions-slug">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions-slug</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/suggestions/{slug}.json")
-  public SuggestedUserCategory suggestions(@Path("slug") String slug, @Query(name = "lang", skipIfEmpty = true) String lang);
+  @RemoteGet(path = "/suggestions/{slug}.json")
+  public SuggestedUserCategory suggestions(@Path("slug") String slug, @Query(name = "lang") String lang);
 
   /**
    * Access the users in a given category of the Twitter suggested user list and return their most recent status if they are not a protected user.
@@ -65,7 +65,7 @@ public interface SuggestedUsers {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions-slug">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-users-suggestions-slug</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/suggestions/{slug}/members.json")
+  @RemoteGet(path = "/suggestions/{slug}/members.json")
   public List<User> members(@Path("slug") String slug);
 
 }

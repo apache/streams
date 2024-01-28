@@ -18,9 +18,9 @@
 
 package org.apache.streams.fullcontact.util
 
-import org.apache.juneau.ObjectMap
+import org.apache.juneau.collections.JsonMap
 
-object AffinityOrdering extends Ordering[ObjectMap] {
+object AffinityOrdering extends Ordering[JsonMap] {
   def sortByAffinityString(s1: String, s2: String) : Int = {
     if(s1 == null && s2 == null) return 0;
     if(s1 == null ) return -1;
@@ -31,8 +31,8 @@ object AffinityOrdering extends Ordering[ObjectMap] {
     if(s2.isEmpty ) return 1;
     return s1.takeRight(1).compareToIgnoreCase(s2.takeRight(1))
   }
-  def sortByAffinity(o1: ObjectMap, o2: ObjectMap) : Int = {
+  def sortByAffinity(o1: JsonMap, o2: JsonMap) : Int = {
     return sortByAffinityString(o1.getString("affinity", ""), o2.getString("affinity", ""))
   }
-  def compare(a:ObjectMap, b:ObjectMap) = sortByAffinity(a,b)
+  def compare(a:JsonMap, b:JsonMap) = sortByAffinity(a,b)
 }

@@ -21,14 +21,14 @@ package org.apache.streams.fullcontact;
 import org.apache.streams.fullcontact.api.EnrichPersonRequest;
 import org.apache.streams.fullcontact.api.EnrichPersonResponse;
 
-import org.apache.juneau.http.annotation.Body;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.juneau.http.annotation.Content;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemotePost;
 
-@RemoteInterface(path = "https://api.fullcontact.com/v3/person.enrich")
+@Remote(path = "https://api.fullcontact.com/v3/person.enrich")
 public interface PersonEnrichment {
 
-  @RemoteMethod(method ="POST")
-  public EnrichPersonResponse enrichPerson(@Body EnrichPersonRequest request);
+  @RemotePost
+  public EnrichPersonResponse enrichPerson(@Content EnrichPersonRequest request);
 
 }

@@ -18,25 +18,25 @@
 
 package org.apache.streams.sprinklr;
 
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
-
 import org.apache.streams.sprinklr.api.ProfileConversationsRequest;
 import org.apache.streams.sprinklr.api.ProfileConversationsResponse;
 import org.apache.streams.sprinklr.api.SocialProfileRequest;
 import org.apache.streams.sprinklr.api.SocialProfileResponse;
 
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteGet;
+
 import java.util.List;
 
-@RemoteInterface(path = "https://api2.sprinklr.com/api/")
+@Remote(path = "https://api2.sprinklr.com/api/")
 public interface Profiles {
 
-  @RemoteMethod(method = "GET")
+  @RemoteGet
   public List<SocialProfileResponse> getSocialProfile(SocialProfileRequest request);
 
-  @RemoteMethod(method = "GET")
+  @RemoteGet
   public List<ProfileConversationsResponse> getProfileConversations(ProfileConversationsRequest request);
 
-  @RemoteMethod(method = "GET")
+  @RemoteGet
   public List<ProfileConversationsResponse> getAllProfileConversations(ProfileConversationsRequest request);
 }

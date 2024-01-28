@@ -47,10 +47,6 @@
             <artifactId>juneau-marshall</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.juneau</groupId>
-            <artifactId>juneau-marshall-rdf</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
         </dependency>

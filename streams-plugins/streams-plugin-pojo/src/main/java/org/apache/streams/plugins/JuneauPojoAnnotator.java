@@ -23,7 +23,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
-import org.apache.juneau.annotation.BeanProperty;
+
+import org.apache.juneau.annotation.Beanp;
 import org.jsonschema2pojo.AbstractAnnotator;
 
 /**
@@ -42,7 +43,7 @@ public class JuneauPojoAnnotator extends AbstractAnnotator {
    */
   public void propertyField(JFieldVar field, JDefinedClass clazz,
                             String propertyName, JsonNode propertyNode) {
-    field.annotate(BeanProperty.class).param("value", propertyName);
+    field.annotate(Beanp.class).param("value", propertyName);
   }
 
 
@@ -57,7 +58,7 @@ public class JuneauPojoAnnotator extends AbstractAnnotator {
    *            the name of the JSON property that this getter gets
    */
   public void propertyGetter(JMethod getter, String propertyName) {
-    getter.annotate(BeanProperty.class).param("value", propertyName);
+    getter.annotate(Beanp.class).param("value", propertyName);
   }
 
   /**
@@ -71,7 +72,7 @@ public class JuneauPojoAnnotator extends AbstractAnnotator {
    *            the name of the JSON property that this setter sets
    */
   public void propertySetter(JMethod setter, String propertyName) {
-    setter.annotate(BeanProperty.class).param("value", propertyName);
+    setter.annotate(Beanp.class).param("value", propertyName);
   }
 
   /**
@@ -84,7 +85,7 @@ public class JuneauPojoAnnotator extends AbstractAnnotator {
    *            properties
    */
   public void anyGetter(JMethod getter) {
-    getter.annotate(BeanProperty.class).param("name", "*");
+    getter.annotate(Beanp.class).param("name", "*");
   }
 
   /**
@@ -97,6 +98,6 @@ public class JuneauPojoAnnotator extends AbstractAnnotator {
    *            properties
    */
   public void anySetter(JMethod setter) {
-    setter.annotate(BeanProperty.class).param("name", "*");
+    setter.annotate(Beanp.class).param("name", "*");
   }
 }

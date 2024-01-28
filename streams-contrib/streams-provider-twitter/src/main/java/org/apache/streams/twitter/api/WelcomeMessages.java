@@ -20,17 +20,19 @@ package org.apache.streams.twitter.api;
 
 import org.apache.streams.twitter.pojo.WelcomeMessage;
 
-import org.apache.juneau.http.annotation.Body;
+import org.apache.juneau.http.annotation.Content;
 import org.apache.juneau.http.annotation.Query;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteDelete;
+import org.apache.juneau.http.remote.RemoteGet;
+import org.apache.juneau.http.remote.RemotePost;
 
 /**
  * Interface for /direct_messages/welcome_messages methods.
  *
  * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference</a>
  */
-@RemoteInterface(path = "https://api.twitter.com/1.1/direct_messages/welcome_messages")
+@Remote(path = "https://api.twitter.com/1.1/direct_messages/welcome_messages")
 public interface WelcomeMessages {
 
   /**
@@ -40,8 +42,8 @@ public interface WelcomeMessages {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/list-welcome-messages">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/list-welcome-messages</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/list.json")
-  public WelcomeMessagesListResponse listWelcomeMessages(@Query(name = "*", skipIfEmpty = true) WelcomeMessagesListRequest parameters);
+  @RemoteGet(path = "/list.json")
+  public WelcomeMessagesListResponse listWelcomeMessages(@Query(name = "*") WelcomeMessagesListRequest parameters);
 
   /**
    * Returns a Welcome Message by the given id.
@@ -50,7 +52,7 @@ public interface WelcomeMessages {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/get-welcome-message">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/get-welcome-message</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/show.json")
+  @RemoteGet(path = "/show.json")
   public WelcomeMessage showWelcomeMessage(@Query("id") Long id);
 
   /**
@@ -60,15 +62,15 @@ public interface WelcomeMessages {
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/new-welcome-message">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/new-welcome-message</a>
    *
    */
-  @RemoteMethod(method ="POST", path = "/new.json")
-  public WelcomeMessageNewResponse newWelcomeMessage(@Body WelcomeMessageNewRequest messageNewRequest);
+  @RemotePost(path = "/new.json")
+  public WelcomeMessageNewResponse newWelcomeMessage(@Content WelcomeMessageNewRequest messageNewRequest);
 
   /**
    * Deletes a Welcome Message by the given id.
    *
    * @see <a href="https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/delete-welcome-message">https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference/delete-welcome-message</a>
    */
-  @RemoteMethod(method ="DELETE", path = "/destroy.json")
+  @RemoteDelete(path = "/destroy.json")
   public void destroyWelcomeMessage(@Query("id") Long id);
 
 }

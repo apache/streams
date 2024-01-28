@@ -17,15 +17,12 @@ package org.apache.streams.instagram.provider.userinfo;
 
 import org.apache.streams.core.StreamsDatum;
 import org.apache.streams.instagram.api.Instagram;
-import org.apache.streams.instagram.api.SearchUsersRequest;
-import org.apache.streams.instagram.api.SearchUsersResponse;
 import org.apache.streams.instagram.api.UserInfoResponse;
-import org.apache.streams.instagram.config.InstagramConfiguration;
 import org.apache.streams.instagram.config.InstagramUserInfoProviderConfiguration;
 import org.apache.streams.instagram.pojo.UserInfo;
 import org.apache.streams.instagram.provider.InstagramDataCollector;
 
-import org.apache.juneau.internal.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

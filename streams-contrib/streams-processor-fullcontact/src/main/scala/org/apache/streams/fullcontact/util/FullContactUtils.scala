@@ -18,8 +18,7 @@
 
 package org.apache.streams.fullcontact.util
 
-import org.apache.juneau.ObjectList
-import org.apache.juneau.ObjectMap
+import org.apache.juneau.collections.{JsonList, JsonMap}
 import org.apache.juneau.json.JsonParser
 import org.apache.streams.config.ComponentConfigurator
 
@@ -123,7 +122,7 @@ object FullContactUtils {
   }
 
   def uriFromNamespaceAndId( ns_id : (String, String) ) = s"${ns_id._1}${ns_id._2}"
-  
+
   def profilePrefixAndType( profile : SocialProfile ) : (String,String) = {
     profile.getService match {
       case "angellist" => ("fc","Profile")
@@ -441,31 +440,28 @@ object FullContactUtils {
   }
 
   def callEnrichPerson(request : EnrichPersonRequest)(implicit config : FullContactConfiguration) : String = {
-    import java.net.URI
-
     import org.apache.http.client.utils.URIBuilder
-    import org.apache.juneau.json.JsonParser
-    import org.apache.juneau.json.JsonSerializer
-    import org.apache.juneau.rest.client.RestCall
+    import org.apache.juneau.json.{JsonParser, JsonSerializer}
     import org.apache.juneau.rest.client.RestClient
+
+    import java.net.URI
     val auth_header = s"Bearer ${config.getToken()}"
     val url = "https://api.fullcontact.com/v3/person.enrich"
     val uri : URI = new URIBuilder(url).build()
     lazy val parser = JsonParser.create().
       debug().
-      ignoreUnknownBeanProperties(true).
-      ignorePropertiesWithoutSetters(true).
+      ignoreUnknownBeanProperties().
       build()
     lazy val serializer = JsonSerializer.create().
       debug().
+      keepNullProperties(false).
       trimEmptyCollections(true).
-      trimNullProperties(true).
       trimEmptyMaps(true).
       build()
     val restClientBuilder = RestClient.
       create().
-      authorization(auth_header).
-      beansRequireSerializable(true).
+      header("Authorization", auth_header).
+      beansRequireSerializable().
       debug().
       disableAutomaticRetries().
       disableCookieManagement().
@@ -475,10 +471,9 @@ object FullContactUtils {
       rootUrl(uri).
       serializer(serializer)
 
-    val post : RestCall = restClientBuilder.
+    val post = restClientBuilder.
       build().
-      doPost(uri).
-      body(request)
+      post(uri, request)
 
     Thread.sleep(1000)
 
@@ -499,38 +494,38 @@ object FullContactUtils {
     Try(parseEnrichPersonResponse(response)).toOption
   }
 
-  def educationItem(row : ObjectMap) : Option[String] = Try(f"""${row.getString("name","")}%s ${row.getString("degree","")}%s (${row.getAt("start/year",classOf[String])}%s - ${row.getAt("end/year",classOf[String])}%s)""").toOption
+  def educationItem(row : JsonMap) : Option[String] = Try(f"""${row.getString("name","")}%s ${row.getString("degree","")}%s (${row.getAt("start/year",classOf[String])}%s - ${row.getAt("end/year",classOf[String])}%s)""").toOption
   def educationSummary(json : String) : List[String] = {
-    val list = JsonParser.DEFAULT.parse(json, classOf[ObjectList])
-    val summaries = Try(list.elements(classOf[ObjectMap]).flatMap( row => educationItem(row) ))
+    val list = JsonParser.DEFAULT.parse(json, classOf[JsonList])
+    val summaries = Try(list.elements(classOf[JsonMap]).flatMap( row => educationItem(row) ))
     if( summaries.isFailure || summaries.get.size == 0 ) return List() else return summaries.get.toList
   }
 
-  def employmentItem(row : ObjectMap) : Option[String] = Try(f"""${row.getString("name","")}%s ${row.getString("title","")}%s (${row.getAt("start/year",classOf[String])}%s - ${row.getAt("end/year",classOf[String])})""").toOption
+  def employmentItem(row : JsonMap) : Option[String] = Try(f"""${row.getString("name","")}%s ${row.getString("title","")}%s (${row.getAt("start/year",classOf[String])}%s - ${row.getAt("end/year",classOf[String])})""").toOption
   def employmentSummary(json : String) : List[String] = {
-    val list = JsonParser.DEFAULT.parse(json, classOf[ObjectList])
-    val summaries = Try(list.elements(classOf[ObjectMap]).flatMap( row => employmentItem(row)))
+    val list = JsonParser.DEFAULT.parse(json, classOf[JsonList])
+    val summaries = Try(list.elements(classOf[JsonMap]).flatMap( row => employmentItem(row)))
     if( summaries.isFailure || summaries.get.size == 0 ) return List() else summaries.get.toList
   }
 
-  def interestItem(row : ObjectMap) : Option[String] = Try(f"""${row.getString("name","")}%s (${row.getString("affinity","")}%s)""").toOption
+  def interestItem(row : JsonMap) : Option[String] = Try(f"""${row.getString("name","")}%s (${row.getString("affinity","")}%s)""").toOption
   def interestSummary(json : String) : List[String] = {
-    val list = JsonParser.DEFAULT.parse(json, classOf[ObjectList])
-    val summaries = Try(list.elements(classOf[ObjectMap]).toSeq.sorted(AffinityOrdering).flatMap( row => interestItem(row)))
+    val list = JsonParser.DEFAULT.parse(json, classOf[JsonList])
+    val summaries = Try(list.elements(classOf[JsonMap]).toSeq.sorted(AffinityOrdering).flatMap( row => interestItem(row)))
     if( summaries.isFailure || summaries.get.size == 0 ) return List() else summaries.get.toList
   }
 
-  def profileItem(row : ObjectMap) : Option[String] = Try(f"""${row.get("url")}%s""").toOption
+  def profileItem(row : JsonMap) : Option[String] = Try(f"""${row.get("url")}%s""").toOption
   def profileSummary(json : String) : List[String] = {
-    val map = JsonParser.DEFAULT.parse(json, classOf[ObjectMap])
-    val summaries = Try(map.entrySet().flatMap( row => profileItem(row.getValue().asInstanceOf[ObjectMap])).toSeq.sorted)
+    val map = JsonParser.DEFAULT.parse(json, classOf[JsonMap])
+    val summaries = Try(map.entrySet().flatMap( row => profileItem(row.getValue().asInstanceOf[JsonMap])).toSeq.sorted)
     if( summaries.isFailure || summaries.get.size == 0 ) return List() else summaries.get.toList
   }
 
-  def urlItem(row : ObjectMap) : Option[String] = Try(f"""${row.get("value")}%s""").toOption
+  def urlItem(row : JsonMap) : Option[String] = Try(f"""${row.get("value")}%s""").toOption
   def urlSummary(json : String) : List[String] = {
-    val list = JsonParser.DEFAULT.parse(json, classOf[ObjectList])
-    val summaries = Try(list.elements(classOf[ObjectMap]).flatMap( row => urlItem(row)).toSeq.sorted)
+    val list = JsonParser.DEFAULT.parse(json, classOf[JsonList])
+    val summaries = Try(list.elements(classOf[JsonMap]).flatMap( row => urlItem(row)).toSeq.sorted)
     if( summaries.isFailure || summaries.get.size == 0 ) return List() else summaries.get.toList
   }
 

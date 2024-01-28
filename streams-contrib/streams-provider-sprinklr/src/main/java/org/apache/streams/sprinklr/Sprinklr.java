@@ -18,30 +18,27 @@
 
 package org.apache.streams.sprinklr;
 
-import com.google.common.util.concurrent.Uninterruptibles;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.message.BasicHeader;
-import org.apache.juneau.ObjectMap;
-import org.apache.juneau.json.JsonParser;
-import org.apache.juneau.json.JsonSerializer;
-import org.apache.juneau.parser.ParseException;
-import org.apache.juneau.rest.client.RestCall;
-import org.apache.juneau.rest.client.RestClient;
-import org.apache.juneau.rest.client.RestClientBuilder;
-import org.apache.juneau.rest.client.RestCallException;
-
 import org.apache.streams.config.ComponentConfigurator;
-import org.apache.streams.sprinklr.api.*;
+import org.apache.streams.sprinklr.api.PartnerAccountsResponse;
+import org.apache.streams.sprinklr.api.ProfileConversationsRequest;
+import org.apache.streams.sprinklr.api.ProfileConversationsResponse;
+import org.apache.streams.sprinklr.api.SocialProfileRequest;
+import org.apache.streams.sprinklr.api.SocialProfileResponse;
 import org.apache.streams.sprinklr.config.SprinklrConfiguration;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
+import org.apache.juneau.collections.JsonMap;
+import org.apache.juneau.json.JsonParser;
+import org.apache.juneau.json.JsonSerializer;
+import org.apache.juneau.rest.client.RestClient;
+import org.apache.juneau.rest.client.RestRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -58,7 +55,7 @@ public class Sprinklr implements Bootstrap, Profiles {
   JsonParser parser;
   JsonSerializer serializer;
 
-  RestClientBuilder restClientBuilder;
+  RestClient.Builder restClientBuilder;
   RestClient restClient;
 
   public static Map<SprinklrConfiguration, Sprinklr> INSTANCE_MAP = new ConcurrentHashMap<>();
@@ -79,10 +76,10 @@ public class Sprinklr implements Bootstrap, Profiles {
 
   private Sprinklr(SprinklrConfiguration configuration) {
     this.configuration = configuration;
-    this.parser = JsonParser.DEFAULT.builder()
-        .ignoreUnknownBeanProperties(true)
+    this.parser = JsonParser.DEFAULT.copy()
+        .ignoreUnknownBeanProperties()
         .build();
-    this.serializer = JsonSerializer.DEFAULT.builder()
+    this.serializer = JsonSerializer.DEFAULT.copy()
         .trimEmptyCollections(true)
         .trimEmptyMaps(true)
         .build();
@@ -98,11 +95,9 @@ public class Sprinklr implements Bootstrap, Profiles {
       this.restClientBuilder.debug();
     }
 
-    ArrayList<Header> defaultHeaders = new ArrayList<>();
-    defaultHeaders.add(new BasicHeader("key", configuration.getKey()));
-    defaultHeaders.add(new BasicHeader("Authorization", configuration.getAuthorization()));
+    restClientBuilder.header("key", configuration.getKey());
+    restClientBuilder.header("Authorization", configuration.getAuthorization());
 
-    restClientBuilder.setDefaultHeaders(defaultHeaders);
     this.restClient = restClientBuilder.build();
   }
 
@@ -113,11 +108,11 @@ public class Sprinklr implements Bootstrap, Profiles {
   @Override
   public PartnerAccountsResponse getPartnerAccounts() {
     try {
-      ObjectMap requestMap = new ObjectMap();
+      JsonMap requestMap = new JsonMap();
       requestMap.put("types", "PARTNER_ACCOUNTS");
-      RestCall call = restClient
-          .doGet(baseUrl() + "v1/bootstrap/resources")
-          .queryIfNE(requestMap)
+      RestRequest call = restClient
+          .get(baseUrl() + "v1/bootstrap/resources")
+          .queryDataBean(requestMap)
           .ignoreErrors();
       String responseJson = call.getResponseAsString();
       PartnerAccountsResponse response = parser.parse(responseJson, PartnerAccountsResponse.class);
@@ -134,13 +129,13 @@ public class Sprinklr implements Bootstrap, Profiles {
   public List<SocialProfileResponse> getSocialProfile(SocialProfileRequest request) {
     try {
       String requestJson = serializer.serialize(request);
-      ObjectMap requestParams = new ObjectMap(requestJson);
-      RestCall call = restClient
-          .doGet(baseUrl() + "v1/profile")
+      JsonMap requestParams = new JsonMap(requestJson);
+      RestRequest call = restClient
+          .get(baseUrl() + "v1/profile")
           .accept("application/json")
           .contentType("application/json")
           .ignoreErrors()
-          .queryIfNE(requestParams);
+          .queryDataBean(requestParams);
       String responseJson = call.getResponseAsString();
       List<SocialProfileResponse> result = parser.parse(responseJson, List.class, SocialProfileResponse.class);
       return result;
@@ -156,13 +151,13 @@ public class Sprinklr implements Bootstrap, Profiles {
   public List<ProfileConversationsResponse> getProfileConversations(ProfileConversationsRequest request) {
     try {
       String requestJson = serializer.serialize(request);
-      ObjectMap requestParams = new ObjectMap(requestJson);
-      RestCall call = restClient
-          .doGet(baseUrl() + "v1/profile/conversations")
+      JsonMap requestParams = new JsonMap(requestJson);
+      RestRequest call = restClient
+          .get(baseUrl() + "v1/profile/conversations")
           .accept("application/json")
           .contentType("application/json")
           .ignoreErrors()
-          .queryIfNE(requestParams);
+          .queryDataBean(requestParams);
       String responseJson = call.getResponseAsString();
       List<ProfileConversationsResponse> result = parser.parse(responseJson, List.class, ProfileConversationsResponse.class);
       return result;

@@ -19,15 +19,15 @@
 package org.apache.streams.twitter.api;
 
 import org.apache.juneau.http.annotation.Query;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteGet;
 
 /**
  * Interface for /media methods.
  *
  * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
  */
-@RemoteInterface(path = "https://upload.twitter.com/1.1/media")
+@Remote(path = "https://upload.twitter.com/1.1/media")
 public interface Media {
 
   /**
@@ -38,7 +38,7 @@ public interface Media {
    * @see <a href="https://developer.twitter.com/en/docs/media/upload-media/api-reference/get-media-upload-status">https://developer.twitter.com/en/docs/media/upload-media/api-reference/get-media-upload-status</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/upload")
-  public MediaStatusResponse getMediaStatus(@Query(name = "*", skipIfEmpty = true) MediaStatusRequest parameters );
+  @RemoteGet(path = "/upload")
+  public MediaStatusResponse getMediaStatus(@Query(name = "*") MediaStatusRequest parameters );
 
 }

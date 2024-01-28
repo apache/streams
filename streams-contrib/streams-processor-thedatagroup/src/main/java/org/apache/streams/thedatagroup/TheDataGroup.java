@@ -18,12 +18,6 @@
 
 package org.apache.streams.thedatagroup;
 
-import com.google.common.util.concurrent.Uninterruptibles;
-import org.apache.juneau.json.JsonParser;
-import org.apache.juneau.json.JsonSerializer;
-import org.apache.juneau.rest.client.RestCall;
-import org.apache.juneau.rest.client.RestClient;
-import org.apache.juneau.rest.client.RestClientBuilder;
 import org.apache.streams.config.ComponentConfigurator;
 import org.apache.streams.thedatagroup.api.AppendRequest;
 import org.apache.streams.thedatagroup.api.DemographicsAppendResponse;
@@ -36,6 +30,13 @@ import org.apache.streams.thedatagroup.api.PhoneAppendResponse;
 import org.apache.streams.thedatagroup.api.PhoneLookupRequest;
 import org.apache.streams.thedatagroup.api.VehicleAppendResponse;
 import org.apache.streams.thedatagroup.config.TheDataGroupConfiguration;
+
+import com.google.common.util.concurrent.Uninterruptibles;
+
+import org.apache.juneau.json.JsonParser;
+import org.apache.juneau.json.JsonSerializer;
+import org.apache.juneau.rest.client.RestClient;
+import org.apache.juneau.rest.client.RestRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +56,7 @@ public class TheDataGroup implements SyncAppend, SyncLookup {
   JsonParser parser;
   JsonSerializer serializer;
 
-  RestClientBuilder restClientBuilder;
+  RestClient.Builder restClientBuilder;
   RestClient restClient;
 
   private static Map<TheDataGroupConfiguration, TheDataGroup> INSTANCE_MAP = new ConcurrentHashMap<>();
@@ -76,10 +77,10 @@ public class TheDataGroup implements SyncAppend, SyncLookup {
 
   private TheDataGroup(TheDataGroupConfiguration configuration) {
     this.configuration = configuration;
-    this.parser = JsonParser.DEFAULT.builder()
-      .ignoreUnknownBeanProperties(true)
+    this.parser = JsonParser.DEFAULT.copy()
+      .ignoreUnknownBeanProperties()
       .build();
-    this.serializer = JsonSerializer.DEFAULT.builder()
+    this.serializer = JsonSerializer.DEFAULT.copy()
       .trimEmptyCollections(true)
       .trimEmptyMaps(true)
       .build();
@@ -106,9 +107,9 @@ public class TheDataGroup implements SyncAppend, SyncLookup {
   @Override
   public DemographicsAppendResponse appendDemographics(AppendRequest request) {
     try {
-      RestCall call = restClient
-              .doPost(baseUrl() + "sync/append/demographics")
-              .body(request)
+      RestRequest call = restClient
+              .post(baseUrl() + "sync/append/demographics")
+              .content(request)
               .ignoreErrors();
       String responseJson = call.getResponseAsString();
       DemographicsAppendResponse response = parser.parse(responseJson, DemographicsAppendResponse.class);
@@ -124,9 +125,9 @@ public class TheDataGroup implements SyncAppend, SyncLookup {
   @Override
   public EmailAppendResponse appendEmail(AppendRequest request) {
     try {
-      RestCall call = restClient
-              .doPost(baseUrl() + "sync/append/email")
-              .body(request)
+      RestRequest call = restClient
+              .post(baseUrl() + "sync/append/email")
+              .content(request)
               .ignoreErrors();
       String responseJson = call.getResponseAsString();
       EmailAppendResponse response = parser.parse(responseJson, EmailAppendResponse.class);
@@ -142,9 +143,9 @@ public class TheDataGroup implements SyncAppend, SyncLookup {
   @Override
   public PhoneAppendResponse appendPhone(AppendRequest request) {
     try {
-      RestCall call = restClient
-              .doPost(baseUrl() + "sync/append/phone")
-              .body(request)
+      RestRequest call = restClient
+              .post(baseUrl() + "sync/append/phone")
+              .content(request)
               .ignoreErrors();
       String responseJson = call.getResponseAsString();
       PhoneAppendResponse response = parser.parse(responseJson, PhoneAppendResponse.class);
@@ -160,9 +161,9 @@ public class TheDataGroup implements SyncAppend, SyncLookup {
   @Override
   public MobileAppendResponse appendMobile(AppendRequest request) {
     try {
-      RestCall call = restClient
-              .doPost(baseUrl() + "sync/append/mobile")
-              .body(request)
+      RestRequest call = restClient
+              .post(baseUrl() + "sync/append/mobile")
+              .content(request)
               .ignoreErrors();
       String responseJson = call.getResponseAsString();
       MobileAppendResponse response = parser.parse(responseJson, MobileAppendResponse.class);
@@ -178,9 +179,9 @@ public class TheDataGroup implements SyncAppend, SyncLookup {
   @Override
   public VehicleAppendResponse appendVehicle(AppendRequest request) {
     try {
-      RestCall call = restClient
-              .doPost(baseUrl() + "sync/append/vehicle")
-              .body(request)
+      RestRequest call = restClient
+              .post(baseUrl() + "sync/append/vehicle")
+              .content(request)
               .ignoreErrors();
       String responseJson = call.getResponseAsString();
       VehicleAppendResponse response = parser.parse(responseJson, VehicleAppendResponse.class);
@@ -196,9 +197,9 @@ public class TheDataGroup implements SyncAppend, SyncLookup {
   @Override
   public LookupResponse lookupEmail(EmailLookupRequest request) {
     try {
-      RestCall call = restClient
-              .doPost(baseUrl() + "sync/lookup/email")
-              .body(request)
+      RestRequest call = restClient
+              .post(baseUrl() + "sync/lookup/email")
+              .content(request)
               .ignoreErrors();
       String responseJson = call.getResponseAsString();
       LookupResponse response = parser.parse(responseJson, LookupResponse.class);
@@ -214,9 +215,9 @@ public class TheDataGroup implements SyncAppend, SyncLookup {
   @Override
   public LookupResponse lookupMobile(PhoneLookupRequest request) {
     try {
-      RestCall call = restClient
-              .doPost(baseUrl() + "sync/lookup/mobile")
-              .body(request)
+      RestRequest call = restClient
+              .post(baseUrl() + "sync/lookup/mobile")
+              .content(request)
               .ignoreErrors();
       String responseJson = call.getResponseAsString();
       LookupResponse response = parser.parse(responseJson, LookupResponse.class);
@@ -232,9 +233,9 @@ public class TheDataGroup implements SyncAppend, SyncLookup {
   @Override
   public LookupResponse lookupIp(IpLookupRequest request) {
     try {
-      RestCall call = restClient
-              .doPost(baseUrl() + "sync/lookup/ip")
-              .body(request)
+      RestRequest call = restClient
+              .post(baseUrl() + "sync/lookup/ip")
+              .content(request)
               .ignoreErrors();
       String responseJson = call.getResponseAsString();
       LookupResponse response = parser.parse(responseJson, LookupResponse.class);
@@ -250,9 +251,9 @@ public class TheDataGroup implements SyncAppend, SyncLookup {
   @Override
   public LookupResponse lookupPhone(PhoneLookupRequest request) {
     try {
-      RestCall call = restClient
-              .doPost(baseUrl() + "sync/lookup/phone")
-              .body(request)
+      RestRequest call = restClient
+              .post(baseUrl() + "sync/lookup/phone")
+              .content(request)
               .ignoreErrors();
       String responseJson = call.getResponseAsString();
       LookupResponse response = parser.parse(responseJson, LookupResponse.class);

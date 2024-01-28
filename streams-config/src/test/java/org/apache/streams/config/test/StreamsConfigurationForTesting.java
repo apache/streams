@@ -22,16 +22,17 @@ import org.apache.streams.config.ComponentConfiguration;
 import org.apache.streams.config.StreamsConfiguration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.juneau.annotation.BeanProperty;
+
+import org.apache.juneau.annotation.Beanp;
 
 public class StreamsConfigurationForTesting extends StreamsConfiguration {
 
   @JsonProperty("componentOne")
-  @BeanProperty("componentOne")
+  @Beanp("componentOne")
   private org.apache.streams.config.ComponentConfiguration componentOne;
 
   @JsonProperty("componentTwo")
-  @BeanProperty("componentTwo")
+  @Beanp("componentTwo")
   private org.apache.streams.config.ComponentConfiguration componentTwo;
 
   public StreamsConfigurationForTesting() {
@@ -43,25 +44,25 @@ public class StreamsConfigurationForTesting extends StreamsConfiguration {
   }
 
   @JsonProperty("componentOne")
-  @BeanProperty("componentOne")
+  @Beanp("componentOne")
   public ComponentConfiguration getComponentOne() {
     return componentOne;
   }
 
   @JsonProperty("componentOne")
-  @BeanProperty("componentOne")
+  @Beanp("componentOne")
   public void setComponentOne(ComponentConfiguration componentOne) {
     this.componentOne = componentOne;
   }
 
   @JsonProperty("componentTwo")
-  @BeanProperty("componentTwo")
+  @Beanp("componentTwo")
   public ComponentConfiguration getComponentTwo() {
     return componentTwo;
   }
 
   @JsonProperty("componentTwo")
-  @BeanProperty("componentTwo")
+  @Beanp("componentTwo")
   public void setComponentTwo(ComponentConfiguration componentTwo) {
     this.componentTwo = componentTwo;
   }

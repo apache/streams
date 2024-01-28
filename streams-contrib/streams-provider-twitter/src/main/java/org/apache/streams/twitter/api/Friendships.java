@@ -22,8 +22,9 @@ import org.apache.streams.twitter.pojo.Friendship;
 import org.apache.streams.twitter.pojo.User;
 
 import org.apache.juneau.http.annotation.Query;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteGet;
+import org.apache.juneau.http.remote.RemotePost;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ import java.util.List;
  *
  * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/overview">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/overview</a>
  */
-@RemoteInterface(path = "https://api.twitter.com/1.1/friendships")
+@Remote(path = "https://api.twitter.com/1.1/friendships")
 public interface Friendships {
 
   /**
@@ -43,8 +44,8 @@ public interface Friendships {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-create">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-create</a>
    *
    */
-  @RemoteMethod(method ="POST", path = "/create.json")
-  public User create(@Query(name = "*", skipIfEmpty = true) FriendshipCreateRequest parameters);
+  @RemotePost(path = "/create.json")
+  public User create(@Query(name = "*") FriendshipCreateRequest parameters);
 
   /**
    * Allows the authenticating user to unfollow the user specified in the ID parameter.
@@ -54,8 +55,8 @@ public interface Friendships {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-destroy">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-destroy</a>
    *
    */
-  @RemoteMethod(method ="POST", path = "/destroy.json")
-  public User destroy(@Query(name = "*", skipIfEmpty = true) FriendshipDestroyRequest parameters);
+  @RemotePost(path = "/destroy.json")
+  public User destroy(@Query(name = "*") FriendshipDestroyRequest parameters);
 
   /**
    * Returns a collection of numeric IDs for every user who has a pending request to follow the authenticating user.
@@ -65,8 +66,8 @@ public interface Friendships {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-incoming">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-incoming</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/incoming.json")
-  public User incoming(@Query(name = "*", skipIfEmpty = true) FriendshipsIncomingRequest parameters);
+  @RemoteGet(path = "/incoming.json")
+  public User incoming(@Query(name = "*") FriendshipsIncomingRequest parameters);
 
   /**
    * Returns the relationships of the authenticating user to the comma-separated list of up to 100 screen_names or user_ids provided.
@@ -77,8 +78,8 @@ public interface Friendships {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-lookup">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-lookup</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/lookup.json")
-  public List<Friendship> lookup(@Query(name = "*", skipIfEmpty = true) FriendshipsLookupRequest parameters);
+  @RemoteGet(path = "/lookup.json")
+  public List<Friendship> lookup(@Query(name = "*") FriendshipsLookupRequest parameters);
 
 
   /**
@@ -89,8 +90,8 @@ public interface Friendships {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-incoming">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-incoming</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/outgoing.json")
-  public User outgoing(@Query(name = "*", skipIfEmpty = true) FriendshipsOutgoingRequest parameters);
+  @RemoteGet(path = "/outgoing.json")
+  public User outgoing(@Query(name = "*") FriendshipsOutgoingRequest parameters);
 
   /**
    * Returns detailed information about the relationship between two arbitrary users.
@@ -100,8 +101,8 @@ public interface Friendships {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-show">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/get-friendships-show</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/show.json")
-  public FriendshipShowResponse show(@Query(name = "*", skipIfEmpty = true) FriendshipShowRequest parameters);
+  @RemoteGet(path = "/show.json")
+  public FriendshipShowResponse show(@Query(name = "*") FriendshipShowRequest parameters);
 
   /**
    * Allows one to enable or disable retweets and device notifications from the specified user.
@@ -111,7 +112,7 @@ public interface Friendships {
    * @see <a href="https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-update">https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference/post-friendships-update</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/update.json")
-  public User update(@Query(name = "*", skipIfEmpty = true) FriendshipUpdateRequest parameters);
+  @RemoteGet(path = "/update.json")
+  public User update(@Query(name = "*") FriendshipUpdateRequest parameters);
 
 }

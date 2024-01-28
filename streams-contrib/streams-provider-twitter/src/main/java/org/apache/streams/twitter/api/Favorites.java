@@ -21,8 +21,8 @@ package org.apache.streams.twitter.api;
 import org.apache.streams.twitter.pojo.Tweet;
 
 import org.apache.juneau.http.annotation.Query;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemoteGet;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @see <a href="https://dev.twitter.com/rest/reference">https://dev.twitter.com/rest/reference</a>
  */
-@RemoteInterface(path = "https://api.twitter.com/1.1/favorites")
+@Remote(path = "https://api.twitter.com/1.1/favorites")
 public interface Favorites {
 
   /**
@@ -43,7 +43,7 @@ public interface Favorites {
    * @see <a href="https://dev.twitter.com/rest/reference/get/favorites/list">https://dev.twitter.com/rest/reference/get/favorites/list</a>
    *
    */
-  @RemoteMethod(method ="GET", path = "/list.json")
-  public List<Tweet> list( @Query(name = "*", skipIfEmpty = true) FavoritesListRequest parameters);
+  @RemoteGet(path = "/list.json")
+  public List<Tweet> list( @Query(name = "*") FavoritesListRequest parameters);
 
 }

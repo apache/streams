@@ -18,27 +18,33 @@
 
 package org.apache.streams.thedatagroup;
 
-import org.apache.juneau.http.annotation.Body;
-import org.apache.juneau.remote.RemoteInterface;
-import org.apache.juneau.rest.client.remote.RemoteMethod;
-import org.apache.streams.thedatagroup.api.*;
+import org.apache.streams.thedatagroup.api.AppendRequest;
+import org.apache.streams.thedatagroup.api.DemographicsAppendResponse;
+import org.apache.streams.thedatagroup.api.EmailAppendResponse;
+import org.apache.streams.thedatagroup.api.MobileAppendResponse;
+import org.apache.streams.thedatagroup.api.PhoneAppendResponse;
+import org.apache.streams.thedatagroup.api.VehicleAppendResponse;
 
-@RemoteInterface(path = "https://api.thedatagroup.com/v3/sync/append")
+import org.apache.juneau.http.annotation.Content;
+import org.apache.juneau.http.remote.Remote;
+import org.apache.juneau.http.remote.RemotePost;
+
+@Remote(path = "https://api.thedatagroup.com/v3/sync/append")
 public interface SyncAppend {
 
-  @RemoteMethod(method ="POST", path="/demographics")
-  public DemographicsAppendResponse appendDemographics(@Body AppendRequest request);
+  @RemotePost(path="/demographics")
+  public DemographicsAppendResponse appendDemographics(@Content AppendRequest request);
 
-  @RemoteMethod(method ="POST", path="/email")
-  public EmailAppendResponse appendEmail(@Body AppendRequest request);
+  @RemotePost(path="/email")
+  public EmailAppendResponse appendEmail(@Content AppendRequest request);
 
-  @RemoteMethod(method ="POST", path="/mobile")
-  public MobileAppendResponse appendMobile(@Body AppendRequest request);
+  @RemotePost(path="/mobile")
+  public MobileAppendResponse appendMobile(@Content AppendRequest request);
 
-  @RemoteMethod(method ="POST", path="/phone")
-  public PhoneAppendResponse appendPhone(@Body AppendRequest request);
+  @RemotePost(path="/phone")
+  public PhoneAppendResponse appendPhone(@Content AppendRequest request);
 
-  @RemoteMethod(method ="POST", path="/vehicle")
-  public VehicleAppendResponse appendVehicle(@Body AppendRequest request);
+  @RemotePost(path="/vehicle")
+  public VehicleAppendResponse appendVehicle(@Content AppendRequest request);
 
 }
