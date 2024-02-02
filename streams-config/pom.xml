@@ -138,29 +138,18 @@
                 <version>${project.version}</version>
                 <configuration>
                     <sourcePaths>
-                        <sourcePath>${basedir}/src/main/jsonschema</sourcePath>
+                        <sourcePath>${project.basedir}/src/main/jsonschema</sourcePath>
                     </sourcePaths>
-                    <targetDirectory>${basedir}/target/generated-sources/pojo</targetDirectory>
+                    <targetDirectory>${project.build.directory}/generated-sources/pojo</targetDirectory>
                     <targetPackage>org.apache.streams.config</targetPackage>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${basedir}/target/generated-sources/pojo</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <generatedSourcesDirectory>${project.build.directory}/generated-sources/pojo</generatedSourcesDirectory>
+                    <generatedTestSourcesDirectory>${project.build.directory}/generated-sources/pojo</generatedTestSourcesDirectory>
+                </configuration>
             </plugin>
         </plugins>
     </build>

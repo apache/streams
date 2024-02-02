@@ -33,14 +33,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.streams</groupId>
-            <artifactId>streams-schema-jsonschemaorg</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            <classifier>schemas</classifier>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jsonschema2pojo</groupId>
             <artifactId>jsonschema2pojo-maven-plugin</artifactId>
             <version>${jsonschema2pojo.version}</version>

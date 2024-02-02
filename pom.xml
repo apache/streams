@@ -570,13 +570,6 @@
                     <groupId>org.apache.streams.plugins</groupId>
                     <artifactId>streams-plugin-pojo</artifactId>
                     <version>${project.version}</version>
-                    <configuration>
-                        <sourcePaths>
-                            <sourcePath>${project.basedir}/src/main/jsonschema</sourcePath>
-                        </sourcePaths>
-                        <targetDirectory>${project.basedir}/target/generated-sources/pojo</targetDirectory>
-                        <targetPackage>org.apache.streams.pojo</targetPackage>
-                    </configuration>
                     <executions>
                         <execution>
                             <phase>generate-sources</phase>
@@ -802,7 +795,7 @@
                     <executions>
                         <execution>
                             <id>unpack-schemas</id>
-                            <phase>generate-sources</phase>
+                            <phase>initialize</phase>
                             <goals>
                                 <goal>unpack-dependencies</goal>
                             </goals>
@@ -815,7 +808,7 @@
                         </execution>
                         <execution>
                             <id>unpack-test-resources</id>
-                            <phase>process-test-resources</phase>
+                            <phase>initialize</phase>
                             <goals>
                                 <goal>unpack-dependencies</goal>
                             </goals>

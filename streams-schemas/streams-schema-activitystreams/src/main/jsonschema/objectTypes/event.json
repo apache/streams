@@ -13,7 +13,7 @@
             "$ref": "../object.json"
         },
         {
-            "$ref": "../../../../../streams-schemas/streams-schema-jsonschemaorg/src/main/jsonschema/calendar.json"
+            "$ref": "./../../../../target/dependency/jsonschemaorg-schemas/calendar.json"
         }
     ],
     "properties": {
