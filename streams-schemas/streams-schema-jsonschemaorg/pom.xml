@@ -33,6 +33,7 @@
     <description>Jsonschema.org schemas</description>
 
     <build>
+        <sourceDirectory>${project.build.directory}/generated-sources/pojo</sourceDirectory>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -40,24 +41,19 @@
         </resources>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-resource</goal>
-                        </goals>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/src/main/jsonschema</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>org.apache.streams.plugins</groupId>
+                <artifactId>streams-plugin-pojo</artifactId>
+                <version>${project.version}</version>
+<!--                <configuration>-->
+<!--                    <sourceDirectory>${project.basedir}/src/main/jsonschema</sourceDirectory>-->
+<!--                </configuration>-->
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <generatedSourcesDirectory>${project.build.directory}/generated-sources/pojo</generatedSourcesDirectory>
+                    <generatedTestSourcesDirectory>${project.build.directory}/generated-sources/pojo</generatedTestSourcesDirectory>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

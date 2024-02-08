@@ -53,19 +53,19 @@ public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
   @Component
   public MavenProject project;
 
-  @Parameter( defaultValue = "${project.basedir}", readonly = true )
+  @Parameter( defaultValue = "${project.basedir}", readonly = false )
   public File basedir;
 
-  @Parameter( defaultValue = "./src/main/jsonschema", readonly = true ) // Maven 3 only
+  @Parameter( defaultValue = "${project.basedir}/src/main/jsonschema", readonly = false )
   public String sourceDirectory;
 
-  @Parameter( readonly = true ) // Maven 3 only
+  @Parameter( readonly = false )
   public List<String> sourcePaths;
 
-  @Parameter(defaultValue = "./target/generated-sources/pojo", readonly = true)
+  @Parameter(defaultValue = "${project.build.directory}/generated-sources/pojo", readonly = false)
   public String targetDirectory;
 
-  @Parameter(readonly = true)
+  @Parameter(readonly = false)
   public String targetPackage;
 
   /**
@@ -84,8 +84,8 @@ public class StreamsPojoSourceGeneratorMojo extends AbstractMojo {
     } else {
       config.setSourceDirectory(sourceDirectory);
     }
-    config.setTargetPackage(targetPackage);
     config.setTargetDirectory(targetDirectory);
+    config.setTargetPackage(targetPackage);
 
     StreamsPojoSourceGenerator streamsPojoSourceGenerator = new StreamsPojoSourceGenerator(config);
 

@@ -69,8 +69,8 @@ public class SchemaValidationTest {
         LOGGER.debug("Test Document JSON: " + testFileString);
         JsonNode testNode = MAPPER.readValue(testFileString, ObjectNode.class);
         LOGGER.debug("Test Document Object:" + testNode);
-        LOGGER.debug("Test Schema File: " + "target/classes/verbs/" + file);
-        String testSchemaString = new String(Files.readAllBytes(Paths.get("target/classes/verbs/" + file)));
+        LOGGER.debug("Test Schema File: " + "src/main/jsonschema/verbs/" + file);
+        String testSchemaString = new String(Files.readAllBytes(Paths.get("src/main/jsonschema/verbs/" + file)));
         LOGGER.debug("Test Schema JSON: " + testSchemaString);
         JsonNode testSchemaNode = MAPPER.readValue(testFileString, ObjectNode.class);
         LOGGER.debug("Test Schema Object:" + testSchemaNode);

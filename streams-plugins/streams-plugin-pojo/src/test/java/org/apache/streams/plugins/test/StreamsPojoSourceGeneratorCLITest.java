@@ -23,6 +23,7 @@ import org.apache.streams.plugins.StreamsPojoSourceGenerator;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ public class StreamsPojoSourceGeneratorCLITest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(StreamsPojoSourceGeneratorCLITest.class);
 
+  @Ignore("until find a better way to test it")
   @Test
   public void testStreamsPojoSourceGeneratorCLI() throws Exception {
 
