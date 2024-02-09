@@ -21,13 +21,13 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>streams-plugin-cassandra</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.8.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <parent>
         <groupId>org.apache.streams.plugins</groupId>
         <artifactId>streams-plugins</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.8.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
