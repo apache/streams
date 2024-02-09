@@ -16,13 +16,13 @@
 # under the License.
 #
 
-name: build
+name: "build"
 
 on:
   push:
-    branches: ['master', 'STREAMS-*']
+    branches: ['master', '*']
   pull_request:
-    branches: ['master', 'STREAMS-*']
+    branches: ['master', '*']
   schedule:
     # Run daily at 3pm UTC
     - cron: '0 15 * * *'
