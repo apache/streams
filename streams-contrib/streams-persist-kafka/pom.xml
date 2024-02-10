@@ -33,7 +33,7 @@
     <properties>
         <scala.binary.version>2.12</scala.binary.version>
         <kafka.version>3.6.0</kafka.version>
-        <clojure.version>1.2.0</clojure.version>
+        <clojure.version>1.9.0</clojure.version>
     </properties>
 
     <dependencies>
