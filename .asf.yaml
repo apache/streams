@@ -29,3 +29,9 @@ github:
     - streams
   protected_branches:
     master: {}
+  notifications:
+    commits: commits@streams.apache.org
+    issues: commits@streams.apache.org
+    pullrequests: commits@streams.apache.org
+    jobs: commits@streams.apache.org
+    discussions: dev@streams.apache.org
