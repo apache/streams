@@ -11,35 +11,63 @@
 // * specific language governing permissions and limitations under the License.                                              *
 // ***************************************************************************************************************************
 
-timestamps {
+def AGENT_LABEL = env.AGENT_LABEL ?: 'ubuntu'
+def JDK_NAME = env.JDK_NAME ?: 'jdk_17_latest'
+def MVN_NAME = env.MVN_NAME ?: 'maven_3_latest'
 
-	node ('ubuntu') {
+pipeline {
 
-		stage ('Streams - Checkout') {
-			checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '', url: 'https://github.com/apache/streams']]])
-		}
+	agent {
+        node {
+            label AGENT_LABEL
+        }
+    }
 
-		stage ('Streams - Build') {
+    tools {
+        maven MVN_NAME
+        jdk JDK_NAME
+    }
 
-            def JAVA_JDK_17=tool name: 'jdk_17_latest', type: 'hudson.model.JDK'
-            def MAVEN_3_LATEST=tool name: 'maven_3_latest', type: 'hudson.tasks.Maven$MavenInstallation'
+    environment {
+        LANG = 'C.UTF-8'
+        MAVEN_CLI_OPTS = "--batch-mode --errors --fail-at-end --show-version --no-transfer-progress"
+    }
 
-			withEnv(["Path+JDK=$JAVA_JDK_17/bin","Path+MAVEN=$MAVEN_3_LATEST/bin","JAVA_HOME=$JAVA_JDK_17"]) {
-                sh "mvn -P 'java-17' clean install"
+    stages {
+
+		stage ('Build') {
+            steps {
+			    sh "mvn ${MAVEN_CLI_OPTS} -P 'java-17' -Dmaven.test.skip.exec=true clean install"
 			}
+			post {
+                success {
+                    archiveArtifacts '**/target/*.jar'
+                }
+            }
 		}
 
-        stage('Deploy snapshots') {
+        stage ('Test') {
+            steps {
+			    sh "mvn ${MAVEN_CLI_OPTS} -P 'java-17' verify"
+			}
+			post {
+                always {
+                    junit testResults: '**/target/surefire-reports/TEST-*.xml'
+                }
+            }
+		}
+
+        stage('Deploy') {
             when {
                 branch 'snapshots'
             }
             steps {
                 // Use release profile defined in project pom.xml
-                sh "mvn package -Dmaven.test.skip.exec=true deploy"
+                sh "mvn ${MAVEN_CLI_OPTS} -Dmaven.test.skip.exec=true deploy"
             }
         }
 
-		stage ('Streams - Post build actions') {
+		stage ('Notify') {
 			step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'dev@streams.apache.org', sendToIndividuals: true])
 		}
 	}
