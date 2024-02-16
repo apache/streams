@@ -29,6 +29,16 @@ timestamps {
 			}
 		}
 
+        stage('Deploy snapshots') {
+            when {
+                branch 'snapshots'
+            }
+            steps {
+                // Use release profile defined in project pom.xml
+                sh "mvn package -Dmaven.test.skip.exec=true deploy"
+            }
+        }
+
 		stage ('Streams - Post build actions') {
 			step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'dev@streams.apache.org', sendToIndividuals: true])
 		}
