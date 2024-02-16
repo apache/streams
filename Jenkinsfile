@@ -31,13 +31,14 @@ pipeline {
     environment {
         LANG = 'C.UTF-8'
         MAVEN_CLI_OPTS = "--batch-mode --errors --fail-at-end --show-version --no-transfer-progress"
+        MAVEN_DEPLOY_LOCAL_DIR = "/tmp/maven_deploy_dir"
     }
 
     stages {
 
 		stage ('Build') {
             steps {
-			    sh "mvnw ${MAVEN_CLI_OPTS} -P 'java-17' -Dmaven.test.skip.exec=true clean install"
+			    sh "mvn ${MAVEN_CLI_OPTS} -P 'java-17' -Dmaven.test.skip.exec=true clean install"
 			}
 			post {
                 success {
@@ -48,7 +49,7 @@ pipeline {
 
         stage ('Test') {
             steps {
-			    sh "mvnw ${MAVEN_CLI_OPTS} -P 'java-17' verify"
+			    sh "mvn ${MAVEN_CLI_OPTS} -P 'java-17' verify"
 			}
 			post {
                 always {
@@ -62,8 +63,20 @@ pipeline {
                 branch 'snapshots'
             }
             steps {
-                // Use release profile defined in project pom.xml
-                sh "mvnw ${MAVEN_CLI_OPTS} -Dmaven.test.skip.exec=true deploy"
+                script {
+                    withCredentials([usernamePassword(credentialsId: env.MAVEN_REPO_CREDS_ID, usernameVariable: 'REPOSITORY_USER', passwordVariable: 'REPOSITORY_TOKEN')]) {
+                        configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]) {
+                            getMavenCommand()
+                                .withSettingsXmlFile(MAVEN_SETTINGS_FILE)
+                                .withProperty('wagon.source', env.MAVEN_DEPLOY_LOCAL_DIR)
+                                .withProperty('wagon.target', env.MAVEN_DEPLOY_REPOSITORY)
+                                .withProperty('wagon.targetId', 'apache-snapshots')
+                                .withProperty('apache.snapshot.repository.username', REPOSITORY_USER)
+                                .withProperty('apache.snapshot.repository.password', REPOSITORY_TOKEN)
+                                .run("org.codehaus.mojo:wagon-maven-plugin:2.0.2:merge-maven-repos")
+                        }
+                    }
+                }
             }
         }
 
