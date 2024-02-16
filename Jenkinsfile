@@ -68,7 +68,9 @@ pipeline {
         }
 
 		stage ('Notify') {
-			step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'dev@streams.apache.org', sendToIndividuals: true])
+		    steps {
+			    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'dev@streams.apache.org', sendToIndividuals: true])
+            }
 		}
 	}
 }
