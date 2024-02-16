@@ -37,7 +37,7 @@ pipeline {
 
 		stage ('Build') {
             steps {
-			    sh "mvn ${MAVEN_CLI_OPTS} -P 'java-17' -Dmaven.test.skip.exec=true clean install"
+			    sh "mvnw ${MAVEN_CLI_OPTS} -P 'java-17' -Dmaven.test.skip.exec=true clean install"
 			}
 			post {
                 success {
@@ -48,7 +48,7 @@ pipeline {
 
         stage ('Test') {
             steps {
-			    sh "mvn ${MAVEN_CLI_OPTS} -P 'java-17' verify"
+			    sh "mvnw ${MAVEN_CLI_OPTS} -P 'java-17' verify"
 			}
 			post {
                 always {
@@ -63,7 +63,7 @@ pipeline {
             }
             steps {
                 // Use release profile defined in project pom.xml
-                sh "mvn ${MAVEN_CLI_OPTS} -Dmaven.test.skip.exec=true deploy"
+                sh "mvnw ${MAVEN_CLI_OPTS} -Dmaven.test.skip.exec=true deploy"
             }
         }
 
