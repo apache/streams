@@ -18,7 +18,7 @@
 
 package org.apache.streams.s3;
 
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
@@ -42,7 +42,7 @@ public class S3OutputStreamWrapper extends OutputStream {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(S3OutputStreamWrapper.class);
 
-  private final AmazonS3Client amazonS3Client;
+  private final AmazonS3 amazonS3;
   private final String bucketName;
   private final String path;
   private final String fileName;
@@ -52,7 +52,7 @@ public class S3OutputStreamWrapper extends OutputStream {
 
   /**
    * Create an OutputStream Wrapper
-   * @param amazonS3Client
+   * @param amazonS3
    * The Amazon S3 Client which will be handling the file
    * @param bucketName
    * The Bucket Name you are wishing to write to.
@@ -65,8 +65,8 @@ public class S3OutputStreamWrapper extends OutputStream {
    * @throws IOException
    * If there is an issue creating the stream, this
    */
-  public S3OutputStreamWrapper(AmazonS3Client amazonS3Client, String bucketName, String path, String fileName, Map<String, String> metaData) throws IOException {
-    this.amazonS3Client = amazonS3Client;
+  public S3OutputStreamWrapper(AmazonS3 amazonS3, String bucketName, String path, String fileName, Map<String, String> metaData) throws IOException {
+    this.amazonS3 = amazonS3;
     this.bucketName = bucketName;
     this.path = path;
     this.fileName = fileName;
@@ -116,7 +116,7 @@ public class S3OutputStreamWrapper extends OutputStream {
     InputStream is = new ByteArrayInputStream(this.outputStream.toByteArray());
     int contentLength = outputStream.size();
 
-    TransferManager transferManager = new TransferManager(amazonS3Client);
+    TransferManager transferManager = new TransferManager(amazonS3);
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setExpirationTime(DateTime.now().plusDays(365 * 3).toDate());
     metadata.setContentLength(contentLength);
