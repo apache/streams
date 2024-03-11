@@ -102,8 +102,7 @@ public class S3OutputStreamWrapper extends OutputStream {
         this.outputStream.close();
         this.outputStream = null;
       } catch (Exception ex) {
-        ex.printStackTrace();
-        LOGGER.warn("There was an error adding the temporaryFile to S3");
+        LOGGER.warn("There was an error adding the temporaryFile to S3", ex);
       } finally {
         // we are done here.
         this.isClosed = true;
